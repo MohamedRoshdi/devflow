@@ -269,9 +269,11 @@ WORKDIR /var/www
 
 # Install system dependencies and PHP extensions
 RUN apk add --no-cache nginx supervisor curl git unzip \
+        libpng-dev libjpeg-turbo-dev freetype-dev \
     && apk add --no-cache --virtual .build-deps \
         \$PHPIZE_DEPS \
-    && docker-php-ext-install pdo pdo_mysql \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j\$(nproc) pdo pdo_mysql pcntl gd \
     && apk del .build-deps
 
 # Install Composer
