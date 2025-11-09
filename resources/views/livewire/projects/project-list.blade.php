@@ -79,6 +79,23 @@
                             @endif
                         </div>
 
+                        <!-- Access URL for running projects -->
+                        @if($project->status === 'running' && $project->port && $project->server)
+                            @php
+                                $url = 'http://' . $project->server->ip_address . ':' . $project->port;
+                            @endphp
+                            <div class="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                                <p class="text-xs text-green-700 font-medium mb-1">🚀 Live at:</p>
+                                <a href="{{ $url }}" target="_blank" 
+                                   class="text-sm text-green-800 hover:text-green-900 font-mono break-all flex items-center">
+                                    {{ $url }}
+                                    <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        @endif
+
                         <div class="flex justify-between items-center pt-4 border-t border-gray-200">
                             <span class="text-xs text-gray-500">
                                 {{ $project->last_deployed_at ? $project->last_deployed_at->diffForHumans() : 'Never deployed' }}

@@ -38,6 +38,33 @@
         </div>
     @endif
 
+    <!-- Access URL (for running projects) -->
+    @if($project->status === 'running' && $project->port && $project->server)
+        <div class="mb-6 bg-blue-50 border-2 border-blue-300 rounded-lg p-6">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-blue-900 mb-2">🚀 Your Application is Live!</h3>
+                    <p class="text-sm text-blue-700 mb-3">Access your running application at:</p>
+                    @php
+                        $url = 'http://' . $project->server->ip_address . ':' . $project->port;
+                    @endphp
+                    <a href="{{ $url }}" target="_blank" 
+                       class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-150 ease-in-out">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        </svg>
+                        {{ $url }}
+                    </a>
+                </div>
+                <button onclick="navigator.clipboard.writeText('{{ $url }}')" 
+                        class="ml-4 px-4 py-2 bg-white border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50 transition duration-150 ease-in-out"
+                        title="Copy URL">
+                    📋 Copy
+                </button>
+            </div>
+        </div>
+    @endif
+
     <!-- Deploy Modal -->
     @if($showDeployModal)
         <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
