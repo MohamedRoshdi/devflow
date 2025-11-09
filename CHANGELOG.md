@@ -7,6 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.1] - 2025-11-09
+
+### 🐛 Bug Fixes
+
+**Fixed Critical Server Offline Issue**
+- Fixed servers showing as "offline" after creation
+- Added automatic SSH connectivity testing
+- Implemented real-time server status detection
+- Added localhost/same-VPS auto-detection
+- Fixed projects not able to be assigned to servers
+
+### ✨ Enhancements
+
+**Server Management Improvements:**
+- Created `ServerConnectivityService` for real SSH testing
+- Auto-gather server specifications (CPU, RAM, Disk, OS)
+- Added latency measurement for connections
+- Improved error messages and user feedback
+
+**Project Creation Improvements:**
+- Show ALL servers (not just online ones)
+- Added server status badges in selection
+- Added manual "Refresh" button per server
+- Better visual feedback with status colors
+- Improved server selection UI
+
+**Server Monitoring:**
+- Enhanced ping functionality with real connectivity test
+- Auto-update server specs when pinging
+- Better status messages (success/failure)
+- Added error display in server details
+
+### 🔧 Technical Changes
+
+**New Files:**
+- `app/Services/ServerConnectivityService.php`
+- `database/migrations/2024_01_02_000007_create_cache_table.php`
+- `PROJECT_STATUS.md`
+
+**Modified Files:**
+- `app/Livewire/Servers/ServerCreate.php`
+- `app/Livewire/Servers/ServerShow.php`
+- `app/Livewire/Projects/ProjectCreate.php`
+- `resources/views/livewire/projects/project-create.blade.php`
+- `resources/views/livewire/servers/server-show.blade.php`
+- `TROUBLESHOOTING.md`
+
+### 📚 Documentation Updates
+- Added troubleshooting section for server offline issue
+- Created PROJECT_STATUS.md for tracking project state
+- Updated TROUBLESHOOTING.md with new solutions
+
+---
+
 ## [1.0.0] - 2025-11-09
 
 ### 🎉 Initial Release

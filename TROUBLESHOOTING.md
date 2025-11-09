@@ -2,6 +2,52 @@
 
 ## Common Issues and Solutions
 
+### Server Management Issues
+
+#### 1. Server Shows as "Offline" After Adding
+
+**Symptoms:** Server added but status shows "offline", cannot create projects
+
+**Causes:**
+- SSH connectivity not tested automatically
+- Incorrect SSH credentials
+- Server firewall blocking SSH
+- Wrong port number
+
+**Solutions:**
+```bash
+# Option 1: Use the Ping/Refresh button
+# Go to Servers → Select your server → Click "Ping Server"
+# This will test connectivity and update status
+
+# Option 2: Manual SSH test from command line
+ssh -p 22 root@31.220.90.121 "echo 'test'"
+
+# Option 3: For localhost/same VPS
+# The system should auto-detect this, but you can manually update:
+# Go to server details → Click "Ping Server"
+
+# Option 4: Check if SSH service is running
+systemctl status ssh
+
+# Option 5: Verify firewall allows SSH
+ufw status
+ufw allow 22/tcp
+```
+
+**Note:** After the latest update, servers are automatically tested when created. Use the refresh button in project creation if status needs updating.
+
+#### 2. Cannot Add Project to Server
+
+**Symptoms:** Server not appearing in project creation dropdown
+
+**Solutions:**
+- The latest update shows ALL servers (not just online ones)
+- Look for your server in the list with status badge
+- Click the "🔄 Refresh" button next to the server
+- This will test connectivity and update status
+- If server is localhost (same VPS), it will be detected automatically
+
 ### Application Issues
 
 #### 1. "File not found" or 403 Forbidden Error
