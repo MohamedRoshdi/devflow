@@ -41,29 +41,63 @@
             <!-- Server Selection -->
             <div class="border-t pt-6">
                 <h3 class="text-lg font-medium text-gray-900 mb-4">Server Configuration</h3>
+                
+                @if (session()->has('server_status_updated'))
+                    <div class="mb-4 bg-blue-50 border border-blue-200 text-blue-800 px-4 py-2 rounded text-sm">
+                        {{ session('server_status_updated') }}
+                    </div>
+                @endif
+
                 <div>
                     <label for="server_id" class="block text-sm font-medium text-gray-700 mb-2">Select Server *</label>
-                    <select wire:model="server_id" 
-                            id="server_id" 
-                            required
-                            class="input @error('server_id') border-red-500 @enderror">
-                        <option value="">Choose a server...</option>
-                        @foreach($servers as $server)
-                            <option value="{{ $server->id }}">
-                                {{ $server->name }} ({{ $server->ip_address }})
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('server_id') 
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
+                    <div class="space-y-3">
+                        @forelse($servers as $server)
+                            <div class="border rounded-lg p-4 {{ $server_id == $server->id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300' }}">
+                                <div class="flex items-center justify-between">
+                                    <label class="flex items-center flex-1 cursor-pointer">
+                                        <input type="radio" 
+                                               wire:model="server_id" 
+                                               value="{{ $server->id }}"
+                                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                        <div class="ml-3 flex-1">
+                                            <div class="flex items-center">
+                                                <span class="font-medium text-gray-900">{{ $server->name }}</span>
+                                                <span class="ml-2 px-2 py-1 rounded-full text-xs
+                                                    @if($server->status === 'online') bg-green-100 text-green-800
+                                                    @elseif($server->status === 'offline') bg-red-100 text-red-800
+                                                    @elseif($server->status === 'maintenance') bg-yellow-100 text-yellow-800
+                                                    @else bg-gray-100 text-gray-800
+                                                    @endif">
+                                                    {{ ucfirst($server->status) }}
+                                                </span>
+                                            </div>
+                                            <div class="text-sm text-gray-500 mt-1">
+                                                {{ $server->ip_address }} • {{ $server->cpu_cores ?? '?' }} CPU • {{ $server->memory_gb ?? '?' }} GB RAM
+                                                @if($server->docker_installed)
+                                                    • <span class="text-green-600">Docker ✓</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </label>
+                                    <button type="button"
+                                            wire:click="refreshServerStatus({{ $server->id }})"
+                                            class="ml-3 text-blue-600 hover:text-blue-700 text-sm font-medium"
+                                            title="Refresh server status">
+                                        🔄 Refresh
+                                    </button>
+                                </div>
+                            </div>
+                        @empty
+                            <p class="text-yellow-600 text-sm">
+                                ⚠️ You need to add a server first. 
+                                <a href="{{ route('servers.create') }}" class="underline font-medium">Add server now</a>
+                            </p>
+                        @endforelse
+                    </div>
                     
-                    @if($servers->count() === 0)
-                        <p class="text-yellow-600 text-sm mt-2">
-                            ⚠️ You need to add a server first. 
-                            <a href="{{ route('servers.create') }}" class="underline">Add server now</a>
-                        </p>
-                    @endif
+                    @error('server_id') 
+                        <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
 

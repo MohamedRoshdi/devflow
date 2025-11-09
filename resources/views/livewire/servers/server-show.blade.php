@@ -20,6 +20,12 @@
         </div>
     @endif
 
+    @if (session()->has('error'))
+        <div class="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <!-- Server Stats -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div class="bg-white rounded-lg shadow p-6">

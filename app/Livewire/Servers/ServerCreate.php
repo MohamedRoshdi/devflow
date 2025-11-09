@@ -5,6 +5,7 @@ namespace App\Livewire\Servers;
 use Livewire\Component;
 use App\Models\Server;
 use App\Services\DockerService;
+use App\Services\ServerConnectivityService;
 
 class ServerCreate extends Component
 {
@@ -45,8 +46,22 @@ class ServerCreate extends Component
         $this->validate();
         
         try {
-            // Test SSH connection (simplified)
-            session()->flash('connection_test', 'Connection test successful!');
+            // Create temporary server object for testing
+            $tempServer = new Server([
+                'ip_address' => $this->ip_address,
+                'port' => $this->port,
+                'username' => $this->username,
+                'ssh_key' => $this->ssh_key,
+            ]);
+
+            $connectivityService = app(ServerConnectivityService::class);
+            $result = $connectivityService->testConnection($tempServer);
+            
+            if ($result['reachable']) {
+                session()->flash('connection_test', $result['message'] . ' (Latency: ' . $result['latency_ms'] . 'ms)');
+            } else {
+                session()->flash('connection_error', $result['message']);
+            }
         } catch (\Exception $e) {
             session()->flash('connection_error', 'Connection failed: ' . $e->getMessage());
         }
@@ -70,6 +85,24 @@ class ServerCreate extends Component
             'status' => 'offline',
         ]);
 
+        // Test connectivity and update status
+        $connectivityService = app(ServerConnectivityService::class);
+        $isReachable = $connectivityService->pingAndUpdateStatus($server);
+
+        // Get server information
+        if ($isReachable) {
+            $serverInfo = $connectivityService->getServerInfo($server);
+            
+            if (!empty($serverInfo)) {
+                $server->update([
+                    'os' => $serverInfo['os'] ?? null,
+                    'cpu_cores' => $serverInfo['cpu_cores'] ?? null,
+                    'memory_gb' => $serverInfo['memory_gb'] ?? null,
+                    'disk_gb' => $serverInfo['disk_gb'] ?? null,
+                ]);
+            }
+        }
+
         // Check Docker installation
         try {
             $dockerService = app(DockerService::class);
@@ -85,8 +118,12 @@ class ServerCreate extends Component
 
         $this->dispatch('server-created');
         
+        $message = $isReachable 
+            ? 'Server added successfully and is online!' 
+            : 'Server added but appears offline. Check SSH credentials.';
+        
         return redirect()->route('servers.show', $server)
-            ->with('message', 'Server added successfully!');
+            ->with('message', $message);
     }
 
     public function render()

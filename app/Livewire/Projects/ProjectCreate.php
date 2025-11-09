@@ -5,6 +5,7 @@ namespace App\Livewire\Projects;
 use Livewire\Component;
 use App\Models\Project;
 use App\Models\Server;
+use App\Services\ServerConnectivityService;
 use Illuminate\Support\Str;
 
 class ProjectCreate extends Component
@@ -29,13 +30,30 @@ class ProjectCreate extends Component
     public function mount()
     {
         $this->servers = Server::where('user_id', auth()->id())
-            ->where('status', 'online')
+            ->orderByRaw("FIELD(status, 'online', 'maintenance', 'offline', 'error')")
             ->get();
     }
 
     public function updatedName()
     {
         $this->slug = Str::slug($this->name);
+    }
+
+    public function refreshServerStatus($serverId)
+    {
+        $server = Server::where('id', $serverId)
+            ->where('user_id', auth()->id())
+            ->first();
+
+        if ($server) {
+            $connectivityService = app(ServerConnectivityService::class);
+            $connectivityService->pingAndUpdateStatus($server);
+            
+            // Reload servers list
+            $this->mount();
+            
+            session()->flash('server_status_updated', 'Server status refreshed');
+        }
     }
 
     public function rules()

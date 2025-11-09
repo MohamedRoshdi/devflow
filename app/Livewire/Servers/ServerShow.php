@@ -4,6 +4,7 @@ namespace App\Livewire\Servers;
 
 use Livewire\Component;
 use App\Models\Server;
+use App\Services\ServerConnectivityService;
 use Livewire\Attributes\On;
 
 class ServerShow extends Component
@@ -29,12 +30,38 @@ class ServerShow extends Component
 
     public function pingServer()
     {
-        $this->server->update([
-            'last_ping_at' => now(),
-            'status' => 'online',
-        ]);
+        $connectivityService = app(ServerConnectivityService::class);
+        $result = $connectivityService->testConnection($this->server);
 
-        session()->flash('message', 'Server pinged successfully');
+        if ($result['reachable']) {
+            $this->server->update([
+                'last_ping_at' => now(),
+                'status' => 'online',
+            ]);
+
+            // Try to update server info
+            $serverInfo = $connectivityService->getServerInfo($this->server);
+            if (!empty($serverInfo)) {
+                $this->server->update([
+                    'os' => $serverInfo['os'] ?? $this->server->os,
+                    'cpu_cores' => $serverInfo['cpu_cores'] ?? $this->server->cpu_cores,
+                    'memory_gb' => $serverInfo['memory_gb'] ?? $this->server->memory_gb,
+                    'disk_gb' => $serverInfo['disk_gb'] ?? $this->server->disk_gb,
+                ]);
+            }
+
+            session()->flash('message', 'Server is online! ' . $result['message']);
+        } else {
+            $this->server->update([
+                'last_ping_at' => now(),
+                'status' => 'offline',
+            ]);
+
+            session()->flash('error', 'Server appears offline: ' . $result['message']);
+        }
+
+        // Refresh server data
+        $this->server->refresh();
     }
 
     public function render()
