@@ -117,12 +117,18 @@
                 <h3 class="text-lg font-medium text-gray-900 mb-4">Repository</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="repository_url" class="block text-sm font-medium text-gray-700 mb-2">Repository URL</label>
+                        <label for="repository_url" class="block text-sm font-medium text-gray-700 mb-2">Repository URL *</label>
                         <input wire:model="repository_url" 
                                id="repository_url" 
-                               type="url" 
-                               placeholder="https://github.com/user/repo.git"
-                               class="input">
+                               type="text" 
+                               placeholder="https://github.com/user/repo.git or git@github.com:user/repo.git"
+                               class="input @error('repository_url') border-red-500 @enderror">
+                        <p class="text-xs text-gray-500 mt-1">
+                            Supports HTTPS or SSH format. SSH recommended for private repositories.
+                        </p>
+                        @error('repository_url') 
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>
