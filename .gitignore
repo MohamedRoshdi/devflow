@@ -20,3 +20,4 @@ yarn-error.log
 user_response.txt
 
 
+*.tar.gz
