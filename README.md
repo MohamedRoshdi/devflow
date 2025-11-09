@@ -24,40 +24,51 @@ DevFlow Pro is a **complete deployment management system** that makes it easy to
 ## 🎯 Key Features
 
 ### 🚀 Project Management
-- **Create & Edit Projects** - Full CRUD operations
+- **Create & Edit Projects** - Full CRUD operations with validation
 - **Multiple Frameworks** - Laravel, Node.js, React, Vue, Next.js, Static sites
 - **Version Control** - Git integration (HTTPS & SSH)
 - **Branch Management** - Deploy from any branch
+- **Git Commit Tracking** - View commit history and check for updates ⭐ NEW!
+- **Update Notifications** - Get notified when new commits are available ⭐ NEW!
 
 ### 🖥️ Server Management
 - **Multi-Server Support** - Manage unlimited servers
 - **Real-Time Monitoring** - CPU, RAM, Disk usage
 - **Auto-Discovery** - One-click current server addition
 - **SSH Connectivity** - Automated connection testing
+- **Server Health Checks** - Automatic ping and status detection
 
 ### 📦 Docker Integration
-- **Auto-Containerization** - Automatic Docker image creation
+- **Smart Dockerfile Detection** - Uses your Dockerfile if it exists ⭐ NEW!
+- **Dockerfile.production Support** - Separate dev/prod configurations ⭐ NEW!
+- **Auto-Generation Fallback** - Creates Dockerfile only if needed
 - **docker-compose Support** - Use your own configurations
 - **Container Management** - Start, stop, restart containers
 - **Real-Time Logs** - View container logs in dashboard
 
 ### 🔄 Automated Deployments
 - **GitHub Integration** - Clone from public/private repositories
-- **SSH Key Support** - Secure authentication
+- **SSH Key Support** - Secure authentication for private repos
 - **Build Automation** - Automatic builds and migrations
-- **Deployment History** - Track all deployments
+- **Deployment History** - Track all deployments with commit info
+- **Real-Time Progress Viewer** - Watch deployments with live progress bar ⭐ NEW!
+- **Auto-Refresh** - Updates every 3 seconds during deployment ⭐ NEW!
+- **Extended Timeout** - 20 minutes for large projects with npm builds ⭐ NEW!
 
 ### 📊 Analytics & Monitoring
 - **Performance Metrics** - Server and project analytics
 - **Deployment Stats** - Success rates, duration tracking
 - **Real-Time Updates** - Live status monitoring
-- **Alert System** - Notifications for failures
+- **Live Progress Tracking** - Step-by-step deployment visualization ⭐ NEW!
+- **Commit History** - See what code is deployed ⭐ NEW!
 
 ### 🌐 Modern UI/UX
 - **Beautiful Dashboard** - Clean, intuitive interface
-- **Real-Time Updates** - Livewire-powered reactivity
-- **Mobile Responsive** - PWA support
-- **Dark Mode Ready** - (Coming soon)
+- **Real-Time Updates** - Livewire-powered reactivity with auto-refresh
+- **Live Progress Bars** - Animated deployment progress with step indicators ⭐ NEW!
+- **Auto-Scrolling Logs** - Smart terminal-style log viewer ⭐ NEW!
+- **Mobile Responsive** - Works on all devices
+- **Visual Feedback** - Step indicators, spinners, and progress animations ⭐ NEW!
 
 ---
 
@@ -218,19 +229,30 @@ Dashboard → Projects → Create Project
 ### 3. Deploy
 ```
 Project Page → 🚀 Deploy
-- Clones repository
-- Builds Docker image
-- Runs migrations/builds
-- Updates status
+- Clones repository from GitHub
+- Records commit information
+- Builds Docker image (uses your Dockerfile if exists!)
+- Runs migrations/builds/npm builds
+- Starts container
+- Updates status and commit info
+
+⭐ NEW: Watch it happen in real-time!
+- Live progress bar (0-100%)
+- Step-by-step indicators
+- Auto-refreshing logs
+- Running duration counter
+- Current step display
 ```
 
-### 4. Manage
+### 4. Monitor & Manage
 ```
-Project Page → Controls
-- ▶️ Start - Launch container
-- ⏹️ Stop - Stop container
-- ✏️ Edit - Update settings
-- 📋 Logs - View output
+Project Page → Features
+- ▶️ Start/Stop - Container controls
+- ✏️ Edit - Update project settings
+- 🔄 Check for Updates - Compare with GitHub
+- 📋 View Logs - Real-time log streaming
+- 📊 Commit History - See what's deployed
+- 🚀 Deploy Latest - Quick update when behind
 ```
 
 ---
@@ -414,15 +436,28 @@ For simple static sites, select "Static Site" framework - no build process neede
 
 See [COMPREHENSIVE_IMPROVEMENT_PLAN.md](COMPREHENSIVE_IMPROVEMENT_PLAN.md) for the complete roadmap.
 
-### Coming Soon
-- ✅ Project editing (v2.0)
-- ✅ PHP 8.4 support (v2.0)
-- ✅ Static site support (v2.0)
-- 🔄 Environment variables manager
-- 🔄 Project templates
-- 🔄 Rollback system
-- 🔄 SSL automation
-- 🔄 Team collaboration
+### Recently Added (v2.1) ⭐
+- ✅ **Git Commit Tracking** - See exactly what code is deployed
+- ✅ **Check for Updates** - Compare deployed version with GitHub
+- ✅ **Real-Time Progress Viewer** - Watch deployments with live progress
+- ✅ **Dockerfile Detection** - Respects your Dockerfile/Dockerfile.production
+- ✅ **Extended Timeouts** - 20 minutes for large npm builds
+- ✅ **Auto-Scrolling Logs** - Smart log viewer with terminal style
+- ✅ **Step Indicators** - Visual deployment step progress
+
+### Completed (v2.0)
+- ✅ Project editing
+- ✅ PHP 8.4 support
+- ✅ Static site support
+- ✅ SSH authentication for private repos
+
+### Coming Soon (v2.2+)
+- 🔄 Environment variables manager UI
+- 🔄 Project templates library
+- 🔄 One-click rollback system
+- 🔄 Automatic SSL with Let's Encrypt
+- 🔄 Team collaboration features
+- 🔄 Deployment scheduling
 
 ---
 
