@@ -63,7 +63,7 @@ class ProjectCreate extends Component
             // Ignore soft-deleted projects when checking slug uniqueness
             'slug' => 'required|string|max:255|unique:projects,slug,NULL,id,deleted_at,NULL',
             'server_id' => 'required|exists:servers,id',
-            'repository_url' => 'nullable|url',
+            'repository_url' => 'required|url',
             'branch' => 'required|string|max:255',
             'framework' => 'nullable|string|max:255',
             'php_version' => 'nullable|string|max:255',
