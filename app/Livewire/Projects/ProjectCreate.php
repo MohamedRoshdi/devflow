@@ -16,7 +16,25 @@ class ProjectCreate extends Component
     public $repository_url = '';
     public $branch = 'main';
     public $framework = '';
-    public $php_version = '8.2';
+    public $frameworks = [
+        '' => '-- Select Framework --',
+        'static' => 'Static Site (HTML/CSS/JS)',
+        'laravel' => 'Laravel',
+        'nodejs' => 'Node.js / Express',
+        'react' => 'React',
+        'vue' => 'Vue.js',
+        'nextjs' => 'Next.js',
+        'nuxt' => 'Nuxt.js',
+    ];
+    public $php_version = '8.3';
+    public $php_versions = [
+        '8.4' => 'PHP 8.4 (Latest)',
+        '8.3' => 'PHP 8.3',
+        '8.2' => 'PHP 8.2',
+        '8.1' => 'PHP 8.1',
+        '8.0' => 'PHP 8.0',
+        '7.4' => 'PHP 7.4 (Legacy)',
+    ];
     public $node_version = '20';
     public $root_directory = '/';
     public $build_command = '';
@@ -63,7 +81,8 @@ class ProjectCreate extends Component
             // Ignore soft-deleted projects when checking slug uniqueness
             'slug' => 'required|string|max:255|unique:projects,slug,NULL,id,deleted_at,NULL',
             'server_id' => 'required|exists:servers,id',
-            'repository_url' => 'required|url',
+            // Support both HTTPS and SSH URLs
+            'repository_url' => ['required', 'regex:/^(https?:\/\/|git@)[\w\-\.]+[\/:][\w\-\.]+\/[\w\-\.]+\.git$/'],
             'branch' => 'required|string|max:255',
             'framework' => 'nullable|string|max:255',
             'php_version' => 'nullable|string|max:255',
