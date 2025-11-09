@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.2] - 2025-11-09
+
+### ✨ Enhancements
+
+**Navigation Improvements:**
+- Fixed navigation bar active state highlighting
+- Active page now shows blue underline and darker text
+- Uses dynamic route checking with `request()->routeIs()`
+- Better visual feedback for current location
+
+**Quick Server Addition:**
+- Added "⚡ Add Current Server" button in server list
+- One-click to add the current VPS as a server
+- Auto-detects current server IP (multiple methods)
+- Automatic duplicate detection
+- Auto-gathers server specifications
+- Sets status to 'online' immediately
+- No manual IP entry needed
+
+### 🔧 Technical Changes
+
+**Modified Files:**
+- `resources/views/layouts/app.blade.php` - Dynamic nav active state
+- `app/Livewire/Servers/ServerList.php` - addCurrentServer() method
+- `resources/views/livewire/servers/server-list.blade.php` - Quick button UI
+
+**New Methods:**
+- `ServerList::addCurrentServer()` - Quick server addition
+- `ServerList::getCurrentServerIP()` - IP auto-detection
+
+### 🎨 User Experience
+
+**What Users See:**
+- Active navigation link has blue underline
+- "Add Current Server" button next to "Add Server"
+- Success messages for server addition
+- Error messages for duplicates
+- Better button grouping and layout
+
+---
+
 ## [1.0.1] - 2025-11-09
 
 ### 🐛 Bug Fixes

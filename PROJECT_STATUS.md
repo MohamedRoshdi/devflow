@@ -1,7 +1,7 @@
 # DevFlow Pro - Project Status
 
-**Last Updated:** November 9, 2025  
-**Version:** 1.0.1  
+**Last Updated:** November 9, 2025 12:47 CET  
+**Version:** 1.0.2  
 **Status:** ✅ Production - Live and Operational
 
 ---
@@ -13,7 +13,7 @@
 - **URL:** http://31.220.90.121
 - **Status:** ✅ Live and Operational
 - **Deployed:** November 9, 2025
-- **Last Update:** November 9, 2025 12:36 CET
+- **Last Update:** November 9, 2025 12:47 CET
 
 ### Services Status
 - ✅ **Nginx:** Running (Port 80)
@@ -218,6 +218,15 @@
 ---
 
 ## 📝 Recent Updates
+
+### November 9, 2025 - 12:47 CET  
+**Version 1.0.2 - Navigation & UX Improvements**
+- ✅ Fixed navigation bar active state (blue underline on current page)
+- ✅ Added "⚡ Add Current Server" quick button
+- ✅ Auto-detects current VPS IP
+- ✅ One-click server addition
+- ✅ Duplicate detection
+- ✅ Better button layout and UX
 
 ### November 9, 2025 - 12:36 CET
 **Version 1.0.1 - Server Connectivity Fix**
