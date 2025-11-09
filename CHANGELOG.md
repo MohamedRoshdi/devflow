@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.2] - 2025-11-09
 
+### 🐛 Bug Fixes
+
+**Build Error Fixed:**
+- Fixed Vite build failing due to missing laravel-echo dependency
+- Added laravel-echo (^1.16.1) to package.json dependencies
+- Added pusher-js (^8.4.0-rc2) to package.json dependencies
+- Assets now build successfully without errors
+
 ### ✨ Enhancements
 
 **Navigation Improvements:**
