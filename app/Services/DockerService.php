@@ -267,12 +267,22 @@ FROM php:{$phpVersion}-fpm-alpine
 
 WORKDIR /var/www
 
-RUN apk add --no-cache nginx supervisor curl
+# Install system dependencies and PHP extensions
+RUN apk add --no-cache nginx supervisor curl git unzip \
+    && apk add --no-cache --virtual .build-deps \
+        \$PHPIZE_DEPS \
+    && docker-php-ext-install pdo pdo_mysql \
+    && apk del .build-deps
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
+# Laravel optimization
 RUN php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache
