@@ -227,6 +227,14 @@
 - ✅ Returns 403 instead of 500 for unauthorized access
 - ✅ Clean database ready for fresh start
 
+### November 9, 2025 - 13:50 CET  
+**Version 1.0.2 (Build 5) - Docker Fix & Installation**
+- ✅ Fixed Docker commands for localhost servers
+- ✅ Added isLocalhost() detection to DockerService
+- ✅ Installed Docker 28.5.2 on production VPS
+- ✅ Docker commands now execute locally (no SSH)
+- ✅ Ready for container deployments
+
 ### November 9, 2025 - 13:45 CET  
 **Version 1.0.2 (Build 4) - Slug Cleanup & Authorization Fix**
 - ✅ Permanently removed soft-deleted ATS Pro project
