@@ -116,12 +116,21 @@ class DeployProjectJob implements ShouldQueue
             $logs[] = $buildResult['output'] ?? 'Build successful';
             $logs[] = "✓ Build successful";
 
-            // Step 2: Stop old container if running
-            $logs[] = "\nStopping old container...";
+            // Step 3: Stop old container if running
+            $logs[] = "";
+            $logs[] = "=== Stopping Old Container ===";
             $dockerService->stopContainer($project);
+            $logs[] = "✓ Old container stopped (if any)";
+            $logs[] = "";
+            
+            // Save logs before starting
+            $this->deployment->update([
+                'output_log' => implode("\n", $logs),
+            ]);
 
-            // Step 3: Start new container
-            $logs[] = "\nStarting new container...";
+            // Step 4: Start new container
+            $logs[] = "=== Starting Container ===";
+            $logs[] = "Starting new container...";
             $startResult = $dockerService->startContainer($project);
             
             if (!$startResult['success']) {
