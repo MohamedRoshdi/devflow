@@ -98,6 +98,15 @@ class DeployProjectJob implements ShouldQueue
 
             // Step 2: Build container
             $logs[] = "=== Building Docker Container ===";
+            $logs[] = "This may take 10-20 minutes for large projects with npm builds...";
+            $logs[] = "Please be patient!";
+            $logs[] = "";
+            
+            // Save initial logs so user can see progress started
+            $this->deployment->update([
+                'output_log' => implode("\n", $logs),
+            ]);
+            
             $buildResult = $dockerService->buildContainer($project);
             
             if (!$buildResult['success']) {
@@ -105,6 +114,7 @@ class DeployProjectJob implements ShouldQueue
             }
             
             $logs[] = $buildResult['output'] ?? 'Build successful';
+            $logs[] = "✓ Build successful";
 
             // Step 2: Stop old container if running
             $logs[] = "\nStopping old container...";
