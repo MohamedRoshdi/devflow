@@ -33,9 +33,35 @@ class DeployProjectJob implements ShouldQueue
             $project = $this->deployment->project;
             
             $logs = [];
+            $projectPath = "/var/www/{$project->slug}";
 
-            // Step 1: Build container
-            $logs[] = "Building Docker container...";
+            // Step 1: Clone repository from GitHub
+            $logs[] = "=== Cloning Repository ===";
+            $logs[] = "Repository: {$project->repository_url}";
+            $logs[] = "Branch: {$project->branch}";
+            $logs[] = "Path: {$projectPath}";
+            
+            // Remove old directory if exists
+            if (file_exists($projectPath)) {
+                $logs[] = "Removing old project directory...";
+                \Illuminate\Support\Facades\Process::run("rm -rf {$projectPath}");
+            }
+            
+            // Clone repository
+            $logs[] = "Cloning repository...";
+            $cloneResult = \Illuminate\Support\Facades\Process::run(
+                "git clone --branch {$project->branch} {$project->repository_url} {$projectPath}"
+            );
+            
+            if (!$cloneResult->successful()) {
+                throw new \Exception('Git clone failed: ' . $cloneResult->errorOutput());
+            }
+            
+            $logs[] = "✓ Repository cloned successfully";
+            $logs[] = "";
+
+            // Step 2: Build container
+            $logs[] = "=== Building Docker Container ===";
             $buildResult = $dockerService->buildContainer($project);
             
             if (!$buildResult['success']) {

@@ -54,7 +54,10 @@
             <div class="p-6 space-y-4">
                 <div class="flex justify-between">
                     <span class="text-gray-600">Project:</span>
-                    <span class="font-medium">{{ $deployment->project->name }}</span>
+                    <a href="{{ route('projects.show', $deployment->project) }}" 
+                       class="font-medium text-blue-600 hover:text-blue-800 hover:underline">
+                        {{ $deployment->project->name }}
+                    </a>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-gray-600">Server:</span>
