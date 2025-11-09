@@ -14,7 +14,11 @@ class ServerShow extends Component
 
     public function mount(Server $server)
     {
-        $this->authorize('view', $server);
+        // Check if server belongs to current user
+        if ($server->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized access to this server.');
+        }
+        
         $this->server = $server;
         $this->loadMetrics();
     }
