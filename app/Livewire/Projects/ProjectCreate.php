@@ -60,7 +60,8 @@ class ProjectCreate extends Component
     {
         return [
             'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:projects,slug',
+            // Ignore soft-deleted projects when checking slug uniqueness
+            'slug' => 'required|string|max:255|unique:projects,slug,NULL,id,deleted_at,NULL',
             'server_id' => 'required|exists:servers,id',
             'repository_url' => 'nullable|url',
             'branch' => 'required|string|max:255',
