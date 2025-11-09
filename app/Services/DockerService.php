@@ -240,16 +240,22 @@ class DockerService
         try {
             $server = $project->server;
             
-            $stopCommand = "docker stop " . $project->slug;
+            // Stop and remove the container to avoid "name already in use" errors
+            $stopAndRemoveCommand = sprintf(
+                "docker stop %s 2>/dev/null || true && docker rm %s 2>/dev/null || true",
+                $project->slug,
+                $project->slug
+            );
+            
             $command = $this->isLocalhost($server)
-                ? $stopCommand
-                : $this->buildSSHCommand($server, $stopCommand);
+                ? $stopAndRemoveCommand
+                : $this->buildSSHCommand($server, $stopAndRemoveCommand);
             
             $process = Process::fromShellCommandline($command);
             $process->run();
 
             return [
-                'success' => $process->isSuccessful(),
+                'success' => true, // Always return success since we use || true
                 'output' => $process->getOutput(),
             ];
         } catch (\Exception $e) {
