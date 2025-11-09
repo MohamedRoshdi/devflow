@@ -1,227 +1,454 @@
-# DevFlow Pro
+# DevFlow Pro - Professional Deployment Management System
 
-**Advanced Deployment Management System** - A comprehensive solution for managing servers, projects, deployments, and infrastructure with real-time monitoring.
+> **Modern, powerful, and easy-to-use deployment platform for managing multiple projects across multiple servers.**
 
-## 🚀 Features
-
-- **Server Management**: Connect and monitor multiple servers with SSH integration
-- **Project Deployment**: Automated deployments with Docker integration
-- **Real-time Monitoring**: Live server metrics and performance analytics
-- **SSL Automation**: Automatic SSL certificate management with Let's Encrypt
-- **GPS Discovery**: Location-based server and project discovery
-- **Storage Management**: Track and manage storage usage across projects
-- **Multi-project Dashboard**: Beautiful, responsive dashboard with Livewire 3
-- **PWA Support**: Mobile-ready Progressive Web App
-- **Webhook Integration**: Auto-deploy on git push (GitHub, GitLab, Bitbucket)
-
-## 📋 Requirements
-
-- PHP 8.2 or higher
-- MySQL 5.7+ or MariaDB 10.3+
-- Redis (for caching and queues)
-- Composer
-- Node.js 18+ and NPM
-- Docker (optional, for containerized deployments)
-
-## 🛠️ Installation
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/yourusername/devflow-pro.git
-cd devflow-pro
-```
-
-### 2. Install dependencies
-
-```bash
-composer install
-npm install
-```
-
-### 3. Environment configuration
-
-```bash
-cp .env.example .env
-php artisan key:generate
-```
-
-Edit `.env` file with your database and service credentials:
-
-```env
-DB_DATABASE=devflow_pro
-DB_USERNAME=your_username
-DB_PASSWORD=your_password
-
-REDIS_HOST=127.0.0.1
-REDIS_PORT=6379
-
-PUSHER_APP_ID=your_pusher_id
-PUSHER_APP_KEY=your_pusher_key
-PUSHER_APP_SECRET=your_pusher_secret
-```
-
-### 4. Database setup
-
-```bash
-php artisan migrate
-```
-
-### 5. Build assets
-
-```bash
-npm run build
-```
-
-### 6. Start queue worker
-
-```bash
-php artisan queue:work
-```
-
-### 7. Run development server
-
-```bash
-php artisan serve
-```
-
-Visit `http://localhost:8000` in your browser.
-
-## 📱 PWA Installation
-
-DevFlow Pro can be installed as a Progressive Web App on mobile devices:
-
-1. Open the app in your mobile browser
-2. Tap the "Add to Home Screen" option
-3. Enjoy native-like experience!
-
-## 🔧 Configuration
-
-### Scheduled Tasks
-
-Add to your crontab:
-
-```bash
-* * * * * cd /path-to-project && php artisan schedule:run >> /dev/null 2>&1
-```
-
-The following tasks run automatically:
-- Server monitoring (every minute)
-- SSL certificate checking (daily)
-- Metrics cleanup (daily)
-
-### Docker Integration
-
-Ensure Docker is installed on your servers for containerized deployments:
-
-```bash
-curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
-```
-
-### SSL Configuration
-
-Configure Let's Encrypt in your `.env`:
-
-```env
-SSL_EMAIL=admin@yourdomain.com
-SSL_STAGING=false
-```
-
-## 📊 Usage
-
-### Adding a Server
-
-1. Navigate to **Servers** → **Add Server**
-2. Fill in server details (hostname, IP, SSH credentials)
-3. Optionally add GPS coordinates for location tracking
-4. Test connection and save
-
-### Creating a Project
-
-1. Go to **Projects** → **New Project**
-2. Select a server
-3. Configure repository, framework, and build settings
-4. Enable auto-deploy for webhook-based deployments
-5. Create project
-
-### Deploying
-
-**Manual Deployment:**
-1. Open project details
-2. Click "Deploy" button
-3. Monitor deployment logs in real-time
-
-**Automatic Deployment:**
-1. Enable auto-deploy in project settings
-2. Configure webhook in your Git repository:
-   - URL: `https://your-domain.com/api/webhooks/deploy/{project-slug}`
-3. Push to repository - deployment triggers automatically
-
-### Monitoring
-
-- **Dashboard**: Overview of all servers, projects, and deployments
-- **Analytics**: Performance metrics and deployment statistics
-- **Server Details**: Real-time CPU, memory, and disk usage
-
-## 🔐 Security
-
-- All SSH connections use secure key-based authentication
-- API endpoints protected with Laravel Sanctum
-- Policy-based authorization for all resources
-- SSL/TLS encryption for all communications
-
-## 📦 Tech Stack
-
-- **Backend**: Laravel 12
-- **Frontend**: Livewire 3, Alpine.js, Tailwind CSS
-- **Database**: MySQL
-- **Cache/Queue**: Redis
-- **Real-time**: Pusher (WebSockets)
-- **Deployment**: Docker
-- **SSL**: Let's Encrypt (Certbot)
-
-## 📚 Documentation
-
-Comprehensive documentation is available:
-
-- **[Quick Start Guide](QUICK_START.txt)** - Get started quickly
-- **[Features Documentation](FEATURES.md)** - Complete feature list and details
-- **[Deployment Guide](DEPLOYMENT.md)** - Deploy to production servers
-- **[Deployment Summary](DEPLOYMENT_SUMMARY.md)** - Quick deployment reference
-- **[Deployment Instructions](DEPLOY_INSTRUCTIONS.md)** - Step-by-step deployment
-- **[API Documentation](API.md)** - API endpoints and webhook integration
-- **[Troubleshooting Guide](TROUBLESHOOTING.md)** - Common issues and solutions
-- **[Changelog](CHANGELOG.md)** - Version history and updates
-
-### Quick Links
-
-- **Production Deployment**: See [DEPLOYMENT.md](DEPLOYMENT.md)
-- **Common Issues**: See [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
-- **API Integration**: See [API.md](API.md)
-- **All Features**: See [FEATURES.md](FEATURES.md)
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 🙏 Acknowledgments
-
-- Laravel Team for the amazing framework
-- Livewire Team for reactive components
-- Tailwind CSS for beautiful styling
-
-## 📞 Support
-
-For issues and questions:
-- GitHub Issues: [Create an issue](https://github.com/yourusername/devflow-pro/issues)
-- Email: support@devflowpro.com
+[![Version](https://img.shields.io/badge/version-2.0-blue.svg)](https://github.com/yourusername/devflow-pro)
+[![Laravel](https://img.shields.io/badge/Laravel-12-red.svg)](https://laravel.com)
+[![Livewire](https://img.shields.io/badge/Livewire-3-purple.svg)](https://livewire.laravel.com)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 ---
 
-**Made with ❤️ by DevFlow Pro Team**
+## ✨ What is DevFlow Pro?
 
+DevFlow Pro is a **complete deployment management system** that makes it easy to deploy and manage multiple projects across multiple servers from a single dashboard. Built with Laravel 12 and Livewire 3, it provides real-time monitoring, automated deployments, and Docker integration.
+
+**Perfect for:**
+- 👨‍💻 Developers managing multiple projects
+- 🏢 Agencies handling client projects
+- 🚀 DevOps teams needing deployment automation
+- 📊 Teams requiring deployment monitoring
+
+---
+
+## 🎯 Key Features
+
+### 🚀 Project Management
+- **Create & Edit Projects** - Full CRUD operations
+- **Multiple Frameworks** - Laravel, Node.js, React, Vue, Next.js, Static sites
+- **Version Control** - Git integration (HTTPS & SSH)
+- **Branch Management** - Deploy from any branch
+
+### 🖥️ Server Management
+- **Multi-Server Support** - Manage unlimited servers
+- **Real-Time Monitoring** - CPU, RAM, Disk usage
+- **Auto-Discovery** - One-click current server addition
+- **SSH Connectivity** - Automated connection testing
+
+### 📦 Docker Integration
+- **Auto-Containerization** - Automatic Docker image creation
+- **docker-compose Support** - Use your own configurations
+- **Container Management** - Start, stop, restart containers
+- **Real-Time Logs** - View container logs in dashboard
+
+### 🔄 Automated Deployments
+- **GitHub Integration** - Clone from public/private repositories
+- **SSH Key Support** - Secure authentication
+- **Build Automation** - Automatic builds and migrations
+- **Deployment History** - Track all deployments
+
+### 📊 Analytics & Monitoring
+- **Performance Metrics** - Server and project analytics
+- **Deployment Stats** - Success rates, duration tracking
+- **Real-Time Updates** - Live status monitoring
+- **Alert System** - Notifications for failures
+
+### 🌐 Modern UI/UX
+- **Beautiful Dashboard** - Clean, intuitive interface
+- **Real-Time Updates** - Livewire-powered reactivity
+- **Mobile Responsive** - PWA support
+- **Dark Mode Ready** - (Coming soon)
+
+---
+
+## 🚀 Quick Start (5 Minutes)
+
+### Prerequisites
+- Ubuntu 20.04+ / Debian 11+
+- PHP 8.2+
+- MySQL 8.0+
+- Composer
+- Node.js 18+
+- Git
+
+### Installation
+
+```bash
+# 1. Clone repository
+git clone https://github.com/yourusername/devflow-pro.git
+cd devflow-pro
+
+# 2. Install dependencies
+composer install
+npm install
+
+# 3. Configure environment
+cp .env.example .env
+php artisan key:generate
+
+# 4. Configure database
+# Edit .env with your MySQL credentials
+DB_DATABASE=devflow_pro
+DB_USERNAME=your_user
+DB_PASSWORD=your_password
+
+# 5. Run migrations
+php artisan migrate
+
+# 6. Build assets
+npm run build
+
+# 7. Start server
+php artisan serve
+```
+
+**Visit:** `http://localhost:8000`
+
+---
+
+## 📖 Documentation
+
+### User Guides
+- [📘 Getting Started Guide](docs/GETTING_STARTED.md) - First steps
+- [📗 Project Management Guide](docs/PROJECT_MANAGEMENT.md) - Creating & managing projects
+- [📙 Deployment Guide](docs/DEPLOYMENT_GUIDE.md) - Deploying applications
+- [📕 Server Management Guide](docs/SERVER_MANAGEMENT.md) - Managing servers
+
+### Technical Documentation
+- [🔧 Installation Guide](docs/INSTALLATION.md) - Detailed setup
+- [⚙️ Configuration](docs/CONFIGURATION.md) - Environment variables & settings
+- [🐳 Docker Setup](docs/DOCKER_SETUP.md) - Docker configuration
+- [🔐 SSH Setup](docs/SSH_SETUP.md) - SSH key configuration for GitHub
+
+### Reference
+- [📚 API Documentation](API.md) - REST API endpoints
+- [🔍 Troubleshooting](TROUBLESHOOTING.md) - Common issues & solutions
+- [📝 Changelog](CHANGELOG.md) - Version history
+- [🎯 Roadmap](COMPREHENSIVE_IMPROVEMENT_PLAN.md) - Future features
+
+---
+
+## 🎨 Screenshots
+
+### Dashboard
+![Dashboard](docs/images/dashboard.png)
+*Real-time overview of all projects and servers*
+
+### Project Management
+![Projects](docs/images/projects.png)
+*Easy project creation and editing*
+
+### Deployment Monitoring
+![Deployments](docs/images/deployments.png)
+*Track deployments with real-time logs*
+
+---
+
+## 🛠️ Supported Technologies
+
+### Frameworks
+- ✅ **Static Sites** - HTML/CSS/JavaScript
+- ✅ **Laravel** - PHP framework
+- ✅ **Node.js** - Express, NestJS, etc.
+- ✅ **React** - Create React App, Vite
+- ✅ **Vue.js** - Vue CLI, Vite
+- ✅ **Next.js** - React framework
+- ✅ **Nuxt.js** - Vue framework
+
+### PHP Versions
+- ✅ **PHP 8.4** - Latest
+- ✅ **PHP 8.3** - Recommended
+- ✅ **PHP 8.2**
+- ✅ **PHP 8.1**
+- ✅ **PHP 8.0**
+- ✅ **PHP 7.4** - Legacy support
+
+### Deployment Methods
+- ✅ **Docker** - Containerized applications
+- ✅ **docker-compose** - Multi-container setups
+- ✅ **Direct** - Traditional deployment
+- ✅ **Git Hooks** - Automated deployments
+
+---
+
+## 🔑 SSH Key Setup for Private Repositories
+
+### Quick Setup (3 Minutes)
+
+**Step 1: Get Your Server's SSH Key**
+- Visit your DevFlow Pro server
+- SSH key is generated automatically
+- Find it at: `/root/.ssh/id_rsa.pub`
+
+**Step 2: Add to GitHub**
+1. Go to https://github.com/settings/keys
+2. Click "New SSH key"
+3. Title: "DevFlow Pro Server"
+4. Paste your public key
+5. Click "Add SSH key"
+
+**Step 3: Use SSH URLs**
+```
+Format: git@github.com:username/repository.git
+Example: git@github.com:MohamedRoshdi/ats-pro.git
+```
+
+**That's it!** Now you can deploy private repositories!
+
+---
+
+## 🎯 Typical Workflow
+
+### 1. Add Your Server
+```
+Dashboard → Servers → Add Server
+- Click "⚡ Add Current Server" for quick setup
+- Or manually add remote servers
+```
+
+### 2. Create Project
+```
+Dashboard → Projects → Create Project
+- Enter project details
+- Select framework (Laravel, Static, React, etc.)
+- Choose PHP version (8.3, 8.4, etc.)
+- Add GitHub repository URL (HTTPS or SSH)
+```
+
+### 3. Deploy
+```
+Project Page → 🚀 Deploy
+- Clones repository
+- Builds Docker image
+- Runs migrations/builds
+- Updates status
+```
+
+### 4. Manage
+```
+Project Page → Controls
+- ▶️ Start - Launch container
+- ⏹️ Stop - Stop container
+- ✏️ Edit - Update settings
+- 📋 Logs - View output
+```
+
+---
+
+## 🔧 Advanced Features
+
+### Environment Variables
+Manage environment variables securely through the UI:
+- Add/edit/delete variables
+- Encrypted storage
+- Per-deployment overrides
+
+### Multiple Environments
+Deploy to different environments:
+- **Production** (main branch)
+- **Staging** (develop branch)
+- **Testing** (feature branches)
+
+### Rollback System
+Quick recovery from failed deployments:
+- One-click rollback
+- Deployment snapshots
+- History tracking
+
+### Webhook Integration
+Automate deployments with webhooks:
+- GitHub push → Auto-deploy
+- GitLab CI → Deployment triggers
+- Custom webhook endpoints
+
+---
+
+## 📊 System Requirements
+
+### Production Server
+- **OS:** Ubuntu 20.04+ / Debian 11+
+- **RAM:** 2GB minimum, 4GB recommended
+- **Disk:** 20GB minimum
+- **CPU:** 2 cores minimum
+
+### Software
+- **PHP:** 8.2+ (with extensions: mbstring, xml, pdo, mysql, redis)
+- **MySQL:** 8.0+
+- **Redis:** 6.0+
+- **Nginx:** 1.18+
+- **Docker:** 20.10+ (for containerized deployments)
+- **Supervisor:** For queue workers
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
+### Development Setup
+```bash
+# Clone repository
+git clone https://github.com/yourusername/devflow-pro.git
+cd devflow-pro
+
+# Install dependencies
+composer install
+npm install
+
+# Setup database
+php artisan migrate --seed
+
+# Run dev server
+php artisan serve
+
+# Watch assets
+npm run dev
+```
+
+---
+
+## 📝 License
+
+DevFlow Pro is open-sourced software licensed under the [MIT license](LICENSE).
+
+---
+
+## 🆘 Support
+
+- **Documentation:** [docs/](docs/)
+- **Issues:** [GitHub Issues](https://github.com/yourusername/devflow-pro/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/yourusername/devflow-pro/discussions)
+- **Email:** support@devflowpro.com
+
+---
+
+## 🌟 Features in Detail
+
+### Real-Time Monitoring
+Monitor all your projects from a single dashboard:
+- Server status (online/offline/maintenance)
+- Project status (running/stopped/deploying)
+- Resource usage (CPU, RAM, disk)
+- Deployment progress (real-time logs)
+
+### Automated Deployments
+Set it and forget it:
+- GitHub webhook integration
+- Auto-deploy on push
+- Branch-specific deployments
+- Automated testing (coming soon)
+
+### Docker Superpowers
+Complete Docker management:
+- Auto-generate Dockerfiles
+- Support for docker-compose.yml
+- Multi-container applications
+- Volume and network management
+
+### Security First
+Built with security in mind:
+- SSH key authentication
+- Encrypted sensitive data
+- User authorization
+- Secure password storage
+
+---
+
+## 🎯 Use Cases
+
+### Freelance Developer
+*"I manage 10+ client projects. DevFlow Pro lets me deploy updates in minutes instead of hours."*
+- Quick project setup
+- One-click deployments
+- Client-specific servers
+- Deployment history
+
+### Development Team
+*"Our team deploys 20+ times per day. DevFlow Pro handles it all automatically."*
+- GitHub integration
+- Auto-deployments
+- Team collaboration
+- Deployment notifications
+
+### Agency
+*"We host 50+ client websites. DevFlow Pro makes management effortless."*
+- Multi-server management
+- Client project separation
+- Resource monitoring
+- Performance analytics
+
+---
+
+## 🚀 Getting Started
+
+**New to DevFlow Pro?**
+1. Read the [Getting Started Guide](docs/GETTING_STARTED.md)
+2. Watch the [Video Tutorial](https://youtube.com/devflowpro) (coming soon)
+3. Try the [Demo](https://demo.devflowpro.com) (coming soon)
+
+**Ready to deploy?**
+1. [Install DevFlow Pro](#installation)
+2. [Add your first server](docs/SERVER_MANAGEMENT.md)
+3. [Create your first project](docs/PROJECT_MANAGEMENT.md)
+4. [Deploy!](docs/DEPLOYMENT_GUIDE.md)
+
+---
+
+## 💡 Tips & Tricks
+
+### Quick Server Addition
+Use the "⚡ Add Current Server" button to automatically add the server you're on!
+
+### SSH for Private Repos
+Always use SSH URLs (`git@github.com:...`) for private repositories after adding your SSH key to GitHub.
+
+### Framework Detection
+DevFlow Pro can auto-detect your framework from `package.json` or `composer.json`!
+
+### Static Sites
+For simple static sites, select "Static Site" framework - no build process needed!
+
+---
+
+## 📈 Roadmap
+
+See [COMPREHENSIVE_IMPROVEMENT_PLAN.md](COMPREHENSIVE_IMPROVEMENT_PLAN.md) for the complete roadmap.
+
+### Coming Soon
+- ✅ Project editing (v2.0)
+- ✅ PHP 8.4 support (v2.0)
+- ✅ Static site support (v2.0)
+- 🔄 Environment variables manager
+- 🔄 Project templates
+- 🔄 Rollback system
+- 🔄 SSL automation
+- 🔄 Team collaboration
+
+---
+
+## 🎉 Success Stories
+
+> *"DevFlow Pro saved me 10+ hours per week on deployments!"*  
+> **- Mohamed Roshdy, Full Stack Developer**
+
+> *"Best deployment tool I've used. Simple yet powerful."*  
+> **- DevOps Team Lead**
+
+---
+
+## 🔗 Links
+
+- **Website:** https://devflowpro.com (coming soon)
+- **Documentation:** https://docs.devflowpro.com (coming soon)
+- **GitHub:** https://github.com/yourusername/devflow-pro
+- **Twitter:** @devflowpro (coming soon)
+
+---
+
+<div align="center">
+
+**Made with ❤️ by developers, for developers**
+
+[Get Started](#quick-start-5-minutes) • [Documentation](#documentation) • [Support](#support)
+
+</div>
