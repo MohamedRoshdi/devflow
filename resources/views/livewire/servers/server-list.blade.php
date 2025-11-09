@@ -4,10 +4,27 @@
             <h1 class="text-3xl font-bold text-gray-900">Servers</h1>
             <p class="text-gray-600 mt-1">Manage your server infrastructure</p>
         </div>
-        <a href="{{ route('servers.create') }}" class="btn btn-primary">
-            + Add Server
-        </a>
+        <div class="flex space-x-3">
+            <button wire:click="addCurrentServer" class="btn btn-success">
+                ⚡ Add Current Server
+            </button>
+            <a href="{{ route('servers.create') }}" class="btn btn-primary">
+                + Add Server
+            </a>
+        </div>
     </div>
+
+    @if (session()->has('message'))
+        <div class="mb-6 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded">
+            {{ session('message') }}
+        </div>
+    @endif
+
+    @if (session()->has('error'))
+        <div class="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded">
+            {{ session('error') }}
+        </div>
+    @endif
 
     <!-- Filters -->
     <div class="bg-white rounded-lg shadow p-6 mb-6">

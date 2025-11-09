@@ -28,23 +28,23 @@
                     </div>
                     <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
                         <a href="{{ route('dashboard') }}" 
-                           class="border-transparent text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500">
+                           class="{{ request()->routeIs('dashboard') ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-900' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500">
                             Dashboard
                         </a>
                         <a href="{{ route('servers.index') }}" 
-                           class="border-transparent text-gray-500 hover:text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500">
+                           class="{{ request()->routeIs('servers.*') ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-900' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500">
                             Servers
                         </a>
                         <a href="{{ route('projects.index') }}" 
-                           class="border-transparent text-gray-500 hover:text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500">
+                           class="{{ request()->routeIs('projects.*') ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-900' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500">
                             Projects
                         </a>
-                        <a href="{{ route('deployments.index') }}" 
-                           class="border-transparent text-gray-500 hover:text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500">
+                        <a href="{{ route('deployments.*') }}" 
+                           class="{{ request()->routeIs('deployments.*') ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-900' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500">
                             Deployments
                         </a>
                         <a href="{{ route('analytics') }}" 
-                           class="border-transparent text-gray-500 hover:text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500">
+                           class="{{ request()->routeIs('analytics') ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-900' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500">
                             Analytics
                         </a>
                     </div>
