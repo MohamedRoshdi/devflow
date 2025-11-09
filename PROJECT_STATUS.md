@@ -1,7 +1,7 @@
 # DevFlow Pro - Project Status
 
-**Last Updated:** November 9, 2025 13:06 CET  
-**Version:** 1.0.2 (Build 3 - Hotfix)  
+**Last Updated:** November 9, 2025 13:17 CET  
+**Version:** 1.0.2 (Build 4 - Database Reset)  
 **Status:** ✅ Production - Live and Operational
 
 ---
@@ -218,6 +218,14 @@
 ---
 
 ## 📝 Recent Updates
+
+### November 9, 2025 - 13:17 CET  
+**Version 1.0.2 (Build 4) - Database Reset & Authorization Fix**
+- ✅ Reset servers table and all related data
+- ✅ Fixed ServerShow authorization (better error handling)
+- ✅ Changed from policy to direct user check
+- ✅ Returns 403 instead of 500 for unauthorized access
+- ✅ Clean database ready for fresh start
 
 ### November 9, 2025 - 13:06 CET  
 **Version 1.0.2 (Build 3) - Route Fix (Hotfix)**
