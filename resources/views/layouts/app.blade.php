@@ -39,7 +39,7 @@
                            class="{{ request()->routeIs('projects.*') ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-900' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500">
                             Projects
                         </a>
-                        <a href="{{ route('deployments.*') }}" 
+                        <a href="{{ route('deployments.index') }}" 
                            class="{{ request()->routeIs('deployments.*') ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-900' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500">
                             Deployments
                         </a>
