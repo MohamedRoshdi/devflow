@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 🐛 Bug Fixes
 
+**Critical 500 Error Fixed (Hotfix):**
+- Fixed "Route [deployments.*] not defined" error causing 500 on all pages
+- Changed `route('deployments.*')` to `route('deployments.index')` in navigation
+- Application now loads without errors
+- All pages accessible
+
 **Build Error Fixed:**
 - Fixed Vite build failing due to missing laravel-echo dependency
 - Added laravel-echo (^1.16.1) to package.json dependencies
