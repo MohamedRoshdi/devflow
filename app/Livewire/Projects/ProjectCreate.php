@@ -82,6 +82,9 @@ class ProjectCreate extends Component
     {
         $this->validate();
 
+        // Find next available port
+        $port = $this->getNextAvailablePort();
+
         $project = Project::create([
             'user_id' => auth()->id(),
             'server_id' => $this->server_id,
@@ -92,6 +95,7 @@ class ProjectCreate extends Component
             'framework' => $this->framework,
             'php_version' => $this->php_version,
             'node_version' => $this->node_version,
+            'port' => $port,
             'root_directory' => $this->root_directory,
             'build_command' => $this->build_command,
             'start_command' => $this->start_command,
@@ -104,7 +108,33 @@ class ProjectCreate extends Component
         $this->dispatch('project-created');
         
         return redirect()->route('projects.show', $project)
-            ->with('message', 'Project created successfully!');
+            ->with('message', 'Project created successfully on port ' . $port . '!');
+    }
+
+    /**
+     * Find the next available port for the project
+     */
+    protected function getNextAvailablePort(): int
+    {
+        // Start from port 8001
+        $startPort = 8001;
+        $maxPort = 9000;
+
+        // Get all used ports on the selected server
+        $usedPorts = Project::where('server_id', $this->server_id)
+            ->whereNotNull('port')
+            ->pluck('port')
+            ->toArray();
+
+        // Find the first available port
+        for ($port = $startPort; $port <= $maxPort; $port++) {
+            if (!in_array($port, $usedPorts)) {
+                return $port;
+            }
+        }
+
+        // If all ports are used, return a high port number
+        return $maxPort + count($usedPorts) + 1;
     }
 
     public function getFrameworksProperty()

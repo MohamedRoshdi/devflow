@@ -20,6 +20,7 @@ class Project extends Model
         'framework',
         'php_version',
         'node_version',
+        'port',
         'root_directory',
         'build_command',
         'start_command',

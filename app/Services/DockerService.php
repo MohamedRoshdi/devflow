@@ -166,9 +166,19 @@ class DockerService
         try {
             $server = $project->server;
             
+            // Use project's assigned port, or default based on project ID
+            $port = $project->port ?? (8000 + $project->id);
+            
+            // Determine the internal container port based on the Dockerfile
+            // For PHP-FPM containers, use port 9000
+            // For nginx containers, use port 80
+            $containerPort = $this->detectContainerPort($project);
+            
             $startCommand = sprintf(
-                "docker run -d --name %s -p 80:80 %s",
+                "docker run -d --name %s -p %d:%d %s",
                 $project->slug,
+                $port,
+                $containerPort,
                 $project->slug
             );
 
@@ -180,9 +190,15 @@ class DockerService
             $process->run();
 
             if ($process->isSuccessful()) {
+                // Update project with the port if not set
+                if (!$project->port) {
+                    $project->update(['port' => $port]);
+                }
+                
                 return [
                     'success' => true,
                     'container_id' => trim($process->getOutput()),
+                    'port' => $port,
                 ];
             }
 
@@ -196,6 +212,27 @@ class DockerService
                 'error' => $e->getMessage(),
             ];
         }
+    }
+    
+    /**
+     * Detect the internal port used by the container
+     */
+    protected function detectContainerPort(Project $project): int
+    {
+        // For Laravel/PHP projects with Dockerfile.production, use port 80 (nginx + PHP-FPM)
+        // For Node.js projects, typically use port 3000
+        // For static sites with nginx, use port 80
+        
+        if (in_array($project->framework, ['Laravel', 'Symfony', 'CodeIgniter'])) {
+            return 80; // nginx serving PHP-FPM
+        }
+        
+        if (in_array($project->framework, ['Next.js', 'React', 'Vue', 'Nuxt.js', 'Node.js'])) {
+            return 3000; // Node.js default
+        }
+        
+        // Default to 80 for nginx-based containers
+        return 80;
     }
 
     public function stopContainer(Project $project): array
