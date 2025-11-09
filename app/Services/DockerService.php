@@ -12,7 +12,10 @@ class DockerService
     public function checkDockerInstallation(Server $server): array
     {
         try {
-            $command = $this->buildSSHCommand($server, 'docker --version');
+            $command = $this->isLocalhost($server) 
+                ? 'docker --version'
+                : $this->buildSSHCommand($server, 'docker --version');
+            
             $process = Process::fromShellCommandline($command);
             $process->run();
 
@@ -30,6 +33,27 @@ class DockerService
         } catch (\Exception $e) {
             return ['installed' => false, 'error' => $e->getMessage()];
         }
+    }
+
+    protected function isLocalhost(Server $server): bool
+    {
+        $localIPs = ['127.0.0.1', '::1', 'localhost'];
+        
+        if (in_array($server->ip_address, $localIPs)) {
+            return true;
+        }
+
+        // Check if IP matches server's own IP
+        try {
+            $publicIP = trim(file_get_contents('http://api.ipify.org'));
+            if ($server->ip_address === $publicIP) {
+                return true;
+            }
+        } catch (\Exception $e) {
+            // Ignore
+        }
+
+        return false;
     }
 
     public function installDocker(Server $server): array
@@ -83,7 +107,10 @@ class DockerService
                 $project->slug
             );
 
-            $command = $this->buildSSHCommand($server, $buildCommand);
+            $command = $this->isLocalhost($server)
+                ? $buildCommand
+                : $this->buildSSHCommand($server, $buildCommand);
+            
             $process = Process::fromShellCommandline($command);
             $process->setTimeout(600); // 10 minutes
             $process->run();
@@ -118,7 +145,10 @@ class DockerService
                 $project->slug
             );
 
-            $command = $this->buildSSHCommand($server, $startCommand);
+            $command = $this->isLocalhost($server)
+                ? $startCommand
+                : $this->buildSSHCommand($server, $startCommand);
+            
             $process = Process::fromShellCommandline($command);
             $process->run();
 
@@ -146,7 +176,11 @@ class DockerService
         try {
             $server = $project->server;
             
-            $command = $this->buildSSHCommand($server, "docker stop " . $project->slug);
+            $stopCommand = "docker stop " . $project->slug;
+            $command = $this->isLocalhost($server)
+                ? $stopCommand
+                : $this->buildSSHCommand($server, $stopCommand);
+            
             $process = Process::fromShellCommandline($command);
             $process->run();
 
@@ -167,7 +201,11 @@ class DockerService
         try {
             $server = $project->server;
             
-            $command = $this->buildSSHCommand($server, "docker logs --tail {$lines} " . $project->slug);
+            $logsCommand = "docker logs --tail {$lines} " . $project->slug;
+            $command = $this->isLocalhost($server)
+                ? $logsCommand
+                : $this->buildSSHCommand($server, $logsCommand);
+            
             $process = Process::fromShellCommandline($command);
             $process->run();
 
