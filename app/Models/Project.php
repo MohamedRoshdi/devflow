@@ -32,6 +32,9 @@ class Project extends Model
         'longitude',
         'auto_deploy',
         'metadata',
+        'current_commit_hash',
+        'current_commit_message',
+        'last_commit_at',
     ];
 
     protected function casts(): array
@@ -41,6 +44,7 @@ class Project extends Model
             'metadata' => 'array',
             'auto_deploy' => 'boolean',
             'last_deployed_at' => 'datetime',
+            'last_commit_at' => 'datetime',
             'storage_used_mb' => 'integer',
             'latitude' => 'decimal:8',
             'longitude' => 'decimal:8',

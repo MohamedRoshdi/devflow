@@ -6,12 +6,16 @@ use Livewire\Component;
 use App\Models\Project;
 use App\Models\Deployment;
 use App\Services\DockerService;
+use App\Services\GitService;
 use Livewire\Attributes\On;
 
 class ProjectShow extends Component
 {
     public Project $project;
     public $showDeployModal = false;
+    public $commits = [];
+    public $updateStatus = null;
+    public $checkingForUpdates = false;
 
     public function mount(Project $project)
     {
@@ -21,6 +25,50 @@ class ProjectShow extends Component
         }
         
         $this->project = $project;
+        $this->loadCommits();
+    }
+
+    public function loadCommits()
+    {
+        try {
+            $gitService = app(GitService::class);
+            $result = $gitService->getLatestCommits($this->project, 10);
+            
+            if ($result['success']) {
+                $this->commits = $result['commits'];
+            } else {
+                $this->commits = [];
+            }
+        } catch (\Exception $e) {
+            $this->commits = [];
+        }
+    }
+
+    public function checkForUpdates()
+    {
+        try {
+            $this->checkingForUpdates = true;
+            
+            $gitService = app(GitService::class);
+            $result = $gitService->checkForUpdates($this->project);
+            
+            if ($result['success']) {
+                $this->updateStatus = $result;
+                
+                if ($result['up_to_date']) {
+                    session()->flash('message', 'Project is up-to-date with the latest commit!');
+                } else {
+                    session()->flash('message', "New updates available! {$result['commits_behind']} commit(s) behind.");
+                }
+            } else {
+                session()->flash('error', 'Failed to check for updates: ' . $result['error']);
+            }
+            
+            $this->checkingForUpdates = false;
+        } catch (\Exception $e) {
+            $this->checkingForUpdates = false;
+            session()->flash('error', 'Failed to check for updates: ' . $e->getMessage());
+        }
     }
 
     public function deploy()
@@ -90,6 +138,8 @@ class ProjectShow extends Component
         return view('livewire.projects.project-show', [
             'deployments' => $deployments,
             'domains' => $domains,
+            'commits' => $this->commits,
+            'updateStatus' => $this->updateStatus,
         ]);
     }
 }

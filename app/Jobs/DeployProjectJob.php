@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Deployment;
 use App\Services\DockerService;
+use App\Services\GitService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -58,6 +59,35 @@ class DeployProjectJob implements ShouldQueue
             }
             
             $logs[] = "✓ Repository cloned successfully";
+            $logs[] = "";
+
+            // Get current commit information
+            $logs[] = "=== Recording Commit Information ===";
+            $gitService = app(GitService::class);
+            $commitInfo = $gitService->getCurrentCommit($project);
+            
+            if ($commitInfo) {
+                $logs[] = "Commit: {$commitInfo['short_hash']}";
+                $logs[] = "Author: {$commitInfo['author']}";
+                $logs[] = "Message: {$commitInfo['message']}";
+                
+                // Update project with commit info
+                $project->update([
+                    'current_commit_hash' => $commitInfo['hash'],
+                    'current_commit_message' => $commitInfo['message'],
+                    'last_commit_at' => now()->setTimestamp($commitInfo['timestamp']),
+                ]);
+                
+                // Update deployment with commit info
+                $this->deployment->update([
+                    'commit_hash' => $commitInfo['hash'],
+                    'commit_message' => $commitInfo['message'],
+                ]);
+                
+                $logs[] = "✓ Commit information recorded";
+            } else {
+                $logs[] = "⚠ Could not retrieve commit information";
+            }
             $logs[] = "";
 
             // Step 2: Build container
