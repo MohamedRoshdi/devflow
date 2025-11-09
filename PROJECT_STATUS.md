@@ -227,6 +227,14 @@
 - ✅ Returns 403 instead of 500 for unauthorized access
 - ✅ Clean database ready for fresh start
 
+### November 9, 2025 - 13:45 CET  
+**Version 1.0.2 (Build 4) - Slug Cleanup & Authorization Fix**
+- ✅ Permanently removed soft-deleted ATS Pro project
+- ✅ Fixed slug conflict (ats-pro now available)
+- ✅ Fixed ProjectShow authorization (500 error)
+- ✅ Changed from policy to direct user check
+- ✅ Database clean, ready for new projects
+
 ### November 9, 2025 - 13:06 CET  
 **Version 1.0.2 (Build 3) - Route Fix (Hotfix)**
 - ✅ Fixed 500 error on all pages
