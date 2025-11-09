@@ -149,6 +149,32 @@ class ProjectEdit extends Component
         return redirect()->route('projects.show', $this->project);
     }
 
+    public function getFrameworksProperty()
+    {
+        return [
+            '' => '-- Select Framework --',
+            'static' => 'Static Site (HTML/CSS/JS)',
+            'laravel' => 'Laravel',
+            'nodejs' => 'Node.js / Express',
+            'react' => 'React',
+            'vue' => 'Vue.js',
+            'nextjs' => 'Next.js',
+            'nuxt' => 'Nuxt.js',
+        ];
+    }
+
+    public function getPhpVersionsProperty()
+    {
+        return [
+            '8.4' => 'PHP 8.4 (Latest)',
+            '8.3' => 'PHP 8.3',
+            '8.2' => 'PHP 8.2',
+            '8.1' => 'PHP 8.1',
+            '8.0' => 'PHP 8.0',
+            '7.4' => 'PHP 7.4 (Legacy)',
+        ];
+    }
+
     public function render()
     {
         return view('livewire.projects.project-edit');
