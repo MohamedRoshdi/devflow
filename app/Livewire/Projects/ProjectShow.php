@@ -15,7 +15,11 @@ class ProjectShow extends Component
 
     public function mount(Project $project)
     {
-        $this->authorize('view', $project);
+        // Check if project belongs to current user
+        if ($project->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized access to this project.');
+        }
+        
         $this->project = $project;
     }
 
