@@ -98,21 +98,28 @@ class DockerService
             
             $projectPath = "/var/www/{$project->slug}";
             
-            // Check if project has its own Dockerfile
-            $checkDockerfileCommand = "test -f {$projectPath}/Dockerfile && echo 'exists' || echo 'missing'";
+            // Check for Dockerfile or Dockerfile.production
+            $checkDockerfileCommand = "cd {$projectPath} && if [ -f Dockerfile ]; then echo 'Dockerfile'; elif [ -f Dockerfile.production ]; then echo 'Dockerfile.production'; else echo 'missing'; fi";
             $checkCommand = $this->isLocalhost($server)
                 ? $checkDockerfileCommand
                 : $this->buildSSHCommand($server, $checkDockerfileCommand);
             
             $checkProcess = Process::fromShellCommandline($checkCommand);
             $checkProcess->run();
-            $hasDockerfile = trim($checkProcess->getOutput()) === 'exists';
+            $dockerfileType = trim($checkProcess->getOutput());
             
             // Build Docker image
-            if ($hasDockerfile) {
-                // Use project's existing Dockerfile
+            if ($dockerfileType === 'Dockerfile') {
+                // Use project's Dockerfile
                 $buildCommand = sprintf(
                     "cd %s && docker build -t %s .",
+                    $projectPath,
+                    $project->slug
+                );
+            } elseif ($dockerfileType === 'Dockerfile.production') {
+                // Use project's Dockerfile.production
+                $buildCommand = sprintf(
+                    "cd %s && docker build -f Dockerfile.production -t %s .",
                     $projectPath,
                     $project->slug
                 );
