@@ -29,6 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/projects', ProjectList::class)->name('projects.index');
     Route::get('/projects/create', ProjectCreate::class)->name('projects.create');
     Route::get('/projects/{project}', ProjectShow::class)->name('projects.show');
+    Route::get('/projects/{project}/edit', \App\Livewire\Projects\ProjectEdit::class)->name('projects.edit');
 
     // Deployments
     Route::get('/deployments', DeploymentList::class)->name('deployments.index');

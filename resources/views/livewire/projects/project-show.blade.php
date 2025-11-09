@@ -17,6 +17,9 @@
             <button wire:click="$set('showDeployModal', true)" class="btn btn-primary">
                 🚀 Deploy
             </button>
+            <a href="{{ route('projects.edit', $project) }}" class="btn btn-secondary">
+                ✏️ Edit
+            </a>
             <a href="{{ route('projects.index') }}" class="btn btn-secondary">
                 Back to List
             </a>
