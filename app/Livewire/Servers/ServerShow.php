@@ -5,6 +5,7 @@ namespace App\Livewire\Servers;
 use Livewire\Component;
 use App\Models\Server;
 use App\Services\ServerConnectivityService;
+use App\Services\DockerService;
 use Livewire\Attributes\On;
 
 class ServerShow extends Component
@@ -54,6 +55,9 @@ class ServerShow extends Component
                 ]);
             }
 
+            // Check Docker status
+            $this->checkDockerStatus();
+
             session()->flash('message', 'Server is online! ' . $result['message']);
         } else {
             $this->server->update([
@@ -66,6 +70,32 @@ class ServerShow extends Component
 
         // Refresh server data
         $this->server->refresh();
+    }
+
+    public function checkDockerStatus()
+    {
+        try {
+            $dockerService = app(DockerService::class);
+            $dockerCheck = $dockerService->checkDockerInstallation($this->server);
+            
+            if ($dockerCheck['installed']) {
+                $this->server->update([
+                    'docker_installed' => true,
+                    'docker_version' => $dockerCheck['version'] ?? 'unknown',
+                ]);
+                session()->flash('message', 'Docker detected! Version: ' . ($dockerCheck['version'] ?? 'unknown'));
+            } else {
+                $this->server->update([
+                    'docker_installed' => false,
+                    'docker_version' => null,
+                ]);
+                session()->flash('error', 'Docker not found on this server');
+            }
+            
+            $this->server->refresh();
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to check Docker: ' . $e->getMessage());
+        }
     }
 
     public function render()

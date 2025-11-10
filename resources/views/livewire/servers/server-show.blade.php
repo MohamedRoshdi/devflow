@@ -9,6 +9,10 @@
                 <a href="{{ route('docker.dashboard', $server) }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
                     🐳 Docker Management
                 </a>
+            @else
+                <button wire:click="checkDockerStatus" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+                    🔍 Detect Docker
+                </button>
             @endif
             <button wire:click="pingServer" class="btn btn-secondary">
                 Ping Server
