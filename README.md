@@ -47,6 +47,8 @@ DevFlow Pro is a **complete deployment management system** that makes it easy to
 - **Real-Time Logs** - View container logs in dashboard
 
 ### 🐳 Advanced Docker Management ⭐ NEW v2.2!
+- **Docker Detection** - Auto-detect Docker installation with one-click button
+- **Docker Dashboard** - Beautiful UI for complete Docker control
 - **Resource Monitoring** - Real-time CPU, Memory, Network, Disk I/O stats
 - **Resource Limits** - Set memory limits and CPU shares per container
 - **Volume Management** - Create, delete, inspect, and manage Docker volumes

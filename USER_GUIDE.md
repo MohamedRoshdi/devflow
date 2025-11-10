@@ -106,7 +106,9 @@
 **From Server Details:**
 - **📊 View Metrics** - CPU, RAM, Disk usage
 - **🐳 Docker Info** - Container status
-- **🔄 Ping Server** - Test connectivity
+- **🔍 Detect Docker** - Check for Docker installation
+- **🔄 Ping Server** - Test connectivity (also checks Docker)
+- **🐳 Docker Management** - Access Docker dashboard (when Docker detected)
 
 ---
 
@@ -409,6 +411,63 @@ Container started with ID: abc123def456
 - Error messages
 - Debug information
 - Server responses
+
+---
+
+## 🐳 Accessing Docker Management
+
+### How to Access Docker Dashboard
+
+**Step 1: Detect Docker**
+1. Go to **Servers** page
+2. Click on a server
+3. If you see "Docker: ✗ Not Installed", click **"🔍 Detect Docker"**
+4. Or click **"Ping Server"** which also checks for Docker
+
+**Step 2: Access Dashboard**
+1. After Docker is detected, you'll see **"🐳 Docker Management"** button
+2. Click it to access the Docker dashboard
+
+**What You'll See:**
+- **📊 Overview** - Docker version, containers, images, disk usage
+- **🖼️ Images** - List, delete, prune Docker images
+- **💾 Volumes** - Manage persistent storage
+- **🌐 Networks** - Network configuration
+- **🧹 Cleanup** - Free up disk space
+
+### Docker Dashboard Features
+
+**Overview Tab:**
+- Docker system information
+- Container counts (running/stopped)
+- Image statistics
+- Disk usage breakdown with reclaimable space
+
+**Images Tab:**
+- View all Docker images
+- See image sizes
+- Delete individual images
+- Prune unused images to free space
+
+**Volumes Tab:**
+- List all volumes
+- View mountpoints
+- Delete volumes (with warning)
+
+**Networks Tab:**
+- List Docker networks
+- View network details
+- Delete custom networks
+
+**Cleanup Tab:**
+- Prune dangling images
+- System-wide cleanup
+- See disk space savings
+
+**Direct URL:**
+```
+http://your-domain.com/servers/{server-id}/docker
+```
 
 ---
 

@@ -29,6 +29,8 @@ DevFlow Pro now includes comprehensive Docker management features that give you 
 
 ### What's New in v2.2
 
+- ✅ **Docker Detection** - One-click button to detect Docker installation
+- ✅ **Docker Dashboard** - Beautiful UI with tabbed interface
 - ✅ **Container Stats** - Real-time CPU, Memory, Network monitoring
 - ✅ **Resource Limits** - Set and manage container resource constraints
 - ✅ **Volume Management** - Create, delete, and inspect Docker volumes
@@ -39,6 +41,44 @@ DevFlow Pro now includes comprehensive Docker management features that give you 
 - ✅ **Backup & Restore** - Export and import container snapshots
 - ✅ **Registry Integration** - Push/pull from private registries
 - ✅ **System Cleanup** - Automated cleanup of unused resources
+
+---
+
+## 🚀 Getting Started
+
+### Accessing Docker Management
+
+**Prerequisites:**
+- Server added to DevFlow Pro
+- Docker installed on the server
+- Server marked as having Docker
+
+**Step 1: Detect Docker**
+
+If your server shows "Docker: ✗ Not Installed":
+1. Go to the server details page
+2. Click **"🔍 Detect Docker"** button
+3. Wait for detection to complete
+4. Docker version will be displayed
+
+**Alternative:** Click **"Ping Server"** which automatically checks for Docker
+
+**Step 2: Access Dashboard**
+
+Once Docker is detected:
+1. You'll see a **"🐳 Docker Management"** button
+2. Click it to access the Docker dashboard
+3. Explore the 5 tabs: Overview, Images, Volumes, Networks, Cleanup
+
+**Direct URL:**
+```
+http://your-domain.com/servers/{server-id}/docker
+```
+
+**Example:**
+```
+http://31.220.90.121/servers/1/docker
+```
 
 ---
 
