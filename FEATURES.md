@@ -113,6 +113,194 @@
 
 ---
 
+## 🐳 Advanced Docker Management
+
+### Container Resource Management ⭐ NEW!
+
+- **Real-Time Statistics**
+  - CPU usage percentage monitoring
+  - Memory usage and limits tracking
+  - Network I/O statistics (bytes in/out)
+  - Disk I/O monitoring
+  - Process ID (PID) counting
+  - Container uptime tracking
+
+- **Resource Limits**
+  - Set memory limits (MB/GB)
+  - Configure CPU shares (priority)
+  - CPU quota management
+  - Dynamic resource adjustment
+  - Prevent resource overconsumption
+  - Container resource inspection
+
+### Volume Management ⭐ NEW!
+
+- **Volume Operations**
+  - List all volumes on server
+  - Create new Docker volumes
+  - Delete unused volumes
+  - Inspect volume details
+  - Volume usage statistics
+  - Custom driver support
+  - Volume labeling system
+
+- **Volume Features**
+  - Data persistence across deployments
+  - Shared storage between containers
+  - Backup and restore volumes
+  - Volume mounting management
+  - Named volumes support
+  - Volume driver configuration
+
+### Network Management ⭐ NEW!
+
+- **Network Operations**
+  - List all Docker networks
+  - Create custom networks
+  - Delete unused networks
+  - Network driver selection (bridge, overlay, host)
+  - Network inspection and details
+
+- **Container Connectivity**
+  - Connect containers to networks
+  - Disconnect containers from networks
+  - Multi-network container support
+  - Service discovery via container names
+  - Network isolation and security
+  - Inter-container communication
+
+### Image Management ⭐ NEW!
+
+- **Image Operations**
+  - List all images on server
+  - Delete unused images
+  - Prune dangling images
+  - Pull images from registries
+  - Image size tracking
+  - Image tag management
+
+- **Image Optimization**
+  - Remove unused images
+  - Cleanup old versions
+  - Disk space recovery
+  - Image layer analysis
+  - Cache management
+  - Multi-architecture support
+
+### Docker Compose Enhancement ⭐ NEW!
+
+- **Compose Operations**
+  - Deploy multi-container applications
+  - Stop all compose services
+  - View service status
+  - Service health monitoring
+  - Automatic service orchestration
+  - Dependency management
+
+- **Compose Features**
+  - Full docker-compose.yml support
+  - Multi-service coordination
+  - Environment variable injection
+  - Volume and network auto-creation
+  - Service scaling support
+  - Health check integration
+
+### Container Execution ⭐ NEW!
+
+- **Command Execution**
+  - Execute commands in containers
+  - Interactive shell access
+  - Non-interactive command running
+  - Output streaming
+  - Error capture
+
+- **Process Management**
+  - View container processes (docker top)
+  - Process monitoring
+  - PID tracking
+  - Resource usage per process
+  - Command history
+
+### Backup & Restore ⭐ NEW!
+
+- **Container Backup**
+  - Export container as image
+  - Create container snapshots
+  - Automatic backup naming
+  - Backup before deployments
+  - Version history
+
+- **Image Export/Import**
+  - Save images to tar files
+  - Load images from tar files
+  - Offline image transfer
+  - Disaster recovery
+  - Server migration support
+
+- **Backup Features**
+  - Scheduled automatic backups
+  - Manual backup creation
+  - Backup retention policies
+  - Storage optimization
+  - Backup verification
+
+### Registry Integration ⭐ NEW!
+
+- **Registry Support**
+  - Docker Hub integration
+  - GitHub Container Registry (ghcr.io)
+  - GitLab Container Registry
+  - AWS ECR support
+  - Google Container Registry
+  - Azure Container Registry
+  - Private registry support
+
+- **Registry Operations**
+  - Login to registries
+  - Push images to registry
+  - Pull images from registry
+  - Image tagging for registry
+  - Multi-registry management
+  - Authentication handling
+
+- **Registry Features**
+  - Secure credential storage
+  - Multiple registry support
+  - Automatic authentication
+  - Image versioning
+  - Tag management
+  - Registry health checks
+
+### System Management ⭐ NEW!
+
+- **Docker System Info**
+  - Docker version information
+  - Container count (total/running/stopped)
+  - Image count and size
+  - Storage driver details
+  - Logging driver info
+  - System resources (CPU, Memory)
+  - Architecture and OS details
+
+- **Disk Usage Analysis**
+  - Total Docker disk usage
+  - Images storage breakdown
+  - Containers storage usage
+  - Volumes storage tracking
+  - Build cache size
+  - Reclaimable space calculation
+
+- **System Cleanup**
+  - Remove stopped containers
+  - Delete unused networks
+  - Prune dangling images
+  - Clear build cache
+  - Volume cleanup (optional)
+  - Automated cleanup scheduling
+  - Disk space recovery
+
+---
+
 ## 🚀 Deployment System
 
 ### Deployment Features

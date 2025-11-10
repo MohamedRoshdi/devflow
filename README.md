@@ -46,6 +46,18 @@ DevFlow Pro is a **complete deployment management system** that makes it easy to
 - **Container Management** - Start, stop, restart containers
 - **Real-Time Logs** - View container logs in dashboard
 
+### 🐳 Advanced Docker Management ⭐ NEW v2.2!
+- **Resource Monitoring** - Real-time CPU, Memory, Network, Disk I/O stats
+- **Resource Limits** - Set memory limits and CPU shares per container
+- **Volume Management** - Create, delete, inspect, and manage Docker volumes
+- **Network Management** - Create custom networks, connect containers
+- **Image Management** - List, pull, delete, prune images and save disk space
+- **Docker Compose** - Full multi-container orchestration support
+- **Container Execution** - Run commands and access shell inside containers
+- **Backup & Restore** - Export/import containers, disaster recovery
+- **Registry Integration** - Push/pull from Docker Hub, GitHub, GitLab, AWS ECR
+- **System Cleanup** - Automated cleanup of unused resources, disk space recovery
+
 ### 🔄 Automated Deployments
 - **GitHub Integration** - Clone from public/private repositories
 - **SSH Key Support** - Secure authentication for private repos
@@ -129,6 +141,8 @@ php artisan serve
 - [🔧 Installation Guide](docs/INSTALLATION.md) - Detailed setup
 - [⚙️ Configuration](docs/CONFIGURATION.md) - Environment variables & settings
 - [🐳 Docker Setup](docs/DOCKER_SETUP.md) - Docker configuration
+- [🐳 Docker Management](DOCKER_MANAGEMENT.md) - Advanced Docker features ⭐ NEW!
+- [🔍 Docker Detection Guide](DOCKER_DETECTION_GUIDE.md) - Dockerfile detection explained
 - [🔐 SSH Setup](docs/SSH_SETUP.md) - SSH key configuration for GitHub
 
 ### Reference
@@ -436,7 +450,19 @@ For simple static sites, select "Static Site" framework - no build process neede
 
 See [COMPREHENSIVE_IMPROVEMENT_PLAN.md](COMPREHENSIVE_IMPROVEMENT_PLAN.md) for the complete roadmap.
 
-### Recently Added (v2.1) ⭐
+### Recently Added (v2.2) ⭐
+- ✅ **Advanced Docker Management** - Complete container, volume, network, and image control
+- ✅ **Resource Monitoring** - Real-time CPU, Memory, Network, Disk I/O stats
+- ✅ **Resource Limits** - Set memory and CPU limits per container
+- ✅ **Volume Management** - Full Docker volume lifecycle management
+- ✅ **Network Management** - Create networks, connect containers
+- ✅ **Image Management** - Pull, delete, prune, and optimize images
+- ✅ **Container Execution** - Run commands and access shells
+- ✅ **Backup & Restore** - Export/import containers for disaster recovery
+- ✅ **Registry Integration** - Push/pull from Docker Hub, GitHub, GitLab, AWS
+- ✅ **System Cleanup** - Automated cleanup and disk space recovery
+
+### Completed (v2.1)
 - ✅ **Git Commit Tracking** - See exactly what code is deployed
 - ✅ **Check for Updates** - Compare deployed version with GitHub
 - ✅ **Real-Time Progress Viewer** - Watch deployments with live progress
@@ -451,13 +477,15 @@ See [COMPREHENSIVE_IMPROVEMENT_PLAN.md](COMPREHENSIVE_IMPROVEMENT_PLAN.md) for t
 - ✅ Static site support
 - ✅ SSH authentication for private repos
 
-### Coming Soon (v2.2+)
+### Coming Soon (v2.3+)
 - 🔄 Environment variables manager UI
 - 🔄 Project templates library
 - 🔄 One-click rollback system
 - 🔄 Automatic SSL with Let's Encrypt
 - 🔄 Team collaboration features
 - 🔄 Deployment scheduling
+- 🔄 Container health monitoring UI
+- 🔄 Kubernetes integration
 
 ---
 

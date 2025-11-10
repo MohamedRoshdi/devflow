@@ -483,6 +483,660 @@ echo $response;
 
 ---
 
+## Docker Management API ⭐ NEW!
+
+### Container Statistics
+
+#### Get Container Stats
+
+```http
+GET /api/projects/{project}/docker/stats
+Authorization: Bearer {token}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "stats": {
+    "Container": "my-project",
+    "CPUPerc": "15.5%",
+    "MemUsage": "256MB / 512MB",
+    "MemPerc": "50%",
+    "NetIO": "1.2MB / 850KB",
+    "BlockIO": "450KB / 120KB",
+    "PIDs": "12"
+  }
+}
+```
+
+#### Set Resource Limits
+
+```http
+POST /api/projects/{project}/docker/limits
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Body:**
+```json
+{
+  "memory_mb": 512,
+  "cpu_shares": 1024
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Resource limits updated"
+}
+```
+
+---
+
+### Volume Management
+
+#### List Volumes
+
+```http
+GET /api/servers/{server}/docker/volumes
+Authorization: Bearer {token}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "volumes": [
+    {
+      "Name": "my-project-db-data",
+      "Driver": "local",
+      "Mountpoint": "/var/lib/docker/volumes/my-project-db-data/_data",
+      "CreatedAt": "2025-11-10T10:00:00Z",
+      "Labels": {
+        "project": "my-project",
+        "type": "database"
+      }
+    }
+  ]
+}
+```
+
+#### Create Volume
+
+```http
+POST /api/servers/{server}/docker/volumes
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Body:**
+```json
+{
+  "name": "my-project-uploads",
+  "driver": "local",
+  "labels": {
+    "project": "my-project",
+    "type": "storage"
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "volume_name": "my-project-uploads"
+}
+```
+
+#### Delete Volume
+
+```http
+DELETE /api/servers/{server}/docker/volumes/{volume_name}
+Authorization: Bearer {token}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Volume deleted successfully"
+}
+```
+
+---
+
+### Network Management
+
+#### List Networks
+
+```http
+GET /api/servers/{server}/docker/networks
+Authorization: Bearer {token}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "networks": [
+    {
+      "Name": "my-project-network",
+      "ID": "abc123...",
+      "Driver": "bridge",
+      "Scope": "local"
+    }
+  ]
+}
+```
+
+#### Create Network
+
+```http
+POST /api/servers/{server}/docker/networks
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Body:**
+```json
+{
+  "name": "my-app-network",
+  "driver": "bridge"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "network_id": "abc123def456..."
+}
+```
+
+#### Connect Container to Network
+
+```http
+POST /api/projects/{project}/docker/networks/connect
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Body:**
+```json
+{
+  "network_name": "my-app-network"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Container connected to network"
+}
+```
+
+---
+
+### Image Management
+
+#### List Images
+
+```http
+GET /api/servers/{server}/docker/images
+Authorization: Bearer {token}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "images": [
+    {
+      "Repository": "nginx",
+      "Tag": "alpine",
+      "ID": "abc123...",
+      "Size": "24.1MB",
+      "CreatedAt": "2025-11-01T10:00:00Z"
+    }
+  ]
+}
+```
+
+#### Pull Image
+
+```http
+POST /api/servers/{server}/docker/images/pull
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Body:**
+```json
+{
+  "image": "nginx:alpine"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Image pulled successfully",
+  "output": "latest: Pulling from library/nginx..."
+}
+```
+
+#### Delete Image
+
+```http
+DELETE /api/servers/{server}/docker/images/{image_id}
+Authorization: Bearer {token}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Image deleted successfully"
+}
+```
+
+#### Prune Images
+
+```http
+POST /api/servers/{server}/docker/images/prune
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Body:**
+```json
+{
+  "all": false
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "output": "Total reclaimed space: 850MB"
+}
+```
+
+---
+
+### Docker Compose
+
+#### Deploy with Compose
+
+```http
+POST /api/projects/{project}/docker/compose/up
+Authorization: Bearer {token}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "output": "Creating network...\nCreating app...\nCreating db...\nCreating redis..."
+}
+```
+
+#### Get Compose Status
+
+```http
+GET /api/projects/{project}/docker/compose/status
+Authorization: Bearer {token}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "services": [
+    {
+      "Name": "app",
+      "State": "running",
+      "Publishers": [
+        {
+          "URL": "0.0.0.0",
+          "TargetPort": 80,
+          "PublishedPort": 8000
+        }
+      ]
+    },
+    {
+      "Name": "db",
+      "State": "running"
+    }
+  ]
+}
+```
+
+---
+
+### Container Execution
+
+#### Execute Command
+
+```http
+POST /api/projects/{project}/docker/exec
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Body:**
+```json
+{
+  "command": "php artisan migrate",
+  "interactive": false
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "output": "Migration table created successfully.\nMigrating: 2024_01_01_000000_create_users_table\nMigrated:  2024_01_01_000000_create_users_table (45.23ms)"
+}
+```
+
+#### Get Container Processes
+
+```http
+GET /api/projects/{project}/docker/processes
+Authorization: Bearer {token}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "processes": "PID    USER     COMMAND\n1      root     nginx: master\n12     www-data nginx: worker"
+}
+```
+
+---
+
+### Backup & Restore
+
+#### Export Container
+
+```http
+POST /api/projects/{project}/docker/backup
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Body:**
+```json
+{
+  "backup_name": "my-project-backup-v1"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "backup_name": "my-project-backup-v1",
+  "image_id": "sha256:abc123..."
+}
+```
+
+#### Save Image to File
+
+```http
+POST /api/servers/{server}/docker/images/save
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Body:**
+```json
+{
+  "image_name": "my-project-backup-v1",
+  "file_path": "/backups/my-project-2025-11-10.tar"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "file_path": "/backups/my-project-2025-11-10.tar"
+}
+```
+
+---
+
+### Registry Operations
+
+#### Registry Login
+
+```http
+POST /api/servers/{server}/docker/registry/login
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Body:**
+```json
+{
+  "registry": "ghcr.io",
+  "username": "yourusername",
+  "password": "your_token"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Login Succeeded"
+}
+```
+
+#### Push Image
+
+```http
+POST /api/servers/{server}/docker/images/push
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Body:**
+```json
+{
+  "image_name": "ghcr.io/username/my-app:latest"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "output": "The push refers to repository [ghcr.io/username/my-app]..."
+}
+```
+
+#### Tag Image
+
+```http
+POST /api/servers/{server}/docker/images/tag
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Body:**
+```json
+{
+  "source_image": "my-app:latest",
+  "target_image": "ghcr.io/username/my-app:v1.0.0"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Image tagged successfully"
+}
+```
+
+---
+
+### System Management
+
+#### Get Docker System Info
+
+```http
+GET /api/servers/{server}/docker/info
+Authorization: Bearer {token}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "info": {
+    "ServerVersion": "28.5.2",
+    "Containers": 5,
+    "ContainersRunning": 3,
+    "ContainersStopped": 2,
+    "Images": 12,
+    "Driver": "overlay2",
+    "NCPU": 4,
+    "MemTotal": 8589934592,
+    "OperatingSystem": "Ubuntu 22.04.3 LTS"
+  }
+}
+```
+
+#### Get Disk Usage
+
+```http
+GET /api/servers/{server}/docker/disk-usage
+Authorization: Bearer {token}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "usage": [
+    {
+      "Type": "Images",
+      "TotalCount": 12,
+      "Active": 8,
+      "Size": "3.2GB",
+      "Reclaimable": "450MB"
+    },
+    {
+      "Type": "Containers",
+      "TotalCount": 5,
+      "Active": 3,
+      "Size": "450MB",
+      "Reclaimable": "120MB"
+    },
+    {
+      "Type": "Volumes",
+      "TotalCount": 8,
+      "Active": 6,
+      "Size": "1.8GB",
+      "Reclaimable": "200MB"
+    }
+  ]
+}
+```
+
+#### System Prune
+
+```http
+POST /api/servers/{server}/docker/prune
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+**Body:**
+```json
+{
+  "volumes": false
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "output": "Deleted Containers:\nabc123...\ndef456...\n\nDeleted Networks:\nmy-old-network\n\nTotal reclaimed space: 1.2GB"
+}
+```
+
+---
+
+## Webhook Automation Examples
+
+### Automated Deployment + Backup
+
+```bash
+#!/bin/bash
+# deploy-with-backup.sh
+
+PROJECT_ID="my-project"
+API_URL="https://devflow.example.com/api"
+TOKEN="your_token_here"
+
+# Create backup before deployment
+echo "Creating backup..."
+curl -X POST "${API_URL}/projects/${PROJECT_ID}/docker/backup" \
+  -H "Authorization: Bearer ${TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{"backup_name": "pre-deploy-'$(date +%Y%m%d-%H%M%S)'"}'
+
+# Trigger deployment
+echo "Deploying..."
+curl -X POST "${API_URL}/webhooks/deploy/${PROJECT_ID}" \
+  -H "Authorization: Bearer ${TOKEN}"
+
+echo "Deployment initiated with backup!"
+```
+
+### Automated Cleanup Script
+
+```bash
+#!/bin/bash
+# weekly-cleanup.sh
+
+SERVER_ID="1"
+API_URL="https://devflow.example.com/api"
+TOKEN="your_token_here"
+
+echo "Starting weekly cleanup..."
+
+# Prune unused images
+curl -X POST "${API_URL}/servers/${SERVER_ID}/docker/images/prune" \
+  -H "Authorization: Bearer ${TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{"all": false}'
+
+# System prune (no volumes)
+curl -X POST "${API_URL}/servers/${SERVER_ID}/docker/prune" \
+  -H "Authorization: Bearer ${TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{"volumes": false}'
+
+echo "Cleanup completed!"
+```
+
+---
+
 ## Best Practices
 
 1. **Secure your tokens** - Store API tokens securely
@@ -491,8 +1145,14 @@ echo $response;
 4. **Validate webhooks** - Verify webhook signatures
 5. **Log errors** - Keep track of API errors
 6. **Monitor usage** - Track API usage patterns
+7. **Backup before operations** - Always backup before destructive operations ⭐ NEW!
+8. **Set resource limits** - Prevent containers from consuming excessive resources ⭐ NEW!
+9. **Regular cleanup** - Schedule automated cleanup to free disk space ⭐ NEW!
+10. **Use named volumes** - Better management and portability ⭐ NEW!
 
 ---
 
-**Need more endpoints? Check the source code in `routes/api.php` or request new features!**
+**Full API Reference:** Check `routes/api.php` for all available endpoints.
+
+**Need custom endpoints?** Open an issue or submit a pull request!
 
