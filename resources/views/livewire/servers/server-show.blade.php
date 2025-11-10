@@ -5,6 +5,11 @@
             <p class="text-gray-600 mt-1">{{ $server->ip_address }} • {{ $server->hostname }}</p>
         </div>
         <div class="flex space-x-3">
+            @if($server->docker_installed)
+                <a href="{{ route('docker.dashboard', $server) }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    🐳 Docker Management
+                </a>
+            @endif
             <button wire:click="pingServer" class="btn btn-secondary">
                 Ping Server
             </button>

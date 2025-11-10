@@ -11,6 +11,7 @@ use App\Livewire\Projects\ProjectShow;
 use App\Livewire\Deployments\DeploymentList;
 use App\Livewire\Deployments\DeploymentShow;
 use App\Livewire\Analytics\AnalyticsDashboard;
+use App\Livewire\Docker\DockerDashboard;
 
 Route::get('/', function () {
     return redirect('/dashboard');
@@ -37,6 +38,9 @@ Route::middleware('auth')->group(function () {
 
     // Analytics
     Route::get('/analytics', AnalyticsDashboard::class)->name('analytics');
+
+    // Docker Management
+    Route::get('/servers/{server}/docker', DockerDashboard::class)->name('docker.dashboard');
 });
 
 require __DIR__.'/auth.php';
