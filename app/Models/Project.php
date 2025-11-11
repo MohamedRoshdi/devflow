@@ -18,6 +18,7 @@ class Project extends Model
         'repository_url',
         'branch',
         'framework',
+        'environment',
         'php_version',
         'node_version',
         'port',
