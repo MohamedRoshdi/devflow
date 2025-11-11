@@ -3,49 +3,99 @@
 namespace App\Services;
 
 use App\Models\Project;
+use App\Models\Server;
 use Illuminate\Support\Facades\Process;
 
 class GitService
 {
+    /**
+     * Check if server is localhost
+     */
+    protected function isLocalhost(Server $server): bool
+    {
+        $localIPs = ['127.0.0.1', '::1', 'localhost'];
+        
+        if (in_array($server->ip_address, $localIPs)) {
+            return true;
+        }
+
+        // Check if IP matches server's own IP
+        try {
+            $publicIP = trim(file_get_contents('http://api.ipify.org'));
+            if ($server->ip_address === $publicIP) {
+                return true;
+            }
+        } catch (\Exception $e) {
+            // Ignore
+        }
+
+        return false;
+    }
+
+    /**
+     * Build SSH command for remote execution
+     */
+    protected function buildSSHCommand(Server $server, string $remoteCommand): string
+    {
+        $sshOptions = [
+            '-o StrictHostKeyChecking=no',
+            '-o UserKnownHostsFile=/dev/null',
+            '-p ' . $server->port,
+        ];
+
+        if ($server->ssh_key) {
+            // Save SSH key to temp file
+            $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
+            file_put_contents($keyFile, $server->ssh_key);
+            chmod($keyFile, 0600);
+            $sshOptions[] = '-i ' . $keyFile;
+        }
+
+        return sprintf(
+            'ssh %s %s@%s "%s"',
+            implode(' ', $sshOptions),
+            $server->username,
+            $server->ip_address,
+            addslashes($remoteCommand)
+        );
+    }
+    
     /**
      * Get the latest commits from a project repository
      */
     public function getLatestCommits(Project $project, int $limit = 10): array
     {
         try {
+            $server = $project->server;
             $projectPath = "/var/www/{$project->slug}";
             
-            // Check if the repository is cloned
-            if (!$this->isRepositoryCloned($projectPath)) {
-                return [
-                    'success' => false,
-                    'error' => 'Repository not cloned yet. Deploy the project first.',
-                ];
-            }
-
-            // Configure safe directory to fix ownership issues
-            $this->configureSafeDirectory($projectPath);
+            // Configure safe directory first
+            $safeConfigCommand = "git config --global --add safe.directory {$projectPath} 2>&1 || true";
+            $command = $this->isLocalhost($server) 
+                ? $safeConfigCommand
+                : $this->buildSSHCommand($server, $safeConfigCommand);
+            Process::run($command);
 
             // Fetch latest commits from remote
-            $fetchCommand = "cd {$projectPath} && git fetch origin {$project->branch} 2>&1";
-            $fetchResult = Process::run($fetchCommand);
-
-            if (!$fetchResult->successful()) {
-                // Try to fix ownership and retry
-                $this->fixRepositoryOwnership($projectPath);
-                $fetchResult = Process::run($fetchCommand);
-                
-                if (!$fetchResult->successful()) {
-                    return [
-                        'success' => false,
-                        'error' => 'Failed to fetch from remote: ' . $fetchResult->errorOutput(),
-                    ];
-                }
+            $fetchCommand = "cd {$projectPath} && git fetch origin {$project->branch} 2>&1 || echo 'fetch-failed'";
+            $command = $this->isLocalhost($server)
+                ? $fetchCommand
+                : $this->buildSSHCommand($server, $fetchCommand);
+            
+            $fetchResult = Process::run($command);
+            
+            // Check if fetch failed
+            if (str_contains($fetchResult->output(), 'fetch-failed') || !$fetchResult->successful()) {
+                \Log::warning("Git fetch failed for {$project->slug}: " . $fetchResult->errorOutput());
             }
 
-            // Get commit history
-            $logCommand = "cd {$projectPath} && git log origin/{$project->branch} --pretty=format:'%H|%an|%ae|%at|%s' -n {$limit}";
-            $logResult = Process::run($logCommand);
+            // Get commit history (even if fetch failed, show what we have)
+            $logCommand = "cd {$projectPath} && git log origin/{$project->branch} --pretty=format:'%H|%an|%ae|%at|%s' -n {$limit} 2>&1 || git log HEAD --pretty=format:'%H|%an|%ae|%at|%s' -n {$limit}";
+            $command = $this->isLocalhost($server)
+                ? $logCommand
+                : $this->buildSSHCommand($server, $logCommand);
+                
+            $logResult = Process::run($command);
 
             if (!$logResult->successful()) {
                 return [
@@ -125,38 +175,36 @@ class GitService
     public function checkForUpdates(Project $project): array
     {
         try {
+            $server = $project->server;
             $projectPath = "/var/www/{$project->slug}";
             
-            if (!$this->isRepositoryCloned($projectPath)) {
-                return [
-                    'success' => false,
-                    'error' => 'Repository not cloned yet. Deploy the project first.',
-                ];
-            }
-
-            // Configure safe directory to fix ownership issues
-            $this->configureSafeDirectory($projectPath);
+            // Configure safe directory first
+            $safeConfigCommand = "git config --global --add safe.directory {$projectPath} 2>&1 || true";
+            $command = $this->isLocalhost($server) 
+                ? $safeConfigCommand
+                : $this->buildSSHCommand($server, $safeConfigCommand);
+            Process::run($command);
 
             // Fetch latest from remote
-            $fetchCommand = "cd {$projectPath} && git fetch origin {$project->branch} 2>&1";
-            $fetchResult = Process::run($fetchCommand);
-
-            if (!$fetchResult->successful()) {
-                // Try to fix ownership and retry
-                $this->fixRepositoryOwnership($projectPath);
-                $fetchResult = Process::run($fetchCommand);
+            $fetchCommand = "cd {$projectPath} && git fetch origin {$project->branch} 2>&1 || echo 'fetch-failed'";
+            $command = $this->isLocalhost($server)
+                ? $fetchCommand
+                : $this->buildSSHCommand($server, $fetchCommand);
                 
-                if (!$fetchResult->successful()) {
-                    return [
-                        'success' => false,
-                        'error' => 'Failed to fetch from remote: ' . $fetchResult->errorOutput(),
-                    ];
-                }
+            $fetchResult = Process::run($command);
+            
+            // Log if fetch failed but continue to show current status
+            if (str_contains($fetchResult->output(), 'fetch-failed') || !$fetchResult->successful()) {
+                \Log::warning("Git fetch failed for {$project->slug}: " . $fetchResult->errorOutput());
             }
 
             // Get current local commit
-            $localCommand = "cd {$projectPath} && git rev-parse HEAD";
-            $localResult = Process::run($localCommand);
+            $localCommand = "cd {$projectPath} && git rev-parse HEAD 2>&1";
+            $command = $this->isLocalhost($server)
+                ? $localCommand
+                : $this->buildSSHCommand($server, $localCommand);
+                
+            $localResult = Process::run($command);
 
             if (!$localResult->successful()) {
                 return [
@@ -168,8 +216,12 @@ class GitService
             $localCommit = trim($localResult->output());
 
             // Get latest remote commit
-            $remoteCommand = "cd {$projectPath} && git rev-parse origin/{$project->branch}";
-            $remoteResult = Process::run($remoteCommand);
+            $remoteGitCommand = "cd {$projectPath} && git rev-parse origin/{$project->branch} 2>&1";
+            $command = $this->isLocalhost($server)
+                ? $remoteGitCommand
+                : $this->buildSSHCommand($server, $remoteGitCommand);
+                
+            $remoteResult = Process::run($command);
 
             if (!$remoteResult->successful()) {
                 return [
@@ -181,8 +233,12 @@ class GitService
             $remoteCommit = trim($remoteResult->output());
 
             // Count commits behind
-            $behindCommand = "cd {$projectPath} && git rev-list --count HEAD..origin/{$project->branch}";
-            $behindResult = Process::run($behindCommand);
+            $behindGitCommand = "cd {$projectPath} && git rev-list --count HEAD..origin/{$project->branch} 2>&1";
+            $command = $this->isLocalhost($server)
+                ? $behindGitCommand
+                : $this->buildSSHCommand($server, $behindGitCommand);
+                
+            $behindResult = Process::run($command);
             $commitsBehind = $behindResult->successful() ? (int)trim($behindResult->output()) : 0;
 
             $isUpToDate = $localCommit === $remoteCommit;
@@ -287,37 +343,25 @@ class GitService
     }
 
     /**
-     * Configure Git safe directory to fix ownership issues
+     * Check if repository is cloned at given path
      */
-    protected function configureSafeDirectory(string $projectPath): void
+    protected function isRepositoryCloned(string $projectPath, Server $server = null): bool
     {
-        try {
-            // Add the project path as a safe directory
-            $configCommand = "git config --global --add safe.directory {$projectPath} 2>&1 || true";
-            Process::run($configCommand);
-        } catch (\Exception $e) {
-            // Log but don't fail - this is a best-effort fix
-            \Log::debug("Failed to configure safe directory: " . $e->getMessage());
+        if (!$server) {
+            // Fallback to local check
+            return is_dir("{$projectPath}/.git");
         }
-    }
-
-    /**
-     * Fix repository ownership issues
-     */
-    protected function fixRepositoryOwnership(string $projectPath): void
-    {
-        try {
-            // Set ownership to current user (www-data or whatever is running the web server)
-            $user = posix_getpwuid(posix_geteuid())['name'] ?? 'www-data';
-            $chownCommand = "sudo chown -R {$user}:{$user} {$projectPath} 2>&1 || true";
-            Process::run($chownCommand);
-            
-            // Also configure safe directory again after ownership fix
-            $this->configureSafeDirectory($projectPath);
-        } catch (\Exception $e) {
-            // Log but don't fail
-            \Log::debug("Failed to fix repository ownership: " . $e->getMessage());
+        
+        // Check via SSH if remote
+        if (!$this->isLocalhost($server)) {
+            $checkCommand = "test -d {$projectPath}/.git && echo 'exists' || echo 'not-exists'";
+            $command = $this->buildSSHCommand($server, $checkCommand);
+            $result = Process::run($command);
+            return str_contains($result->output(), 'exists');
         }
+        
+        // Local check
+        return is_dir("{$projectPath}/.git");
     }
 }
 
