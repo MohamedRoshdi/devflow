@@ -1,8 +1,8 @@
 <div>
     <div class="mb-8 flex justify-between items-center">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">{{ $project->name }}</h1>
-            <p class="text-gray-600 mt-1">{{ $project->slug }}</p>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ $project->name }}</h1>
+            <p class="text-gray-600 dark:text-gray-400 mt-1">{{ $project->slug }}</p>
         </div>
         <div class="flex space-x-3">
             @if($project->status === 'running')
@@ -67,12 +67,12 @@
 
     <!-- Deploy Modal -->
     @if($showDeployModal)
-        <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="fixed inset-0 bg-gray-600 dark:bg-gray-900 bg-opacity-50 dark:bg-opacity-75 overflow-y-auto h-full w-full z-50">
+            <div class="relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 w-96 shadow-lg rounded-md bg-white dark:bg-gray-800 transition-colors">
                 <div class="mt-3">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Deploy Project</h3>
-                    <p class="text-sm text-gray-500 mb-6">
-                        This will deploy the latest changes from <strong>{{ $project->branch }}</strong> branch.
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Deploy Project</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                        This will deploy the latest changes from <strong class="text-gray-900 dark:text-white">{{ $project->branch }}</strong> branch.
                     </p>
                     <div class="flex justify-end space-x-3">
                         <button wire:click="$set('showDeployModal', false)" class="btn btn-secondary">
@@ -89,33 +89,33 @@
 
     <!-- Project Stats -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-lg shadow p-6">
-            <p class="text-sm font-medium text-gray-600">Status</p>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 p-6 transition-colors">
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Status</p>
             <p class="text-2xl font-bold mt-2">
                 <span class="px-3 py-1 rounded-full text-sm
-                    @if($project->status === 'running') bg-green-100 text-green-800
-                    @elseif($project->status === 'stopped') bg-gray-100 text-gray-800
-                    @elseif($project->status === 'building') bg-yellow-100 text-yellow-800
-                    @else bg-red-100 text-red-800
+                    @if($project->status === 'running') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
+                    @elseif($project->status === 'stopped') bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300
+                    @elseif($project->status === 'building') bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400
+                    @else bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400
                     @endif">
                     {{ ucfirst($project->status) }}
                 </span>
             </p>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-6">
-            <p class="text-sm font-medium text-gray-600">Deployments</p>
-            <p class="text-2xl font-bold text-gray-900 mt-2">{{ $project->deployments()->count() }}</p>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 p-6 transition-colors">
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Deployments</p>
+            <p class="text-2xl font-bold text-gray-900 dark:text-white mt-2">{{ $project->deployments()->count() }}</p>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-6">
-            <p class="text-sm font-medium text-gray-600">Domains</p>
-            <p class="text-2xl font-bold text-gray-900 mt-2">{{ $project->domains->count() }}</p>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 p-6 transition-colors">
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Domains</p>
+            <p class="text-2xl font-bold text-gray-900 dark:text-white mt-2">{{ $project->domains->count() }}</p>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-6">
-            <p class="text-sm font-medium text-gray-600">Storage Used</p>
-            <p class="text-2xl font-bold text-gray-900 mt-2">{{ number_format($project->storage_used_mb / 1024, 2) }} GB</p>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 p-6 transition-colors">
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Storage Used</p>
+            <p class="text-2xl font-bold text-gray-900 dark:text-white mt-2">{{ number_format($project->storage_used_mb / 1024, 2) }} GB</p>
         </div>
     </div>
 
@@ -126,47 +126,47 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Project Details -->
-        <div class="bg-white rounded-lg shadow">
-            <div class="p-6 border-b border-gray-200">
-                <h2 class="text-xl font-bold text-gray-900">Project Details</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 transition-colors">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white">Project Details</h2>
             </div>
             <div class="p-6 space-y-4">
                 <div class="flex justify-between">
-                    <span class="text-gray-600">Server:</span>
-                    <span class="font-medium">{{ $project->server->name ?? 'None' }}</span>
+                    <span class="text-gray-600 dark:text-gray-400">Server:</span>
+                    <span class="font-medium text-gray-900 dark:text-white">{{ $project->server->name ?? 'None' }}</span>
                 </div>
                 <div class="flex justify-between">
-                    <span class="text-gray-600">Framework:</span>
-                    <span class="font-medium">{{ $project->framework ?? 'Unknown' }}</span>
+                    <span class="text-gray-600 dark:text-gray-400">Framework:</span>
+                    <span class="font-medium text-gray-900 dark:text-white">{{ $project->framework ?? 'Unknown' }}</span>
                 </div>
                 <div class="flex justify-between">
-                    <span class="text-gray-600">PHP Version:</span>
-                    <span class="font-medium">{{ $project->php_version ?? 'N/A' }}</span>
+                    <span class="text-gray-600 dark:text-gray-400">PHP Version:</span>
+                    <span class="font-medium text-gray-900 dark:text-white">{{ $project->php_version ?? 'N/A' }}</span>
                 </div>
                 <div class="flex justify-between">
-                    <span class="text-gray-600">Node Version:</span>
-                    <span class="font-medium">{{ $project->node_version ?? 'N/A' }}</span>
+                    <span class="text-gray-600 dark:text-gray-400">Node Version:</span>
+                    <span class="font-medium text-gray-900 dark:text-white">{{ $project->node_version ?? 'N/A' }}</span>
                 </div>
                 <div class="flex justify-between">
-                    <span class="text-gray-600">Branch:</span>
-                    <span class="font-medium">{{ $project->branch }}</span>
+                    <span class="text-gray-600 dark:text-gray-400">Branch:</span>
+                    <span class="font-medium text-gray-900 dark:text-white">{{ $project->branch }}</span>
                 </div>
                 <div class="flex justify-between">
-                    <span class="text-gray-600">Auto Deploy:</span>
-                    <span class="font-medium">{{ $project->auto_deploy ? 'Enabled' : 'Disabled' }}</span>
+                    <span class="text-gray-600 dark:text-gray-400">Auto Deploy:</span>
+                    <span class="font-medium text-gray-900 dark:text-white">{{ $project->auto_deploy ? 'Enabled' : 'Disabled' }}</span>
                 </div>
                 <div class="flex justify-between">
-                    <span class="text-gray-600">Last Deployed:</span>
-                    <span class="font-medium">{{ $project->last_deployed_at ? $project->last_deployed_at->diffForHumans() : 'Never' }}</span>
+                    <span class="text-gray-600 dark:text-gray-400">Last Deployed:</span>
+                    <span class="font-medium text-gray-900 dark:text-white">{{ $project->last_deployed_at ? $project->last_deployed_at->diffForHumans() : 'Never' }}</span>
                 </div>
             </div>
         </div>
 
         <!-- Domains -->
-        <div class="bg-white rounded-lg shadow">
-            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-                <h2 class="text-xl font-bold text-gray-900">Domains</h2>
-                <button class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 transition-colors">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white">Domains</h2>
+                <button class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium transition-colors">
                     + Add Domain
                 </button>
             </div>
@@ -174,34 +174,34 @@
                 @if($domains->count() > 0)
                     <div class="space-y-3">
                         @foreach($domains as $domain)
-                            <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                            <div class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
                                 <div class="flex-1">
-                                    <div class="font-medium text-gray-900">{{ $domain->domain }}</div>
+                                    <div class="font-medium text-gray-900 dark:text-white">{{ $domain->domain }}</div>
                                     <div class="flex items-center space-x-2 mt-1">
                                         @if($domain->ssl_enabled)
-                                            <span class="text-xs text-green-600">🔒 SSL Active</span>
+                                            <span class="text-xs text-green-600 dark:text-green-400">🔒 SSL Active</span>
                                         @else
-                                            <span class="text-xs text-gray-500">🔓 No SSL</span>
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">🔓 No SSL</span>
                                         @endif
                                         @if($domain->is_primary)
-                                            <span class="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded">Primary</span>
+                                            <span class="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 text-xs rounded">Primary</span>
                                         @endif
                                     </div>
                                 </div>
-                                <span class="text-sm text-gray-600">{{ ucfirst($domain->status) }}</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">{{ ucfirst($domain->status) }}</span>
                             </div>
                         @endforeach
                     </div>
                 @else
-                    <p class="text-gray-500 text-center py-8">No domains configured</p>
+                    <p class="text-gray-500 dark:text-gray-400 text-center py-8">No domains configured</p>
                 @endif
             </div>
         </div>
 
         <!-- Git Commits & Updates -->
-        <div class="bg-white rounded-lg shadow">
-            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-                <h2 class="text-xl font-bold text-gray-900">Git Commits</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 transition-colors">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white">Git Commits</h2>
                 <button wire:click="checkForUpdates" 
                         class="btn btn-sm btn-secondary"
                         wire:loading.attr="disabled"
@@ -270,16 +270,16 @@
                 @endif
 
                 @if(count($commits) > 0)
-                    <h4 class="text-sm font-semibold text-gray-900 mb-3">Recent Commits on {{ $project->branch }}</h4>
+                    <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Recent Commits on {{ $project->branch }}</h4>
                     <div class="space-y-3">
                         @foreach($commits as $commit)
-                            <div class="flex items-start space-x-3 py-2 border-b border-gray-100 last:border-0">
-                                <code class="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded font-mono flex-shrink-0">
+                            <div class="flex items-start space-x-3 py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                                <code class="text-xs bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 px-2 py-1 rounded font-mono flex-shrink-0">
                                     {{ $commit['short_hash'] }}
                                 </code>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-gray-900 break-words">{{ $commit['message'] }}</p>
-                                    <p class="text-xs text-gray-500 mt-1">
+                                    <p class="text-sm text-gray-900 dark:text-white break-words">{{ $commit['message'] }}</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                         {{ $commit['author'] }} • {{ \Carbon\Carbon::createFromTimestamp($commit['timestamp'])->diffForHumans() }}
                                     </p>
                                 </div>
@@ -287,7 +287,7 @@
                         @endforeach
                     </div>
                 @else
-                    <p class="text-gray-500 text-center py-8">
+                    <p class="text-gray-500 dark:text-gray-400 text-center py-8">
                         No commit history available. Deploy the project first to track commits.
                     </p>
                 @endif
@@ -295,30 +295,30 @@
         </div>
 
         <!-- Recent Deployments -->
-        <div class="bg-white rounded-lg shadow">
-            <div class="p-6 border-b border-gray-200">
-                <h2 class="text-xl font-bold text-gray-900">Recent Deployments</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 transition-colors">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white">Recent Deployments</h2>
             </div>
             <div class="p-6">
                 @if($deployments->count() > 0)
                     <div class="space-y-4">
                         @foreach($deployments as $deployment)
-                            <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+                            <div class="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700 last:border-0">
                                 <div class="flex-1">
                                     <div class="flex items-center space-x-3">
                                         <span class="px-3 py-1 rounded-full text-xs font-medium
-                                            @if($deployment->status === 'success') bg-green-100 text-green-800
-                                            @elseif($deployment->status === 'failed') bg-red-100 text-red-800
-                                            @elseif($deployment->status === 'running') bg-yellow-100 text-yellow-800
-                                            @else bg-gray-100 text-gray-800
+                                            @if($deployment->status === 'success') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
+                                            @elseif($deployment->status === 'failed') bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400
+                                            @elseif($deployment->status === 'running') bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400
+                                            @else bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300
                                             @endif">
                                             {{ ucfirst($deployment->status) }}
                                         </span>
-                                        <span class="text-sm text-gray-900">
+                                        <span class="text-sm text-gray-900 dark:text-white">
                                             {{ $deployment->commit_message ?? 'No message' }}
                                         </span>
                                     </div>
-                                    <div class="text-xs text-gray-500 mt-1">
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                         {{ $deployment->created_at->diffForHumans() }}
                                         @if($deployment->duration_seconds)
                                             • Duration: {{ $deployment->duration_seconds }}s
@@ -326,14 +326,14 @@
                                     </div>
                                 </div>
                                 <a href="{{ route('deployments.show', $deployment) }}" 
-                                   class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                                   class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium transition-colors">
                                     View
                                 </a>
                             </div>
                         @endforeach
                     </div>
                 @else
-                    <p class="text-gray-500 text-center py-8">No deployments yet</p>
+                    <p class="text-gray-500 dark:text-gray-400 text-center py-8">No deployments yet</p>
                 @endif
             </div>
         </div>
