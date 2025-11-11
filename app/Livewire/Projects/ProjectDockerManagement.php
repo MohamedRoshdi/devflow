@@ -6,10 +6,12 @@ use App\Models\Project;
 use App\Services\DockerService;
 use Livewire\Component;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Locked;
 
 class ProjectDockerManagement extends Component
 {
-    public Project $project;
+    #[Locked]
+    public $projectId;
     public $images = [];
     public $containerInfo = null;
     public $containerStats = null;
@@ -27,8 +29,13 @@ class ProjectDockerManagement extends Component
             abort(403, 'Unauthorized access to this project.');
         }
 
-        $this->project = $project;
+        $this->projectId = $project->id;
         $this->loadDockerInfo();
+    }
+
+    protected function getProject()
+    {
+        return Project::findOrFail($this->projectId);
     }
 
     public function loadDockerInfo()
@@ -37,22 +44,23 @@ class ProjectDockerManagement extends Component
         $this->error = null;
 
         try {
+            $project = $this->getProject();
             $dockerService = app(DockerService::class);
             
             // Get project-specific images
-            $imagesResult = $dockerService->listProjectImages($this->project);
+            $imagesResult = $dockerService->listProjectImages($project);
             if ($imagesResult['success']) {
                 $this->images = $imagesResult['images'];
             }
 
             // Get container status
-            $statusResult = $dockerService->getContainerStatus($this->project);
+            $statusResult = $dockerService->getContainerStatus($project);
             if ($statusResult['success'] && $statusResult['exists']) {
                 $this->containerInfo = $statusResult['container'];
                 
                 // Get container stats if running
                 if (isset($this->containerInfo['State']) && stripos($this->containerInfo['State'], 'running') !== false) {
-                    $statsResult = $dockerService->getContainerStats($this->project);
+                    $statsResult = $dockerService->getContainerStats($project);
                     if ($statsResult['success']) {
                         $this->containerStats = $statsResult['stats'];
                     }
@@ -82,8 +90,9 @@ class ProjectDockerManagement extends Component
     {
         $this->loading = true;
         try {
+            $project = $this->getProject();
             $dockerService = app(DockerService::class);
-            $result = $dockerService->getContainerLogs($this->project, $this->logLines);
+            $result = $dockerService->getContainerLogs($project, $this->logLines);
             if ($result['success']) {
                 $this->containerLogs = $result['logs'];
             } else {
@@ -105,8 +114,9 @@ class ProjectDockerManagement extends Component
     {
         $this->loading = true;
         try {
+            $project = $this->getProject();
             $dockerService = app(DockerService::class);
-            $result = $dockerService->buildContainer($this->project);
+            $result = $dockerService->buildContainer($project);
             if ($result['success']) {
                 session()->flash('message', 'Docker image built successfully!');
                 $this->loadDockerInfo();
@@ -123,10 +133,11 @@ class ProjectDockerManagement extends Component
     {
         $this->loading = true;
         try {
+            $project = $this->getProject();
             $dockerService = app(DockerService::class);
-            $result = $dockerService->startContainer($this->project);
+            $result = $dockerService->startContainer($project);
             if ($result['success']) {
-                $this->project->update(['status' => 'running']);
+                $project->update(['status' => 'running']);
                 session()->flash('message', 'Container started successfully!');
                 $this->loadDockerInfo();
             } else {
@@ -142,10 +153,11 @@ class ProjectDockerManagement extends Component
     {
         $this->loading = true;
         try {
+            $project = $this->getProject();
             $dockerService = app(DockerService::class);
-            $result = $dockerService->stopContainer($this->project);
+            $result = $dockerService->stopContainer($project);
             if ($result['success']) {
-                $this->project->update(['status' => 'stopped']);
+                $project->update(['status' => 'stopped']);
                 session()->flash('message', 'Container stopped successfully!');
                 $this->loadDockerInfo();
             } else {
@@ -168,8 +180,9 @@ class ProjectDockerManagement extends Component
     {
         $this->loading = true;
         try {
+            $project = $this->getProject();
             $dockerService = app(DockerService::class);
-            $result = $dockerService->deleteImage($this->project->server, $imageId);
+            $result = $dockerService->deleteImage($project->server, $imageId);
             if ($result['success']) {
                 session()->flash('message', 'Image deleted successfully!');
                 $this->loadDockerInfo();
@@ -186,8 +199,9 @@ class ProjectDockerManagement extends Component
     {
         $this->loading = true;
         try {
+            $project = $this->getProject();
             $dockerService = app(DockerService::class);
-            $result = $dockerService->exportContainer($this->project);
+            $result = $dockerService->exportContainer($project);
             if ($result['success']) {
                 session()->flash('message', 'Container exported as backup: ' . $result['backup_name']);
                 $this->loadDockerInfo();
@@ -202,7 +216,10 @@ class ProjectDockerManagement extends Component
 
     public function render()
     {
-        return view('livewire.projects.project-docker-management');
+        $project = $this->getProject();
+        return view('livewire.projects.project-docker-management', [
+            'project' => $project
+        ]);
     }
 }
 
