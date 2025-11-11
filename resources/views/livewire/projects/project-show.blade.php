@@ -405,12 +405,18 @@
         </div>
 
         <!-- Docker Tab -->
-        <div x-show="activeTab === 'docker'" x-transition class="space-y-8">
+        <div x-show="activeTab === 'docker'" 
+             x-transition 
+             class="space-y-8" 
+             wire:ignore.self>
             @livewire('projects.project-docker-management', ['project' => $project], key('docker-' . $project->id))
         </div>
 
         <!-- Environment Tab -->
-        <div x-show="activeTab === 'environment'" x-transition class="space-y-8">
+        <div x-show="activeTab === 'environment'" 
+             x-transition 
+             class="space-y-8" 
+             wire:ignore.self>
             @livewire('projects.project-environment', ['project' => $project], key('env-' . $project->id))
         </div>
 
