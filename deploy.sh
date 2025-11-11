@@ -17,14 +17,30 @@ echo "================================================"
 echo "📦 Creating deployment package..."
 tar -czf devflow-pro.tar.gz \
     --exclude='.git' \
+    --exclude='.gitignore' \
     --exclude='node_modules' \
     --exclude='vendor' \
-    --exclude='storage/logs/*' \
-    --exclude='storage/framework/cache/*' \
-    --exclude='storage/framework/sessions/*' \
-    --exclude='storage/framework/views/*' \
+    --exclude='storage/logs' \
+    --exclude='storage/framework/cache' \
+    --exclude='storage/framework/sessions' \
+    --exclude='storage/framework/views' \
+    --exclude='storage/framework/testing' \
+    --exclude='bootstrap/cache' \
     --exclude='.env' \
-    .
+    --exclude='.env.*' \
+    --exclude='*.tar.gz' \
+    --exclude='.DS_Store' \
+    --exclude='Thumbs.db' \
+    --exclude='*.log' \
+    --warning=no-file-changed \
+    --warning=no-file-removed \
+    . 2>/dev/null || true
+
+# Check if tar succeeded in creating the file
+if [ ! -f devflow-pro.tar.gz ]; then
+    echo "❌ Failed to create deployment package"
+    exit 1
+fi
 
 echo "✅ Package created: devflow-pro.tar.gz"
 
@@ -48,6 +64,16 @@ tar -xzf /tmp/devflow-pro.tar.gz -C $REMOTE_PATH
 
 # Navigate to project
 cd $REMOTE_PATH
+
+# Create necessary directories
+echo "📁 Creating required directories..."
+mkdir -p storage/logs
+mkdir -p storage/framework/{cache,sessions,views,testing}
+mkdir -p bootstrap/cache
+touch storage/logs/.gitkeep
+touch storage/framework/cache/.gitkeep
+touch storage/framework/sessions/.gitkeep
+touch storage/framework/views/.gitkeep
 
 # Install dependencies
 echo "📥 Installing PHP dependencies..."
