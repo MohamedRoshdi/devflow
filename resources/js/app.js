@@ -1,8 +1,7 @@
 import './bootstrap';
-import Alpine from 'alpinejs';
 
-window.Alpine = Alpine;
-Alpine.start();
+// Livewire v3 includes Alpine.js - don't import it separately!
+// Alpine is available via Livewire's bundle
 
 // Toast Notification System
 window.showToast = function(message, type = 'info') {
