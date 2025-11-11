@@ -66,7 +66,8 @@
                     </thead>
                     <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         @foreach($servers as $server)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer" 
+                                onclick="window.location='{{ route('servers.show', $server) }}'">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div>
                                         <div class="font-medium text-gray-900 dark:text-white">{{ $server->name }}</div>
@@ -93,7 +94,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                     {{ $server->last_ping_at ? $server->last_ping_at->diffForHumans() : 'Never' }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2" onclick="event.stopPropagation()">
                                     <a href="{{ route('servers.show', $server) }}" class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 transition-colors">View</a>
                                     <button wire:click="deleteServer({{ $server->id }})" 
                                             wire:confirm="Are you sure you want to delete this server?"
