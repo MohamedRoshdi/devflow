@@ -127,6 +127,7 @@ class DeployProjectJob implements ShouldQueue
 
             // Step 2: Build container
             $logs[] = "=== Building Docker Container ===";
+            $logs[] = "Environment: " . ($project->environment ?? 'production');
             $logs[] = "This may take 10-20 minutes for large projects with npm builds...";
             $logs[] = "Please be patient!";
             $logs[] = "";
@@ -159,6 +160,10 @@ class DeployProjectJob implements ShouldQueue
 
             // Step 4: Start new container
             $logs[] = "=== Starting Container ===";
+            $logs[] = "Environment: " . ($project->environment ?? 'production');
+            if ($project->env_variables && count((array)$project->env_variables) > 0) {
+                $logs[] = "Custom Variables: " . count((array)$project->env_variables) . " variable(s)";
+            }
             $logs[] = "Starting new container...";
             $startResult = $dockerService->startContainer($project);
             

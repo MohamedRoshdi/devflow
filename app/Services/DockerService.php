@@ -180,11 +180,15 @@ class DockerService
             // For nginx containers, use port 80
             $containerPort = $this->detectContainerPort($project);
             
+            // Build environment variables string
+            $envVars = $this->buildEnvironmentVariables($project);
+            
             $startCommand = sprintf(
-                "docker run -d --name %s -p %d:%d %s",
+                "docker run -d --name %s -p %d:%d%s %s",
                 $project->slug,
                 $port,
                 $containerPort,
+                $envVars,
                 $project->slug
             );
 
@@ -221,8 +225,28 @@ class DockerService
     }
     
     /**
-     * Clean up existing container to avoid naming conflicts
+     * Build environment variables string for docker run command
      */
+    protected function buildEnvironmentVariables(Project $project): string
+    {
+        $envFlags = '';
+        
+        // Add APP_ENV from project environment
+        $appEnv = $project->environment ?? 'production';
+        $envFlags .= " -e APP_ENV={$appEnv}";
+        
+        // Add custom environment variables
+        if ($project->env_variables && is_array($project->env_variables)) {
+            foreach ($project->env_variables as $key => $value) {
+                // Escape special characters in value
+                $escapedValue = addslashes($value);
+                $envFlags .= " -e {$key}=\"{$escapedValue}\"";
+            }
+        }
+        
+        return $envFlags;
+    }
+
     protected function cleanupExistingContainer(Project $project): array
     {
         try {
