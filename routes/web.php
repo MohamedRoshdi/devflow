@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Dashboard;
+use App\Livewire\Home\HomePublic;
 use App\Livewire\Servers\ServerList;
 use App\Livewire\Servers\ServerCreate;
 use App\Livewire\Servers\ServerShow;
@@ -13,9 +14,8 @@ use App\Livewire\Deployments\DeploymentShow;
 use App\Livewire\Analytics\AnalyticsDashboard;
 use App\Livewire\Docker\DockerDashboard;
 
-Route::get('/', function () {
-    return redirect('/dashboard');
-});
+// Public Home Page - Shows all projects
+Route::get('/', HomePublic::class)->name('home');
 
 Route::middleware('auth')->group(function () {
     // Dashboard
