@@ -2,6 +2,250 @@
 
 ## Common Issues and Solutions
 
+---
+
+## ⭐ NEW Issues & Solutions (v2.4.0)
+
+### Environment Management Issues
+
+#### 1. Environment Selection Not Persisting
+
+**Symptoms:** Select environment (e.g., Development), refresh page, back to Production
+
+**Cause:** `environment` field was missing from Project model's `$fillable` array
+
+**Solution:**
+```php
+// Fixed in v2.4.0
+// app/Models/Project.php now includes:
+protected $fillable = [
+    // ...
+    'environment',  // ✅ Added
+    // ...
+];
+```
+
+**Verification:**
+1. Select any environment
+2. Refresh page
+3. Should stay selected ✓
+
+---
+
+#### 2. Environment Not Affecting Deployed App
+
+**Symptoms:** Set to Development, but app still shows generic 500 errors
+
+**Cause:** APP_DEBUG wasn't being injected (only APP_ENV was)
+
+**Solution:**
+```
+Fixed in v2.4.0 - Now auto-injects:
+- APP_ENV (from your selection)
+- APP_DEBUG (true for local/dev, false for staging/prod)
+```
+
+**Important:** Must restart container after changing environment!
+```
+Docker Tab → Restart Container
+```
+
+---
+
+#### 3. Missing APP_KEY Error
+
+**Symptoms:** "No application encryption key has been specified"
+
+**Solution:**
+Add APP_KEY to environment variables:
+1. Go to Environment tab
+2. Click "Add Variable"
+3. Name: `APP_KEY`
+4. Value: Generate via `php artisan key:generate --show`
+5. Or use: `base64:K05BLhVEm2Qtu5SPGrH6BZIvOMJYlSVwyBlwS6gOjuk=`
+6. Restart container
+
+**Auto-Fix:** Newer deployments include APP_KEY automatically
+
+---
+
+### Deployment UX Issues
+
+#### 1. Deploy Button - No Feedback
+
+**Symptoms:** Click Deploy, nothing seems to happen, click multiple times
+
+**Solution (Fixed in v2.4.0):**
+- Deploy button now shows instant spinner
+- Full-screen loading overlay appears
+- Auto-redirects to deployment page
+- Button disabled (prevents double-click)
+
+**If Still No Feedback:**
+- Hard refresh browser: `Ctrl + Shift + R`
+- Clear browser cache
+- Check browser console for errors
+
+---
+
+#### 2. Multiple Deployments Started
+
+**Symptoms:** Deployment logs show multiple builds for same project
+
+**Cause:** Double-clicking deploy button (old version)
+
+**Prevention (Fixed in v2.4.0):**
+- Button disables immediately on click
+- Loading overlay prevents additional clicks
+- Auto-redirect after deployment starts
+
+**If It Happens:**
+- Let both deployments complete
+- They won't conflict (auto cleanup)
+- Check Deployments tab for all instances
+
+---
+
+### Alpine.js / JavaScript Errors
+
+#### 1. "Detected Multiple Instances of Alpine Running"
+
+**Symptoms:** Browser console warning about multiple Alpine instances
+
+**Cause:** Alpine.js imported manually + bundled with Livewire v3
+
+**Solution (Fixed in v2.4.0):**
+```javascript
+// resources/js/app.js
+// OLD (wrong):
+import Alpine from 'alpinejs';  // ❌ Remove
+Alpine.start();
+
+// NEW (correct):
+// Livewire v3 includes Alpine - don't import!
+```
+
+**Result:** 54% smaller bundle, no warnings
+
+---
+
+#### 2. "Alpine Expression Error: Unexpected token '}'"
+
+**Symptoms:** Alpine errors in console, features not working
+
+**Common Causes & Solutions:**
+
+**Cause A: Chained $set() calls**
+```blade
+<!-- Wrong: -->
+wire:click="$set('a', ''); $set('b', '')"  ❌
+
+<!-- Fix: Create method -->
+wire:click="clearFilters"  ✅
+```
+
+**Cause B: wire:click.stop without expression**
+```blade
+<!-- Wrong: -->
+<div wire:click.stop>  ❌
+
+<!-- Fix: Use Alpine -->
+<div @click.stop>  ✅
+```
+
+**Solution:** Fixed in all modals in v2.4.0
+
+---
+
+#### 3. "The deferred DOM Node could not be resolved"
+
+**Symptoms:** Errors when switching tabs or using nested Livewire components
+
+**Cause:** Livewire trying to update hidden Alpine tab content
+
+**Solution (Fixed in v2.4.0):**
+```blade
+<div x-show="activeTab === 'docker'" wire:ignore.self>
+    @livewire('child-component')
+</div>
+```
+
+**Explanation:** `wire:ignore.self` tells Livewire to skip morphing the container but allow child components to update
+
+---
+
+### Performance Issues
+
+#### 1. Slow Page Loads
+
+**Symptoms:** Pages take 2-3 seconds to load
+
+**Solutions:**
+
+**Check 1: Browser Cache**
+```
+Hard refresh: Ctrl + Shift + R
+Clear cache: F12 → Application → Clear Storage
+```
+
+**Check 2: Bundle Size**
+```
+v2.4.0: 37.75 kB (optimized)
+v2.3.0: 82.32 kB (had duplicate Alpine)
+
+If > 80 kB: Update to v2.4.0
+```
+
+**Check 3: Server Resources**
+```
+Check server CPU/RAM usage
+Restart PHP-FPM if needed:
+systemctl restart php8.2-fpm
+```
+
+---
+
+#### 2. Deployed App Slow Response
+
+**Symptoms:** App takes seconds to respond, slow database queries
+
+**Solutions:**
+
+**Check 1: Laravel Optimization**
+```
+Verify caches exist in container:
+docker exec project-name ls -la bootstrap/cache/
+
+Should see:
+- config.php (config cache)
+- routes-v7.php (route cache)
+- events.php (event cache)
+
+If missing: Re-deploy (v2.4.0+ creates automatically)
+```
+
+**Check 2: Database Connection**
+```
+Inside container:
+docker exec project-name php artisan tinker
+>>> DB::connection()->getPdo();
+
+Should connect without errors
+```
+
+**Check 3: Environment**
+```
+Production apps should have:
+- APP_ENV=production
+- Caching enabled
+- Debug disabled
+
+Check via:
+docker inspect project-name --format='{{range .Config.Env}}{{println .}}{{end}}'
+```
+
+---
+
 ### Server Management Issues
 
 #### 1. Server Shows as "Offline" After Adding
