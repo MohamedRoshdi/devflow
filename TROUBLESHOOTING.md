@@ -590,5 +590,351 @@ tar -czf devflow_backup_$(date +%Y%m%d).tar.gz /var/www/devflow-pro
 
 ---
 
-**Still having issues? Check the logs and review the DEPLOYMENT.md guide for more details.**
+## Livewire Issues (CRITICAL)
+
+### 1. Livewire Actions Return 500 Error
+
+**Symptoms:** Clicking buttons causes 500 errors, "method not found" in logs
+
+**Root Causes:**
+- Livewire JavaScript assets not published
+- Component cache stale after updates
+- PHP-FPM OPcache serving old code
+- Eloquent models in component properties
+
+**Solutions:**
+
+```bash
+# STEP 1: Publish Livewire Assets (CRITICAL!)
+cd /var/www/devflow-pro
+php artisan livewire:publish --assets
+
+# Verify assets exist:
+ls -la public/vendor/livewire/livewire.min.js
+# Should show 144K file
+
+# STEP 2: Clear All Caches
+php artisan optimize:clear
+php artisan config:cache
+php artisan route:cache
+
+# STEP 3: Regenerate Autoload
+composer dump-autoload --optimize
+
+# STEP 4: Restart PHP-FPM (CRITICAL!)
+systemctl restart php8.2-fpm
+
+# STEP 5: Use the fix script (if available)
+./fix-livewire-cache.sh
+```
+
+**Prevention:**
+- Always run `php artisan livewire:publish --assets` after deployment
+- Include in deploy.sh script
+- Restart PHP-FPM after component changes
+- Never use Eloquent models as public properties in Livewire components
+
+### 2. Component Methods Not Found
+
+**Symptoms:** `Unable to call component method. Public method [methodName] not found`
+
+**Root Cause:** Component cache or dependency injection issues
+
+**Solutions:**
+
+```bash
+# Quick fix script:
+cd /var/www/devflow-pro
+rm -rf storage/framework/cache/livewire*
+rm -rf bootstrap/cache/livewire*
+composer dump-autoload --optimize
+php artisan optimize:clear
+systemctl restart php8.2-fpm
+```
+
+**Component Best Practices:**
+```php
+// ❌ DON'T: Use dependency injection in boot()
+protected DockerService $dockerService;
+public function boot(DockerService $dockerService) {
+    $this->dockerService = $dockerService;
+}
+
+// ✅ DO: Resolve services on-demand
+public function myMethod() {
+    $dockerService = app(DockerService::class);
+    // use service
+}
+
+// ❌ DON'T: Store Eloquent models as properties
+public Project $project;
+
+// ✅ DO: Store only IDs, fetch fresh
+#[Locked]
+public $projectId;
+
+protected function getProject() {
+    return Project::findOrFail($this->projectId);
+}
+```
+
+### 3. Pusher Console Errors
+
+**Symptoms:** "You must pass your app key when you instantiate Pusher"
+
+**Root Cause:** Pusher initialized without valid credentials
+
+**Solution Already Applied:**
+Our `resources/js/bootstrap.js` now conditionally loads Pusher only if configured.
+
+**To Configure Pusher (Optional):**
+```bash
+# Add to .env:
+VITE_PUSHER_APP_KEY=your-pusher-key
+VITE_PUSHER_APP_CLUSTER=mt1
+
+# Rebuild assets:
+npm run build
+```
+
+---
+
+## Docker Container Issues
+
+### 1. Docker Container Can't Connect to Host MySQL (Linux)
+
+**Symptoms:** 
+```
+php_network_getaddresses: getaddrinfo for host.docker.internal failed: Name does not resolve
+```
+
+**Root Cause:** `host.docker.internal` only works on Docker Desktop (Mac/Windows), NOT on Linux!
+
+**Solutions:**
+
+```bash
+# STEP 1: Find Docker bridge gateway IP
+docker network inspect bridge | grep Gateway
+# Result: 172.17.0.1 (standard)
+
+# STEP 2: Configure MySQL to listen on all interfaces
+sudo sed -i 's/bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf
+sudo systemctl restart mysql
+
+# STEP 3: Grant MySQL access from Docker network
+mysql -e "CREATE USER IF NOT EXISTS 'devflow'@'172.17.%' IDENTIFIED BY 'your-password';"
+mysql -e "GRANT ALL PRIVILEGES ON database_name.* TO 'devflow'@'172.17.%';"
+mysql -e "FLUSH PRIVILEGES;"
+
+# STEP 4: Update container .env
+docker exec container-name sh -c 'sed -i "s/DB_HOST=.*/DB_HOST=172.17.0.1/" .env'
+docker exec container-name php artisan config:clear
+docker exec container-name php artisan optimize
+
+# STEP 5: Test connection
+docker exec container-name php artisan migrate:status
+```
+
+**Important Notes:**
+- On Linux: Use `172.17.0.1` (Docker bridge gateway)
+- On Mac/Windows Docker Desktop: Use `host.docker.internal`
+- MySQL must listen on `0.0.0.0` not just `127.0.0.1`
+- Grant from `172.17.%` to allow all Docker containers
+
+### 2. Container Missing .env File
+
+**Symptoms:** `file_get_contents(/var/www/html/.env): Failed to open stream`
+
+**Solution:**
+```bash
+# Copy .env from example
+docker exec container-name sh -c 'cp .env.example .env'
+
+# Generate APP_KEY
+docker exec container-name php artisan key:generate
+
+# Configure database
+docker exec container-name sh -c 'sed -i "s/DB_HOST=.*/DB_HOST=172.17.0.1/" .env'
+docker exec container-name php artisan config:clear
+```
+
+### 3. Container Redis Connection Failed
+
+**Symptoms:** `php_network_getaddresses: getaddrinfo for redis failed`
+
+**Solution - Use File Cache Instead:**
+```bash
+docker exec container-name sh -c 'sed -i "s/CACHE_STORE=.*/CACHE_STORE=file/" .env'
+docker exec container-name sh -c 'sed -i "s/SESSION_DRIVER=.*/SESSION_DRIVER=file/" .env'
+docker exec container-name sh -c 'sed -i "s/QUEUE_CONNECTION=.*/QUEUE_CONNECTION=database/" .env'
+docker exec container-name php artisan config:clear
+docker exec container-name php artisan optimize
+```
+
+### 4. Docker Container Name Conflicts
+
+**Symptoms:** `Conflict. The container name is already in use`
+
+**Solution Already Implemented:**
+Our DockerService automatically stops and removes existing containers before starting new ones.
+
+**Manual Fix (if needed):**
+```bash
+# Stop and remove conflicting container
+docker stop container-name
+docker rm -f container-name
+
+# Start new container
+docker run...
+```
+
+---
+
+## Browser Cache Issues
+
+### Symptoms
+- Changes deployed but not visible
+- Old JavaScript running
+- 404 errors for /livewire/livewire.js
+- Buttons not clickable after update
+
+### Solutions
+
+**Hard Refresh:**
+- Windows/Linux: `Ctrl + Shift + R`
+- Mac: `Cmd + Shift + R`
+
+**Clear Browser Cache Completely:**
+1. Press `Ctrl + Shift + Delete`
+2. Select "All time"
+3. Check "Cached images and files"
+4. Click "Clear data"
+5. Close and restart browser
+
+**Test in Incognito:**
+1. `Ctrl + Shift + N` (incognito window)
+2. Login and test
+3. If works in incognito → Browser cache issue
+
+**DevTools Method:**
+1. Press `F12`
+2. Right-click refresh button
+3. Select "Empty Cache and Hard Reload"
+
+---
+
+## Deployment Script Issues
+
+### Deploy Script Must Include
+
+**Critical Steps:**
+```bash
+# In deploy.sh, ensure these are included:
+
+# 1. Publish Livewire assets
+php artisan livewire:publish --assets
+
+# 2. Build frontend assets
+npm run build
+
+# 3. Clear all caches
+php artisan optimize:clear
+
+# 4. Cache for production
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# 5. Set permissions
+chown -R www-data:www-data $PROJECT_PATH
+chmod -R 755 $PROJECT_PATH
+chmod -R 775 storage bootstrap/cache
+
+# 6. Restart PHP-FPM (after deployment)
+systemctl restart php8.2-fpm
+```
+
+### Post-Deployment Checklist
+
+After deploying:
+1. ✅ Livewire assets published
+2. ✅ Frontend assets built
+3. ✅ Caches cleared
+4. ✅ PHP-FPM restarted
+5. ✅ Permissions correct
+6. ✅ Test in browser (hard refresh!)
+
+---
+
+## Dark Theme Issues
+
+### Some Elements Not Dark Mode
+
+**Symptoms:** White cards or elements in dark theme
+
+**Solution:**
+All our components now include dark mode. If you see white elements:
+
+1. Hard refresh browser: `Ctrl + Shift + R`
+2. Check browser console for CSS errors
+3. Verify assets rebuilt: `npm run build`
+4. Clear view cache: `php artisan view:clear`
+
+**Dark Mode Classes:**
+- Cards: `bg-white dark:bg-gray-800`
+- Text: `text-gray-900 dark:text-white`
+- Borders: `border-gray-200 dark:border-gray-700`
+- Badges: Add `dark:bg-*-900/30 dark:text-*-400`
+
+---
+
+## Git Repository Issues
+
+### Dubious Ownership Error
+
+**Symptoms:** `fatal: detected dubious ownership in repository`
+
+**Solution Already Implemented:**
+Our GitService automatically configures safe directories.
+
+**Manual Fix:**
+```bash
+git config --global --add safe.directory /var/www/project-slug
+# Or for all:
+git config --global --add safe.directory "/var/www/*"
+```
+
+---
+
+## Quick Reference - Most Common Fixes
+
+### "500 Error on Livewire Actions"
+```bash
+php artisan livewire:publish --assets
+systemctl restart php8.2-fpm
+```
+
+### "Docker Container Can't Connect to MySQL"
+```bash
+# Use 172.17.0.1 not host.docker.internal
+docker exec container sh -c 'sed -i "s/DB_HOST=.*/DB_HOST=172.17.0.1/" .env'
+docker exec container php artisan config:clear
+```
+
+### "Changes Not Showing in Browser"
+```
+Hard refresh: Ctrl + Shift + R
+Or try incognito window
+```
+
+### "Method Not Found on Component"
+```bash
+composer dump-autoload --optimize
+php artisan optimize:clear
+systemctl restart php8.2-fpm
+```
+
+---
+
+**Still having issues? Check the logs and review the specific fix documentation files for more details.**
 

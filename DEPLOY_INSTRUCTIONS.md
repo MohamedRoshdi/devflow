@@ -66,12 +66,39 @@ nano .env
 # Run migrations
 php artisan migrate --force
 
+# Publish Livewire assets (CRITICAL!)
+php artisan livewire:publish --assets
+
 # Optimize
 php artisan config:cache
 php artisan route:cache
+php artisan view:cache
+
+# Restart PHP-FPM to clear OPcache
+systemctl restart php8.2-fpm
 
 exit
 ```
+
+## Step 2.5: Configure Docker MySQL Access (If Using Docker Containers)
+
+**For Linux servers only** (not needed on Mac/Windows Docker Desktop):
+
+```bash
+# Configure MySQL to accept connections from Docker containers
+sudo sed -i 's/bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf
+sudo systemctl restart mysql
+
+# Grant access from Docker network (172.17.0.0/16)
+mysql -e "CREATE USER IF NOT EXISTS 'devflow'@'172.17.%' IDENTIFIED BY 'devflow_secure_password_123';"
+mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'devflow'@'172.17.%';"
+mysql -e "FLUSH PRIVILEGES;"
+
+# Test from container:
+docker exec your-container sh -c 'php artisan migrate:status'
+```
+
+**Important:** Docker containers on Linux must use `172.17.0.1` as DB_HOST, not `host.docker.internal`!
 
 ## Step 3: Access Application
 

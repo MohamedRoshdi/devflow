@@ -549,6 +549,91 @@ See [COMPREHENSIVE_IMPROVEMENT_PLAN.md](COMPREHENSIVE_IMPROVEMENT_PLAN.md) for t
 
 ---
 
+## ⚠️ Important Notes & Best Practices
+
+### Critical Deployment Steps
+
+**Always include these in your deployment process:**
+
+```bash
+# 1. Publish Livewire assets (CRITICAL for interactive features!)
+php artisan livewire:publish --assets
+
+# 2. Build frontend assets
+npm run build
+
+# 3. Clear all caches
+php artisan optimize:clear
+
+# 4. Restart PHP-FPM to clear OPcache
+systemctl restart php8.2-fpm
+```
+
+### Docker on Linux Servers
+
+**MySQL Connection from Containers:**
+- ❌ DON'T use `host.docker.internal` (doesn't work on Linux!)
+- ✅ DO use `172.17.0.1` (Docker bridge gateway)
+
+```bash
+# Configure MySQL to accept Docker connections:
+sed -i 's/bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf
+systemctl restart mysql
+
+# Grant access from Docker network:
+mysql -e "GRANT ALL PRIVILEGES ON db_name.* TO 'user'@'172.17.%';"
+```
+
+### Livewire Component Best Practices
+
+```php
+// ❌ AVOID: Eloquent models as public properties
+public Project $project;
+
+// ✅ USE: Store IDs, fetch fresh
+#[Locked]
+public $projectId;
+
+protected function getProject() {
+    return Project::findOrFail($this->projectId);
+}
+
+// ❌ AVOID: Dependency injection in boot()
+public function boot(Service $service) { }
+
+// ✅ USE: Resolve on-demand
+public function method() {
+    $service = app(Service::class);
+}
+```
+
+### Browser Cache Issues
+
+After deployment, users may see old versions:
+
+**Solution:** Hard refresh
+- Windows/Linux: `Ctrl + Shift + R`
+- Mac: `Cmd + Shift + R`
+- Or test in incognito window first
+
+### Common Issues Quick Fix
+
+```bash
+# Docker actions not working?
+php artisan livewire:publish --assets
+systemctl restart php8.2-fpm
+
+# Container can't reach MySQL?
+# Use 172.17.0.1 instead of host.docker.internal
+
+# Changes not showing?
+# Hard refresh browser: Ctrl + Shift + R
+```
+
+📖 **For complete troubleshooting, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md)**
+
+---
+
 ## 🔗 Links
 
 - **Website:** https://devflowpro.com (coming soon)

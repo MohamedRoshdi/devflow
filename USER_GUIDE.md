@@ -719,6 +719,51 @@ http://your-domain.com/servers/{server-id}/docker
 
 ## 🐛 Troubleshooting
 
+### Critical Issues (MUST READ!)
+
+#### ❌ Livewire Actions Not Working (500 Errors)
+
+**Symptoms:** Clicking buttons causes 500 errors, Docker actions dead
+
+**Root Cause:** Livewire JavaScript assets not published
+
+**Quick Fix:**
+```bash
+cd /var/www/devflow-pro
+php artisan livewire:publish --assets
+systemctl restart php8.2-fpm
+```
+
+**Browser:** Hard refresh (`Ctrl + Shift + R`)
+
+#### ❌ Docker Container Can't Connect to MySQL
+
+**Symptoms:** `host.docker.internal failed: Name does not resolve`
+
+**Root Cause:** On Linux, use `172.17.0.1` not `host.docker.internal`
+
+**Quick Fix:**
+```bash
+# Update container:
+docker exec container-name sh -c 'sed -i "s/DB_HOST=.*/DB_HOST=172.17.0.1/" .env'
+docker exec container-name php artisan config:clear
+
+# Grant MySQL access:
+mysql -e "GRANT ALL PRIVILEGES ON db.* TO 'user'@'172.17.%';"
+```
+
+#### ❌ Changes Not Showing After Deployment
+
+**Symptoms:** Deployed but old version still showing
+
+**Root Cause:** Browser cache
+
+**Quick Fix:**
+- Hard refresh: `Ctrl + Shift + R` (Windows) or `Cmd + Shift + R` (Mac)
+- Or test in incognito window
+
+---
+
 ### Common Issues
 
 #### "Unable to find image 'xxx:latest'"
@@ -741,6 +786,7 @@ http://your-domain.com/servers/{server-id}/docker
 **Solution:**
 - Use unique ports in docker-compose.yml
 - Or stop the other container
+- System auto-resolves conflicts now!
 
 #### "Build failed"
 **Problem:** Code issues, missing dependencies  
@@ -749,12 +795,23 @@ http://your-domain.com/servers/{server-id}/docker
 - Fix code issues
 - Redeploy
 
+#### "Method not found on component"
+**Problem:** Livewire cache stale
+
+**Solution:**
+```bash
+composer dump-autoload --optimize
+php artisan optimize:clear
+systemctl restart php8.2-fpm
+```
+
 ### Getting Help
 
 **Check:**
-1. [Troubleshooting Guide](TROUBLESHOOTING.md) - Common solutions
-2. [GitHub Issues](https://github.com/yourusername/devflow-pro/issues) - Report bugs
-3. [Comprehensive Plan](COMPREHENSIVE_IMPROVEMENT_PLAN.md) - Upcoming fixes
+1. 📖 [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - Comprehensive troubleshooting guide
+2. 🔍 [ATS_PRO_FINAL_FIX.md](ATS_PRO_FINAL_FIX.md) - Docker MySQL connection guide
+3. 🐛 [GitHub Issues](https://github.com/yourusername/devflow-pro/issues) - Report bugs
+4. 📋 Application logs: `/var/www/devflow-pro/storage/logs/laravel.log`
 
 ---
 
