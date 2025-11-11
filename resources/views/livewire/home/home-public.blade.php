@@ -1,4 +1,10 @@
-<div class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-20 left-10 w-72 h-72 bg-blue-300 dark:bg-blue-900 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-3xl opacity-20 animate-blob"></div>
+        <div class="absolute top-40 right-10 w-72 h-72 bg-purple-300 dark:bg-purple-900 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 dark:bg-pink-900 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+    </div>
     <!-- Header -->
     <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -44,11 +50,11 @@
     </div>
 
     <!-- Main Content -->
-    <div class="w-full px-6 sm:px-8 lg:px-12 py-20">
+    <div class="w-full px-6 sm:px-8 lg:px-12 py-20 relative z-10">
         <!-- Hero Section -->
         <div class="text-center mb-28 max-w-6xl mx-auto">
             <!-- Floating Badge -->
-            <div class="inline-flex items-center px-8 py-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-full shadow-2xl mb-10 border-2 border-gray-200 dark:border-gray-700">
+            <div class="inline-flex items-center px-8 py-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-full shadow-2xl mb-10 border-2 border-gray-200 dark:border-gray-700 hover:scale-105 transition-transform duration-300 animate-float">
                 <span class="relative flex h-4 w-4 mr-3">
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                     <span class="relative inline-flex rounded-full h-4 w-4 bg-green-500"></span>
@@ -59,7 +65,7 @@
             <!-- Main Heading -->
             <h2 class="text-6xl md:text-8xl lg:text-9xl font-black text-gray-900 dark:text-white mb-10 leading-tight">
                 Welcome to
-                <span class="block mt-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                <span class="block mt-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient">
                     Our Projects
                 </span>
             </h2>
@@ -73,8 +79,9 @@
             <!-- Stats Cards -->
             <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
                 <!-- Live Projects -->
-                <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-3xl shadow-2xl p-10 border-2 border-gray-200 dark:border-gray-700 transform hover:scale-110 transition-all duration-300">
-                    <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
+                <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-3xl shadow-2xl p-10 border-2 border-gray-200 dark:border-gray-700 transform hover:scale-110 transition-all duration-300 group relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl group-hover:rotate-12 transition-transform duration-300 relative z-10">
                         <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
                         </svg>
@@ -84,8 +91,9 @@
                 </div>
 
                 <!-- Uptime -->
-                <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-3xl shadow-2xl p-10 border-2 border-gray-200 dark:border-gray-700 transform hover:scale-110 transition-all duration-300">
-                    <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
+                <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-3xl shadow-2xl p-10 border-2 border-gray-200 dark:border-gray-700 transform hover:scale-110 transition-all duration-300 group relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl group-hover:rotate-12 transition-transform duration-300 relative z-10">
                         <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
@@ -95,8 +103,9 @@
                 </div>
 
                 <!-- 24/7 -->
-                <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-3xl shadow-2xl p-10 border-2 border-gray-200 dark:border-gray-700 transform hover:scale-110 transition-all duration-300">
-                    <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
+                <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-3xl shadow-2xl p-10 border-2 border-gray-200 dark:border-gray-700 transform hover:scale-110 transition-all duration-300 group relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl group-hover:rotate-12 transition-transform duration-300 relative z-10">
                         <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
@@ -118,9 +127,12 @@
             <!-- Projects Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-6xl mx-auto">
                 @foreach($projects as $project)
-                    <div class="group relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-4 hover:scale-105 overflow-hidden border-2 border-gray-200 dark:border-gray-700">
+                    <div class="group relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-3xl shadow-2xl hover:shadow-purple-500/50 dark:hover:shadow-purple-500/30 transition-all duration-500 transform hover:-translate-y-4 hover:scale-105 overflow-hidden border-2 border-gray-200 dark:border-gray-700 hover:border-purple-500/50">
                         <!-- Gradient Top -->
-                        <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+                        <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-gradient"></div>
+                        
+                        <!-- Shine Effect -->
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                         
                         <!-- Card Content -->
                         <div class="p-12">
@@ -194,9 +206,10 @@
                             @endphp
                             
                             <a href="{{ $url }}" target="_blank" 
-                               class="w-full inline-flex items-center justify-center px-10 py-6 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white font-black rounded-2xl transition-all duration-300 transform group-hover:scale-105 shadow-2xl hover:shadow-3xl text-xl">
-                                <span>Visit Project</span>
-                                <svg class="w-7 h-7 ml-3 transform group-hover:translate-x-2 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                               class="w-full inline-flex items-center justify-center px-10 py-6 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white font-black rounded-2xl transition-all duration-300 transform group-hover:scale-105 shadow-2xl hover:shadow-purple-500/50 dark:hover:shadow-purple-500/30 text-xl relative overflow-hidden">
+                                <span class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
+                                <span class="relative">Visit Project</span>
+                                <svg class="w-7 h-7 ml-3 transform group-hover:translate-x-2 transition-transform duration-300 relative" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                                 </svg>
                             </a>
