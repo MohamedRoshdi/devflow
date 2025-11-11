@@ -1,6 +1,6 @@
 # DevFlow Pro - Complete User Guide
 
-**Version 2.2.1** | Last Updated: November 11, 2025
+**Version 2.4.0** | Last Updated: November 11, 2025
 
 ---
 
@@ -12,9 +12,10 @@
 4. [Editing Projects](#editing-projects)
 5. [Deploying Applications](#deploying-applications)
 6. [Managing Containers](#managing-containers)
-7. [Project Docker Management](#project-docker-management--new-v221) ⭐ NEW!
-8. [Viewing Logs](#viewing-logs)
-9. [Troubleshooting](#troubleshooting)
+7. [Project Docker Management](#project-docker-management--new-v221)
+8. [Environment Management](#environment-management--new-v240) ⭐ NEW v2.4!
+9. [Viewing Logs](#viewing-logs)
+10. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -617,6 +618,227 @@ docker run -d --name project-slug -p 8001:80 project-slug:latest
 2. Refresh the page
 3. Check server Docker version (needs 20.10+)
 4. Verify user permissions
+
+---
+
+## ⚙️ Environment Management ⭐ NEW! v2.4.0
+
+### Overview
+
+Environment Management allows you to configure how your deployed applications run, including APP_ENV settings, custom environment variables, and automatic debug mode configuration.
+
+### Accessing Environment Management
+
+**Location:**
+1. Navigate to your project page
+2. Click the **"Environment"** tab
+3. You'll see two sections:
+   - **Application Environment** - Select runtime environment
+   - **Environment Variables** - Manage custom variables
+
+### 📊 Selecting Application Environment
+
+**4 Environment Options:**
+
+#### 🏠 Local
+- **Use Case:** Your local development machine
+- **APP_ENV:** local
+- **APP_DEBUG:** true (detailed errors)
+- **Caching:** Minimal
+- **Best for:** Local development only
+
+#### 💻 Development
+- **Use Case:** Active development server
+- **APP_ENV:** development
+- **APP_DEBUG:** true (detailed errors with stack traces)
+- **Caching:** Disabled for faster development
+- **Best for:** Team development, testing features
+
+#### 🔧 Staging
+- **Use Case:** Pre-production testing
+- **APP_ENV:** staging
+- **APP_DEBUG:** false (errors logged, not displayed)
+- **Caching:** Enabled for performance testing
+- **Best for:** QA testing, client previews
+
+#### 🚀 Production
+- **Use Case:** Live application for end users
+- **APP_ENV:** production
+- **APP_DEBUG:** false (secure, no error details exposed)
+- **Caching:** Full optimization
+- **Best for:** Live production deployments
+
+**How to Change Environment:**
+1. Click on the desired environment card
+2. Confirm the change (security prompt)
+3. Success message appears
+4. **Important:** Restart container to apply!
+   - Go to Docker tab
+   - Click "Restart Container"
+   - New container will have the selected environment
+
+### 🔧 Managing Environment Variables
+
+**What are Environment Variables?**
+- Configuration values for your application
+- Examples: API_KEY, DATABASE_URL, SMTP_HOST
+- Securely stored in database
+- Automatically injected into containers
+
+**Pre-Configured Variables:**
+DevFlow Pro automatically provides these Laravel essentials:
+- `APP_ENV` - From your environment selection
+- `APP_DEBUG` - Auto-set based on environment
+- `APP_KEY` - Application encryption key
+- `DB_CONNECTION` - Database driver (mysql)
+- `DB_HOST` - Database host (172.17.0.1 for Docker)
+- `DB_DATABASE` - Database name
+- `DB_USERNAME` - Database user
+- `DB_PASSWORD` - Database password
+- `CACHE_STORE` - Cache driver (file)
+- `SESSION_DRIVER` - Session storage (file)
+- `QUEUE_CONNECTION` - Queue driver (database)
+
+**Adding Custom Variables:**
+
+1. **Click "Add Variable" button**
+   - Opens modal with form
+
+2. **Enter Variable Details:**
+   ```
+   Variable Name: API_KEY
+   Value: your-api-key-here
+   ```
+
+3. **Click "Add Variable"**
+   - Saved to database
+   - Appears in table
+
+4. **Restart Container to Apply:**
+   - Variables only injected on container start
+   - Go to Docker tab → Restart Container
+
+**Editing Variables:**
+1. Click "Edit" button on variable row
+2. Modify the value (key is read-only)
+3. Click "Update Variable"
+4. Restart container to apply changes
+
+**Deleting Variables:**
+1. Click "Delete" button on variable row
+2. Confirm deletion
+3. Variable removed from database
+4. Restart container to remove from app
+
+**Security Features:**
+- 🔒 Passwords/secrets automatically masked (shows ••••••••)
+- 🔒 Values stored encrypted in database
+- 🔒 Never committed to git
+- 🔒 Per-project isolation
+
+**Variable Naming Best Practices:**
+```
+✅ Good:
+- API_KEY
+- DATABASE_URL
+- SMTP_HOST
+- AWS_ACCESS_KEY
+- STRIPE_SECRET_KEY
+
+❌ Avoid:
+- apikey (use uppercase)
+- key (not descriptive)
+- my-api-key (use underscores, not dashes)
+```
+
+### 🔄 How Environment Variables Work
+
+**Complete Flow:**
+
+```
+Step 1: Configure in DevFlow Pro
+├─ Select environment: Development
+├─ Add variables: API_KEY=abc123
+└─ Saves to database ✓
+
+Step 2: Deploy or Restart Container
+├─ System reads from database
+├─ Generates docker run command
+└─ Injects all variables ✓
+
+Step 3: Container Starts
+├─ Gets: -e APP_ENV=development
+├─ Gets: -e APP_DEBUG=true
+├─ Gets: -e API_KEY=abc123
+├─ Gets: All 11+ variables
+└─ Application has full config ✓
+
+Step 4: Your App Uses Variables
+├─ config('app.env') → "development"
+├─ config('app.debug') → true
+├─ env('API_KEY') → "abc123"
+└─ Everything works! ✓
+```
+
+### 💡 Common Use Cases
+
+**Example 1: Laravel App**
+```
+Environment: Production
+Variables:
+  APP_KEY=base64:random-key
+  DB_CONNECTION=mysql
+  DB_HOST=172.17.0.1
+  DB_DATABASE=myapp
+  DB_USERNAME=myuser
+  DB_PASSWORD=secret
+  CACHE_DRIVER=redis
+  QUEUE_CONNECTION=redis
+  MAIL_MAILER=smtp
+  MAIL_HOST=smtp.mailtrap.io
+```
+
+**Example 2: API Integration**
+```
+Environment: Development
+Variables:
+  API_KEY=your-api-key
+  API_SECRET=your-api-secret
+  API_URL=https://api.example.com
+  API_TIMEOUT=30
+```
+
+**Example 3: Payment Gateway**
+```
+Environment: Production
+Variables:
+  STRIPE_KEY=pk_live_xxx
+  STRIPE_SECRET=sk_live_xxx
+  STRIPE_WEBHOOK_SECRET=whsec_xxx
+```
+
+### ⚠️ Important Notes
+
+**Security:**
+- ❌ NEVER commit .env files to git
+- ❌ NEVER share production credentials
+- ✅ Use different secrets per environment
+- ✅ Rotate credentials regularly
+
+**Container Restart Required:**
+- Environment changes → Restart container
+- Variable additions → Restart container
+- Variable updates → Restart container
+- Variable deletions → Restart container
+
+**Verification:**
+After restarting, verify variables are injected:
+```bash
+# Via Docker inspect:
+docker inspect project-name --format='{{range .Config.Env}}{{println .}}{{end}}'
+
+# Should show all your variables
+```
 
 ---
 
