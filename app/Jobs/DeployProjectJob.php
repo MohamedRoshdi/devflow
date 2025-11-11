@@ -52,8 +52,11 @@ class DeployProjectJob implements ShouldQueue
             if (file_exists("{$projectPath}/.git")) {
                 $logs[] = "Repository already exists, pulling latest changes...";
                 
-                // Configure safe directory
-                \Illuminate\Support\Facades\Process::run("git config --global --add safe.directory {$projectPath}");
+                // Configure safe directory (use wildcard to avoid duplicates)
+                \Illuminate\Support\Facades\Process::run("git config --global safe.directory '*' 2>/dev/null || true");
+                
+                // Ensure correct ownership
+                \Illuminate\Support\Facades\Process::run("chown -R www-data:www-data {$projectPath} 2>/dev/null || true");
                 
                 // Reset any local changes and pull latest
                 $pullResult = \Illuminate\Support\Facades\Process::run(
@@ -69,6 +72,9 @@ class DeployProjectJob implements ShouldQueue
                 // Repository doesn't exist, clone it
                 $logs[] = "Cloning repository...";
                 
+                // Configure safe directory (use wildcard to avoid duplicates)
+                \Illuminate\Support\Facades\Process::run("git config --global safe.directory '*' 2>/dev/null || true");
+                
                 // Remove directory if it exists but isn't a git repo
                 if (file_exists($projectPath)) {
                     $logs[] = "Removing non-git directory...";
@@ -82,6 +88,9 @@ class DeployProjectJob implements ShouldQueue
                 if (!$cloneResult->successful()) {
                     throw new \Exception('Git clone failed: ' . $cloneResult->errorOutput());
                 }
+                
+                // Ensure correct ownership
+                \Illuminate\Support\Facades\Process::run("chown -R www-data:www-data {$projectPath}");
                 
                 $logs[] = "✓ Repository cloned successfully";
             }
