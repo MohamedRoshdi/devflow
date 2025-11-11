@@ -244,14 +244,15 @@
                      id="deployment-logs"
                      x-data="{ autoScroll: true }"
                      x-init="
-                        $watch('$wire.deployment.output_log', value => {
-                            if (autoScroll) {
-                                $nextTick(() => {
-                                    $el.scrollTop = $el.scrollHeight;
-                                });
-                            }
-                        });
+                        // Auto-scroll to bottom on load
                         $el.scrollTop = $el.scrollHeight;
+                        
+                        // Set up interval to check for updates and scroll
+                        setInterval(() => {
+                            if (autoScroll) {
+                                $el.scrollTop = $el.scrollHeight;
+                            }
+                        }, 500);
                      "
                      @scroll="autoScroll = ($el.scrollHeight - $el.scrollTop - $el.clientHeight) < 10">
                     <pre>{{ $deployment->output_log }}</pre>
