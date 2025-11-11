@@ -118,6 +118,10 @@ npm run build
 echo "🗄️  Running database migrations..."
 php artisan migrate --force
 
+# Publish Livewire assets
+echo "📦 Publishing Livewire assets..."
+php artisan livewire:publish --assets --force
+
 # Optimize Laravel
 echo "⚡ Optimizing Laravel..."
 php artisan config:cache
