@@ -23,15 +23,24 @@ class GitService
                 ];
             }
 
+            // Configure safe directory to fix ownership issues
+            $this->configureSafeDirectory($projectPath);
+
             // Fetch latest commits from remote
-            $fetchCommand = "cd {$projectPath} && git fetch origin {$project->branch}";
+            $fetchCommand = "cd {$projectPath} && git fetch origin {$project->branch} 2>&1";
             $fetchResult = Process::run($fetchCommand);
 
             if (!$fetchResult->successful()) {
-                return [
-                    'success' => false,
-                    'error' => 'Failed to fetch from remote: ' . $fetchResult->errorOutput(),
-                ];
+                // Try to fix ownership and retry
+                $this->fixRepositoryOwnership($projectPath);
+                $fetchResult = Process::run($fetchCommand);
+                
+                if (!$fetchResult->successful()) {
+                    return [
+                        'success' => false,
+                        'error' => 'Failed to fetch from remote: ' . $fetchResult->errorOutput(),
+                    ];
+                }
             }
 
             // Get commit history
@@ -125,15 +134,24 @@ class GitService
                 ];
             }
 
+            // Configure safe directory to fix ownership issues
+            $this->configureSafeDirectory($projectPath);
+
             // Fetch latest from remote
-            $fetchCommand = "cd {$projectPath} && git fetch origin {$project->branch}";
+            $fetchCommand = "cd {$projectPath} && git fetch origin {$project->branch} 2>&1";
             $fetchResult = Process::run($fetchCommand);
 
             if (!$fetchResult->successful()) {
-                return [
-                    'success' => false,
-                    'error' => 'Failed to fetch from remote: ' . $fetchResult->errorOutput(),
-                ];
+                // Try to fix ownership and retry
+                $this->fixRepositoryOwnership($projectPath);
+                $fetchResult = Process::run($fetchCommand);
+                
+                if (!$fetchResult->successful()) {
+                    return [
+                        'success' => false,
+                        'error' => 'Failed to fetch from remote: ' . $fetchResult->errorOutput(),
+                    ];
+                }
             }
 
             // Get current local commit
@@ -265,6 +283,40 @@ class GitService
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
+        }
+    }
+
+    /**
+     * Configure Git safe directory to fix ownership issues
+     */
+    protected function configureSafeDirectory(string $projectPath): void
+    {
+        try {
+            // Add the project path as a safe directory
+            $configCommand = "git config --global --add safe.directory {$projectPath} 2>&1 || true";
+            Process::run($configCommand);
+        } catch (\Exception $e) {
+            // Log but don't fail - this is a best-effort fix
+            \Log::debug("Failed to configure safe directory: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Fix repository ownership issues
+     */
+    protected function fixRepositoryOwnership(string $projectPath): void
+    {
+        try {
+            // Set ownership to current user (www-data or whatever is running the web server)
+            $user = posix_getpwuid(posix_geteuid())['name'] ?? 'www-data';
+            $chownCommand = "sudo chown -R {$user}:{$user} {$projectPath} 2>&1 || true";
+            Process::run($chownCommand);
+            
+            // Also configure safe directory again after ownership fix
+            $this->configureSafeDirectory($projectPath);
+        } catch (\Exception $e) {
+            // Log but don't fail
+            \Log::debug("Failed to fix repository ownership: " . $e->getMessage());
         }
     }
 }

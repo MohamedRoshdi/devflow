@@ -199,14 +199,26 @@
         </div>
 
         <!-- Git Commits & Updates -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 transition-colors">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 transition-colors" wire:poll.60s="checkForUpdates">
             <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                <h2 class="text-xl font-bold text-gray-900 dark:text-white">Git Commits</h2>
+                <div class="flex items-center space-x-3">
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">Git Commits</h2>
+                    <span class="text-xs text-gray-500 dark:text-gray-400" wire:loading.remove wire:target="checkForUpdates">
+                        (Auto-checks every 60s)
+                    </span>
+                    <div wire:loading wire:target="checkForUpdates" class="flex items-center">
+                        <svg class="animate-spin h-4 w-4 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">Checking...</span>
+                    </div>
+                </div>
                 <button wire:click="checkForUpdates" 
                         class="btn btn-sm btn-secondary"
                         wire:loading.attr="disabled"
                         wire:target="checkForUpdates">
-                    <span wire:loading.remove wire:target="checkForUpdates">🔄 Check for Updates</span>
+                    <span wire:loading.remove wire:target="checkForUpdates">🔄 Check Now</span>
                     <span wire:loading wire:target="checkForUpdates">Checking...</span>
                 </button>
             </div>

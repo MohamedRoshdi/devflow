@@ -16,6 +16,7 @@ class ProjectShow extends Component
     public $commits = [];
     public $updateStatus = null;
     public $checkingForUpdates = false;
+    public $autoCheckEnabled = true;
 
     public function mount(Project $project)
     {
@@ -26,6 +27,9 @@ class ProjectShow extends Component
         
         $this->project = $project;
         $this->loadCommits();
+        
+        // Auto-check for updates on mount
+        $this->checkForUpdates();
     }
 
     public function loadCommits()

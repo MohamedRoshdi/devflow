@@ -105,6 +105,11 @@ chmod -R 755 $REMOTE_PATH
 chmod -R 775 $REMOTE_PATH/storage
 chmod -R 775 $REMOTE_PATH/bootstrap/cache
 
+# Fix Git ownership issues
+echo "🔧 Configuring Git safe directories..."
+git config --global --add safe.directory $REMOTE_PATH 2>/dev/null || true
+git config --global --add safe.directory "/var/www/*" 2>/dev/null || true
+
 # Build assets
 echo "🎨 Building assets..."
 npm run build
