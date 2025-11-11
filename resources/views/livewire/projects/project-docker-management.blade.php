@@ -117,27 +117,27 @@
                             @if($containerStats)
                                 <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
                                     @if(isset($containerStats['CPUPerc']))
-                                        <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-blue-200">
+                                        <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-blue-200 dark:border-blue-700 transition-colors">
                                             <p class="text-xs text-gray-600 dark:text-gray-400 mb-1">CPU Usage</p>
-                                            <p class="text-lg font-bold text-gray-900 dark:text-white dark:text-white">{{ $containerStats['CPUPerc'] }}</p>
+                                            <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $containerStats['CPUPerc'] }}</p>
                                         </div>
                                     @endif
                                     @if(isset($containerStats['MemPerc']))
-                                        <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-blue-200">
+                                        <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-blue-200 dark:border-blue-700 transition-colors">
                                             <p class="text-xs text-gray-600 dark:text-gray-400 mb-1">Memory Usage</p>
-                                            <p class="text-lg font-bold text-gray-900 dark:text-white dark:text-white">{{ $containerStats['MemPerc'] }}</p>
+                                            <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $containerStats['MemPerc'] }}</p>
                                         </div>
                                     @endif
                                     @if(isset($containerStats['NetIO']))
-                                        <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-blue-200">
+                                        <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-blue-200 dark:border-blue-700 transition-colors">
                                             <p class="text-xs text-gray-600 dark:text-gray-400 mb-1">Network I/O</p>
-                                            <p class="text-sm font-bold text-gray-900 dark:text-white dark:text-white">{{ $containerStats['NetIO'] }}</p>
+                                            <p class="text-sm font-bold text-gray-900 dark:text-white">{{ $containerStats['NetIO'] }}</p>
                                         </div>
                                     @endif
                                     @if(isset($containerStats['BlockIO']))
-                                        <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-blue-200">
+                                        <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-blue-200 dark:border-blue-700 transition-colors">
                                             <p class="text-xs text-gray-600 dark:text-gray-400 mb-1">Disk I/O</p>
-                                            <p class="text-sm font-bold text-gray-900 dark:text-white dark:text-white">{{ $containerStats['BlockIO'] }}</p>
+                                            <p class="text-sm font-bold text-gray-900 dark:text-white">{{ $containerStats['BlockIO'] }}</p>
                                         </div>
                                     @endif
                                 </div>
@@ -156,27 +156,27 @@
 
                     <!-- Quick Stats -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-white border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 transition-colors">
                             <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Docker Images</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white dark:text-white">{{ count($images) }}</p>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ count($images) }}</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Related to this project</p>
                         </div>
                         
-                        <div class="bg-white border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 transition-colors">
                             <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Project Status</p>
                             <p class="text-2xl font-bold">
                                 <span class="px-3 py-1 rounded-full text-sm
-                                    @if($project->status === 'running') bg-green-100 text-green-800
-                                    @elseif($project->status === 'stopped') bg-gray-100 text-gray-800
-                                    @else bg-yellow-100 text-yellow-800 @endif">
+                                    @if($project->status === 'running') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
+                                    @elseif($project->status === 'stopped') bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300
+                                    @else bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 @endif">
                                     {{ ucfirst($project->status) }}
                                 </span>
                             </p>
                         </div>
 
-                        <div class="bg-white border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 transition-colors">
                             <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Server</p>
-                            <p class="text-lg font-bold text-gray-900 dark:text-white dark:text-white">{{ $project->server->name }}</p>
+                            <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $project->server->name }}</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $project->server->ip_address }}</p>
                         </div>
                     </div>
@@ -207,28 +207,28 @@
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700">
+                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                     @foreach($images as $image)
-                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700">
+                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <code class="text-sm text-gray-900 dark:text-white dark:text-white">{{ $image['Repository'] ?? 'N/A' }}</code>
+                                                <code class="text-sm text-gray-900 dark:text-white">{{ $image['Repository'] ?? 'N/A' }}</code>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">{{ $image['Tag'] ?? 'latest' }}</span>
+                                                <span class="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 rounded">{{ $image['Tag'] ?? 'latest' }}</span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <code class="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-400">{{ substr($image['ID'] ?? '', 0, 12) }}</code>
+                                                <code class="text-xs text-gray-600 dark:text-gray-400">{{ substr($image['ID'] ?? '', 0, 12) }}</code>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                                                 {{ $image['CreatedSince'] ?? 'N/A' }}
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                                                 {{ $image['Size'] ?? 'N/A' }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm">
                                                 <button wire:click="deleteImage('{{ $image['ID'] }}')" 
                                                         wire:confirm="Are you sure you want to delete this image?"
-                                                        class="text-red-600 hover:text-red-800 font-medium">
+                                                        class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 font-medium transition-colors">
                                                     🗑️ Delete
                                                 </button>
                                             </td>
@@ -238,12 +238,12 @@
                             </table>
                         </div>
                     @else
-                        <div class="text-center py-12 bg-gray-50 rounded-lg">
-                            <div class="text-gray-400 text-5xl mb-3">📦</div>
+                        <div class="text-center py-12 bg-gray-50 dark:bg-gray-700 rounded-lg transition-colors">
+                            <div class="text-gray-400 dark:text-gray-500 text-5xl mb-3">📦</div>
                             <p class="text-gray-600 dark:text-gray-400 mb-4">No Docker images found for this project</p>
                             <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Build an image to get started</p>
                             <button wire:click="buildImage" 
-                                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors">
+                                    class="px-4 py-2 bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors">
                                 🔨 Build Image
                             </button>
                         </div>
