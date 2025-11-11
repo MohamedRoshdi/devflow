@@ -36,14 +36,18 @@ class ProjectEnvironment extends Component
         return Project::findOrFail($this->projectId);
     }
 
-    public function updateEnvironment()
+    public function updateEnvironment($newEnvironment = null)
     {
+        if ($newEnvironment) {
+            $this->environment = $newEnvironment;
+        }
+
         $this->validate(['environment' => 'required|in:local,development,staging,production']);
 
         $project = $this->getProject();
         $project->update(['environment' => $this->environment]);
 
-        session()->flash('message', 'Environment updated to ' . $this->environment);
+        session()->flash('message', 'Environment updated to ' . ucfirst($this->environment));
         $this->dispatch('environmentUpdated');
     }
 
