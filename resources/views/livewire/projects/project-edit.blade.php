@@ -1,8 +1,8 @@
 <div>
     <div class="mb-8 flex justify-between items-center">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">Edit Project</h1>
-            <p class="text-gray-600 mt-1">Update project configuration</p>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white dark:text-white">Edit Project</h1>
+            <p class="text-gray-600 dark:text-gray-400 mt-1">Update project configuration</p>
         </div>
         <a href="{{ route('projects.show', $project) }}" class="btn btn-secondary">
             Cancel
@@ -10,19 +10,19 @@
     </div>
 
     @if (session()->has('message'))
-        <div class="mb-6 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded">
+        <div class="mb-6 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 text-green-800 dark:text-green-400 px-4 py-3 rounded">
             {{ session('message') }}
         </div>
     @endif
 
-    <div class="bg-white rounded-lg shadow p-8">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-8">
         <form wire:submit="updateProject" class="space-y-8">
             <!-- Basic Information -->
             <div>
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Basic Information</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Project Name *</label>
+                        <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Project Name *</label>
                         <input wire:model.live="name" 
                                id="name" 
                                type="text" 
@@ -35,7 +35,7 @@
                     </div>
 
                     <div>
-                        <label for="slug" class="block text-sm font-medium text-gray-700 mb-2">Slug *</label>
+                        <label for="slug" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Slug *</label>
                         <input wire:model="slug" 
                                id="slug" 
                                type="text" 
@@ -51,19 +51,19 @@
 
             <!-- Server Selection -->
             <div class="border-t pt-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Server Configuration</h3>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Server Configuration</h3>
                 
                 @if (session()->has('server_status_updated'))
-                    <div class="mb-4 bg-blue-50 border border-blue-200 text-blue-800 px-4 py-2 rounded text-sm">
+                    <div class="mb-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-400 px-4 py-2 rounded text-sm">
                         {{ session('server_status_updated') }}
                     </div>
                 @endif
 
                 <div>
-                    <label for="server_id" class="block text-sm font-medium text-gray-700 mb-2">Select Server *</label>
+                    <label for="server_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Server *</label>
                     <div class="space-y-3">
                         @forelse($servers as $server)
-                            <div class="border rounded-lg p-4 {{ $server_id == $server->id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300' }}">
+                            <div class="border rounded-lg p-4 {{ $server_id == $server->id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 dark:border-gray-700 hover:border-blue-300' }}">
                                 <div class="flex items-center justify-between">
                                     <label class="flex items-center flex-1 cursor-pointer">
                                         <input type="radio" 
@@ -72,7 +72,7 @@
                                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
                                         <div class="ml-3 flex-1">
                                             <div class="flex items-center">
-                                                <span class="font-medium text-gray-900">{{ $server->name }}</span>
+                                                <span class="font-medium text-gray-900 dark:text-white dark:text-white">{{ $server->name }}</span>
                                                 <span class="ml-2 px-2 py-1 rounded-full text-xs
                                                     @if($server->status === 'online') bg-green-100 text-green-800
                                                     @elseif($server->status === 'offline') bg-red-100 text-red-800
@@ -82,17 +82,17 @@
                                                     {{ ucfirst($server->status) }}
                                                 </span>
                                             </div>
-                                            <div class="text-sm text-gray-500 mt-1">
+                                            <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
                                                 {{ $server->ip_address }} • {{ $server->cpu_cores ?? '?' }} CPU • {{ $server->memory_gb ?? '?' }} GB RAM
                                                 @if($server->docker_installed)
-                                                    • <span class="text-green-600">Docker ✓</span>
+                                                    • <span class="text-green-600 dark:text-green-400">Docker ✓</span>
                                                 @endif
                                             </div>
                                         </div>
                                     </label>
                                     <button type="button"
                                             wire:click="refreshServerStatus({{ $server->id }})"
-                                            class="ml-3 text-blue-600 hover:text-blue-700 text-sm font-medium"
+                                            class="ml-3 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
                                             title="Refresh server status">
                                         🔄 Refresh
                                     </button>
@@ -114,16 +114,16 @@
 
             <!-- Repository -->
             <div class="border-t pt-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Repository</h3>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Repository</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="repository_url" class="block text-sm font-medium text-gray-700 mb-2">Repository URL *</label>
+                        <label for="repository_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Repository URL *</label>
                         <input wire:model="repository_url" 
                                id="repository_url" 
                                type="text" 
                                placeholder="https://github.com/user/repo.git or git@github.com:user/repo.git"
                                class="input @error('repository_url') border-red-500 @enderror">
-                        <p class="text-xs text-gray-500 mt-1">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                             Supports HTTPS or SSH format. SSH recommended for private repositories.
                         </p>
                         @error('repository_url') 
@@ -132,7 +132,7 @@
                     </div>
 
                     <div>
-                        <label for="branch" class="block text-sm font-medium text-gray-700 mb-2">Branch *</label>
+                        <label for="branch" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Branch *</label>
                         <input wire:model="branch" 
                                id="branch" 
                                type="text" 
@@ -144,10 +144,10 @@
 
             <!-- Framework & Runtime -->
             <div class="border-t pt-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Framework & Runtime</h3>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Framework & Runtime</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                        <label for="framework" class="block text-sm font-medium text-gray-700 mb-2">Framework</label>
+                        <label for="framework" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Framework</label>
                         <select wire:model="framework" id="framework" class="input">
                             <option value="">Select Framework...</option>
                             <option value="Laravel">Laravel</option>
@@ -161,7 +161,7 @@
                     </div>
 
                     <div>
-                        <label for="php_version" class="block text-sm font-medium text-gray-700 mb-2">PHP Version</label>
+                        <label for="php_version" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">PHP Version</label>
                         <select wire:model="php_version" id="php_version" class="input">
                             <option value="8.3">8.3</option>
                             <option value="8.2">8.2</option>
@@ -171,7 +171,7 @@
                     </div>
 
                     <div>
-                        <label for="node_version" class="block text-sm font-medium text-gray-700 mb-2">Node Version</label>
+                        <label for="node_version" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Node Version</label>
                         <select wire:model="node_version" id="node_version" class="input">
                             <option value="20">20 (LTS)</option>
                             <option value="18">18 (LTS)</option>
@@ -183,10 +183,10 @@
 
             <!-- Build Configuration -->
             <div class="border-t pt-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Build Configuration</h3>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Build Configuration</h3>
                 <div class="space-y-6">
                     <div>
-                        <label for="root_directory" class="block text-sm font-medium text-gray-700 mb-2">Root Directory *</label>
+                        <label for="root_directory" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Root Directory *</label>
                         <input wire:model="root_directory" 
                                id="root_directory" 
                                type="text" 
@@ -196,7 +196,7 @@
                     </div>
 
                     <div>
-                        <label for="build_command" class="block text-sm font-medium text-gray-700 mb-2">Build Command</label>
+                        <label for="build_command" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Build Command</label>
                         <input wire:model="build_command" 
                                id="build_command" 
                                type="text" 
@@ -205,7 +205,7 @@
                     </div>
 
                     <div>
-                        <label for="start_command" class="block text-sm font-medium text-gray-700 mb-2">Start Command</label>
+                        <label for="start_command" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Start Command</label>
                         <input wire:model="start_command" 
                                id="start_command" 
                                type="text" 
@@ -217,13 +217,13 @@
 
             <!-- Options -->
             <div class="border-t pt-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Options</h3>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Options</h3>
                 <div class="flex items-center">
                     <input wire:model="auto_deploy" 
                            id="auto_deploy" 
                            type="checkbox"
                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                    <label for="auto_deploy" class="ml-2 block text-sm text-gray-900">
+                    <label for="auto_deploy" class="ml-2 block text-sm text-gray-900 dark:text-white dark:text-white">
                         Enable auto-deployment on git push
                     </label>
                 </div>
@@ -231,10 +231,10 @@
 
             <!-- GPS Location -->
             <div class="border-t pt-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">GPS Location (Optional)</h3>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">GPS Location (Optional)</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="latitude" class="block text-sm font-medium text-gray-700 mb-2">Latitude</label>
+                        <label for="latitude" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Latitude</label>
                         <input wire:model="latitude" 
                                id="latitude" 
                                type="number" 
@@ -244,7 +244,7 @@
                     </div>
 
                     <div>
-                        <label for="longitude" class="block text-sm font-medium text-gray-700 mb-2">Longitude</label>
+                        <label for="longitude" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Longitude</label>
                         <input wire:model="longitude" 
                                id="longitude" 
                                type="number" 
