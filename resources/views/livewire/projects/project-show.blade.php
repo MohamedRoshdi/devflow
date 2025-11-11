@@ -124,6 +124,11 @@
         @livewire('projects.project-docker-management', ['project' => $project])
     </div>
 
+    <!-- Environment Management -->
+    <div class="mb-8">
+        @livewire('projects.project-environment', ['project' => $project])
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Project Details -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 transition-colors">
