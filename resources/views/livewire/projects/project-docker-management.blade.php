@@ -1,9 +1,9 @@
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
     <div class="p-6 border-b border-gray-200 dark:border-gray-700 dark:border-gray-700">
         <div class="flex justify-between items-center">
-            <h2 class="text-xl font-bold text-gray-900 dark:text-white dark:text-white">🐳 Docker Management</h2>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white">🐳 Docker Management</h2>
             <button wire:click="loadDockerInfo" 
-                    class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded transition"
+                    class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
                     wire:loading.attr="disabled">
                 <span wire:loading.remove wire:target="loadDockerInfo">🔄 Refresh</span>
                 <span wire:loading wire:target="loadDockerInfo">Loading...</span>
@@ -27,18 +27,18 @@
     <div class="border-b border-gray-200 dark:border-gray-700 dark:border-gray-700">
         <nav class="flex px-6 -mb-px space-x-8">
             <button wire:click="switchTab('overview')" 
-                    class="py-4 px-1 border-b-2 font-medium text-sm transition
-                    @if($activeTab === 'overview') border-blue-500 text-blue-600 @else border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 hover:border-gray-300 @endif">
+                    class="py-4 px-1 border-b-2 font-medium text-sm transition-colors
+                    @if($activeTab === 'overview') border-blue-500 text-blue-600 dark:text-blue-400 @else border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 @endif">
                 Overview
             </button>
             <button wire:click="switchTab('images')" 
-                    class="py-4 px-1 border-b-2 font-medium text-sm transition
-                    @if($activeTab === 'images') border-blue-500 text-blue-600 @else border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 hover:border-gray-300 @endif">
+                    class="py-4 px-1 border-b-2 font-medium text-sm transition-colors
+                    @if($activeTab === 'images') border-blue-500 text-blue-600 dark:text-blue-400 @else border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 @endif">
                 Images ({{ count($images) }})
             </button>
             <button wire:click="switchTab('logs')" 
-                    class="py-4 px-1 border-b-2 font-medium text-sm transition
-                    @if($activeTab === 'logs') border-blue-500 text-blue-600 @else border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 hover:border-gray-300 @endif">
+                    class="py-4 px-1 border-b-2 font-medium text-sm transition-colors
+                    @if($activeTab === 'logs') border-blue-500 text-blue-600 dark:text-blue-400 @else border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 @endif">
                 Container Logs
             </button>
         </nav>
@@ -55,33 +55,33 @@
             @if($activeTab === 'overview')
                 <div class="space-y-6">
                     <!-- Container Status Card -->
-                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
+                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-6 transition-colors">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Container Status</h3>
                         
                         @if($containerInfo)
                             <div class="space-y-3">
                                 <div class="flex justify-between items-center">
-                                    <span class="text-gray-700 font-medium">Name:</span>
-                                    <code class="bg-blue-100 text-blue-800 px-3 py-1 rounded text-sm">{{ $containerInfo['Names'] ?? $project->slug }}</code>
+                                    <span class="text-gray-700 dark:text-gray-300 font-medium">Name:</span>
+                                    <code class="bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 px-3 py-1 rounded text-sm">{{ $containerInfo['Names'] ?? $project->slug }}</code>
                                 </div>
                                 <div class="flex justify-between items-center">
-                                    <span class="text-gray-700 font-medium">Status:</span>
+                                    <span class="text-gray-700 dark:text-gray-300 font-medium">Status:</span>
                                     <span class="px-3 py-1 rounded-full text-sm font-medium
-                                        @if(isset($containerInfo['State']) && stripos($containerInfo['State'], 'running') !== false) bg-green-100 text-green-800
-                                        @else bg-gray-100 text-gray-800 @endif">
+                                        @if(isset($containerInfo['State']) && stripos($containerInfo['State'], 'running') !== false) bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
+                                        @else bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 @endif">
                                         {{ $containerInfo['State'] ?? 'Unknown' }}
                                     </span>
                                 </div>
                                 @if(isset($containerInfo['Ports']))
                                     <div class="flex justify-between items-center">
-                                        <span class="text-gray-700 font-medium">Ports:</span>
-                                        <span class="text-gray-900 dark:text-white dark:text-white">{{ $containerInfo['Ports'] }}</span>
+                                        <span class="text-gray-700 dark:text-gray-300 font-medium">Ports:</span>
+                                        <span class="text-gray-900 dark:text-white">{{ $containerInfo['Ports'] }}</span>
                                     </div>
                                 @endif
                                 @if(isset($containerInfo['Image']))
                                     <div class="flex justify-between items-center">
-                                        <span class="text-gray-700 font-medium">Image:</span>
-                                        <code class="bg-blue-100 text-blue-800 px-3 py-1 rounded text-sm">{{ $containerInfo['Image'] }}</code>
+                                        <span class="text-gray-700 dark:text-gray-300 font-medium">Image:</span>
+                                        <code class="bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 px-3 py-1 rounded text-sm">{{ $containerInfo['Image'] }}</code>
                                     </div>
                                 @endif
                             </div>
