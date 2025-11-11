@@ -141,9 +141,10 @@ class GitService
     public function getCurrentCommit(Project $project): ?array
     {
         try {
+            $server = $project->server;
             $projectPath = "/var/www/{$project->slug}";
             
-            if (!$this->isRepositoryCloned($projectPath)) {
+            if (!$this->isRepositoryCloned($projectPath, $server)) {
                 return null;
             }
 
@@ -279,22 +280,15 @@ class GitService
     }
 
     /**
-     * Check if repository is cloned
-     */
-    protected function isRepositoryCloned(string $path): bool
-    {
-        return file_exists($path . '/.git');
-    }
-
-    /**
      * Get commit difference between two commits
      */
     public function getCommitDiff(Project $project, string $fromCommit, string $toCommit): array
     {
         try {
+            $server = $project->server;
             $projectPath = "/var/www/{$project->slug}";
             
-            if (!$this->isRepositoryCloned($projectPath)) {
+            if (!$this->isRepositoryCloned($projectPath, $server)) {
                 return [
                     'success' => false,
                     'error' => 'Repository not cloned yet.',
