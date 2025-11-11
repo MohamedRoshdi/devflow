@@ -91,9 +91,10 @@ class ProjectShow extends Component
             // Dispatch deployment job
             \App\Jobs\DeployProjectJob::dispatch($deployment);
 
-            session()->flash('message', 'Deployment started successfully!');
-            
             $this->showDeployModal = false;
+            
+            // Auto-redirect to deployment page to watch progress
+            return redirect()->route('deployments.show', $deployment);
             
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to start deployment: ' . $e->getMessage());

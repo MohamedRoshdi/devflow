@@ -633,21 +633,43 @@
 
                     <div class="flex space-x-3">
                         <button wire:click="$set('showDeployModal', false)" 
-                                class="flex-1 px-6 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                                wire:loading.attr="disabled"
+                                wire:target="deploy"
+                                class="flex-1 px-6 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
                             Cancel
                         </button>
                         <button wire:click="deploy" 
                                 wire:loading.attr="disabled"
-                                class="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-bold transition-all transform hover:scale-105 shadow-lg">
-                            <span wire:loading.remove wire:target="deploy">🚀 Deploy Now</span>
+                                wire:loading.class="scale-100 cursor-wait"
+                                class="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-bold transition-all transform hover:scale-105 shadow-lg disabled:opacity-75 disabled:cursor-not-allowed">
+                            <span wire:loading.remove wire:target="deploy" class="flex items-center justify-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                                Deploy Now
+                            </span>
                             <span wire:loading wire:target="deploy" class="flex items-center justify-center">
                                 <svg class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
-                                Deploying...
+                                <span class="animate-pulse">Starting deployment...</span>
                             </span>
                         </button>
+                    </div>
+                    
+                    <!-- Loading Overlay -->
+                    <div wire:loading wire:target="deploy" class="absolute inset-0 bg-white dark:bg-gray-800 bg-opacity-95 dark:bg-opacity-95 flex items-center justify-center rounded-2xl z-10">
+                        <div class="text-center">
+                            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-4 animate-pulse">
+                                <svg class="animate-spin h-10 w-10 text-white" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </div>
+                            <p class="text-lg font-bold text-gray-900 dark:text-white mb-2">Starting Deployment...</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Please wait, you'll be redirected shortly</p>
+                        </div>
                     </div>
                 </div>
             </div>
