@@ -7,6 +7,85 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.3.0] - 2025-11-11
+
+### Added ✨
+- **🌙 Dark Theme** - Beautiful dark mode with one-click toggle
+  - Theme toggle button with sun/moon icons
+  - Persistent theme preference via localStorage
+  - Zero flash on page load (theme loads before render)
+  - All components support dark mode
+  - Smooth color transitions (200ms)
+  - PWA meta theme-color updates dynamically
+  - Works on login/register pages
+- **🐳 Project-Specific Docker Management** - Each project gets its own Docker panel
+  - Filtered Docker images by project slug
+  - Container status monitoring per project
+  - Real-time stats (CPU, Memory, Network I/O, Disk I/O)
+  - Container logs viewer (50-500 lines)
+  - Build, start, stop, restart controls
+  - Container backup functionality
+  - Image management (build, view, delete)
+- **ProjectDockerManagement** - New Livewire component for per-project Docker control
+- **Dark mode utility classes** - `.text-primary`, `.bg-primary`, `.border-primary`, etc.
+- Comprehensive dark theme documentation (DARK_THEME_GUIDE.md)
+- Complete Docker conflict fix documentation (DOCKER_CONFLICT_FIX_SUMMARY.md)
+- Project-specific Docker documentation (DOCKER_PROJECT_MANAGEMENT.md)
+
+### Changed 🔄
+- **Tailwind CSS** - Configured with class-based dark mode
+- **Navigation Bar** - Now includes theme toggle button
+- **All Buttons** - Enhanced with dark mode variants
+- **All Inputs** - Enhanced with dark mode styling
+- **All Cards** - Enhanced with dark shadows and colors
+- **All Badges** - Enhanced with dark variants
+- **CSS Components** - All updated with `dark:` prefix classes
+
+### Fixed 🐛
+- **CRITICAL:** Docker container name conflicts - Auto-resolves "name already in use" errors
+  - System now automatically stops and removes existing containers before starting
+  - Force removal with `-f` flag ensures complete cleanup
+  - No more manual Docker cleanup required
+- **Deploy Script** - Fixed "tar: file changed as we read it" warning
+  - Added `--warning=no-file-changed` flag
+  - Improved file exclusion patterns
+  - Better handling of volatile files (logs, cache)
+  - Creates required directories on server after extraction
+  - Robust error handling for tar creation
+
+### Improved 💪
+- Docker container lifecycle management
+- User experience with automatic conflict resolution
+- Theme switching experience (instant with persistence)
+- Visual consistency across light and dark themes
+- Deployment reliability (no more tar warnings)
+- Project isolation (only see your own Docker resources)
+- Documentation completeness (3 new comprehensive guides)
+
+### Technical
+- Added `darkMode: 'class'` to Tailwind configuration
+- Added dark color palette to Tailwind theme
+- Added `cleanupExistingContainer()` method to DockerService
+- Updated `startContainer()` to auto-cleanup before starting
+- Updated `stopContainer()` with force removal flag
+- Added `listProjectImages()` method for filtered image lists
+- Added `getContainerStatus()` method for project containers
+- Created ProjectDockerManagement Livewire component
+- Theme detection script in `<head>` prevents flash
+- Theme toggle JavaScript with localStorage persistence
+- Improved tar exclusions in deploy.sh
+- Added directory creation step in deployment
+
+### Documentation 📚
+- **DARK_THEME_GUIDE.md** - Complete dark theme implementation guide
+- **DOCKER_CONFLICT_FIX_SUMMARY.md** - Docker conflict resolution details
+- **DOCKER_PROJECT_MANAGEMENT.md** - Project-specific Docker features
+- Updated README.md with v2.3.0 features
+- Updated FEATURES.md with new capabilities
+- Updated USER_GUIDE.md with dark theme and Docker usage
+
+---
+
 ## [2.1.0] - 2025-11-09
 
 ### Added ✨

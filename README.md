@@ -2,7 +2,7 @@
 
 > **Modern, powerful, and easy-to-use deployment platform for managing multiple projects across multiple servers.**
 
-[![Version](https://img.shields.io/badge/version-2.0-blue.svg)](https://github.com/yourusername/devflow-pro)
+[![Version](https://img.shields.io/badge/version-2.3.0-blue.svg)](https://github.com/yourusername/devflow-pro)
 [![Laravel](https://img.shields.io/badge/Laravel-12-red.svg)](https://laravel.com)
 [![Livewire](https://img.shields.io/badge/Livewire-3-purple.svg)](https://livewire.laravel.com)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -485,14 +485,20 @@ For simple static sites, select "Static Site" framework - no build process neede
 
 See [COMPREHENSIVE_IMPROVEMENT_PLAN.md](COMPREHENSIVE_IMPROVEMENT_PLAN.md) for the complete roadmap.
 
-### Recently Added (v2.2.1) ⭐ LATEST!
-- ✅ **Project-Specific Docker Management** - Each project gets its own Docker control panel
+### Recently Added (v2.3.0) ⭐ LATEST! November 11, 2025
+- ✅ **🌙 Dark Theme** - Beautiful dark mode with one-click toggle
+  - Theme persistence via localStorage
+  - Zero flash on page load
+  - All components support dark mode
+  - PWA meta theme-color updates
+- ✅ **🐳 Project-Specific Docker Management** - Each project gets its own Docker control panel
 - ✅ **Auto Conflict Resolution** - Automatically handles container name conflicts
 - ✅ **Filtered Image Lists** - Shows only Docker images related to each project
 - ✅ **Per-Project Container Stats** - Real-time monitoring for individual projects
 - ✅ **Smart Container Cleanup** - Removes existing containers before starting new ones
 - ✅ **Project Docker Logs** - View logs for specific project containers
 - ✅ **Project Image Management** - Build, view, and delete project-specific images
+- ✅ **Deploy Script Fix** - Resolved "tar: file changed" warning permanently
 
 ### Recently Added (v2.2) ⭐
 - ✅ **Advanced Docker Management** - Complete container, volume, network, and image control
