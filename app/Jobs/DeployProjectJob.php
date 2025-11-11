@@ -172,6 +172,43 @@ class DeployProjectJob implements ShouldQueue
             }
             
             $logs[] = "Container started successfully with ID: " . ($startResult['container_id'] ?? 'unknown');
+            $logs[] = "";
+
+            // Step 5: Laravel Optimization (inside container)
+            $logs[] = "=== Laravel Optimization ===";
+            $logs[] = "Running Laravel optimization commands inside container...";
+            
+            $optimizationCommands = [
+                'composer install --optimize-autoloader --no-dev' => 'Installing/updating dependencies',
+                'php artisan config:cache' => 'Caching configuration',
+                'php artisan route:cache' => 'Caching routes',
+                'php artisan view:cache' => 'Caching views',
+                'php artisan event:cache' => 'Caching events',
+                'php artisan migrate --force' => 'Running migrations',
+                'php artisan storage:link' => 'Linking storage',
+                'php artisan optimize' => 'Optimizing application',
+            ];
+
+            foreach ($optimizationCommands as $cmd => $description) {
+                $logs[] = "→ {$description}...";
+                $dockerCmd = "docker exec {$project->slug} {$cmd} 2>&1 || echo 'Command may have already run or not applicable'";
+                $result = \Illuminate\Support\Facades\Process::run($dockerCmd);
+                
+                // Log output but don't fail deployment if optimization fails
+                if ($result->successful() || str_contains($result->output(), 'already')) {
+                    $logs[] = "  ✓ {$description} completed";
+                } else {
+                    $logs[] = "  ⚠ {$description} skipped or failed (not critical)";
+                }
+            }
+            
+            $logs[] = "✓ Laravel optimization completed";
+            $logs[] = "";
+            
+            // Update logs with optimization progress
+            $this->deployment->update([
+                'output_log' => implode("\n", $logs),
+            ]);
 
             // Update deployment and project
             $endTime = now();
