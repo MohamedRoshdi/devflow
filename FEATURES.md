@@ -294,6 +294,71 @@
   - Tag management
   - Registry health checks
 
+### Project-Specific Docker Management ⭐ LATEST! v2.2.1
+
+- **Isolated Docker Control**
+  - Each project has its own Docker management panel
+  - Filter images by project slug
+  - Show only containers related to specific project
+  - Secure isolation between projects
+  - Per-project resource monitoring
+
+- **Container Status & Stats**
+  - Real-time container status for each project
+  - CPU usage monitoring per project
+  - Memory usage tracking per project
+  - Network I/O stats per container
+  - Disk I/O monitoring per container
+  - Container uptime tracking
+
+- **Auto Conflict Resolution**
+  - Automatically detects container name conflicts
+  - Removes existing containers before starting new ones
+  - Force removal with `-f` flag
+  - Clean error handling
+  - Prevents "name already in use" errors
+  - Logs warnings for failed cleanups
+
+- **Project Image Management**
+  - Lists only images related to the project
+  - Matches by repository name
+  - Matches by image tags
+  - Build new images for the project
+  - Delete project-specific images
+  - View image details (size, tag, ID, created date)
+
+- **Project Container Logs**
+  - View logs for specific project containers
+  - Adjustable line limits (50-500 lines)
+  - Terminal-style display
+  - Real-time log streaming
+  - One-click refresh
+  - Auto-scrolling interface
+
+- **Container Operations Per Project**
+  - Start container for project
+  - Stop container for project
+  - Restart container functionality
+  - Build image from project code
+  - Export container as backup
+  - All operations scoped to specific project
+
+- **Smart Integration**
+  - Embedded in project detail pages
+  - Tabbed interface (Overview, Images, Logs)
+  - Real-time updates with Livewire
+  - Loading states and error handling
+  - Success/error notifications
+  - Responsive mobile design
+
+- **Security Features**
+  - Only project owners can access controls
+  - Server ownership validation
+  - Secure SSH command execution
+  - Isolated container namespaces
+  - Protected image operations
+  - User authentication required
+
 ### System Management ⭐ NEW!
 
 - **Docker System Info**

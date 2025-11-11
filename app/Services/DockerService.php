@@ -166,6 +166,12 @@ class DockerService
         try {
             $server = $project->server;
             
+            // First, clean up any existing container with the same name
+            $cleanupResult = $this->cleanupExistingContainer($project);
+            if (!$cleanupResult['success']) {
+                \Log::warning("Failed to cleanup existing container for {$project->slug}: " . ($cleanupResult['error'] ?? 'Unknown error'));
+            }
+            
             // Use project's assigned port, or default based on project ID
             $port = $project->port ?? (8000 + $project->id);
             
@@ -215,6 +221,40 @@ class DockerService
     }
     
     /**
+     * Clean up existing container to avoid naming conflicts
+     */
+    protected function cleanupExistingContainer(Project $project): array
+    {
+        try {
+            $server = $project->server;
+            
+            // Stop and remove any existing container with this name
+            $cleanupCommand = sprintf(
+                "docker stop %s 2>/dev/null || true && docker rm -f %s 2>/dev/null || true",
+                $project->slug,
+                $project->slug
+            );
+            
+            $command = $this->isLocalhost($server)
+                ? $cleanupCommand
+                : $this->buildSSHCommand($server, $cleanupCommand);
+            
+            $process = Process::fromShellCommandline($command);
+            $process->run();
+
+            return [
+                'success' => true,
+                'output' => $process->getOutput(),
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+    
+    /**
      * Detect the internal port used by the container
      */
     protected function detectContainerPort(Project $project): int
@@ -240,9 +280,10 @@ class DockerService
         try {
             $server = $project->server;
             
-            // Stop and remove the container to avoid "name already in use" errors
+            // Stop and force remove the container to avoid "name already in use" errors
+            // Using -f flag to force removal even if container is running
             $stopAndRemoveCommand = sprintf(
-                "docker stop %s 2>/dev/null || true && docker rm %s 2>/dev/null || true",
+                "docker stop %s 2>/dev/null || true && docker rm -f %s 2>/dev/null || true",
                 $project->slug,
                 $project->slug
             );

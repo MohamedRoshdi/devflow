@@ -1,6 +1,6 @@
 # DevFlow Pro - Complete User Guide
 
-**Version 2.0** | Last Updated: November 9, 2025
+**Version 2.2.1** | Last Updated: November 11, 2025
 
 ---
 
@@ -12,8 +12,9 @@
 4. [Editing Projects](#editing-projects)
 5. [Deploying Applications](#deploying-applications)
 6. [Managing Containers](#managing-containers)
-7. [Viewing Logs](#viewing-logs)
-8. [Troubleshooting](#troubleshooting)
+7. [Project Docker Management](#project-docker-management--new-v221) ⭐ NEW!
+8. [Viewing Logs](#viewing-logs)
+9. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -371,6 +372,251 @@ Running → Stopped → Redeployed → Running
   Stop     Container   New Build    New
  Button     Stopped      Image    Container
 ```
+
+---
+
+## 🐳 Project Docker Management ⭐ NEW! v2.2.1
+
+### Overview
+
+Each project now has its own dedicated Docker management panel showing **only** the Docker resources related to that specific project. No more confusion with other projects' containers and images!
+
+### Accessing Docker Management
+
+**Location:**
+1. Navigate to your project page
+2. Scroll down past the project stats
+3. Find the **"🐳 Docker Management"** section
+4. Three tabs available: **Overview**, **Images**, **Logs**
+
+### 📊 Overview Tab
+
+**What you see:**
+- **Container Status Card**
+  - Container name
+  - Current state (Running/Stopped/Not Found)
+  - Exposed ports
+  - Image being used
+  
+- **Real-Time Stats** (when running)
+  - 🖥️ CPU Usage percentage
+  - 💾 Memory Usage percentage
+  - 🌐 Network I/O (bytes in/out)
+  - 💿 Disk I/O (read/write)
+
+**Container Actions:**
+
+**If Container is Running:**
+- **⏹️ Stop Container** - Stops and removes container
+- **🔄 Restart Container** - Restarts the container
+- **💾 Backup Container** - Creates timestamped backup image
+
+**If Container is Stopped/Not Found:**
+- **▶️ Start Container** - Starts the container
+- **🔨 Build Image & Start** - Builds from code then starts
+
+**Quick Stats Cards:**
+- Docker Images count (for this project)
+- Project Status indicator
+- Server information
+
+### 🖼️ Images Tab
+
+**What you see:**
+- Table of all Docker images related to this project
+- Only shows images matching your project slug
+- Filtered from all server images
+
+**Image Information:**
+- **Repository** - Image name
+- **Tag** - Version tag (latest, v1.0, etc.)
+- **Image ID** - First 12 characters
+- **Created** - How long ago (e.g., "2 days ago")
+- **Size** - Disk space used
+
+**Actions:**
+- **🔨 Build New Image** - Creates fresh image from code
+- **🗑️ Delete** - Remove specific image (with confirmation)
+
+**Use Cases:**
+- **Build New Image:** After code changes
+- **Delete Old Images:** Clean up unused versions to save disk space
+- **Check Image Size:** Monitor disk usage
+
+### 📝 Logs Tab
+
+**What you see:**
+- Real-time container logs in terminal style
+- Green text on dark background (classic terminal look)
+- Automatically scrollable
+
+**Log Controls:**
+- **Select Line Count:** Dropdown to choose 50, 100, 200, or 500 lines
+- **🔄 Refresh Logs:** Update to latest logs
+- Logs auto-scroll to show recent entries
+
+**When to use:**
+- **Debugging:** Check application errors
+- **Monitoring:** Watch application behavior
+- **Troubleshooting:** Identify issues in real-time
+
+**Example Log View:**
+```
+[2025-11-11 13:45:23] Starting application...
+[2025-11-11 13:45:24] Database connected successfully
+[2025-11-11 13:45:25] Server listening on port 3000
+[2025-11-11 13:45:30] GET /api/users - 200 OK
+```
+
+### 🔧 Common Tasks
+
+#### Task 1: Start Your Project Container
+
+**Steps:**
+1. Go to your project page
+2. Find Docker Management section
+3. Click **Overview** tab
+4. If no container exists, click **"▶️ Start Container"**
+5. Wait for confirmation message
+6. Check container status shows "Running"
+
+**Troubleshooting:**
+- If you see "name already in use" error → Don't worry! The system automatically handles this now
+- System will stop and remove old container automatically
+- Try clicking Start again
+
+#### Task 2: View Container Logs for Debugging
+
+**Steps:**
+1. Open Docker Management section
+2. Click **Logs** tab
+3. Select number of lines (start with 100)
+4. Click **"🔄 Refresh Logs"** for latest
+5. Scroll through logs to find errors
+6. Increase line count if needed
+
+**Tips:**
+- Look for red text or "ERROR" keywords
+- Check timestamps to find recent issues
+- Use browser's Ctrl+F to search logs
+
+#### Task 3: Clean Up Old Docker Images
+
+**Steps:**
+1. Open Docker Management section
+2. Click **Images** tab
+3. Identify old/unused images
+4. Click **"🗑️ Delete"** on old image
+5. Confirm deletion
+6. Check size freed up
+
+**When to do this:**
+- After multiple deployments
+- Running low on disk space
+- Having images from old versions
+
+#### Task 4: Backup Your Container
+
+**Steps:**
+1. Make sure container is running
+2. Go to **Overview** tab
+3. Click **"💾 Backup Container"**
+4. Wait for confirmation
+5. New backup image created
+6. Check **Images** tab for backup
+
+**Backup Name Format:**
+```
+project-slug-backup-2025-11-11-13-45-30
+```
+
+### 🛡️ Security Features
+
+**Access Control:**
+- ✅ Only project owners can access Docker controls
+- ✅ User authentication required
+- ✅ Server ownership validated
+- ✅ All operations logged
+
+**Isolation:**
+- ✅ Each project sees only its own images
+- ✅ Containers filtered by project slug
+- ✅ No cross-project interference
+- ✅ Secure command execution
+
+### 🚨 Conflict Resolution (Automatic)
+
+**Problem:** Container name already in use
+**Old Behavior:** Error message, manual cleanup needed
+**New Behavior:** ⭐ Automatic resolution!
+
+**How it works:**
+1. You click "Start Container"
+2. System checks for existing container with same name
+3. Automatically stops old container
+4. Automatically removes old container with force flag
+5. Starts new container
+6. Success!
+
+**Technical Details:**
+```bash
+# What happens behind the scenes:
+docker stop project-slug 2>/dev/null || true
+docker rm -f project-slug 2>/dev/null || true
+docker run -d --name project-slug -p 8001:80 project-slug:latest
+```
+
+### 💡 Pro Tips
+
+**Tip 1: Monitor Resource Usage**
+- Keep Overview tab open during high traffic
+- Watch CPU/Memory stats
+- Restart if resources maxed out
+
+**Tip 2: Regular Image Cleanup**
+- Delete old images weekly
+- Keep only last 2-3 versions
+- Saves significant disk space
+
+**Tip 3: Check Logs After Deployment**
+- Always check logs after deploying
+- Verify application started correctly
+- Catch errors early
+
+**Tip 4: Use Backup Before Major Updates**
+- Backup container before big changes
+- Easy rollback if something breaks
+- Backup includes all container data
+
+### 🔍 Troubleshooting Docker Issues
+
+**Issue: Container won't start**
+**Solution:**
+1. Check Images tab - is image present?
+2. If no image, click "Build Image"
+3. Check server has enough resources
+4. View logs for error messages
+
+**Issue: Can't see logs**
+**Solution:**
+1. Ensure container is running
+2. Click "Refresh Logs"
+3. Try lower line count (50)
+4. Check server connectivity
+
+**Issue: Image build fails**
+**Solution:**
+1. Check repository is accessible
+2. Verify Dockerfile exists or can be generated
+3. Check server has Docker installed
+4. Review deployment logs
+
+**Issue: Stats not showing**
+**Solution:**
+1. Container must be running
+2. Refresh the page
+3. Check server Docker version (needs 20.10+)
+4. Verify user permissions
 
 ---
 

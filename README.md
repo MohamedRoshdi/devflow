@@ -49,6 +49,9 @@ DevFlow Pro is a **complete deployment management system** that makes it easy to
 ### 🐳 Advanced Docker Management ⭐ NEW v2.2!
 - **Docker Detection** - Auto-detect Docker installation with one-click button
 - **Docker Dashboard** - Beautiful UI for complete Docker control
+- **Project-Specific Docker** - Each project shows only its related Docker images ⭐ LATEST!
+- **Container Status** - Real-time container monitoring per project ⭐ LATEST!
+- **Auto Conflict Resolution** - Automatically handles container name conflicts ⭐ LATEST!
 - **Resource Monitoring** - Real-time CPU, Memory, Network, Disk I/O stats
 - **Resource Limits** - Set memory limits and CPU shares per container
 - **Volume Management** - Create, delete, inspect, and manage Docker volumes
@@ -59,6 +62,7 @@ DevFlow Pro is a **complete deployment management system** that makes it easy to
 - **Backup & Restore** - Export/import containers, disaster recovery
 - **Registry Integration** - Push/pull from Docker Hub, GitHub, GitLab, AWS ECR
 - **System Cleanup** - Automated cleanup of unused resources, disk space recovery
+- **Smart Container Cleanup** - Automatically removes existing containers before restart ⭐ LATEST!
 
 ### 🔄 Automated Deployments
 - **GitHub Integration** - Clone from public/private repositories
@@ -143,7 +147,8 @@ php artisan serve
 - [🔧 Installation Guide](docs/INSTALLATION.md) - Detailed setup
 - [⚙️ Configuration](docs/CONFIGURATION.md) - Environment variables & settings
 - [🐳 Docker Setup](docs/DOCKER_SETUP.md) - Docker configuration
-- [🐳 Docker Management](DOCKER_MANAGEMENT.md) - Advanced Docker features ⭐ NEW!
+- [🐳 Docker Management](DOCKER_MANAGEMENT.md) - Advanced Docker features (Server-wide)
+- [🐳 Project Docker Management](DOCKER_PROJECT_MANAGEMENT.md) - Per-project Docker control ⭐ LATEST!
 - [🔍 Docker Detection Guide](DOCKER_DETECTION_GUIDE.md) - Dockerfile detection explained
 - [🔐 SSH Setup](docs/SSH_SETUP.md) - SSH key configuration for GitHub
 
@@ -269,6 +274,34 @@ Project Page → Features
 - 📋 View Logs - Real-time log streaming
 - 📊 Commit History - See what's deployed
 - 🚀 Deploy Latest - Quick update when behind
+```
+
+### 5. Docker Management (Per Project) ⭐ NEW!
+```
+Project Page → Docker Management Section
+- 📊 Overview Tab
+  • View container status and real-time stats
+  • CPU, Memory, Network, Disk I/O monitoring
+  • Start/Stop/Restart container controls
+  • Create container backups
+
+- 🖼️ Images Tab
+  • See only images related to this project
+  • Build new Docker images
+  • Delete unused images
+  • View image details (size, tags, creation date)
+
+- 📝 Logs Tab
+  • Real-time container logs
+  • Adjustable line limits (50-500)
+  • Terminal-style display
+  • One-click refresh
+
+✨ Features:
+- Auto-resolves container name conflicts
+- Filters images by project slug
+- Isolated project resources
+- Secure - only shows your project's containers
 ```
 
 ---
@@ -451,6 +484,15 @@ For simple static sites, select "Static Site" framework - no build process neede
 ## 📈 Roadmap
 
 See [COMPREHENSIVE_IMPROVEMENT_PLAN.md](COMPREHENSIVE_IMPROVEMENT_PLAN.md) for the complete roadmap.
+
+### Recently Added (v2.2.1) ⭐ LATEST!
+- ✅ **Project-Specific Docker Management** - Each project gets its own Docker control panel
+- ✅ **Auto Conflict Resolution** - Automatically handles container name conflicts
+- ✅ **Filtered Image Lists** - Shows only Docker images related to each project
+- ✅ **Per-Project Container Stats** - Real-time monitoring for individual projects
+- ✅ **Smart Container Cleanup** - Removes existing containers before starting new ones
+- ✅ **Project Docker Logs** - View logs for specific project containers
+- ✅ **Project Image Management** - Build, view, and delete project-specific images
 
 ### Recently Added (v2.2) ⭐
 - ✅ **Advanced Docker Management** - Complete container, volume, network, and image control
