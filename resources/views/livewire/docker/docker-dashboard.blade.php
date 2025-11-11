@@ -6,10 +6,22 @@
             <p class="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Server: {{ $server->name }}</p>
         </div>
         <button wire:click="loadDockerInfo" 
-                class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-                wire:loading.attr="disabled">
-            <span wire:loading.remove>🔄 Refresh</span>
-            <span wire:loading>Loading...</span>
+                class="px-4 py-2 bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-lg transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                wire:loading.attr="disabled"
+                wire:target="loadDockerInfo">
+            <span wire:loading.remove wire:target="loadDockerInfo" class="flex items-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span>Refresh</span>
+            </span>
+            <span wire:loading wire:target="loadDockerInfo" class="flex items-center space-x-2">
+                <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Refreshing...</span>
+            </span>
         </button>
     </div>
 
@@ -51,6 +63,19 @@
                 🧹 Cleanup
             </button>
         </nav>
+    </div>
+
+    {{-- Loading Overlay for Content --}}
+    <div wire:loading wire:target="loadDockerInfo,switchTab" class="relative">
+        <div class="absolute inset-0 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm z-40 rounded-lg flex items-center justify-center">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 flex items-center space-x-3">
+                <svg class="animate-spin h-6 w-6 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="text-gray-700 dark:text-gray-300 font-medium">Loading...</span>
+            </div>
+        </div>
     </div>
 
     {{-- Overview Tab --}}

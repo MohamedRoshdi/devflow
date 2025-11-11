@@ -1,12 +1,34 @@
+<style>
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+</style>
+
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
     <div class="p-6 border-b border-gray-200 dark:border-gray-700 dark:border-gray-700">
         <div class="flex justify-between items-center">
             <h2 class="text-xl font-bold text-gray-900 dark:text-white">🐳 Docker Management</h2>
             <button wire:click="loadDockerInfo" 
-                    class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
-                    wire:loading.attr="disabled">
-                <span wire:loading.remove wire:target="loadDockerInfo">🔄 Refresh</span>
-                <span wire:loading wire:target="loadDockerInfo">Loading...</span>
+                    class="px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                    wire:loading.attr="disabled"
+                    wire:target="loadDockerInfo">
+                <span wire:loading.remove wire:target="loadDockerInfo" class="flex items-center space-x-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span>Refresh</span>
+                </span>
+                <span wire:loading wire:target="loadDockerInfo" class="flex items-center space-x-1">
+                    <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Loading...</span>
+                </span>
             </button>
         </div>
     </div>
@@ -46,14 +68,68 @@
 
     <div class="p-6">
         @if($loading)
-            <div class="flex items-center justify-center py-12">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                <span class="ml-3 text-gray-600 dark:text-gray-400 dark:text-gray-400">Loading...</span>
+            <!-- Beautiful Loading Skeleton -->
+            <div class="space-y-6 animate-pulse">
+                <!-- Container Status Skeleton -->
+                <div class="bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-lg p-6 h-64">
+                    <div class="h-6 bg-gray-300 dark:bg-gray-600 rounded w-48 mb-6"></div>
+                    <div class="space-y-4">
+                        <div class="flex justify-between">
+                            <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-24"></div>
+                            <div class="h-6 bg-gray-300 dark:bg-gray-600 rounded w-32"></div>
+                        </div>
+                        <div class="flex justify-between">
+                            <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-24"></div>
+                            <div class="h-6 bg-gray-300 dark:bg-gray-600 rounded w-20"></div>
+                        </div>
+                        <div class="flex justify-between">
+                            <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-24"></div>
+                            <div class="h-6 bg-gray-300 dark:bg-gray-600 rounded w-40"></div>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex gap-3">
+                        <div class="h-10 bg-gray-300 dark:bg-gray-600 rounded w-32"></div>
+                        <div class="h-10 bg-gray-300 dark:bg-gray-600 rounded w-32"></div>
+                        <div class="h-10 bg-gray-300 dark:bg-gray-600 rounded w-32"></div>
+                    </div>
+                </div>
+
+                <!-- Resource Stats Skeleton -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    @for($i = 0; $i < 4; $i++)
+                        <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 h-24">
+                            <div class="h-3 bg-gray-300 dark:bg-gray-600 rounded w-20 mb-2"></div>
+                            <div class="h-8 bg-gray-300 dark:bg-gray-600 rounded w-16"></div>
+                        </div>
+                    @endfor
+                </div>
+
+                <!-- Quick Stats Skeleton -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    @for($i = 0; $i < 3; $i++)
+                        <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 h-28">
+                            <div class="h-3 bg-gray-300 dark:bg-gray-600 rounded w-24 mb-2"></div>
+                            <div class="h-8 bg-gray-300 dark:bg-gray-600 rounded w-12 mb-2"></div>
+                            <div class="h-3 bg-gray-300 dark:bg-gray-600 rounded w-32"></div>
+                        </div>
+                    @endfor
+                </div>
+
+                <!-- Loading Text with Icon -->
+                <div class="flex items-center justify-center py-8">
+                    <div class="flex items-center space-x-3 px-6 py-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                        <svg class="animate-spin h-5 w-5 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span class="text-sm font-medium text-blue-900 dark:text-blue-300">Loading Docker information...</span>
+                    </div>
+                </div>
             </div>
         @else
             <!-- Overview Tab -->
             @if($activeTab === 'overview')
-                <div class="space-y-6">
+                <div class="space-y-6 animate-fadeIn">
                     <!-- Container Status Card -->
                     <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-6 transition-colors">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Container Status</h3>
@@ -185,9 +261,9 @@
 
             <!-- Images Tab -->
             @if($activeTab === 'images')
-                <div>
+                <div class="animate-fadeIn">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white dark:text-white">Docker Images for {{ $project->name }}</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Docker Images for {{ $project->name }}</h3>
                         <button wire:click="buildImage" 
                                 class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors">
                             🔨 Build New Image
@@ -253,7 +329,7 @@
 
             <!-- Logs Tab -->
             @if($activeTab === 'logs')
-                <div>
+                <div class="animate-fadeIn">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white dark:text-white">Container Logs</h3>
                         <div class="flex items-center space-x-3">
