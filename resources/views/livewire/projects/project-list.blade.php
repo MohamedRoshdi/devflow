@@ -36,7 +36,8 @@
     @if($projects->count() > 0)
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             @foreach($projects as $project)
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 hover:shadow-lg dark:hover:shadow-gray-900 transition-all">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 hover:shadow-xl dark:hover:shadow-gray-900 hover:scale-105 transition-all duration-200 cursor-pointer relative group" 
+                     onclick="window.location='{{ route('projects.show', $project) }}'">
                     <div class="p-6">
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex-1">
@@ -87,6 +88,7 @@
                             <div class="mb-3 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg">
                                 <p class="text-xs text-green-700 dark:text-green-400 font-medium mb-1">🚀 Live at:</p>
                                 <a href="{{ $url }}" target="_blank" 
+                                   onclick="event.stopPropagation()"
                                    class="text-sm text-green-800 dark:text-green-300 hover:text-green-900 dark:hover:text-green-200 font-mono break-all flex items-center transition-colors">
                                     {{ $url }}
                                     <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,7 +102,7 @@
                             <span class="text-xs text-gray-500 dark:text-gray-400">
                                 {{ $project->last_deployed_at ? $project->last_deployed_at->diffForHumans() : 'Never deployed' }}
                             </span>
-                            <div class="flex space-x-2">
+                            <div class="flex space-x-2" onclick="event.stopPropagation()">
                                 <a href="{{ route('projects.show', $project) }}" 
                                    class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium transition-colors">
                                     View

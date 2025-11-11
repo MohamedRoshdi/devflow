@@ -118,7 +118,8 @@
             </div>
             <div class="p-6">
                 @forelse($projects as $project)
-                    <div class="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                    <div class="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer rounded-lg px-3 -mx-3"
+                         onclick="window.location='{{ route('projects.show', $project) }}'">
                         <div class="flex-1">
                             <a href="{{ route('projects.show', $project) }}" class="font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                                 {{ $project->name }}
@@ -131,6 +132,7 @@
                                     $url = 'http://' . $project->server->ip_address . ':' . $project->port;
                                 @endphp
                                 <a href="{{ $url }}" target="_blank" 
+                                   onclick="event.stopPropagation()"
                                    class="inline-flex items-center text-xs text-green-700 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300 mt-1 font-mono transition-colors">
                                     🚀 {{ $url }}
                                     <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
