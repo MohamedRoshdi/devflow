@@ -118,6 +118,25 @@ class UserList extends Component
         session()->flash('message', 'User deleted successfully!');
     }
 
+    public function clearFilters()
+    {
+        $this->search = '';
+        $this->roleFilter = '';
+        $this->resetPage();
+    }
+
+    public function closeCreateModal()
+    {
+        $this->showCreateModal = false;
+        $this->resetForm();
+    }
+
+    public function closeEditModal()
+    {
+        $this->showEditModal = false;
+        $this->resetForm();
+    }
+
     public function resetForm()
     {
         $this->name = '';

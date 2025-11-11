@@ -133,7 +133,7 @@
                                 <div class="text-gray-400 dark:text-gray-500 text-5xl mb-3">👥</div>
                                 <p class="text-gray-500 dark:text-gray-400">No users found</p>
                                 @if($search || $roleFilter)
-                                    <button wire:click="$set('search', ''); $set('roleFilter', '')" 
+                                    <button wire:click="clearFilters" 
                                             class="mt-4 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm transition-colors">
                                         Clear filters
                                     </button>
@@ -153,7 +153,7 @@
 
     <!-- Create User Modal -->
     @if($showCreateModal)
-        <div class="fixed inset-0 bg-gray-600 dark:bg-gray-900 bg-opacity-50 dark:bg-opacity-75 overflow-y-auto h-full w-full z-50" wire:click="showCreateModal = false">
+        <div class="fixed inset-0 bg-gray-600 dark:bg-gray-900 bg-opacity-50 dark:bg-opacity-75 overflow-y-auto h-full w-full z-50" wire:click="closeCreateModal">
             <div class="relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 w-full max-w-2xl shadow-lg rounded-lg bg-white dark:bg-gray-800 transition-colors" wire:click.stop>
                 <div class="p-6">
                     <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-6">Create New User</h3>
@@ -200,7 +200,7 @@
                         </div>
 
                         <div class="flex justify-end space-x-3 mt-6">
-                            <button type="button" wire:click="showCreateModal = false"
+                            <button type="button" wire:click="closeCreateModal"
                                     class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                 Cancel
                             </button>
@@ -217,7 +217,7 @@
 
     <!-- Edit User Modal -->
     @if($showEditModal)
-        <div class="fixed inset-0 bg-gray-600 dark:bg-gray-900 bg-opacity-50 dark:bg-opacity-75 overflow-y-auto h-full w-full z-50" wire:click="showEditModal = false">
+        <div class="fixed inset-0 bg-gray-600 dark:bg-gray-900 bg-opacity-50 dark:bg-opacity-75 overflow-y-auto h-full w-full z-50" wire:click="closeEditModal">
             <div class="relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 w-full max-w-2xl shadow-lg rounded-lg bg-white dark:bg-gray-800 transition-colors" wire:click.stop>
                 <div class="p-6">
                     <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-6">Edit User</h3>
@@ -264,7 +264,7 @@
                         </div>
 
                         <div class="flex justify-end space-x-3 mt-6">
-                            <button type="button" wire:click="showEditModal = false"
+                            <button type="button" wire:click="closeEditModal"
                                     class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                 Cancel
                             </button>
