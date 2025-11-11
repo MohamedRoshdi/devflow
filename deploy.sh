@@ -120,7 +120,7 @@ php artisan migrate --force
 
 # Publish Livewire assets
 echo "📦 Publishing Livewire assets..."
-php artisan livewire:publish --assets --force
+php artisan livewire:publish --assets
 
 # Optimize Laravel
 echo "⚡ Optimizing Laravel..."
