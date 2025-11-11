@@ -235,6 +235,10 @@ class DockerService
         $appEnv = $project->environment ?? 'production';
         $envFlags .= " -e APP_ENV={$appEnv}";
         
+        // Add APP_DEBUG based on environment
+        $appDebug = in_array($appEnv, ['local', 'development']) ? 'true' : 'false';
+        $envFlags .= " -e APP_DEBUG={$appDebug}";
+        
         // Add custom environment variables
         if ($project->env_variables && is_array($project->env_variables)) {
             foreach ($project->env_variables as $key => $value) {
