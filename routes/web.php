@@ -39,6 +39,9 @@ Route::middleware('auth')->group(function () {
     // Analytics
     Route::get('/analytics', AnalyticsDashboard::class)->name('analytics');
 
+    // Users Management
+    Route::get('/users', \App\Livewire\Users\UserList::class)->name('users.index');
+
     // Docker Management
     Route::get('/servers/{server}/docker', DockerDashboard::class)->name('docker.dashboard');
 });

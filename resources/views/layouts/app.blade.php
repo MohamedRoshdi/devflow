@@ -56,6 +56,10 @@
                            class="{{ request()->routeIs('analytics') ? 'border-blue-500 text-gray-900 dark:text-white' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500 transition-colors">
                             Analytics
                         </a>
+                        <a href="{{ route('users.index') }}" 
+                           class="{{ request()->routeIs('users.*') ? 'border-blue-500 text-gray-900 dark:text-white' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500 transition-colors">
+                            Users
+                        </a>
                     </div>
                 </div>
                 <div class="flex items-center">
