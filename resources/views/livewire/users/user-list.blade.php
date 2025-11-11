@@ -154,7 +154,7 @@
     <!-- Create User Modal -->
     @if($showCreateModal)
         <div class="fixed inset-0 bg-gray-600 dark:bg-gray-900 bg-opacity-50 dark:bg-opacity-75 overflow-y-auto h-full w-full z-50" wire:click="closeCreateModal">
-            <div class="relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 w-full max-w-2xl shadow-lg rounded-lg bg-white dark:bg-gray-800 transition-colors" wire:click.stop>
+            <div class="relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 w-full max-w-2xl shadow-lg rounded-lg bg-white dark:bg-gray-800 transition-colors" @click.stop>
                 <div class="p-6">
                     <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-6">Create New User</h3>
                     
@@ -218,7 +218,7 @@
     <!-- Edit User Modal -->
     @if($showEditModal)
         <div class="fixed inset-0 bg-gray-600 dark:bg-gray-900 bg-opacity-50 dark:bg-opacity-75 overflow-y-auto h-full w-full z-50" wire:click="closeEditModal">
-            <div class="relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 w-full max-w-2xl shadow-lg rounded-lg bg-white dark:bg-gray-800 transition-colors" wire:click.stop>
+            <div class="relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 w-full max-w-2xl shadow-lg rounded-lg bg-white dark:bg-gray-800 transition-colors" @click.stop>
                 <div class="p-6">
                     <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-6">Edit User</h3>
                     

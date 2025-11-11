@@ -155,7 +155,7 @@
     <!-- Add/Edit Environment Variable Modal -->
     @if($showEnvModal)
         <div class="fixed inset-0 bg-gray-600 dark:bg-gray-900 bg-opacity-50 dark:bg-opacity-75 overflow-y-auto h-full w-full z-50" wire:click="closeEnvModal">
-            <div class="relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 w-full max-w-2xl shadow-lg rounded-lg bg-white dark:bg-gray-800 transition-colors" wire:click.stop>
+            <div class="relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 w-full max-w-2xl shadow-lg rounded-lg bg-white dark:bg-gray-800 transition-colors" @click.stop>
                 <div class="p-6">
                     <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-6">
                         {{ $editingEnvKey ? 'Edit' : 'Add' }} Environment Variable

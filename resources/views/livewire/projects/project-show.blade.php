@@ -608,7 +608,7 @@
         <div class="fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4" 
              wire:click="$set('showDeployModal', false)">
             <div class="relative mx-auto border border-gray-200 dark:border-gray-700 w-full max-w-lg shadow-2xl rounded-2xl bg-white dark:bg-gray-800 transform transition-all" 
-                 wire:click.stop>
+                 @click.stop>
                 <div class="p-8">
                     <div class="flex items-center justify-center w-16 h-16 mx-auto bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-6">
                         <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
