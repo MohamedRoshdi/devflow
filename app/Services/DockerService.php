@@ -841,6 +841,94 @@ DOCKERFILE;
     }
 
     /**
+     * List Docker images related to a specific project
+     */
+    public function listProjectImages(Project $project): array
+    {
+        try {
+            $server = $project->server;
+            $imagesCommand = "docker images --format '{{json .}}'";
+            
+            $command = $this->isLocalhost($server)
+                ? $imagesCommand
+                : $this->buildSSHCommand($server, $imagesCommand);
+            
+            $process = Process::fromShellCommandline($command);
+            $process->run();
+
+            if ($process->isSuccessful()) {
+                $output = $process->getOutput();
+                $lines = array_filter(explode("\n", $output));
+                $allImages = array_map(fn($line) => json_decode($line, true), $lines);
+                
+                // Filter images related to this project (by slug or tag)
+                $projectImages = array_filter($allImages, function($image) use ($project) {
+                    $repository = $image['Repository'] ?? '';
+                    $tag = $image['Tag'] ?? '';
+                    
+                    // Match images that contain the project slug in the repository name or tag
+                    return stripos($repository, $project->slug) !== false || 
+                           stripos($tag, $project->slug) !== false ||
+                           $repository === $project->slug;
+                });
+                
+                return [
+                    'success' => true,
+                    'images' => array_values($projectImages), // Re-index array
+                ];
+            }
+
+            return ['success' => false, 'error' => $process->getErrorOutput()];
+        } catch (\Exception $e) {
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * Get container status for a project
+     */
+    public function getContainerStatus(Project $project): array
+    {
+        try {
+            $server = $project->server;
+            
+            $statusCommand = sprintf(
+                "docker ps -a --filter name=%s --format '{{json .}}'",
+                $project->slug
+            );
+            
+            $command = $this->isLocalhost($server)
+                ? $statusCommand
+                : $this->buildSSHCommand($server, $statusCommand);
+            
+            $process = Process::fromShellCommandline($command);
+            $process->run();
+
+            if ($process->isSuccessful()) {
+                $output = trim($process->getOutput());
+                if (!empty($output)) {
+                    $container = json_decode($output, true);
+                    return [
+                        'success' => true,
+                        'container' => $container,
+                        'exists' => true,
+                    ];
+                }
+                
+                return [
+                    'success' => true,
+                    'container' => null,
+                    'exists' => false,
+                ];
+            }
+
+            return ['success' => false, 'error' => $process->getErrorOutput()];
+        } catch (\Exception $e) {
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+    }
+
+    /**
      * Delete a Docker image
      */
     public function deleteImage(Server $server, string $imageId): array

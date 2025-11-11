@@ -119,6 +119,11 @@
         </div>
     </div>
 
+    <!-- Docker Management Section (Full Width) -->
+    <div class="mb-8">
+        @livewire('projects.project-docker-management', ['project' => $project])
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Project Details -->
         <div class="bg-white rounded-lg shadow">
