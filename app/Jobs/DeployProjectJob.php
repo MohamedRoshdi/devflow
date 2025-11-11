@@ -42,29 +42,49 @@ class DeployProjectJob implements ShouldQueue
             $logs = [];
             $projectPath = "/var/www/{$project->slug}";
 
-            // Step 1: Clone repository from GitHub
-            $logs[] = "=== Cloning Repository ===";
+            // Step 1: Setup Git repository
+            $logs[] = "=== Setting Up Repository ===";
             $logs[] = "Repository: {$project->repository_url}";
             $logs[] = "Branch: {$project->branch}";
             $logs[] = "Path: {$projectPath}";
             
-            // Remove old directory if exists
-            if (file_exists($projectPath)) {
-                $logs[] = "Removing old project directory...";
-                \Illuminate\Support\Facades\Process::run("rm -rf {$projectPath}");
+            // Check if repository already exists
+            if (file_exists("{$projectPath}/.git")) {
+                $logs[] = "Repository already exists, pulling latest changes...";
+                
+                // Configure safe directory
+                \Illuminate\Support\Facades\Process::run("git config --global --add safe.directory {$projectPath}");
+                
+                // Reset any local changes and pull latest
+                $pullResult = \Illuminate\Support\Facades\Process::run(
+                    "cd {$projectPath} && git fetch origin {$project->branch} && git reset --hard origin/{$project->branch}"
+                );
+                
+                if (!$pullResult->successful()) {
+                    throw new \Exception('Git pull failed: ' . $pullResult->errorOutput());
+                }
+                
+                $logs[] = "✓ Repository updated successfully";
+            } else {
+                // Repository doesn't exist, clone it
+                $logs[] = "Cloning repository...";
+                
+                // Remove directory if it exists but isn't a git repo
+                if (file_exists($projectPath)) {
+                    $logs[] = "Removing non-git directory...";
+                    \Illuminate\Support\Facades\Process::run("rm -rf {$projectPath}");
+                }
+                
+                $cloneResult = \Illuminate\Support\Facades\Process::run(
+                    "git clone --branch {$project->branch} {$project->repository_url} {$projectPath}"
+                );
+                
+                if (!$cloneResult->successful()) {
+                    throw new \Exception('Git clone failed: ' . $cloneResult->errorOutput());
+                }
+                
+                $logs[] = "✓ Repository cloned successfully";
             }
-            
-            // Clone repository
-            $logs[] = "Cloning repository...";
-            $cloneResult = \Illuminate\Support\Facades\Process::run(
-                "git clone --branch {$project->branch} {$project->repository_url} {$projectPath}"
-            );
-            
-            if (!$cloneResult->successful()) {
-                throw new \Exception('Git clone failed: ' . $cloneResult->errorOutput());
-            }
-            
-            $logs[] = "✓ Repository cloned successfully";
             $logs[] = "";
 
             // Get current commit information
