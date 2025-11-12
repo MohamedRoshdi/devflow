@@ -21,6 +21,7 @@ class ProjectDockerManagement extends Component
     public $error = null;
     public $showLogs = false;
     public $logLines = 100;
+    public bool $initialized = false;
 
     public function mount(Project $project)
     {
@@ -30,7 +31,16 @@ class ProjectDockerManagement extends Component
         }
 
         $this->projectId = $project->id;
+    }
+
+    public function initDocker(): void
+    {
+        if ($this->initialized) {
+            return;
+        }
+
         $this->loadDockerInfo();
+        $this->initialized = true;
     }
 
     protected function getProject()
@@ -75,6 +85,7 @@ class ProjectDockerManagement extends Component
         }
 
         $this->loading = false;
+        $this->initialized = true;
     }
 
     public function switchTab($tab)

@@ -76,23 +76,23 @@ class DeployProjectJob implements ShouldQueue
                 \Illuminate\Support\Facades\Process::run("git config --global safe.directory '*' 2>/dev/null || true");
                 
                 // Remove directory if it exists but isn't a git repo
-                if (file_exists($projectPath)) {
+            if (file_exists($projectPath)) {
                     $logs[] = "Removing non-git directory...";
-                    \Illuminate\Support\Facades\Process::run("rm -rf {$projectPath}");
-                }
-                
-                $cloneResult = \Illuminate\Support\Facades\Process::run(
-                    "git clone --branch {$project->branch} {$project->repository_url} {$projectPath}"
-                );
-                
-                if (!$cloneResult->successful()) {
-                    throw new \Exception('Git clone failed: ' . $cloneResult->errorOutput());
-                }
+                \Illuminate\Support\Facades\Process::run("rm -rf {$projectPath}");
+            }
+            
+            $cloneResult = \Illuminate\Support\Facades\Process::run(
+                "git clone --branch {$project->branch} {$project->repository_url} {$projectPath}"
+            );
+            
+            if (!$cloneResult->successful()) {
+                throw new \Exception('Git clone failed: ' . $cloneResult->errorOutput());
+            }
                 
                 // Ensure correct ownership
                 \Illuminate\Support\Facades\Process::run("chown -R www-data:www-data {$projectPath}");
-                
-                $logs[] = "✓ Repository cloned successfully";
+            
+            $logs[] = "✓ Repository cloned successfully";
             }
             $logs[] = "";
 

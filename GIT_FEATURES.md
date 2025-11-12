@@ -204,7 +204,7 @@ commit_message TEXT NULL
 
 ```php
 // Fetch latest commits from repository
-getLatestCommits(Project $project, int $limit = 10): array
+getLatestCommits(Project $project, int $perPage = 10, int $page = 1): array
 
 // Get currently deployed commit
 getCurrentCommit(Project $project): ?array
@@ -228,17 +228,48 @@ updateProjectCommitInfo(Project $project): bool
 - Author and time information
 - Responsive design
 - Clickable (future: link to GitHub)
+- Compact display with hash + message
+- Author, email, and relative time information
+- Copy-hash action for quick clipboard access
+- Responsive design with hover highlighting
+- Pagination controls (prev/next, per-page selector, range summary)
 
 ### Update Status Badge
+- **Local vs Remote Cards:** Show hash, author, and timestamp for both ends
 - **Green:** Up-to-date ✅
-- **Yellow:** Updates available ⚠️
-- **Gray:** Not deployed yet
+- **Amber:** Updates available (displays commits-behind count)
+- **Gray:** Repository metadata unavailable (fallback state)
 
 ### Currently Deployed Card
 - Blue background
 - Prominent display
 - Shows commit details
 - Relative time
+
+---
+
+## Git History UI
+
+### Repository Overview Panel
+- Shows remote URL, active branch, and deploy root directory
+- Displays auto-deploy status to clarify whether pushes are automatic or manual
+- Quick link opens repository in a new tab
+
+### Sync Insight Cards
+- Local and remote commits each contain hash, author, message, and human-friendly timestamp
+- Sync status card highlights whether the project is up to date and how many commits behind when outdated
+
+### Commit Timeline
+- Vertical timeline layout with gradient markers for each commit
+- Copy full hash action for clipboard-friendly workflows
+- Message, author, email, and timestamps grouped for readability
+- Hover elevation for the commit card you are focused on
+
+### Pagination Controls
+- Range summary (e.g., “Showing 1 to 8 of 42 commits”)
+- Per-page selector (5/8/10/15) instantly reloads history
+- First/Previous/Next/Last buttons with disabled states
+- Page indicators show current vs. total pages
 
 ---
 

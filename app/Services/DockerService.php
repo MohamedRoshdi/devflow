@@ -360,6 +360,52 @@ class DockerService
         }
     }
 
+    public function getLaravelLogs(Project $project, int $lines = 200): array
+    {
+        try {
+            $server = $project->server;
+
+            $containerPath = '/var/www/storage/logs/laravel.log';
+            $hostPath = "/var/www/{$project->slug}/storage/logs/laravel.log";
+
+            $dockerCommand = "docker exec {$project->slug} sh -c 'if [ -f {$containerPath} ]; then tail -n {$lines} {$containerPath}; else echo \"Laravel log not found inside container\"; fi'";
+            $command = $this->isLocalhost($server)
+                ? $dockerCommand
+                : $this->buildSSHCommand($server, $dockerCommand);
+
+            $process = Process::fromShellCommandline($command);
+            $process->run();
+
+            if ($process->isSuccessful() && trim($process->getOutput()) !== 'Laravel log not found inside container') {
+                return [
+                    'success' => true,
+                    'logs' => $process->getOutput(),
+                    'source' => 'container',
+                ];
+            }
+
+            // Fall back to host filesystem
+            $hostCommand = "if [ -f {$hostPath} ]; then tail -n {$lines} {$hostPath}; else echo 'Laravel log not found on host'; fi";
+            $command = $this->isLocalhost($server)
+                ? $hostCommand
+                : $this->buildSSHCommand($server, $hostCommand);
+
+            $hostProcess = Process::fromShellCommandline($command);
+            $hostProcess->run();
+
+            return [
+                'success' => $hostProcess->isSuccessful(),
+                'logs' => $hostProcess->getOutput(),
+                'source' => 'host',
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
     protected function buildSSHCommand(Server $server, string $remoteCommand): string
     {
         $sshOptions = [

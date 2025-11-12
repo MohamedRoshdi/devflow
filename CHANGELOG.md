@@ -12,15 +12,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added ✨
 - **🏠 Public Marketing Landing Page** – Replaced the minimal list view with a polished marketing layout featuring a capsule navigation bar, animated hero, platform highlights, workflow timeline, refreshed projects grid, and closing CTA.
 - **🌓 Restored Theme Toggle** – Header now includes the global theme toggle so visitors can switch between light and dark before signing in.
+- **🪵 Unified Log Viewer** – New Logs tab on the project page with a Livewire component that streams Docker container output or Laravel application logs, adjustable tail lengths, and refresh-on-demand.
 
 ### Changed 🔄
 - **Invite-Only Access** – Disabled self-registration; `/register` redirects to `/login` with guidance, and all public CTAs now read “Sign In” or “Request Access.”
 - **Login Experience** – Added friendly status banner explaining registration closure and updated copy to instruct users to contact an administrator.
 - **Public CTAs** – Updated home page buttons to align with the invite-only workflow and widened layout containers for large screens.
+- **Project Hero** – Redesigned hero section with gradient glass styling, richer metadata chips, and reorganised action buttons for faster scanning.
+- **Git & Docker Lazy Loading** – Heavy Git checks and Docker telemetry are now deferred until their tabs are opened, keeping the initial project load snappy while still providing detailed data when needed.
+- **Docker Loading Experience** – Full-screen gradient loader with step indicators replaces the previous dim overlay for better feedback during remote SSH polling.
 
 ### Fixed 🐛
 - **Hero Overlap** – Added top margin to main content so the fixed navigation no longer obscures the hero section.
 - **Theme Toggle Hook** – Ensured the marketing layout exposes the `theme-toggle` button so the existing JavaScript can bind correctly.
+- **SwitchTab Errors** – Added guard methods so nested Livewire components no longer throw `switchTab` missing method exceptions.
 
 ---
 

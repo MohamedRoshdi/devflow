@@ -63,11 +63,12 @@ class GitService
     /**
      * Get the latest commits from a project repository
      */
-    public function getLatestCommits(Project $project, int $limit = 10): array
+    public function getLatestCommits(Project $project, int $perPage = 10, int $page = 1): array
     {
         try {
             $server = $project->server;
             $projectPath = "/var/www/{$project->slug}";
+            $skip = max(0, ($page - 1) * $perPage);
             
             // Configure safe directory first
             $safeConfigCommand = "git config --global --add safe.directory {$projectPath} 2>&1 || true";
@@ -89,8 +90,23 @@ class GitService
                 \Log::warning("Git fetch failed for {$project->slug}: " . $fetchResult->errorOutput());
             }
 
+            // Determine total commits for pagination (falls back to local HEAD if remote not available)
+            $countCommand = "cd {$projectPath} && git rev-list --count origin/{$project->branch} 2>&1";
+            $command = $this->isLocalhost($server)
+                ? $countCommand
+                : $this->buildSSHCommand($server, $countCommand);
+            $countResult = Process::run($command);
+            if (!$countResult->successful()) {
+                $countCommand = "cd {$projectPath} && git rev-list --count HEAD 2>&1";
+                $command = $this->isLocalhost($server)
+                    ? $countCommand
+                    : $this->buildSSHCommand($server, $countCommand);
+                $countResult = Process::run($command);
+            }
+            $totalCommits = $countResult->successful() ? (int)trim($countResult->output()) : 0;
+
             // Get commit history (even if fetch failed, show what we have)
-            $logCommand = "cd {$projectPath} && git log origin/{$project->branch} --pretty=format:'%H|%an|%ae|%at|%s' -n {$limit} 2>&1 || git log HEAD --pretty=format:'%H|%an|%ae|%at|%s' -n {$limit}";
+            $logCommand = "cd {$projectPath} && git log origin/{$project->branch} --pretty=format:'%H|%an|%ae|%at|%s' --skip={$skip} -n {$perPage} 2>&1 || git log HEAD --pretty=format:'%H|%an|%ae|%at|%s' --skip={$skip} -n {$perPage}";
             $command = $this->isLocalhost($server)
                 ? $logCommand
                 : $this->buildSSHCommand($server, $logCommand);
@@ -126,6 +142,9 @@ class GitService
             return [
                 'success' => true,
                 'commits' => $commits,
+                'total' => $totalCommits,
+                'page' => $page,
+                'per_page' => $perPage,
             ];
         } catch (\Exception $e) {
             return [
@@ -242,6 +261,45 @@ class GitService
             $behindResult = Process::run($command);
             $commitsBehind = $behindResult->successful() ? (int)trim($behindResult->output()) : 0;
 
+            // Gather additional metadata for richer UI
+            $localMetaCommand = "cd {$projectPath} && git show -s --format='%H|%an|%at|%s' {$localCommit}";
+            $command = $this->isLocalhost($server)
+                ? $localMetaCommand
+                : $this->buildSSHCommand($server, $localMetaCommand);
+            $localMetaResult = Process::run($command);
+
+            $remoteMetaCommand = "cd {$projectPath} && git show -s --format='%H|%an|%at|%s' {$remoteCommit}";
+            $command = $this->isLocalhost($server)
+                ? $remoteMetaCommand
+                : $this->buildSSHCommand($server, $remoteMetaCommand);
+            $remoteMetaResult = Process::run($command);
+
+            $localMeta = null;
+            if ($localMetaResult->successful()) {
+                [$hash, $author, $timestamp, $message] = explode('|', trim($localMetaResult->output()), 4);
+                $localMeta = [
+                    'hash' => $hash,
+                    'short_hash' => substr($hash, 0, 7),
+                    'author' => $author,
+                    'timestamp' => (int)$timestamp,
+                    'date' => date('Y-m-d H:i:s', (int)$timestamp),
+                    'message' => $message,
+                ];
+            }
+
+            $remoteMeta = null;
+            if ($remoteMetaResult->successful()) {
+                [$hash, $author, $timestamp, $message] = explode('|', trim($remoteMetaResult->output()), 4);
+                $remoteMeta = [
+                    'hash' => $hash,
+                    'short_hash' => substr($hash, 0, 7),
+                    'author' => $author,
+                    'timestamp' => (int)$timestamp,
+                    'date' => date('Y-m-d H:i:s', (int)$timestamp),
+                    'message' => $message,
+                ];
+            }
+
             $isUpToDate = $localCommit === $remoteCommit;
 
             return [
@@ -250,6 +308,8 @@ class GitService
                 'local_commit' => substr($localCommit, 0, 7),
                 'remote_commit' => substr($remoteCommit, 0, 7),
                 'commits_behind' => $commitsBehind,
+                'local_meta' => $localMeta,
+                'remote_meta' => $remoteMeta,
             ];
         } catch (\Exception $e) {
             return [

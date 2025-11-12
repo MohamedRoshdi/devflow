@@ -8,7 +8,7 @@
     }
 </style>
 
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow" wire:init="initDocker">
     <div class="p-6 border-b border-gray-200 dark:border-gray-700 dark:border-gray-700">
         <div class="flex justify-between items-center">
             <h2 class="text-xl font-bold text-gray-900 dark:text-white">🐳 Docker Management</h2>
@@ -66,7 +66,7 @@
     </div>
 
     <div class="p-6">
-        @if($loading)
+        @if(!$initialized || $loading)
             <!-- Beautiful Loading Skeleton -->
             <div class="space-y-6 animate-pulse">
                 <!-- Container Status Skeleton -->

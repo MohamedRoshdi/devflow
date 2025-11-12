@@ -66,14 +66,36 @@
     </div>
 
     {{-- Loading Overlay for Content --}}
-    <div wire:loading wire:target="loadDockerInfo,switchTab" class="relative">
-        <div class="absolute inset-0 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm z-40 rounded-lg flex items-center justify-center">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 flex items-center space-x-3">
-                <svg class="animate-spin h-6 w-6 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span class="text-gray-700 dark:text-gray-300 font-medium">Loading...</span>
+    <div wire:loading wire:target="loadDockerInfo,switchTab" class="fixed inset-0 z-40 flex items-center justify-center">
+        <div class="absolute inset-0 backdrop-blur-md bg-slate-900/70"></div>
+        <div class="relative">
+            <div class="absolute -inset-1 rounded-3xl bg-gradient-to-r from-blue-500/60 via-purple-500/60 to-indigo-500/60 blur-xl opacity-75 animate-pulse"></div>
+            <div class="relative bg-slate-900/95 border border-white/10 rounded-3xl px-10 py-8 shadow-2xl text-center space-y-5">
+                <div class="flex items-center justify-center space-x-3 text-blue-300">
+                    <svg class="w-6 h-6 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="text-sm font-semibold tracking-wide uppercase">Docker telemetry incoming…</span>
+                </div>
+                <div class="text-white text-lg font-semibold">Syncing server metrics</div>
+                <p class="text-sm text-slate-400 max-w-sm">
+                    Fetching container stats, images, volumes, networks and disk usage directly from <span class="font-semibold">{{ $server->name }}</span>.
+                </p>
+                <div class="space-y-2 text-left text-xs text-slate-400 font-medium">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Container information
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse delay-150"></span>
+                        Resource metrics
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-purple-400 animate-pulse delay-300"></span>
+                        Disk usage snapshots
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -354,16 +376,5 @@
             </div>
         </div>
     @endif
-
-    {{-- Loading Overlay --}}
-    <div wire:loading class="fixed inset-0 bg-gray-900 bg-opacity-50 dark:bg-opacity-75 flex items-center justify-center z-50">
-        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 flex items-center space-x-3 transition-colors">
-            <svg class="animate-spin h-5 w-5 text-blue-500 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span class="text-gray-700 dark:text-gray-300">Loading...</span>
-        </div>
-    </div>
 </div>
 

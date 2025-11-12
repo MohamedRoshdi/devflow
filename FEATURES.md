@@ -28,6 +28,16 @@ Self-service registration has been turned off to keep environments private.
 - Public home page CTAs were updated to “Sign In” / “Request Access” to match the invite-only workflow.
 - Documentation updated with artisan snippet for creating the first admin user.
 
+### 🪵 Project Logs Console
+- Dedicated **Logs** tab on the project page with a Livewire component that streams Docker container output or Laravel’s `storage/logs/laravel.log`.
+- Adjustable tail lengths (100–1000 lines), instant refresh, and source badges (container vs. host) for clarity.
+- The tab loads asynchronously so the project view stays fast.
+
+### ⚡ Performance & UX Improvements
+- Project page renders immediately; Git commit history and update checks now load lazily the first time you open the Git tab.
+- Docker telemetry (images, containers, volumes, networks, disk usage) is fetched on demand via `wire:init`, eliminating initial SSH delays.
+- New full-screen gradient loader with status bullets (“Container information”, “Resource metrics”, “Disk usage snapshots”) replaces the generic overlay for Docker fetches.
+
 ---
 
 ## ⭐ NEW in v2.4.0 (November 11, 2025)
