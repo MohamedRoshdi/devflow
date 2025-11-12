@@ -1,5 +1,11 @@
 <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg px-8 py-10 transition-colors">
-    <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white mb-8">Sign in to your account</h2>
+    <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white mb-6">Sign in to your account</h2>
+
+    @if (session('status'))
+        <div class="mb-6 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700 dark:border-blue-500/40 dark:bg-blue-500/10 dark:text-blue-200">
+            {{ session('status') }}
+        </div>
+    @endif
     
     <form wire:submit="login" class="space-y-6">
         <!-- Email -->
@@ -58,13 +64,10 @@
             </button>
         </div>
 
-        <!-- Register Link -->
+        <!-- Access Help -->
         <div class="text-center">
             <p class="text-sm text-gray-600 dark:text-gray-400">
-                Don't have an account? 
-                <a href="{{ route('register') }}" class="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 transition-colors">
-                    Register here
-                </a>
+                Need an account? Contact your DevFlow Pro administrator to request access.
             </p>
         </div>
     </form>

@@ -102,6 +102,7 @@ DevFlow Pro is a **complete deployment management system** that makes it easy to
 - **Enhanced Deploy Modal** - Instant feedback with loading overlays ⭐ NEW v2.4!
 - **50% Faster Load Times** - Optimized bundle size and assets ⭐ NEW v2.4!
 - **Dark Theme** - Complete dark mode support with toggle and persistence
+- **Marketing Home Experience** - Public landing page with animated hero, platform highlights, workflow walkthrough, and CTA ⭐ NEW v2.4.1!
 
 ### 👥 User Management
 - **User CRUD** - Create, edit, delete system users
@@ -109,6 +110,7 @@ DevFlow Pro is a **complete deployment management system** that makes it easy to
 - **Search & Filter** - Find users quickly by name, email, or role
 - **Secure Authentication** - Laravel's built-in auth with password hashing
 - **User Assignments** - Link users to specific projects
+- **Invite-Only Access** - Self-service registration is disabled; admins provision and share credentials ⭐ NEW v2.4.1!
 
 ---
 
@@ -154,6 +156,26 @@ php artisan serve
 ```
 
 **Visit:** `http://localhost:8000`
+
+---
+
+### Access Control
+
+> 🔒 **Registration Closed by Default**
+
+- Public registration is now disabled for security. Use the seeded admin account or create users manually via tinker:
+
+```bash
+php artisan tinker
+>>> \App\Models\User::create([
+...     'name' => 'Admin User',
+...     'email' => 'admin@example.com',
+...     'password' => bcrypt('secret-password'),
+... ]);
+```
+
+- Grant roles from the dashboard once signed in.
+- Share credentials privately with trusted teammates.
 
 ---
 

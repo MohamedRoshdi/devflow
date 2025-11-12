@@ -1,474 +1,149 @@
-# 🏠 Public Home Page - Projects Showcase
+# 🏠 Public Marketing Home
 
 ## Feature Overview
 
-A beautiful, public-facing home page that showcases all running projects with their live URLs. The dev dashboard is now separate and requires authentication.
+A fully redesigned marketing-focused landing page lives at the root URL and showcases running projects while telling the DevFlow Pro story. The authenticated dashboard remains separate at `/dashboard`.
 
 ---
 
-## ✨ What's New
+## ✨ Highlights
 
-### Public Home Page
-- **URL:** `http://31.220.90.121/` (root URL)
-- **Access:** Public (no login required)
-- **Purpose:** Showcase deployed projects to visitors
+### Public Landing Experience
+- **URL:** `/`
+- **Access:** Public (no authentication required)
+- **Purpose:** Present DevFlow Pro capabilities, highlight live projects, and funnel visitors to “Request Access”.
 
-### Dev Dashboard
-- **URL:** `http://31.220.90.121/dashboard`
-- **Access:** Requires authentication
-- **Purpose:** Project management and deployment
-
----
-
-## 🎨 Design Features
-
-### Hero Section
-- **Gradient Background:** Blue to purple gradient
-- **Project Title:** "Welcome to Our Project Showcase"
-- **Statistics Display:**
-  - Live Projects count
-  - 100% Uptime
-  - 24/7 Availability
-
-### Project Cards
-- **3-Column Grid:** Responsive (1/2/3 columns)
-- **Modern Card Design:**
-  - Gradient top border
-  - Framework-specific icons
-  - Live status indicator (animated pulse)
-  - Environment badge
-  - Server information
-  - Visit button with hover effects
-
-### Framework Icons
-- **Laravel:** Red Laravel logo
-- **React/Vue/Next.js:** Code brackets icon
-- **Others:** Globe icon
-- **All in gradient circles:** Blue to purple
-
-### Status Indicators
-- **Live Badge:** Green with animated pulse
-- **Environment Badges:**
-  - Production: Blue
-  - Staging: Yellow
-  - Development: Gray
+### Authenticated Dashboard
+- **URL:** `/dashboard`
+- **Access:** Authenticated users only
+- **Purpose:** Full project/server/deployment management
 
 ---
 
-## 🔗 URL Generation
+## 🎨 Layout & Sections
 
-### Domain-Based URLs
-```
-If project has domain:
-http://example.com or https://example.com
-```
+### Floating Navigation Capsule
+- Centered, rounded capsule with subtle shadow & blur
+- Contains logo, quick anchors (`Projects`, `Platform`, `Workflow`), and the `Open Dashboard` CTA
+- Restored theme toggle (`#theme-toggle`) so visitors can switch light/dark modes before sign-in
 
-### Port-Based URLs
-```
-If no domain:
-http://server-ip:port
-Example: http://31.220.90.121:8001
-```
+### Hero Experience
+- Cinematic gradient backdrop (slate → blue) with blurred blobs
+- Pulsing “Projects Live Now” badge reflects real project count
+- Headline: “Deploy production apps in minutes, not days.”
+- Subtext explains orchestration & monitoring benefits
+- Auth users see **Launch Control Center** (dashboard link)
+- Guests see **Request Access** (links to login + status message)
+- Glassmorphism “Deployment Insights” card surfaces environment health, average deployment time, and security messaging
 
----
+### Platform Highlights
+- Three marketing tiles: Infrastructure Ready, Continuous Delivery, Operations Visibility
+- Icon badges with supportive copy
 
-## 📱 Responsive Design
+### Workflow Timeline
+- Gradient-backed four-step journey (01–04): Connect repo → Define environments → Deploy confidently → Monitor & iterate
+- Reinforces DevFlow Pro pipeline at a glance
 
-### Desktop (lg)
-- 3 columns grid
-- Full features visible
-- Hover animations
+### Projects Grid
+- Wide responsive grid (up to 1560px) displaying only `status = 'running'` projects
+- Cards include:
+  - Framework icon capsule (Laravel icon, code brackets, or globe)
+  - Animated “Live” pill with pulsing dot
+  - Environment badge text (“Production environment” etc.)
+  - Domain preferred; safe fallback to `server.ip[:port]`
+  - “Visit project” CTA with hover translation on icon
 
-### Tablet (md)
-- 2 columns grid
-- Touch-friendly
-- All features visible
-
-### Mobile (sm)
-- 1 column
-- Stack layout
-- Large touch targets
-
----
-
-## 🎯 Navigation
-
-### For Guests (Not Logged In)
-- **Header Right:**
-  - Login button
-  - Get Started button (register)
-
-### For Authenticated Users
-- **Header Right:**
-  - Dashboard button (goes to management)
-- **Navigation Menu:**
-  - Home (public page)
-  - Dashboard (management)
-  - Servers
-  - Projects
-  - Deployments
-  - Analytics
-  - Users
-
----
-
-## 🚀 Features
-
-### Project Display
-✅ **Shows Only Running Projects**
-- Status must be 'running'
-- Ordered alphabetically by name
-
-✅ **Project Information**
-- Name
-- Framework (Laravel, React, etc.)
-- Domain or URL
-- Server name
-- Environment (prod/staging/dev)
-- Live status
-
-✅ **Visit Button**
-- Opens in new tab
-- External link icon
-- Hover animation
-- Clear call-to-action
-
-### Empty State
-✅ **When No Projects:**
-- Friendly message
-- Icon display
-- "Check back soon" text
-- Create project button (if authenticated)
+### Call-to-Action Banner
+- Full-width gradient banner (`from-blue-600 via-indigo-600 to-purple-600`)
+- Authenticated users → “Manage Projects”; guests → “Request Access” (login)
 
 ### Footer
-✅ **DevFlow Pro Branding**
-- Powered by DevFlow Pro
-- Copyright notice
-- Professional appearance
+- Wide 1560px container, stacked layout on mobile
+- Copy: “Powered by DevFlow Pro — Professional Deployment Management” + copyright year
 
 ---
 
-## 🎨 Visual Effects
-
-### Hover Effects
-- **Cards:** Scale up slightly, shadow increases
-- **Buttons:** Scale up, shadow changes
-- **Visit Button:** Arrow icon moves right
-
-### Animations
-- **Status Pulse:** Green dot animated pulse
-- **Border Gradient:** Animated rainbow border on hover
-- **Smooth Transitions:** 200-300ms on all effects
-
-### Gradients
-- **Hero Background:** Blue-50 via white to purple-50
-- **Card Borders:** Blue-purple-pink rainbow
-- **Buttons:** Blue-600 to purple-600
-- **Icon Backgrounds:** Blue-500 to purple-600
+## 🔒 Registration Closure
+- `/register` now redirects to `/login` with a flash message explaining registration is closed
+- Login screen surfaces the status banner and asks users to contact an administrator for access
+- All public CTAs now point to sign-in/request access instead of self-service registration
 
 ---
 
-## 🌙 Dark Mode Support
-
-### Automatic Theme
-- Follows system theme toggle
-- All colors have dark variants
-- Smooth color transitions
-
-### Dark Mode Colors
-- **Background:** Gray-900 to gray-800
-- **Cards:** Gray-800 background
-- **Text:** White/gray-300
-- **Borders:** Gray-700
-- **Shadows:** Adjusted for dark bg
+## 🔗 URL Handling
+- Domains preserved exactly; `http(s)://{domain}`
+- Fallback: `http://{server_ip}:{port}` when no domain exists
+- All external links open in a new tab (`target="_blank"`)
 
 ---
 
-## 📊 Technical Implementation
+## 📱 Responsiveness & Visual Effects
+- Layout containers expanded to `max-w-[1560px]` (CTA banner `max-w-[1440px]`)
+- Smooth transitions (`transition`, `hover:-translate-y-0.5`, shadow intensifiers)
+- Animated elements: live badge pulse, hero blobs, CTA icon translation
+- Full dark-mode parity via Tailwind dark classes
+
+---
+
+## 🧱 Technical Implementation
 
 ### Component
 ```php
 app/Livewire/Home/HomePublic.php
-- Fetches running projects
+- Fetches running projects with server relation
 - Orders alphabetically
-- Includes server relationship
-- Uses guest layout
+- Uses new `layouts.marketing` wrapper (no `max-w-md` constraint)
+```
+
+### Layout
+```blade
+resources/views/layouts/marketing.blade.php
+- Minimal shell with theme-init script and slot
+- Provides global theme toggle JS hook
 ```
 
 ### View
 ```blade
 resources/views/livewire/home/home-public.blade.php
-- Full page design
-- No sidebar/navigation
-- Public-facing layout
-- Responsive grid
+- Floating nav capsule with theme toggle and CTA logic
+- Hero + insight card + stats
+- Platform highlights, workflow timeline
+- Projects grid / empty state
+- Gradient CTA banner and footer
 ```
 
-### Route
+### Routes
 ```php
-Route::get('/', HomePublic::class)->name('home');
-- No authentication required
-- Public access
-- Root URL
+routes/web.php -> Route::get('/', HomePublic::class)->name('home');
+routes/auth.php -> guest registration redirects to login with status message
 ```
 
 ---
 
-## 🔒 Security
-
-### Public Access
-✅ **Safe to expose:**
-- Project names
-- Frameworks
-- Public URLs
-- Environment types
-- Server names
-
-❌ **Not exposed:**
-- SSH credentials
-- Database passwords
-- Environment variables
-- Deployment logs
-- Server details
-
-### Authentication Still Required For:
-- Dashboard access
-- Project management
-- Server management
-- Deployments
-- Settings
+## 🧪 Testing Checklist
+- [x] Guest access renders landing page
+- [x] Authenticated users see dashboard CTAs
+- [x] Theme toggle switches modes without reload glitches
+- [x] Hero content not obscured by fixed nav (`mt-28` offset)
+- [x] Project URLs open in new tab with correct fallback
+- [x] Empty state friendly for zero running projects
+- [x] Dark mode verified end-to-end
 
 ---
 
-## 📈 Use Cases
-
-### Portfolio Showcase
-- Show clients your deployed projects
-- Public project directory
-- Professional appearance
-
-### Team Transparency
-- Show stakeholders live apps
-- Display project status
-- Easy access to projects
-
-### Public Services
-- Directory of public applications
-- Community projects
-- Open source deployments
+## 📚 Related Docs
+- [README.md](README.md)
+- [CHANGELOG.md](CHANGELOG.md)
+- [FEATURES.md](FEATURES.md)
+- [ENVIRONMENT_MANAGEMENT_FEATURE.md](ENVIRONMENT_MANAGEMENT_FEATURE.md)
 
 ---
 
-## 🎯 User Flow
-
-### Guest Visitor Flow:
-```
-1. Visit http://31.220.90.121/
-2. See all running projects
-3. Click "Visit Project" button
-4. Opens project in new tab
-5. Can login/register for management
-```
-
-### Authenticated User Flow:
-```
-1. Visit http://31.220.90.121/
-2. See all running projects
-3. Click "Dashboard" button
-4. Access full management interface
-5. Can return to home via "Home" nav link
-```
-
----
-
-## ✅ What You Get
-
-### For Visitors
-✅ Beautiful project showcase  
-✅ Easy access to live projects  
-✅ No login required  
-✅ Professional appearance  
-✅ Mobile-friendly  
-
-### For Administrators
-✅ Separate management dashboard  
-✅ Full project control  
-✅ All features accessible  
-✅ Easy navigation  
-✅ Secure access  
-
----
-
-## 🔧 Configuration
-
-### Show/Hide Projects
-Projects automatically appear on home page if:
-- Status is 'running'
-- Project is deployed
-- Container is active
-
-To hide a project:
-- Stop the container
-- Status will change from 'running'
-- Won't appear on home page
-
-### Customize Display
-Edit `app/Livewire/Home/HomePublic.php`:
-```php
-// Show all projects (not just running):
-$this->projects = Project::with('server')
-    ->orderBy('name')
-    ->get();
-
-// Filter by environment:
-$this->projects = Project::with('server')
-    ->where('status', 'running')
-    ->where('environment', 'production')
-    ->orderBy('name')
-    ->get();
-```
-
----
-
-## 📸 What It Looks Like
-
-### Header
-```
-┌─────────────────────────────────────────────┐
-│  🌐 Our Projects                    Login ▶  │
-│     Deployed Applications       Get Started │
-└─────────────────────────────────────────────┘
-```
-
-### Hero
-```
-┌─────────────────────────────────────────────┐
-│         Welcome to Our                       │
-│       Project Showcase                       │
-│  Explore our live applications               │
-│                                              │
-│    5          100%         24/7             │
-│ Live Projects  Uptime    Available          │
-└─────────────────────────────────────────────┘
-```
-
-### Project Cards
-```
-┌────────────────┬────────────────┬────────────────┐
-│ 🚀 Laravel     │ ⚛ React App   │ 🌐 Static Site │
-│ ATS Pro        │ Portfolio      │ Landing Page   │
-│ Laravel        │ React          │ Static Site    │
-│ ● Live         │ ● Live         │ ● Live         │
-│ [Visit →]      │ [Visit →]      │ [Visit →]      │
-└────────────────┴────────────────┴────────────────┘
-```
-
-### Footer
-```
-┌─────────────────────────────────────────────┐
-│  Powered by DevFlow Pro                     │
-│  Professional Deployment Management System  │
-│  © 2025 All rights reserved.                │
-└─────────────────────────────────────────────┘
-```
-
----
-
-## 🎉 Benefits
-
-### Public Showcase
-✅ Professional project directory  
-✅ Easy sharing with stakeholders  
-✅ No login friction for visitors  
-✅ Beautiful first impression  
-
-### Separate Concerns
-✅ Public view vs. admin view  
-✅ Dashboard remains private  
-✅ Clear navigation between both  
-✅ Security maintained  
-
-### Modern Design
-✅ Gradient backgrounds  
-✅ Smooth animations  
-✅ Responsive layout  
-✅ Dark mode support  
-✅ Professional appearance  
-
----
-
-## 📊 Comparison
-
-### Before (v2.4.0)
-```
-http://31.220.90.121/
-  ↓
-Redirects to /dashboard
-  ↓
-Must login to see anything
-  ↓
-Dashboard (management interface)
-```
-
-### After (v2.5.0)
-```
-http://31.220.90.121/
-  ↓
-Public home page (no login)
-  ↓
-Shows all running projects
-  ↓
-Can visit projects or login
-
-/dashboard (separate)
-  ↓
-Requires authentication
-  ↓
-Full management interface
-```
-
----
-
-## 🚀 Deployment
-
-### Automatic Deployment
-✅ Already deployed to production  
-✅ Available at root URL  
-✅ Dashboard still at /dashboard  
-✅ All navigation updated  
-
-### Testing
-```bash
-# Visit public home page:
-http://31.220.90.121/
-
-# Visit dashboard (requires auth):
-http://31.220.90.121/dashboard
-```
-
----
-
-## 📝 Summary
-
-**What Changed:**
-- ✅ Root URL now shows public home page
-- ✅ Dashboard moved to /dashboard (still requires auth)
-- ✅ Beautiful project showcase for visitors
-- ✅ Modern, responsive design
-- ✅ Easy project access
-
-**Status:** ✅ **Live and Working!**
-
-**Test:** Visit http://31.220.90.121/ to see it!
-
----
-
-**Perfect for:**
-- Portfolio showcases
-- Client presentations
-- Public project directories
-- Team transparency
-- Professional appearance
-
-**Everything is separated and working perfectly!** 🎉
+## ✅ Status
+- [x] Implemented
+- [x] Deployed
+- [x] Documented
+- [x] Mobile-friendly
+- [x] Dark mode supported
+- [x] Invite-only workflow enforced
 

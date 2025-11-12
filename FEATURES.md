@@ -4,6 +4,32 @@
 
 ---
 
+## ⭐ NEW in v2.4.1 (November 12, 2025)
+
+### 🏠 Public Marketing Home Refresh
+A fully responsive marketing-focused landing page that replaces the previous minimal layout.
+
+**Highlights:**
+- **Floating Navigation Capsule** – Centered header with logo, quick anchors (Projects/Platform/Workflow), and prominent `Open Dashboard` button.
+- **Dark-Mode Toggle** – Restored moon/sun toggle hooked into the global theme system.
+- **Hero Experience** – Cinematic gradient backdrop, live projects badge, and conversion-focused CTAs (`Launch Control Center` / `Request Access`).
+- **Deployment Insights Card** – Animated glassmorphism block showcasing environment sync, average deployment time, and security callouts.
+- **Platform Highlights** – Three feature tiles summarising infrastructure readiness, continuous delivery, and operations visibility.
+- **Projects Grid** – Wider cards with refined typography, live badges, and safer fallback URL handling.
+- **Workflow Timeline** – Four-step journey (Connect repo → Define environments → Deploy → Monitor) with marketing copy.
+- **Call-To-Action Banner** – Gradient CTA encouraging admins to manage projects or invite new teammates.
+
+### 🔒 Registration Control
+Self-service registration has been turned off to keep environments private.
+
+**What’s new:**
+- `/register` now redirects to `/login` with a status message explaining registration is closed.
+- Login screen shows the status alert and instructs users to contact an administrator for access.
+- Public home page CTAs were updated to “Sign In” / “Request Access” to match the invite-only workflow.
+- Documentation updated with artisan snippet for creating the first admin user.
+
+---
+
 ## ⭐ NEW in v2.4.0 (November 11, 2025)
 
 ### ⚙️ Environment Management System

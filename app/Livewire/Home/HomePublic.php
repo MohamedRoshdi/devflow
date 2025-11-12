@@ -21,6 +21,6 @@ class HomePublic extends Component
     public function render()
     {
         return view('livewire.home.home-public')
-            ->layout('layouts.guest'); // Use guest layout (no sidebar/nav)
+            ->layout('layouts.marketing');
     }
 }

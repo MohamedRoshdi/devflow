@@ -8,8 +8,12 @@ use Illuminate\Support\Facades\Auth;
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', Login::class)->name('login');
-    Route::get('/register', Register::class)->name('register');
     Route::get('/forgot-password', ForgotPassword::class)->name('password.request');
+
+    // Registration is closed – redirect any attempt back to login with a notice
+    Route::get('/register', function () {
+        return redirect()->route('login')->with('status', 'Registration is currently closed. Please contact an administrator for access.');
+    })->name('register');
 });
 
 Route::post('/logout', function () {

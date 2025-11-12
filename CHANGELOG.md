@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.4.1] - 2025-11-12
+
+### Added ✨
+- **🏠 Public Marketing Landing Page** – Replaced the minimal list view with a polished marketing layout featuring a capsule navigation bar, animated hero, platform highlights, workflow timeline, refreshed projects grid, and closing CTA.
+- **🌓 Restored Theme Toggle** – Header now includes the global theme toggle so visitors can switch between light and dark before signing in.
+
+### Changed 🔄
+- **Invite-Only Access** – Disabled self-registration; `/register` redirects to `/login` with guidance, and all public CTAs now read “Sign In” or “Request Access.”
+- **Login Experience** – Added friendly status banner explaining registration closure and updated copy to instruct users to contact an administrator.
+- **Public CTAs** – Updated home page buttons to align with the invite-only workflow and widened layout containers for large screens.
+
+### Fixed 🐛
+- **Hero Overlap** – Added top margin to main content so the fixed navigation no longer obscures the hero section.
+- **Theme Toggle Hook** – Ensured the marketing layout exposes the `theme-toggle` button so the existing JavaScript can bind correctly.
+
+---
+
 ## [2.4.0] - 2025-11-11
 
 ### Added ✨
