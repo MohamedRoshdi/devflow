@@ -33,6 +33,17 @@ class ProjectDockerManagement extends Component
         $this->projectId = $project->id;
     }
 
+    #[On('init-docker')]
+    public function handleInitDocker($payload = null): void
+    {
+        $id = is_array($payload) ? ($payload['projectId'] ?? null) : $payload;
+        if ($id !== null && (int) $id !== $this->projectId) {
+            return;
+        }
+
+        $this->initDocker();
+    }
+
     public function initDocker(): void
     {
         if ($this->initialized) {
@@ -85,7 +96,6 @@ class ProjectDockerManagement extends Component
         }
 
         $this->loading = false;
-        $this->initialized = true;
     }
 
     public function switchTab($tab)

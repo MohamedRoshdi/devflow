@@ -5,11 +5,21 @@
 
 <div wire:init="preloadUpdateStatus" x-data="{
         activeTab: localStorage.getItem('project-{{ $project->id }}-tab') || 'overview',
+        dockerReady: false,
         setTab(value) {
             this.activeTab = value;
             localStorage.setItem('project-{{ $project->id }}-tab', value);
+
+            if (value === 'docker' && !this.dockerReady) {
+                this.dockerReady = true;
+                Livewire.dispatch('init-docker', { projectId: {{ $project->id }} });
+            }
+
+            if (value === 'git') {
+                $wire.prepareGitTab();
+            }
         }
-    }">
+    }" x-init="if(activeTab === 'docker'){ this.dockerReady = true; Livewire.dispatch('init-docker', { projectId: {{ $project->id }} }); } else if(activeTab === 'git'){ $wire.prepareGitTab(); }">
     <!-- Hero Section with Project Status -->
     <div class="mb-10 relative">
         <div class="absolute inset-0 rounded-3xl bg-gradient-to-r from-indigo-500 via-purple-500 to-sky-500 opacity-80 blur-xl"></div>
