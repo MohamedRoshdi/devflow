@@ -1,25 +1,64 @@
 @php
     use Illuminate\Support\Str;
+
     $isUpdatePending = $updateStatus && !(($updateStatus['up_to_date'] ?? true));
+    $initialTab = $firstTab ?? 'overview';
 @endphp
 
 <div wire:init="preloadUpdateStatus" x-data="{
-        activeTab: localStorage.getItem('project-{{ $project->id }}-tab') || 'overview',
+        projectId: {{ $project->id }},
+        activeTab: '{{ $initialTab }}',
         dockerReady: false,
-        setTab(value) {
-            this.activeTab = value;
-            localStorage.setItem('project-{{ $project->id }}-tab', value);
+        gitPrimed: false,
+        tabLoading: false,
+        init() {
+            const stored = localStorage.getItem(`project-${this.projectId}-tab`);
+            if (stored) {
+                this.activeTab = stored;
+            }
 
-            if (value === 'docker' && !this.dockerReady) {
-                this.dockerReady = true;
-                Livewire.dispatch('init-docker', { projectId: {{ $project->id }} });
+            if (this.activeTab === 'docker') {
+                this.prepareDocker();
+            }
+
+            if (this.activeTab === 'git') {
+                this.prepareGit();
+            }
+        },
+        setTab(value) {
+            if (this.activeTab === value) {
+                return;
+            }
+
+            this.tabLoading = true;
+            this.activeTab = value;
+            localStorage.setItem(`project-${this.projectId}-tab`, value);
+
+            setTimeout(() => {
+                this.tabLoading = false;
+            }, 300);
+
+            if (value === 'docker') {
+                this.prepareDocker();
             }
 
             if (value === 'git') {
+                this.prepareGit();
+            }
+        },
+        prepareDocker() {
+            if (!this.dockerReady) {
+                Livewire.dispatch('init-docker', { projectId: this.projectId });
+                this.dockerReady = true;
+            }
+        },
+        prepareGit() {
+            if (!this.gitPrimed) {
                 $wire.prepareGitTab();
+                this.gitPrimed = true;
             }
         }
-    }" x-init="if(activeTab === 'docker'){ this.dockerReady = true; Livewire.dispatch('init-docker', { projectId: {{ $project->id }} }); } else if(activeTab === 'git'){ $wire.prepareGitTab(); }">
+    }">
     <!-- Hero Section with Project Status -->
     <div class="mb-10 relative">
         <div class="absolute inset-0 rounded-3xl bg-gradient-to-r from-indigo-500 via-purple-500 to-sky-500 opacity-80 blur-xl"></div>
@@ -371,8 +410,11 @@
         </div>
     </div>
 
+    <!-- Tab Loading Overlay -->
+    <x-tab-loading-overlay />
+
     <!-- Tab Content -->
-    <div class="min-h-screen">
+    <div class="min-h-screen relative">
         <!-- Overview Tab -->
         <div x-show="activeTab === 'overview'" x-transition class="space-y-8">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -527,7 +569,26 @@
 
         <!-- Git & Commits Tab -->
         <div x-show="activeTab === 'git'" x-transition class="space-y-8" wire:ignore.self>
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 overflow-hidden">
+            <!-- Loading State for Git Tab -->
+            <div x-show="!gitPrimed || $wire.commitsLoading"
+                 class="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 overflow-hidden p-12">
+                <div class="flex flex-col items-center justify-center space-y-6">
+                    <div class="relative w-20 h-20">
+                        <div class="absolute inset-0 border-4 border-blue-200 dark:border-blue-800 rounded-full"></div>
+                        <div class="absolute inset-0 border-4 border-blue-600 dark:border-blue-400 rounded-full border-t-transparent animate-spin"></div>
+                    </div>
+                    <div class="text-center space-y-2">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Loading Git Data...</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Fetching commits and repository information</p>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="gitPrimed && !$wire.commitsLoading"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0"
+                 class="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 overflow-hidden">
                 <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-blue-900 p-6 sm:p-8">
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                         <div>

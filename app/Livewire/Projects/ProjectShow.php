@@ -30,6 +30,8 @@ class ProjectShow extends Component
     public bool $commitsLoading = false;
     public bool $updateStatusLoaded = false;
     public bool $updateStatusRequested = false;
+    public ?string $firstTab = null;
+    public ?string $lastGitRefreshAt = null;
 
     public function mount(Project $project)
     {
@@ -39,6 +41,7 @@ class ProjectShow extends Component
         }
         
         $this->project = $project;
+        $this->firstTab = request()->query('tab', 'overview');
     }
 
     public function preloadUpdateStatus(): void
@@ -53,7 +56,12 @@ class ProjectShow extends Component
 
     public function prepareGitTab(): void
     {
-        if ($this->gitLoaded) {
+        $now = now();
+
+        $needsRefresh = !$this->gitLoaded
+            || ($this->lastGitRefreshAt && $now->diffInMinutes($this->lastGitRefreshAt) >= 5);
+
+        if (!$needsRefresh) {
             return;
         }
 
@@ -61,15 +69,28 @@ class ProjectShow extends Component
         $this->loadCommits();
         $this->commitsLoading = false;
 
-        if (!$this->updateStatusLoaded) {
+        if (!$this->updateStatusLoaded || ($this->updateStatus && !$this->updateStatus['up_to_date'])) {
             $this->checkForUpdates();
         }
 
         $this->gitLoaded = true;
+        $this->lastGitRefreshAt = $now;
+    }
+
+    public function loadCommitsAction(): void
+    {
+        if ($this->commitsRequested && !$this->commitsLoading) {
+            return;
+        }
+
+        $this->commitsRequested = true;
+        $this->loadCommits();
     }
 
     public function loadCommits()
     {
+        $this->commitsLoading = true;
+
         try {
             $gitService = app(GitService::class);
             $result = $gitService->getLatestCommits($this->project, $this->commitPerPage, $this->commitPage);
@@ -96,6 +117,8 @@ class ProjectShow extends Component
         } catch (\Exception $e) {
             $this->commits = [];
             $this->commitTotal = 0;
+        } finally {
+            $this->commitsLoading = false;
         }
     }
 
@@ -124,6 +147,7 @@ class ProjectShow extends Component
 
         $this->commitPerPage = $perPage;
         $this->commitPage = 1;
+        $this->commitsRequested = true;
         $this->loadCommits();
     }
 
@@ -134,6 +158,7 @@ class ProjectShow extends Component
 
         if ($page !== $this->commitPage) {
             $this->commitPage = $page;
+            $this->commitsRequested = true;
             $this->loadCommits();
         }
     }
@@ -282,6 +307,7 @@ class ProjectShow extends Component
             'domains' => $domains,
             'commits' => $this->commits,
             'updateStatus' => $this->updateStatus,
+            'firstTab' => $this->firstTab,
         ]);
     }
 }
