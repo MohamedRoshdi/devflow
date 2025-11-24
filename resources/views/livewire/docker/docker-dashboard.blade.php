@@ -1,40 +1,50 @@
 <div class="space-y-6">
-    {{-- Header --}}
-    <div class="flex justify-between items-center">
-        <div>
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white dark:text-white">Docker Management</h2>
-            <p class="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Server: {{ $server->name }}</p>
+    {{-- Header with Gradient --}}
+    <div class="relative mb-8 rounded-2xl bg-gradient-to-br from-cyan-500 via-blue-500 to-indigo-500 dark:from-cyan-600 dark:via-blue-600 dark:to-indigo-600 p-8 shadow-xl overflow-hidden">
+        <div class="absolute inset-0 bg-black/10 dark:bg-black/20 backdrop-blur-sm"></div>
+        <div class="relative z-10 flex justify-between items-center">
+            <div>
+                <div class="flex items-center space-x-3 mb-2">
+                    <div class="p-2 bg-white/20 dark:bg-white/10 backdrop-blur-md rounded-lg">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                        </svg>
+                    </div>
+                    <h1 class="text-4xl font-bold text-white">Docker Management</h1>
+                </div>
+                <p class="text-white/90 text-lg">Server: {{ $server->name }}</p>
+            </div>
+            <button wire:click="loadDockerInfo"
+                    class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105 shadow-lg flex items-center space-x-2"
+                    wire:loading.attr="disabled"
+                    wire:target="loadDockerInfo">
+                <span wire:loading.remove wire:target="loadDockerInfo" class="flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span>Refresh</span>
+                </span>
+                <span wire:loading wire:target="loadDockerInfo" class="flex items-center space-x-2">
+                    <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Refreshing...</span>
+                </span>
+            </button>
         </div>
-        <button wire:click="loadDockerInfo" 
-                class="px-4 py-2 bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-lg transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                wire:loading.attr="disabled"
-                wire:target="loadDockerInfo">
-            <span wire:loading.remove wire:target="loadDockerInfo" class="flex items-center space-x-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                <span>Refresh</span>
-            </span>
-            <span wire:loading wire:target="loadDockerInfo" class="flex items-center space-x-2">
-                <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span>Refreshing...</span>
-            </span>
-        </button>
     </div>
 
     {{-- Success Message --}}
     @if (session()->has('message'))
-        <div class="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 text-green-800 dark:text-green-400 px-4 py-3 rounded-lg">
+        <div class="mb-6 bg-gradient-to-r from-green-500/20 to-emerald-500/20 dark:from-green-500/30 dark:to-emerald-500/30 border border-green-200 dark:border-green-700 text-green-800 dark:text-green-400 px-4 py-3 rounded-lg backdrop-blur-sm">
             {{ session('message') }}
         </div>
     @endif
 
     {{-- Error Message --}}
     @if ($error)
-        <div class="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 text-red-800 dark:text-red-400 px-4 py-3 rounded-lg">
+        <div class="mb-6 bg-gradient-to-r from-red-500/20 to-red-600/20 dark:from-red-500/30 dark:to-red-600/30 border border-red-200 dark:border-red-700 text-red-800 dark:text-red-400 px-4 py-3 rounded-lg backdrop-blur-sm">
             {{ $error }}
         </div>
     @endif
@@ -105,34 +115,34 @@
         <div class="space-y-6">
             {{-- Docker Info --}}
             @if ($dockerInfo)
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 p-6 transition-colors">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Docker System Information</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg transition-colors">
+                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 p-4 rounded-lg transition-all hover:-translate-y-1 shadow-md">
                             <div class="text-sm text-gray-600 dark:text-gray-400">Docker Version</div>
                             <div class="text-xl font-bold text-gray-900 dark:text-white">{{ $dockerInfo['ServerVersion'] ?? 'N/A' }}</div>
                         </div>
-                        <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg transition-colors">
+                        <div class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/40 p-4 rounded-lg transition-all hover:-translate-y-1 shadow-md">
                             <div class="text-sm text-gray-600 dark:text-gray-400">Total Containers</div>
                             <div class="text-xl font-bold text-blue-600 dark:text-blue-400">{{ $dockerInfo['Containers'] ?? 0 }}</div>
-                            <div class="text-xs text-gray-500 dark:text-gray-400">
-                                Running: {{ $dockerInfo['ContainersRunning'] ?? 0 }} | 
+                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                Running: {{ $dockerInfo['ContainersRunning'] ?? 0 }} |
                                 Stopped: {{ $dockerInfo['ContainersStopped'] ?? 0 }}
                             </div>
                         </div>
-                        <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg transition-colors">
+                        <div class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-900/40 p-4 rounded-lg transition-all hover:-translate-y-1 shadow-md">
                             <div class="text-sm text-gray-600 dark:text-gray-400">Total Images</div>
                             <div class="text-xl font-bold text-green-600 dark:text-green-400">{{ $dockerInfo['Images'] ?? 0 }}</div>
                         </div>
-                        <div class="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg transition-colors">
+                        <div class="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-900/40 p-4 rounded-lg transition-all hover:-translate-y-1 shadow-md">
                             <div class="text-sm text-gray-600 dark:text-gray-400">Storage Driver</div>
                             <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ $dockerInfo['Driver'] ?? 'N/A' }}</div>
                         </div>
-                        <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg transition-colors">
+                        <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-900/40 p-4 rounded-lg transition-all hover:-translate-y-1 shadow-md">
                             <div class="text-sm text-gray-600 dark:text-gray-400">Operating System</div>
                             <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ $dockerInfo['OperatingSystem'] ?? 'N/A' }}</div>
                         </div>
-                        <div class="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg transition-colors">
+                        <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-900/40 p-4 rounded-lg transition-all hover:-translate-y-1 shadow-md">
                             <div class="text-sm text-gray-600 dark:text-gray-400">CPU Cores</div>
                             <div class="text-xl font-bold text-indigo-600 dark:text-indigo-400">{{ $dockerInfo['NCPU'] ?? 'N/A' }}</div>
                         </div>
@@ -142,15 +152,15 @@
 
             {{-- Disk Usage --}}
             @if ($diskUsage)
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 p-6 transition-colors">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Disk Usage</h3>
                     <div class="space-y-4">
                         @foreach ($diskUsage as $item)
-                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg transition-colors">
+                            <div class="flex items-center justify-between p-4 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-lg hover:-translate-y-1 transition-all shadow-md">
                                 <div>
                                     <div class="font-semibold text-gray-900 dark:text-white">{{ $item['Type'] ?? 'Unknown' }}</div>
                                     <div class="text-sm text-gray-600 dark:text-gray-400">
-                                        Total: {{ $item['TotalCount'] ?? 0 }} | 
+                                        Total: {{ $item['TotalCount'] ?? 0 }} |
                                         Active: {{ $item['Active'] ?? 0 }}
                                     </div>
                                 </div>
@@ -170,11 +180,11 @@
 
     {{-- Images Tab --}}
     @if ($activeTab === 'images')
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
-            <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                <h3 class="text-lg font-semibold">Docker Images</h3>
-                <button wire:click="pruneImages" 
-                        class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition"
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Docker Images</h3>
+                <button wire:click="pruneImages"
+                        class="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all hover:scale-105 shadow-lg"
                         wire:loading.attr="disabled">
                     🧹 Prune Unused Images
                 </button>
@@ -230,9 +240,9 @@
 
     {{-- Volumes Tab --}}
     @if ($activeTab === 'volumes')
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
-            <div class="p-6 border-b border-gray-200 dark:border-gray-700 dark:border-gray-700">
-                <h3 class="text-lg font-semibold">Docker Volumes</h3>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Docker Volumes</h3>
             </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -277,9 +287,9 @@
 
     {{-- Networks Tab --}}
     @if ($activeTab === 'networks')
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
-            <div class="p-6 border-b border-gray-200 dark:border-gray-700 dark:border-gray-700">
-                <h3 class="text-lg font-semibold">Docker Networks</h3>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Docker Networks</h3>
             </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -333,26 +343,26 @@
     {{-- Cleanup Tab --}}
     @if ($activeTab === 'cleanup')
         <div class="space-y-6">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 p-6 transition-colors">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">System Cleanup</h3>
                 <p class="text-gray-600 dark:text-gray-400 mb-6">Free up disk space by removing unused Docker resources.</p>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700 rounded-lg p-6 transition-colors">
+                    <div class="border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-900/40 rounded-lg p-6 hover:-translate-y-1 transition-all shadow-md">
                         <h4 class="font-semibold text-gray-900 dark:text-white mb-2">🖼️ Prune Images</h4>
                         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Remove dangling and unused images</p>
-                        <button wire:click="pruneImages" 
-                                class="w-full px-4 py-2 bg-orange-500 dark:bg-orange-600 hover:bg-orange-600 dark:hover:bg-orange-700 text-white rounded-lg transition-colors"
+                        <button wire:click="pruneImages"
+                                class="w-full px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all hover:scale-105 shadow-lg"
                                 wire:loading.attr="disabled">
                             Prune Images
                         </button>
                     </div>
-                    
-                    <div class="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700 rounded-lg p-6 transition-colors">
+
+                    <div class="border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-900/40 rounded-lg p-6 hover:-translate-y-1 transition-all shadow-md">
                         <h4 class="font-semibold text-gray-900 dark:text-white mb-2">🧹 System Prune</h4>
                         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Remove all unused containers, networks, and images</p>
-                        <button wire:click="systemPrune" 
-                                class="w-full px-4 py-2 bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white rounded-lg transition-colors"
+                        <button wire:click="systemPrune"
+                                class="w-full px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg transition-all hover:scale-105 shadow-lg"
                                 wire:loading.attr="disabled"
                                 onclick="return confirm('This will remove all unused Docker resources. Continue?')">
                             System Prune
@@ -361,7 +371,7 @@
                 </div>
 
                 @if ($diskUsage)
-                    <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg transition-colors">
+                    <div class="mt-6 p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/40 rounded-lg backdrop-blur-sm border border-blue-200 dark:border-blue-700">
                         <h4 class="font-semibold text-gray-900 dark:text-white mb-2">💡 Disk Space Summary</h4>
                         <div class="text-sm text-gray-700 dark:text-gray-300 space-y-1">
                             @foreach ($diskUsage as $item)
