@@ -1,21 +1,32 @@
 <div>
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-        <p class="text-gray-600 dark:text-gray-400 mt-1">Monitor your infrastructure and deployments</p>
+    <!-- Hero Section with Gradient -->
+    <div class="relative mb-8 rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 dark:from-blue-600 dark:via-purple-600 dark:to-pink-600 p-8 shadow-xl overflow-hidden">
+        <div class="absolute inset-0 bg-black/10 dark:bg-black/20 backdrop-blur-sm"></div>
+        <div class="relative z-10">
+            <div class="flex items-center space-x-3 mb-2">
+                <div class="p-2 bg-white/20 dark:bg-white/10 backdrop-blur-md rounded-lg">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                </div>
+                <h1 class="text-4xl font-bold text-white">Infrastructure Overview</h1>
+            </div>
+            <p class="text-white/90 text-lg">Monitor your servers, projects, and deployments</p>
+        </div>
     </div>
 
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- Servers Card -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 p-6 transition-colors">
+        <div class="bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Servers</p>
-                    <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ $stats['total_servers'] }}</p>
-                    <p class="text-sm text-green-600 dark:text-green-400 mt-1">{{ $stats['online_servers'] }} online</p>
+                    <p class="text-sm font-medium text-blue-100">Total Servers</p>
+                    <p class="text-3xl font-bold text-white mt-2">{{ $stats['total_servers'] }}</p>
+                    <p class="text-sm text-blue-100 mt-1">{{ $stats['online_servers'] }} online</p>
                 </div>
-                <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full transition-colors">
-                    <svg class="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="p-2 bg-white/20 backdrop-blur-md rounded-lg">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"></path>
                     </svg>
                 </div>
@@ -23,15 +34,15 @@
         </div>
 
         <!-- Projects Card -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 p-6 transition-colors">
+        <div class="bg-gradient-to-br from-green-500 to-emerald-600 dark:from-green-600 dark:to-emerald-700 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Projects</p>
-                    <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ $stats['total_projects'] }}</p>
-                    <p class="text-sm text-green-600 dark:text-green-400 mt-1">{{ $stats['running_projects'] }} running</p>
+                    <p class="text-sm font-medium text-green-100">Total Projects</p>
+                    <p class="text-3xl font-bold text-white mt-2">{{ $stats['total_projects'] }}</p>
+                    <p class="text-sm text-green-100 mt-1">{{ $stats['running_projects'] }} running</p>
                 </div>
-                <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-full transition-colors">
-                    <svg class="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="p-2 bg-white/20 backdrop-blur-md rounded-lg">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
                     </svg>
                 </div>
@@ -39,15 +50,15 @@
         </div>
 
         <!-- Deployments Card -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 p-6 transition-colors">
+        <div class="bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Deployments</p>
-                    <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ $stats['total_deployments'] }}</p>
-                    <p class="text-sm text-green-600 dark:text-green-400 mt-1">{{ $stats['successful_deployments'] }} successful</p>
+                    <p class="text-sm font-medium text-purple-100">Total Deployments</p>
+                    <p class="text-3xl font-bold text-white mt-2">{{ $stats['total_deployments'] }}</p>
+                    <p class="text-sm text-purple-100 mt-1">{{ $stats['successful_deployments'] }} successful</p>
                 </div>
-                <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full transition-colors">
-                    <svg class="w-8 h-8 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="p-2 bg-white/20 backdrop-blur-md rounded-lg">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                     </svg>
                 </div>
@@ -55,15 +66,15 @@
         </div>
 
         <!-- Failed Deployments Card -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 p-6 transition-colors">
+        <div class="bg-gradient-to-br from-red-500 to-red-600 dark:from-red-600 dark:to-red-700 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Failed Deployments</p>
-                    <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ $stats['failed_deployments'] }}</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Last 30 days</p>
+                    <p class="text-sm font-medium text-red-100">Failed Deployments</p>
+                    <p class="text-3xl font-bold text-white mt-2">{{ $stats['failed_deployments'] }}</p>
+                    <p class="text-sm text-red-100 mt-1">Last 30 days</p>
                 </div>
-                <div class="p-3 bg-red-100 dark:bg-red-900/30 rounded-full transition-colors">
-                    <svg class="w-8 h-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="p-2 bg-white/20 backdrop-blur-md rounded-lg">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
@@ -73,13 +84,20 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Recent Deployments -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 transition-colors">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300">
             <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-                <h2 class="text-xl font-bold text-gray-900 dark:text-white">Recent Deployments</h2>
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">Recent Deployments</h2>
+                </div>
             </div>
             <div class="p-6">
                 @forelse($recentDeployments as $deployment)
-                    <div class="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                    <div class="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors rounded-lg px-3 -mx-3">
                         <div class="flex-1">
                             <a href="{{ route('projects.show', $deployment->project) }}" class="font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                                 {{ $deployment->project->name }}
@@ -109,9 +127,16 @@
         </div>
 
         <!-- Projects Overview -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 transition-colors">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300">
             <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                <h2 class="text-xl font-bold text-gray-900 dark:text-white">Projects</h2>
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">Projects</h2>
+                </div>
                 <a href="{{ route('projects.create') }}" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium transition-colors">
                     + New Project
                 </a>
@@ -131,7 +156,7 @@
                                 @php
                                     $url = 'http://' . $project->server->ip_address . ':' . $project->port;
                                 @endphp
-                                <a href="{{ $url }}" target="_blank" 
+                                <a href="{{ $url }}" target="_blank"
                                    onclick="event.stopPropagation()"
                                    class="inline-flex items-center text-xs text-green-700 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300 mt-1 font-mono transition-colors">
                                     🚀 {{ $url }}
