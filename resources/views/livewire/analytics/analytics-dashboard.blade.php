@@ -8,7 +8,7 @@
                 <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
                     <div class="flex-1">
                         <div class="flex items-center gap-3 mb-4">
-                            <svg class="w-10 h-10 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-6 h-6 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                             </svg>
                             <span class="px-3 py-1 text-xs font-semibold tracking-wide uppercase bg-white/10 text-white/80 rounded-full">Analytics Dashboard</span>
@@ -64,7 +64,7 @@
     <!-- Deployment Statistics with Enhanced Cards -->
     <div class="mb-10">
         <div class="flex items-center gap-3 mb-6">
-            <svg class="w-7 h-7 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
             </svg>
             <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Deployment Statistics</h2>
@@ -75,12 +75,12 @@
                 <div class="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
                 <div class="relative p-6 text-white">
                     <div class="flex items-center justify-between mb-4">
-                        <div class="p-3 bg-white/20 rounded-xl">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="p-2 bg-white/20 rounded-lg">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                             </svg>
                         </div>
-                        <span class="text-4xl font-bold opacity-20">01</span>
+                        <span class="text-3xl font-bold opacity-20">01</span>
                     </div>
                     <p class="text-sm font-medium text-white/80 mb-2">Total Deployments</p>
                     <p class="text-4xl font-extrabold">{{ $deploymentStats['total'] }}</p>
@@ -95,12 +95,12 @@
                 <div class="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
                 <div class="relative p-6 text-white">
                     <div class="flex items-center justify-between mb-4">
-                        <div class="p-3 bg-white/20 rounded-xl">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="p-2 bg-white/20 rounded-lg">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
-                        <span class="text-4xl font-bold opacity-20">02</span>
+                        <span class="text-3xl font-bold opacity-20">02</span>
                     </div>
                     <p class="text-sm font-medium text-white/80 mb-2">Successful</p>
                     <p class="text-4xl font-extrabold">{{ $deploymentStats['successful'] }}</p>
@@ -117,12 +117,12 @@
                 <div class="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
                 <div class="relative p-6 text-white">
                     <div class="flex items-center justify-between mb-4">
-                        <div class="p-3 bg-white/20 rounded-xl">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="p-2 bg-white/20 rounded-lg">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
-                        <span class="text-4xl font-bold opacity-20">03</span>
+                        <span class="text-3xl font-bold opacity-20">03</span>
                     </div>
                     <p class="text-sm font-medium text-white/80 mb-2">Failed</p>
                     <p class="text-4xl font-extrabold">{{ $deploymentStats['failed'] }}</p>
@@ -139,12 +139,12 @@
                 <div class="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
                 <div class="relative p-6 text-white">
                     <div class="flex items-center justify-between mb-4">
-                        <div class="p-3 bg-white/20 rounded-xl">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="p-2 bg-white/20 rounded-lg">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
-                        <span class="text-4xl font-bold opacity-20">04</span>
+                        <span class="text-3xl font-bold opacity-20">04</span>
                     </div>
                     <p class="text-sm font-medium text-white/80 mb-2">Avg Duration</p>
                     <p class="text-4xl font-extrabold">{{ $deploymentStats['avg_duration'] ?? 0 }}<span class="text-xl">s</span></p>
@@ -159,7 +159,7 @@
     <!-- Server Performance with Modern Progress Bars -->
     <div class="mb-10">
         <div class="flex items-center gap-3 mb-6">
-            <svg class="w-7 h-7 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"></path>
             </svg>
             <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Server Performance</h2>
@@ -296,7 +296,7 @@
     <!-- Project Analytics with Enhanced Grid -->
     <div>
         <div class="flex items-center gap-3 mb-6">
-            <svg class="w-7 h-7 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
             </svg>
             <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Project Analytics</h2>
@@ -305,8 +305,8 @@
             <!-- Total Projects -->
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
                 <div class="flex items-center justify-between mb-4">
-                    <div class="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl">
-                        <svg class="w-7 h-7 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
+                        <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
                         </svg>
                     </div>
@@ -321,8 +321,8 @@
             <!-- Running Projects -->
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
                 <div class="flex items-center justify-between mb-4">
-                    <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl">
-                        <svg class="w-7 h-7 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                        <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
@@ -338,8 +338,8 @@
             <!-- Stopped Projects -->
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
                 <div class="flex items-center justify-between mb-4">
-                    <div class="p-3 bg-gray-100 dark:bg-gray-700 rounded-xl">
-                        <svg class="w-7 h-7 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                        <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
@@ -354,8 +354,8 @@
             <!-- Total Storage -->
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
                 <div class="flex items-center justify-between mb-4">
-                    <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
-                        <svg class="w-7 h-7 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
                         </svg>
                     </div>
