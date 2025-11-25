@@ -9,42 +9,52 @@
         projectId: {{ $project->id }},
         activeTab: '{{ $initialTab }}',
         dockerReady: false,
-        gitPrimed: false,
+        gitDataLoaded: @entangle('gitLoaded'),
+        gitCommitsLoading: @entangle('commitsLoading'),
         tabLoading: false,
         init() {
             const stored = localStorage.getItem(`project-${this.projectId}-tab`);
-            if (stored) {
+            if (stored && ['overview', 'docker', 'environment', 'git', 'logs', 'deployments'].includes(stored)) {
                 this.activeTab = stored;
             }
 
-            if (this.activeTab === 'docker') {
-                this.prepareDocker();
-            }
-
-            if (this.activeTab === 'git') {
-                this.prepareGit();
-            }
+            // Initial tab preparation
+            this.$nextTick(() => {
+                if (this.activeTab === 'docker') {
+                    this.prepareDocker();
+                } else if (this.activeTab === 'git') {
+                    this.prepareGit();
+                }
+            });
         },
         setTab(value) {
             if (this.activeTab === value) {
                 return;
             }
 
+            // Show loading overlay
             this.tabLoading = true;
-            this.activeTab = value;
-            localStorage.setItem(`project-${this.projectId}-tab`, value);
 
+            // Small delay to allow overlay to appear
             setTimeout(() => {
-                this.tabLoading = false;
-            }, 300);
+                // Switch tab
+                this.activeTab = value;
+                localStorage.setItem(`project-${this.projectId}-tab`, value);
 
-            if (value === 'docker') {
-                this.prepareDocker();
-            }
-
-            if (value === 'git') {
-                this.prepareGit();
-            }
+                // Prepare tab data
+                this.$nextTick(() => {
+                    if (value === 'docker') {
+                        this.prepareDocker();
+                    } else if (value === 'git') {
+                        this.prepareGit();
+                    }
+                    
+                    // Hide overlay after transition
+                    setTimeout(() => {
+                        this.tabLoading = false;
+                    }, 300);
+                });
+            }, 50);
         },
         prepareDocker() {
             if (!this.dockerReady) {
@@ -53,9 +63,9 @@
             }
         },
         prepareGit() {
-            if (!this.gitPrimed) {
+            // Only call if not already loading
+            if (!this.gitCommitsLoading) {
                 $wire.prepareGitTab();
-                this.gitPrimed = true;
             }
         }
     }">
@@ -378,31 +388,32 @@
                     <span>Environment</span>
                 </button>
 
-                <button @click="setTab('git'); $wire.prepareGitTab()" 
-                        class="flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors
-                        @if($project->status === 'running' && $isUpdatePending) text-yellow-500 @endif
-                        " :class="activeTab === 'git' ? 'bg-white/10 text-white' : 'text-white/70 hover:text-white'">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12A4 4 0 108 12a4 4 0 108 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v2m6.364.636l-1.414 1.414M22 12h-2m-.636 6.364l-1.414-1.414M12 20v-2m-6.364.636l1.414-1.414M4 12H2m.636-6.364l1.414 1.414" />
+                <button @click="setTab('git')"
+                        :class="activeTab === 'git' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                     </svg>
                     <span>Git & Commits</span>
+                    @if($project->status === 'running' && $isUpdatePending)
+                        <span class="ml-1 w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></span>
+                    @endif
                 </button>
 
                 <button @click="setTab('logs')"
-                        class="flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors"
-                        :class="activeTab === 'logs' ? 'bg-white/10 text-white' : 'text-white/70 hover:text-white'">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17l4 4 4-4m0-5V3m-4 14V3m-4 9v4m8-4v4" />
+                        :class="activeTab === 'logs' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
                     <span>Logs</span>
                 </button>
 
-                <button @click="setTab('deployments')" 
-                        class="flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors" 
-                        :class="activeTab === 'deployments' ? 'bg-white/10 text-white' : 'text-white/70 hover:text-white'">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <button @click="setTab('deployments')"
+                        :class="activeTab === 'deployments' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                     </svg>
                     <span>Deployments</span>
                 </button>
@@ -416,7 +427,11 @@
     <!-- Tab Content -->
     <div class="min-h-screen relative">
         <!-- Overview Tab -->
-        <div x-show="activeTab === 'overview'" x-transition class="space-y-8">
+        <div x-show="activeTab === 'overview'"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             class="space-y-8">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <!-- Project Details Card -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 overflow-hidden">
@@ -552,39 +567,47 @@
         </div>
 
         <!-- Docker Tab -->
-        <div x-show="activeTab === 'docker'" 
-             x-transition 
-             class="space-y-8" 
-             wire:ignore.self>
+        <div x-show="activeTab === 'docker'"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             class="space-y-8">
             @livewire('projects.project-docker-management', ['project' => $project], key('docker-' . $project->id))
         </div>
 
         <!-- Environment Tab -->
-        <div x-show="activeTab === 'environment'" 
-             x-transition 
-             class="space-y-8" 
-             wire:ignore.self>
+        <div x-show="activeTab === 'environment'"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             class="space-y-8">
             @livewire('projects.project-environment', ['project' => $project], key('env-' . $project->id))
         </div>
 
         <!-- Git & Commits Tab -->
-        <div x-show="activeTab === 'git'" x-transition class="space-y-8" wire:ignore.self>
+        <div x-show="activeTab === 'git'" x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             class="space-y-8">
+
             <!-- Loading State for Git Tab -->
-            <div x-show="!gitPrimed || $wire.commitsLoading"
-                 class="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 overflow-hidden p-12">
-                <div class="flex flex-col items-center justify-center space-y-6">
-                    <div class="relative w-20 h-20">
-                        <div class="absolute inset-0 border-4 border-blue-200 dark:border-blue-800 rounded-full"></div>
-                        <div class="absolute inset-0 border-4 border-blue-600 dark:border-blue-400 rounded-full border-t-transparent animate-spin"></div>
-                    </div>
-                    <div class="text-center space-y-2">
-                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Loading Git Data...</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Fetching commits and repository information</p>
+            <template x-if="gitCommitsLoading">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 overflow-hidden p-12">
+                    <div class="flex flex-col items-center justify-center space-y-6">
+                        <div class="relative w-20 h-20">
+                            <div class="absolute inset-0 border-4 border-blue-200 dark:border-blue-800 rounded-full"></div>
+                            <div class="absolute inset-0 border-4 border-blue-600 dark:border-blue-400 rounded-full border-t-transparent animate-spin"></div>
+                        </div>
+                        <div class="text-center space-y-2">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white">Loading Git Data...</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Fetching commits and repository information</p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </template>
 
-            <div x-show="gitPrimed && !$wire.commitsLoading"
+            <!-- Git Content -->
+            <div x-show="!gitCommitsLoading && gitDataLoaded"
                  x-transition:enter="transition ease-out duration-300"
                  x-transition:enter-start="opacity-0 transform translate-y-4"
                  x-transition:enter-end="opacity-100 transform translate-y-0"
@@ -604,14 +627,15 @@
                             </p>
                         </div>
                         <div class="flex flex-wrap items-center gap-3">
-                            <button wire:click="checkForUpdates(true)"
+                            <button wire:click="refreshGitData"
                                     wire:loading.attr="disabled"
+                                    wire:loading.class="opacity-50 cursor-wait"
                                     class="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-full font-semibold transition">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4" :class="gitCommitsLoading ? 'animate-spin' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v6h6M20 20v-6h-6M5.63 18.37A9 9 0 1118.37 5.63L19 6M5 19l.63-.63" />
                                 </svg>
-                                <span wire:loading.remove>Check for Updates</span>
-                                <span wire:loading>Checking…</span>
+                                <span wire:loading.remove wire:target="refreshGitData">Refresh</span>
+                                <span wire:loading wire:target="refreshGitData">Refreshing…</span>
                             </button>
                             <a href="{{ route('deployments.index') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-slate-900 rounded-full font-semibold hover:bg-slate-100 transition">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -864,12 +888,20 @@
         </div>
 
         <!-- Logs Tab -->
-        <div x-show="activeTab === 'logs'" x-transition class="space-y-8" wire:ignore.self>
+        <div x-show="activeTab === 'logs'"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             class="space-y-8">
             @livewire('projects.project-logs', ['project' => $project], key('logs-' . $project->id))
         </div>
 
         <!-- Deployments Tab -->
-        <div x-show="activeTab === 'deployments'" x-transition class="space-y-8">
+        <div x-show="activeTab === 'deployments'"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             class="space-y-8">
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 overflow-hidden">
                 <div class="bg-gradient-to-r from-orange-500 to-red-500 p-6">
                     <h2 class="text-2xl font-bold text-white flex items-center">
@@ -947,7 +979,9 @@
                 {{ $deployments->onEachSide(1)->links() }}
             </div>
         </div>
+        <!-- End of Deployments Tab -->
     </div>
+    <!-- End of Tab Content Container -->
 
     <!-- Deploy Modal -->
     @if($showDeployModal)

@@ -1,0 +1,88 @@
+# MySQL Performance Optimization Configuration
+# Place this file in /etc/mysql/mysql.conf.d/zz-devflow-optimization.cnf
+# Or merge with your existing MySQL configuration
+
+[mysqld]
+
+# Connection Settings
+max_connections = 200
+max_connect_errors = 100
+connect_timeout = 10
+wait_timeout = 600
+interactive_timeout = 600
+
+# Buffer Pool Settings (adjust based on available RAM)
+# Rule of thumb: 70-80% of available RAM for dedicated MySQL server
+innodb_buffer_pool_size = 2G
+innodb_buffer_pool_instances = 4
+innodb_log_buffer_size = 16M
+
+# InnoDB Settings
+innodb_file_per_table = 1
+innodb_flush_log_at_trx_commit = 2
+innodb_flush_method = O_DIRECT
+innodb_log_file_size = 256M
+innodb_log_files_in_group = 2
+innodb_io_capacity = 2000
+innodb_io_capacity_max = 4000
+innodb_read_io_threads = 4
+innodb_write_io_threads = 4
+
+# Query Cache (disabled in MySQL 8.0+, but kept for MySQL 5.7)
+# query_cache_type = 0
+# query_cache_size = 0
+
+# Table Cache
+table_open_cache = 4000
+table_definition_cache = 2000
+
+# Thread Cache
+thread_cache_size = 50
+
+# Temporary Tables
+tmp_table_size = 64M
+max_heap_table_size = 64M
+
+# Sort and Join Buffers
+sort_buffer_size = 2M
+read_buffer_size = 2M
+read_rnd_buffer_size = 4M
+join_buffer_size = 2M
+
+# Binary Logging (for replication and point-in-time recovery)
+binlog_expire_logs_seconds = 604800
+max_binlog_size = 100M
+binlog_cache_size = 4M
+
+# Slow Query Log
+slow_query_log = 1
+slow_query_log_file = /var/log/mysql/slow-query.log
+long_query_time = 2
+log_queries_not_using_indexes = 0
+
+# General Settings
+max_allowed_packet = 64M
+default_storage_engine = InnoDB
+character_set_server = utf8mb4
+collation_server = utf8mb4_unicode_ci
+
+# Performance Schema (disable if not needed to save memory)
+performance_schema = ON
+
+[mysqldump]
+quick
+quote_names
+max_allowed_packet = 64M
+
+[mysql]
+# No auto-rehash for faster startup
+no_auto_rehash
+
+[myisamchk]
+key_buffer_size = 128M
+sort_buffer_size = 128M
+read_buffer = 8M
+write_buffer = 8M
+
+[mysqlhotcopy]
+interactive_timeout

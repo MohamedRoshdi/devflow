@@ -13,6 +13,7 @@ use App\Livewire\Deployments\DeploymentList;
 use App\Livewire\Deployments\DeploymentShow;
 use App\Livewire\Analytics\AnalyticsDashboard;
 use App\Livewire\Docker\DockerDashboard;
+use App\Livewire\Admin\SystemAdmin;
 
 // Public Home Page - Shows all projects
 Route::get('/', HomePublic::class)->name('home');
@@ -44,6 +45,27 @@ Route::middleware('auth')->group(function () {
 
     // Docker Management
     Route::get('/servers/{server}/docker', DockerDashboard::class)->name('docker.dashboard');
+
+    // System Administration
+    Route::get('/admin/system', SystemAdmin::class)->name('admin.system');
+
+    // ============ ADVANCED FEATURES ============
+
+    // Kubernetes Management
+    Route::get('/kubernetes', \App\Livewire\Kubernetes\ClusterManager::class)->name('kubernetes.index');
+
+    // CI/CD Pipelines
+    Route::get('/pipelines', \App\Livewire\CICD\PipelineBuilder::class)->name('pipelines.index');
+
+    // Deployment Scripts
+    Route::get('/scripts', \App\Livewire\Scripts\ScriptManager::class)->name('scripts.index');
+
+    // Notification Channels
+    Route::get('/notifications', \App\Livewire\Notifications\NotificationChannelManager::class)->name('notifications.index');
+
+    // Multi-Tenant Management
+    Route::get('/tenants', \App\Livewire\MultiTenant\TenantManager::class)->name('tenants.index');
+    Route::get('/tenants/{project}', \App\Livewire\MultiTenant\TenantManager::class)->name('tenants.project');
 });
 
 require __DIR__.'/auth.php';

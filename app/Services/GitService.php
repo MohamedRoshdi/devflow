@@ -70,6 +70,17 @@ class GitService
             $projectPath = "/var/www/{$project->slug}";
             $skip = max(0, ($page - 1) * $perPage);
             
+            // Check if repository exists
+            if (!$this->isRepositoryCloned($projectPath, $server)) {
+                return [
+                    'success' => true,
+                    'commits' => [],
+                    'total' => 0,
+                    'page' => $page,
+                    'per_page' => $perPage,
+                ];
+            }
+            
             // Configure safe directory first
             $safeConfigCommand = "git config --global --add safe.directory {$projectPath} 2>&1 || true";
             $command = $this->isLocalhost($server) 
@@ -77,41 +88,41 @@ class GitService
                 : $this->buildSSHCommand($server, $safeConfigCommand);
             Process::run($command);
 
-            // Fetch latest commits from remote
-            $fetchCommand = "cd {$projectPath} && git fetch origin {$project->branch} 2>&1 || echo 'fetch-failed'";
+            // Fetch latest commits from remote with timeout
+            $fetchCommand = "cd {$projectPath} && timeout 30 git fetch origin {$project->branch} 2>&1 || echo 'fetch-failed'";
             $command = $this->isLocalhost($server)
                 ? $fetchCommand
                 : $this->buildSSHCommand($server, $fetchCommand);
-            
-            $fetchResult = Process::run($command);
-            
+
+            $fetchResult = Process::timeout(35)->run($command);
+
             // Check if fetch failed
             if (str_contains($fetchResult->output(), 'fetch-failed') || !$fetchResult->successful()) {
                 \Log::warning("Git fetch failed for {$project->slug}: " . $fetchResult->errorOutput());
             }
 
             // Determine total commits for pagination (falls back to local HEAD if remote not available)
-            $countCommand = "cd {$projectPath} && git rev-list --count origin/{$project->branch} 2>&1";
+            $countCommand = "cd {$projectPath} && timeout 10 git rev-list --count origin/{$project->branch} 2>&1";
             $command = $this->isLocalhost($server)
                 ? $countCommand
                 : $this->buildSSHCommand($server, $countCommand);
-            $countResult = Process::run($command);
+            $countResult = Process::timeout(15)->run($command);
             if (!$countResult->successful()) {
-                $countCommand = "cd {$projectPath} && git rev-list --count HEAD 2>&1";
+                $countCommand = "cd {$projectPath} && timeout 10 git rev-list --count HEAD 2>&1";
                 $command = $this->isLocalhost($server)
                     ? $countCommand
                     : $this->buildSSHCommand($server, $countCommand);
-                $countResult = Process::run($command);
+                $countResult = Process::timeout(15)->run($command);
             }
             $totalCommits = $countResult->successful() ? (int)trim($countResult->output()) : 0;
 
             // Get commit history (even if fetch failed, show what we have)
-            $logCommand = "cd {$projectPath} && git log origin/{$project->branch} --pretty=format:'%H|%an|%ae|%at|%s' --skip={$skip} -n {$perPage} 2>&1 || git log HEAD --pretty=format:'%H|%an|%ae|%at|%s' --skip={$skip} -n {$perPage}";
+            $logCommand = "cd {$projectPath} && timeout 15 git log origin/{$project->branch} --pretty=format:'%H|%an|%ae|%at|%s' --skip={$skip} -n {$perPage} 2>&1 || timeout 15 git log HEAD --pretty=format:'%H|%an|%ae|%at|%s' --skip={$skip} -n {$perPage}";
             $command = $this->isLocalhost($server)
                 ? $logCommand
                 : $this->buildSSHCommand($server, $logCommand);
-                
-            $logResult = Process::run($command);
+
+            $logResult = Process::timeout(20)->run($command);
 
             if (!$logResult->successful()) {
                 return [
@@ -198,6 +209,19 @@ class GitService
             $server = $project->server;
             $projectPath = "/var/www/{$project->slug}";
             
+            // Check if repository exists
+            if (!$this->isRepositoryCloned($projectPath, $server)) {
+                return [
+                    'success' => true,
+                    'up_to_date' => true, // Assume up to date if not deployed (nothing to update)
+                    'local_commit' => null,
+                    'remote_commit' => null,
+                    'commits_behind' => 0,
+                    'local_meta' => null,
+                    'remote_meta' => null,
+                ];
+            }
+            
             // Configure safe directory first
             $safeConfigCommand = "git config --global --add safe.directory {$projectPath} 2>&1 || true";
             $command = $this->isLocalhost($server) 
@@ -205,26 +229,26 @@ class GitService
                 : $this->buildSSHCommand($server, $safeConfigCommand);
             Process::run($command);
 
-            // Fetch latest from remote
-            $fetchCommand = "cd {$projectPath} && git fetch origin {$project->branch} 2>&1 || echo 'fetch-failed'";
+            // Fetch latest from remote with timeout
+            $fetchCommand = "cd {$projectPath} && timeout 30 git fetch origin {$project->branch} 2>&1 || echo 'fetch-failed'";
             $command = $this->isLocalhost($server)
                 ? $fetchCommand
                 : $this->buildSSHCommand($server, $fetchCommand);
-                
-            $fetchResult = Process::run($command);
-            
+
+            $fetchResult = Process::timeout(35)->run($command);
+
             // Log if fetch failed but continue to show current status
             if (str_contains($fetchResult->output(), 'fetch-failed') || !$fetchResult->successful()) {
                 \Log::warning("Git fetch failed for {$project->slug}: " . $fetchResult->errorOutput());
             }
 
             // Get current local commit
-            $localCommand = "cd {$projectPath} && git rev-parse HEAD 2>&1";
+            $localCommand = "cd {$projectPath} && timeout 10 git rev-parse HEAD 2>&1";
             $command = $this->isLocalhost($server)
                 ? $localCommand
                 : $this->buildSSHCommand($server, $localCommand);
-                
-            $localResult = Process::run($command);
+
+            $localResult = Process::timeout(15)->run($command);
 
             if (!$localResult->successful()) {
                 return [
@@ -236,12 +260,12 @@ class GitService
             $localCommit = trim($localResult->output());
 
             // Get latest remote commit
-            $remoteGitCommand = "cd {$projectPath} && git rev-parse origin/{$project->branch} 2>&1";
+            $remoteGitCommand = "cd {$projectPath} && timeout 10 git rev-parse origin/{$project->branch} 2>&1";
             $command = $this->isLocalhost($server)
                 ? $remoteGitCommand
                 : $this->buildSSHCommand($server, $remoteGitCommand);
-                
-            $remoteResult = Process::run($command);
+
+            $remoteResult = Process::timeout(15)->run($command);
 
             if (!$remoteResult->successful()) {
                 return [
@@ -253,26 +277,26 @@ class GitService
             $remoteCommit = trim($remoteResult->output());
 
             // Count commits behind
-            $behindGitCommand = "cd {$projectPath} && git rev-list --count HEAD..origin/{$project->branch} 2>&1";
+            $behindGitCommand = "cd {$projectPath} && timeout 10 git rev-list --count HEAD..origin/{$project->branch} 2>&1";
             $command = $this->isLocalhost($server)
                 ? $behindGitCommand
                 : $this->buildSSHCommand($server, $behindGitCommand);
-                
-            $behindResult = Process::run($command);
+
+            $behindResult = Process::timeout(15)->run($command);
             $commitsBehind = $behindResult->successful() ? (int)trim($behindResult->output()) : 0;
 
             // Gather additional metadata for richer UI
-            $localMetaCommand = "cd {$projectPath} && git show -s --format='%H|%an|%at|%s' {$localCommit}";
+            $localMetaCommand = "cd {$projectPath} && timeout 10 git show -s --format='%H|%an|%at|%s' {$localCommit}";
             $command = $this->isLocalhost($server)
                 ? $localMetaCommand
                 : $this->buildSSHCommand($server, $localMetaCommand);
-            $localMetaResult = Process::run($command);
+            $localMetaResult = Process::timeout(15)->run($command);
 
-            $remoteMetaCommand = "cd {$projectPath} && git show -s --format='%H|%an|%at|%s' {$remoteCommit}";
+            $remoteMetaCommand = "cd {$projectPath} && timeout 10 git show -s --format='%H|%an|%at|%s' {$remoteCommit}";
             $command = $this->isLocalhost($server)
                 ? $remoteMetaCommand
                 : $this->buildSSHCommand($server, $remoteMetaCommand);
-            $remoteMetaResult = Process::run($command);
+            $remoteMetaResult = Process::timeout(15)->run($command);
 
             $localMeta = null;
             if ($localMetaResult->successful()) {

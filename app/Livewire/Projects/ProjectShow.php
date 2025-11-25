@@ -28,10 +28,16 @@ class ProjectShow extends Component
 
     public bool $gitLoaded = false;
     public bool $commitsLoading = false;
+    public bool $commitsRequested = false;
     public bool $updateStatusLoaded = false;
     public bool $updateStatusRequested = false;
     public ?string $firstTab = null;
     public ?string $lastGitRefreshAt = null;
+
+    // Cache for Git data
+    private $cachedCommits = null;
+    private $cachedUpdateStatus = null;
+    private $cacheExpiry = null;
 
     public function mount(Project $project)
     {
@@ -39,9 +45,16 @@ class ProjectShow extends Component
         if ($project->user_id !== auth()->id()) {
             abort(403, 'Unauthorized access to this project.');
         }
-        
+
         $this->project = $project;
         $this->firstTab = request()->query('tab', 'overview');
+
+        // Initialize state
+        $this->gitLoaded = false;
+        $this->commitsLoading = false;
+        $this->commitsRequested = false;
+        $this->updateStatusLoaded = false;
+        $this->updateStatusRequested = false;
     }
 
     public function preloadUpdateStatus(): void
@@ -56,25 +69,94 @@ class ProjectShow extends Component
 
     public function prepareGitTab(): void
     {
-        $now = now();
-
-        $needsRefresh = !$this->gitLoaded
-            || ($this->lastGitRefreshAt && $now->diffInMinutes($this->lastGitRefreshAt) >= 5);
-
-        if (!$needsRefresh) {
+        // If already loaded and cache is valid, use cached data
+        if ($this->gitLoaded && $this->cacheExpiry && now()->lt($this->cacheExpiry)) {
+            // Use cached data
+            if ($this->cachedCommits !== null) {
+                $this->commits = $this->cachedCommits;
+                $this->commitTotal = count($this->commits);
+            }
+            if ($this->cachedUpdateStatus !== null) {
+                $this->updateStatus = $this->cachedUpdateStatus;
+            }
             return;
         }
 
-        $this->commitsLoading = true;
-        $this->loadCommits();
-        $this->commitsLoading = false;
-
-        if (!$this->updateStatusLoaded || ($this->updateStatus && !$this->updateStatus['up_to_date'])) {
-            $this->checkForUpdates();
+        // Only load if not currently loading
+        if ($this->commitsLoading) {
+            return;
         }
 
-        $this->gitLoaded = true;
-        $this->lastGitRefreshAt = $now;
+        // Set loading state
+        $this->commitsLoading = true;
+
+        try {
+            // Load commits
+            $this->loadCommitsInternal();
+
+            // Check for updates if needed
+            if (!$this->updateStatusLoaded) {
+                $this->checkForUpdatesInternal();
+            }
+
+            // Cache the data
+            $this->cachedCommits = $this->commits;
+            $this->cachedUpdateStatus = $this->updateStatus;
+            $this->cacheExpiry = now()->addMinutes(5);
+
+            $this->gitLoaded = true;
+            $this->lastGitRefreshAt = now();
+
+        } catch (\Exception $e) {
+            \Log::error('prepareGitTab failed: ' . $e->getMessage());
+
+            // Set empty data to prevent infinite loading
+            $this->commits = [];
+            $this->commitTotal = 0;
+            $this->gitLoaded = true;
+
+            // Display error message to user
+            session()->flash('error', 'Failed to load Git data. Please try again.');
+        } finally {
+            $this->commitsLoading = false;
+        }
+    }
+
+    private function loadCommitsInternal(): void
+    {
+        try {
+            $gitService = app(GitService::class);
+            $result = $gitService->getLatestCommits($this->project, $this->commitPerPage, $this->commitPage);
+
+            if ($result['success']) {
+                $this->commits = $result['commits'];
+                $this->commitTotal = $result['total'] ?? count($this->commits);
+                $this->commitsRequested = true;
+            } else {
+                $this->commits = [];
+                $this->commitTotal = 0;
+            }
+        } catch (\Exception $e) {
+            $this->commits = [];
+            $this->commitTotal = 0;
+            throw $e;
+        }
+    }
+
+    private function checkForUpdatesInternal(): void
+    {
+        try {
+            $gitService = app(GitService::class);
+            $result = $gitService->checkForUpdates($this->project);
+
+            if ($result['success']) {
+                $this->updateStatus = $result;
+                $this->updateStatusLoaded = true;
+            }
+        } catch (\Exception $e) {
+            // Silently fail for update check
+            $this->updateStatusLoaded = true;
+        }
     }
 
     public function loadCommitsAction(): void
@@ -94,7 +176,7 @@ class ProjectShow extends Component
         try {
             $gitService = app(GitService::class);
             $result = $gitService->getLatestCommits($this->project, $this->commitPerPage, $this->commitPage);
-            
+
             if ($result['success']) {
                 $this->commits = $result['commits'];
                 $this->commitTotal = $result['total'] ?? count($this->commits);
@@ -110,13 +192,18 @@ class ProjectShow extends Component
                     $this->loadCommits();
                     return;
                 }
+
+                // Mark commits as loaded
+                $this->commitsRequested = true;
             } else {
                 $this->commits = [];
                 $this->commitTotal = 0;
+                \Log::warning('Git commits load failed: ' . ($result['error'] ?? 'Unknown error'));
             }
         } catch (\Exception $e) {
             $this->commits = [];
             $this->commitTotal = 0;
+            \Log::error('Exception loading commits: ' . $e->getMessage());
         } finally {
             $this->commitsLoading = false;
         }
@@ -232,6 +319,18 @@ class ProjectShow extends Component
 
     public function prepareGitTabInteractive(): void
     {
+        $this->prepareGitTab();
+    }
+
+    public function refreshGitData(): void
+    {
+        // Clear cache to force refresh
+        $this->cachedCommits = null;
+        $this->cachedUpdateStatus = null;
+        $this->cacheExpiry = null;
+        $this->gitLoaded = false;
+
+        // Reload data
         $this->prepareGitTab();
     }
 

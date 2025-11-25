@@ -79,6 +79,16 @@ class Project extends Model
         return $this->hasMany(ProjectAnalytic::class);
     }
 
+    public function tenants()
+    {
+        return $this->hasMany(Tenant::class);
+    }
+
+    public function pipelines()
+    {
+        return $this->hasMany(Pipeline::class);
+    }
+
     // Status helpers
     public function isRunning(): bool
     {
