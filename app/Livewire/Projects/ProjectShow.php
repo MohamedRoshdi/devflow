@@ -136,6 +136,16 @@ class ProjectShow extends Component
         return max(1, (int) ceil($this->commitTotal / $this->commitPerPage));
     }
 
+    public function getCommitRangeProperty(): array
+    {
+        $start = ($this->commitPage - 1) * $this->commitPerPage + 1;
+        $end = min($this->commitPage * $this->commitPerPage, $this->commitTotal);
+        return [
+            'start' => $this->commitTotal > 0 ? $start : 0,
+            'end' => $end,
+        ];
+    }
+
     public function previousCommitPage(): void
     {
         if ($this->commitPage > 1) {

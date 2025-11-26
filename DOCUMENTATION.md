@@ -1,7 +1,7 @@
 # DevFlow Pro - Complete Documentation
 
-**Version:** 2.4.1
-**Last Updated:** November 24, 2025
+**Version:** 2.5.1
+**Last Updated:** November 26, 2025
 
 This is the comprehensive documentation combining user guides, deployment instructions, features overview, and troubleshooting.
 
@@ -15,9 +15,15 @@ This is the comprehensive documentation combining user guides, deployment instru
 4. [Features Overview](#features-overview)
 5. [Docker Management](#docker-management)
 6. [Environment Management](#environment-management)
-7. [Troubleshooting](#troubleshooting)
-8. [API Reference](#api-reference)
-9. [Best Practices](#best-practices)
+7. [Advanced Features](#advanced-features)
+   - [Kubernetes Integration](#kubernetes-integration)
+   - [CI/CD Pipelines](#cicd-pipelines)
+   - [Custom Scripts](#custom-deployment-scripts)
+   - [Notifications](#notification-system)
+   - [Multi-Tenant](#multi-tenant-management)
+8. [Troubleshooting](#troubleshooting)
+9. [API Reference](#api-reference)
+10. [Best Practices](#best-practices)
 
 ---
 
@@ -29,7 +35,9 @@ This is the comprehensive documentation combining user guides, deployment instru
 
 1. **Access Your Installation:**
    ```
-   http://your-server-ip
+   Main Hub: http://nilestack.duckdns.org
+   Admin Panel: http://admin.nilestack.duckdns.org
+   Direct IP: http://31.220.90.121
    ```
 
 2. **Create Admin User:**
@@ -148,7 +156,9 @@ php artisan tinker
 ... ]);
 
 # Access application
-http://your-server-ip
+Portfolio: http://nilestack.duckdns.org
+Admin Panel: http://admin.nilestack.duckdns.org
+Direct IP: http://31.220.90.121
 ```
 
 ---
@@ -473,6 +483,270 @@ Application accesses via env()
 
 ---
 
+## 🚀 Advanced Features
+
+DevFlow Pro v2.5 introduces enterprise-grade features for modern DevOps workflows.
+
+### ☸️ Kubernetes Integration
+
+**Overview:**
+Deploy and manage applications on Kubernetes clusters directly from DevFlow Pro.
+
+**Getting Started:**
+1. Navigate to **Advanced → Kubernetes** in the navigation menu
+2. Click "Add Cluster" to configure your K8s cluster:
+   ```yaml
+   Name: Production Cluster
+   API Server URL: https://k8s.example.com:6443
+   Namespace: default
+   Kubeconfig: [Paste your kubeconfig content]
+   ```
+3. Test connection to verify setup
+4. Select a project and click "Deploy to K8s"
+
+**Features:**
+- **Multi-Cluster Support** - Manage development, staging, and production clusters
+- **Namespace Management** - Organize deployments by namespace
+- **Pod Monitoring** - Real-time status, logs, and metrics
+- **Scaling Controls** - Horizontal pod autoscaling
+- **Rolling Updates** - Zero-downtime deployments
+- **Helm Integration** - Deploy using Helm charts
+- **Secret Management** - Encrypted kubeconfig storage
+
+**Deployment Process:**
+```
+Select Project → Choose Cluster → Configure Resources → Deploy
+    ↓
+Generate K8s Manifests
+    ↓
+Apply to Cluster
+    ↓
+Monitor Pod Status
+```
+
+### 🔧 CI/CD Pipelines
+
+**Overview:**
+Visual pipeline builder supporting multiple CI/CD providers.
+
+**Supported Providers:**
+- GitHub Actions
+- GitLab CI/CD
+- Bitbucket Pipelines
+- Jenkins
+
+**Creating a Pipeline:**
+1. Go to **Advanced → CI/CD Pipelines**
+2. Click "Create Pipeline"
+3. Select your provider
+4. Configure stages:
+   ```yaml
+   Build → Test → Deploy
+   ```
+5. Add jobs to each stage
+6. Configure triggers (push, PR, schedule)
+7. Save and execute
+
+**Pipeline Features:**
+- **Visual Editor** - Drag-and-drop pipeline configuration
+- **Template Library** - Pre-built pipelines for common scenarios
+- **Parallel Execution** - Run multiple jobs concurrently
+- **Artifact Storage** - Share files between jobs
+- **Environment Variables** - Secure secret management
+- **Webhook Integration** - Automatic triggers
+- **YAML Export** - Version control your pipelines
+
+**Example Pipeline:**
+```yaml
+stages:
+  - build
+  - test
+  - deploy
+
+build:
+  script:
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+
+test:
+  script:
+    - npm run test
+    - npm run lint
+
+deploy:
+  script:
+    - docker build -t app:latest .
+    - docker push registry/app:latest
+  only:
+    - main
+```
+
+### 📜 Custom Deployment Scripts
+
+**Overview:**
+Create and manage custom deployment scripts in multiple languages.
+
+**Supported Languages:**
+- Bash/Shell
+- Python
+- PHP
+- Node.js
+- Ruby
+
+**Creating Scripts:**
+1. Navigate to **Advanced → Deployment Scripts**
+2. Click "Create Script"
+3. Configure:
+   ```bash
+   Name: Laravel Deployment
+   Language: Bash
+   Timeout: 300 seconds
+   ```
+4. Write your script with template variables:
+   ```bash
+   #!/bin/bash
+   echo "Deploying @{{PROJECT_NAME}} from branch @{{BRANCH}}"
+   cd @{{PROJECT_PATH}}
+   git pull origin @{{BRANCH}}
+   composer install --no-dev
+   php artisan migrate --force
+   php artisan config:cache
+   ```
+5. Save and test
+
+**Available Variables:**
+- `@{{PROJECT_NAME}}` - Project name
+- `@{{PROJECT_SLUG}}` - Project slug
+- `@{{BRANCH}}` - Current branch
+- `@{{COMMIT_HASH}}` - Latest commit
+- `@{{TIMESTAMP}}` - Current timestamp
+- `@{{DOMAIN}}` - Primary domain
+- `@{{PROJECT_PATH}}` - Project directory
+
+**Script Features:**
+- **Version Control** - Track changes with rollback
+- **Execution History** - Detailed logs and output
+- **Error Handling** - Automatic retry on failure
+- **Scheduled Execution** - Cron-based scheduling
+- **Template Library** - Reusable script templates
+- **Secure Execution** - Sandboxed environment
+
+### 🔔 Notification System
+
+**Overview:**
+Real-time notifications for deployment events and system alerts.
+
+**Supported Channels:**
+- Slack
+- Discord
+- Microsoft Teams
+- Custom Webhooks
+
+**Setting Up Notifications:**
+1. Go to **Advanced → Notifications**
+2. Click "Add Channel"
+3. Configure channel:
+   ```
+   Name: Team Slack
+   Provider: Slack
+   Webhook URL: https://hooks.slack.com/services/XXX
+   ```
+4. Select events to monitor:
+   - Deployment Started
+   - Deployment Completed
+   - Deployment Failed
+   - Health Check Failed
+   - SSL Expiring
+5. Test notification
+6. Enable channel
+
+**Notification Features:**
+- **Rich Formatting** - Markdown, embeds, attachments
+- **Custom Templates** - Create reusable messages
+- **Event Filtering** - Choose which events to receive
+- **Delivery Tracking** - Monitor notification status
+- **Silent Hours** - Configure quiet periods
+- **Fallback Channels** - Secondary notification methods
+
+**Example Slack Message:**
+```json
+{
+  "text": "Deployment Status",
+  "attachments": [{
+    "color": "good",
+    "title": "Deployment Successful",
+    "fields": [
+      {"title": "Project", "value": "My App"},
+      {"title": "Environment", "value": "Production"},
+      {"title": "Version", "value": "v2.5.0"},
+      {"title": "Duration", "value": "2m 15s"}
+    ]
+  }]
+}
+```
+
+### 🏢 Multi-Tenant Management
+
+**Overview:**
+Manage multi-tenant applications with isolated deployments.
+
+**Key Concepts:**
+- **Tenant** - Isolated instance with own database/storage
+- **Master Project** - Base application code
+- **Tenant Deployment** - Deploying updates to tenants
+
+**Setting Up Multi-Tenancy:**
+1. Mark project as multi-tenant:
+   ```
+   Project Settings → Type: Multi-Tenant
+   ```
+2. Navigate to **Advanced → Multi-Tenant**
+3. Select your project
+4. Create tenants:
+   ```
+   Name: Customer A
+   Subdomain: customer-a
+   Database: tenant_customer_a
+   Plan: Enterprise
+   ```
+5. Deploy to tenants
+
+**Tenant Features:**
+- **Database Isolation** - Separate database per tenant
+- **Storage Isolation** - Dedicated storage paths
+- **Custom Configuration** - Per-tenant environment variables
+- **Bulk Operations** - Deploy to multiple tenants
+- **Resource Quotas** - Limit CPU/memory per tenant
+- **Usage Analytics** - Track resource consumption
+- **Backup/Restore** - Tenant-specific backups
+- **Migration Tools** - Move tenants between servers
+
+**Deployment Strategies:**
+1. **Sequential** - Deploy one tenant at a time
+2. **Parallel** - Deploy to multiple tenants simultaneously
+3. **Canary** - Deploy to subset first
+4. **Blue-Green** - Zero-downtime tenant updates
+
+**Tenant Management Commands:**
+```bash
+# Create tenant
+php artisan tenant:create customer-a
+
+# Deploy to all tenants
+php artisan tenant:deploy --all
+
+# Backup specific tenant
+php artisan tenant:backup customer-a
+
+# Reset tenant data
+php artisan tenant:reset customer-a
+```
+
+---
+
 ## 🐛 Troubleshooting
 
 ### Critical Issues & Quick Fixes
@@ -764,6 +1038,38 @@ Docker:     Bridge 172.17.0.1
 
 ---
 
-**Version:** 2.4.1 | **Last Updated:** November 24, 2025
+## 🌐 Production Environment (November 25, 2025)
+
+### Current Deployment Status
+
+| Application | URL | Database | PHP | Status |
+|------------|-----|----------|-----|--------|
+| **Portfolio** | http://nilestack.duckdns.org | portfolio_db | 8.2 | ✅ Active |
+| **DevFlow Pro** | http://admin.nilestack.duckdns.org | devflow_pro | 8.2 | ✅ Active |
+| **ATS Pro** | http://ats.nilestack.duckdns.org | ats_pro | 8.3 | ✅ Configured |
+| **Portainer** | https://nilestack.duckdns.org:9443 | - | - | ✅ Active |
+
+### Infrastructure Details
+- **Server:** 31.220.90.121 (Ubuntu 24.04.3 LTS)
+- **Web Server:** Nginx 1.24.0
+- **Database:** MySQL 8.0 (User: devflow_user)
+- **Cache:** Redis 7.x
+- **Queue:** Supervisor with Laravel workers
+
+### Latest Updates (v2.5.1)
+- ✅ Fixed project show page tabs - now using server-side Blade rendering
+- ✅ Fixed Livewire component snapshot issues
+- ✅ Fixed deploy button functionality
+- ✅ Added @livewireStyles and @livewireScripts to layouts
+- ✅ Advanced Features: Kubernetes, CI/CD, Scripts, Notifications, Multi-tenant
+- ✅ Portfolio as main site on nilestack.duckdns.org
+- ✅ DevFlow Pro on secure admin subdomain
+- ✅ Unified MySQL user management
+- ✅ PHP 8.3 support for ATS Pro
+- ✅ All applications fully configured and operational
+
+---
+
+**Version:** 2.5.1 | **Last Updated:** November 26, 2025
 
 Happy Deploying! 🚀
