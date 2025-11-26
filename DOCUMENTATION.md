@@ -1,6 +1,6 @@
 # DevFlow Pro - Complete Documentation
 
-**Version:** 2.5.2
+**Version:** 2.5.3
 **Last Updated:** November 26, 2025
 
 This is the comprehensive documentation combining user guides, deployment instructions, features overview, and troubleshooting.
@@ -444,7 +444,35 @@ The system now automatically:
 3. Confirm change
 4. **Important:** Restart container to apply!
 
-### Custom Environment Variables
+### Server .env File Management (NEW in v2.5.3)
+
+**View and Edit Server .env Directly:**
+
+The Environment tab now shows the actual `.env` file from your server, allowing you to:
+- View all environment variables currently set on the server
+- Edit existing variables directly
+- Add new variables to the server .env file
+- Delete variables from the server
+
+**How to Use:**
+
+1. Go to Project → Environment tab
+2. The "Server .env File" section shows all variables from `/var/www/project-slug/.env`
+3. Click **Edit** next to any variable to modify it
+4. Click **Add Variable** to add new variables
+5. Click **Delete** to remove variables
+6. Click **Refresh** to reload the current server state
+
+**Security Features:**
+- 🔒 Sensitive values (PASSWORD, SECRET, KEY, TOKEN) are masked
+- 🔒 Changes are made via secure SSH connection
+- 🔒 Confirmation required before delete operations
+
+**Note:** Changes take effect immediately on the server. You may need to clear config cache (`php artisan config:clear`) or restart the container for Laravel to pick up new values.
+
+### Custom Environment Variables (Database)
+
+These variables are stored in DevFlow Pro's database and injected during deployment.
 
 **Pre-Configured Variables (Automatic):**
 - APP_ENV, APP_DEBUG, APP_KEY
@@ -453,14 +481,14 @@ The system now automatically:
 
 **Adding Custom Variables:**
 
-1. Environment tab → "Add Variable" button
+1. Environment tab → "Add Variable" button (in Environment Variables section)
 2. Enter name and value:
    ```
    Variable Name: API_KEY
    Value: your-api-key-here
    ```
 3. Click "Add Variable"
-4. **Restart container to apply**
+4. **Re-deploy to apply** (these are injected during deployment)
 
 **Security Features:**
 - 🔒 Values encrypted in database

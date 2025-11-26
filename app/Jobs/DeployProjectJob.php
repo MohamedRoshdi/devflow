@@ -47,52 +47,52 @@ class DeployProjectJob implements ShouldQueue
             $logs[] = "Repository: {$project->repository_url}";
             $logs[] = "Branch: {$project->branch}";
             $logs[] = "Path: {$projectPath}";
-            
-            // Check if repository already exists
-            if (file_exists("{$projectPath}/.git")) {
+
+            // Build SSH command helper for running commands as root on the server
+            $server = $project->server;
+            $sshPrefix = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 {$server->username}@{$server->ip_address}";
+
+            // Check if repository already exists (via SSH to ensure we check server state)
+            $checkResult = \Illuminate\Support\Facades\Process::run("{$sshPrefix} \"test -d {$projectPath}/.git && echo 'exists' || echo 'not_exists'\"");
+            $repoExists = trim($checkResult->output()) === 'exists';
+
+            if ($repoExists) {
                 $logs[] = "Repository already exists, pulling latest changes...";
-                
-                // Configure safe directory (use wildcard to avoid duplicates)
-                \Illuminate\Support\Facades\Process::run("git config --global safe.directory '*' 2>/dev/null || true");
-                
-                // Ensure correct ownership
-                \Illuminate\Support\Facades\Process::run("chown -R www-data:www-data {$projectPath} 2>/dev/null || true");
-                
-                // Reset any local changes and pull latest
-                $pullResult = \Illuminate\Support\Facades\Process::run(
-                    "cd {$projectPath} && git fetch origin {$project->branch} && git reset --hard origin/{$project->branch}"
-                );
-                
+
+                // Run git operations via SSH as root (fixes permission issues)
+                $gitCommand = "cd {$projectPath} && " .
+                    "git config --global safe.directory '*' && " .
+                    "chown -R root:root {$projectPath}/.git {$projectPath}/storage {$projectPath}/bootstrap 2>/dev/null || true && " .
+                    "git fetch origin {$project->branch} && " .
+                    "git reset --hard origin/{$project->branch} && " .
+                    "chown -R 1000:1000 {$projectPath}/storage {$projectPath}/bootstrap/cache && " .
+                    "chmod -R 775 {$projectPath}/storage {$projectPath}/bootstrap/cache";
+
+                $pullResult = \Illuminate\Support\Facades\Process::timeout(120)->run("{$sshPrefix} \"{$gitCommand}\"");
+
                 if (!$pullResult->successful()) {
                     throw new \Exception('Git pull failed: ' . $pullResult->errorOutput());
                 }
-                
+
                 $logs[] = "✓ Repository updated successfully";
             } else {
                 // Repository doesn't exist, clone it
                 $logs[] = "Cloning repository...";
-                
-                // Configure safe directory (use wildcard to avoid duplicates)
-                \Illuminate\Support\Facades\Process::run("git config --global safe.directory '*' 2>/dev/null || true");
-                
-                // Remove directory if it exists but isn't a git repo
-            if (file_exists($projectPath)) {
-                    $logs[] = "Removing non-git directory...";
-                \Illuminate\Support\Facades\Process::run("rm -rf {$projectPath}");
-            }
-            
-            $cloneResult = \Illuminate\Support\Facades\Process::run(
-                "git clone --branch {$project->branch} {$project->repository_url} {$projectPath}"
-            );
-            
-            if (!$cloneResult->successful()) {
-                throw new \Exception('Git clone failed: ' . $cloneResult->errorOutput());
-            }
-                
-                // Ensure correct ownership
-                \Illuminate\Support\Facades\Process::run("chown -R www-data:www-data {$projectPath}");
-            
-            $logs[] = "✓ Repository cloned successfully";
+
+                // Run clone via SSH as root
+                $cloneCommand = "git config --global safe.directory '*' && " .
+                    "rm -rf {$projectPath} 2>/dev/null || true && " .
+                    "git clone --branch {$project->branch} {$project->repository_url} {$projectPath} && " .
+                    "chown -R 1000:1000 {$projectPath}/storage {$projectPath}/bootstrap/cache && " .
+                    "chmod -R 775 {$projectPath}/storage {$projectPath}/bootstrap/cache";
+
+                $cloneResult = \Illuminate\Support\Facades\Process::timeout(300)->run("{$sshPrefix} \"{$cloneCommand}\"");
+
+                if (!$cloneResult->successful()) {
+                    throw new \Exception('Git clone failed: ' . $cloneResult->errorOutput());
+                }
+
+                $logs[] = "✓ Repository cloned successfully";
             }
             $logs[] = "";
 
@@ -171,13 +171,25 @@ class DeployProjectJob implements ShouldQueue
                 throw new \Exception('Start failed: ' . ($startResult['error'] ?? 'Unknown error'));
             }
             
-            $logs[] = "Container started successfully with ID: " . ($startResult['container_id'] ?? 'unknown');
+            $logs[] = "Container started successfully";
+            if (isset($startResult['message'])) {
+                $logs[] = $startResult['message'];
+            }
             $logs[] = "";
 
             // Step 5: Laravel Optimization (inside container)
             $logs[] = "=== Laravel Optimization ===";
             $logs[] = "Running Laravel optimization commands inside container...";
-            
+
+            // Determine the correct container name
+            $usesCompose = $dockerService->usesDockerCompose($project);
+            $containerName = $usesCompose
+                ? $dockerService->getAppContainerName($project)
+                : $project->slug;
+
+            $logs[] = "Target container: {$containerName}";
+            $logs[] = "";
+
             $optimizationCommands = [
                 'composer install --optimize-autoloader --no-dev' => 'Installing/updating dependencies',
                 'php artisan config:cache' => 'Caching configuration',
@@ -191,9 +203,9 @@ class DeployProjectJob implements ShouldQueue
 
             foreach ($optimizationCommands as $cmd => $description) {
                 $logs[] = "→ {$description}...";
-                $dockerCmd = "docker exec {$project->slug} {$cmd} 2>&1 || echo 'Command may have already run or not applicable'";
+                $dockerCmd = "docker exec {$containerName} {$cmd} 2>&1 || echo 'Command may have already run or not applicable'";
                 $result = \Illuminate\Support\Facades\Process::run($dockerCmd);
-                
+
                 // Log output but don't fail deployment if optimization fails
                 if ($result->successful() || str_contains($result->output(), 'already')) {
                     $logs[] = "  ✓ {$description} completed";
@@ -201,7 +213,7 @@ class DeployProjectJob implements ShouldQueue
                     $logs[] = "  ⚠ {$description} skipped or failed (not critical)";
                 }
             }
-            
+
             $logs[] = "✓ Laravel optimization completed";
             $logs[] = "";
             
