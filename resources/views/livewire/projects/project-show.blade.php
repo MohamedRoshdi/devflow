@@ -500,7 +500,12 @@
                                                     @if($domain->is_primary)
                                                         <span class="px-2 py-1 bg-blue-500 text-white text-xs rounded-full font-medium">Primary</span>
                                                     @endif
-                                                    <span class="text-xs text-gray-600 dark:text-gray-400">{{ ucfirst($domain->status) }}</span>
+                                                    <span class="text-xs font-medium
+                                                        @if($domain->status === 'active') text-green-600 dark:text-green-400
+                                                        @elseif($domain->status === 'pending') text-yellow-600 dark:text-yellow-400
+                                                        @elseif($domain->status === 'failed' || $domain->status === 'expired') text-red-600 dark:text-red-400
+                                                        @else text-gray-600 dark:text-gray-400
+                                                        @endif">{{ ucfirst($domain->status) }}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -540,23 +545,8 @@
         @if($activeTab === 'git')
         <div class="space-y-8">
 
-            <!-- Loading State for Git Tab -->
-            <div wire:loading wire:target="prepareGitTab,refreshGitData" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 overflow-hidden p-12">
-                <div class="flex flex-col items-center justify-center space-y-6">
-                    <div class="relative w-20 h-20">
-                        <div class="absolute inset-0 border-4 border-blue-200 dark:border-blue-800 rounded-full"></div>
-                        <div class="absolute inset-0 border-4 border-blue-600 dark:border-blue-400 rounded-full border-t-transparent animate-spin"></div>
-                    </div>
-                    <div class="text-center space-y-2">
-                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Loading Git Data...</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Fetching commits and repository information</p>
-                    </div>
-                </div>
-            </div>
-
             <!-- Git Content -->
-            <div wire:loading.remove wire:target="prepareGitTab,refreshGitData"
-                 class="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 overflow-hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 overflow-hidden">
                 <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-blue-900 p-6 sm:p-8">
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                         <div>
@@ -574,10 +564,15 @@
                         <div class="flex flex-wrap items-center gap-3">
                             <button wire:click="refreshGitData"
                                     wire:loading.attr="disabled"
-                                    wire:loading.class="opacity-50 cursor-wait"
-                                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-full font-semibold transition">
-                                <svg class="w-4 h-4" wire:loading.class="animate-spin" wire:target="refreshGitData" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    wire:loading.class="!bg-blue-600 scale-105"
+                                    wire:target="refreshGitData"
+                                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-full font-semibold transition-all duration-200">
+                                <svg wire:loading.remove wire:target="refreshGitData" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v6h6M20 20v-6h-6M5.63 18.37A9 9 0 1118.37 5.63L19 6M5 19l.63-.63" />
+                                </svg>
+                                <svg wire:loading wire:target="refreshGitData" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
                                 <span wire:loading.remove wire:target="refreshGitData">Refresh</span>
                                 <span wire:loading wire:target="refreshGitData">Refreshing…</span>

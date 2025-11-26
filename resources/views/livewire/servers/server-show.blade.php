@@ -167,7 +167,13 @@
                                 <a href="{{ route('projects.show', $project) }}" class="font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                                     {{ $project->name }}
                                 </a>
-                                <span class="text-sm text-gray-600 dark:text-gray-400">{{ ucfirst($project->status) }}</span>
+                                <span class="text-sm font-medium
+                                    @if($project->status === 'running') text-green-600 dark:text-green-400
+                                    @elseif($project->status === 'stopped') text-gray-500 dark:text-gray-400
+                                    @elseif($project->status === 'building') text-yellow-600 dark:text-yellow-400
+                                    @elseif($project->status === 'failed') text-red-600 dark:text-red-400
+                                    @else text-gray-600 dark:text-gray-400
+                                    @endif">{{ ucfirst($project->status) }}</span>
                             </div>
                         @endforeach
                     </div>

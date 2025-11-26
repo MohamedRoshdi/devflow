@@ -1,7 +1,8 @@
 # DevFlow Pro - System Credentials & Access Information
 
-**Last Updated:** November 24, 2025
+**Last Updated:** November 25, 2025
 **Environment:** Production
+**Version:** 2.5.0 with Advanced Features
 
 ---
 
@@ -32,16 +33,20 @@ ssh root@31.220.90.121
 
 ### MySQL Database
 
-**Connection Details:**
-- **Host:** `127.0.0.1` (localhost)
+**Primary User (All Applications):**
+- **Host:** `127.0.0.1` or `localhost`
 - **Port:** `3306`
-- **Database Name:** `devflow_pro`
-- **Username:** `devflow`
-- **Password:** `devflow_secure_password_123`
+- **Username:** `devflow_user`
+- **Password:** `devflow_pass`
+
+**Databases:**
+- `devflow_pro` - DevFlow Pro Admin Panel
+- `portfolio_db` - Portfolio Website
+- `ats_pro` - ATS Pro Application
 
 **Root Access:**
 - **Username:** `root`
-- **Password:** (Set during installation - check secure notes)
+- **Password:** (Requires sudo on server)
 
 **For Docker Containers:**
 - **Host:** `172.17.0.1` (Docker bridge gateway)
@@ -61,9 +66,12 @@ FLUSH PRIVILEGES;
 
 ### DevFlow Pro Application
 
-**Production URL:**
+**Production URLs:**
 ```
-http://31.220.90.121
+Portfolio Site: http://nilestack.duckdns.org
+Admin Panel: http://admin.nilestack.duckdns.org
+ATS System: http://ats.nilestack.duckdns.org
+Direct IP: http://31.220.90.121 (shows portfolio)
 ```
 
 **Application Path:**
@@ -81,7 +89,7 @@ http://31.220.90.121
 APP_NAME=DevFlowPro
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=http://31.220.90.121
+APP_URL=http://admin.nilestack.duckdns.org
 APP_KEY=base64:T8rSGPT1V36a7b0wc2YvB/jj7uoBB19ys3gyXHVc8cQ=
 ```
 
@@ -196,8 +204,10 @@ systemctl reload nginx
 
 **PHP-FPM:**
 ```bash
-systemctl status php8.2-fpm
+systemctl status php8.2-fpm    # DevFlow & Portfolio
 systemctl restart php8.2-fpm
+systemctl status php8.3-fpm    # ATS Pro
+systemctl restart php8.3-fpm
 ```
 
 **MySQL:**
@@ -422,6 +432,11 @@ https://github.com/yourusername/devflow-pro
 | 2025-11-24 | System | Database configured and migrations run |
 | 2025-11-24 | System | SSH key authentication set up |
 | 2025-11-24 | System | All services started and verified |
+| 2025-11-25 | System | Portfolio configured as main site |
+| 2025-11-25 | System | DevFlow moved to admin subdomain |
+| 2025-11-25 | System | MySQL user devflow_user created |
+| 2025-11-25 | System | PHP 8.3 installed for ATS Pro |
+| 2025-11-25 | System | All three applications configured |
 
 ---
 

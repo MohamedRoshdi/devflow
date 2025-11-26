@@ -43,10 +43,11 @@ class TenantManager extends Component
         'plan' => 'required|in:basic,pro,enterprise',
     ];
 
-    public function mount($projectId = null)
+    public function mount($project = null)
     {
-        if ($projectId) {
-            $this->selectedProject = $projectId;
+        // Handle both route parameter name 'project' and direct ID
+        if ($project) {
+            $this->selectedProject = is_numeric($project) ? $project : $project;
         }
     }
 

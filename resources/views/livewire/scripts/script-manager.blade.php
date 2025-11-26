@@ -210,11 +210,11 @@
                             <div class="mt-4">
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Script Content</label>
                                 <div class="bg-gray-100 dark:bg-gray-900 rounded p-2 text-xs mb-2">
-                                    Available variables: {{PROJECT_NAME}}, {{PROJECT_SLUG}}, {{BRANCH}}, {{COMMIT_HASH}}, {{TIMESTAMP}}, {{DOMAIN}}
+                                    Available variables: @{{PROJECT_NAME}}, @{{PROJECT_SLUG}}, @{{BRANCH}}, @{{COMMIT_HASH}}, @{{TIMESTAMP}}, @{{DOMAIN}}
                                 </div>
                                 <textarea wire:model="content" rows="15"
                                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white font-mono text-sm"
-                                    placeholder="#!/bin/bash&#10;&#10;echo 'Starting deployment for {{PROJECT_NAME}}'&#10;cd {{PROJECT_PATH}}&#10;git pull origin {{BRANCH}}"></textarea>
+                                    placeholder="#!/bin/bash&#10;&#10;echo 'Starting deployment for @{{PROJECT_NAME}}'&#10;cd @{{PROJECT_PATH}}&#10;git pull origin @{{BRANCH}}"></textarea>
                                 @error('content') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                             </div>
                         </div>

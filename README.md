@@ -1,11 +1,23 @@
-# DevFlow Pro - Professional Deployment Management System
+# DevFlow Pro - Advanced Multi-Project Deployment & Management System
 
-> **Modern, powerful, and easy-to-use deployment platform for managing multiple projects across multiple servers.**
+> **Enterprise-grade deployment platform with Kubernetes, CI/CD, and multi-tenant support for managing projects at scale.**
 
-[![Version](https://img.shields.io/badge/version-2.4.0-blue.svg)](https://github.com/yourusername/devflow-pro)
+[![Version](https://img.shields.io/badge/version-2.5.3-blue.svg)](https://github.com/yourusername/devflow-pro)
 [![Laravel](https://img.shields.io/badge/Laravel-12-red.svg)](https://laravel.com)
 [![Livewire](https://img.shields.io/badge/Livewire-3-purple.svg)](https://livewire.laravel.com)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg)](https://docker.com)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-326CE5.svg)](https://kubernetes.io)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
+## 🌐 Live Production Access
+
+| Service | URL | Purpose | Status |
+|---------|-----|---------|--------|
+| **Portfolio Site** | [nilestack.duckdns.org](http://nilestack.duckdns.org) | Main portfolio website | ✅ Active |
+| **DevFlow Admin** | [admin.nilestack.duckdns.org](http://admin.nilestack.duckdns.org) | Project management panel | ✅ Active |
+| **ATS Pro** | [ats.nilestack.duckdns.org](http://ats.nilestack.duckdns.org) | Applicant tracking system | ✅ Configured |
+| **Portainer** | [nilestack.duckdns.org:9443](https://nilestack.duckdns.org:9443) | Docker management | ✅ Active |
+| **Documentation** | [SYSTEM_URLS.md](SYSTEM_URLS.md) | Complete URL reference | 📚 Updated |
 
 ---
 
@@ -33,6 +45,7 @@ DevFlow Pro is a **complete deployment management system** that makes it easy to
 - **Modern Tabbed Interface** - Beautiful 5-tab navigation (Overview/Docker/Environment/Git/Deployments) ⭐ NEW v2.4!
 - **Environment Management** - Configure APP_ENV per project (Local/Dev/Staging/Prod) ⭐ NEW v2.4!
 - **Custom Environment Variables** - Add unlimited env vars with secure storage ⭐ NEW v2.4!
+- **Server .env File Management** - View/edit server .env files directly via SSH ⭐ NEW v2.5.3!
 - **Clickable Project Cards** - Entire cards clickable for better UX ⭐ NEW v2.4!
 
 ### 🖥️ Server Management
@@ -111,6 +124,56 @@ DevFlow Pro is a **complete deployment management system** that makes it easy to
 - **Secure Authentication** - Laravel's built-in auth with password hashing
 - **User Assignments** - Link users to specific projects
 - **Invite-Only Access** - Self-service registration is disabled; admins provision and share credentials ⭐ NEW v2.4.1!
+
+### ☸️ Kubernetes Integration ⭐ NEW v2.5!
+- **Multi-Cluster Management** - Add and manage multiple K8s clusters
+- **One-Click Deployment** - Deploy projects directly to Kubernetes
+- **Pod Monitoring** - Real-time pod status, logs, and metrics
+- **Auto-Scaling** - Configure horizontal pod autoscaling
+- **Helm Support** - Deploy using Helm charts
+- **Namespace Isolation** - Organize deployments by namespace
+- **Rolling Updates** - Zero-downtime deployments
+- **Secret Management** - Encrypted kubeconfig storage
+
+### 🔧 CI/CD Pipeline Automation ⭐ NEW v2.5!
+- **Multi-Provider Support** - GitHub Actions, GitLab CI, Bitbucket, Jenkins
+- **Visual Pipeline Builder** - Drag-and-drop pipeline configuration
+- **Template Library** - Pre-built pipelines for common scenarios
+- **Parallel Execution** - Run multiple jobs concurrently
+- **Artifact Management** - Store and retrieve build artifacts
+- **Pipeline Triggers** - Manual, push, PR, schedule triggers
+- **Build Status Tracking** - Real-time pipeline execution monitoring
+- **YAML Generation** - Export pipelines as YAML for version control
+
+### 📜 Custom Deployment Scripts ⭐ NEW v2.5!
+- **Multi-Language Support** - Bash, Python, PHP, Node.js, Ruby
+- **Template Variables** - Dynamic substitution (PROJECT_NAME, BRANCH, etc.)
+- **Script Library** - Save and reuse common scripts
+- **Version Control** - Track script changes with rollback capability
+- **Execution History** - Detailed logs and output capture
+- **Scheduled Execution** - Cron-based script scheduling
+- **Error Handling** - Automatic retry and failure notifications
+- **Secure Execution** - Sandboxed environment with timeout controls
+
+### 🔔 Smart Notification System ⭐ NEW v2.5!
+- **Multiple Channels** - Slack, Discord, Microsoft Teams, Custom Webhooks
+- **Event-Driven** - Deployment status, health checks, alerts
+- **Rich Formatting** - Markdown support with embeds and attachments
+- **Delivery Tracking** - Monitor notification delivery status
+- **Custom Templates** - Create reusable message templates
+- **Silent Hours** - Configure quiet periods
+- **Channel Testing** - Test notifications before enabling
+- **Notification History** - Audit trail of all notifications
+
+### 🏢 Multi-Tenant Architecture ⭐ NEW v2.5!
+- **Tenant Isolation** - Separate databases and storage per tenant
+- **Bulk Operations** - Deploy to multiple tenants simultaneously
+- **Custom Configurations** - Per-tenant environment variables
+- **Resource Quotas** - Limit resources per tenant
+- **Usage Analytics** - Track resource usage and costs
+- **Tenant Backup** - Automated backup strategies
+- **Migration Tools** - Move tenants between servers
+- **White-Label Support** - Custom branding per tenant
 
 ---
 
@@ -529,7 +592,20 @@ For simple static sites, select "Static Site" framework - no build process neede
 
 See [COMPREHENSIVE_IMPROVEMENT_PLAN.md](COMPREHENSIVE_IMPROVEMENT_PLAN.md) for the complete roadmap.
 
-### Recently Added (v2.4.0) ⭐ LATEST! November 11, 2025
+### Recently Added (v2.5.3) ⭐ LATEST! November 26, 2025
+- ✅ **🔧 Server .env File Management** - Direct server environment management
+  - View all .env variables from deployed project on server
+  - Edit/add/delete variables directly via SSH
+  - Real-time sync with server .env file
+  - Secure SSH-based operations
+- ✅ **🔄 Git Operations Fix** - All git operations now run via SSH as root
+  - Fixes "fetch failed" errors when www-data lacks GitHub SSH keys
+  - Reliable commit checking and fetching on remote servers
+- ✅ **📝 Clear Logs Fix** - Permission-safe log clearing
+  - Uses truncate instead of chown to avoid permission denied errors
+  - Works with Docker containers where ownership can't be changed
+
+### Recently Added (v2.4.0) November 11, 2025
 - ✅ **⚙️ Environment Management** - Complete APP_ENV configuration system
   - Select environment per project (Local/Development/Staging/Production)
   - Auto-inject APP_DEBUG based on selection
@@ -585,6 +661,48 @@ See [COMPREHENSIVE_IMPROVEMENT_PLAN.md](COMPREHENSIVE_IMPROVEMENT_PLAN.md) for t
 - ✅ **Dockerfile Detection** - Respects your Dockerfile/Dockerfile.production
 - ✅ **Extended Timeouts** - 20 minutes for large npm builds
 - ✅ **Auto-Scrolling Logs** - Smart log viewer with terminal style
+
+---
+
+## 📅 Latest Deployment (November 25, 2025)
+
+### 🚀 Production Environment Status
+
+**Server Information:**
+- **IP Address:** 31.220.90.121
+- **Operating System:** Ubuntu 24.04.3 LTS
+- **PHP Versions:** 8.2 (DevFlow/Portfolio) & 8.3 (ATS Pro)
+- **Web Server:** Nginx 1.24.0
+- **Database:** MySQL 8.0 with unified user management
+
+### 🌐 Active Services
+
+1. **Portfolio Website** (Main Domain)
+   - URL: http://nilestack.duckdns.org
+   - Framework: Laravel 12
+   - Database: portfolio_db
+   - Status: ✅ Fully operational
+
+2. **DevFlow Pro** (Admin Panel)
+   - URL: http://admin.nilestack.duckdns.org
+   - Framework: Laravel 12 + Livewire 3
+   - Database: devflow_pro
+   - Features: All v2.5 features active including Kubernetes, CI/CD, Scripts, Notifications, Multi-tenant
+
+3. **ATS Pro** (Applicant Tracking)
+   - URL: http://ats.nilestack.duckdns.org
+   - Framework: Laravel 12
+   - Database: ats_pro
+   - Status: ✅ Database configured, migrations complete
+
+### 🔧 Recent Configuration Updates
+- ✅ Portfolio set as main site on nilestack.duckdns.org
+- ✅ DevFlow Pro moved to secure admin subdomain
+- ✅ MySQL user `devflow_user` created with access to all databases
+- ✅ All three applications configured with proper environment variables
+- ✅ PHP 8.3 installed for ATS Pro compatibility
+- ✅ Redis configured for caching and queues
+- ✅ All nginx configurations optimized for production
 - ✅ **Step Indicators** - Visual deployment step progress
 
 ### Completed (v2.0)
