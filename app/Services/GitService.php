@@ -10,25 +10,13 @@ class GitService
 {
     /**
      * Check if server is localhost
+     * Note: Even for localhost, we use SSH to run commands as root for git operations
+     * since the web server runs as www-data which doesn't have SSH keys for GitHub
      */
     protected function isLocalhost(Server $server): bool
     {
-        $localIPs = ['127.0.0.1', '::1', 'localhost'];
-        
-        if (in_array($server->ip_address, $localIPs)) {
-            return true;
-        }
-
-        // Check if IP matches server's own IP
-        try {
-            $publicIP = trim(file_get_contents('http://api.ipify.org'));
-            if ($server->ip_address === $publicIP) {
-                return true;
-            }
-        } catch (\Exception $e) {
-            // Ignore
-        }
-
+        // Always return false to use SSH - this ensures git commands run as root
+        // which has the SSH keys configured for GitHub access
         return false;
     }
 
