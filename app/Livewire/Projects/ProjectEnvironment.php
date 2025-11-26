@@ -60,8 +60,51 @@ class ProjectEnvironment extends Component
         $project = $this->getProject();
         $project->update(['environment' => $this->environment]);
 
+        // Also update APP_ENV in the server's .env file
+        $this->updateServerAppEnv($this->environment);
+
         session()->flash('message', 'Environment updated to ' . ucfirst($this->environment));
         $this->dispatch('environmentUpdated');
+    }
+
+    /**
+     * Update APP_ENV in the server's .env file
+     */
+    protected function updateServerAppEnv(string $environment): void
+    {
+        try {
+            $project = $this->getProject();
+            $server = $project->server;
+
+            if (!$server) {
+                return;
+            }
+
+            $projectPath = "/var/www/{$project->slug}";
+
+            // Update APP_ENV and APP_DEBUG based on environment
+            $appDebug = in_array($environment, ['local', 'development']) ? 'true' : 'false';
+
+            $updateCommand = "cd {$projectPath} && " .
+                "if [ -f .env ]; then " .
+                "sed -i 's|^APP_ENV=.*|APP_ENV={$environment}|' .env && " .
+                "sed -i 's|^APP_DEBUG=.*|APP_DEBUG={$appDebug}|' .env && " .
+                "echo 'SUCCESS'; else echo 'NO_ENV'; fi";
+
+            $sshCommand = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 {$server->username}@{$server->ip_address} \"{$updateCommand}\"";
+
+            $process = Process::fromShellCommandline($sshCommand);
+            $process->setTimeout(30);
+            $process->run();
+
+            if ($process->isSuccessful() && str_contains($process->getOutput(), 'SUCCESS')) {
+                // Reload server env variables to show updated values
+                $this->loadServerEnv();
+            }
+        } catch (\Exception $e) {
+            // Log error but don't fail the environment update
+            \Log::warning("Failed to update server APP_ENV: " . $e->getMessage());
+        }
     }
 
     public function openEnvModal()
