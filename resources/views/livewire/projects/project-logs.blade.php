@@ -14,13 +14,34 @@
                 </p>
             </div>
             <div class="flex flex-wrap items-center gap-3">
-                <button wire:click="refreshLogs" wire:loading.attr="disabled"
+                <button wire:click="refreshLogs"
+                        wire:loading.attr="disabled"
+                        wire:target="refreshLogs"
                         class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/15 hover:bg-white/25 text-sm font-semibold tracking-wide uppercase transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg wire:loading.remove wire:target="refreshLogs" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v6h6M20 20v-6h-6M5.63 18.37A9 9 0 1118.37 5.63L19 6M5 19l.63-.63" />
                     </svg>
-                    <span wire:loading.remove>Refresh</span>
-                    <span wire:loading>Refreshing…</span>
+                    <svg wire:loading wire:target="refreshLogs" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span wire:loading.remove wire:target="refreshLogs">Refresh</span>
+                    <span wire:loading wire:target="refreshLogs">Refreshing…</span>
+                </button>
+                <button wire:click="clearLogs"
+                        wire:loading.attr="disabled"
+                        wire:target="clearLogs"
+                        wire:confirm="Are you sure you want to clear all logs? This action cannot be undone."
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-200 text-sm font-semibold tracking-wide uppercase transition">
+                    <svg wire:loading.remove wire:target="clearLogs" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    <svg wire:loading wire:target="clearLogs" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span wire:loading.remove wire:target="clearLogs">Clear Logs</span>
+                    <span wire:loading wire:target="clearLogs">Clearing…</span>
                 </button>
             </div>
         </div>

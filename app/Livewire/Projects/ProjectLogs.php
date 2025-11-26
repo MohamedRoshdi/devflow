@@ -55,6 +55,25 @@ class ProjectLogs extends Component
         $this->loadLogs();
     }
 
+    public function clearLogs(): void
+    {
+        $project = $this->getProject();
+        $dockerService = app(DockerService::class);
+
+        try {
+            $result = $dockerService->clearLaravelLogs($project);
+
+            if ($result['success'] ?? false) {
+                session()->flash('message', 'Logs cleared successfully');
+                $this->loadLogs();
+            } else {
+                $this->error = $result['error'] ?? 'Failed to clear logs';
+            }
+        } catch (\Throwable $e) {
+            $this->error = 'Failed to clear logs: ' . $e->getMessage();
+        }
+    }
+
     protected function loadLogs(): void
     {
         $this->loading = true;

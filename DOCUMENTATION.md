@@ -1,6 +1,6 @@
 # DevFlow Pro - Complete Documentation
 
-**Version:** 2.5.1
+**Version:** 2.5.2
 **Last Updated:** November 26, 2025
 
 This is the comprehensive documentation combining user guides, deployment instructions, features overview, and troubleshooting.
@@ -358,10 +358,11 @@ After pushing code changes:
 - Filtered by project slug for security
 
 **3. Logs Tab**
-- Real-time container logs
+- Real-time container logs (Docker output) or Laravel application logs
 - Terminal-style display (green text on dark background)
-- Adjustable line count (50-500)
+- Adjustable line count (100-1000)
 - One-click refresh
+- **Clear Logs button** - Clears Laravel logs for fresh error capture (with confirmation dialog)
 
 **Common Tasks:**
 

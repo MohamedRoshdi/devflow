@@ -406,6 +406,49 @@ class DockerService
         }
     }
 
+    public function clearLaravelLogs(Project $project): array
+    {
+        try {
+            $server = $project->server;
+            $hostPath = "/var/www/{$project->slug}/storage/logs/laravel.log";
+
+            // Clear logs and preserve ownership/permissions (1000:1000 is typical container user)
+            $hostCommand = "if [ -f {$hostPath} ]; then > {$hostPath} && chown 1000:1000 {$hostPath} && chmod 664 {$hostPath} && echo 'cleared'; else echo 'not_found'; fi";
+            $command = $this->isLocalhost($server)
+                ? $hostCommand
+                : $this->buildSSHCommand($server, $hostCommand);
+
+            $process = Process::fromShellCommandline($command);
+            $process->run();
+
+            $output = trim($process->getOutput());
+
+            if ($process->isSuccessful() && $output === 'cleared') {
+                return [
+                    'success' => true,
+                    'message' => 'Laravel logs cleared successfully',
+                ];
+            }
+
+            if ($output === 'not_found') {
+                return [
+                    'success' => false,
+                    'error' => "Log file not found at {$hostPath}",
+                ];
+            }
+
+            return [
+                'success' => false,
+                'error' => 'Could not clear logs: ' . ($process->getErrorOutput() ?: 'Unknown error'),
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
     protected function buildSSHCommand(Server $server, string $remoteCommand): string
     {
         $sshOptions = [
