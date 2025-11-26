@@ -20,7 +20,7 @@ return [
     ],
     'render_on_redirect' => false,
     'legacy_model_binding' => false,
-    'inject_assets' => true,
+    'inject_assets' => false,
     'navigate' => [
         'show_progress_bar' => true,
         'progress_bar_color' => '#2299dd',
