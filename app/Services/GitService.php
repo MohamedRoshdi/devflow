@@ -173,13 +173,17 @@ class GitService
         try {
             $server = $project->server;
             $projectPath = "/var/www/{$project->slug}";
-            
+
             if (!$this->isRepositoryCloned($projectPath, $server)) {
                 return null;
             }
 
-            $command = "cd {$projectPath} && git log -1 --pretty=format:'%H|%an|%at|%s'";
-            $result = Process::run($command);
+            $gitCommand = "cd {$projectPath} && git log -1 --pretty=format:'%H|%an|%at|%s'";
+            $command = $this->isLocalhost($server)
+                ? $gitCommand
+                : $this->buildSSHCommand($server, $gitCommand);
+
+            $result = Process::timeout(15)->run($command);
 
             if (!$result->successful()) {
                 return null;
@@ -371,7 +375,7 @@ class GitService
         try {
             $server = $project->server;
             $projectPath = "/var/www/{$project->slug}";
-            
+
             if (!$this->isRepositoryCloned($projectPath, $server)) {
                 return [
                     'success' => false,
@@ -379,8 +383,12 @@ class GitService
                 ];
             }
 
-            $command = "cd {$projectPath} && git log {$fromCommit}..{$toCommit} --pretty=format:'%H|%an|%at|%s'";
-            $result = Process::run($command);
+            $gitCommand = "cd {$projectPath} && git log {$fromCommit}..{$toCommit} --pretty=format:'%H|%an|%at|%s'";
+            $command = $this->isLocalhost($server)
+                ? $gitCommand
+                : $this->buildSSHCommand($server, $gitCommand);
+
+            $result = Process::timeout(15)->run($command);
 
             if (!$result->successful()) {
                 return [
@@ -391,12 +399,12 @@ class GitService
 
             $commits = [];
             $lines = explode("\n", trim($result->output()));
-            
+
             foreach ($lines as $line) {
                 if (empty($line)) continue;
-                
+
                 [$hash, $author, $timestamp, $message] = explode('|', $line, 4);
-                
+
                 $commits[] = [
                     'hash' => $hash,
                     'short_hash' => substr($hash, 0, 7),
