@@ -18,6 +18,7 @@ class Server extends Model
         'port',
         'username',
         'ssh_key',
+        'ssh_password',
         'status',
         'os',
         'cpu_cores',
@@ -30,6 +31,11 @@ class Server extends Model
         'location_name',
         'last_ping_at',
         'metadata',
+    ];
+
+    protected $hidden = [
+        'ssh_key',
+        'ssh_password',
     ];
 
     protected function casts(): array

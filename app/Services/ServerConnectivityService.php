@@ -96,13 +96,18 @@ class ServerConnectivityService
 
             $info = [];
             foreach ($commands as $key => $cmd) {
-                $command = $this->buildSSHCommand($server, $cmd);
+                $command = $this->buildSSHCommand($server, $cmd, true);
                 $process = Process::fromShellCommandline($command);
                 $process->setTimeout(10);
                 $process->run();
 
                 if ($process->isSuccessful()) {
-                    $info[$key] = trim($process->getOutput());
+                    $output = trim($process->getOutput());
+                    // For numeric fields, extract only the number
+                    if (in_array($key, ['cpu_cores', 'memory_gb', 'disk_gb'])) {
+                        $output = $this->extractNumericValue($output);
+                    }
+                    $info[$key] = $output;
                 }
             }
 
@@ -116,6 +121,28 @@ class ServerConnectivityService
 
             return [];
         }
+    }
+
+    /**
+     * Extract numeric value from output (handles SSH warnings mixed in output)
+     */
+    protected function extractNumericValue(string $output): ?int
+    {
+        // Split by lines and find the first line that is purely numeric
+        $lines = explode("\n", $output);
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (is_numeric($line)) {
+                return (int) $line;
+            }
+        }
+
+        // Try to extract any number from the output
+        if (preg_match('/(\d+)/', $output, $matches)) {
+            return (int) $matches[1];
+        }
+
+        return null;
     }
 
     /**
@@ -177,16 +204,41 @@ class ServerConnectivityService
 
     /**
      * Build SSH command
+     *
+     * @param Server $server
+     * @param string $remoteCommand
+     * @param bool $suppressWarnings - If true, redirects stderr to /dev/null
      */
-    protected function buildSSHCommand(Server $server, string $remoteCommand): string
+    protected function buildSSHCommand(Server $server, string $remoteCommand, bool $suppressWarnings = false): string
     {
         $sshOptions = [
             '-o StrictHostKeyChecking=no',
             '-o UserKnownHostsFile=/dev/null',
             '-o ConnectTimeout=10',
-            '-o BatchMode=yes',
+            '-o LogLevel=ERROR',
             '-p ' . $server->port,
         ];
+
+        $stderrRedirect = $suppressWarnings ? '2>/dev/null' : '2>&1';
+
+        // Check if password authentication should be used
+        if ($server->ssh_password) {
+            // Use sshpass for password authentication
+            $escapedPassword = escapeshellarg($server->ssh_password);
+
+            return sprintf(
+                'sshpass -p %s ssh %s %s@%s "%s" %s',
+                $escapedPassword,
+                implode(' ', $sshOptions),
+                $server->username,
+                $server->ip_address,
+                addslashes($remoteCommand),
+                $stderrRedirect
+            );
+        }
+
+        // Use SSH key authentication
+        $sshOptions[] = '-o BatchMode=yes';
 
         if ($server->ssh_key) {
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
@@ -196,11 +248,12 @@ class ServerConnectivityService
         }
 
         return sprintf(
-            'ssh %s %s@%s "%s" 2>&1',
+            'ssh %s %s@%s "%s" %s',
             implode(' ', $sshOptions),
             $server->username,
             $server->ip_address,
-            addslashes($remoteCommand)
+            addslashes($remoteCommand),
+            $stderrRedirect
         );
     }
 }

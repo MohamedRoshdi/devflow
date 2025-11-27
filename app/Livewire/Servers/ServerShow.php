@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Server;
 use App\Services\ServerConnectivityService;
 use App\Services\DockerService;
+use App\Services\DockerInstallationService;
 use Livewire\Attributes\On;
 
 class ServerShow extends Component
@@ -77,7 +78,7 @@ class ServerShow extends Component
         try {
             $dockerService = app(DockerService::class);
             $dockerCheck = $dockerService->checkDockerInstallation($this->server);
-            
+
             if ($dockerCheck['installed']) {
                 $this->server->update([
                     'docker_installed' => true,
@@ -91,10 +92,31 @@ class ServerShow extends Component
                 ]);
                 session()->flash('error', 'Docker not found on this server');
             }
-            
+
             $this->server->refresh();
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to check Docker: ' . $e->getMessage());
+        }
+    }
+
+    public function installDocker()
+    {
+        try {
+            session()->flash('info', 'Installing Docker... This may take a few minutes.');
+
+            $installationService = app(DockerInstallationService::class);
+            $result = $installationService->installDocker($this->server);
+
+            if ($result['success']) {
+                $this->server->refresh();
+                session()->flash('message', $result['message'] . ' Version: ' . ($result['version'] ?? 'unknown'));
+                $this->dispatch('docker-installed');
+            } else {
+                session()->flash('error', $result['message']);
+            }
+
+        } catch (\Exception $e) {
+            session()->flash('error', 'Docker installation failed: ' . $e->getMessage());
         }
     }
 

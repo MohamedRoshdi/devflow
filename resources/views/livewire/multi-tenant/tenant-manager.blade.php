@@ -97,10 +97,24 @@
                                     </a>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                        {{ $tenant->plan === 'enterprise' ? 'bg-purple-100 text-purple-800' : '' }}
-                                        {{ $tenant->plan === 'pro' ? 'bg-blue-100 text-blue-800' : '' }}
-                                        {{ $tenant->plan === 'basic' ? 'bg-gray-100 text-gray-800' : '' }}">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs leading-5 font-bold rounded-full shadow-md
+                                        @if($tenant->plan === 'enterprise') bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-purple-500/30
+                                        @elseif($tenant->plan === 'pro') bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-blue-500/30
+                                        @else bg-gradient-to-r from-gray-400 to-slate-500 text-white shadow-gray-500/30
+                                        @endif">
+                                        @if($tenant->plan === 'enterprise')
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                                            </svg>
+                                        @elseif($tenant->plan === 'pro')
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                            </svg>
+                                        @else
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                            </svg>
+                                        @endif
                                         {{ ucfirst($tenant->plan) }}
                                     </span>
                                 </td>
@@ -113,23 +127,36 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @switch($tenant->status)
                                         @case('active')
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs leading-5 font-bold rounded-full shadow-md bg-gradient-to-r from-emerald-500 to-green-500 text-white shadow-emerald-500/30">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
                                                 Active
                                             </span>
                                             @break
                                         @case('suspended')
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs leading-5 font-bold rounded-full shadow-md bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-amber-500/30">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
                                                 Suspended
                                             </span>
                                             @break
                                         @case('pending')
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs leading-5 font-bold rounded-full shadow-md bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-blue-500/30">
+                                                <svg class="w-3.5 h-3.5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
                                                 Pending
                                             </span>
                                             @break
+                                        @case('inactive')
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs leading-5 font-bold rounded-full shadow-md bg-gradient-to-r from-gray-400 to-slate-500 text-white shadow-gray-500/30">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-white/70"></span>
+                                                Inactive
+                                            </span>
+                                            @break
                                         @default
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                                                {{ $tenant->status }}
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs leading-5 font-bold rounded-full shadow-md bg-gradient-to-r from-gray-400 to-slate-500 text-white shadow-gray-500/30">
+                                                {{ ucfirst($tenant->status) }}
                                             </span>
                                     @endswitch
                                 </td>

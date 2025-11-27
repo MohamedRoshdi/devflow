@@ -72,12 +72,34 @@
             <div>
                 <p class="text-sm font-medium text-gray-600 dark:text-gray-400 dark:text-gray-400">Status</p>
                 <p class="mt-2">
-                    <span class="px-4 py-2 rounded-full text-sm font-medium
-                        @if($deployment->status === 'success') bg-green-100 text-green-800
-                        @elseif($deployment->status === 'failed') bg-red-100 text-red-800
-                        @elseif($deployment->status === 'running') bg-yellow-100 text-yellow-800
-                        @else bg-gray-100 text-gray-800
+                    <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold shadow-lg
+                        @if($deployment->status === 'success') bg-gradient-to-r from-emerald-500 to-green-500 text-white shadow-emerald-500/40
+                        @elseif($deployment->status === 'failed') bg-gradient-to-r from-red-500 to-rose-500 text-white shadow-red-500/40
+                        @elseif($deployment->status === 'running') bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-amber-500/40
+                        @elseif($deployment->status === 'pending') bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-blue-500/40
+                        @else bg-gradient-to-r from-gray-500 to-slate-500 text-white shadow-gray-500/40
                         @endif">
+                        @if($deployment->status === 'success')
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        @elseif($deployment->status === 'failed')
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        @elseif($deployment->status === 'running')
+                            <svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                        @elseif($deployment->status === 'pending')
+                            <svg class="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        @else
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        @endif
                         {{ ucfirst($deployment->status) }}
                     </span>
                 </p>

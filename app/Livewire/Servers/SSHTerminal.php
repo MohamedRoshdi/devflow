@@ -201,7 +201,7 @@ class SSHTerminal extends Component
 
     public function render()
     {
-        return view('livewire.servers.ssh-terminal', [
+        return view('livewire.servers.s-s-h-terminal', [
             'quickCommands' => $this->getQuickCommands(),
         ]);
     }

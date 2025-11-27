@@ -51,13 +51,13 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M9.5 17a7.5 7.5 0 117.5-7.5 7.5 7.5 0 01-7.5 7.5z" />
                             </svg>
                         </span>
-                        <input type="text" placeholder="Commit message, branch, or project" wire:model.debounce.500ms="search"
+                        <input type="text" placeholder="Commit message, branch, or project" wire:model.live.debounce.500ms="search"
                                class="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500" />
                     </div>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Project</label>
-                    <select wire:model="projectFilter" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500">
+                    <select wire:model.live="projectFilter" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500">
                         <option value="">All projects</option>
                         @foreach($projects as $project)
                             <option value="{{ $project->id }}">{{ $project->name }}</option>
@@ -66,7 +66,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Status</label>
-                    <select wire:model="statusFilter" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500">
+                    <select wire:model.live="statusFilter" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500">
                         <option value="">All statuses</option>
                         <option value="success">Success</option>
                         <option value="failed">Failed</option>
@@ -76,7 +76,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Per Page</label>
-                    <select wire:model="perPage" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500">
+                    <select wire:model.live="perPage" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500">
                         @foreach([10, 15, 20, 30, 50] as $size)
                             <option value="{{ $size }}">{{ $size }} results</option>
                         @endforeach
@@ -90,18 +90,53 @@
                     <div class="space-y-5">
                         @foreach($deployments as $deployment)
                             <div class="relative pl-6">
-                                <span class="absolute left-0 top-3 w-3 h-3 rounded-full border-2 border-white dark:border-gray-900 bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-500 shadow"></span>
-                                <div class="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:-translate-y-0.5 transition-transform">
+                                {{-- Timeline dot matching status color --}}
+                                <span @class([
+                                    'absolute left-0 top-3 w-4 h-4 rounded-full border-2 border-white dark:border-gray-900 shadow-lg',
+                                    'bg-gradient-to-br from-emerald-400 to-green-500' => $deployment->status === 'success',
+                                    'bg-gradient-to-br from-amber-400 to-orange-500 animate-pulse' => $deployment->status === 'running',
+                                    'bg-gradient-to-br from-red-400 to-rose-500' => $deployment->status === 'failed',
+                                    'bg-gradient-to-br from-blue-400 to-indigo-500 animate-pulse' => $deployment->status === 'pending',
+                                    'bg-gradient-to-br from-gray-400 to-slate-500' => ! in_array($deployment->status, ['success', 'failed', 'running', 'pending']),
+                                ])></span>
+                                <div @class([
+                                    'p-6 bg-white dark:bg-gray-900 rounded-xl border-2 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl',
+                                    'border-emerald-200 dark:border-emerald-800/50 hover:border-emerald-300 dark:hover:border-emerald-700' => $deployment->status === 'success',
+                                    'border-amber-200 dark:border-amber-800/50 hover:border-amber-300 dark:hover:border-amber-700' => $deployment->status === 'running',
+                                    'border-red-200 dark:border-red-800/50 hover:border-red-300 dark:hover:border-red-700' => $deployment->status === 'failed',
+                                    'border-blue-200 dark:border-blue-800/50 hover:border-blue-300 dark:hover:border-blue-700' => $deployment->status === 'pending',
+                                    'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600' => ! in_array($deployment->status, ['success', 'failed', 'running', 'pending']),
+                                ])>
                                     <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                                         <div class="flex-1 space-y-3">
                                             <div class="flex flex-wrap items-center gap-3">
-                                                <span class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wide shadow-sm
-                                                    @class([
-                                                        'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' => $deployment->status === 'success',
-                                                        'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' => $deployment->status === 'running',
-                                                        'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300' => $deployment->status === 'failed',
-                                                        'bg-gray-100 text-gray-700 dark:bg-gray-800/60 dark:text-gray-300' => ! in_array($deployment->status, ['success', 'failed', 'running']),
-                                                    ])">
+                                                <span @class([
+                                                    'inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wide shadow-lg',
+                                                    'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-emerald-500/40' => $deployment->status === 'success',
+                                                    'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-amber-500/40' => $deployment->status === 'running',
+                                                    'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-red-500/40' => $deployment->status === 'failed',
+                                                    'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-blue-500/40' => $deployment->status === 'pending',
+                                                    'bg-gradient-to-r from-gray-500 to-slate-600 text-white shadow-gray-500/40' => ! in_array($deployment->status, ['success', 'failed', 'running', 'pending']),
+                                                ])>
+                                                    @if($deployment->status === 'success')
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                                                        </svg>
+                                                    @elseif($deployment->status === 'running')
+                                                        <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                                        </svg>
+                                                    @elseif($deployment->status === 'failed')
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                                                        </svg>
+                                                    @elseif($deployment->status === 'pending')
+                                                        <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                        </svg>
+                                                    @else
+                                                        <span class="w-2 h-2 rounded-full bg-white"></span>
+                                                    @endif
                                                     {{ ucfirst($deployment->status) }}
                                                 </span>
                                                 @if($deployment->commit_hash)

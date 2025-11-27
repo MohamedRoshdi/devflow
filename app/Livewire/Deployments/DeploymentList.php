@@ -3,6 +3,7 @@
 namespace App\Livewire\Deployments;
 
 use Livewire\Component;
+use Livewire\Attributes\Url;
 use App\Models\Deployment;
 use App\Models\Project;
 use Livewire\WithPagination;
@@ -11,31 +12,31 @@ class DeploymentList extends Component
 {
     use WithPagination;
 
+    #[Url(except: '')]
     public string $statusFilter = '';
-    public string $projectFilter = '';
-    public string $search = '';
-    public int $perPage = 15;
 
-    protected $queryString = [
-        'statusFilter' => ['except' => ''],
-        'projectFilter' => ['except' => ''],
-        'search' => ['except' => ''],
-        'perPage' => ['except' => 15],
-    ];
+    #[Url(except: '')]
+    public string $projectFilter = '';
+
+    #[Url(except: '')]
+    public string $search = '';
+
+    #[Url(except: 15)]
+    public int $perPage = 15;
 
     protected $paginationTheme = 'tailwind';
 
-    public function updatingStatusFilter(): void
+    public function updatedStatusFilter(): void
     {
         $this->resetPage();
     }
 
-    public function updatingProjectFilter(): void
+    public function updatedProjectFilter(): void
     {
         $this->resetPage();
     }
 
-    public function updatingSearch(): void
+    public function updatedSearch(): void
     {
         $this->resetPage();
     }
@@ -55,7 +56,18 @@ class DeploymentList extends Component
 
     public function render()
     {
-        $baseQuery = Deployment::with(['project', 'server'])
+        // Stats query - only filtered by user, not by status/project/search
+        $statsBaseQuery = Deployment::where('user_id', auth()->id());
+
+        $stats = [
+            'total' => (clone $statsBaseQuery)->count(),
+            'success' => (clone $statsBaseQuery)->where('status', 'success')->count(),
+            'failed' => (clone $statsBaseQuery)->where('status', 'failed')->count(),
+            'running' => (clone $statsBaseQuery)->where('status', 'running')->count(),
+        ];
+
+        // Filtered query for the list
+        $deployments = Deployment::with(['project', 'server'])
             ->where('user_id', auth()->id())
             ->when($this->statusFilter, fn ($query) => $query->where('status', $this->statusFilter))
             ->when($this->projectFilter, fn ($query) => $query->where('project_id', $this->projectFilter))
@@ -65,18 +77,7 @@ class DeploymentList extends Component
                       ->orWhere('branch', 'like', '%' . $this->search . '%')
                       ->orWhereHas('project', fn ($project) => $project->where('name', 'like', '%' . $this->search . '%'));
                 });
-            });
-
-        $statsQuery = clone $baseQuery;
-
-        $stats = [
-            'total' => (clone $statsQuery)->count(),
-            'success' => (clone $statsQuery)->where('status', 'success')->count(),
-            'failed' => (clone $statsQuery)->where('status', 'failed')->count(),
-            'running' => (clone $statsQuery)->where('status', 'running')->count(),
-        ];
-
-        $deployments = $baseQuery
+            })
             ->latest()
             ->paginate($this->perPage);
 

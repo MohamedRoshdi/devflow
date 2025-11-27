@@ -14,7 +14,9 @@ class ServerCreate extends Component
     public $ip_address = '';
     public $port = 22;
     public $username = 'root';
+    public $ssh_password = '';
     public $ssh_key = '';
+    public $auth_method = 'password'; // 'password' or 'key'
     public $latitude = null;
     public $longitude = null;
     public $location_name = '';
@@ -23,11 +25,13 @@ class ServerCreate extends Component
     {
         return [
             'name' => 'required|string|max:255',
-            'hostname' => 'required|string|max:255',
+            'hostname' => 'nullable|string|max:255',
             'ip_address' => 'required|ip',
             'port' => 'required|integer|min:1|max:65535',
             'username' => 'required|string|max:255',
-            'ssh_key' => 'nullable|string',
+            'ssh_password' => 'nullable|string|required_if:auth_method,password',
+            'ssh_key' => 'nullable|string|required_if:auth_method,key',
+            'auth_method' => 'required|in:password,key',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'location_name' => 'nullable|string|max:255',
@@ -44,19 +48,20 @@ class ServerCreate extends Component
     public function testConnection()
     {
         $this->validate();
-        
+
         try {
             // Create temporary server object for testing
             $tempServer = new Server([
                 'ip_address' => $this->ip_address,
                 'port' => $this->port,
                 'username' => $this->username,
-                'ssh_key' => $this->ssh_key,
+                'ssh_password' => $this->auth_method === 'password' ? $this->ssh_password : null,
+                'ssh_key' => $this->auth_method === 'key' ? $this->ssh_key : null,
             ]);
 
             $connectivityService = app(ServerConnectivityService::class);
             $result = $connectivityService->testConnection($tempServer);
-            
+
             if ($result['reachable']) {
                 session()->flash('connection_test', $result['message'] . ' (Latency: ' . $result['latency_ms'] . 'ms)');
             } else {
@@ -74,11 +79,12 @@ class ServerCreate extends Component
         $server = Server::create([
             'user_id' => auth()->id(),
             'name' => $this->name,
-            'hostname' => $this->hostname,
+            'hostname' => $this->hostname ?: null,
             'ip_address' => $this->ip_address,
             'port' => $this->port,
             'username' => $this->username,
-            'ssh_key' => $this->ssh_key,
+            'ssh_password' => $this->auth_method === 'password' ? $this->ssh_password : null,
+            'ssh_key' => $this->auth_method === 'key' ? $this->ssh_key : null,
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'location_name' => $this->location_name,
