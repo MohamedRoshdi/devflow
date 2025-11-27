@@ -235,7 +235,7 @@
                 <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Execute commands directly on the server</p>
             </div>
             <div class="p-6">
-                @livewire('servers.ssh-terminal', ['server' => $server])
+                <livewire:servers.ssh-terminal :server="$server" />
             </div>
         </div>
     </div>
