@@ -17,7 +17,7 @@ class DockerInstallationService
             Log::info('Starting Docker installation', ['server_id' => $server->id]);
 
             // Build installation script
-            $installScript = $this->getDockerInstallScript();
+            $installScript = $this->getDockerInstallScript($server);
 
             // Execute installation via SSH
             $command = $this->buildSSHCommand($server, $installScript);
@@ -134,46 +134,78 @@ class DockerInstallationService
     /**
      * Get Docker installation script
      */
-    protected function getDockerInstallScript(): string
+    protected function getDockerInstallScript(Server $server): string
     {
-        return <<<'BASH'
+        // If user has SSH password, we'll pass it to sudo commands
+        $sudoPrefix = '';
+        if ($server->ssh_password) {
+            $sudoPrefix = "echo " . escapeshellarg($server->ssh_password) . " | sudo -S";
+        } else {
+            // Assume passwordless sudo or root user
+            $sudoPrefix = "sudo";
+        }
+
+        return <<<BASH
 #!/bin/bash
 set -e
 
 echo "=== Starting Docker Installation ==="
 
+# Detect OS
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    OS=\$ID
+else
+    echo "Cannot detect OS"
+    exit 1
+fi
+
+echo "Detected OS: \$OS"
+
 # Update package index
-sudo apt-get update
+{$sudoPrefix} apt-get update
 
 # Install prerequisites
-sudo apt-get install -y \
+{$sudoPrefix} apt-get install -y \
     ca-certificates \
     curl \
     gnupg \
     lsb-release
 
-# Add Docker's official GPG key
-sudo mkdir -p /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
+# Add Docker's official GPG key and repository based on OS
+{$sudoPrefix} mkdir -p /etc/apt/keyrings
 
-# Set up the repository
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+if [ "\$OS" = "debian" ]; then
+    echo "Installing Docker for Debian..."
+    curl -fsSL https://download.docker.com/linux/debian/gpg | {$sudoPrefix} gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    {$sudoPrefix} chmod a+r /etc/apt/keyrings/docker.gpg
+    echo \
+      "deb [arch=\$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+      \$(lsb_release -cs) stable" | {$sudoPrefix} tee /etc/apt/sources.list.d/docker.list > /dev/null
+elif [ "\$OS" = "ubuntu" ]; then
+    echo "Installing Docker for Ubuntu..."
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | {$sudoPrefix} gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    {$sudoPrefix} chmod a+r /etc/apt/keyrings/docker.gpg
+    echo \
+      "deb [arch=\$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+      \$(lsb_release -cs) stable" | {$sudoPrefix} tee /etc/apt/sources.list.d/docker.list > /dev/null
+else
+    echo "Unsupported OS: \$OS"
+    exit 1
+fi
 
 # Update package index again
-sudo apt-get update
+{$sudoPrefix} apt-get update
 
 # Install Docker Engine, CLI, containerd, and plugins
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+{$sudoPrefix} apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Start and enable Docker service
-sudo systemctl start docker
-sudo systemctl enable docker
+{$sudoPrefix} systemctl start docker
+{$sudoPrefix} systemctl enable docker
 
 # Add current user to docker group (optional, for non-root usage)
-sudo usermod -aG docker $USER || true
+{$sudoPrefix} usermod -aG docker \$USER || true
 
 # Verify installation
 docker --version

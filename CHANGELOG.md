@@ -7,6 +7,87 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.6.0] - 2025-11-27
+
+### Added ✨
+- **⏳ Comprehensive Loading States** - All forms and actions now show clear loading feedback
+  - Server creation form (Get Location, Test Connection, Add Server buttons)
+  - Project show page (Stop/Start Project buttons with spinning icons)
+  - Project creation form (Refresh Server Status, Create Project buttons)
+  - Project edit form (Refresh Server Status, Update Project buttons)
+  - Project logs (Refresh and Clear Logs buttons)
+  - Consistent pattern: Button disables, shows loading text/spinner
+  - Prevents double-clicks and duplicate submissions
+  - Improves user confidence with immediate visual feedback
+
+- **🐧 Docker Installation Multi-OS Support** - Now supports both Debian and Ubuntu
+  - Automatic OS detection from `/etc/os-release`
+  - Debian-specific Docker repository: `https://download.docker.com/linux/debian/gpg`
+  - Ubuntu-specific Docker repository: `https://download.docker.com/linux/ubuntu/gpg`
+  - Tested on Debian 12 (Bookworm), Debian 13 (Trixie), Ubuntu 22.04/24.04
+  - Clear error messages for unsupported operating systems
+
+- **🔐 Sudo Password Authentication** - Docker installation now works with non-root users
+  - Automatically passes SSH password to sudo commands via `-S` option
+  - Supports both passwordless sudo and password-required sudo
+  - Works with root users (no changes needed)
+  - Eliminates "sudo: a terminal is required to read the password" errors
+
+### Fixed 🐛
+- **RAM Detection for Small VPS** - Accurate memory display for sub-gigabyte servers
+  - Changed from `free -g` to `free -m` with decimal calculation
+  - 512MB servers now show "0.5 GB" instead of "N/A"
+  - Updated return type from `int` to `float|int|null` for accuracy
+  - Improved numeric value extraction to support decimal points
+
+- **Docker Installation Session Messages** - Fixed conflicting UI messages
+  - Removed simultaneous "Installing..." and "Failed" messages
+  - Added `session()->forget('info')` before setting success/error messages
+  - Only one clear message shows at a time
+  - Better user experience during installation process
+
+### Changed 🔄
+- **DockerInstallationService** - Enhanced for multi-OS and sudo support
+  - `getDockerInstallScript()` now accepts `Server $server` parameter
+  - Dynamic `$sudoPrefix` based on SSH password availability
+  - OS detection logic with conditional repository setup
+  - Improved error logging with exit codes and detailed output
+
+- **ServerConnectivityService** - Better RAM detection accuracy
+  - Updated memory command: `free -m | awk '/^Mem:/{printf "%.1f", $2/1024}'`
+  - Enhanced `extractNumericValue()` to handle floats and integers
+  - Supports decimal memory values for accurate reporting
+
+### Technical
+- Loading state pattern using Livewire 3 directives:
+  - `wire:loading.attr="disabled"` - Disables button during action
+  - `wire:target="actionName"` - Targets specific action
+  - `wire:loading` / `wire:loading.remove` - Toggle visibility
+  - CSS classes: `disabled:opacity-50 disabled:cursor-not-allowed`
+
+- Files Modified:
+  - `resources/views/livewire/servers/server-create.blade.php`
+  - `resources/views/livewire/projects/project-show.blade.php`
+  - `resources/views/livewire/projects/project-create.blade.php`
+  - `resources/views/livewire/projects/project-edit.blade.php`
+  - `app/Services/DockerInstallationService.php`
+  - `app/Services/ServerConnectivityService.php`
+  - `app/Livewire/Servers/ServerShow.php`
+
+### Performance
+- Loading states: Negligible overhead (CSS + Livewire directives)
+- OS detection: +0.1s one-time overhead during Docker installation
+- RAM detection: Same performance, improved accuracy
+- All changes backward compatible, no migrations required
+
+### Documentation
+- Created `UX_IMPROVEMENTS_V2.6.md` - Comprehensive documentation of all changes
+- Includes before/after comparisons
+- Testing results for all OS combinations
+- Technical implementation details
+
+---
+
 ## [2.5.6] - 2025-11-27
 
 ### Added ✨

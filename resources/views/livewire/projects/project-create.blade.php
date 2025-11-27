@@ -249,8 +249,12 @@
                 <a href="{{ route('projects.index') }}" class="btn btn-secondary">
                     Cancel
                 </a>
-                <button type="submit" class="btn btn-primary">
-                    Create Project
+                <button type="submit"
+                        wire:loading.attr="disabled"
+                        wire:target="createProject"
+                        class="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span wire:loading.remove wire:target="createProject">Create Project</span>
+                    <span wire:loading wire:target="createProject">⏳ Creating Project...</span>
                 </button>
             </div>
         </form>

@@ -171,10 +171,13 @@
                     </div>
                 </div>
 
-                <button type="button" 
+                <button type="button"
                         wire:click="getLocation"
-                        class="mt-4 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">
-                    📍 Use Current GPS Location
+                        wire:loading.attr="disabled"
+                        wire:target="getLocation"
+                        class="mt-4 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span wire:loading.remove wire:target="getLocation">📍 Use Current GPS Location</span>
+                    <span wire:loading wire:target="getLocation">🔄 Getting Location...</span>
                 </button>
             </div>
 
@@ -184,13 +187,20 @@
                     Cancel
                 </a>
                 <div class="space-x-4">
-                    <button type="button" 
+                    <button type="button"
                             wire:click="testConnection"
-                            class="btn btn-secondary">
-                        Test Connection
+                            wire:loading.attr="disabled"
+                            wire:target="testConnection"
+                            class="btn btn-secondary disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span wire:loading.remove wire:target="testConnection">Test Connection</span>
+                        <span wire:loading wire:target="testConnection">⏳ Testing...</span>
                     </button>
-                    <button type="submit" class="btn btn-primary">
-                        Add Server
+                    <button type="submit"
+                            wire:loading.attr="disabled"
+                            wire:target="createServer"
+                            class="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span wire:loading.remove wire:target="createServer">Add Server</span>
+                        <span wire:loading wire:target="createServer">⏳ Adding Server...</span>
                     </button>
                 </div>
             </div>
