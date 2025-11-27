@@ -90,7 +90,7 @@ class ServerConnectivityService
             $commands = [
                 'os' => 'uname -s',
                 'cpu_cores' => 'nproc',
-                'memory_gb' => 'free -g | awk \'/^Mem:/{print $2}\'',
+                'memory_gb' => 'free -m | awk \'/^Mem:/{printf "%.1f", $2/1024}\'',
                 'disk_gb' => 'df -BG / | tail -1 | awk \'{print $2}\' | sed \'s/G//\'',
             ];
 
@@ -126,20 +126,22 @@ class ServerConnectivityService
     /**
      * Extract numeric value from output (handles SSH warnings mixed in output)
      */
-    protected function extractNumericValue(string $output): ?int
+    protected function extractNumericValue(string $output): float|int|null
     {
         // Split by lines and find the first line that is purely numeric
         $lines = explode("\n", $output);
         foreach ($lines as $line) {
             $line = trim($line);
             if (is_numeric($line)) {
-                return (int) $line;
+                // Return float if it has decimals, int otherwise
+                return str_contains($line, '.') ? (float) $line : (int) $line;
             }
         }
 
-        // Try to extract any number from the output
-        if (preg_match('/(\d+)/', $output, $matches)) {
-            return (int) $matches[1];
+        // Try to extract any number (including decimals) from the output
+        if (preg_match('/(\d+\.?\d*)/', $output, $matches)) {
+            $value = $matches[1];
+            return str_contains($value, '.') ? (float) $value : (int) $value;
         }
 
         return null;

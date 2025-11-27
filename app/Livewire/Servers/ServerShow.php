@@ -107,6 +107,9 @@ class ServerShow extends Component
             $installationService = app(DockerInstallationService::class);
             $result = $installationService->installDocker($this->server);
 
+            // Clear the info message first
+            session()->forget('info');
+
             if ($result['success']) {
                 $this->server->refresh();
                 session()->flash('message', $result['message'] . ' Version: ' . ($result['version'] ?? 'unknown'));
@@ -116,6 +119,7 @@ class ServerShow extends Component
             }
 
         } catch (\Exception $e) {
+            session()->forget('info');
             session()->flash('error', 'Docker installation failed: ' . $e->getMessage());
         }
     }

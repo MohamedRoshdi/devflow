@@ -61,14 +61,18 @@ class DockerInstallationService
                 }
             }
 
+            $errorMessage = !empty($error) ? $error : (!empty($output) ? $output : 'Unknown error - no output from installation script');
+
             Log::error('Docker installation failed', [
                 'server_id' => $server->id,
-                'error' => $error,
+                'exit_code' => $process->getExitCode(),
+                'error' => $errorMessage,
+                'output' => substr($output, 0, 500), // First 500 chars
             ]);
 
             return [
                 'success' => false,
-                'message' => 'Docker installation failed',
+                'message' => 'Docker installation failed. ' . (strlen($errorMessage) > 200 ? substr($errorMessage, 0, 200) . '...' : $errorMessage),
                 'output' => $output,
                 'error' => $error,
             ];
