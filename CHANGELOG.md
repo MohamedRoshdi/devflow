@@ -7,6 +7,74 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.6.1] - 2025-11-27
+
+### Added ✨
+- **🔧 Enhanced SSH Terminal Quick Commands** - Improved server exploration capabilities
+  - New "Explore System" category with file discovery commands
+  - New "Web Services" category for Nginx/Apache management
+  - Added `id` command to show user permissions and groups
+  - Added `docker system df` to check Docker disk usage
+  - Added Docker service logs via journalctl
+  - Added `ss` command as modern alternative to netstat
+  - Quick commands now appear BEFORE terminal input for better visibility
+
+### Fixed 🐛
+- **Permission Errors in Quick Commands** - All privileged commands now use sudo
+  - System logs: `sudo tail -50 /var/log/syslog`
+  - Kernel messages: `sudo dmesg`
+  - Network ports: `sudo netstat` and `sudo ss`
+  - Log directory: `sudo ls -la /var/log`
+  - Nginx config: `sudo ls -la /etc/nginx`
+
+- **Graceful Fallbacks** - Commands now show helpful messages instead of errors
+  - `systemctl status nginx || echo "Nginx not installed"`
+  - `ls -la /var/www || echo "Directory not found"`
+  - System log tries syslog, then messages, then shows friendly error
+  - All file operations include `2>/dev/null` to suppress permission errors
+
+- **Docker Installation Sudo Password** - Fixed clean output during installation
+  - Created `run_sudo()` bash function to wrap sudo commands
+  - Filters out `[sudo] password for user:` prompts from output
+  - Uses `-qq` flags for quieter apt-get operations
+  - Better progress messages during installation steps
+
+### Changed 🔄
+- **SSH Terminal Layout** - Reorganized for better UX
+  - Quick Commands section moved to top (was below terminal)
+  - Users see available commands immediately on page load
+  - Better workflow: Browse commands → Select → Execute
+
+- **Quick Commands Categories** - Reorganized for better discovery
+  - System Info: Added `id` for permission checking
+  - Explore System: NEW category with `find`, `which`, directory exploration
+  - Process & Services: Added service listing and socket commands
+  - Docker: Added disk usage command
+  - Web Services: NEW category for Nginx/Apache status and configs
+  - Logs: Enhanced with multiple fallback options and Docker logs
+
+### Technical
+- SSH Terminal quick commands now include:
+  - 7 System Info commands
+  - 6 Explore System commands (new)
+  - 5 Process & Services commands
+  - 6 Docker commands
+  - 5 Web Services commands (new)
+  - 5 Log commands with fallbacks
+
+- Docker installation script improvements:
+  - Custom `run_sudo()` function for clean sudo execution
+  - Password stored in `SUDO_PASSWORD` environment variable
+  - Output filtered with `grep -v '^\[sudo\] password'`
+  - All commands use dynamic `$sudoPrefix` (either `run_sudo` or `sudo`)
+
+- Files Modified:
+  - `app/Livewire/Servers/SSHTerminal.php` - Enhanced quick commands
+  - `resources/views/livewire/servers/s-s-h-terminal.blade.php` - Reordered layout
+  - `app/Services/DockerInstallationService.php` - Better sudo handling
+
+---
+
 ## [2.6.0] - 2025-11-27
 
 ### Added ✨

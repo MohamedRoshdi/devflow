@@ -136,13 +136,21 @@ class DockerInstallationService
      */
     protected function getDockerInstallScript(Server $server): string
     {
-        // If user has SSH password, we'll pass it to sudo commands
-        $sudoPrefix = '';
+        // If user has SSH password, we'll create a sudo wrapper function
+        $sudoSetup = '';
         if ($server->ssh_password) {
-            $sudoPrefix = "echo " . escapeshellarg($server->ssh_password) . " | sudo -S";
+            $escapedPassword = str_replace("'", "'\\''", $server->ssh_password);
+            $sudoSetup = <<<BASH
+# Setup sudo with password
+export SUDO_PASSWORD='{$escapedPassword}'
+function run_sudo() {
+    echo "\$SUDO_PASSWORD" | sudo -S "\$@" 2>&1 | grep -v '^\[sudo\] password'
+}
+BASH;
+            $sudoPrefix = 'run_sudo';
         } else {
             // Assume passwordless sudo or root user
-            $sudoPrefix = "sudo";
+            $sudoPrefix = 'sudo';
         }
 
         return <<<BASH
@@ -150,6 +158,8 @@ class DockerInstallationService
 set -e
 
 echo "=== Starting Docker Installation ==="
+
+{$sudoSetup}
 
 # Detect OS
 if [ -f /etc/os-release ]; then
@@ -163,10 +173,10 @@ fi
 echo "Detected OS: \$OS"
 
 # Update package index
-{$sudoPrefix} apt-get update
+{$sudoPrefix} apt-get update -qq
 
 # Install prerequisites
-{$sudoPrefix} apt-get install -y \
+{$sudoPrefix} apt-get install -y -qq \
     ca-certificates \
     curl \
     gnupg \
@@ -195,12 +205,14 @@ else
 fi
 
 # Update package index again
-{$sudoPrefix} apt-get update
+{$sudoPrefix} apt-get update -qq
 
 # Install Docker Engine, CLI, containerd, and plugins
-{$sudoPrefix} apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+echo "Installing Docker packages..."
+{$sudoPrefix} apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Start and enable Docker service
+echo "Starting Docker service..."
 {$sudoPrefix} systemctl start docker
 {$sudoPrefix} systemctl enable docker
 

@@ -1,4 +1,26 @@
 <div class="space-y-6">
+    <!-- Quick Commands -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Quick Commands</h3>
+        <div class="space-y-3">
+            @foreach($quickCommands as $category => $commands)
+                <div>
+                    <h4 class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">{{ $category }}</h4>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($commands as $cmd => $description)
+                            <button
+                                wire:click="$set('command', '{{ $cmd }}')"
+                                class="px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-xs text-gray-700 dark:text-gray-300 rounded transition"
+                                title="{{ $description }}">
+                                {{ $cmd }}
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+
     <!-- Terminal Header -->
     <div class="bg-gray-800 rounded-t-lg px-4 py-3 flex items-center justify-between">
         <div class="flex items-center space-x-2">
@@ -45,28 +67,6 @@
                 <span wire:loading wire:target="executeCommand">Running...</span>
             </button>
         </form>
-    </div>
-
-    <!-- Quick Commands -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-        <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Quick Commands</h3>
-        <div class="space-y-3">
-            @foreach($quickCommands as $category => $commands)
-                <div>
-                    <h4 class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">{{ $category }}</h4>
-                    <div class="flex flex-wrap gap-2">
-                        @foreach($commands as $cmd => $description)
-                            <button
-                                wire:click="$set('command', '{{ $cmd }}')"
-                                class="px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-xs text-gray-700 dark:text-gray-300 rounded transition"
-                                title="{{ $description }}">
-                                {{ $cmd }}
-                            </button>
-                        @endforeach
-                    </div>
-                </div>
-            @endforeach
-        </div>
     </div>
 
     <!-- Command History & Output -->

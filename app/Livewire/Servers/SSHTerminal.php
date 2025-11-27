@@ -170,31 +170,49 @@ class SSHTerminal extends Component
         return [
             'System Info' => [
                 'uname -a' => 'System information',
+                'cat /etc/os-release' => 'OS details',
                 'df -h' => 'Disk usage',
                 'free -h' => 'Memory usage',
                 'uptime' => 'System uptime',
                 'whoami' => 'Current user',
+                'id' => 'User ID and groups',
             ],
-            'Process Management' => [
+            'Explore System' => [
+                'ls -la ~' => 'List home directory',
+                'ls -la /' => 'List root directory',
+                'pwd' => 'Current directory',
+                'find /var -type d -maxdepth 2 2>/dev/null | head -30' => 'Explore /var directories',
+                'which nginx apache2 docker php' => 'Find installed services',
+                'sudo find /home -maxdepth 2 -type d 2>/dev/null' => 'Explore home directories',
+            ],
+            'Process & Services' => [
                 'ps aux | head -20' => 'Running processes',
-                'top -bn1 | head -20' => 'Top processes',
-                'systemctl status docker' => 'Docker service status',
-                'systemctl status nginx' => 'Nginx service status',
+                'systemctl list-units --type=service --state=running | head -30' => 'Running services',
+                'systemctl status docker' => 'Docker status',
+                'sudo netstat -tulpn | grep LISTEN' => 'Listening ports',
+                'sudo ss -tulpn | grep LISTEN' => 'Listening sockets (ss)',
             ],
             'Docker' => [
+                'docker --version' => 'Docker version',
                 'docker ps' => 'Running containers',
                 'docker ps -a' => 'All containers',
                 'docker images' => 'Docker images',
-                'docker version' => 'Docker version',
+                'docker compose version' => 'Docker Compose version',
+                'docker system df' => 'Docker disk usage',
             ],
-            'Files & Directories' => [
-                'ls -la /var/www' => 'List web directory',
-                'pwd' => 'Current directory',
-                'ls -lah' => 'List files (detailed)',
+            'Web Services' => [
+                'systemctl status nginx 2>/dev/null || echo "Nginx not installed"' => 'Nginx status',
+                'systemctl status apache2 2>/dev/null || echo "Apache not installed"' => 'Apache status',
+                'ls -la /var/www 2>/dev/null || echo "Directory not found"' => 'Web directory',
+                'sudo ls -la /etc/nginx 2>/dev/null || echo "Nginx config not found"' => 'Nginx config',
+                'sudo ls -la /var/log 2>/dev/null' => 'Log directory',
             ],
             'Logs' => [
-                'tail -50 /var/log/nginx/error.log' => 'Nginx error log',
-                'journalctl -n 50' => 'System journal',
+                'journalctl -n 50 --no-pager' => 'System journal (last 50)',
+                'sudo tail -50 /var/log/syslog 2>/dev/null || sudo tail -50 /var/log/messages 2>/dev/null || echo "Log not accessible"' => 'System log',
+                'sudo dmesg | tail -30' => 'Kernel messages',
+                'sudo ls -lah /var/log | head -30' => 'Available log files',
+                'sudo journalctl -u docker -n 30 --no-pager 2>/dev/null || echo "Docker logs not available"' => 'Docker service logs',
             ],
         ];
     }
