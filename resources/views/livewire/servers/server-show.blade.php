@@ -13,6 +13,13 @@
                 <button wire:click="checkDockerStatus" class="px-4 py-2 bg-purple-600 dark:bg-purple-500 text-white rounded-lg hover:bg-purple-700 dark:hover:bg-purple-600 transition">
                     🔍 Detect Docker
                 </button>
+                <button wire:click="installDocker"
+                        class="px-4 py-2 bg-green-600 dark:bg-green-500 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition"
+                        wire:loading.attr="disabled"
+                        wire:loading.class="opacity-50 cursor-not-allowed">
+                    <span wire:loading.remove wire:target="installDocker">📦 Install Docker</span>
+                    <span wire:loading wire:target="installDocker">⏳ Installing...</span>
+                </button>
             @endif
             <button wire:click="pingServer" class="btn btn-secondary">
                 Ping Server
@@ -32,6 +39,12 @@
     @if (session()->has('error'))
         <div class="mb-6 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 text-red-800 dark:text-red-400 px-4 py-3 rounded">
             {{ session('error') }}
+        </div>
+    @endif
+
+    @if (session()->has('info'))
+        <div class="mb-6 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-400 px-4 py-3 rounded">
+            {{ session('info') }}
         </div>
     @endif
 
@@ -210,6 +223,19 @@
                 @else
                     <p class="text-gray-500 dark:text-gray-400 text-center py-8">No deployments yet</p>
                 @endif
+            </div>
+        </div>
+    </div>
+
+    <!-- SSH Terminal Section -->
+    <div class="mt-8">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 transition-colors overflow-hidden">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">SSH Terminal</h2>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Execute commands directly on the server</p>
+            </div>
+            <div class="p-6">
+                @livewire('servers.ssh-terminal', ['server' => $server])
             </div>
         </div>
     </div>

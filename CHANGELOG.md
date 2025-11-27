@@ -7,6 +7,145 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.5.6] - 2025-11-27
+
+### Added ✨
+- **🖥️ Web-Based SSH Terminal** - Execute commands directly from the browser
+  - New `SSHTerminal` Livewire component for real-time SSH command execution
+  - Terminal-style UI with macOS design (traffic light controls)
+  - Command execution with 5-minute timeout via SSH
+  - Command history feature storing last 50 commands per server
+  - Session-based history persistence across page reloads
+  - Quick commands organized by category:
+    - System Info (uname, df, free, uptime, whoami)
+    - Process Management (ps, top, systemctl status)
+    - Docker (docker ps, images, version)
+    - Files & Directories (ls, pwd)
+    - Logs (nginx logs, journalctl)
+  - Success/failure indicators with exit codes display
+  - Rerun command feature - click to execute previous commands
+  - Real-time output display with pre-formatted terminal text
+  - Loading states during command execution
+  - Clear history button with confirmation
+  - Support for both password and SSH key authentication
+  - Help section with usage tips
+  - Full error handling and logging
+
+### Changed 🔄
+- **Server Show Page** - Enhanced with SSH terminal section
+  - Added SSH Terminal section below server stats and project lists
+  - Full-width terminal interface for better usability
+  - Terminal UI matches dark theme design
+
+### Technical
+- Created `app/Livewire/Servers/SSHTerminal.php` component with methods:
+  - `executeCommand()` - Executes SSH commands and stores in history
+  - `clearHistory()` - Clears command history from session
+  - `rerunCommand($index)` - Reruns a previous command
+  - `buildSSHCommand()` - Builds SSH commands with password/key support
+  - `getQuickCommands()` - Returns categorized quick command list
+- Created `resources/views/livewire/servers/ssh-terminal.blade.php` view
+- Updated `resources/views/livewire/servers/server-show.blade.php` to include terminal
+- Session storage: `ssh_history_{server_id}` for per-server history
+- Command timeout: 300 seconds (5 minutes)
+- History limit: 50 commands per server
+- Comprehensive logging for all command executions
+
+### UI/UX
+- macOS-style terminal window with colored traffic light controls (red, yellow, green)
+- Green `$` prompt for command input
+- Monospace font for authentic terminal feel
+- Click-to-use quick commands for common operations
+- Human-readable timestamps ("5 minutes ago")
+- Color-coded success (green) and failure (red) indicators
+- Scrollable output area with max height
+- Responsive design works on all screen sizes
+
+---
+
+## [2.5.5] - 2025-11-27
+
+### Added ✨
+- **🐳 One-Click Docker Installation** - Install Docker directly from DevFlow Pro interface
+  - New `DockerInstallationService` for automated Docker installation via SSH
+  - `installDocker()` method in ServerShow Livewire component
+  - Install Docker button in server show page (visible when Docker not detected)
+  - Real-time installation feedback with loading states
+  - Automatic installation of Docker Engine, CLI, containerd, and Docker Compose plugin
+  - Post-installation verification and version detection
+  - Server record automatically updated with Docker version after installation
+
+- **📚 SSH Access Documentation** - Comprehensive server access guides
+  - `SSH_ACCESS.md` - Complete SSH guide with security, troubleshooting, and advanced techniques
+  - `QUICK_SSH_ACCESS.md` - Quick reference for common SSH commands
+  - Both guides linked in README for easy access
+
+### Changed 🔄
+- **Server Show UI** - Enhanced Docker section
+  - "Detect Docker" button for checking Docker installation
+  - "Install Docker" button for one-click installation (10-minute timeout)
+  - Loading states with disabled button during installation
+  - Info alerts for installation progress
+
+### Technical
+- Created `DockerInstallationService` with methods:
+  - `installDocker()` - Main installation method
+  - `verifyDockerInstallation()` - Post-install verification
+  - `checkDockerCompose()` - Verify Docker Compose plugin
+  - `getDockerInfo()` - Retrieve Docker system info
+  - `buildSSHCommand()` - SSH command builder with password/key support
+- Installation script supports Ubuntu/Debian with official Docker repository
+- 600-second (10-minute) timeout for installation process
+- Comprehensive error handling and logging
+
+### Security
+- Installation uses official Docker repositories
+- GPG key verification for package authenticity
+- Secure SSH command execution with proper escaping
+- Installation runs with root privileges via SSH
+
+---
+
+## [2.5.4] - 2025-11-27
+
+### Added ✨
+- **🔐 Password Authentication for Servers** - New authentication method for server connections
+  - Toggle between Password and SSH Key authentication in server creation form
+  - Secure password storage using Laravel's encryption
+  - Integration with `sshpass` for password-based SSH connections
+  - Backward compatible - existing SSH key servers continue to work
+  - `auth_method` field to select authentication type (password/key)
+  - `ssh_password` column added to servers table
+
+- **📝 Optional Hostname Field** - Simplified server setup
+  - Domain/hostname is now optional when adding servers
+  - IP address serves as the primary server identifier
+  - Hostname can be added or updated at any time
+
+### Fixed 🐛
+- **SSH Output Parsing** - Fixed server info collection errors
+  - `extractNumericValue()` helper properly parses SSH output
+  - Filters out SSH warnings like "Permanently added..." from command output
+  - Prevents "Incorrect integer value" database errors for cpu_cores, memory_gb, disk_gb
+  - Added `-o LogLevel=ERROR` to suppress SSH verbose output
+  - `suppressWarnings` parameter for cleaner command output
+
+### Changed 🔄
+- **Server Creation Form** - Enhanced UI/UX
+  - Radio buttons for selecting authentication method
+  - Conditional display of password or SSH key field
+  - Clearer required field indicators
+  - Improved dark mode styling for radio buttons
+
+### Technical
+- Added `ssh_password` to Server model's `$fillable` and `$hidden` arrays
+- Updated `ServerConnectivityService::buildSSHCommand()` to support both auth methods
+- Added `extractNumericValue()` method for robust numeric parsing
+- Migration: `2025_11_27_155942_add_ssh_password_to_servers_table.php`
+- Installed `sshpass` package on production server
+
+---
+
 ## [2.4.1] - 2025-11-12
 
 ### Added ✨

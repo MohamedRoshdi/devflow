@@ -2,7 +2,7 @@
 
 > **Enterprise-grade deployment platform with Kubernetes, CI/CD, and multi-tenant support for managing projects at scale.**
 
-[![Version](https://img.shields.io/badge/version-2.5.3-blue.svg)](https://github.com/yourusername/devflow-pro)
+[![Version](https://img.shields.io/badge/version-2.5.6-blue.svg)](https://github.com/yourusername/devflow-pro)
 [![Laravel](https://img.shields.io/badge/Laravel-12-red.svg)](https://laravel.com)
 [![Livewire](https://img.shields.io/badge/Livewire-3-purple.svg)](https://livewire.laravel.com)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg)](https://docker.com)
@@ -53,6 +53,16 @@ DevFlow Pro is a **complete deployment management system** that makes it easy to
 - **Real-Time Monitoring** - CPU, RAM, Disk usage
 - **Auto-Discovery** - One-click current server addition
 - **SSH Connectivity** - Automated connection testing
+- **Password & SSH Key Auth** - Choose between password or SSH key authentication ⭐ NEW v2.5.4!
+- **Optional Hostname** - Domain/hostname field now optional ⭐ NEW v2.5.4!
+- **One-Click Docker Installation** - Install Docker directly from the UI ⭐ NEW v2.5.5!
+- **Web-Based SSH Terminal** - Execute commands directly from the browser ⭐ NEW v2.5.6!
+  - Terminal-style interface with macOS design
+  - Command history (last 50 commands)
+  - Quick commands for common operations
+  - Real-time command execution with output display
+  - Success/failure indicators with exit codes
+- **Docker Detection** - Automatic Docker version detection
 - **Server Health Checks** - Automatic ping and status detection
 - **Clickable Server Rows** - Click anywhere on row to view details ⭐ NEW v2.4!
 
@@ -249,6 +259,7 @@ php artisan tinker
 - [📗 Project Management Guide](docs/PROJECT_MANAGEMENT.md) - Creating & managing projects
 - [📙 Deployment Guide](docs/DEPLOYMENT_GUIDE.md) - Deploying applications
 - [📕 Server Management Guide](docs/SERVER_MANAGEMENT.md) - Managing servers
+- [⚡ Quick SSH Access](QUICK_SSH_ACCESS.md) - Fast server access reference
 
 ### Technical Documentation
 - [🔧 Installation Guide](docs/INSTALLATION.md) - Detailed setup
@@ -261,6 +272,7 @@ php artisan tinker
 
 ### Reference
 - [📚 API Documentation](API.md) - REST API endpoints
+- [🔐 SSH Access Guide](SSH_ACCESS.md) - Server access and management
 - [🔍 Troubleshooting](TROUBLESHOOTING.md) - Common issues & solutions
 - [📝 Changelog](CHANGELOG.md) - Version history
 - [🎯 Roadmap](COMPREHENSIVE_IMPROVEMENT_PLAN.md) - Future features
@@ -592,7 +604,44 @@ For simple static sites, select "Static Site" framework - no build process neede
 
 See [COMPREHENSIVE_IMPROVEMENT_PLAN.md](COMPREHENSIVE_IMPROVEMENT_PLAN.md) for the complete roadmap.
 
-### Recently Added (v2.5.3) ⭐ LATEST! November 26, 2025
+### Recently Added (v2.5.6) ⭐ LATEST! November 27, 2025
+- ✅ **🖥️ Web-Based SSH Terminal** - Execute commands directly from the browser
+  - macOS-style terminal interface with traffic light controls
+  - Execute SSH commands in real-time with 5-minute timeout
+  - Command history with last 50 commands per server
+  - Quick commands organized by category (System, Docker, Files, Logs)
+  - Success/failure indicators with exit codes
+  - Rerun previous commands with one click
+  - Session-based history persistence
+  - Support for both password and SSH key authentication
+
+### Recently Added (v2.5.5) November 27, 2025
+- ✅ **🐳 One-Click Docker Installation** - Install Docker from DevFlow Pro interface
+  - Automated installation script for Ubuntu/Debian servers
+  - Installs Docker Engine, CLI, containerd, and Docker Compose plugin
+  - Real-time installation progress feedback
+  - Automatic version detection after installation
+  - No manual SSH commands required
+- ✅ **📚 Comprehensive SSH Documentation** - Complete server access guides
+  - Quick SSH access reference for instant commands
+  - Detailed SSH access guide with security best practices
+  - Server management shortcuts and troubleshooting
+
+### Recently Added (v2.5.4) November 27, 2025
+- ✅ **🔐 Password Authentication for Servers** - Connect to servers using SSH password
+  - Toggle between Password and SSH Key authentication methods
+  - Secure password storage with encryption
+  - Uses sshpass for password-based SSH connections
+  - Seamless integration with existing server connectivity
+- ✅ **📝 Optional Hostname Field** - Domain/hostname is now optional when adding servers
+  - IP address is the primary identifier
+  - Hostname can be added later or left empty
+- ✅ **🔧 Improved SSH Output Parsing** - Fixed server info collection
+  - Properly extracts numeric values from SSH output
+  - Filters out SSH warnings and noise
+  - More reliable CPU, memory, and disk detection
+
+### Recently Added (v2.5.3) November 26, 2025
 - ✅ **🔧 Server .env File Management** - Direct server environment management
   - View all .env variables from deployed project on server
   - Edit/add/delete variables directly via SSH
