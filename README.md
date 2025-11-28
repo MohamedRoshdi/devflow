@@ -2,7 +2,7 @@
 
 > **Enterprise-grade deployment platform with Kubernetes, CI/CD, and multi-tenant support for managing projects at scale.**
 
-[![Version](https://img.shields.io/badge/version-2.6.2-blue.svg)](https://github.com/yourusername/devflow-pro)
+[![Version](https://img.shields.io/badge/version-2.6.3-blue.svg)](https://github.com/yourusername/devflow-pro)
 [![Laravel](https://img.shields.io/badge/Laravel-12-red.svg)](https://laravel.com)
 [![Livewire](https://img.shields.io/badge/Livewire-3-purple.svg)](https://livewire.laravel.com)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg)](https://docker.com)
@@ -53,10 +53,19 @@ DevFlow Pro is a **complete deployment management system** that makes it easy to
 - **Real-Time Monitoring** - CPU, RAM, Disk usage
 - **Auto-Discovery** - One-click current server addition
 - **SSH Connectivity** - Automated connection testing
-- **Password & SSH Key Auth** - Choose between password or SSH key authentication ⭐ NEW v2.5.4!
-- **Optional Hostname** - Domain/hostname field now optional ⭐ NEW v2.5.4!
-- **One-Click Docker Installation** - Install Docker directly from the UI ⭐ NEW v2.5.5!
-- **Web-Based SSH Terminal** - Execute commands directly from the browser ⭐ NEW v2.5.6!
+- **Password & SSH Key Auth** - Choose between password or SSH key authentication
+- **Optional Hostname** - Domain/hostname field now optional
+- **One-Click Docker Installation** - Install Docker directly from the UI (supports Debian, Ubuntu, RHEL)
+- **Quick Actions Panel** - Centralized server controls with one-click actions ⭐ NEW v2.6.3!
+  - Ping server with real-time status
+  - Reboot server with confirmation
+  - Clear system cache
+  - Check/Install Docker
+  - Restart services (nginx, mysql, redis, php-fpm, docker, supervisor)
+- **Auto-Status Updates** - Servers auto-ping on page load with polling ⭐ NEW v2.6.3!
+- **Server Stats Cards** - At-a-glance metrics (Status, CPU, Memory, Docker) ⭐ NEW v2.6.3!
+- **Redesigned Server Page** - Modern UI with hero section and quick actions ⭐ NEW v2.6.3!
+- **Web-Based SSH Terminal** - Execute commands directly from the browser
   - Terminal-style interface with macOS design
   - Command history (last 50 commands)
   - Quick commands for common operations
@@ -64,7 +73,7 @@ DevFlow Pro is a **complete deployment management system** that makes it easy to
   - Success/failure indicators with exit codes
 - **Docker Detection** - Automatic Docker version detection
 - **Server Health Checks** - Automatic ping and status detection
-- **Clickable Server Rows** - Click anywhere on row to view details ⭐ NEW v2.4!
+- **Clickable Server Rows** - Click anywhere on row to view details
 
 ### 📦 Docker Integration
 - **Smart Dockerfile Detection** - Uses your Dockerfile if it exists ⭐ NEW!

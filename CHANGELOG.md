@@ -69,6 +69,89 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.6.3] - 2025-11-28
+
+### Added ✨
+- **🖥️ Server Quick Actions Panel** - Centralized server management controls
+  - Redesigned server show page with hero section and quick actions
+  - Ping server with real-time status updates
+  - Reboot server with confirmation dialogs
+  - Clear system cache (drops cached memory)
+  - Check Docker installation status
+  - Install Docker (one-click for non-root users)
+  - Docker Panel link when Docker is installed
+  - Services dropdown to restart nginx, mysql, redis, php-fpm, docker, supervisor
+
+- **🔄 Server Auto-Status Updates** - Automatic server status monitoring
+  - Auto-ping all servers on page load
+  - `wire:poll.60s` for automatic status refresh on server list
+  - `wire:poll.30s` for server show page
+  - "Ping All" button to manually refresh all servers
+  - Individual "Ping" buttons per server in list view
+
+- **📊 Server Stats Cards** - At-a-glance server metrics
+  - Status card with animated indicator (online/maintenance/offline)
+  - CPU cores display
+  - Memory (GB) display
+  - Docker version/status card
+
+- **🎨 Server Show Page Redesign** - Modern UI overhaul
+  - Gradient hero section with server icon and status pulse
+  - Quick Actions panel with 6 action buttons
+  - Stats cards grid (Status, CPU, Memory, Docker)
+  - Server Information panel with all details
+  - Live Metrics panel with progress bars (CPU, Memory, Disk usage)
+  - Projects list with status badges
+  - Recent Deployments list
+  - SSH Terminal section
+
+### Fixed 🐛
+- **Docker Installation Sudo Password** - Fixed for non-root users
+  - Sudo credentials now cached at script start: `echo 'password' | sudo -S -v`
+  - Background process keeps sudo alive during long installation
+  - Eliminates "sudo: a terminal is required to read the password" error
+
+- **Debian Testing/Unstable Support** - Docker installation now works on trixie/sid
+  - Detects Debian testing/unstable (trixie, sid)
+  - Falls back to bookworm repository for Docker packages
+  - Works on all Debian versions (stable, testing, unstable)
+
+- **SSH Connection Display** - Fixed raw Blade syntax showing in UI
+  - Now displays `username@ip:port` format correctly
+  - Removed hostname confusion when not set
+
+### Changed 🔄
+- **ServerConnectivityService** - Added new server management methods
+  - `rebootServer()` - Safely reboot server via SSH
+  - `restartService()` - Restart specific services (nginx, mysql, etc.)
+  - `clearSystemCache()` - Clear system cached memory
+  - `getUptime()` - Get server uptime
+  - `getDiskUsage()` - Get disk usage stats
+  - `getMemoryUsage()` - Get memory usage stats
+
+- **ServerList Component** - Enhanced with auto-refresh
+  - Added `mount()` to ping servers on load
+  - Added `pingAllServers()` for manual refresh
+  - Added `pingServer()` for individual server ping
+  - Added `rebootServer()` for server reboot
+
+- **ServerShow Component** - Added server management actions
+  - Added `rebootServer()` method
+  - Added `restartService()` method
+  - Added `clearSystemCache()` method
+  - Added `getServerStats()` method
+
+### Technical
+- Files Modified:
+  - `app/Services/DockerInstallationService.php` - Sudo caching, Debian trixie support
+  - `app/Services/ServerConnectivityService.php` - New management methods
+  - `app/Livewire/Servers/ServerList.php` - Auto-ping, manual actions
+  - `app/Livewire/Servers/ServerShow.php` - Server management actions
+  - `resources/views/livewire/servers/server-list.blade.php` - New UI with actions
+  - `resources/views/livewire/servers/server-show.blade.php` - Complete redesign
+
+---
+
 ## [2.6.2] - 2025-11-28
 
 ### Added ✨

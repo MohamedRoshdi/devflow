@@ -1,6 +1,6 @@
 # DevFlow Pro - Roadmap & Task Planning
 
-> **Version:** 2.6.2 | **Last Updated:** 2025-11-28
+> **Version:** 2.6.3 | **Last Updated:** 2025-11-28
 
 ---
 
@@ -8,7 +8,7 @@
 
 | Metric | Value |
 |--------|-------|
-| Current Version | v2.6.2 |
+| Current Version | v2.6.3 |
 | Core Features | ✅ Complete |
 | Test Coverage | ~60% |
 | PHPStan Level | 8 |
@@ -21,10 +21,14 @@
 ### Phase 1: Quick Wins (v2.7.x)
 **Target: 1-2 weeks per feature**
 
-- [ ] **Deployment Rollback UI** - One-click rollback to previous deployment
-- [ ] **Project Health Dashboard** - Aggregate health view of all projects
-- [ ] **Deployment Scheduling** - Schedule deployments for off-peak hours
-- [ ] **Project Templates** - Pre-configured templates for Laravel, Node, etc.
+- [x] **Deployment Rollback UI** - One-click rollback to previous deployment ✅ (v2.7.0)
+- [x] **Project Health Dashboard** - Aggregate health view of all projects ✅ (v2.7.0)
+- [x] **Deployment Scheduling** - Schedule deployments for off-peak hours ✅ (v2.7.0)
+- [x] **Project Templates** - Pre-configured templates for Laravel, Node, etc. ✅ (v2.7.0)
+- [ ] **Server Monitoring Dashboard** - Real-time metrics charts for all servers
+- [ ] **Server Groups/Tags** - Organize servers with tags and groups
+- [ ] **Bulk Server Actions** - Execute actions on multiple servers at once
+- [ ] **SSH Key Management UI** - Manage SSH keys from the interface
 
 ### Phase 2: Feature Expansion (v2.8.x)
 **Target: 2-4 weeks per feature**
@@ -32,8 +36,10 @@
 - [ ] **Webhook Deployments** - Auto-deploy on GitHub/GitLab push events
 - [ ] **SSL Certificate Management** - Let's Encrypt auto-renewal integration
 - [ ] **Database Backups** - Scheduled MySQL/PostgreSQL backups with S3 storage
+- [ ] **Server Backups** - Full server backup management with scheduling
 - [ ] **Log Aggregation** - Centralized log viewing with search/filter
 - [ ] **Resource Alerts** - CPU/RAM/Disk threshold notifications
+- [ ] **Automated Health Checks** - Scheduled health checks with email/Slack alerts
 
 ### Phase 3: Enterprise Features (v3.0.x)
 **Target: 1-2 months per feature**
@@ -169,9 +175,184 @@ ALTER TABLE domains ADD COLUMN ssl_auto_renew BOOLEAN DEFAULT TRUE;
 
 ---
 
+#### 5. Server Monitoring Dashboard
+**Priority:** 🔴 High | **Effort:** Medium | **Version:** v2.7.1
+
+**Description:** Real-time server metrics dashboard with charts and historical data.
+
+**Tasks:**
+- [ ] Create `ServerMetricsDashboard` Livewire component
+- [ ] Add real-time CPU usage chart (Chart.js/ApexCharts)
+- [ ] Add real-time Memory usage chart
+- [ ] Add real-time Disk I/O chart
+- [ ] Add Network I/O chart
+- [ ] Implement WebSocket for live updates
+- [ ] Store metrics history in database
+- [ ] Add time range selector (1h, 6h, 24h, 7d, 30d)
+- [ ] Create aggregate view for all servers
+- [ ] Add export metrics to CSV
+- [ ] Write tests for metrics collection
+
+**Database Changes:**
+```sql
+CREATE TABLE server_metrics (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    server_id BIGINT UNSIGNED NOT NULL,
+    cpu_usage DECIMAL(5,2) NOT NULL,
+    memory_usage DECIMAL(5,2) NOT NULL,
+    memory_used_mb INT NOT NULL,
+    memory_total_mb INT NOT NULL,
+    disk_usage DECIMAL(5,2) NOT NULL,
+    disk_used_gb INT NOT NULL,
+    disk_total_gb INT NOT NULL,
+    load_average_1 DECIMAL(5,2) NULL,
+    load_average_5 DECIMAL(5,2) NULL,
+    load_average_15 DECIMAL(5,2) NULL,
+    network_in_bytes BIGINT UNSIGNED NULL,
+    network_out_bytes BIGINT UNSIGNED NULL,
+    recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_server_time (server_id, recorded_at),
+    FOREIGN KEY (server_id) REFERENCES servers(id) ON DELETE CASCADE
+);
+```
+
+**Files to Create:**
+- `app/Livewire/Servers/ServerMetricsDashboard.php`
+- `app/Services/ServerMetricsService.php`
+- `resources/views/livewire/servers/server-metrics-dashboard.blade.php`
+- `app/Console/Commands/CollectServerMetrics.php`
+
+---
+
+#### 6. Server Groups/Tags
+**Priority:** 🟡 Medium | **Effort:** Low | **Version:** v2.7.1
+
+**Description:** Organize servers with tags and groups for better management.
+
+**Tasks:**
+- [ ] Create `ServerTag` model
+- [ ] Create `ServerGroup` model
+- [ ] Add tag management UI
+- [ ] Add group management UI
+- [ ] Implement tag filtering on server list
+- [ ] Implement group filtering on server list
+- [ ] Add color picker for tags
+- [ ] Show tags on server cards
+- [ ] Add bulk tag assignment
+- [ ] Write tests for tags/groups
+
+**Database Changes:**
+```sql
+CREATE TABLE server_tags (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT UNSIGNED NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    color VARCHAR(7) DEFAULT '#6366f1',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_user_tag (user_id, name),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE server_tag_pivot (
+    server_id BIGINT UNSIGNED NOT NULL,
+    tag_id BIGINT UNSIGNED NOT NULL,
+    PRIMARY KEY (server_id, tag_id),
+    FOREIGN KEY (server_id) REFERENCES servers(id) ON DELETE CASCADE,
+    FOREIGN KEY (tag_id) REFERENCES server_tags(id) ON DELETE CASCADE
+);
+
+CREATE TABLE server_groups (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT UNSIGNED NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    description TEXT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+ALTER TABLE servers ADD COLUMN group_id BIGINT UNSIGNED NULL;
+ALTER TABLE servers ADD FOREIGN KEY (group_id) REFERENCES server_groups(id) ON DELETE SET NULL;
+```
+
+---
+
+#### 7. Bulk Server Actions
+**Priority:** 🟡 Medium | **Effort:** Low | **Version:** v2.7.1
+
+**Description:** Execute actions on multiple servers simultaneously.
+
+**Tasks:**
+- [ ] Add checkbox selection to server list
+- [ ] Create bulk action dropdown (Ping All, Reboot All, etc.)
+- [ ] Implement parallel SSH execution
+- [ ] Add progress indicator for bulk operations
+- [ ] Show results summary after completion
+- [ ] Add confirmation modal for destructive actions
+- [ ] Support bulk Docker installation
+- [ ] Support bulk service restart
+- [ ] Add bulk action history log
+- [ ] Write tests for bulk operations
+
+**Files to Create:**
+- `app/Livewire/Servers/BulkServerActions.php`
+- `app/Services/BulkServerActionService.php`
+- `resources/views/livewire/servers/bulk-server-actions.blade.php`
+
+---
+
+#### 8. SSH Key Management UI
+**Priority:** 🟡 Medium | **Effort:** Medium | **Version:** v2.7.1
+
+**Description:** Manage SSH keys from the web interface instead of manually.
+
+**Tasks:**
+- [ ] Create `SSHKey` model
+- [ ] Add SSH key generation (RSA, Ed25519)
+- [ ] Add SSH key import from file
+- [ ] Add SSH key export/download
+- [ ] Show public key for copying
+- [ ] Add key deployment to servers
+- [ ] Create key rotation workflow
+- [ ] Add key expiry tracking
+- [ ] Show which servers use which keys
+- [ ] Write tests for SSH key management
+
+**Database Changes:**
+```sql
+CREATE TABLE ssh_keys (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT UNSIGNED NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    type ENUM('rsa', 'ed25519', 'ecdsa') DEFAULT 'ed25519',
+    public_key TEXT NOT NULL,
+    private_key_encrypted TEXT NOT NULL,
+    fingerprint VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expires_at TIMESTAMP NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE server_ssh_key (
+    server_id BIGINT UNSIGNED NOT NULL,
+    ssh_key_id BIGINT UNSIGNED NOT NULL,
+    deployed_at TIMESTAMP NULL,
+    PRIMARY KEY (server_id, ssh_key_id),
+    FOREIGN KEY (server_id) REFERENCES servers(id) ON DELETE CASCADE,
+    FOREIGN KEY (ssh_key_id) REFERENCES ssh_keys(id) ON DELETE CASCADE
+);
+```
+
+**Files to Create:**
+- `app/Models/SSHKey.php`
+- `app/Livewire/Settings/SSHKeyManager.php`
+- `app/Services/SSHKeyService.php`
+- `resources/views/livewire/settings/ssh-key-manager.blade.php`
+
+---
+
 ### 🚀 Medium Priority Tasks
 
-#### 5. Database Backups
+#### 9. Database Backups
 **Priority:** 🟡 Medium | **Effort:** Medium | **Version:** v2.8.0
 
 **Description:** Scheduled database backups with cloud storage support.
@@ -426,6 +607,7 @@ CREATE TABLE alerts (
 
 | Version | Date | Highlights |
 |---------|------|------------|
+| v2.6.3 | 2025-11-28 | Server Quick Actions, Auto-ping, Docker sudo fix, UI redesign |
 | v2.6.2 | 2025-11-28 | Git auto-refresh, SSH command fix |
 | v2.6.1 | 2025-11-27 | SSH terminal enhancements, sudo support |
 | v2.6.0 | 2025-11-27 | Loading states, Docker multi-OS support |
