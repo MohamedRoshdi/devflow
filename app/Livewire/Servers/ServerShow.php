@@ -165,9 +165,16 @@ class ServerShow extends Component
             $this->dockerInstallStatus = Cache::get($cacheKey);
 
             // Dispatch the job to run in background
-            InstallDockerJob::dispatch($this->server);
-
-            session()->flash('info', 'Docker installation started! This runs in the background and may take several minutes. The page will update automatically when complete.');
+            // Use sync driver if queue is not configured (will still work but blocks)
+            if (config('queue.default') === 'sync') {
+                // For sync queue, run directly but without blocking the request
+                // by using dispatchAfterResponse
+                InstallDockerJob::dispatchAfterResponse($this->server);
+                session()->flash('info', 'Docker installation started! Please wait while installation completes...');
+            } else {
+                InstallDockerJob::dispatch($this->server);
+                session()->flash('info', 'Docker installation started! This runs in the background and may take several minutes. The page will update automatically when complete.');
+            }
 
         } catch (\Exception $e) {
             Cache::forget($cacheKey);
