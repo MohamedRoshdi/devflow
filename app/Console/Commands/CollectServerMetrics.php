@@ -1,0 +1,78 @@
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+use App\Models\Server;
+use App\Services\ServerMetricsService;
+
+class CollectServerMetrics extends Command
+{
+    protected $signature = 'servers:collect-metrics {server_id?}';
+    protected $description = 'Collect metrics from servers';
+
+    public function handle(ServerMetricsService $metricsService): int
+    {
+        $serverId = $this->argument('server_id');
+
+        if ($serverId) {
+            $server = Server::find($serverId);
+
+            if (!$server) {
+                $this->error("Server with ID {$serverId} not found.");
+                return self::FAILURE;
+            }
+
+            return $this->collectMetricsForServer($server, $metricsService);
+        }
+
+        // Collect metrics for all online servers
+        $servers = Server::where('status', 'online')->get();
+
+        if ($servers->isEmpty()) {
+            $this->info('No online servers found.');
+            return self::SUCCESS;
+        }
+
+        $this->info("Collecting metrics from {$servers->count()} servers...");
+
+        $successCount = 0;
+        $failCount = 0;
+
+        foreach ($servers as $server) {
+            $result = $this->collectMetricsForServer($server, $metricsService);
+
+            if ($result === self::SUCCESS) {
+                $successCount++;
+            } else {
+                $failCount++;
+            }
+        }
+
+        $this->info("Metrics collection completed. Success: {$successCount}, Failed: {$failCount}");
+
+        return self::SUCCESS;
+    }
+
+    protected function collectMetricsForServer(Server $server, ServerMetricsService $metricsService): int
+    {
+        $this->info("Collecting metrics for: {$server->name} ({$server->ip_address})");
+
+        try {
+            $metric = $metricsService->collectMetrics($server);
+
+            if ($metric) {
+                $this->line("  ✓ CPU: {$metric->cpu_usage}%");
+                $this->line("  ✓ Memory: {$metric->memory_usage}%");
+                $this->line("  ✓ Disk: {$metric->disk_usage}%");
+                return self::SUCCESS;
+            } else {
+                $this->error("  ✗ Failed to collect metrics");
+                return self::FAILURE;
+            }
+        } catch (\Exception $e) {
+            $this->error("  ✗ Error: " . $e->getMessage());
+            return self::FAILURE;
+        }
+    }
+}

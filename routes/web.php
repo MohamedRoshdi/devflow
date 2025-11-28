@@ -6,6 +6,8 @@ use App\Livewire\Home\HomePublic;
 use App\Livewire\Servers\ServerList;
 use App\Livewire\Servers\ServerCreate;
 use App\Livewire\Servers\ServerShow;
+use App\Livewire\Servers\ServerMetricsDashboard;
+use App\Livewire\Servers\ServerTagManager;
 use App\Livewire\Projects\ProjectList;
 use App\Livewire\Projects\ProjectCreate;
 use App\Livewire\Projects\ProjectShow;
@@ -26,7 +28,9 @@ Route::middleware('auth')->group(function () {
     // Servers
     Route::get('/servers', ServerList::class)->name('servers.index');
     Route::get('/servers/create', ServerCreate::class)->name('servers.create');
+    Route::get('/servers/tags', ServerTagManager::class)->name('servers.tags');
     Route::get('/servers/{server}', ServerShow::class)->name('servers.show');
+    Route::get('/servers/{server}/metrics', ServerMetricsDashboard::class)->name('servers.metrics');
 
     // Projects
     Route::get('/projects', ProjectList::class)->name('projects.index');
@@ -70,6 +74,9 @@ Route::middleware('auth')->group(function () {
     // Multi-Tenant Management
     Route::get('/tenants', \App\Livewire\MultiTenant\TenantManager::class)->name('tenants.index');
     Route::get('/tenants/{project}', \App\Livewire\MultiTenant\TenantManager::class)->name('tenants.project');
+
+    // SSH Key Management
+    Route::get('/settings/ssh-keys', \App\Livewire\Settings\SSHKeyManager::class)->name('settings.ssh-keys');
 });
 
 require __DIR__.'/auth.php';

@@ -74,6 +74,18 @@ class Server extends Model
         return $this->hasMany(ServerMetric::class);
     }
 
+    public function sshKeys()
+    {
+        return $this->belongsToMany(SSHKey::class, 'server_ssh_key')
+            ->withPivot('deployed_at')
+            ->withTimestamps();
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(ServerTag::class, 'server_tag_pivot', 'server_id', 'tag_id');
+    }
+
     // Status helpers
     public function isOnline(): bool
     {

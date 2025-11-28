@@ -49,6 +49,16 @@ class User extends Authenticatable
     {
         return $this->hasMany(Deployment::class);
     }
+
+    public function sshKeys()
+    {
+        return $this->hasMany(SSHKey::class);
+    }
+
+    public function serverTags()
+    {
+        return $this->hasMany(ServerTag::class);
+    }
 }
 
 

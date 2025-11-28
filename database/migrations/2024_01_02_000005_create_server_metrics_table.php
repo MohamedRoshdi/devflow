@@ -13,11 +13,16 @@ return new class extends Migration
             $table->foreignId('server_id')->constrained()->onDelete('cascade');
             $table->decimal('cpu_usage', 5, 2)->default(0);
             $table->decimal('memory_usage', 5, 2)->default(0);
+            $table->integer('memory_used_mb')->default(0);
+            $table->integer('memory_total_mb')->default(0);
             $table->decimal('disk_usage', 5, 2)->default(0);
-            $table->bigInteger('network_in')->default(0);
-            $table->bigInteger('network_out')->default(0);
-            $table->decimal('load_average', 5, 2)->default(0);
-            $table->integer('active_connections')->default(0);
+            $table->integer('disk_used_gb')->default(0);
+            $table->integer('disk_total_gb')->default(0);
+            $table->decimal('load_average_1', 5, 2)->default(0);
+            $table->decimal('load_average_5', 5, 2)->default(0);
+            $table->decimal('load_average_15', 5, 2)->default(0);
+            $table->bigInteger('network_in_bytes')->default(0);
+            $table->bigInteger('network_out_bytes')->default(0);
             $table->timestamp('recorded_at');
             $table->timestamps();
 

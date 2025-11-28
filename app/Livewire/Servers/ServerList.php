@@ -5,6 +5,7 @@ namespace App\Livewire\Servers;
 use Livewire\Component;
 use App\Models\Server;
 use App\Services\ServerConnectivityService;
+use App\Services\BulkServerActionService;
 use Livewire\WithPagination;
 use Livewire\Attributes\On;
 
@@ -14,7 +15,15 @@ class ServerList extends Component
 
     public $search = '';
     public $statusFilter = '';
+    public $tagFilter = [];
     public bool $isPingingAll = false;
+
+    // Bulk action properties
+    public array $selectedServers = [];
+    public bool $selectAll = false;
+    public bool $bulkActionInProgress = false;
+    public array $bulkActionResults = [];
+    public bool $showResultsModal = false;
 
     public function mount(): void
     {
@@ -209,9 +218,190 @@ class ServerList extends Component
         return '127.0.0.1';
     }
 
-    public function render()
+    /**
+     * Toggle server selection
+     */
+    public function toggleServerSelection(int $serverId): void
     {
-        $servers = Server::where('user_id', auth()->id())
+        if (in_array($serverId, $this->selectedServers)) {
+            $this->selectedServers = array_values(array_diff($this->selectedServers, [$serverId]));
+        } else {
+            $this->selectedServers[] = $serverId;
+        }
+
+        // Update selectAll state based on current selection
+        $totalServersOnPage = $this->getServersQuery()->pluck('id')->toArray();
+        $this->selectAll = count($this->selectedServers) > 0 &&
+                          count(array_intersect($totalServersOnPage, $this->selectedServers)) === count($totalServersOnPage);
+    }
+
+    /**
+     * Toggle select all servers on current page
+     */
+    public function toggleSelectAll(): void
+    {
+        $this->selectAll = !$this->selectAll;
+
+        if ($this->selectAll) {
+            // Select all servers on current page
+            $serverIds = $this->getServersQuery()->pluck('id')->toArray();
+            $this->selectedServers = array_unique(array_merge($this->selectedServers, $serverIds));
+        } else {
+            // Deselect all servers
+            $this->selectedServers = [];
+        }
+    }
+
+    /**
+     * Clear all selections
+     */
+    public function clearSelection(): void
+    {
+        $this->selectedServers = [];
+        $this->selectAll = false;
+        $this->bulkActionResults = [];
+        $this->showResultsModal = false;
+    }
+
+    /**
+     * Bulk ping selected servers
+     */
+    public function bulkPing(): void
+    {
+        if (empty($this->selectedServers)) {
+            session()->flash('error', 'No servers selected');
+            return;
+        }
+
+        $this->bulkActionInProgress = true;
+        $this->bulkActionResults = [];
+
+        $servers = Server::whereIn('id', $this->selectedServers)
+            ->where('user_id', auth()->id())
+            ->get();
+
+        $bulkService = app(BulkServerActionService::class);
+        $results = $bulkService->pingServers($servers);
+        $stats = $bulkService->getSummaryStats($results);
+
+        $this->bulkActionResults = $results;
+        $this->bulkActionInProgress = false;
+        $this->showResultsModal = true;
+
+        session()->flash('message', "Bulk ping completed: {$stats['successful']} successful, {$stats['failed']} failed");
+    }
+
+    /**
+     * Bulk reboot selected servers
+     */
+    public function bulkReboot(): void
+    {
+        if (empty($this->selectedServers)) {
+            session()->flash('error', 'No servers selected');
+            return;
+        }
+
+        $this->bulkActionInProgress = true;
+        $this->bulkActionResults = [];
+
+        $servers = Server::whereIn('id', $this->selectedServers)
+            ->where('user_id', auth()->id())
+            ->get();
+
+        $bulkService = app(BulkServerActionService::class);
+        $results = $bulkService->rebootServers($servers);
+        $stats = $bulkService->getSummaryStats($results);
+
+        $this->bulkActionResults = $results;
+        $this->bulkActionInProgress = false;
+        $this->showResultsModal = true;
+
+        session()->flash('message', "Bulk reboot initiated: {$stats['successful']} successful, {$stats['failed']} failed");
+    }
+
+    /**
+     * Bulk install Docker on selected servers
+     */
+    public function bulkInstallDocker(): void
+    {
+        if (empty($this->selectedServers)) {
+            session()->flash('error', 'No servers selected');
+            return;
+        }
+
+        $this->bulkActionInProgress = true;
+        $this->bulkActionResults = [];
+
+        $servers = Server::whereIn('id', $this->selectedServers)
+            ->where('user_id', auth()->id())
+            ->get();
+
+        $bulkService = app(BulkServerActionService::class);
+        $results = $bulkService->installDockerOnServers($servers);
+        $stats = $bulkService->getSummaryStats($results);
+
+        $this->bulkActionResults = $results;
+        $this->bulkActionInProgress = false;
+        $this->showResultsModal = true;
+
+        session()->flash('message', "Bulk Docker installation completed: {$stats['successful']} successful, {$stats['failed']} failed");
+    }
+
+    /**
+     * Bulk restart service on selected servers
+     */
+    public function bulkRestartService(string $service): void
+    {
+        if (empty($this->selectedServers)) {
+            session()->flash('error', 'No servers selected');
+            return;
+        }
+
+        $this->bulkActionInProgress = true;
+        $this->bulkActionResults = [];
+
+        $servers = Server::whereIn('id', $this->selectedServers)
+            ->where('user_id', auth()->id())
+            ->get();
+
+        $bulkService = app(BulkServerActionService::class);
+        $results = $bulkService->restartServiceOnServers($servers, $service);
+        $stats = $bulkService->getSummaryStats($results);
+
+        $this->bulkActionResults = $results;
+        $this->bulkActionInProgress = false;
+        $this->showResultsModal = true;
+
+        session()->flash('message', "Bulk {$service} restart completed: {$stats['successful']} successful, {$stats['failed']} failed");
+    }
+
+    /**
+     * Close results modal
+     */
+    public function closeResultsModal(): void
+    {
+        $this->showResultsModal = false;
+    }
+
+    /**
+     * Toggle tag filter
+     */
+    public function toggleTagFilter(int $tagId): void
+    {
+        if (in_array($tagId, $this->tagFilter)) {
+            $this->tagFilter = array_diff($this->tagFilter, [$tagId]);
+        } else {
+            $this->tagFilter[] = $tagId;
+        }
+        $this->resetPage();
+    }
+
+    /**
+     * Get the base servers query
+     */
+    protected function getServersQuery()
+    {
+        return Server::where('user_id', auth()->id())
             ->when($this->search, function ($query) {
                 $query->where(function($q) {
                     $q->where('name', 'like', '%'.$this->search.'%')
@@ -222,11 +412,27 @@ class ServerList extends Component
             ->when($this->statusFilter, function ($query) {
                 $query->where('status', $this->statusFilter);
             })
-            ->latest()
-            ->paginate(10);
+            ->when(!empty($this->tagFilter), function ($query) {
+                $query->whereHas('tags', function ($q) {
+                    $q->whereIn('server_tags.id', $this->tagFilter);
+                });
+            })
+            ->latest();
+    }
+
+    public function render()
+    {
+        $servers = $this->getServersQuery()->with('tags')->paginate(10);
+
+        // Get all tags for filtering
+        $allTags = \App\Models\ServerTag::where('user_id', auth()->id())
+            ->withCount('servers')
+            ->orderBy('name')
+            ->get();
 
         return view('livewire.servers.server-list', [
             'servers' => $servers,
+            'allTags' => $allTags,
         ]);
     }
 }

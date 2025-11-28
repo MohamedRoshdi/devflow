@@ -11,6 +11,9 @@ Artisan::command('inspire', function () {
 // Monitor servers
 Schedule::command('devflow:monitor-servers')->everyMinute();
 
+// Collect server metrics (every 5 minutes)
+Schedule::command('servers:collect-metrics')->everyFiveMinutes();
+
 // Check SSL expiration
 Schedule::command('devflow:check-ssl')->daily();
 
