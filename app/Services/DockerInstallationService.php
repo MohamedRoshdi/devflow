@@ -136,76 +136,197 @@ class DockerInstallationService
      */
     protected function getDockerInstallScript(Server $server): string
     {
-        // For root users, no sudo needed. For others, use sudo.
+        // For root users, no sudo needed. For others, use sudo with cached credentials.
         $isRoot = strtolower($server->username) === 'root';
-        $sudo = $isRoot ? '' : 'sudo ';
 
-        return <<<BASH
+        if ($isRoot) {
+            // Root user - no sudo needed
+            return $this->getDockerInstallScriptContent('');
+        } elseif ($server->ssh_password) {
+            // Non-root with password - cache sudo credentials first, then use sudo normally
+            $escapedPassword = str_replace("'", "'\\''", $server->ssh_password);
+
+            // The script first caches sudo credentials, then runs all commands with regular sudo
+            $sudoCache = "echo '{$escapedPassword}' | sudo -S -v 2>/dev/null";
+
+            return <<<BASH
 #!/bin/bash
 set -e
 
 echo "=== Starting Docker Installation ==="
 echo "Username: {$server->username}"
-echo "Using sudo: {$sudo}"
+echo "Caching sudo credentials..."
 
+# Cache sudo credentials (password provided via stdin)
+{$sudoCache}
+
+# Keep sudo alive in background
+while true; do sudo -n true; sleep 50; kill -0 "\$\$" 2>/dev/null || exit; done &
+SUDO_KEEP_ALIVE_PID=\$!
+
+# Trap to kill the background process on exit
+trap "kill \$SUDO_KEEP_ALIVE_PID 2>/dev/null" EXIT
+
+export DEBIAN_FRONTEND=noninteractive
+
+{$this->getDockerInstallScriptContent('sudo ')}
+BASH;
+        } else {
+            // Non-root without password - try passwordless sudo
+            return <<<BASH
+#!/bin/bash
+set -e
+
+echo "=== Starting Docker Installation ==="
+echo "Username: {$server->username}"
+echo "Using passwordless sudo..."
+
+export DEBIAN_FRONTEND=noninteractive
+
+{$this->getDockerInstallScriptContent('sudo ')}
+BASH;
+        }
+    }
+
+    /**
+     * Get the actual Docker installation commands
+     */
+    protected function getDockerInstallScriptContent(string $sudo): string
+    {
+        return <<<BASH
 # Detect OS
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     OS=\$ID
-    echo "Detected OS: \$OS"
+    VERSION_CODENAME=\${VERSION_CODENAME:-}
+
+    # Handle Debian testing/unstable (trixie, sid) - use bookworm as fallback
+    if [ "\$OS" = "debian" ]; then
+        case "\$VERSION_CODENAME" in
+            trixie|sid|testing|unstable)
+                echo "Detected Debian testing/unstable (\$VERSION_CODENAME), using bookworm repository..."
+                VERSION_CODENAME="bookworm"
+                ;;
+            "")
+                VERSION_CODENAME="bookworm"
+                ;;
+        esac
+    fi
+
+    # Fallback to lsb_release if VERSION_CODENAME is empty
+    if [ -z "\$VERSION_CODENAME" ]; then
+        VERSION_CODENAME=\$(lsb_release -cs 2>/dev/null || echo 'stable')
+    fi
+
+    echo "Detected OS: \$OS (\$VERSION_CODENAME)"
 else
     echo "Cannot detect OS"
     exit 1
 fi
 
 # Update package index
-echo "Updating package index..."
+echo ""
+echo "Step 1/6: Updating package index..."
 {$sudo}apt-get update -qq
 
 # Install prerequisites
-echo "Installing prerequisites..."
+echo ""
+echo "Step 2/6: Installing prerequisites..."
 {$sudo}apt-get install -y -qq ca-certificates curl gnupg lsb-release
 
 # Add Docker's official GPG key and repository based on OS
-{$sudo}mkdir -p /etc/apt/keyrings
+echo ""
+echo "Step 3/6: Adding Docker repository..."
+{$sudo}install -m 0755 -d /etc/apt/keyrings
+
+# Remove old GPG key if exists to avoid conflicts
+{$sudo}rm -f /etc/apt/keyrings/docker.gpg 2>/dev/null || true
 
 if [ "\$OS" = "debian" ]; then
-    echo "Installing Docker for Debian..."
-    curl -fsSL https://download.docker.com/linux/debian/gpg | {$sudo}gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    echo "Configuring Docker repository for Debian..."
+    curl -fsSL https://download.docker.com/linux/debian/gpg | {$sudo}gpg --batch --yes --dearmor -o /etc/apt/keyrings/docker.gpg
     {$sudo}chmod a+r /etc/apt/keyrings/docker.gpg
-    echo "deb [arch=\$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \$(lsb_release -cs) stable" | {$sudo}tee /etc/apt/sources.list.d/docker.list > /dev/null
+    echo "deb [arch=\$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \$VERSION_CODENAME stable" | {$sudo}tee /etc/apt/sources.list.d/docker.list > /dev/null
 elif [ "\$OS" = "ubuntu" ]; then
-    echo "Installing Docker for Ubuntu..."
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | {$sudo}gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    echo "Configuring Docker repository for Ubuntu..."
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | {$sudo}gpg --batch --yes --dearmor -o /etc/apt/keyrings/docker.gpg
     {$sudo}chmod a+r /etc/apt/keyrings/docker.gpg
-    echo "deb [arch=\$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \$(lsb_release -cs) stable" | {$sudo}tee /etc/apt/sources.list.d/docker.list > /dev/null
+    echo "deb [arch=\$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \$VERSION_CODENAME stable" | {$sudo}tee /etc/apt/sources.list.d/docker.list > /dev/null
+elif [ "\$OS" = "centos" ] || [ "\$OS" = "rhel" ] || [ "\$OS" = "rocky" ] || [ "\$OS" = "almalinux" ]; then
+    echo "Configuring Docker repository for RHEL-based OS..."
+    {$sudo}dnf -y install dnf-plugins-core 2>/dev/null || {$sudo}yum -y install yum-utils
+    {$sudo}dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo 2>/dev/null || {$sudo}yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+    echo ""
+    echo "Step 4/6: Installing Docker packages..."
+    {$sudo}dnf -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin 2>/dev/null || {$sudo}yum -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    echo ""
+    echo "Step 5/6: Starting Docker service..."
+    {$sudo}systemctl start docker
+    {$sudo}systemctl enable docker
+    echo ""
+    echo "Step 6/6: Configuring user permissions..."
+    {$sudo}usermod -aG docker \$USER 2>/dev/null || true
+    echo ""
+    echo "=== Verifying Installation ==="
+    docker --version
+    docker compose version
+    echo ""
+    echo "=== Docker Installation Completed Successfully ==="
+    exit 0
+elif [ "\$OS" = "fedora" ]; then
+    echo "Configuring Docker repository for Fedora..."
+    {$sudo}dnf -y install dnf-plugins-core
+    {$sudo}dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+    echo ""
+    echo "Step 4/6: Installing Docker packages..."
+    {$sudo}dnf -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    echo ""
+    echo "Step 5/6: Starting Docker service..."
+    {$sudo}systemctl start docker
+    {$sudo}systemctl enable docker
+    echo ""
+    echo "Step 6/6: Configuring user permissions..."
+    {$sudo}usermod -aG docker \$USER 2>/dev/null || true
+    echo ""
+    echo "=== Verifying Installation ==="
+    docker --version
+    docker compose version
+    echo ""
+    echo "=== Docker Installation Completed Successfully ==="
+    exit 0
 else
-    echo "Unsupported OS: \$OS (only debian and ubuntu are supported)"
+    echo "Unsupported OS: \$OS"
+    echo "Supported: debian, ubuntu, centos, rhel, rocky, almalinux, fedora"
     exit 1
 fi
 
-# Update package index again
-echo "Updating package index with Docker repository..."
+# Update package index with Docker repository (Debian/Ubuntu)
+echo ""
+echo "Step 4/6: Updating package index with Docker repository..."
 {$sudo}apt-get update -qq
 
-# Install Docker Engine, CLI, containerd, and plugins
-echo "Installing Docker packages..."
-{$sudo}apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+# Install Docker Engine
+echo ""
+echo "Step 5/6: Installing Docker packages (this may take a few minutes)..."
+{$sudo}apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Start and enable Docker service
-echo "Starting Docker service..."
+echo ""
+echo "Step 6/6: Starting Docker service..."
 {$sudo}systemctl start docker
 {$sudo}systemctl enable docker
 
-# Add current user to docker group (optional, for non-root usage)
+# Add current user to docker group
 {$sudo}usermod -aG docker \$USER 2>/dev/null || true
 
 # Verify installation
-echo "Verifying installation..."
+echo ""
+echo "=== Verifying Installation ==="
 docker --version
 docker compose version
 
-echo "=== Docker Installation Completed ==="
+echo ""
+echo "=== Docker Installation Completed Successfully ==="
 BASH;
     }
 

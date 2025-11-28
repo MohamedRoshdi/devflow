@@ -14,11 +14,110 @@ class ServerList extends Component
 
     public $search = '';
     public $statusFilter = '';
+    public bool $isPingingAll = false;
+
+    public function mount(): void
+    {
+        // Auto-ping all servers on page load to get current status
+        $this->pingAllServersInBackground();
+    }
 
     #[On('server-created')]
     public function refreshServers()
     {
         $this->resetPage();
+    }
+
+    /**
+     * Ping all servers to update their status (runs in background)
+     */
+    public function pingAllServersInBackground(): void
+    {
+        $servers = Server::where('user_id', auth()->id())->get();
+
+        if ($servers->isEmpty()) {
+            return;
+        }
+
+        $connectivityService = app(ServerConnectivityService::class);
+
+        foreach ($servers as $server) {
+            // Quick ping to update status (async-like behavior with timeout)
+            $connectivityService->pingAndUpdateStatus($server);
+        }
+    }
+
+    /**
+     * Ping all servers (manual trigger with loading indicator)
+     */
+    public function pingAllServers(): void
+    {
+        $this->isPingingAll = true;
+
+        $servers = Server::where('user_id', auth()->id())->get();
+        $connectivityService = app(ServerConnectivityService::class);
+
+        $online = 0;
+        $offline = 0;
+
+        foreach ($servers as $server) {
+            $result = $connectivityService->pingAndUpdateStatus($server);
+            if ($result) {
+                $online++;
+            } else {
+                $offline++;
+            }
+        }
+
+        $this->isPingingAll = false;
+        session()->flash('message', "Status updated: {$online} online, {$offline} offline");
+    }
+
+    /**
+     * Ping single server
+     */
+    public function pingServer(int $serverId): void
+    {
+        $server = Server::where('id', $serverId)->where('user_id', auth()->id())->first();
+
+        if (!$server) {
+            return;
+        }
+
+        $connectivityService = app(ServerConnectivityService::class);
+        $result = $connectivityService->testConnection($server);
+
+        $server->update([
+            'status' => $result['reachable'] ? 'online' : 'offline',
+            'last_ping_at' => now(),
+        ]);
+
+        if ($result['reachable']) {
+            session()->flash('message', "{$server->name} is online");
+        } else {
+            session()->flash('error', "{$server->name} is offline: " . ($result['message'] ?? 'Connection failed'));
+        }
+    }
+
+    /**
+     * Reboot a server
+     */
+    public function rebootServer(int $serverId): void
+    {
+        $server = Server::where('id', $serverId)->where('user_id', auth()->id())->first();
+
+        if (!$server) {
+            return;
+        }
+
+        $connectivityService = app(ServerConnectivityService::class);
+        $result = $connectivityService->rebootServer($server);
+
+        if ($result['success']) {
+            session()->flash('message', $result['message']);
+        } else {
+            session()->flash('error', $result['message']);
+        }
     }
 
     public function addCurrentServer()

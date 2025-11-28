@@ -205,6 +205,227 @@ class ServerConnectivityService
     }
 
     /**
+     * Reboot the server
+     */
+    public function rebootServer(Server $server): array
+    {
+        try {
+            $isRoot = strtolower($server->username) === 'root';
+
+            // Build sudo prefix for non-root users
+            if ($isRoot) {
+                $sudoPrefix = '';
+            } elseif ($server->ssh_password) {
+                $escapedPassword = str_replace("'", "'\\''", $server->ssh_password);
+                $sudoPrefix = "echo '{$escapedPassword}' | sudo -S ";
+            } else {
+                $sudoPrefix = 'sudo ';
+            }
+
+            $command = $this->buildSSHCommand($server, "{$sudoPrefix}reboot");
+            $process = Process::fromShellCommandline($command);
+            $process->setTimeout(30);
+            $process->run();
+
+            // Reboot command usually closes connection, so we check if it was initiated
+            // Update server status to reflect it's rebooting
+            $server->update([
+                'status' => 'maintenance',
+                'last_ping_at' => now(),
+            ]);
+
+            Log::info('Server reboot initiated', ['server_id' => $server->id]);
+
+            return [
+                'success' => true,
+                'message' => 'Server reboot initiated. It may take a few minutes to come back online.',
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('Server reboot failed', [
+                'server_id' => $server->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Failed to reboot server: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Restart a specific service on the server
+     */
+    public function restartService(Server $server, string $service): array
+    {
+        try {
+            $allowedServices = ['nginx', 'apache2', 'mysql', 'mariadb', 'redis', 'php-fpm', 'docker', 'supervisor'];
+
+            // Also allow php8.x-fpm variants
+            if (!in_array($service, $allowedServices) && !preg_match('/^php\d+\.\d+-fpm$/', $service)) {
+                return [
+                    'success' => false,
+                    'message' => 'Service not allowed: ' . $service,
+                ];
+            }
+
+            $isRoot = strtolower($server->username) === 'root';
+
+            if ($isRoot) {
+                $sudoPrefix = '';
+            } elseif ($server->ssh_password) {
+                $escapedPassword = str_replace("'", "'\\''", $server->ssh_password);
+                $sudoPrefix = "echo '{$escapedPassword}' | sudo -S ";
+            } else {
+                $sudoPrefix = 'sudo ';
+            }
+
+            $command = $this->buildSSHCommand($server, "{$sudoPrefix}systemctl restart {$service}");
+            $process = Process::fromShellCommandline($command);
+            $process->setTimeout(60);
+            $process->run();
+
+            if ($process->isSuccessful()) {
+                Log::info('Service restarted', ['server_id' => $server->id, 'service' => $service]);
+                return [
+                    'success' => true,
+                    'message' => "Service '{$service}' restarted successfully.",
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'Failed to restart service: ' . $process->getErrorOutput(),
+            ];
+
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Failed to restart service: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Get server uptime
+     */
+    public function getUptime(Server $server): array
+    {
+        try {
+            $command = $this->buildSSHCommand($server, 'uptime -p', true);
+            $process = Process::fromShellCommandline($command);
+            $process->setTimeout(10);
+            $process->run();
+
+            if ($process->isSuccessful()) {
+                return [
+                    'success' => true,
+                    'uptime' => trim($process->getOutput()),
+                ];
+            }
+
+            return ['success' => false, 'uptime' => null];
+
+        } catch (\Exception $e) {
+            return ['success' => false, 'uptime' => null];
+        }
+    }
+
+    /**
+     * Get disk usage
+     */
+    public function getDiskUsage(Server $server): array
+    {
+        try {
+            $command = $this->buildSSHCommand($server, "df -h / | tail -1 | awk '{print $5}'", true);
+            $process = Process::fromShellCommandline($command);
+            $process->setTimeout(10);
+            $process->run();
+
+            if ($process->isSuccessful()) {
+                return [
+                    'success' => true,
+                    'usage' => trim($process->getOutput()),
+                ];
+            }
+
+            return ['success' => false, 'usage' => null];
+
+        } catch (\Exception $e) {
+            return ['success' => false, 'usage' => null];
+        }
+    }
+
+    /**
+     * Get memory usage
+     */
+    public function getMemoryUsage(Server $server): array
+    {
+        try {
+            $command = $this->buildSSHCommand($server, "free | awk '/^Mem:/{printf \"%.1f\", \$3/\$2 * 100}'", true);
+            $process = Process::fromShellCommandline($command);
+            $process->setTimeout(10);
+            $process->run();
+
+            if ($process->isSuccessful()) {
+                return [
+                    'success' => true,
+                    'usage' => trim($process->getOutput()) . '%',
+                ];
+            }
+
+            return ['success' => false, 'usage' => null];
+
+        } catch (\Exception $e) {
+            return ['success' => false, 'usage' => null];
+        }
+    }
+
+    /**
+     * Clear system cache (drop caches)
+     */
+    public function clearSystemCache(Server $server): array
+    {
+        try {
+            $isRoot = strtolower($server->username) === 'root';
+
+            if ($isRoot) {
+                $sudoPrefix = '';
+            } elseif ($server->ssh_password) {
+                $escapedPassword = str_replace("'", "'\\''", $server->ssh_password);
+                $sudoPrefix = "echo '{$escapedPassword}' | sudo -S ";
+            } else {
+                $sudoPrefix = 'sudo ';
+            }
+
+            // Sync filesystem and drop caches
+            $command = $this->buildSSHCommand($server, "{$sudoPrefix}sync && {$sudoPrefix}sh -c 'echo 3 > /proc/sys/vm/drop_caches'");
+            $process = Process::fromShellCommandline($command);
+            $process->setTimeout(30);
+            $process->run();
+
+            if ($process->isSuccessful()) {
+                return [
+                    'success' => true,
+                    'message' => 'System cache cleared successfully.',
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'Failed to clear cache: ' . $process->getErrorOutput(),
+            ];
+
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Failed to clear cache: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
      * Build SSH command
      *
      * @param Server $server

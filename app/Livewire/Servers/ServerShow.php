@@ -124,6 +124,66 @@ class ServerShow extends Component
         }
     }
 
+    public function rebootServer()
+    {
+        try {
+            $connectivityService = app(ServerConnectivityService::class);
+            $result = $connectivityService->rebootServer($this->server);
+
+            if ($result['success']) {
+                $this->server->refresh();
+                session()->flash('message', $result['message']);
+            } else {
+                session()->flash('error', $result['message']);
+            }
+        } catch (\Exception $e) {
+            session()->flash('error', 'Reboot failed: ' . $e->getMessage());
+        }
+    }
+
+    public function restartService(string $service)
+    {
+        try {
+            $connectivityService = app(ServerConnectivityService::class);
+            $result = $connectivityService->restartService($this->server, $service);
+
+            if ($result['success']) {
+                session()->flash('message', $result['message']);
+            } else {
+                session()->flash('error', $result['message']);
+            }
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to restart service: ' . $e->getMessage());
+        }
+    }
+
+    public function clearSystemCache()
+    {
+        try {
+            $connectivityService = app(ServerConnectivityService::class);
+            $result = $connectivityService->clearSystemCache($this->server);
+
+            if ($result['success']) {
+                session()->flash('message', $result['message']);
+            } else {
+                session()->flash('error', $result['message']);
+            }
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to clear cache: ' . $e->getMessage());
+        }
+    }
+
+    public function getServerStats(): array
+    {
+        $connectivityService = app(ServerConnectivityService::class);
+
+        return [
+            'uptime' => $connectivityService->getUptime($this->server),
+            'disk' => $connectivityService->getDiskUsage($this->server),
+            'memory' => $connectivityService->getMemoryUsage($this->server),
+        ];
+    }
+
     public function render()
     {
         $projects = $this->server->projects()->latest()->take(5)->get();
