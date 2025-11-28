@@ -23,3 +23,12 @@ Schedule::command('devflow:cleanup-metrics')->daily();
 // Process scheduled deployments
 Schedule::command('deployments:process-scheduled')->everyMinute();
 
+// Run scheduled database backups
+Schedule::command('backups:run')->everyFifteenMinutes();
+
+// Run health checks
+Schedule::command('health:check')->everyMinute();
+
+// Renew SSL certificates (daily at 2 AM)
+Schedule::command('ssl:renew')->daily()->at('02:00');
+

@@ -2,211 +2,617 @@
 
 namespace App\Services;
 
-use App\Models\Domain;
 use App\Models\Server;
+use App\Models\SSLCertificate;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\Process\Process;
 use Carbon\Carbon;
 
 class SSLService
 {
-    protected $email;
-    protected $staging;
-
-    public function __construct()
+    /**
+     * Check if certbot is installed on the server
+     */
+    public function checkCertbotInstalled(Server $server): bool
     {
-        $this->email = config('app.ssl_email', 'admin@example.com');
-        $this->staging = config('app.ssl_staging', false);
+        try {
+            $command = $this->buildSSHCommand($server, 'which certbot', true);
+            $process = Process::fromShellCommandline($command);
+            $process->setTimeout(10);
+            $process->run();
+
+            return $process->isSuccessful();
+        } catch (\Exception $e) {
+            Log::error('Failed to check certbot installation', [
+                'server_id' => $server->id,
+                'error' => $e->getMessage(),
+            ]);
+            return false;
+        }
     }
 
+    /**
+     * Install certbot on the server
+     */
     public function installCertbot(Server $server): array
     {
         try {
-            $script = <<<'BASH'
-            apt-get update && \
-            apt-get install -y certbot python3-certbot-nginx || \
-            yum install -y certbot python3-certbot-nginx
-            BASH;
+            Log::info('Installing certbot', ['server_id' => $server->id]);
 
-            $command = $this->buildSSHCommand($server, $script);
+            // Check if already installed
+            if ($this->checkCertbotInstalled($server)) {
+                return [
+                    'success' => true,
+                    'message' => 'Certbot is already installed',
+                ];
+            }
+
+            $installScript = $this->getCertbotInstallScript($server);
+            $command = $this->buildSSHCommand($server, $installScript);
+
             $process = Process::fromShellCommandline($command);
-            $process->setTimeout(300);
+            $process->setTimeout(300); // 5 minutes timeout
             $process->run();
 
-            return [
-                'success' => $process->isSuccessful(),
-                'output' => $process->getOutput(),
-                'error' => $process->getErrorOutput(),
-            ];
-        } catch (\Exception $e) {
+            if ($process->isSuccessful() && $this->checkCertbotInstalled($server)) {
+                Log::info('Certbot installed successfully', ['server_id' => $server->id]);
+
+                return [
+                    'success' => true,
+                    'message' => 'Certbot installed successfully',
+                    'output' => $process->getOutput(),
+                ];
+            }
+
+            $errorMessage = $process->getErrorOutput() ?: $process->getOutput();
+
+            Log::error('Certbot installation failed', [
+                'server_id' => $server->id,
+                'error' => $errorMessage,
+            ]);
+
             return [
                 'success' => false,
+                'message' => 'Failed to install certbot: ' . substr($errorMessage, 0, 200),
+                'error' => $errorMessage,
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('Certbot installation exception', [
+                'server_id' => $server->id,
                 'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Installation failed: ' . $e->getMessage(),
             ];
         }
     }
 
-    public function obtainCertificate(Domain $domain): array
+    /**
+     * Issue a new SSL certificate using Let's Encrypt
+     */
+    public function issueCertificate(Server $server, string $domain, string $email): array
     {
         try {
-            $server = $domain->project->server;
-            
-            if (!$server) {
-                return ['success' => false, 'error' => 'No server associated with this domain'];
+            Log::info('Issuing SSL certificate', [
+                'server_id' => $server->id,
+                'domain' => $domain,
+            ]);
+
+            // Check if certbot is installed
+            if (!$this->checkCertbotInstalled($server)) {
+                $installResult = $this->installCertbot($server);
+                if (!$installResult['success']) {
+                    return $installResult;
+                }
             }
 
-            $stagingFlag = $this->staging ? '--staging' : '';
-            
-            $certbotCommand = sprintf(
-                "certbot certonly --nginx -d %s --non-interactive --agree-tos --email %s %s",
-                $domain->domain,
-                $this->email,
-                $stagingFlag
-            );
+            // Issue certificate using certbot
+            $isRoot = strtolower($server->username) === 'root';
+            $sudoPrefix = $this->getSudoPrefix($server);
+
+            $certbotCommand = "{$sudoPrefix}certbot certonly --standalone --non-interactive --agree-tos --email {$email} -d {$domain} --preferred-challenges http";
 
             $command = $this->buildSSHCommand($server, $certbotCommand);
             $process = Process::fromShellCommandline($command);
-            $process->setTimeout(180);
+            $process->setTimeout(120);
             $process->run();
 
-            if ($process->isSuccessful()) {
-                // Retrieve certificate details
-                $certPath = "/etc/letsencrypt/live/{$domain->domain}/fullchain.pem";
-                $keyPath = "/etc/letsencrypt/live/{$domain->domain}/privkey.pem";
-                
-                $domain->update([
-                    'ssl_enabled' => true,
-                    'ssl_provider' => 'letsencrypt',
-                    'ssl_issued_at' => now(),
-                    'ssl_expires_at' => now()->addDays(90),
-                    'status' => 'active',
+            $output = $process->getOutput();
+            $errorOutput = $process->getErrorOutput();
+
+            if ($process->isSuccessful() || str_contains($output, 'Successfully received certificate')) {
+                // Get certificate information
+                $certInfo = $this->getCertificateInfo($server, $domain);
+
+                // Create or update certificate record
+                $certificate = SSLCertificate::updateOrCreate(
+                    [
+                        'server_id' => $server->id,
+                        'domain_name' => $domain,
+                    ],
+                    [
+                        'provider' => 'letsencrypt',
+                        'status' => 'issued',
+                        'certificate_path' => "/etc/letsencrypt/live/{$domain}/fullchain.pem",
+                        'private_key_path' => "/etc/letsencrypt/live/{$domain}/privkey.pem",
+                        'chain_path' => "/etc/letsencrypt/live/{$domain}/chain.pem",
+                        'issued_at' => now(),
+                        'expires_at' => $certInfo['expires_at'] ?? now()->addDays(90),
+                        'auto_renew' => true,
+                        'renewal_error' => null,
+                    ]
+                );
+
+                Log::info('SSL certificate issued successfully', [
+                    'server_id' => $server->id,
+                    'domain' => $domain,
+                    'certificate_id' => $certificate->id,
                 ]);
 
                 return [
                     'success' => true,
-                    'output' => $process->getOutput(),
-                    'cert_path' => $certPath,
-                    'key_path' => $keyPath,
+                    'message' => 'SSL certificate issued successfully',
+                    'certificate' => $certificate,
+                    'output' => $output,
                 ];
             }
 
+            // Certificate issuance failed
+            $errorMessage = !empty($errorOutput) ? $errorOutput : $output;
+
+            // Try to create a failed certificate record
+            try {
+                SSLCertificate::updateOrCreate(
+                    [
+                        'server_id' => $server->id,
+                        'domain_name' => $domain,
+                    ],
+                    [
+                        'provider' => 'letsencrypt',
+                        'status' => 'failed',
+                        'renewal_error' => $errorMessage,
+                    ]
+                );
+            } catch (\Exception $e) {
+                Log::warning('Failed to create failed certificate record', [
+                    'error' => $e->getMessage(),
+                ]);
+            }
+
+            Log::error('SSL certificate issuance failed', [
+                'server_id' => $server->id,
+                'domain' => $domain,
+                'error' => $errorMessage,
+            ]);
+
             return [
                 'success' => false,
-                'error' => $process->getErrorOutput(),
+                'message' => 'Failed to issue certificate: ' . substr($errorMessage, 0, 300),
+                'error' => $errorMessage,
             ];
+
         } catch (\Exception $e) {
+            Log::error('SSL certificate issuance exception', [
+                'server_id' => $server->id,
+                'domain' => $domain,
+                'error' => $e->getMessage(),
+            ]);
+
             return [
                 'success' => false,
-                'error' => $e->getMessage(),
+                'message' => 'Certificate issuance failed: ' . $e->getMessage(),
             ];
         }
     }
 
-    public function renewCertificate(Domain $domain): array
+    /**
+     * Renew an existing SSL certificate
+     */
+    public function renewCertificate(SSLCertificate $certificate): array
     {
         try {
-            $server = $domain->project->server;
-            
-            $command = $this->buildSSHCommand($server, "certbot renew --nginx --non-interactive");
+            Log::info('Renewing SSL certificate', [
+                'certificate_id' => $certificate->id,
+                'domain' => $certificate->domain_name,
+            ]);
+
+            $certificate->update([
+                'last_renewal_attempt' => now(),
+            ]);
+
+            $server = $certificate->server;
+            $sudoPrefix = $this->getSudoPrefix($server);
+
+            // Renew using certbot
+            $renewCommand = "{$sudoPrefix}certbot renew --cert-name {$certificate->domain_name} --non-interactive";
+
+            $command = $this->buildSSHCommand($server, $renewCommand);
             $process = Process::fromShellCommandline($command);
-            $process->setTimeout(180);
+            $process->setTimeout(120);
             $process->run();
 
-            if ($process->isSuccessful()) {
-                $domain->update([
-                    'ssl_expires_at' => now()->addDays(90),
+            $output = $process->getOutput();
+            $errorOutput = $process->getErrorOutput();
+
+            if ($process->isSuccessful() || str_contains($output, 'successfully renewed') || str_contains($output, 'not yet due for renewal')) {
+                // Get updated certificate information
+                $certInfo = $this->getCertificateInfo($server, $certificate->domain_name);
+
+                $certificate->update([
+                    'status' => 'issued',
+                    'issued_at' => now(),
+                    'expires_at' => $certInfo['expires_at'] ?? now()->addDays(90),
+                    'renewal_error' => null,
+                ]);
+
+                Log::info('SSL certificate renewed successfully', [
+                    'certificate_id' => $certificate->id,
+                    'domain' => $certificate->domain_name,
                 ]);
 
                 return [
                     'success' => true,
-                    'output' => $process->getOutput(),
+                    'message' => 'Certificate renewed successfully',
+                    'output' => $output,
                 ];
             }
 
+            // Renewal failed
+            $errorMessage = !empty($errorOutput) ? $errorOutput : $output;
+
+            $certificate->update([
+                'status' => 'failed',
+                'renewal_error' => $errorMessage,
+            ]);
+
+            Log::error('SSL certificate renewal failed', [
+                'certificate_id' => $certificate->id,
+                'domain' => $certificate->domain_name,
+                'error' => $errorMessage,
+            ]);
+
             return [
                 'success' => false,
-                'error' => $process->getErrorOutput(),
+                'message' => 'Failed to renew certificate: ' . substr($errorMessage, 0, 300),
+                'error' => $errorMessage,
             ];
+
         } catch (\Exception $e) {
+            $certificate->update([
+                'status' => 'failed',
+                'renewal_error' => $e->getMessage(),
+            ]);
+
+            Log::error('SSL certificate renewal exception', [
+                'certificate_id' => $certificate->id,
+                'error' => $e->getMessage(),
+            ]);
+
             return [
                 'success' => false,
-                'error' => $e->getMessage(),
+                'message' => 'Renewal failed: ' . $e->getMessage(),
             ];
         }
     }
 
-    public function checkExpiringCertificates(): array
-    {
-        // Get domains with certificates expiring in 30 days
-        $expiringDomains = Domain::where('ssl_enabled', true)
-            ->where('ssl_expires_at', '<=', now()->addDays(30))
-            ->where('ssl_expires_at', '>', now())
-            ->where('auto_renew_ssl', true)
-            ->get();
-
-        $renewed = [];
-        $failed = [];
-
-        foreach ($expiringDomains as $domain) {
-            $result = $this->renewCertificate($domain);
-            
-            if ($result['success']) {
-                $renewed[] = $domain->domain;
-            } else {
-                $failed[] = [
-                    'domain' => $domain->domain,
-                    'error' => $result['error'] ?? 'Unknown error',
-                ];
-            }
-        }
-
-        return [
-            'renewed' => $renewed,
-            'failed' => $failed,
-        ];
-    }
-
-    public function revokeCertificate(Domain $domain): array
+    /**
+     * Revoke an SSL certificate
+     */
+    public function revokeCertificate(SSLCertificate $certificate): array
     {
         try {
-            $server = $domain->project->server;
-            
-            $command = $this->buildSSHCommand(
-                $server, 
-                "certbot revoke --cert-path /etc/letsencrypt/live/{$domain->domain}/cert.pem --non-interactive"
-            );
+            Log::info('Revoking SSL certificate', [
+                'certificate_id' => $certificate->id,
+                'domain' => $certificate->domain_name,
+            ]);
+
+            $server = $certificate->server;
+            $sudoPrefix = $this->getSudoPrefix($server);
+
+            $revokeCommand = "{$sudoPrefix}certbot revoke --cert-name {$certificate->domain_name} --non-interactive";
+
+            $command = $this->buildSSHCommand($server, $revokeCommand);
             $process = Process::fromShellCommandline($command);
+            $process->setTimeout(60);
             $process->run();
 
             if ($process->isSuccessful()) {
-                $domain->update([
-                    'ssl_enabled' => false,
-                    'ssl_provider' => null,
-                    'ssl_issued_at' => null,
-                    'ssl_expires_at' => null,
+                $certificate->update([
+                    'status' => 'revoked',
                 ]);
 
-                return ['success' => true];
+                Log::info('SSL certificate revoked successfully', [
+                    'certificate_id' => $certificate->id,
+                ]);
+
+                return [
+                    'success' => true,
+                    'message' => 'Certificate revoked successfully',
+                ];
+            }
+
+            $errorMessage = $process->getErrorOutput() ?: $process->getOutput();
+
+            Log::error('SSL certificate revocation failed', [
+                'certificate_id' => $certificate->id,
+                'error' => $errorMessage,
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Failed to revoke certificate: ' . substr($errorMessage, 0, 300),
+                'error' => $errorMessage,
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('SSL certificate revocation exception', [
+                'certificate_id' => $certificate->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Revocation failed: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Check certificate status
+     */
+    public function checkCertificateStatus(SSLCertificate $certificate): array
+    {
+        try {
+            $certInfo = $this->getCertificateInfo($certificate->server, $certificate->domain_name);
+
+            if (isset($certInfo['expires_at'])) {
+                $certificate->update([
+                    'expires_at' => $certInfo['expires_at'],
+                    'status' => $certInfo['expires_at']->isPast() ? 'expired' : 'issued',
+                ]);
+
+                return [
+                    'success' => true,
+                    'valid' => !$certInfo['expires_at']->isPast(),
+                    'expires_at' => $certInfo['expires_at'],
+                ];
             }
 
             return [
                 'success' => false,
-                'error' => $process->getErrorOutput(),
+                'message' => 'Certificate not found or invalid',
             ];
+
         } catch (\Exception $e) {
+            Log::error('Certificate status check failed', [
+                'certificate_id' => $certificate->id,
+                'error' => $e->getMessage(),
+            ]);
+
             return [
                 'success' => false,
+                'message' => 'Failed to check certificate status: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Get certificate information using openssl
+     */
+    public function getCertificateInfo(Server $server, string $domain): array
+    {
+        try {
+            $sudoPrefix = $this->getSudoPrefix($server);
+            $certPath = "/etc/letsencrypt/live/{$domain}/fullchain.pem";
+
+            $opensslCommand = "{$sudoPrefix}openssl x509 -in {$certPath} -noout -enddate 2>/dev/null || echo 'NOT_FOUND'";
+
+            $command = $this->buildSSHCommand($server, $opensslCommand, true);
+            $process = Process::fromShellCommandline($command);
+            $process->setTimeout(10);
+            $process->run();
+
+            $output = trim($process->getOutput());
+
+            if (str_contains($output, 'NOT_FOUND') || !$process->isSuccessful()) {
+                return [
+                    'found' => false,
+                ];
+            }
+
+            // Parse expiry date: notAfter=Nov 28 12:00:00 2026 GMT
+            if (preg_match('/notAfter=(.+)/', $output, $matches)) {
+                $expiryDate = Carbon::parse($matches[1]);
+
+                return [
+                    'found' => true,
+                    'expires_at' => $expiryDate,
+                    'days_until_expiry' => $expiryDate->diffInDays(now()),
+                ];
+            }
+
+            return [
+                'found' => false,
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('Failed to get certificate info', [
+                'server_id' => $server->id,
+                'domain' => $domain,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'found' => false,
                 'error' => $e->getMessage(),
             ];
         }
     }
 
-    protected function buildSSHCommand(Server $server, string $remoteCommand): string
+    /**
+     * Setup automatic renewal cron job
+     */
+    public function setupAutoRenewal(Server $server): array
+    {
+        try {
+            Log::info('Setting up auto-renewal for certificates', ['server_id' => $server->id]);
+
+            $sudoPrefix = $this->getSudoPrefix($server);
+
+            // Certbot usually sets up auto-renewal during installation
+            // We'll verify and ensure it's configured
+            $cronCheckCommand = "{$sudoPrefix}systemctl status certbot.timer 2>/dev/null || crontab -l | grep certbot || echo 'NOT_CONFIGURED'";
+
+            $command = $this->buildSSHCommand($server, $cronCheckCommand, true);
+            $process = Process::fromShellCommandline($command);
+            $process->setTimeout(10);
+            $process->run();
+
+            $output = $process->getOutput();
+
+            if (str_contains($output, 'active') || str_contains($output, 'certbot renew')) {
+                return [
+                    'success' => true,
+                    'message' => 'Auto-renewal is already configured',
+                ];
+            }
+
+            // Setup cron job if not configured
+            $cronCommand = "0 2 * * * certbot renew --quiet";
+            $setupCronCommand = "(crontab -l 2>/dev/null | grep -v certbot; echo '{$cronCommand}') | crontab -";
+
+            $command = $this->buildSSHCommand($server, $setupCronCommand);
+            $process = Process::fromShellCommandline($command);
+            $process->setTimeout(30);
+            $process->run();
+
+            if ($process->isSuccessful()) {
+                Log::info('Auto-renewal cron job configured', ['server_id' => $server->id]);
+
+                return [
+                    'success' => true,
+                    'message' => 'Auto-renewal configured successfully',
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'Failed to configure auto-renewal',
+                'error' => $process->getErrorOutput(),
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('Auto-renewal setup failed', [
+                'server_id' => $server->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Failed to setup auto-renewal: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Get certbot installation script
+     */
+    protected function getCertbotInstallScript(Server $server): string
+    {
+        $sudoPrefix = $this->getSudoPrefix($server);
+
+        return <<<BASH
+#!/bin/bash
+set -e
+
+echo "Installing certbot..."
+
+# Detect OS
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    OS=\$ID
+fi
+
+# Install based on OS
+if [ "\$OS" = "debian" ] || [ "\$OS" = "ubuntu" ]; then
+    {$sudoPrefix}apt-get update -qq
+    {$sudoPrefix}apt-get install -y certbot
+elif [ "\$OS" = "centos" ] || [ "\$OS" = "rhel" ] || [ "\$OS" = "rocky" ] || [ "\$OS" = "almalinux" ]; then
+    {$sudoPrefix}dnf install -y certbot 2>/dev/null || {$sudoPrefix}yum install -y certbot
+elif [ "\$OS" = "fedora" ]; then
+    {$sudoPrefix}dnf install -y certbot
+else
+    echo "Unsupported OS: \$OS"
+    exit 1
+fi
+
+certbot --version
+echo "Certbot installed successfully"
+BASH;
+    }
+
+    /**
+     * Get sudo prefix for commands
+     */
+    protected function getSudoPrefix(Server $server): string
+    {
+        $isRoot = strtolower($server->username) === 'root';
+
+        if ($isRoot) {
+            return '';
+        } elseif ($server->ssh_password) {
+            $escapedPassword = str_replace("'", "'\\''", $server->ssh_password);
+            return "echo '{$escapedPassword}' | sudo -S ";
+        } else {
+            return 'sudo ';
+        }
+    }
+
+    /**
+     * Build SSH command for remote execution
+     */
+    protected function buildSSHCommand(Server $server, string $remoteCommand, bool $suppressWarnings = false): string
     {
         $sshOptions = [
             '-o StrictHostKeyChecking=no',
             '-o UserKnownHostsFile=/dev/null',
+            '-o ConnectTimeout=10',
+            '-o LogLevel=ERROR',
             '-p ' . $server->port,
         ];
+
+        $stderrRedirect = $suppressWarnings ? '2>/dev/null' : '2>&1';
+
+        // For long/complex scripts, use base64 encoding
+        $isLongScript = strlen($remoteCommand) > 500 || str_contains($remoteCommand, '$(');
+
+        if ($isLongScript) {
+            $encodedScript = base64_encode($remoteCommand);
+            $executeCommand = "echo {$encodedScript} | base64 -d | /bin/bash";
+        } else {
+            $executeCommand = "/bin/bash -c " . escapeshellarg($remoteCommand);
+        }
+
+        // Check if password authentication should be used
+        if ($server->ssh_password) {
+            $escapedPassword = escapeshellarg($server->ssh_password);
+
+            return sprintf(
+                'sshpass -p %s ssh %s %s@%s %s %s',
+                $escapedPassword,
+                implode(' ', $sshOptions),
+                $server->username,
+                $server->ip_address,
+                escapeshellarg($executeCommand),
+                $stderrRedirect
+            );
+        }
+
+        // Use SSH key authentication
+        $sshOptions[] = '-o BatchMode=yes';
 
         if ($server->ssh_key) {
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
@@ -216,11 +622,12 @@ class SSLService
         }
 
         return sprintf(
-            'ssh %s %s@%s "sudo %s"',
+            'ssh %s %s@%s %s %s',
             implode(' ', $sshOptions),
             $server->username,
             $server->ip_address,
-            addslashes($remoteCommand)
+            escapeshellarg($executeCommand),
+            $stderrRedirect
         );
     }
 }

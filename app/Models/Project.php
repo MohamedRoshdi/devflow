@@ -38,6 +38,8 @@ class Project extends Model
         'latitude',
         'longitude',
         'auto_deploy',
+        'webhook_secret',
+        'webhook_enabled',
         'metadata',
         'current_commit_hash',
         'current_commit_message',
@@ -53,6 +55,7 @@ class Project extends Model
             'build_commands' => 'array',
             'post_deploy_commands' => 'array',
             'auto_deploy' => 'boolean',
+            'webhook_enabled' => 'boolean',
             'last_deployed_at' => 'datetime',
             'last_commit_at' => 'datetime',
             'storage_used_mb' => 'integer',
@@ -108,6 +111,27 @@ class Project extends Model
     public function pipelines()
     {
         return $this->hasMany(Pipeline::class);
+    }
+
+    public function webhookDeliveries()
+    {
+        return $this->hasMany(WebhookDelivery::class);
+    }
+
+    public function databaseBackups()
+    {
+        return $this->hasMany(DatabaseBackup::class);
+    }
+
+    public function backupSchedules()
+    {
+        return $this->hasMany(BackupSchedule::class);
+    }
+
+    // Webhook methods
+    public function generateWebhookSecret(): string
+    {
+        return bin2hex(random_bytes(32)); // Generates a 64-character hex string
     }
 
     // Status helpers

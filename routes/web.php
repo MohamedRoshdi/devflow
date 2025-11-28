@@ -31,12 +31,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/servers/tags', ServerTagManager::class)->name('servers.tags');
     Route::get('/servers/{server}', ServerShow::class)->name('servers.show');
     Route::get('/servers/{server}/metrics', ServerMetricsDashboard::class)->name('servers.metrics');
+    Route::get('/servers/{server}/ssl', \App\Livewire\Servers\SSLManager::class)->name('servers.ssl');
 
     // Projects
     Route::get('/projects', ProjectList::class)->name('projects.index');
     Route::get('/projects/create', ProjectCreate::class)->name('projects.create');
     Route::get('/projects/{project}', ProjectShow::class)->name('projects.show');
     Route::get('/projects/{project}/edit', \App\Livewire\Projects\ProjectEdit::class)->name('projects.edit');
+    Route::get('/projects/{project}/backups', \App\Livewire\Projects\DatabaseBackupManager::class)->name('projects.backups');
 
     // Deployments
     Route::get('/deployments', DeploymentList::class)->name('deployments.index');
@@ -75,9 +77,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/tenants', \App\Livewire\MultiTenant\TenantManager::class)->name('tenants.index');
     Route::get('/tenants/{project}', \App\Livewire\MultiTenant\TenantManager::class)->name('tenants.project');
 
-    // SSH Key Management
+    // Settings
     Route::get('/settings/ssh-keys', \App\Livewire\Settings\SSHKeyManager::class)->name('settings.ssh-keys');
+    Route::get('/settings/health-checks', \App\Livewire\Settings\HealthCheckManager::class)->name('settings.health-checks');
 });
+
+// Webhook endpoints (public, no auth required)
+Route::post('/webhooks/github/{secret}', [App\Http\Controllers\WebhookController::class, 'handleGitHub'])->name('webhooks.github');
+Route::post('/webhooks/gitlab/{secret}', [App\Http\Controllers\WebhookController::class, 'handleGitLab'])->name('webhooks.gitlab');
 
 require __DIR__.'/auth.php';
 

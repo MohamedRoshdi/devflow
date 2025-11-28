@@ -86,6 +86,11 @@ class Server extends Model
         return $this->belongsToMany(ServerTag::class, 'server_tag_pivot', 'server_id', 'tag_id');
     }
 
+    public function sslCertificates()
+    {
+        return $this->hasMany(SSLCertificate::class);
+    }
+
     // Status helpers
     public function isOnline(): bool
     {

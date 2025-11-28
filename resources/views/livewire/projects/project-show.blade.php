@@ -416,6 +416,19 @@
                     </svg>
                     <span>Deployments</span>
                 </button>
+
+                <button wire:click="setActiveTab('webhooks')"
+                        wire:loading.class="opacity-50"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center space-x-2 {{ $activeTab === 'webhooks' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600' }}">
+                    <svg wire:loading.remove wire:target="setActiveTab('webhooks')" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    <svg wire:loading wire:target="setActiveTab('webhooks')" class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Webhooks</span>
+                </button>
             </nav>
         </div>
     </div>
@@ -1067,6 +1080,12 @@
         </div>
         @endif
         <!-- End of Deployments Tab -->
+
+        <!-- Webhooks Tab -->
+        @if($activeTab === 'webhooks')
+            @livewire('projects.project-webhook-settings', ['project' => $project], key('webhooks-' . $project->id))
+        @endif
+        <!-- End of Webhooks Tab -->
     </div>
     <!-- End of Tab Content Container -->
 
