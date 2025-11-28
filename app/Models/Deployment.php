@@ -19,10 +19,13 @@ class Deployment extends Model
         'status',
         'output_log',
         'error_log',
+        'error_message',
         'started_at',
         'completed_at',
         'duration_seconds',
         'triggered_by',
+        'rollback_deployment_id',
+        'environment_snapshot',
         'metadata',
     ];
 
@@ -30,10 +33,22 @@ class Deployment extends Model
     {
         return [
             'metadata' => 'array',
+            'environment_snapshot' => 'array',
             'started_at' => 'datetime',
             'completed_at' => 'datetime',
             'duration_seconds' => 'integer',
         ];
+    }
+
+    // Rollback relationship
+    public function rollbackOf()
+    {
+        return $this->belongsTo(Deployment::class, 'rollback_deployment_id');
+    }
+
+    public function rollbacks()
+    {
+        return $this->hasMany(Deployment::class, 'rollback_deployment_id');
     }
 
     // Relationships

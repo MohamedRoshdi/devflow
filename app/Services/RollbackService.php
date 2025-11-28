@@ -106,9 +106,9 @@ class RollbackService
             }
 
             // Step 4: Rebuild and restart containers
-            $dockerResult = $this->dockerService->deployProject($project);
-            if (!$dockerResult) {
-                throw new \Exception("Failed to rebuild Docker containers");
+            $dockerResult = $this->dockerService->deployWithCompose($project);
+            if (!$dockerResult['success']) {
+                throw new \Exception("Failed to rebuild Docker containers: " . ($dockerResult['error'] ?? 'Unknown error'));
             }
 
             // Step 5: Run post-rollback checks
