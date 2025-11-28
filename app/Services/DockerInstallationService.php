@@ -136,113 +136,72 @@ class DockerInstallationService
      */
     protected function getDockerInstallScript(Server $server): string
     {
-        // Determine sudo prefix based on username and password
-        $sudoSetup = '';
-
-        if ($server->username === 'root') {
-            // Root user doesn't need sudo
-            $sudoPrefix = '';
-        } elseif ($server->ssh_password) {
-            // Non-root user with password - create sudo wrapper
-            $escapedPassword = str_replace("'", "'\\''", $server->ssh_password);
-            $sudoSetup = <<<BASH
-# Setup sudo with password
-export SUDO_PASSWORD='{$escapedPassword}'
-function run_sudo() {
-    echo "\$SUDO_PASSWORD" | sudo -S "\$@" 2>&1 | grep -v '^\[sudo\] password'
-}
-BASH;
-            $sudoPrefix = 'run_sudo';
-        } else {
-            // Non-root user without password - assume passwordless sudo
-            $sudoPrefix = 'sudo';
-        }
-
-        // For root user, run commands directly; for others, use run_cmd wrapper
-        $isRoot = $server->username === 'root';
-        $runCmd = $isRoot ? '' : 'run_cmd ';
-
-        // Define the run_cmd function based on user type
-        if ($isRoot) {
-            $runCmdFunction = '# Running as root - no sudo needed';
-        } else {
-            $runCmdFunction = <<<BASH
-# Helper function to run commands with sudo
-run_cmd() {
-    {$sudoPrefix} "\$@"
-}
-BASH;
-        }
+        // For root users, no sudo needed. For others, use sudo.
+        $isRoot = strtolower($server->username) === 'root';
+        $sudo = $isRoot ? '' : 'sudo ';
 
         return <<<BASH
 #!/bin/bash
 set -e
 
 echo "=== Starting Docker Installation ==="
-
-{$sudoSetup}
-
-{$runCmdFunction}
+echo "Username: {$server->username}"
+echo "Using sudo: {$sudo}"
 
 # Detect OS
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     OS=\$ID
+    echo "Detected OS: \$OS"
 else
     echo "Cannot detect OS"
     exit 1
 fi
 
-echo "Detected OS: \$OS"
-
 # Update package index
-{$runCmd}apt-get update -qq
+echo "Updating package index..."
+{$sudo}apt-get update -qq
 
 # Install prerequisites
-{$runCmd}apt-get install -y -qq \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release
+echo "Installing prerequisites..."
+{$sudo}apt-get install -y -qq ca-certificates curl gnupg lsb-release
 
 # Add Docker's official GPG key and repository based on OS
-{$runCmd}mkdir -p /etc/apt/keyrings
+{$sudo}mkdir -p /etc/apt/keyrings
 
 if [ "\$OS" = "debian" ]; then
     echo "Installing Docker for Debian..."
-    curl -fsSL https://download.docker.com/linux/debian/gpg | {$runCmd}gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-    {$runCmd}chmod a+r /etc/apt/keyrings/docker.gpg
-    echo \
-      "deb [arch=\$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
-      \$(lsb_release -cs) stable" | {$runCmd}tee /etc/apt/sources.list.d/docker.list > /dev/null
+    curl -fsSL https://download.docker.com/linux/debian/gpg | {$sudo}gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    {$sudo}chmod a+r /etc/apt/keyrings/docker.gpg
+    echo "deb [arch=\$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \$(lsb_release -cs) stable" | {$sudo}tee /etc/apt/sources.list.d/docker.list > /dev/null
 elif [ "\$OS" = "ubuntu" ]; then
     echo "Installing Docker for Ubuntu..."
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | {$runCmd}gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-    {$runCmd}chmod a+r /etc/apt/keyrings/docker.gpg
-    echo \
-      "deb [arch=\$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-      \$(lsb_release -cs) stable" | {$runCmd}tee /etc/apt/sources.list.d/docker.list > /dev/null
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | {$sudo}gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    {$sudo}chmod a+r /etc/apt/keyrings/docker.gpg
+    echo "deb [arch=\$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \$(lsb_release -cs) stable" | {$sudo}tee /etc/apt/sources.list.d/docker.list > /dev/null
 else
-    echo "Unsupported OS: \$OS"
+    echo "Unsupported OS: \$OS (only debian and ubuntu are supported)"
     exit 1
 fi
 
 # Update package index again
-{$runCmd}apt-get update -qq
+echo "Updating package index with Docker repository..."
+{$sudo}apt-get update -qq
 
 # Install Docker Engine, CLI, containerd, and plugins
 echo "Installing Docker packages..."
-{$runCmd}apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+{$sudo}apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Start and enable Docker service
 echo "Starting Docker service..."
-{$runCmd}systemctl start docker
-{$runCmd}systemctl enable docker
+{$sudo}systemctl start docker
+{$sudo}systemctl enable docker
 
 # Add current user to docker group (optional, for non-root usage)
-{$runCmd}usermod -aG docker \$USER || true
+{$sudo}usermod -aG docker \$USER 2>/dev/null || true
 
 # Verify installation
+echo "Verifying installation..."
 docker --version
 docker compose version
 
