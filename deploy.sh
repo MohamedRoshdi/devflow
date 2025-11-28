@@ -125,12 +125,7 @@ git config --global --add safe.directory "/var/www/*" 2>/dev/null || true
 echo "🎨 Building assets..."
 npm run build
 
-# Setup queue tables
-echo "📊 Setting up queue tables..."
-php artisan queue:table 2>/dev/null || true
-php artisan queue:failed-table 2>/dev/null || true
-
-# Run migrations
+# Run migrations (queue tables are created via migration file with hasTable check)
 echo "🗄️  Running database migrations..."
 php artisan migrate --force
 
