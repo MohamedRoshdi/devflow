@@ -132,6 +132,13 @@
                                         </svg>
                                         System Admin
                                     </a>
+                                    <a href="{{ route('settings.queue-monitor') }}"
+                                       class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 {{ request()->routeIs('settings.queue-monitor') ? 'bg-gray-100 dark:bg-gray-700' : '' }}">
+                                        <svg class="inline w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v7a1 1 0 102 0V8z" clip-rule="evenodd" />
+                                        </svg>
+                                        Queue Monitor
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -196,6 +203,7 @@
                     <a href="{{ route('notifications.index') }}" class="block pl-6 pr-4 py-2 border-l-4 {{ request()->routeIs('notifications.*') ? 'border-blue-500 text-blue-700 bg-blue-50 dark:bg-blue-900/20' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700' }} text-base font-medium">Notifications</a>
                     <a href="{{ route('tenants.index') }}" class="block pl-6 pr-4 py-2 border-l-4 {{ request()->routeIs('tenants.*') ? 'border-blue-500 text-blue-700 bg-blue-50 dark:bg-blue-900/20' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700' }} text-base font-medium">Multi-Tenant</a>
                     <a href="{{ route('admin.system') }}" class="block pl-6 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.*') ? 'border-blue-500 text-blue-700 bg-blue-50 dark:bg-blue-900/20' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700' }} text-base font-medium">System Admin</a>
+                    <a href="{{ route('settings.queue-monitor') }}" class="block pl-6 pr-4 py-2 border-l-4 {{ request()->routeIs('settings.queue-monitor') ? 'border-blue-500 text-blue-700 bg-blue-50 dark:bg-blue-900/20' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700' }} text-base font-medium">Queue Monitor</a>
                 </div>
             </div>
         </div>
