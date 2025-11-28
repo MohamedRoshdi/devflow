@@ -549,9 +549,12 @@ class DockerService
             $server = $project->server;
             $hostPath = "/var/www/{$project->slug}/storage/logs/laravel.log";
 
+            // Use sudo for non-root users to handle permission issues
+            $sudo = strtolower($server->username) === 'root' ? '' : 'sudo ';
+
             // Clear logs using truncate command - don't change ownership, just truncate
             // The file keeps its current ownership so the container can still write to it
-            $hostCommand = "if [ -f {$hostPath} ]; then truncate -s 0 {$hostPath} && echo 'cleared'; elif [ -d /var/www/{$project->slug}/storage/logs ]; then touch {$hostPath} && chmod 666 {$hostPath} && echo 'created'; else echo 'not_found'; fi";
+            $hostCommand = "if [ -f {$hostPath} ]; then {$sudo}truncate -s 0 {$hostPath} && echo 'cleared'; elif [ -d /var/www/{$project->slug}/storage/logs ]; then {$sudo}touch {$hostPath} && {$sudo}chmod 666 {$hostPath} && echo 'created'; else echo 'not_found'; fi";
             $command = $this->isLocalhost($server)
                 ? $hostCommand
                 : $this->buildSSHCommand($server, $hostCommand);
@@ -578,6 +581,57 @@ class DockerService
             return [
                 'success' => false,
                 'error' => 'Could not clear logs: ' . ($process->getErrorOutput() ?: $process->getOutput() ?: 'Unknown error'),
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Download Laravel logs as a file
+     */
+    public function downloadLaravelLogs(Project $project): array
+    {
+        try {
+            $server = $project->server;
+            $hostPath = "/var/www/{$project->slug}/storage/logs/laravel.log";
+
+            // Use sudo for non-root users
+            $sudo = strtolower($server->username) === 'root' ? '' : 'sudo ';
+
+            // Read the entire log file
+            $hostCommand = "if [ -f {$hostPath} ]; then {$sudo}cat {$hostPath}; else echo '__LOG_NOT_FOUND__'; fi";
+            $command = $this->isLocalhost($server)
+                ? $hostCommand
+                : $this->buildSSHCommand($server, $hostCommand);
+
+            $process = Process::fromShellCommandline($command);
+            $process->setTimeout(120); // 2 minute timeout for large files
+            $process->run();
+
+            $output = $process->getOutput();
+
+            if (trim($output) === '__LOG_NOT_FOUND__') {
+                return [
+                    'success' => false,
+                    'error' => 'Log file not found',
+                ];
+            }
+
+            if ($process->isSuccessful()) {
+                return [
+                    'success' => true,
+                    'content' => $output,
+                    'filename' => $project->slug . '-laravel-' . now()->format('Y-m-d-His') . '.log',
+                ];
+            }
+
+            return [
+                'success' => false,
+                'error' => 'Could not download logs: ' . ($process->getErrorOutput() ?: 'Unknown error'),
             ];
         } catch (\Exception $e) {
             return [

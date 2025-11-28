@@ -7,6 +7,7 @@ use App\Services\DockerService;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ProjectLogs extends Component
 {
@@ -19,6 +20,7 @@ class ProjectLogs extends Component
     public bool $loading = false;
     public ?string $error = null;
     public ?string $source = null;
+    public bool $downloading = false;
 
     public function mount(Project $project): void
     {
@@ -71,6 +73,43 @@ class ProjectLogs extends Component
             }
         } catch (\Throwable $e) {
             $this->error = 'Failed to clear logs: ' . $e->getMessage();
+        }
+    }
+
+    public function downloadLogs(): StreamedResponse
+    {
+        $this->downloading = true;
+        $project = $this->getProject();
+        $dockerService = app(DockerService::class);
+
+        try {
+            $result = $dockerService->downloadLaravelLogs($project);
+
+            if ($result['success'] ?? false) {
+                $content = $result['content'];
+                $filename = $result['filename'];
+
+                return response()->streamDownload(function () use ($content) {
+                    echo $content;
+                }, $filename, [
+                    'Content-Type' => 'text/plain',
+                ]);
+            }
+
+            $this->error = $result['error'] ?? 'Failed to download logs';
+            $this->downloading = false;
+
+            // Return empty response with error
+            return response()->streamDownload(function () {
+                echo '';
+            }, 'error.txt');
+        } catch (\Throwable $e) {
+            $this->error = 'Failed to download logs: ' . $e->getMessage();
+            $this->downloading = false;
+
+            return response()->streamDownload(function () {
+                echo '';
+            }, 'error.txt');
         }
     }
 
