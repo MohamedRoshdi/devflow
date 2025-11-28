@@ -852,14 +852,62 @@
                         <div class="relative pl-6">
                             <span class="absolute left-2 top-0 bottom-0 w-px bg-gradient-to-b from-green-200 via-blue-200 to-purple-200 dark:from-green-700/60 dark:via-blue-700/60 dark:to-purple-700/60"></span>
                             <div class="space-y-4">
+                                @php
+                                    $currentCommitHash = $project->current_commit_hash;
+                                    $foundCurrentCommit = false;
+                                @endphp
                                 @foreach($commits as $commit)
+                                    @php
+                                        $isCurrentCommit = $currentCommitHash && str_starts_with($commit['hash'], substr($currentCommitHash, 0, 7));
+                                        $isUnmerged = !$foundCurrentCommit && !$isCurrentCommit && $currentCommitHash;
+                                        $isMerged = $foundCurrentCommit;
+                                        if ($isCurrentCommit) $foundCurrentCommit = true;
+                                    @endphp
                                     <div class="relative pl-6"
                                          wire:key="commit-{{ $commit['hash'] }}">
-                                        <span class="absolute left-0 top-2 w-3 h-3 rounded-full border-2 border-white dark:border-gray-900 bg-gradient-to-r from-green-500 via-blue-500 to-purple-500 shadow"></span>
-                                        <div class="p-5 bg-gray-50 dark:bg-gray-700/40 rounded-xl border border-gray-200 dark:border-gray-600 hover:-translate-y-0.5 transition-transform">
+                                        {{-- Timeline dot with different colors --}}
+                                        <span class="absolute left-0 top-2 w-3 h-3 rounded-full border-2 border-white dark:border-gray-900 shadow
+                                            @if($isCurrentCommit)
+                                                bg-green-500
+                                            @elseif($isUnmerged)
+                                                bg-amber-500
+                                            @else
+                                                bg-blue-500
+                                            @endif"></span>
+
+                                        {{-- Commit card with colored backgrounds --}}
+                                        <div class="p-5 rounded-xl border-2 hover:-translate-y-0.5 transition-all
+                                            @if($isCurrentCommit)
+                                                bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-green-300 dark:border-green-700
+                                            @elseif($isUnmerged)
+                                                bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-amber-300 dark:border-amber-700
+                                            @else
+                                                bg-gradient-to-r from-blue-50/50 to-indigo-50/50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800
+                                            @endif">
                                             <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                                                 <div class="flex items-center gap-3">
-                                                    <code class="text-xs bg-slate-900 text-white px-3 py-1.5 rounded-lg font-mono">{{ $commit['short_hash'] }}</code>
+                                                    <code class="text-xs px-3 py-1.5 rounded-lg font-mono font-bold
+                                                        @if($isCurrentCommit)
+                                                            bg-green-600 text-white
+                                                        @elseif($isUnmerged)
+                                                            bg-amber-600 text-white
+                                                        @else
+                                                            bg-blue-600 text-white
+                                                        @endif">{{ $commit['short_hash'] }}</code>
+                                                    {{-- Status badge --}}
+                                                    @if($isCurrentCommit)
+                                                        <span class="text-xs px-2 py-0.5 rounded-full bg-green-500 text-white font-medium shadow-sm">
+                                                            Deployed
+                                                        </span>
+                                                    @elseif($isUnmerged)
+                                                        <span class="text-xs px-2 py-0.5 rounded-full bg-amber-500 text-white font-medium shadow-sm">
+                                                            Unmerged
+                                                        </span>
+                                                    @else
+                                                        <span class="text-xs px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 font-medium">
+                                                            Merged
+                                                        </span>
+                                                    @endif
                                                     <button type="button"
                                                             onclick="navigator.clipboard.writeText('{{ $commit['hash'] }}')"
                                                             class="text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">
@@ -876,13 +924,13 @@
                                             </div>
                                             <p class="mt-3 text-sm font-medium text-gray-900 dark:text-white leading-relaxed">{{ $commit['message'] }}</p>
                                             <div class="mt-3 flex flex-wrap items-center gap-3 text-xs text-gray-600 dark:text-gray-400">
-                                                <span class="inline-flex items-center gap-2 px-2 py-1 bg-gray-200/70 dark:bg-gray-700/60 rounded-lg">
+                                                <span class="inline-flex items-center gap-2 px-2 py-1 bg-white/60 dark:bg-gray-700/60 rounded-lg">
                                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                         <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
                                                     </svg>
                                                     {{ $commit['author'] }}
                                                 </span>
-                                                <span class="inline-flex items-center gap-2 px-2 py-1 bg-gray-200/40 dark:bg-gray-700/40 rounded-lg">
+                                                <span class="inline-flex items-center gap-2 px-2 py-1 bg-white/40 dark:bg-gray-700/40 rounded-lg">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.88 3.549l3.536 3.536-9.193 9.193a4 4 0 01-1.414.943l-3.086.924.924-3.086a4 4 0 01.943-1.414l9.29-9.29z" />
                                                     </svg>
