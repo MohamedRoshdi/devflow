@@ -7,6 +7,72 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.8.0] - 2025-11-28
+
+### Added ✨
+
+- **🪝 Webhook Deployments** - Auto-deploy on GitHub/GitLab push events
+  - `WebhookController` for GitHub and GitLab webhook endpoints
+  - `WebhookService` with HMAC-SHA256 signature verification
+  - `WebhookDelivery` model for delivery tracking and logging
+  - `ProjectWebhookSettings` Livewire component for configuration
+  - Webhook secret generation per project
+  - Support for branch filtering
+  - Delivery status tracking (pending, processing, success, failed)
+
+- **🔐 SSL Certificate Management** - Let's Encrypt integration
+  - `SSLCertificate` model with status tracking
+  - `SSLService` with Certbot integration via SSH
+  - `SSLManager` Livewire component per server
+  - `SSLRenewCommand` for automatic renewal via scheduler
+  - Certificate issuance, renewal, and revocation
+  - Expiry tracking with days remaining
+  - Support for multiple domains per certificate
+
+- **🏥 Automated Health Checks** - Scheduled monitoring with notifications
+  - `HealthCheck` model with configurable check types (HTTP, TCP, Ping, SSL)
+  - `HealthCheckResult` model for check history
+  - `NotificationChannel` model (Email, Slack, Discord)
+  - `HealthCheckService` with multi-type check support
+  - `NotificationService` for multi-channel alerts
+  - `HealthCheckManager` Livewire component
+  - `RunHealthChecksCommand` for scheduled execution
+  - Configurable check intervals and thresholds
+  - Response time and status code validation
+
+- **💾 Database Backups** - Scheduled backups with cloud storage
+  - `DatabaseBackup` model for backup records
+  - `BackupSchedule` model for scheduling
+  - `DatabaseBackupService` with MySQL/PostgreSQL support
+  - `DatabaseBackupManager` Livewire component
+  - `RunBackupsCommand` for scheduled execution
+  - Remote backup execution via SSH
+  - S3 storage integration ready
+  - Backup compression support
+  - Manual backup trigger
+
+### Database Migrations
+
+- `create_ssl_certificates_table`
+- `add_webhook_fields_to_projects_table` (webhook_secret, webhook_enabled)
+- `create_webhook_deliveries_table`
+- `create_health_checks_table`
+- `create_health_check_results_table`
+- `create_notification_channels_table`
+- `create_health_check_notifications_table`
+- `create_database_backups_table`
+- `create_backup_schedules_table`
+
+### New Routes
+
+- `GET /servers/{server}/ssl` - SSL certificate management
+- `GET /projects/{project}/backups` - Database backup management
+- `GET /settings/health-checks` - Health check configuration
+- `POST /webhooks/github/{secret}` - GitHub webhook endpoint
+- `POST /webhooks/gitlab/{secret}` - GitLab webhook endpoint
+
+---
+
 ## [2.7.0] - 2025-11-28
 
 ### Added ✨
