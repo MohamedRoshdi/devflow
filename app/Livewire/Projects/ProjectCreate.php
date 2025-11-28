@@ -132,6 +132,7 @@ class ProjectCreate extends Component
         $project = Project::create([
             'user_id' => auth()->id(),
             'server_id' => $this->server_id,
+            'template_id' => $this->selectedTemplateId,
             'name' => $this->name,
             'slug' => $this->slug,
             'repository_url' => $this->repository_url,
