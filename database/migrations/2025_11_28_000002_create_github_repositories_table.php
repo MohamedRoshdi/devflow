@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('github_repositories')) {
+            return;
+        }
+
         Schema::create('github_repositories', function (Blueprint $table) {
             $table->id();
             $table->foreignId('github_connection_id')->constrained()->onDelete('cascade');

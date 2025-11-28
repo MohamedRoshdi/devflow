@@ -8,6 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('server_ssh_key')) {
+            return;
+        }
+
         Schema::create('server_ssh_key', function (Blueprint $table) {
             $table->foreignId('server_id')->constrained()->onDelete('cascade');
             $table->foreignId('ssh_key_id')->constrained()->onDelete('cascade');

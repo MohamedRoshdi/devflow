@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('ssl_certificates')) {
+            return;
+        }
+
         Schema::create('ssl_certificates', function (Blueprint $table) {
             $table->id();
             $table->foreignId('server_id')->constrained()->cascadeOnDelete();

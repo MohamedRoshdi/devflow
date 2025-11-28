@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('alert_history')) {
+            return;
+        }
+
         Schema::create('alert_history', function (Blueprint $table) {
             $table->id();
             $table->foreignId('resource_alert_id')->constrained()->onDelete('cascade');
