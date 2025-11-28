@@ -17,9 +17,18 @@ use App\Livewire\Analytics\AnalyticsDashboard;
 use App\Livewire\Docker\DockerDashboard;
 use App\Livewire\Admin\SystemAdmin;
 use App\Livewire\Dashboard\HealthDashboard;
+use App\Livewire\Settings\GitHubSettings;
+use App\Http\Controllers\GitHubAuthController;
+use App\Livewire\Teams\TeamList;
+use App\Livewire\Teams\TeamSettings;
+use App\Http\Controllers\TeamInvitationController;
 
 // Public Home Page - Shows all projects
 Route::get('/', HomePublic::class)->name('home');
+
+// Team Invitation (requires auth to accept)
+Route::get('/invitations/{token}', [TeamInvitationController::class, 'show'])->name('invitations.show');
+Route::post('/invitations/{token}/accept', [TeamInvitationController::class, 'accept'])->name('invitations.accept')->middleware('auth');
 
 Route::middleware('auth')->group(function () {
     // Dashboard
@@ -55,6 +64,10 @@ Route::middleware('auth')->group(function () {
     // Users Management
     Route::get('/users', \App\Livewire\Users\UserList::class)->name('users.index');
 
+    // Team Management
+    Route::get('/teams', TeamList::class)->name('teams.index');
+    Route::get('/teams/{team}/settings', TeamSettings::class)->name('teams.settings');
+
     // Docker Management
     Route::get('/servers/{server}/docker', DockerDashboard::class)->name('docker.dashboard');
 
@@ -82,6 +95,16 @@ Route::middleware('auth')->group(function () {
     // Settings
     Route::get('/settings/ssh-keys', \App\Livewire\Settings\SSHKeyManager::class)->name('settings.ssh-keys');
     Route::get('/settings/health-checks', \App\Livewire\Settings\HealthCheckManager::class)->name('settings.health-checks');
+    Route::get('/settings/github', GitHubSettings::class)->name('settings.github');
+    Route::get('/settings/api-tokens', \App\Livewire\Settings\ApiTokenManager::class)->name('settings.api-tokens');
+
+    // API Documentation
+    Route::get('/docs/api', \App\Livewire\Docs\ApiDocumentation::class)->name('docs.api');
+
+    // GitHub OAuth
+    Route::get('/auth/github', [GitHubAuthController::class, 'redirect'])->name('github.redirect');
+    Route::get('/auth/github/callback', [GitHubAuthController::class, 'callback'])->name('github.callback');
+    Route::get('/auth/github/disconnect', [GitHubAuthController::class, 'disconnect'])->name('github.disconnect');
 
     // Log Aggregation
     Route::get('/logs', \App\Livewire\Logs\LogViewer::class)->name('logs.index');

@@ -13,6 +13,7 @@ class Project extends Model
     protected $fillable = [
         'user_id',
         'server_id',
+        'team_id',
         'template_id',
         'name',
         'slug',
@@ -81,6 +82,11 @@ class Project extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
     }
 
     public function server()

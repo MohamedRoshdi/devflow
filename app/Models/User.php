@@ -18,6 +18,7 @@ class User extends Authenticatable
         'avatar',
         'timezone',
         'last_login_at',
+        'current_team_id',
     ];
 
     protected $hidden = [
@@ -58,6 +59,44 @@ class User extends Authenticatable
     public function serverTags()
     {
         return $this->hasMany(ServerTag::class);
+    }
+
+    public function apiTokens()
+    {
+        return $this->hasMany(ApiToken::class);
+    }
+
+    // Team relationships
+    public function teams()
+    {
+        return $this->belongsToMany(Team::class, 'team_members')
+            ->withPivot(['role', 'permissions', 'invited_by', 'joined_at'])
+            ->withTimestamps();
+    }
+
+    public function ownedTeams()
+    {
+        return $this->hasMany(Team::class, 'owner_id');
+    }
+
+    public function currentTeam()
+    {
+        return $this->belongsTo(Team::class, 'current_team_id');
+    }
+
+    public function teamInvitations()
+    {
+        return $this->hasMany(TeamInvitation::class, 'invited_by');
+    }
+
+    // Helper method for avatar URL
+    public function getAvatarUrlAttribute(): string
+    {
+        if ($this->avatar) {
+            return asset('storage/' . $this->avatar);
+        }
+
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=ffffff&background=6366f1&bold=true';
     }
 }
 
