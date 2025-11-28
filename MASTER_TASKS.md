@@ -1,6 +1,6 @@
 # DevFlow Pro - Master Task List
 
-> **Last Updated:** 2025-11-28 | **Version:** 2.6.3
+> **Last Updated:** 2025-11-28 | **Version:** 2.7.1
 
 ---
 
@@ -8,10 +8,10 @@
 
 | Status | Count |
 |--------|-------|
-| 🔴 High Priority | 4 |
-| 🟡 Medium Priority | 6 |
+| 🔴 High Priority | 3 |
+| 🟡 Medium Priority | 3 |
 | 🟢 Low Priority | 4 |
-| ✅ Completed | 12 |
+| ✅ Completed | 16 |
 
 ---
 
@@ -21,37 +21,15 @@
 _Currently no tasks in progress_
 
 ### Up Next
-1. Server Monitoring Dashboard
-2. Server Groups/Tags
-3. Bulk Server Actions
+1. Webhook Deployments
+2. SSL Certificate Management
+3. Automated Health Checks
 
 ---
 
 ## 📋 High Priority Tasks
 
-### 1. Server Monitoring Dashboard
-**Status:** 🔴 Todo | **Effort:** Medium | **Target:** v2.7.1
-
-Real-time server metrics dashboard with charts and historical data.
-
-**Subtasks:**
-- [ ] Create `ServerMetricsDashboard` Livewire component
-- [ ] Add real-time CPU usage chart
-- [ ] Add real-time Memory usage chart
-- [ ] Add Disk I/O chart
-- [ ] Add Network I/O chart
-- [ ] Store metrics history in database
-- [ ] Add time range selector
-- [ ] Add export to CSV
-
-**Files to Create:**
-- `app/Livewire/Servers/ServerMetricsDashboard.php`
-- `app/Services/ServerMetricsService.php`
-- `app/Console/Commands/CollectServerMetrics.php`
-
----
-
-### 2. Webhook Deployments
+### 1. Webhook Deployments
 **Status:** 🔴 Todo | **Effort:** Medium | **Target:** v2.8.0
 
 Auto-deploy on GitHub/GitLab push events.
@@ -71,7 +49,7 @@ Auto-deploy on GitHub/GitLab push events.
 
 ---
 
-### 3. SSL Certificate Management
+### 2. SSL Certificate Management
 **Status:** 🔴 Todo | **Effort:** Medium | **Target:** v2.8.0
 
 Let's Encrypt integration for automatic SSL.
@@ -86,7 +64,7 @@ Let's Encrypt integration for automatic SSL.
 
 ---
 
-### 4. Automated Health Checks
+### 3. Automated Health Checks
 **Status:** 🔴 Todo | **Effort:** Low | **Target:** v2.8.0
 
 Scheduled health checks with notifications.
@@ -102,49 +80,7 @@ Scheduled health checks with notifications.
 
 ## 🟡 Medium Priority Tasks
 
-### 5. Server Groups/Tags
-**Status:** 🟡 Todo | **Effort:** Low | **Target:** v2.7.1
-
-Organize servers with tags and groups.
-
-**Subtasks:**
-- [ ] Create `ServerTag` model
-- [ ] Create `ServerGroup` model
-- [ ] Add tag management UI
-- [ ] Add group filtering
-- [ ] Add color picker for tags
-
----
-
-### 6. Bulk Server Actions
-**Status:** 🟡 Todo | **Effort:** Low | **Target:** v2.7.1
-
-Execute actions on multiple servers at once.
-
-**Subtasks:**
-- [ ] Add checkbox selection
-- [ ] Create bulk action dropdown
-- [ ] Implement parallel SSH execution
-- [ ] Add progress indicator
-- [ ] Support bulk Docker install
-
----
-
-### 7. SSH Key Management UI
-**Status:** 🟡 Todo | **Effort:** Medium | **Target:** v2.7.1
-
-Manage SSH keys from the interface.
-
-**Subtasks:**
-- [ ] Create `SSHKey` model
-- [ ] Add key generation (RSA, Ed25519)
-- [ ] Add key import/export
-- [ ] Add key deployment to servers
-- [ ] Create key rotation workflow
-
----
-
-### 8. Database Backups
+### 4. Database Backups
 **Status:** 🟡 Todo | **Effort:** Medium | **Target:** v2.8.0
 
 Scheduled database backups with cloud storage.
@@ -158,7 +94,7 @@ Scheduled database backups with cloud storage.
 
 ---
 
-### 9. Server Backups
+### 5. Server Backups
 **Status:** 🟡 Todo | **Effort:** Medium | **Target:** v2.8.0
 
 Full server backup management.
@@ -171,7 +107,7 @@ Full server backup management.
 
 ---
 
-### 10. Resource Alerts
+### 6. Resource Alerts
 **Status:** 🟡 Todo | **Effort:** Medium | **Target:** v2.8.0
 
 Configurable alerts for resource thresholds.
@@ -187,28 +123,28 @@ Configurable alerts for resource thresholds.
 
 ## 🟢 Low Priority Tasks
 
-### 11. Log Aggregation
+### 7. Log Aggregation
 **Status:** 🟢 Todo | **Effort:** Medium | **Target:** v2.8.0
 
 Centralized log viewing with search.
 
 ---
 
-### 12. GitHub App Integration
+### 8. GitHub App Integration
 **Status:** 🟢 Todo | **Effort:** High | **Target:** v3.0.0
 
 Full OAuth-based GitHub integration.
 
 ---
 
-### 13. Team Collaboration
+### 9. Team Collaboration
 **Status:** 🟢 Todo | **Effort:** High | **Target:** v3.0.0
 
 Multi-user access with permissions.
 
 ---
 
-### 14. API v1
+### 10. API v1
 **Status:** 🟢 Todo | **Effort:** High | **Target:** v3.0.0
 
 RESTful API for integrations.
@@ -216,6 +152,12 @@ RESTful API for integrations.
 ---
 
 ## ✅ Recently Completed
+
+### v2.7.1 (2025-11-28)
+- [x] Server Monitoring Dashboard - Real-time metrics with charts
+- [x] Server Groups/Tags - Organize servers with colored tags
+- [x] Bulk Server Actions - Execute actions on multiple servers
+- [x] SSH Key Management UI - Generate, import, deploy SSH keys
 
 ### v2.7.0 (2025-11-28)
 - [x] Deployment Rollback UI
@@ -266,15 +208,15 @@ RESTful API for integrations.
 
 ## 📅 Sprint Planning
 
-### Current Sprint (Dec 2025)
+### Current Sprint (Dec 2025) ✅ COMPLETED
 **Focus:** Server Management Improvements
 
 | Task | Priority | Status |
 |------|----------|--------|
-| Server Monitoring Dashboard | High | Todo |
-| Server Groups/Tags | Medium | Todo |
-| Bulk Server Actions | Medium | Todo |
-| SSH Key Management | Medium | Todo |
+| Server Monitoring Dashboard | High | ✅ Done |
+| Server Groups/Tags | Medium | ✅ Done |
+| Bulk Server Actions | Medium | ✅ Done |
+| SSH Key Management | Medium | ✅ Done |
 
 ### Next Sprint (Jan 2026)
 **Focus:** Automation & Notifications
