@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Deployment;
 use App\Models\Project;
+use App\Models\Server;
 use App\Events\DeploymentStatusUpdated;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Log;
@@ -14,6 +15,52 @@ class RollbackService
         private DockerService $dockerService,
         private GitService $gitService
     ) {}
+
+    /**
+     * Build SSH command for remote execution
+     */
+    protected function buildSSHCommand(Server $server, string $remoteCommand): string
+    {
+        $sshOptions = [
+            '-o StrictHostKeyChecking=no',
+            '-o UserKnownHostsFile=/dev/null',
+            '-p ' . $server->port,
+        ];
+
+        if ($server->ssh_key) {
+            $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
+            file_put_contents($keyFile, $server->ssh_key);
+            chmod($keyFile, 0600);
+            $sshOptions[] = '-i ' . $keyFile;
+        }
+
+        $escapedCommand = str_replace("'", "'\\''", $remoteCommand);
+
+        return sprintf(
+            "ssh %s %s@%s '%s'",
+            implode(' ', $sshOptions),
+            $server->username,
+            $server->ip_address,
+            $escapedCommand
+        );
+    }
+
+    /**
+     * Execute command on server (SSH or local)
+     */
+    protected function executeOnServer(Project $project, string $command, int $timeout = 120): array
+    {
+        $server = $project->server;
+        $sshCommand = $this->buildSSHCommand($server, $command);
+
+        $result = Process::timeout($timeout)->run($sshCommand);
+
+        return [
+            'success' => $result->successful(),
+            'output' => $result->output(),
+            'error' => $result->errorOutput(),
+        ];
+    }
 
     /**
      * Rollback to a previous deployment
@@ -119,23 +166,20 @@ class RollbackService
      */
     private function backupCurrentState(Project $project): void
     {
-        $projectPath = config('devflow.projects_path') . '/' . $project->slug;
-        $backupPath = config('devflow.backups_path') . '/' . $project->slug;
+        $projectPath = "/var/www/{$project->slug}";
+        $backupPath = "/var/www/backups/{$project->slug}";
         $timestamp = now()->format('Y-m-d_H-i-s');
 
         // Create backup directory
-        Process::run("mkdir -p {$backupPath}");
-
-        // Backup database if Laravel project
-        if ($project->framework === 'laravel') {
-            Process::run("cd {$projectPath} && docker-compose exec -T app php artisan backup:run --only-db --filename=rollback_{$timestamp}.sql");
-        }
+        $this->executeOnServer($project, "mkdir -p {$backupPath}");
 
         // Backup environment file
-        Process::run("cp {$projectPath}/.env {$backupPath}/.env.{$timestamp}");
+        $this->executeOnServer($project, "cp {$projectPath}/.env {$backupPath}/.env.{$timestamp} 2>/dev/null || true");
 
         // Create git stash for uncommitted changes
-        Process::run("cd {$projectPath} && git stash save 'Backup before rollback at {$timestamp}'");
+        $this->executeOnServer($project, "cd {$projectPath} && git stash save 'Backup before rollback at {$timestamp}' 2>/dev/null || true");
+
+        Log::info("Backup created for {$project->slug} at {$timestamp}");
     }
 
     /**
@@ -144,19 +188,30 @@ class RollbackService
     private function checkoutCommit(Project $project, string $commitHash): array
     {
         try {
-            $projectPath = config('devflow.projects_path') . '/' . $project->slug;
+            $projectPath = "/var/www/{$project->slug}";
+
+            // Configure safe directory
+            $this->executeOnServer($project, "git config --global --add safe.directory {$projectPath} 2>&1 || true");
+
+            // Fetch latest to ensure we have the commit
+            $fetchResult = $this->executeOnServer($project, "cd {$projectPath} && git fetch origin {$project->branch} 2>&1");
+            if (!$fetchResult['success']) {
+                Log::warning("Git fetch warning: " . $fetchResult['error']);
+            }
 
             // Ensure we're on the correct branch
-            $result = Process::run("cd {$projectPath} && git checkout {$project->branch}");
-            if (!$result->successful()) {
-                throw new \Exception("Failed to checkout branch: " . $result->errorOutput());
+            $result = $this->executeOnServer($project, "cd {$projectPath} && git checkout {$project->branch} 2>&1");
+            if (!$result['success']) {
+                throw new \Exception("Failed to checkout branch: " . $result['error']);
             }
 
             // Reset to the target commit
-            $result = Process::run("cd {$projectPath} && git reset --hard {$commitHash}");
-            if (!$result->successful()) {
-                throw new \Exception("Failed to reset to commit: " . $result->errorOutput());
+            $result = $this->executeOnServer($project, "cd {$projectPath} && git reset --hard {$commitHash} 2>&1");
+            if (!$result['success']) {
+                throw new \Exception("Failed to reset to commit: " . $result['error']);
             }
+
+            Log::info("Checked out commit {$commitHash} for {$project->slug}");
 
             return ['success' => true];
         } catch (\Exception $e) {
@@ -169,15 +224,19 @@ class RollbackService
      */
     private function restoreEnvironment(Project $project, array $environmentSnapshot): void
     {
-        $projectPath = config('devflow.projects_path') . '/' . $project->slug;
-        $envPath = "{$projectPath}/.env";
+        $projectPath = "/var/www/{$project->slug}";
 
         $envContent = "";
         foreach ($environmentSnapshot as $key => $value) {
-            $envContent .= "{$key}={$value}\n";
+            // Escape special characters for shell
+            $escapedValue = str_replace(["'", '"', '$', '`', '\\'], ["'\\''", '\\"', '\\$', '\\`', '\\\\'], $value);
+            $envContent .= "{$key}={$escapedValue}\n";
         }
 
-        file_put_contents($envPath, $envContent);
+        // Write env file via SSH
+        $this->executeOnServer($project, "cat > {$projectPath}/.env << 'ENVEOF'\n{$envContent}ENVEOF");
+
+        Log::info("Environment restored for {$project->slug}");
     }
 
     /**

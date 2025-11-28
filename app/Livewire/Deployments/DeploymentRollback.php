@@ -4,9 +4,11 @@ namespace App\Livewire\Deployments;
 
 use App\Models\Deployment;
 use App\Models\Project;
+use App\Models\Server;
 use App\Services\RollbackService;
 use Livewire\Component;
 use Livewire\Attributes\On;
+use Illuminate\Support\Facades\Process;
 
 class DeploymentRollback extends Component
 {
@@ -21,6 +23,39 @@ class DeploymentRollback extends Component
     {
         $this->project = $project;
         $this->loadRollbackPoints();
+    }
+
+    /**
+     * Build SSH command for remote execution
+     */
+    protected function buildSSHCommand(Server $server, string $remoteCommand): string
+    {
+        $sshOptions = [
+            '-o StrictHostKeyChecking=no',
+            '-o UserKnownHostsFile=/dev/null',
+            '-p ' . $server->port,
+        ];
+
+        $escapedCommand = str_replace("'", "'\\''", $remoteCommand);
+
+        return sprintf(
+            "ssh %s %s@%s '%s'",
+            implode(' ', $sshOptions),
+            $server->username,
+            $server->ip_address,
+            $escapedCommand
+        );
+    }
+
+    /**
+     * Execute command on server via SSH
+     */
+    protected function executeOnServer(string $command): string
+    {
+        $server = $this->project->server;
+        $sshCommand = $this->buildSSHCommand($server, $command);
+        $result = Process::timeout(30)->run($sshCommand);
+        return $result->output();
     }
 
     public function loadRollbackPoints()
@@ -52,23 +87,24 @@ class DeploymentRollback extends Component
         $targetDeployment = Deployment::find($this->selectedDeployment['id']);
 
         if ($currentDeployment && $targetDeployment) {
-            // Get commit diff
-            $projectPath = config('devflow.projects_path') . '/' . $this->project->slug;
-            $diffCommand = "cd {$projectPath} && git log --oneline {$targetDeployment->commit_hash}..{$currentDeployment->commit_hash}";
-            $result = \Illuminate\Support\Facades\Process::run($diffCommand);
+            $projectPath = "/var/www/{$this->project->slug}";
+
+            // Get commit diff via SSH
+            $diffCommand = "cd {$projectPath} && git log --oneline {$targetDeployment->commit_hash}..{$currentDeployment->commit_hash} 2>/dev/null || echo ''";
+            $diffOutput = $this->executeOnServer($diffCommand);
 
             $this->comparisonData = [
                 'current' => [
-                    'commit' => substr($currentDeployment->commit_hash, 0, 7),
-                    'message' => $currentDeployment->commit_message,
+                    'commit' => $currentDeployment->commit_hash ? substr($currentDeployment->commit_hash, 0, 7) : 'N/A',
+                    'message' => $currentDeployment->commit_message ?? 'No message',
                     'date' => $currentDeployment->created_at->format('M d, Y H:i'),
                 ],
                 'target' => [
-                    'commit' => substr($targetDeployment->commit_hash, 0, 7),
-                    'message' => $targetDeployment->commit_message,
+                    'commit' => $targetDeployment->commit_hash ? substr($targetDeployment->commit_hash, 0, 7) : 'N/A',
+                    'message' => $targetDeployment->commit_message ?? 'No message',
                     'date' => $targetDeployment->created_at->format('M d, Y H:i'),
                 ],
-                'commits_to_remove' => explode("\n", trim($result->output())),
+                'commits_to_remove' => array_filter(explode("\n", trim($diffOutput))),
                 'files_changed' => $this->getFilesChanged($targetDeployment->commit_hash, $currentDeployment->commit_hash),
             ];
         }
@@ -76,12 +112,16 @@ class DeploymentRollback extends Component
 
     private function getFilesChanged($fromCommit, $toCommit)
     {
-        $projectPath = config('devflow.projects_path') . '/' . $this->project->slug;
-        $command = "cd {$projectPath} && git diff --name-status {$fromCommit}..{$toCommit}";
-        $result = \Illuminate\Support\Facades\Process::run($command);
+        if (!$fromCommit || !$toCommit) {
+            return [];
+        }
+
+        $projectPath = "/var/www/{$this->project->slug}";
+        $command = "cd {$projectPath} && git diff --name-status {$fromCommit}..{$toCommit} 2>/dev/null | head -20";
+        $output = $this->executeOnServer($command);
 
         $files = [];
-        foreach (explode("\n", trim($result->output())) as $line) {
+        foreach (explode("\n", trim($output)) as $line) {
             if (preg_match('/^([AMD])\s+(.+)$/', $line, $matches)) {
                 $files[] = [
                     'status' => $matches[1] === 'A' ? 'added' : ($matches[1] === 'M' ? 'modified' : 'deleted'),
@@ -90,7 +130,7 @@ class DeploymentRollback extends Component
             }
         }
 
-        return array_slice($files, 0, 10); // Show first 10 files
+        return array_slice($files, 0, 10);
     }
 
     public function confirmRollback()

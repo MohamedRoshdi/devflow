@@ -5,6 +5,7 @@ namespace App\Livewire\Projects;
 use Livewire\Component;
 use App\Models\Project;
 use App\Models\Server;
+use App\Models\ProjectTemplate;
 use App\Services\ServerConnectivityService;
 use Illuminate\Support\Str;
 
@@ -25,13 +26,56 @@ class ProjectCreate extends Component
     public $latitude = null;
     public $longitude = null;
 
+    // Template fields
+    public $selectedTemplateId = null;
+    public $install_commands = [];
+    public $build_commands = [];
+    public $post_deploy_commands = [];
+
     public $servers = [];
+    public $templates = [];
 
     public function mount()
     {
         $this->servers = Server::where('user_id', auth()->id())
             ->orderByRaw("FIELD(status, 'online', 'maintenance', 'offline', 'error')")
             ->get();
+
+        $this->templates = ProjectTemplate::active()->get();
+    }
+
+    public function selectTemplate($templateId)
+    {
+        $this->selectedTemplateId = $templateId;
+
+        if ($templateId) {
+            $template = ProjectTemplate::find($templateId);
+            if ($template) {
+                $this->framework = $template->framework;
+                $this->branch = $template->default_branch;
+                $this->php_version = $template->php_version ?? '8.3';
+                $this->node_version = $template->node_version ?? '20';
+                $this->install_commands = $template->install_commands ?? [];
+                $this->build_commands = $template->build_commands ?? [];
+                $this->post_deploy_commands = $template->post_deploy_commands ?? [];
+
+                // Set build_command as a string (first command if available)
+                $this->build_command = $template->build_commands[0] ?? '';
+            }
+        }
+    }
+
+    public function clearTemplate()
+    {
+        $this->selectedTemplateId = null;
+        $this->framework = '';
+        $this->branch = 'main';
+        $this->php_version = '8.3';
+        $this->node_version = '20';
+        $this->install_commands = [];
+        $this->build_commands = [];
+        $this->post_deploy_commands = [];
+        $this->build_command = '';
     }
 
     public function updatedName()
@@ -103,6 +147,9 @@ class ProjectCreate extends Component
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'status' => 'stopped',
+            'install_commands' => $this->install_commands,
+            'build_commands' => $this->build_commands,
+            'post_deploy_commands' => $this->post_deploy_commands,
         ]);
 
         $this->dispatch('project-created');

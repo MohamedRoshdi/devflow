@@ -17,3 +17,6 @@ Schedule::command('devflow:check-ssl')->daily();
 // Clean old metrics
 Schedule::command('devflow:cleanup-metrics')->daily();
 
+// Process scheduled deployments
+Schedule::command('deployments:process-scheduled')->everyMinute();
+

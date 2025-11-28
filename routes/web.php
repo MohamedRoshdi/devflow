@@ -14,6 +14,7 @@ use App\Livewire\Deployments\DeploymentShow;
 use App\Livewire\Analytics\AnalyticsDashboard;
 use App\Livewire\Docker\DockerDashboard;
 use App\Livewire\Admin\SystemAdmin;
+use App\Livewire\Dashboard\HealthDashboard;
 
 // Public Home Page - Shows all projects
 Route::get('/', HomePublic::class)->name('home');
@@ -39,6 +40,9 @@ Route::middleware('auth')->group(function () {
 
     // Analytics
     Route::get('/analytics', AnalyticsDashboard::class)->name('analytics');
+
+    // Health Dashboard
+    Route::get('/health', HealthDashboard::class)->name('health.dashboard');
 
     // Users Management
     Route::get('/users', \App\Livewire\Users\UserList::class)->name('users.index');

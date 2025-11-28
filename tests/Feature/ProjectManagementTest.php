@@ -273,4 +273,166 @@ class ProjectManagementTest extends TestCase
         // Check cache is cleared
         $this->assertNull(cache()->get("project_{$project->id}_stats"));
     }
+
+    /** @test */
+    public function auto_refresh_can_be_toggled()
+    {
+        $this->actingAs($this->user);
+
+        $project = Project::factory()->create([
+            'user_id' => $this->user->id,
+            'server_id' => $this->server->id,
+        ]);
+
+        $component = Livewire::test(\App\Livewire\Projects\ProjectShow::class, ['project' => $project]);
+
+        // Default should be enabled
+        $component->assertSet('autoRefreshEnabled', true);
+
+        // Toggle off
+        $component->call('toggleAutoRefresh')
+            ->assertSet('autoRefreshEnabled', false);
+
+        // Toggle back on
+        $component->call('toggleAutoRefresh')
+            ->assertSet('autoRefreshEnabled', true);
+    }
+
+    /** @test */
+    public function auto_refresh_interval_can_be_set()
+    {
+        $this->actingAs($this->user);
+
+        $project = Project::factory()->create([
+            'user_id' => $this->user->id,
+            'server_id' => $this->server->id,
+        ]);
+
+        $component = Livewire::test(\App\Livewire\Projects\ProjectShow::class, ['project' => $project]);
+
+        // Default should be 30 seconds
+        $component->assertSet('autoRefreshInterval', 30);
+
+        // Set to 60 seconds
+        $component->call('setAutoRefreshInterval', 60)
+            ->assertSet('autoRefreshInterval', 60);
+
+        // Set to 120 seconds
+        $component->call('setAutoRefreshInterval', 120)
+            ->assertSet('autoRefreshInterval', 120);
+    }
+
+    /** @test */
+    public function auto_refresh_interval_is_bounded()
+    {
+        $this->actingAs($this->user);
+
+        $project = Project::factory()->create([
+            'user_id' => $this->user->id,
+            'server_id' => $this->server->id,
+        ]);
+
+        $component = Livewire::test(\App\Livewire\Projects\ProjectShow::class, ['project' => $project]);
+
+        // Test minimum bound (should be clamped to 10)
+        $component->call('setAutoRefreshInterval', 5)
+            ->assertSet('autoRefreshInterval', 10);
+
+        // Test maximum bound (should be clamped to 300)
+        $component->call('setAutoRefreshInterval', 600)
+            ->assertSet('autoRefreshInterval', 300);
+    }
+
+    /** @test */
+    public function auto_refresh_only_runs_when_enabled_and_on_git_tab()
+    {
+        $this->actingAs($this->user);
+
+        $project = Project::factory()->create([
+            'user_id' => $this->user->id,
+            'server_id' => $this->server->id,
+        ]);
+
+        // Mock GitService
+        $this->mock(GitService::class, function ($mock) {
+            $mock->shouldReceive('getLatestCommits')
+                ->andReturn([
+                    'success' => true,
+                    'commits' => [],
+                    'total' => 0,
+                ]);
+            $mock->shouldReceive('checkForUpdates')
+                ->andReturn([
+                    'success' => true,
+                    'up_to_date' => true,
+                    'local_commit' => 'abc123',
+                    'remote_commit' => 'abc123',
+                    'commits_behind' => 0,
+                ]);
+        });
+
+        $component = Livewire::test(\App\Livewire\Projects\ProjectShow::class, ['project' => $project]);
+
+        // Disable auto-refresh and try to call autoRefreshGit
+        $component->set('autoRefreshEnabled', false)
+            ->call('autoRefreshGit');
+
+        // Should not refresh since disabled (gitLoaded should still be false)
+        $component->assertSet('gitLoaded', false);
+
+        // Enable auto-refresh but stay on overview tab
+        $component->set('autoRefreshEnabled', true)
+            ->set('activeTab', 'overview')
+            ->call('autoRefreshGit');
+
+        // Should not refresh since not on git tab
+        $component->assertSet('gitLoaded', false);
+
+        // Enable and switch to git tab
+        $component->set('activeTab', 'git')
+            ->call('autoRefreshGit');
+
+        // Now it should have loaded
+        $component->assertSet('gitLoaded', true);
+    }
+
+    /** @test */
+    public function git_data_refresh_updates_timestamp()
+    {
+        $this->actingAs($this->user);
+
+        $project = Project::factory()->create([
+            'user_id' => $this->user->id,
+            'server_id' => $this->server->id,
+        ]);
+
+        // Mock GitService
+        $this->mock(GitService::class, function ($mock) {
+            $mock->shouldReceive('getLatestCommits')
+                ->andReturn([
+                    'success' => true,
+                    'commits' => [],
+                    'total' => 0,
+                ]);
+            $mock->shouldReceive('checkForUpdates')
+                ->andReturn([
+                    'success' => true,
+                    'up_to_date' => true,
+                    'local_commit' => 'abc123',
+                    'remote_commit' => 'abc123',
+                    'commits_behind' => 0,
+                ]);
+        });
+
+        $component = Livewire::test(\App\Livewire\Projects\ProjectShow::class, ['project' => $project]);
+
+        // Initially no timestamp
+        $component->assertSet('lastGitRefreshAt', null);
+
+        // Prepare git tab (which sets the timestamp)
+        $component->call('prepareGitTab');
+
+        // Timestamp should be set
+        $this->assertNotNull($component->get('lastGitRefreshAt'));
+    }
 }

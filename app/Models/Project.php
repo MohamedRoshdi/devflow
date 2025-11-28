@@ -13,6 +13,7 @@ class Project extends Model
     protected $fillable = [
         'user_id',
         'server_id',
+        'template_id',
         'name',
         'slug',
         'repository_url',
@@ -26,6 +27,9 @@ class Project extends Model
         'root_directory',
         'build_command',
         'start_command',
+        'install_commands',
+        'build_commands',
+        'post_deploy_commands',
         'env_variables',
         'status',
         'health_check_url',
@@ -45,6 +49,9 @@ class Project extends Model
         return [
             'env_variables' => 'array',
             'metadata' => 'array',
+            'install_commands' => 'array',
+            'build_commands' => 'array',
+            'post_deploy_commands' => 'array',
             'auto_deploy' => 'boolean',
             'last_deployed_at' => 'datetime',
             'last_commit_at' => 'datetime',
@@ -52,6 +59,11 @@ class Project extends Model
             'latitude' => 'decimal:8',
             'longitude' => 'decimal:8',
         ];
+    }
+
+    public function template()
+    {
+        return $this->belongsTo(ProjectTemplate::class, 'template_id');
     }
 
     // Relationships

@@ -20,6 +20,8 @@ class ProjectShow extends Component
     public ?array $updateStatus = null;
     public bool $checkingForUpdates = false;
     public bool $autoCheckEnabled = true;
+    public bool $autoRefreshEnabled = true;
+    public int $autoRefreshInterval = 30; // seconds
     public int $commitPage = 1;
     public int $commitPerPage = 8;
     public int $commitTotal = 0;
@@ -202,6 +204,26 @@ class ProjectShow extends Component
         $this->updateStatus = null;
         $this->updateStatusLoaded = false;
         $this->prepareGitTab();
+    }
+
+    public function autoRefreshGit(): void
+    {
+        // Only refresh if auto-refresh is enabled and we're on the git tab
+        if (!$this->autoRefreshEnabled || $this->activeTab !== 'git') {
+            return;
+        }
+
+        $this->refreshGitData();
+    }
+
+    public function toggleAutoRefresh(): void
+    {
+        $this->autoRefreshEnabled = !$this->autoRefreshEnabled;
+    }
+
+    public function setAutoRefreshInterval(int $seconds): void
+    {
+        $this->autoRefreshInterval = max(10, min(300, $seconds)); // Between 10s and 5min
     }
 
     public function deploy()

@@ -2,7 +2,7 @@
 
 > **Enterprise-grade deployment platform with Kubernetes, CI/CD, and multi-tenant support for managing projects at scale.**
 
-[![Version](https://img.shields.io/badge/version-2.5.6-blue.svg)](https://github.com/yourusername/devflow-pro)
+[![Version](https://img.shields.io/badge/version-2.6.2-blue.svg)](https://github.com/yourusername/devflow-pro)
 [![Laravel](https://img.shields.io/badge/Laravel-12-red.svg)](https://laravel.com)
 [![Livewire](https://img.shields.io/badge/Livewire-3-purple.svg)](https://livewire.laravel.com)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg)](https://docker.com)
@@ -275,7 +275,7 @@ php artisan tinker
 - [🔐 SSH Access Guide](SSH_ACCESS.md) - Server access and management
 - [🔍 Troubleshooting](TROUBLESHOOTING.md) - Common issues & solutions
 - [📝 Changelog](CHANGELOG.md) - Version history
-- [🎯 Roadmap](COMPREHENSIVE_IMPROVEMENT_PLAN.md) - Future features
+- [🗺️ Roadmap & Tasks](ROADMAP.md) - Future features & task planning ⭐ NEW!
 
 ---
 

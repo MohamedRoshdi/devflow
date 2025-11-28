@@ -7,6 +7,120 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.7.0] - 2025-11-28
+
+### Added ✨
+
+- **🏥 Project Health Dashboard** - Monitor the health of all your projects and servers
+  - Health score calculation (0-100) based on uptime, response time, deployment status
+  - Filter projects by health status: All, Healthy (80+), Warning (50-79), Critical (<50)
+  - Server metrics monitoring: CPU, RAM, disk usage via SSH
+  - Real-time HTTP health checks with response time
+  - Issues detection and display
+  - Refresh button to clear cache and reload all health data
+  - New `/health` route accessible from navigation
+
+- **⏰ Deployment Scheduling** - Schedule deployments for off-peak hours
+  - Schedule deployments for a specific date and time
+  - Timezone support with 13 common timezones
+  - Optional pre-deployment notifications (5, 10, 15, 30, 60 minutes before)
+  - Notes field for deployment context
+  - Cancel pending scheduled deployments
+  - Automatic execution via Laravel scheduler
+  - View scheduled deployment history with status
+
+- **📋 Project Templates** - Pre-configured templates for common frameworks
+  - 8 built-in templates: Laravel, Node.js/Express, Next.js, Nuxt.js, Static Site, Python/Django, Go/Gin, Custom
+  - Template selection UI with framework icons and colors
+  - Auto-configures: branch, PHP/Node version, install/build/post-deploy commands
+  - Environment variable templates
+  - Health check path defaults
+  - Templates can be extended by users
+
+- **⏪ Deployment Rollback UI** - Rollback to previous successful deployments
+  - View list of rollback points (successful deployments)
+  - Comparison view showing commits to be removed
+  - Files changed diff display
+  - Confirmation modal before rollback
+  - SSH-based git operations for remote servers
+
+### Changed 🔄
+- **Project Creation Page** - Added template selection section at the top
+- **Deployments Tab** - Now includes Scheduled Deployments and Rollback sections
+- **Navigation** - Added "Health" link to main navigation
+
+### Database
+- New tables:
+  - `scheduled_deployments` - Stores scheduled deployment records
+  - `project_templates` - Stores project template configurations
+- New columns in `projects`:
+  - `template_id` - FK to project_templates
+  - `install_commands` - JSON array of install commands
+  - `build_commands` - JSON array of build commands
+  - `post_deploy_commands` - JSON array of post-deploy commands
+
+### Technical
+- New models: `ScheduledDeployment`, `ProjectTemplate`
+- New Livewire components:
+  - `Dashboard\HealthDashboard`
+  - `Deployments\ScheduledDeployments`
+- New console command: `deployments:process-scheduled`
+- New seeder: `ProjectTemplateSeeder`
+
+---
+
+## [2.6.2] - 2025-11-28
+
+### Added ✨
+- **🔄 Git Auto-Refresh Feature** - Automatically refresh git commits at configurable intervals
+  - Toggle auto-refresh on/off with visual switch
+  - Configurable intervals: 10s, 30s, 1m, 2m, 5m
+  - Last refresh timestamp display with relative time
+  - Pulsing indicator when auto-refresh is active
+  - Smart polling - only refreshes when on Git tab
+
+- **⏳ Commits Loading State** - Visual feedback while loading commits
+  - Animated spinner during git data fetch
+  - "Loading commits..." message
+  - Smooth transition between loading and loaded states
+
+### Fixed 🐛
+- **Critical: Git Commits Not Loading** - Fixed SSH command escaping in GitService
+  - Changed from double quotes to single quotes for SSH command wrapper
+  - Git format strings (`%H`, `%an`, `%ae`, `%at`, `%s`) were being interpreted as bash variables
+  - Single quotes prevent shell interpolation of special characters
+  - Properly escape single quotes within commands using `'\\''` pattern
+
+- **Auto-refresh Dropdown Colors** - Fixed select dropdown visibility
+  - Changed background to solid `bg-slate-800` for better contrast
+  - Options now have proper dark background colors
+  - Added custom dropdown arrow SVG for visibility
+  - Improved focus ring styling with emerald color
+
+### Changed 🔄
+- **Git Tab Header** - Enhanced with auto-refresh controls
+  - Auto-refresh toggle with status indicator
+  - Interval selector dropdown (visible when enabled)
+  - Last updated timestamp with refresh status badge
+  - Shows "Auto-refresh paused" when disabled
+
+### Technical
+- Files Modified:
+  - `app/Services/GitService.php` - Fixed `buildSSHCommand()` method escaping
+  - `app/Livewire/Projects/ProjectShow.php` - Added auto-refresh properties and methods
+  - `resources/views/livewire/projects/project-show.blade.php` - Added auto-refresh UI and loading states
+
+- New Livewire Properties:
+  - `$autoRefreshEnabled` (default: true)
+  - `$autoRefreshInterval` (default: 30 seconds)
+
+- New Livewire Methods:
+  - `autoRefreshGit()` - Called by wire:poll for automatic refresh
+  - `toggleAutoRefresh()` - Toggle auto-refresh on/off
+  - `setAutoRefreshInterval(int $seconds)` - Set refresh interval (10-300s)
+
+---
+
 ## [2.6.1] - 2025-11-27
 
 ### Added ✨

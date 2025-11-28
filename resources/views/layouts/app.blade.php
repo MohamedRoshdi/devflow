@@ -63,9 +63,13 @@
                            class="{{ request()->routeIs('deployments.*') ? 'border-blue-500 text-gray-900 dark:text-white' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500 transition-colors">
                             Deployments
                         </a>
-                        <a href="{{ route('analytics') }}" 
+                        <a href="{{ route('analytics') }}"
                            class="{{ request()->routeIs('analytics') ? 'border-blue-500 text-gray-900 dark:text-white' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500 transition-colors">
                             Analytics
+                        </a>
+                        <a href="{{ route('health.dashboard') }}"
+                           class="{{ request()->routeIs('health.*') ? 'border-blue-500 text-gray-900 dark:text-white' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500 transition-colors">
+                            Health
                         </a>
                         <a href="{{ route('users.index') }}"
                            class="{{ request()->routeIs('users.*') ? 'border-blue-500 text-gray-900 dark:text-white' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500 transition-colors">
@@ -180,6 +184,7 @@
                 <a href="{{ route('projects.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('projects.*') ? 'border-blue-500 text-blue-700 bg-blue-50 dark:bg-blue-900/20' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700' }} text-base font-medium">Projects</a>
                 <a href="{{ route('deployments.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('deployments.*') ? 'border-blue-500 text-blue-700 bg-blue-50 dark:bg-blue-900/20' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700' }} text-base font-medium">Deployments</a>
                 <a href="{{ route('analytics') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('analytics') ? 'border-blue-500 text-blue-700 bg-blue-50 dark:bg-blue-900/20' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700' }} text-base font-medium">Analytics</a>
+                <a href="{{ route('health.dashboard') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('health.*') ? 'border-blue-500 text-blue-700 bg-blue-50 dark:bg-blue-900/20' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700' }} text-base font-medium">Health</a>
                 <a href="{{ route('users.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('users.*') ? 'border-blue-500 text-blue-700 bg-blue-50 dark:bg-blue-900/20' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700' }} text-base font-medium">Users</a>
 
                 <!-- Advanced Features Section -->

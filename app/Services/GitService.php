@@ -39,12 +39,16 @@ class GitService
             $sshOptions[] = '-i ' . $keyFile;
         }
 
+        // Escape the command for safe SSH execution
+        // Use single quotes and escape any single quotes in the command
+        $escapedCommand = str_replace("'", "'\\''", $remoteCommand);
+
         return sprintf(
-            'ssh %s %s@%s "%s"',
+            "ssh %s %s@%s '%s'",
             implode(' ', $sshOptions),
             $server->username,
             $server->ip_address,
-            addslashes($remoteCommand)
+            $escapedCommand
         );
     }
     
