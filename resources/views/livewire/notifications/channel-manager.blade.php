@@ -2,7 +2,11 @@
     <!-- Header -->
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Notification Channels</h2>
-        <button wire:click="addChannel" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+        <button wire:click="addChannel"
+                wire:loading.attr="disabled"
+                wire:loading.class="opacity-50 cursor-not-allowed"
+                wire:target="addChannel"
+                class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
             <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
@@ -52,6 +56,9 @@
                             </div>
                         </div>
                         <button wire:click="toggleChannel({{ $channel->id }})"
+                                wire:loading.attr="disabled"
+                                wire:loading.class="opacity-50"
+                                wire:target="toggleChannel({{ $channel->id }})"
                                 class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors
                                 {{ $channel->enabled ? 'bg-green-600' : 'bg-gray-300' }}">
                             <span class="inline-block h-5 w-5 transform rounded-full bg-white transition-transform
@@ -72,18 +79,29 @@
 
                     <div class="flex justify-between items-center pt-4 border-t dark:border-gray-700">
                         <button wire:click="testChannel({{ $channel->id }})"
+                                wire:loading.attr="disabled"
+                                wire:loading.class="opacity-50"
+                                wire:target="testChannel({{ $channel->id }})"
                                 class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 text-sm font-medium">
-                            Test
+                            <span wire:loading.remove wire:target="testChannel({{ $channel->id }})">Test</span>
+                            <span wire:loading wire:target="testChannel({{ $channel->id }})">Testing...</span>
                         </button>
                         <div class="flex space-x-3">
                             <button wire:click="editChannel({{ $channel->id }})"
+                                    wire:loading.attr="disabled"
+                                    wire:loading.class="opacity-50"
+                                    wire:target="editChannel({{ $channel->id }})"
                                     class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 text-sm">
                                 Edit
                             </button>
                             <button wire:click="deleteChannel({{ $channel->id }})"
-                                    onclick="return confirm('Are you sure?')"
+                                    wire:loading.attr="disabled"
+                                    wire:loading.class="opacity-50"
+                                    wire:target="deleteChannel({{ $channel->id }})"
+                                    wire:confirm="Are you sure you want to delete this channel?"
                                     class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 text-sm">
-                                Delete
+                                <span wire:loading.remove wire:target="deleteChannel({{ $channel->id }})">Delete</span>
+                                <span wire:loading wire:target="deleteChannel({{ $channel->id }})">Deleting...</span>
                             </button>
                         </div>
                     </div>
@@ -189,8 +207,13 @@
                                     class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Cancel
                             </button>
-                            <button type="submit" class="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-md hover:bg-purple-700">
-                                {{ $editingChannel ? 'Update Channel' : 'Add Channel' }}
+                            <button type="submit"
+                                    wire:loading.attr="disabled"
+                                    wire:loading.class="opacity-50 cursor-not-allowed"
+                                    wire:target="saveChannel"
+                                    class="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-md hover:bg-purple-700">
+                                <span wire:loading.remove wire:target="saveChannel">{{ $editingChannel ? 'Update Channel' : 'Add Channel' }}</span>
+                                <span wire:loading wire:target="saveChannel">Saving...</span>
                             </button>
                         </div>
                     </form>

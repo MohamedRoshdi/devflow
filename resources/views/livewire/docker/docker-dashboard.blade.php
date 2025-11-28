@@ -220,10 +220,14 @@
                                     {{ $image['CreatedAt'] ?? 'N/A' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
-                                    <button wire:click="deleteImage('{{ $image['ID'] }}')" 
+                                    <button wire:click="deleteImage('{{ $image['ID'] }}')"
+                                            wire:loading.attr="disabled"
+                                            wire:loading.class="opacity-50"
+                                            wire:target="deleteImage('{{ $image['ID'] }}')"
                                             class="text-red-600 hover:text-red-900"
                                             onclick="return confirm('Are you sure you want to delete this image?')">
-                                        🗑️ Delete
+                                        <span wire:loading.remove wire:target="deleteImage('{{ $image['ID'] }}')">🗑️ Delete</span>
+                                        <span wire:loading wire:target="deleteImage('{{ $image['ID'] }}')">⏳ Deleting...</span>
                                     </button>
                                 </td>
                             </tr>
@@ -267,10 +271,14 @@
                                     {{ Str::limit($volume['Mountpoint'] ?? 'N/A', 50) }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
-                                    <button wire:click="deleteVolume('{{ $volume['Name'] }}')" 
+                                    <button wire:click="deleteVolume('{{ $volume['Name'] }}')"
+                                            wire:loading.attr="disabled"
+                                            wire:loading.class="opacity-50"
+                                            wire:target="deleteVolume('{{ $volume['Name'] }}')"
                                             class="text-red-600 hover:text-red-900"
                                             onclick="return confirm('Are you sure? This will permanently delete all data in this volume!')">
-                                        🗑️ Delete
+                                        <span wire:loading.remove wire:target="deleteVolume('{{ $volume['Name'] }}')">🗑️ Delete</span>
+                                        <span wire:loading wire:target="deleteVolume('{{ $volume['Name'] }}')">⏳ Deleting...</span>
                                     </button>
                                 </td>
                             </tr>
@@ -319,10 +327,14 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                                     @if (!in_array($network['Name'], ['bridge', 'host', 'none']))
-                                        <button wire:click="deleteNetwork('{{ $network['Name'] }}')" 
+                                        <button wire:click="deleteNetwork('{{ $network['Name'] }}')"
+                                                wire:loading.attr="disabled"
+                                                wire:loading.class="opacity-50"
+                                                wire:target="deleteNetwork('{{ $network['Name'] }}')"
                                                 class="text-red-600 hover:text-red-900"
                                                 onclick="return confirm('Are you sure you want to delete this network?')">
-                                            🗑️ Delete
+                                            <span wire:loading.remove wire:target="deleteNetwork('{{ $network['Name'] }}')">🗑️ Delete</span>
+                                            <span wire:loading wire:target="deleteNetwork('{{ $network['Name'] }}')">⏳ Deleting...</span>
                                         </button>
                                     @else
                                         <span class="text-gray-400">System Network</span>

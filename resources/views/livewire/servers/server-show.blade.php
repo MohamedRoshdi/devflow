@@ -10,8 +10,13 @@
                     🐳 Docker Management
                 </a>
             @else
-                <button wire:click="checkDockerStatus" class="px-4 py-2 bg-purple-600 dark:bg-purple-500 text-white rounded-lg hover:bg-purple-700 dark:hover:bg-purple-600 transition">
-                    🔍 Detect Docker
+                <button wire:click="checkDockerStatus"
+                        wire:loading.attr="disabled"
+                        wire:loading.class="opacity-50 cursor-not-allowed"
+                        wire:target="checkDockerStatus"
+                        class="px-4 py-2 bg-purple-600 dark:bg-purple-500 text-white rounded-lg hover:bg-purple-700 dark:hover:bg-purple-600 transition">
+                    <span wire:loading.remove wire:target="checkDockerStatus">🔍 Detect Docker</span>
+                    <span wire:loading wire:target="checkDockerStatus">⏳ Detecting...</span>
                 </button>
                 <button wire:click="installDocker"
                         class="px-4 py-2 bg-green-600 dark:bg-green-500 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition"
@@ -21,8 +26,13 @@
                     <span wire:loading wire:target="installDocker">⏳ Installing...</span>
                 </button>
             @endif
-            <button wire:click="pingServer" class="btn btn-secondary">
-                Ping Server
+            <button wire:click="pingServer"
+                    wire:loading.attr="disabled"
+                    wire:loading.class="opacity-50 cursor-not-allowed"
+                    wire:target="pingServer"
+                    class="btn btn-secondary">
+                <span wire:loading.remove wire:target="pingServer">Ping Server</span>
+                <span wire:loading wire:target="pingServer">Pinging...</span>
             </button>
             <a href="{{ route('servers.index') }}" class="btn btn-secondary">
                 Back to List
