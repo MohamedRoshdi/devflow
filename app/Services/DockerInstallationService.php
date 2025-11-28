@@ -136,9 +136,14 @@ class DockerInstallationService
      */
     protected function getDockerInstallScript(Server $server): string
     {
-        // If user has SSH password, we'll create a sudo wrapper function
+        // Determine sudo prefix based on username and password
         $sudoSetup = '';
-        if ($server->ssh_password) {
+
+        if ($server->username === 'root') {
+            // Root user doesn't need sudo
+            $sudoPrefix = '';
+        } elseif ($server->ssh_password) {
+            // Non-root user with password - create sudo wrapper
             $escapedPassword = str_replace("'", "'\\''", $server->ssh_password);
             $sudoSetup = <<<BASH
 # Setup sudo with password
@@ -149,8 +154,24 @@ function run_sudo() {
 BASH;
             $sudoPrefix = 'run_sudo';
         } else {
-            // Assume passwordless sudo or root user
+            // Non-root user without password - assume passwordless sudo
             $sudoPrefix = 'sudo';
+        }
+
+        // For root user, run commands directly; for others, use run_cmd wrapper
+        $isRoot = $server->username === 'root';
+        $runCmd = $isRoot ? '' : 'run_cmd ';
+
+        // Define the run_cmd function based on user type
+        if ($isRoot) {
+            $runCmdFunction = '# Running as root - no sudo needed';
+        } else {
+            $runCmdFunction = <<<BASH
+# Helper function to run commands with sudo
+run_cmd() {
+    {$sudoPrefix} "\$@"
+}
+BASH;
         }
 
         return <<<BASH
@@ -160,6 +181,8 @@ set -e
 echo "=== Starting Docker Installation ==="
 
 {$sudoSetup}
+
+{$runCmdFunction}
 
 # Detect OS
 if [ -f /etc/os-release ]; then
@@ -173,51 +196,51 @@ fi
 echo "Detected OS: \$OS"
 
 # Update package index
-{$sudoPrefix} apt-get update -qq
+{$runCmd}apt-get update -qq
 
 # Install prerequisites
-{$sudoPrefix} apt-get install -y -qq \
+{$runCmd}apt-get install -y -qq \
     ca-certificates \
     curl \
     gnupg \
     lsb-release
 
 # Add Docker's official GPG key and repository based on OS
-{$sudoPrefix} mkdir -p /etc/apt/keyrings
+{$runCmd}mkdir -p /etc/apt/keyrings
 
 if [ "\$OS" = "debian" ]; then
     echo "Installing Docker for Debian..."
-    curl -fsSL https://download.docker.com/linux/debian/gpg | {$sudoPrefix} gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-    {$sudoPrefix} chmod a+r /etc/apt/keyrings/docker.gpg
+    curl -fsSL https://download.docker.com/linux/debian/gpg | {$runCmd}gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    {$runCmd}chmod a+r /etc/apt/keyrings/docker.gpg
     echo \
       "deb [arch=\$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
-      \$(lsb_release -cs) stable" | {$sudoPrefix} tee /etc/apt/sources.list.d/docker.list > /dev/null
+      \$(lsb_release -cs) stable" | {$runCmd}tee /etc/apt/sources.list.d/docker.list > /dev/null
 elif [ "\$OS" = "ubuntu" ]; then
     echo "Installing Docker for Ubuntu..."
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | {$sudoPrefix} gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-    {$sudoPrefix} chmod a+r /etc/apt/keyrings/docker.gpg
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | {$runCmd}gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    {$runCmd}chmod a+r /etc/apt/keyrings/docker.gpg
     echo \
       "deb [arch=\$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-      \$(lsb_release -cs) stable" | {$sudoPrefix} tee /etc/apt/sources.list.d/docker.list > /dev/null
+      \$(lsb_release -cs) stable" | {$runCmd}tee /etc/apt/sources.list.d/docker.list > /dev/null
 else
     echo "Unsupported OS: \$OS"
     exit 1
 fi
 
 # Update package index again
-{$sudoPrefix} apt-get update -qq
+{$runCmd}apt-get update -qq
 
 # Install Docker Engine, CLI, containerd, and plugins
 echo "Installing Docker packages..."
-{$sudoPrefix} apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+{$runCmd}apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Start and enable Docker service
 echo "Starting Docker service..."
-{$sudoPrefix} systemctl start docker
-{$sudoPrefix} systemctl enable docker
+{$runCmd}systemctl start docker
+{$runCmd}systemctl enable docker
 
 # Add current user to docker group (optional, for non-root usage)
-{$sudoPrefix} usermod -aG docker \$USER || true
+{$runCmd}usermod -aG docker \$USER || true
 
 # Verify installation
 docker --version
