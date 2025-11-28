@@ -33,22 +33,38 @@
             @if(count($rollbackPoints) > 0)
                 <div class="space-y-3">
                     @foreach($rollbackPoints as $index => $point)
+                        @php
+                            // Determine if this is a merged/deployed commit (current) or available for rollback
+                            $isCurrent = $index === 0;
+                            $isDeployed = !$point['can_rollback'] || $isCurrent;
+                        @endphp
                         <div class="group p-4 rounded-xl border-2 transition-all duration-200
-                            {{ $point['can_rollback']
-                                ? 'border-gray-200 dark:border-gray-700 hover:border-amber-400 dark:hover:border-amber-500 hover:shadow-md cursor-pointer'
-                                : 'border-gray-100 dark:border-gray-800 opacity-60' }}"
+                            @if($isCurrent)
+                                {{-- Current deployment - green background --}}
+                                bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-300 dark:border-green-700
+                            @elseif($point['can_rollback'])
+                                {{-- Available for rollback - amber/orange background on hover --}}
+                                bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-amber-400 dark:hover:border-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 hover:shadow-md cursor-pointer
+                            @else
+                                {{-- Old deployed commits - subtle blue/gray background --}}
+                                bg-gradient-to-r from-blue-50/50 to-indigo-50/50 dark:from-blue-900/10 dark:to-indigo-900/10 border-blue-200 dark:border-blue-800/50 opacity-70
+                            @endif"
                             @if($point['can_rollback']) wire:click="selectForRollback({{ $point['id'] }})" @endif>
 
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-4">
                                     <!-- Index/Current Badge -->
                                     <div class="flex-shrink-0">
-                                        @if($index === 0)
-                                            <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 font-bold text-sm">
+                                        @if($isCurrent)
+                                            <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-green-500 dark:bg-green-600 text-white font-bold text-sm shadow-lg">
                                                 NOW
                                             </span>
+                                        @elseif($point['can_rollback'])
+                                            <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-400 font-mono text-sm border-2 border-amber-300 dark:border-amber-700">
+                                                -{{ $index }}
+                                            </span>
                                         @else
-                                            <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 font-mono text-sm">
+                                            <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-mono text-sm">
                                                 -{{ $index }}
                                             </span>
                                         @endif
@@ -57,16 +73,27 @@
                                     <!-- Commit Info -->
                                     <div>
                                         <div class="flex items-center gap-2 mb-1">
-                                            <code class="text-sm bg-slate-800 text-white px-2.5 py-1 rounded-lg font-mono font-bold">
+                                            <code class="text-sm px-2.5 py-1 rounded-lg font-mono font-bold
+                                                @if($isCurrent)
+                                                    bg-green-600 text-white
+                                                @elseif($point['can_rollback'])
+                                                    bg-slate-800 text-white
+                                                @else
+                                                    bg-blue-600/80 text-white
+                                                @endif">
                                                 {{ $point['commit_hash'] ? substr($point['commit_hash'], 0, 7) : 'N/A' }}
                                             </code>
-                                            @if($point['can_rollback'])
-                                                <span class="text-xs px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium">
+                                            @if($isCurrent)
+                                                <span class="text-xs px-2 py-0.5 rounded-full bg-green-500 text-white font-medium shadow-sm">
+                                                    Current
+                                                </span>
+                                            @elseif($point['can_rollback'])
+                                                <span class="text-xs px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium border border-amber-300 dark:border-amber-700">
                                                     Available
                                                 </span>
-                                            @elseif($index === 0)
-                                                <span class="text-xs px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 font-medium">
-                                                    Current
+                                            @else
+                                                <span class="text-xs px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 font-medium">
+                                                    Deployed
                                                 </span>
                                             @endif
                                         </div>
