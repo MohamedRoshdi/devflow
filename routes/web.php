@@ -32,6 +32,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/servers/{server}', ServerShow::class)->name('servers.show');
     Route::get('/servers/{server}/metrics', ServerMetricsDashboard::class)->name('servers.metrics');
     Route::get('/servers/{server}/ssl', \App\Livewire\Servers\SSLManager::class)->name('servers.ssl');
+    Route::get('/servers/{server}/alerts', \App\Livewire\Servers\ResourceAlertManager::class)->name('servers.alerts');
+    Route::get('/servers/{server}/backups', \App\Livewire\Servers\ServerBackupManager::class)->name('servers.backups');
 
     // Projects
     Route::get('/projects', ProjectList::class)->name('projects.index');
@@ -80,6 +82,10 @@ Route::middleware('auth')->group(function () {
     // Settings
     Route::get('/settings/ssh-keys', \App\Livewire\Settings\SSHKeyManager::class)->name('settings.ssh-keys');
     Route::get('/settings/health-checks', \App\Livewire\Settings\HealthCheckManager::class)->name('settings.health-checks');
+
+    // Log Aggregation
+    Route::get('/logs', \App\Livewire\Logs\LogViewer::class)->name('logs.index');
+    Route::get('/servers/{server}/log-sources', \App\Livewire\Logs\LogSourceManager::class)->name('servers.log-sources');
 });
 
 // Webhook endpoints (public, no auth required)

@@ -91,6 +91,26 @@ class Server extends Model
         return $this->hasMany(SSLCertificate::class);
     }
 
+    public function resourceAlerts()
+    {
+        return $this->hasMany(ResourceAlert::class);
+    }
+
+    public function alertHistory()
+    {
+        return $this->hasMany(AlertHistory::class);
+    }
+
+    public function backups()
+    {
+        return $this->hasMany(ServerBackup::class);
+    }
+
+    public function backupSchedules()
+    {
+        return $this->hasMany(ServerBackupSchedule::class);
+    }
+
     // Status helpers
     public function isOnline(): bool
     {
