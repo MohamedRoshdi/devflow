@@ -19,9 +19,10 @@
                     <span wire:loading wire:target="checkDockerStatus">⏳ Detecting...</span>
                 </button>
                 <button wire:click="installDocker"
-                        class="px-4 py-2 bg-green-600 dark:bg-green-500 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition"
                         wire:loading.attr="disabled"
-                        wire:loading.class="opacity-50 cursor-not-allowed">
+                        wire:loading.class="opacity-50 cursor-not-allowed"
+                        wire:target="installDocker"
+                        class="px-4 py-2 bg-green-600 dark:bg-green-500 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition">
                     <span wire:loading.remove wire:target="installDocker">📦 Install Docker</span>
                     <span wire:loading wire:target="installDocker">⏳ Installing...</span>
                 </button>
