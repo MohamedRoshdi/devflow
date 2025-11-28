@@ -7,6 +7,73 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.9.0] - 2025-11-28
+
+### Added ✨
+
+- **💾 Server Backups** - Full server backup management
+  - `ServerBackup` model with full/incremental/snapshot types
+  - `ServerBackupSchedule` model for automated backups
+  - `ServerBackupService` with tar, rsync, LVM snapshot support
+  - `ServerBackupManager` Livewire component
+  - `RunServerBackupsCommand` for scheduled processing
+  - S3 upload support with local-to-cloud migration
+  - Configurable retention periods
+  - One-click restore functionality
+  - Backup size estimation and tracking
+
+- **🚨 Resource Alerts** - Configurable threshold monitoring
+  - `ResourceAlert` model with CPU/RAM/Disk/Load thresholds
+  - `AlertHistory` model for audit trail
+  - `ResourceAlertService` for threshold evaluation
+  - `AlertNotificationService` (Email, Slack, Discord)
+  - `ResourceAlertManager` Livewire component with gauges
+  - `CheckResourceAlertsCommand` for automated checks
+  - Cooldown periods to prevent alert spam
+  - Above/below threshold types
+  - Test notification feature
+
+- **📋 Log Aggregation** - Centralized log management
+  - `LogEntry` model with multi-source support
+  - `LogSource` model for source configuration
+  - `LogAggregationService` with parsers for:
+    - Nginx access/error logs
+    - Laravel logs with stack traces
+    - PHP error logs
+    - MySQL error logs
+    - System logs (syslog)
+    - Docker container logs
+  - `LogViewer` Livewire component with advanced filtering
+  - `LogSourceManager` for source management
+  - `SyncLogsCommand` for automated sync
+  - Full-text search with debounce
+  - Export to CSV
+  - Predefined source templates
+
+### Console Commands
+
+- `php artisan server:backups` - Process scheduled server backups
+- `php artisan alerts:check` - Check resource alert thresholds
+- `php artisan logs:sync` - Sync logs from configured sources
+
+### Database Migrations
+
+- `create_server_backups_table`
+- `create_server_backup_schedules_table`
+- `create_resource_alerts_table`
+- `create_alert_history_table`
+- `create_log_sources_table`
+- `create_log_entries_table`
+
+### New Routes
+
+- `GET /servers/{server}/backups` - Server backup management
+- `GET /servers/{server}/alerts` - Resource alert configuration
+- `GET /logs` - Centralized log viewer
+- `GET /servers/{server}/log-sources` - Log source management
+
+---
+
 ## [2.8.0] - 2025-11-28
 
 ### Added ✨
