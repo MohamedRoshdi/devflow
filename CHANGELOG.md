@@ -7,6 +7,82 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.0.0] - 2025-11-28
+
+### Added ✨
+
+- **🐙 GitHub Integration** - Full OAuth-based repository management
+  - `GitHubConnection` model with encrypted token storage
+  - `GitHubRepository` model for synced repositories
+  - `GitHubService` for OAuth flow and API operations
+  - `GitHubAuthController` for OAuth handling
+  - `GitHubSettings` Livewire component with beautiful UI
+  - `GitHubRepoPicker` for project repository selection
+  - Repository sync, search, and filtering
+  - Link repositories to DevFlow projects
+  - Full dark mode support
+
+- **👥 Team Collaboration** - Multi-user team management
+  - `Team`, `TeamMember`, `TeamInvitation` models
+  - `TeamService` for team operations
+  - `EnsureTeamAccess` middleware for permissions
+  - `TeamList` - Teams dashboard with create modal
+  - `TeamSettings` - Full settings with tabs (General, Members, Invitations, Danger Zone)
+  - `TeamSwitcher` - Dropdown for quick team switching
+  - Role-based access: Owner, Admin, Member, Viewer
+  - Email invitations with 7-day expiration
+  - Transfer ownership functionality
+  - Team-scoped projects and servers
+
+- **🔌 API v1** - RESTful API with documentation
+  - `ApiToken` model with abilities and expiration
+  - `AuthenticateApiToken` middleware
+  - API Controllers: `ProjectController`, `ServerController`, `DeploymentController`
+  - API Resources for consistent JSON responses
+  - Form Requests for validation
+  - `ApiTokenManager` - Create, regenerate, revoke tokens
+  - `ApiDocumentation` - Interactive API docs with examples
+  - 16 API endpoints for projects, servers, deployments
+  - Bearer token authentication
+  - Granular permissions (read/write per resource)
+
+### Database Migrations
+
+- `create_github_connections_table`
+- `create_github_repositories_table`
+- `create_teams_table`
+- `create_team_members_table`
+- `create_team_invitations_table`
+- `add_current_team_id_to_users_table`
+- `add_team_id_to_projects_and_servers`
+- `create_api_tokens_table`
+
+### New Routes
+
+**Web Routes:**
+- `GET /settings/github` - GitHub settings page
+- `GET /auth/github` - OAuth redirect
+- `GET /auth/github/callback` - OAuth callback
+- `GET /auth/github/disconnect` - Disconnect GitHub
+- `GET /teams` - Team list
+- `GET /teams/{team}/settings` - Team settings
+- `GET /invitations/{token}` - View invitation
+- `POST /invitations/{token}/accept` - Accept invitation
+- `GET /settings/api-tokens` - API token management
+- `GET /docs/api` - API documentation
+
+**API Routes (v1):**
+- `GET/POST /api/v1/projects` - List/Create projects
+- `GET/PUT/DELETE /api/v1/projects/{slug}` - Project CRUD
+- `POST /api/v1/projects/{slug}/deploy` - Trigger deployment
+- `GET/POST /api/v1/servers` - List/Create servers
+- `GET/PUT/DELETE /api/v1/servers/{id}` - Server CRUD
+- `GET /api/v1/servers/{id}/metrics` - Server metrics
+- `GET/POST /api/v1/projects/{slug}/deployments` - Deployments
+- `POST /api/v1/deployments/{id}/rollback` - Rollback
+
+---
+
 ## [2.9.0] - 2025-11-28
 
 ### Added ✨
