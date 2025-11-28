@@ -224,18 +224,29 @@ BASH;
 
         $stderrRedirect = $suppressWarnings ? '2>/dev/null' : '2>&1';
 
+        // For long/complex scripts, use base64 encoding to avoid escaping issues
+        $isLongScript = strlen($remoteCommand) > 500 || str_contains($remoteCommand, '$(');
+
+        if ($isLongScript) {
+            // Base64 encode the script to avoid shell escaping issues
+            $encodedScript = base64_encode($remoteCommand);
+            $executeCommand = "echo {$encodedScript} | base64 -d | /bin/bash";
+        } else {
+            $executeCommand = "/bin/bash -c " . escapeshellarg($remoteCommand);
+        }
+
         // Check if password authentication should be used
         if ($server->ssh_password) {
             // Use sshpass for password authentication
             $escapedPassword = escapeshellarg($server->ssh_password);
 
             return sprintf(
-                'sshpass -p %s ssh %s %s@%s "bash -c %s" %s',
+                'sshpass -p %s ssh %s %s@%s %s %s',
                 $escapedPassword,
                 implode(' ', $sshOptions),
                 $server->username,
                 $server->ip_address,
-                escapeshellarg($remoteCommand),
+                escapeshellarg($executeCommand),
                 $stderrRedirect
             );
         }
@@ -251,11 +262,11 @@ BASH;
         }
 
         return sprintf(
-            'ssh %s %s@%s "bash -c %s" %s',
+            'ssh %s %s@%s %s %s',
             implode(' ', $sshOptions),
             $server->username,
             $server->ip_address,
-            escapeshellarg($remoteCommand),
+            escapeshellarg($executeCommand),
             $stderrRedirect
         );
     }
