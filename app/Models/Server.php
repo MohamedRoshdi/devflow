@@ -27,6 +27,12 @@ class Server extends Model
         'disk_gb',
         'docker_installed',
         'docker_version',
+        'ufw_installed',
+        'ufw_enabled',
+        'fail2ban_installed',
+        'fail2ban_enabled',
+        'security_score',
+        'last_security_scan_at',
         'latitude',
         'longitude',
         'location_name',
@@ -43,6 +49,12 @@ class Server extends Model
     {
         return [
             'docker_installed' => 'boolean',
+            'ufw_installed' => 'boolean',
+            'ufw_enabled' => 'boolean',
+            'fail2ban_installed' => 'boolean',
+            'fail2ban_enabled' => 'boolean',
+            'security_score' => 'integer',
+            'last_security_scan_at' => 'datetime',
             'last_ping_at' => 'datetime',
             'metadata' => 'array',
             'cpu_cores' => 'integer',
@@ -117,6 +129,31 @@ class Server extends Model
         return $this->hasMany(ServerBackupSchedule::class);
     }
 
+    public function firewallRules()
+    {
+        return $this->hasMany(FirewallRule::class);
+    }
+
+    public function securityEvents()
+    {
+        return $this->hasMany(SecurityEvent::class);
+    }
+
+    public function sshConfiguration()
+    {
+        return $this->hasOne(SshConfiguration::class);
+    }
+
+    public function securityScans()
+    {
+        return $this->hasMany(SecurityScan::class);
+    }
+
+    public function latestSecurityScan()
+    {
+        return $this->hasOne(SecurityScan::class)->latestOfMany();
+    }
+
     // Status helpers
     public function isOnline(): bool
     {
@@ -135,6 +172,30 @@ class Server extends Model
             'offline' => 'red',
             'maintenance' => 'yellow',
             default => 'gray',
+        };
+    }
+
+    public function getSecurityScoreColorAttribute(): string
+    {
+        return match (true) {
+            $this->security_score >= 91 => 'emerald',
+            $this->security_score >= 81 => 'green',
+            $this->security_score >= 61 => 'yellow',
+            $this->security_score >= 41 => 'orange',
+            $this->security_score !== null => 'red',
+            default => 'gray',
+        };
+    }
+
+    public function getSecurityRiskLevelAttribute(): string
+    {
+        return match (true) {
+            $this->security_score >= 91 => 'secure',
+            $this->security_score >= 81 => 'low',
+            $this->security_score >= 61 => 'medium',
+            $this->security_score >= 41 => 'high',
+            $this->security_score !== null => 'critical',
+            default => 'unknown',
         };
     }
 }

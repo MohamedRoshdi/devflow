@@ -6,6 +6,7 @@ use App\Livewire\Home\HomePublic;
 use App\Livewire\Servers\ServerList;
 use App\Livewire\Servers\ServerCreate;
 use App\Livewire\Servers\ServerShow;
+use App\Livewire\Servers\ServerEdit;
 use App\Livewire\Servers\ServerMetricsDashboard;
 use App\Livewire\Servers\ServerTagManager;
 use App\Livewire\Projects\ProjectList;
@@ -39,10 +40,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/servers/create', ServerCreate::class)->name('servers.create');
     Route::get('/servers/tags', ServerTagManager::class)->name('servers.tags');
     Route::get('/servers/{server}', ServerShow::class)->name('servers.show');
+    Route::get('/servers/{server}/edit', ServerEdit::class)->name('servers.edit');
     Route::get('/servers/{server}/metrics', ServerMetricsDashboard::class)->name('servers.metrics');
     Route::get('/servers/{server}/ssl', \App\Livewire\Servers\SSLManager::class)->name('servers.ssl');
     Route::get('/servers/{server}/alerts', \App\Livewire\Servers\ResourceAlertManager::class)->name('servers.alerts');
     Route::get('/servers/{server}/backups', \App\Livewire\Servers\ServerBackupManager::class)->name('servers.backups');
+
+    // Server Security Management
+    Route::get('/servers/{server}/security', \App\Livewire\Servers\Security\ServerSecurityDashboard::class)->name('servers.security');
+    Route::get('/servers/{server}/security/firewall', \App\Livewire\Servers\Security\FirewallManager::class)->name('servers.security.firewall');
+    Route::get('/servers/{server}/security/fail2ban', \App\Livewire\Servers\Security\Fail2banManager::class)->name('servers.security.fail2ban');
+    Route::get('/servers/{server}/security/ssh', \App\Livewire\Servers\Security\SSHSecurityManager::class)->name('servers.security.ssh');
+    Route::get('/servers/{server}/security/scan', \App\Livewire\Servers\Security\SecurityScanDashboard::class)->name('servers.security.scan');
 
     // Projects
     Route::get('/projects', ProjectList::class)->name('projects.index');
