@@ -14,6 +14,11 @@ class GitHubConnection extends Model
     use HasFactory;
 
     /**
+     * The table associated with the model.
+     */
+    protected $table = 'github_connections';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>

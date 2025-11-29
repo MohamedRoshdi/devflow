@@ -216,8 +216,64 @@ class DeployProjectJob implements ShouldQueue
 
             $logs[] = "✓ Laravel optimization completed";
             $logs[] = "";
-            
+
             // Update logs with optimization progress
+            $this->deployment->update([
+                'output_log' => implode("\n", $logs),
+            ]);
+
+            // Step 6: Fix Permissions & Clear Caches
+            $logs[] = "=== Fixing Permissions & Clearing Caches ===";
+            $logs[] = "Setting proper ownership and permissions...";
+
+            try {
+                // Fix permissions via SSH on the server
+                $permissionCommand = "cd {$projectPath} && " .
+                    "chown -R www-data:www-data storage bootstrap/cache && " .
+                    "chmod -R 775 storage bootstrap/cache";
+
+                $permResult = \Illuminate\Support\Facades\Process::timeout(60)->run("{$sshPrefix} \"{$permissionCommand}\"");
+
+                if ($permResult->successful()) {
+                    $logs[] = "  ✓ Permissions fixed (www-data:www-data, 775)";
+                } else {
+                    $logs[] = "  ⚠ Permission fix partially completed: " . $permResult->errorOutput();
+                }
+
+                // Clear Laravel caches inside container
+                $logs[] = "Clearing Laravel caches...";
+                $cacheCommands = [
+                    'php artisan config:clear' => 'Configuration cache',
+                    'php artisan cache:clear' => 'Application cache',
+                    'php artisan view:clear' => 'View cache',
+                    'php artisan route:clear' => 'Route cache',
+                ];
+
+                foreach ($cacheCommands as $cmd => $description) {
+                    $dockerCmd = "docker exec {$containerName} {$cmd} 2>&1 || echo 'skipped'";
+                    $result = \Illuminate\Support\Facades\Process::run($dockerCmd);
+
+                    if ($result->successful() && !str_contains($result->output(), 'skipped')) {
+                        $logs[] = "  ✓ {$description} cleared";
+                    } else {
+                        $logs[] = "  ⚠ {$description} clear skipped";
+                    }
+                }
+
+                $logs[] = "✓ Permissions and caches handled";
+
+            } catch (\Exception $permError) {
+                // Don't fail deployment if permission fix fails
+                $logs[] = "  ⚠ Permission fix encountered an error (non-critical): " . $permError->getMessage();
+                Log::warning('Permission fix failed but deployment continues', [
+                    'deployment_id' => $this->deployment->id,
+                    'error' => $permError->getMessage(),
+                ]);
+            }
+
+            $logs[] = "";
+
+            // Update logs with permission fix progress
             $this->deployment->update([
                 'output_log' => implode("\n", $logs),
             ]);

@@ -11,6 +11,11 @@ class ApiToken extends Model
 {
     use HasFactory;
 
+    /**
+     * The table associated with the model.
+     */
+    protected $table = 'api_tokens';
+
     protected $fillable = [
         'user_id',
         'team_id',
