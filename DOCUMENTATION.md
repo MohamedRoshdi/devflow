@@ -1,6 +1,6 @@
 # DevFlow Pro - Complete Documentation
 
-**Version:** 3.1.0
+**Version:** 3.1.1
 **Last Updated:** November 29, 2025
 
 This is the comprehensive documentation combining user guides, deployment instructions, features overview, and troubleshooting.

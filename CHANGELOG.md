@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.1.1] - 2025-11-29
+
+### Added
+- **Project Configuration Page** - New dedicated page for editing project settings
+  - Edit project name, slug, repository URL, branch
+  - Change framework, PHP version, Node version
+  - Toggle auto-deploy, configure health check URL
+  - Modern UI with grouped settings sections
+  - Route: `/projects/{project}/configuration`
+
+- **Server Edit Component** - Edit server details from the UI
+
+- **Workspace Pro Subdomain** - Configured `workspace.nilestack.duckdns.org`
+
+### Fixed
+- **SSL Manager 500 Error** - Fixed `SSLCertificate` model table name
+  - Laravel was generating `s_s_l_certificates` instead of `ssl_certificates`
+  - Added explicit `$table = 'ssl_certificates'` property
+
+- **SSH Key Model** - Fixed `SSHKey` model table name
+  - Added explicit `$table = 'ssh_keys'` property
+
+### Changed
+- **Documentation Consolidation** - Merged 14 redundant MD files into core docs
+  - Deleted: MASTER_TASKS.md, ADVANCED_FEATURES.md, CREDENTIALS.md, etc.
+  - Kept: README.md, CHANGELOG.md, DOCUMENTATION.md, ROADMAP.md, CLAUDE.md
+  - Updated README.md with simplified documentation links
+
+- **DevFlow Dev Mode** - Switched to development mode for debugging
+
+---
+
+## [3.1.0] - 2025-11-29
+
+### Added
+- **Server Security Management** - Comprehensive security suite
+  - Security Dashboard with score (0-100)
+  - UFW Firewall management
+  - Fail2ban intrusion prevention
+  - SSH Hardening
+  - Security Scans with recommendations
+  - Audit trail for security events
+
+---
+
 ## [3.0.0] - 2025-11-28
 
 ### Added ✨
