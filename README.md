@@ -333,6 +333,7 @@ php artisan tinker
 - [📕 Server Management Guide](docs/SERVER_MANAGEMENT.md) - Managing servers
 - [🐳 Docker Setup](docs/DOCKER_SETUP.md) - Docker configuration
 - [🔐 SSH Setup](docs/SSH_SETUP.md) - SSH key configuration for GitHub
+- [🚀 VPS Deployment Guide](docs/VPS_DEPLOYMENT_GUIDE.md) - Docker deployment on VPS with Nginx reverse proxy
 
 ---
 

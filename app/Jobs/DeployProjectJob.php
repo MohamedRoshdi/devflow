@@ -222,22 +222,45 @@ class DeployProjectJob implements ShouldQueue
                 'output_log' => implode("\n", $logs),
             ]);
 
-            // Step 6: Fix Permissions & Clear Caches
-            $logs[] = "=== Fixing Permissions & Clearing Caches ===";
-            $logs[] = "Setting proper ownership and permissions...";
+            // Step 6: Fix Permissions & Environment Configuration
+            $logs[] = "=== Fixing Permissions & Environment ===";
 
             try {
-                // Fix permissions via SSH on the server
+                // Determine container UID (Docker containers typically run as UID 1000)
+                $containerUid = '1000';
+                $uidCheckCmd = "docker exec {$containerName} id -u 2>/dev/null || echo '1000'";
+                $uidResult = \Illuminate\Support\Facades\Process::run($uidCheckCmd);
+                if ($uidResult->successful() && is_numeric(trim($uidResult->output()))) {
+                    $containerUid = trim($uidResult->output());
+                }
+                $logs[] = "Container UID: {$containerUid}";
+
+                // Fix permissions via SSH on the server with correct UID
+                $logs[] = "Setting proper ownership and permissions...";
                 $permissionCommand = "cd {$projectPath} && " .
-                    "chown -R www-data:www-data storage bootstrap/cache && " .
-                    "chmod -R 775 storage bootstrap/cache";
+                    "chown -R {$containerUid}:{$containerUid} storage bootstrap/cache 2>/dev/null && " .
+                    "chmod -R 777 storage bootstrap/cache";
 
                 $permResult = \Illuminate\Support\Facades\Process::timeout(60)->run("{$sshPrefix} \"{$permissionCommand}\"");
 
                 if ($permResult->successful()) {
-                    $logs[] = "  ✓ Permissions fixed (www-data:www-data, 775)";
+                    $logs[] = "  ✓ Permissions fixed (UID:{$containerUid}, 777)";
                 } else {
                     $logs[] = "  ⚠ Permission fix partially completed: " . $permResult->errorOutput();
+                }
+
+                // Fix .env file for Docker (DB_HOST, REDIS_HOST should use service names)
+                $logs[] = "Checking .env configuration for Docker...";
+                $envFixCommand = "cd {$projectPath} && " .
+                    "sed -i 's/^DB_HOST=127.0.0.1\$/DB_HOST=mysql/' .env 2>/dev/null; " .
+                    "sed -i 's/^DB_HOST=localhost\$/DB_HOST=mysql/' .env 2>/dev/null; " .
+                    "sed -i 's/^REDIS_HOST=127.0.0.1\$/REDIS_HOST=redis/' .env 2>/dev/null; " .
+                    "sed -i 's/^REDIS_HOST=localhost\$/REDIS_HOST=redis/' .env 2>/dev/null; " .
+                    "echo 'env checked'";
+
+                $envResult = \Illuminate\Support\Facades\Process::timeout(30)->run("{$sshPrefix} \"{$envFixCommand}\"");
+                if ($envResult->successful()) {
+                    $logs[] = "  ✓ Environment configuration validated";
                 }
 
                 // Clear Laravel caches inside container
@@ -260,7 +283,24 @@ class DeployProjectJob implements ShouldQueue
                     }
                 }
 
-                $logs[] = "✓ Permissions and caches handled";
+                // Rebuild config cache with corrected .env values
+                $logs[] = "Rebuilding configuration cache...";
+                $rebuildCommands = [
+                    'php artisan config:cache' => 'Configuration',
+                    'php artisan route:cache' => 'Routes',
+                    'php artisan view:cache' => 'Views',
+                ];
+
+                foreach ($rebuildCommands as $cmd => $description) {
+                    $dockerCmd = "docker exec {$containerName} {$cmd} 2>&1 || echo 'skipped'";
+                    $result = \Illuminate\Support\Facades\Process::run($dockerCmd);
+
+                    if ($result->successful() && !str_contains($result->output(), 'skipped')) {
+                        $logs[] = "  ✓ {$description} cached";
+                    }
+                }
+
+                $logs[] = "✓ Permissions, environment, and caches handled";
 
             } catch (\Exception $permError) {
                 // Don't fail deployment if permission fix fails

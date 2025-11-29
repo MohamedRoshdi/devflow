@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.1.3] - 2025-11-29
+
+### Added
+- **VPS Deployment Guide** - Comprehensive guide for Docker deployment on VPS
+  - Nginx reverse proxy configuration (proxy_pass vs fastcgi_pass)
+  - Environment configuration rules for Docker
+  - Storage permission fixes with UID matching
+  - Common issues and solutions
+  - Quick reference scripts
+
+- **Server Deployment Scripts** - Automation scripts on server (`/root/scripts/`)
+  - `fix-deployment.sh` - Fix common deployment issues for any project
+  - `deploy-all.sh` - Deploy all projects with proper permissions
+  - `quick-fix.sh` - Quick permission and cache fix for all projects
+
+### Fixed
+- **Nginx Configuration** - All projects now use proxy_pass to Docker containers
+  - Portfolio: `proxy_pass http://127.0.0.1:8003`
+  - Workspace Pro: `proxy_pass http://127.0.0.1:8002`
+  - ATS Pro: `proxy_pass http://127.0.0.1:8000`
+  - Previously using fastcgi_pass which caused permission errors
+
+- **Environment Variables** - Fixed .env configurations across all projects
+  - DB_HOST and REDIS_HOST now use Docker service names (not 127.0.0.1)
+  - Values with spaces properly quoted (APP_NAME="Project Name")
+  - PostgreSQL configuration fixed for Portfolio project
+
+- **Storage Permissions** - Fixed UID mismatch between host and container
+  - Container user UID (1000) now matches file ownership
+  - chmod 777 for storage directories in Docker deployments
+
+### Changed
+- **DeployProjectJob** - Automatic fixes now run during deployment
+  - Detects container UID dynamically (no more hardcoded www-data)
+  - Auto-fixes DB_HOST and REDIS_HOST to use Docker service names
+  - Rebuilds config cache after .env fixes
+  - All fixes are non-blocking (deployment succeeds even if fixes fail)
+
+---
+
 ## [3.1.2] - 2025-11-29
 
 ### Added
