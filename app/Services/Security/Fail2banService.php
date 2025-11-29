@@ -448,14 +448,14 @@ class Fail2banService
             '-p ' . $port,
         ];
 
-        // Escape the remote command for bash - use single quotes and escape any existing single quotes
-        $escapedCommand = "'" . str_replace("'", "'\\''", $remoteCommand) . "'";
+        // Escape double quotes and backslashes for the remote command
+        $escapedCommand = str_replace(['\\', '"', '$', '`'], ['\\\\', '\\"', '\\$', '\\`'], $remoteCommand);
 
         if ($server->ssh_password) {
             $escapedPassword = escapeshellarg($server->ssh_password);
 
             return sprintf(
-                'sshpass -p %s ssh %s %s@%s bash -c %s 2>&1',
+                'sshpass -p %s ssh %s %s@%s "%s" 2>&1',
                 $escapedPassword,
                 implode(' ', $sshOptions),
                 $server->username,
@@ -474,7 +474,7 @@ class Fail2banService
         }
 
         return sprintf(
-            'ssh %s %s@%s bash -c %s 2>&1',
+            'ssh %s %s@%s "%s" 2>&1',
             implode(' ', $sshOptions),
             $server->username,
             $server->ip_address,
