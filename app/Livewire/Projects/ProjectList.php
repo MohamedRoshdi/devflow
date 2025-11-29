@@ -22,8 +22,8 @@ class ProjectList extends Component
 
     public function deleteProject($projectId)
     {
-        $project = Project::where('id', $projectId)->where('user_id', auth()->id())->first();
-        
+        $project = Project::find($projectId);
+
         if ($project) {
             $project->delete();
             session()->flash('message', 'Project deleted successfully');
@@ -32,8 +32,8 @@ class ProjectList extends Component
 
     public function render()
     {
-        $projects = Project::with(['server', 'domains'])
-            ->where('user_id', auth()->id())
+        // All projects are shared across all users
+        $projects = Project::with(['server', 'domains', 'user'])
             ->when($this->search, function ($query) {
                 $query->where(function($q) {
                     $q->where('name', 'like', '%'.$this->search.'%')

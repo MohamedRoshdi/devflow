@@ -35,9 +35,8 @@ class HealthDashboard extends Component
 
     protected function loadProjectsHealth()
     {
-        $projects = Project::where('user_id', auth()->id())
-            ->with('server', 'deployments')
-            ->get();
+        // All projects are shared across all users
+        $projects = Project::with('server', 'deployments')->get();
 
         $this->projectsHealth = $projects->map(function ($project) {
             $cacheKey = "project_health_{$project->id}";
@@ -50,9 +49,8 @@ class HealthDashboard extends Component
 
     protected function loadServersHealth()
     {
-        $servers = Server::whereHas('projects', function ($query) {
-            $query->where('user_id', auth()->id());
-        })->get();
+        // All servers are shared across all users
+        $servers = Server::all();
 
         $this->serversHealth = $servers->map(function ($server) {
             $cacheKey = "server_health_{$server->id}";
@@ -134,7 +132,7 @@ class HealthDashboard extends Component
             'name' => $server->name,
             'ip_address' => $server->ip_address,
             'status' => $server->status,
-            'projects_count' => $server->projects()->where('user_id', auth()->id())->count(),
+            'projects_count' => $server->projects()->count(),
             'cpu_usage' => null,
             'ram_usage' => null,
             'disk_usage' => null,

@@ -429,8 +429,15 @@
                                 </button>
                                 <a href="{{ route('servers.show', $server) }}"
                                    class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium transition-colors">
-                                    View Details
+                                    View
                                 </a>
+                                @can('update', $server)
+                                <a href="{{ route('servers.edit', $server) }}"
+                                   class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 text-sm font-medium transition-colors">
+                                    Edit
+                                </a>
+                                @endcan
+                                @can('delete', $server)
                                 <button wire:click="deleteServer({{ $server->id }})"
                                         wire:confirm="Are you sure you want to delete this server?"
                                         wire:loading.attr="disabled"
@@ -440,6 +447,7 @@
                                     <span wire:loading.remove wire:target="deleteServer({{ $server->id }})">Delete</span>
                                     <span wire:loading wire:target="deleteServer({{ $server->id }})">Deleting...</span>
                                 </button>
+                                @endcan
                             </div>
                         </div>
                     </div>

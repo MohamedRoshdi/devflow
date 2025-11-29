@@ -15,16 +15,17 @@ class AnalyticsDashboard extends Component
 
     public function render()
     {
-        $projects = Project::where('user_id', auth()->id())->get();
-        
+        // All projects are shared across all users
+        $projects = Project::all();
+
         $dateFrom = $this->getDateFrom();
-        
+
         // Deployment Statistics
         $deploymentStats = $this->getDeploymentStats($dateFrom);
-        
+
         // Server Performance Metrics
         $serverMetrics = $this->getServerMetrics($dateFrom);
-        
+
         // Project Analytics
         $projectAnalytics = $this->getProjectAnalytics($dateFrom);
 
@@ -49,8 +50,8 @@ class AnalyticsDashboard extends Component
 
     protected function getDeploymentStats($dateFrom)
     {
-        $query = Deployment::where('user_id', auth()->id())
-            ->where('created_at', '>=', $dateFrom);
+        // All deployments are shared
+        $query = Deployment::where('created_at', '>=', $dateFrom);
 
         if ($this->selectedProject) {
             $query->where('project_id', $this->selectedProject);
@@ -66,10 +67,8 @@ class AnalyticsDashboard extends Component
 
     protected function getServerMetrics($dateFrom)
     {
-        return ServerMetric::whereHas('server', function($query) {
-                $query->where('user_id', auth()->id());
-            })
-            ->where('recorded_at', '>=', $dateFrom)
+        // All server metrics are shared
+        return ServerMetric::where('recorded_at', '>=', $dateFrom)
             ->selectRaw('AVG(cpu_usage) as avg_cpu')
             ->selectRaw('AVG(memory_usage) as avg_memory')
             ->selectRaw('AVG(disk_usage) as avg_disk')
@@ -78,7 +77,8 @@ class AnalyticsDashboard extends Component
 
     protected function getProjectAnalytics($dateFrom)
     {
-        $query = Project::where('user_id', auth()->id());
+        // All projects are shared
+        $query = Project::query();
 
         if ($this->selectedProject) {
             $query->where('id', $this->selectedProject);

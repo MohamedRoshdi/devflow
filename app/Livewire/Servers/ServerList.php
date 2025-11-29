@@ -38,11 +38,19 @@ class ServerList extends Component
     }
 
     /**
+     * Get all servers (shared across all accounts)
+     */
+    protected function getAccessibleServers()
+    {
+        return Server::all();
+    }
+
+    /**
      * Ping all servers to update their status (runs in background)
      */
     public function pingAllServersInBackground(): void
     {
-        $servers = Server::where('user_id', auth()->id())->get();
+        $servers = $this->getAccessibleServers();
 
         if ($servers->isEmpty()) {
             return;
@@ -63,7 +71,7 @@ class ServerList extends Component
     {
         $this->isPingingAll = true;
 
-        $servers = Server::where('user_id', auth()->id())->get();
+        $servers = $this->getAccessibleServers();
         $connectivityService = app(ServerConnectivityService::class);
 
         $online = 0;
@@ -87,7 +95,7 @@ class ServerList extends Component
      */
     public function pingServer(int $serverId): void
     {
-        $server = Server::where('id', $serverId)->where('user_id', auth()->id())->first();
+        $server = Server::find($serverId);
 
         if (!$server) {
             return;
@@ -113,7 +121,7 @@ class ServerList extends Component
      */
     public function rebootServer(int $serverId): void
     {
-        $server = Server::where('id', $serverId)->where('user_id', auth()->id())->first();
+        $server = Server::find($serverId);
 
         if (!$server) {
             return;
@@ -134,12 +142,10 @@ class ServerList extends Component
         try {
             // Get current server IP
             $currentIP = $this->getCurrentServerIP();
-            
-            // Check if already added
-            $exists = Server::where('user_id', auth()->id())
-                ->where('ip_address', $currentIP)
-                ->exists();
-            
+
+            // Check if already added (globally, since servers are shared)
+            $exists = Server::where('ip_address', $currentIP)->exists();
+
             if ($exists) {
                 session()->flash('error', 'This server is already added!');
                 return;
@@ -180,12 +186,14 @@ class ServerList extends Component
 
     public function deleteServer($serverId)
     {
-        $server = Server::where('id', $serverId)->where('user_id', auth()->id())->first();
-        
-        if ($server) {
-            $server->delete();
-            session()->flash('message', 'Server deleted successfully');
+        $server = Server::find($serverId);
+
+        if (!$server) {
+            return;
         }
+
+        $server->delete();
+        session()->flash('message', 'Server deleted successfully');
     }
 
     protected function getCurrentServerIP(): string
@@ -276,9 +284,7 @@ class ServerList extends Component
         $this->bulkActionInProgress = true;
         $this->bulkActionResults = [];
 
-        $servers = Server::whereIn('id', $this->selectedServers)
-            ->where('user_id', auth()->id())
-            ->get();
+        $servers = Server::whereIn('id', $this->selectedServers)->get();
 
         $bulkService = app(BulkServerActionService::class);
         $results = $bulkService->pingServers($servers);
@@ -304,9 +310,7 @@ class ServerList extends Component
         $this->bulkActionInProgress = true;
         $this->bulkActionResults = [];
 
-        $servers = Server::whereIn('id', $this->selectedServers)
-            ->where('user_id', auth()->id())
-            ->get();
+        $servers = Server::whereIn('id', $this->selectedServers)->get();
 
         $bulkService = app(BulkServerActionService::class);
         $results = $bulkService->rebootServers($servers);
@@ -332,9 +336,7 @@ class ServerList extends Component
         $this->bulkActionInProgress = true;
         $this->bulkActionResults = [];
 
-        $servers = Server::whereIn('id', $this->selectedServers)
-            ->where('user_id', auth()->id())
-            ->get();
+        $servers = Server::whereIn('id', $this->selectedServers)->get();
 
         $bulkService = app(BulkServerActionService::class);
         $results = $bulkService->installDockerOnServers($servers);
@@ -360,9 +362,7 @@ class ServerList extends Component
         $this->bulkActionInProgress = true;
         $this->bulkActionResults = [];
 
-        $servers = Server::whereIn('id', $this->selectedServers)
-            ->where('user_id', auth()->id())
-            ->get();
+        $servers = Server::whereIn('id', $this->selectedServers)->get();
 
         $bulkService = app(BulkServerActionService::class);
         $results = $bulkService->restartServiceOnServers($servers, $service);
@@ -398,10 +398,11 @@ class ServerList extends Component
 
     /**
      * Get the base servers query
+     * All servers are shared and visible to all authenticated users
      */
     protected function getServersQuery()
     {
-        return Server::where('user_id', auth()->id())
+        return Server::query()
             ->when($this->search, function ($query) {
                 $query->where(function($q) {
                     $q->where('name', 'like', '%'.$this->search.'%')
@@ -422,11 +423,10 @@ class ServerList extends Component
 
     public function render()
     {
-        $servers = $this->getServersQuery()->with('tags')->paginate(10);
+        $servers = $this->getServersQuery()->with(['tags', 'user'])->paginate(10);
 
-        // Get all tags for filtering
-        $allTags = \App\Models\ServerTag::where('user_id', auth()->id())
-            ->withCount('servers')
+        // Get all tags for filtering (shared across all users)
+        $allTags = \App\Models\ServerTag::withCount('servers')
             ->orderBy('name')
             ->get();
 

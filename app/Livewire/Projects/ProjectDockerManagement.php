@@ -25,11 +25,7 @@ class ProjectDockerManagement extends Component
 
     public function mount(Project $project)
     {
-        // Check if project belongs to current user
-        if ($project->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized access to this project.');
-        }
-
+        // All projects are shared across all users
         $this->projectId = $project->id;
     }
 

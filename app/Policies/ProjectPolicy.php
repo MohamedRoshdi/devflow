@@ -5,6 +5,12 @@ namespace App\Policies;
 use App\Models\Project;
 use App\Models\User;
 
+/**
+ * Project Policy
+ *
+ * All projects are shared across all authenticated users.
+ * Any authenticated user can view, create, update, delete, and deploy projects.
+ */
 class ProjectPolicy
 {
     public function viewAny(User $user): bool
@@ -14,7 +20,8 @@ class ProjectPolicy
 
     public function view(User $user, Project $project): bool
     {
-        return $user->id === $project->user_id;
+        // All authenticated users can view any project
+        return true;
     }
 
     public function create(User $user): bool
@@ -24,17 +31,20 @@ class ProjectPolicy
 
     public function update(User $user, Project $project): bool
     {
-        return $user->id === $project->user_id;
+        // All authenticated users can update any project
+        return true;
     }
 
     public function delete(User $user, Project $project): bool
     {
-        return $user->id === $project->user_id;
+        // All authenticated users can delete any project
+        return true;
     }
 
     public function deploy(User $user, Project $project): bool
     {
-        return $user->id === $project->user_id;
+        // All authenticated users can deploy any project
+        return true;
     }
 }
 

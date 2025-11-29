@@ -24,11 +24,7 @@ class ServerMetricsDashboard extends Component
 
     public function mount(Server $server)
     {
-        // Check if server belongs to current user
-        if ($server->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized access to this server.');
-        }
-
+        // All servers are shared across all users
         $this->server = $server;
         $this->loadMetrics();
     }

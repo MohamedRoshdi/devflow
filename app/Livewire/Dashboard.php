@@ -25,21 +25,22 @@ class Dashboard extends Component
     #[On('refresh-dashboard')]
     public function loadStats()
     {
+        // All resources are shared across all users
         $this->stats = [
-            'total_servers' => Server::where('user_id', auth()->id())->count(),
-            'online_servers' => Server::where('user_id', auth()->id())->where('status', 'online')->count(),
-            'total_projects' => Project::where('user_id', auth()->id())->count(),
-            'running_projects' => Project::where('user_id', auth()->id())->where('status', 'running')->count(),
-            'total_deployments' => Deployment::where('user_id', auth()->id())->count(),
-            'successful_deployments' => Deployment::where('user_id', auth()->id())->where('status', 'success')->count(),
-            'failed_deployments' => Deployment::where('user_id', auth()->id())->where('status', 'failed')->count(),
+            'total_servers' => Server::count(),
+            'online_servers' => Server::where('status', 'online')->count(),
+            'total_projects' => Project::count(),
+            'running_projects' => Project::where('status', 'running')->count(),
+            'total_deployments' => Deployment::count(),
+            'successful_deployments' => Deployment::where('status', 'success')->count(),
+            'failed_deployments' => Deployment::where('status', 'failed')->count(),
         ];
     }
 
     public function loadRecentDeployments()
     {
+        // All deployments are shared
         $this->recentDeployments = Deployment::with(['project', 'server'])
-            ->where('user_id', auth()->id())
             ->latest()
             ->take(10)
             ->get();
@@ -47,8 +48,8 @@ class Dashboard extends Component
 
     public function loadProjects()
     {
+        // All projects are shared
         $this->projects = Project::with(['server', 'domains'])
-            ->where('user_id', auth()->id())
             ->latest()
             ->take(6)
             ->get();

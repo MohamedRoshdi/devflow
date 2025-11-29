@@ -16,9 +16,10 @@
 |---------|-----|---------|--------|
 | **Portfolio Site** | [nilestack.duckdns.org](http://nilestack.duckdns.org) | Main portfolio website | ✅ Active |
 | **DevFlow Admin** | [admin.nilestack.duckdns.org](http://admin.nilestack.duckdns.org) | Project management panel | ✅ Active |
+| **Workspace Pro** | [workspace.nilestack.duckdns.org](http://workspace.nilestack.duckdns.org) | Workspace management | ✅ Active |
 | **ATS Pro** | [ats.nilestack.duckdns.org](http://ats.nilestack.duckdns.org) | Applicant tracking system | ✅ Configured |
 | **Portainer** | [nilestack.duckdns.org:9443](https://nilestack.duckdns.org:9443) | Docker management | ✅ Active |
-| **Documentation** | [SYSTEM_URLS.md](SYSTEM_URLS.md) | Complete URL reference | 📚 Updated |
+| **Documentation** | [DOCUMENTATION.md](DOCUMENTATION.md) | Complete reference | 📚 Updated |
 
 ---
 
@@ -320,28 +321,18 @@ php artisan tinker
 
 ## 📖 Documentation
 
-### User Guides
+### Core Documentation
+- [📚 Complete Documentation](DOCUMENTATION.md) - Full user guide, features, and troubleshooting
+- [📝 Changelog](CHANGELOG.md) - Version history and release notes
+- [🗺️ Roadmap](ROADMAP.md) - Future features and task planning
+
+### Additional Guides (docs folder)
 - [📘 Getting Started Guide](docs/GETTING_STARTED.md) - First steps
 - [📗 Project Management Guide](docs/PROJECT_MANAGEMENT.md) - Creating & managing projects
 - [📙 Deployment Guide](docs/DEPLOYMENT_GUIDE.md) - Deploying applications
 - [📕 Server Management Guide](docs/SERVER_MANAGEMENT.md) - Managing servers
-- [⚡ Quick SSH Access](QUICK_SSH_ACCESS.md) - Fast server access reference
-
-### Technical Documentation
-- [🔧 Installation Guide](docs/INSTALLATION.md) - Detailed setup
-- [⚙️ Configuration](docs/CONFIGURATION.md) - Environment variables & settings
 - [🐳 Docker Setup](docs/DOCKER_SETUP.md) - Docker configuration
-- [🐳 Docker Management](DOCKER_MANAGEMENT.md) - Advanced Docker features (Server-wide)
-- [🐳 Project Docker Management](DOCKER_PROJECT_MANAGEMENT.md) - Per-project Docker control ⭐ LATEST!
-- [🔍 Docker Detection Guide](DOCKER_DETECTION_GUIDE.md) - Dockerfile detection explained
 - [🔐 SSH Setup](docs/SSH_SETUP.md) - SSH key configuration for GitHub
-
-### Reference
-- [📚 API Documentation](API.md) - REST API endpoints
-- [🔐 SSH Access Guide](SSH_ACCESS.md) - Server access and management
-- [🔍 Troubleshooting](TROUBLESHOOTING.md) - Common issues & solutions
-- [📝 Changelog](CHANGELOG.md) - Version history
-- [🗺️ Roadmap & Tasks](ROADMAP.md) - Future features & task planning ⭐ NEW!
 
 ---
 
@@ -668,7 +659,7 @@ For simple static sites, select "Static Site" framework - no build process neede
 
 ## 📈 Roadmap
 
-See [COMPREHENSIVE_IMPROVEMENT_PLAN.md](COMPREHENSIVE_IMPROVEMENT_PLAN.md) for the complete roadmap.
+See [ROADMAP.md](ROADMAP.md) for the complete roadmap.
 
 ### Recently Added (v3.1.0) ⭐ LATEST! November 29, 2025
 - ✅ **🔐 Server Security Management** - Comprehensive security suite

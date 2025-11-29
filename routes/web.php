@@ -58,6 +58,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/projects/create', ProjectCreate::class)->name('projects.create');
     Route::get('/projects/{project}', ProjectShow::class)->name('projects.show');
     Route::get('/projects/{project}/edit', \App\Livewire\Projects\ProjectEdit::class)->name('projects.edit');
+    Route::get('/projects/{project}/configuration', \App\Livewire\Projects\ProjectConfiguration::class)->name('projects.configuration');
     Route::get('/projects/{project}/backups', \App\Livewire\Projects\DatabaseBackupManager::class)->name('projects.backups');
 
     // Deployments

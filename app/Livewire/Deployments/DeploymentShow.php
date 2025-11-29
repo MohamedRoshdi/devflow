@@ -13,11 +13,7 @@ class DeploymentShow extends Component
 
     public function mount(Deployment $deployment)
     {
-        // Check if deployment belongs to current user
-        if ($deployment->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized access to this deployment.');
-        }
-        
+        // All deployments are shared across all users
         $this->deployment = $deployment;
         $this->analyzeProgress();
     }

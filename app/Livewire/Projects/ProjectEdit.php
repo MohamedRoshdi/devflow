@@ -49,13 +49,9 @@ class ProjectEdit extends Component
 
     public function mount(Project $project)
     {
-        // Check authorization
-        if ($project->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized access to this project.');
-        }
-
+        // All projects are shared - any authenticated user can edit
         $this->project = $project;
-        
+
         // Load project data
         $this->name = $project->name;
         $this->slug = $project->slug;
@@ -72,8 +68,8 @@ class ProjectEdit extends Component
         $this->latitude = $project->latitude;
         $this->longitude = $project->longitude;
 
-        $this->servers = Server::where('user_id', auth()->id())
-            ->orderByRaw("FIELD(status, 'online', 'maintenance', 'offline', 'error')")
+        // All servers are shared
+        $this->servers = Server::orderByRaw("FIELD(status, 'online', 'maintenance', 'offline', 'error')")
             ->get();
     }
 
@@ -84,19 +80,16 @@ class ProjectEdit extends Component
 
     public function refreshServerStatus($serverId)
     {
-        $server = Server::where('id', $serverId)
-            ->where('user_id', auth()->id())
-            ->first();
+        $server = Server::find($serverId);
 
         if ($server) {
             $connectivityService = app(ServerConnectivityService::class);
             $connectivityService->pingAndUpdateStatus($server);
-            
-            // Reload servers list
-            $this->servers = Server::where('user_id', auth()->id())
-                ->orderByRaw("FIELD(status, 'online', 'maintenance', 'offline', 'error')")
+
+            // Reload servers list (all shared)
+            $this->servers = Server::orderByRaw("FIELD(status, 'online', 'maintenance', 'offline', 'error')")
                 ->get();
-            
+
             session()->flash('server_status_updated', 'Server status refreshed');
         }
     }

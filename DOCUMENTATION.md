@@ -43,6 +43,8 @@ This is the comprehensive documentation combining user guides, deployment instru
    ```
    Main Hub: http://nilestack.duckdns.org
    Admin Panel: http://admin.nilestack.duckdns.org
+   Workspace Pro: http://workspace.nilestack.duckdns.org
+   ATS Pro: http://ats.nilestack.duckdns.org
    Direct IP: http://31.220.90.121
    ```
 

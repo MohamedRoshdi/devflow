@@ -30,11 +30,7 @@ class DockerDashboard extends Component
 
     public function mount(Server $server)
     {
-        // Check if user owns this server
-        if ($server->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized access to this server.');
-        }
-
+        // All servers are shared across all users
         $this->server = $server;
         $this->loadDockerInfo();
     }

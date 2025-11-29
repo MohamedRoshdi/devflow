@@ -10,6 +10,8 @@ class SSHKey extends Model
 {
     use HasFactory;
 
+    protected $table = 'ssh_keys';
+
     protected $fillable = [
         'user_id',
         'name',

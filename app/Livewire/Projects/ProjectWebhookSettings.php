@@ -23,10 +23,7 @@ class ProjectWebhookSettings extends Component
 
     public function mount(Project $project)
     {
-        if ($project->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized access to this project.');
-        }
-
+        // All projects are shared across all users
         $this->project = $project;
         $this->webhookEnabled = $project->webhook_enabled ?? false;
         $this->webhookSecret = $project->webhook_secret;

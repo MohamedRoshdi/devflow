@@ -10,6 +10,8 @@ class SSLCertificate extends Model
 {
     use HasFactory;
 
+    protected $table = 'ssl_certificates';
+
     protected $fillable = [
         'server_id',
         'domain_id',

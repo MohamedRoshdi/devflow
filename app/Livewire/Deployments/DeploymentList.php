@@ -56,19 +56,16 @@ class DeploymentList extends Component
 
     public function render()
     {
-        // Stats query - only filtered by user, not by status/project/search
-        $statsBaseQuery = Deployment::where('user_id', auth()->id());
-
+        // Stats query - all deployments are shared
         $stats = [
-            'total' => (clone $statsBaseQuery)->count(),
-            'success' => (clone $statsBaseQuery)->where('status', 'success')->count(),
-            'failed' => (clone $statsBaseQuery)->where('status', 'failed')->count(),
-            'running' => (clone $statsBaseQuery)->where('status', 'running')->count(),
+            'total' => Deployment::count(),
+            'success' => Deployment::where('status', 'success')->count(),
+            'failed' => Deployment::where('status', 'failed')->count(),
+            'running' => Deployment::where('status', 'running')->count(),
         ];
 
-        // Filtered query for the list
-        $deployments = Deployment::with(['project', 'server'])
-            ->where('user_id', auth()->id())
+        // Filtered query for the list - all deployments are shared
+        $deployments = Deployment::with(['project', 'server', 'user'])
             ->when($this->statusFilter, fn ($query) => $query->where('status', $this->statusFilter))
             ->when($this->projectFilter, fn ($query) => $query->where('project_id', $this->projectFilter))
             ->when($this->search, function ($query) {
@@ -81,9 +78,8 @@ class DeploymentList extends Component
             ->latest()
             ->paginate($this->perPage);
 
-        $projects = Project::where('user_id', auth()->id())
-            ->orderBy('name')
-            ->get(['id', 'name']);
+        // All projects are shared
+        $projects = Project::orderBy('name')->get(['id', 'name']);
 
         return view('livewire.deployments.deployment-list', [
             'deployments' => $deployments,

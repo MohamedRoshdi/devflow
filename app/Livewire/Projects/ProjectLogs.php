@@ -24,10 +24,7 @@ class ProjectLogs extends Component
 
     public function mount(Project $project): void
     {
-        if ($project->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized access to this project');
-        }
-
+        // All projects are shared across all users
         $this->projectId = $project->id;
         $this->loadLogs();
     }

@@ -9,10 +9,13 @@ use App\Services\DockerService;
 use App\Services\DockerInstallationService;
 use App\Jobs\InstallDockerJob;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\On;
 
 class ServerShow extends Component
 {
+    use AuthorizesRequests;
+
     public Server $server;
     public $recentMetrics = [];
     public bool $dockerInstalling = false;
@@ -20,10 +23,7 @@ class ServerShow extends Component
 
     public function mount(Server $server)
     {
-        // Check if server belongs to current user
-        if ($server->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized access to this server.');
-        }
+        $this->authorize('view', $server);
 
         $this->server = $server;
         $this->loadMetrics();

@@ -23,8 +23,8 @@ class ServerTagManager extends Component
 
     public function loadTags(): void
     {
-        $this->tags = ServerTag::where('user_id', auth()->id())
-            ->withCount('servers')
+        // All tags are shared across all users
+        $this->tags = ServerTag::withCount('servers')
             ->orderBy('name')
             ->get()
             ->toArray();
@@ -33,11 +33,11 @@ class ServerTagManager extends Component
     public function createTag(): void
     {
         $this->validate([
-            'newTagName' => 'required|string|max:50|unique:server_tags,name,NULL,id,user_id,' . auth()->id(),
+            'newTagName' => 'required|string|max:50|unique:server_tags,name',
             'newTagColor' => 'required|string|regex:/^#[a-fA-F0-9]{6}$/',
         ], [
             'newTagName.required' => 'Tag name is required',
-            'newTagName.unique' => 'You already have a tag with this name',
+            'newTagName.unique' => 'A tag with this name already exists',
             'newTagColor.regex' => 'Color must be a valid hex color code',
         ]);
 
@@ -56,9 +56,7 @@ class ServerTagManager extends Component
 
     public function editTag(int $tagId): void
     {
-        $tag = ServerTag::where('id', $tagId)
-            ->where('user_id', auth()->id())
-            ->first();
+        $tag = ServerTag::find($tagId);
 
         if (!$tag) {
             return;
@@ -77,17 +75,15 @@ class ServerTagManager extends Component
         }
 
         $this->validate([
-            'editTagName' => 'required|string|max:50|unique:server_tags,name,' . $this->editingTag . ',id,user_id,' . auth()->id(),
+            'editTagName' => 'required|string|max:50|unique:server_tags,name,' . $this->editingTag,
             'editTagColor' => 'required|string|regex:/^#[a-fA-F0-9]{6}$/',
         ], [
             'editTagName.required' => 'Tag name is required',
-            'editTagName.unique' => 'You already have a tag with this name',
+            'editTagName.unique' => 'A tag with this name already exists',
             'editTagColor.regex' => 'Color must be a valid hex color code',
         ]);
 
-        $tag = ServerTag::where('id', $this->editingTag)
-            ->where('user_id', auth()->id())
-            ->first();
+        $tag = ServerTag::find($this->editingTag);
 
         if ($tag) {
             $tag->update([
@@ -104,9 +100,7 @@ class ServerTagManager extends Component
 
     public function deleteTag(int $tagId): void
     {
-        $tag = ServerTag::where('id', $tagId)
-            ->where('user_id', auth()->id())
-            ->first();
+        $tag = ServerTag::find($tagId);
 
         if ($tag) {
             $tag->delete();

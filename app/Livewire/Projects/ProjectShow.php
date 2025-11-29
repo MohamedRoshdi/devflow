@@ -39,10 +39,7 @@ class ProjectShow extends Component
 
     public function mount(Project $project)
     {
-        if ($project->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized access to this project.');
-        }
-
+        // All projects are shared - any authenticated user can view
         $this->project = $project;
         $this->firstTab = request()->query('tab', 'overview');
         $this->activeTab = $this->firstTab;
