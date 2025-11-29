@@ -528,12 +528,29 @@
                         @if($domains->count() > 0)
                             <div class="space-y-3">
                                 @foreach($domains as $domain)
+                                    @php
+                                        $isIpPort = str_contains($domain->domain, ':');
+                                        $protocol = $domain->ssl_enabled ? 'https' : 'http';
+                                        $url = $protocol . '://' . $domain->domain;
+                                    @endphp
                                     <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
                                         <div class="flex items-center justify-between">
                                             <div class="flex-1">
-                                                <div class="font-semibold text-gray-900 dark:text-white">{{ $domain->domain }}</div>
+                                                <a href="{{ $url }}" target="_blank" class="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline flex items-center">
+                                                    {{ $domain->domain }}
+                                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                                    </svg>
+                                                </a>
                                                 <div class="flex items-center space-x-3 mt-2">
-                                                    @if($domain->ssl_enabled)
+                                                    @if($isIpPort)
+                                                        <span class="inline-flex items-center text-xs text-purple-600 dark:text-purple-400 font-medium">
+                                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                                            </svg>
+                                                            Direct Access
+                                                        </span>
+                                                    @elseif($domain->ssl_enabled)
                                                         <span class="inline-flex items-center text-xs text-green-600 dark:text-green-400 font-medium">
                                                             <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                                                 <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
@@ -559,6 +576,11 @@
                                                         @endif">{{ ucfirst($domain->status) }}</span>
                                                 </div>
                                             </div>
+                                            <a href="{{ $url }}" target="_blank" class="p-2 text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                                </svg>
+                                            </a>
                                         </div>
                                     </div>
                                 @endforeach

@@ -5,6 +5,7 @@ namespace App\Livewire\Projects;
 use Livewire\Component;
 use App\Models\Project;
 use App\Models\Server;
+use App\Models\Domain;
 use App\Models\ProjectTemplate;
 use App\Services\ServerConnectivityService;
 use Illuminate\Support\Str;
@@ -151,8 +152,11 @@ class ProjectCreate extends Component
             'post_deploy_commands' => $this->post_deploy_commands,
         ]);
 
+        // Auto-create subdomain for the project
+        $this->createDefaultDomain($project, $port);
+
         $this->dispatch('project-created');
-        
+
         return redirect()->route('projects.show', $project)
             ->with('message', 'Project created successfully on port ' . $port . '!');
     }
@@ -181,6 +185,44 @@ class ProjectCreate extends Component
 
         // If all ports are used, return a high port number
         return $maxPort + count($usedPorts) + 1;
+    }
+
+    /**
+     * Create a default domain for the project
+     */
+    protected function createDefaultDomain(Project $project, int $port): void
+    {
+        $server = Server::find($this->server_id);
+        $baseDomain = config('app.base_domain', 'nilestack.duckdns.org');
+
+        // Create subdomain based on project slug
+        $subdomain = $project->slug . '.' . $baseDomain;
+
+        // Create IP:port domain as well
+        $ipDomain = $server ? $server->ip_address . ':' . $port : null;
+
+        // Create primary subdomain
+        Domain::create([
+            'project_id' => $project->id,
+            'domain' => $subdomain,
+            'is_primary' => true,
+            'ssl_enabled' => false,
+            'dns_configured' => false,
+            'status' => 'pending',
+        ]);
+
+        // Create IP:port access domain if server has IP
+        if ($ipDomain) {
+            Domain::create([
+                'project_id' => $project->id,
+                'domain' => $ipDomain,
+                'is_primary' => false,
+                'ssl_enabled' => false,
+                'dns_configured' => true,
+                'status' => 'active',
+                'metadata' => ['type' => 'ip_port'],
+            ]);
+        }
     }
 
     public function getFrameworksProperty()
