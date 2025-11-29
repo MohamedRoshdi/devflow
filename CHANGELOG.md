@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.1.2] - 2025-11-29
+
+### Added
+- **Automatic Permission Fixing** - Prevents storage/cache permission issues
+  - New `php artisan app:fix-permissions` command
+  - Creates missing storage directories automatically
+  - Fixes ownership to www-data:www-data
+  - Sets proper permissions (775 dirs, 664 files)
+  - Clears all Laravel caches
+  - Supports custom `--path` option for any Laravel project
+
+- **Post-Deployment Permission Fix** - DeployProjectJob now automatically
+  - Fixes storage and bootstrap/cache permissions after each deploy
+  - Clears all Laravel caches inside the container
+  - Non-breaking: logs warning if fix fails, deployment still succeeds
+
+### Fixed
+- **Model Table Naming** - Added explicit `$table` properties to prevent issues
+  - `ApiToken` → `api_tokens` (was converting to `a_p_i_tokens`)
+  - `GitHubConnection` → `github_connections` (was `git_hub_connections`)
+  - `GitHubRepository` → `github_repositories`
+
+---
+
 ## [3.1.1] - 2025-11-29
 
 ### Added

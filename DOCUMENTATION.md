@@ -1,6 +1,6 @@
 # DevFlow Pro - Complete Documentation
 
-**Version:** 3.1.1
+**Version:** 3.1.2
 **Last Updated:** November 29, 2025
 
 This is the comprehensive documentation combining user guides, deployment instructions, features overview, and troubleshooting.
@@ -1033,6 +1033,26 @@ All security actions are logged:
 ## 🐛 Troubleshooting
 
 ### Critical Issues & Quick Fixes
+
+#### ❌ Permission Denied / Storage Errors
+
+**Symptoms:** "Failed to open stream: Permission denied" for storage/logs or bootstrap/cache
+**Cause:** Incorrect file ownership or permissions
+**Fix:**
+```bash
+cd /var/www/your-project
+php artisan app:fix-permissions
+```
+
+Or manually:
+```bash
+chown -R www-data:www-data storage bootstrap/cache
+chmod -R 775 storage bootstrap/cache
+php artisan config:clear
+php artisan cache:clear
+```
+
+**Note:** DevFlow Pro automatically fixes permissions after each deployment.
 
 #### ❌ Livewire Actions Not Working (500 Errors)
 
