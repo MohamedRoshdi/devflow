@@ -16,7 +16,8 @@ class FirewallService
     public function getUfwStatus(Server $server): array
     {
         try {
-            $result = $this->executeCommand($server, 'sudo ufw status verbose 2>&1');
+            $sudoPrefix = $this->getSudoPrefix($server);
+            $result = $this->executeCommand($server, "{$sudoPrefix}ufw status verbose 2>&1");
 
             $combinedOutput = $result['output'] . ' ' . $result['error'];
 
@@ -508,16 +509,19 @@ class FirewallService
             '-p ' . $port,
         ];
 
+        // Escape the remote command for bash - use single quotes and escape any existing single quotes
+        $escapedCommand = "'" . str_replace("'", "'\\''", $remoteCommand) . "'";
+
         if ($server->ssh_password) {
             $escapedPassword = escapeshellarg($server->ssh_password);
 
             return sprintf(
-                'sshpass -p %s ssh %s %s@%s "%s" 2>&1',
+                'sshpass -p %s ssh %s %s@%s bash -c %s 2>&1',
                 $escapedPassword,
                 implode(' ', $sshOptions),
                 $server->username,
                 $server->ip_address,
-                addslashes($remoteCommand)
+                $escapedCommand
             );
         }
 
@@ -531,11 +535,11 @@ class FirewallService
         }
 
         return sprintf(
-            'ssh %s %s@%s "%s" 2>&1',
+            'ssh %s %s@%s bash -c %s 2>&1',
             implode(' ', $sshOptions),
             $server->username,
             $server->ip_address,
-            addslashes($remoteCommand)
+            $escapedCommand
         );
     }
 
