@@ -1,7 +1,7 @@
 # DevFlow Pro - Complete Documentation
 
-**Version:** 2.5.3
-**Last Updated:** November 26, 2025
+**Version:** 3.1.0
+**Last Updated:** November 29, 2025
 
 This is the comprehensive documentation combining user guides, deployment instructions, features overview, and troubleshooting.
 
@@ -21,9 +21,15 @@ This is the comprehensive documentation combining user guides, deployment instru
    - [Custom Scripts](#custom-deployment-scripts)
    - [Notifications](#notification-system)
    - [Multi-Tenant](#multi-tenant-management)
-8. [Troubleshooting](#troubleshooting)
-9. [API Reference](#api-reference)
-10. [Best Practices](#best-practices)
+8. [v3.0 Features](#v30-features)
+   - [GitHub Integration](#github-integration)
+   - [Team Collaboration](#team-collaboration)
+   - [API v1](#api-v1)
+9. [v3.1 Features](#v31-features) ⭐ NEW
+   - [Server Security Management](#server-security-management)
+10. [Troubleshooting](#troubleshooting)
+11. [API Reference](#api-reference)
+12. [Best Practices](#best-practices)
 
 ---
 
@@ -776,6 +782,252 @@ php artisan tenant:reset customer-a
 
 ---
 
+## 🆕 v3.0 Features
+
+DevFlow Pro v3.0 introduces enterprise-grade collaboration and integration features.
+
+### 🐙 GitHub Integration
+
+**Overview:**
+Connect your GitHub account to DevFlow Pro for seamless repository management.
+
+**Setting Up GitHub:**
+1. Navigate to **Settings → GitHub**
+2. Click "Connect GitHub Account"
+3. Authorize DevFlow Pro in GitHub OAuth flow
+4. Your repositories will sync automatically
+
+**Features:**
+- **OAuth Authentication** - Secure connection via GitHub OAuth
+- **Repository Browser** - Browse all your GitHub repositories
+- **Repository Sync** - Keep repositories in sync with GitHub
+- **Search & Filter** - Find repositories by name or type
+- **Project Linking** - Link GitHub repos to DevFlow projects
+- **Dark Mode Support** - Full dark mode compatibility
+
+**Using GitHub Repos in Projects:**
+1. Create or edit a project
+2. Click "Select from GitHub"
+3. Choose a repository from your synced repos
+4. Repository URL automatically populated
+
+---
+
+### 👥 Team Collaboration
+
+**Overview:**
+Create teams and collaborate with multiple users on projects and servers.
+
+**Creating a Team:**
+1. Navigate to **Teams** in the main menu
+2. Click "Create Team"
+3. Enter team name and description
+4. Invite team members via email
+
+**Team Roles:**
+| Role | Permissions |
+|------|-------------|
+| **Owner** | Full control, can delete team, transfer ownership |
+| **Admin** | Manage members, projects, servers, settings |
+| **Member** | Deploy, view logs, manage assigned projects |
+| **Viewer** | Read-only access to projects and deployments |
+
+**Team Features:**
+- **Team Dashboard** - Overview of team activity
+- **Team Settings** - General, Members, Invitations, Danger Zone tabs
+- **Team Switching** - Quick switcher dropdown in navigation
+- **Email Invitations** - Invite users with 7-day expiration
+- **Ownership Transfer** - Transfer team to another admin
+- **Team-Scoped Resources** - Projects and servers belong to teams
+
+**Managing Team Members:**
+1. Go to **Team Settings → Members**
+2. View current members with roles
+3. Change roles using the dropdown
+4. Remove members with the remove button
+
+**Inviting Members:**
+1. Go to **Team Settings → Invitations**
+2. Enter email address
+3. Select role for new member
+4. Click "Send Invitation"
+5. User receives email with join link
+
+---
+
+### 🔌 API v1
+
+**Overview:**
+Full RESTful API for external integrations and automation.
+
+**Getting Started:**
+1. Navigate to **Settings → API Tokens**
+2. Click "Create Token"
+3. Enter token name
+4. Select permissions (read/write for projects, servers, deployments)
+5. Copy generated token (only shown once!)
+
+**Authentication:**
+```bash
+curl -H "Authorization: Bearer YOUR_API_TOKEN" \
+     https://your-devflow.com/api/v1/projects
+```
+
+**Available Endpoints:**
+
+**Projects:**
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/projects` | List all projects |
+| POST | `/api/v1/projects` | Create project |
+| GET | `/api/v1/projects/{slug}` | Get project details |
+| PUT | `/api/v1/projects/{slug}` | Update project |
+| DELETE | `/api/v1/projects/{slug}` | Delete project |
+| POST | `/api/v1/projects/{slug}/deploy` | Trigger deployment |
+
+**Servers:**
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/servers` | List all servers |
+| POST | `/api/v1/servers` | Create server |
+| GET | `/api/v1/servers/{id}` | Get server details |
+| PUT | `/api/v1/servers/{id}` | Update server |
+| DELETE | `/api/v1/servers/{id}` | Delete server |
+| GET | `/api/v1/servers/{id}/metrics` | Get server metrics |
+
+**Deployments:**
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/projects/{slug}/deployments` | List deployments |
+| POST | `/api/v1/projects/{slug}/deployments` | Create deployment |
+| POST | `/api/v1/deployments/{id}/rollback` | Rollback deployment |
+
+**Example: Trigger Deployment:**
+```bash
+curl -X POST \
+     -H "Authorization: Bearer YOUR_TOKEN" \
+     -H "Content-Type: application/json" \
+     https://your-devflow.com/api/v1/projects/my-app/deploy
+```
+
+**Example: Create Project:**
+```bash
+curl -X POST \
+     -H "Authorization: Bearer YOUR_TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "name": "My New App",
+       "repository_url": "git@github.com:user/repo.git",
+       "branch": "main",
+       "framework": "laravel",
+       "server_id": 1
+     }' \
+     https://your-devflow.com/api/v1/projects
+```
+
+**Interactive Documentation:**
+Visit `/docs/api` in your DevFlow Pro installation for interactive API documentation with example requests and responses.
+
+---
+
+## 🆕 v3.1 Features
+
+DevFlow Pro v3.1 introduces comprehensive server security management.
+
+### 🔐 Server Security Management
+
+**Overview:**
+Manage server security from the DevFlow Pro dashboard with UFW firewall, Fail2ban, and SSH hardening.
+
+**Accessing Security Management:**
+1. Navigate to **Servers** in the main menu
+2. Click on a server to view its details
+3. Click the red **"Security"** button
+4. Access the Security Dashboard
+
+**Security Dashboard Features:**
+
+**Security Score (0-100):**
+- Real-time security assessment
+- Color-coded risk levels (Green/Yellow/Orange/Red)
+- Breakdown by category:
+  - Firewall enabled: 20 points
+  - Fail2ban active: 15 points
+  - Non-standard SSH port: 10 points
+  - Root login disabled: 15 points
+  - Password auth disabled: 15 points
+  - Minimal open ports: 10 points
+  - No pending updates: 15 points
+
+**UFW Firewall Manager:**
+```
+Location: Security → Firewall
+```
+- **Enable/Disable** - One-click firewall toggle
+- **Add Rules** - Create allow/deny rules:
+  - Port number (e.g., 80, 443, 22)
+  - Protocol (TCP/UDP/Both)
+  - Action (Allow/Deny)
+  - Source IP (optional, for IP-based rules)
+  - Description
+- **Delete Rules** - Remove rules by number
+- **View Status** - See all active rules
+- **Install UFW** - One-click installation if not present
+
+**Fail2ban Manager:**
+```
+Location: Security → Fail2ban
+```
+- **View Jails** - See all active jails (sshd, nginx, etc.)
+- **Banned IPs** - List IPs banned per jail
+- **Unban IP** - Remove IP from ban list
+- **Ban IP** - Manually ban an IP address
+- **Start/Stop** - Control Fail2ban service
+- **Install** - One-click installation
+
+**SSH Security Manager:**
+```
+Location: Security → SSH
+```
+- **Change Port** - Move SSH to non-standard port
+- **Root Login** - Enable/disable root SSH access
+- **Password Auth** - Enable/disable password authentication
+- **Harden SSH** - One-click security hardening:
+  - Sets non-standard port
+  - Disables root login
+  - Disables password auth
+  - Enables key-only authentication
+- **View Config** - See current SSH configuration
+
+**Security Scans:**
+```
+Location: Security → Scans
+```
+- **Run Scan** - Comprehensive security audit
+- **View History** - Past scan results
+- **Findings** - Detailed security issues
+- **Recommendations** - Priority-based action items
+- **Risk Level** - Low/Medium/High/Critical assessment
+
+**Security Events Audit Trail:**
+All security actions are logged:
+- Firewall enabled/disabled
+- Rules added/deleted
+- IPs banned/unbanned
+- SSH configuration changes
+- Security scans performed
+
+**Best Practices:**
+- ✅ Keep firewall enabled on all servers
+- ✅ Use non-standard SSH port (not 22)
+- ✅ Disable root login, use sudo user
+- ✅ Disable password auth, use SSH keys only
+- ✅ Run security scans weekly
+- ✅ Monitor Fail2ban for repeated attacks
+- ✅ Keep score above 80 for good security
+
+---
+
 ## 🐛 Troubleshooting
 
 ### Critical Issues & Quick Fixes
@@ -1067,7 +1319,7 @@ Docker:     Bridge 172.17.0.1
 
 ---
 
-## 🌐 Production Environment (November 25, 2025)
+## 🌐 Production Environment (November 29, 2025)
 
 ### Current Deployment Status
 
@@ -1085,20 +1337,32 @@ Docker:     Bridge 172.17.0.1
 - **Cache:** Redis 7.x
 - **Queue:** Supervisor with Laravel workers
 
-### Latest Updates (v2.5.1)
-- ✅ Fixed project show page tabs - now using server-side Blade rendering
-- ✅ Fixed Livewire component snapshot issues
-- ✅ Fixed deploy button functionality
-- ✅ Added @livewireStyles and @livewireScripts to layouts
-- ✅ Advanced Features: Kubernetes, CI/CD, Scripts, Notifications, Multi-tenant
-- ✅ Portfolio as main site on nilestack.duckdns.org
-- ✅ DevFlow Pro on secure admin subdomain
-- ✅ Unified MySQL user management
-- ✅ PHP 8.3 support for ATS Pro
-- ✅ All applications fully configured and operational
+### Latest Updates (v3.1.0)
+- ✅ **Server Security Management** - Comprehensive security suite (NEW!)
+  - Security Dashboard with score (0-100) and risk assessment
+  - UFW Firewall management (enable/disable, add/delete rules)
+  - Fail2ban intrusion prevention (view jails, ban/unban IPs)
+  - SSH Hardening (port change, root login, password auth)
+  - Security Scans with findings and recommendations
+  - Audit trail for all security events
+
+### Previous Updates (v3.0.0)
+- ✅ **GitHub Integration** - OAuth-based repository management with sync and linking
+- ✅ **Team Collaboration** - Multi-user teams with roles (Owner, Admin, Member, Viewer)
+- ✅ **API v1** - RESTful API with 16 endpoints and interactive documentation
+- ✅ **Server Backups** - Full/incremental backups with S3 support
+- ✅ **Resource Alerts** - CPU/RAM/Disk threshold monitoring with notifications
+- ✅ **Log Aggregation** - Centralized log viewing with search and export
+- ✅ **Webhook Deployments** - Auto-deploy on GitHub/GitLab push
+- ✅ **SSL Certificate Management** - Let's Encrypt with auto-renewal
+- ✅ **Health Checks** - Automated monitoring with multi-channel notifications
+- ✅ **Database Backups** - Scheduled backups with cloud storage
+- ✅ **Server Metrics** - Real-time dashboard with historical data
+- ✅ **Server Tags** - Organize servers with colored tags
+- ✅ **SSH Key Management** - Generate, import, and deploy keys from UI
 
 ---
 
-**Version:** 2.5.1 | **Last Updated:** November 26, 2025
+**Version:** 3.1.0 | **Last Updated:** November 29, 2025
 
 Happy Deploying! 🚀

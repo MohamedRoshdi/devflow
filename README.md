@@ -2,11 +2,12 @@
 
 > **Enterprise-grade deployment platform with Kubernetes, CI/CD, and multi-tenant support for managing projects at scale.**
 
-[![Version](https://img.shields.io/badge/version-2.6.3-blue.svg)](https://github.com/yourusername/devflow-pro)
+[![Version](https://img.shields.io/badge/version-3.1.0-blue.svg)](https://github.com/yourusername/devflow-pro)
 [![Laravel](https://img.shields.io/badge/Laravel-12-red.svg)](https://laravel.com)
 [![Livewire](https://img.shields.io/badge/Livewire-3-purple.svg)](https://livewire.laravel.com)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg)](https://docker.com)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-326CE5.svg)](https://kubernetes.io)
+[![API](https://img.shields.io/badge/API-v1-orange.svg)](API.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 ## 🌐 Live Production Access
@@ -75,6 +76,39 @@ DevFlow Pro is a **complete deployment management system** that makes it easy to
 - **Server Health Checks** - Automatic ping and status detection
 - **Clickable Server Rows** - Click anywhere on row to view details
 
+### 🔐 Server Security Management ⭐ NEW v3.1!
+- **Security Dashboard** - Comprehensive security overview with score (0-100)
+- **UFW Firewall Management** - Enable/disable firewall, add/delete rules
+  - Port-based rules with protocol selection (TCP/UDP/Both)
+  - IP-based allow/deny rules
+  - Real-time rule listing with numbered deletion
+  - One-click firewall enable/disable
+- **Fail2ban Management** - Intrusion prevention system control
+  - View active jails (sshd, nginx, etc.)
+  - List banned IPs per jail
+  - Manual ban/unban IP addresses
+  - Service start/stop controls
+- **SSH Hardening** - Secure SSH configuration management
+  - Change SSH port (non-standard ports recommended)
+  - Toggle root login (enable/disable)
+  - Toggle password authentication
+  - One-click "Harden SSH" for best practices
+  - View current SSH configuration
+- **Security Score System** - Automated security assessment
+  - 100-point scoring across 7 categories
+  - Firewall status (20 pts)
+  - Fail2ban status (15 pts)
+  - SSH port security (10 pts)
+  - Root login disabled (15 pts)
+  - Password auth disabled (15 pts)
+  - Open ports analysis (10 pts)
+  - Security updates pending (15 pts)
+- **Security Scans** - Run comprehensive security audits
+  - Scan history with timestamps
+  - Risk level assessment (Low/Medium/High/Critical)
+  - Detailed findings and recommendations
+  - Priority-based action items
+
 ### 📦 Docker Integration
 - **Smart Dockerfile Detection** - Uses your Dockerfile if it exists ⭐ NEW!
 - **Dockerfile.production Support** - Separate dev/prod configurations ⭐ NEW!
@@ -142,7 +176,30 @@ DevFlow Pro is a **complete deployment management system** that makes it easy to
 - **Search & Filter** - Find users quickly by name, email, or role
 - **Secure Authentication** - Laravel's built-in auth with password hashing
 - **User Assignments** - Link users to specific projects
-- **Invite-Only Access** - Self-service registration is disabled; admins provision and share credentials ⭐ NEW v2.4.1!
+- **Invite-Only Access** - Self-service registration is disabled; admins provision and share credentials
+
+### 🐙 GitHub Integration ⭐ NEW v3.0!
+- **OAuth Authentication** - Connect GitHub accounts securely via OAuth
+- **Repository Browser** - Browse and select repositories from your GitHub account
+- **Repository Sync** - Sync repositories with search and filtering
+- **Project Linking** - Link GitHub repositories to DevFlow projects
+- **Encrypted Storage** - Secure token storage with encryption
+
+### 👥 Team Collaboration ⭐ NEW v3.0!
+- **Team Management** - Create and manage teams with full settings
+- **Role-Based Access** - Owner, Admin, Member, Viewer roles
+- **Team Invitations** - Email invitations with 7-day expiration
+- **Team Switching** - Quick team switcher dropdown
+- **Ownership Transfer** - Transfer team ownership functionality
+- **Team-Scoped Resources** - Projects and servers scoped to teams
+
+### 🔌 API v1 ⭐ NEW v3.0!
+- **RESTful API** - Full CRUD operations for projects, servers, deployments
+- **Bearer Token Auth** - Secure API token authentication
+- **Token Management** - Create, regenerate, revoke API tokens
+- **Granular Permissions** - Read/write permissions per resource
+- **Interactive Documentation** - Beautiful API docs with examples
+- **16 Endpoints** - Comprehensive coverage of all resources
 
 ### ☸️ Kubernetes Integration ⭐ NEW v2.5!
 - **Multi-Cluster Management** - Add and manage multiple K8s clusters
@@ -613,7 +670,72 @@ For simple static sites, select "Static Site" framework - no build process neede
 
 See [COMPREHENSIVE_IMPROVEMENT_PLAN.md](COMPREHENSIVE_IMPROVEMENT_PLAN.md) for the complete roadmap.
 
-### Recently Added (v2.5.6) ⭐ LATEST! November 27, 2025
+### Recently Added (v3.1.0) ⭐ LATEST! November 29, 2025
+- ✅ **🔐 Server Security Management** - Comprehensive security suite
+  - Security Dashboard with score (0-100) and risk assessment
+  - UFW Firewall management (enable/disable, add/delete rules)
+  - Fail2ban intrusion prevention (view jails, ban/unban IPs)
+  - SSH Hardening (port change, root login, password auth)
+  - Security Scans with findings and recommendations
+  - Audit trail for all security events
+
+### Recently Added (v3.0.0) November 28, 2025
+- ✅ **🐙 GitHub Integration** - Full OAuth-based repository management
+  - Connect GitHub accounts securely via OAuth
+  - Browse, sync, and search repositories
+  - Link repositories to DevFlow projects
+  - Full dark mode support
+- ✅ **👥 Team Collaboration** - Multi-user team management
+  - Teams dashboard with create/manage functionality
+  - Role-based access: Owner, Admin, Member, Viewer
+  - Email invitations with 7-day expiration
+  - Team-scoped projects and servers
+  - Ownership transfer functionality
+- ✅ **🔌 API v1** - RESTful API with documentation
+  - 16 API endpoints for projects, servers, deployments
+  - Bearer token authentication with granular permissions
+  - Interactive API documentation with examples
+  - Token management UI (create, regenerate, revoke)
+
+### Recently Added (v2.9.0) November 28, 2025
+- ✅ **💾 Server Backups** - Full/incremental/snapshot backup management
+  - Automated backup schedules with S3 support
+  - Configurable retention periods
+  - One-click restore functionality
+- ✅ **🚨 Resource Alerts** - Configurable threshold monitoring
+  - CPU/RAM/Disk/Load thresholds with cooldowns
+  - Multi-channel notifications (Email, Slack, Discord)
+  - Alert history and audit trail
+- ✅ **📋 Log Aggregation** - Centralized log management
+  - Multi-source support (Nginx, Laravel, Docker, System)
+  - Full-text search with export to CSV
+  - Predefined source templates
+
+### Recently Added (v2.8.0) November 28, 2025
+- ✅ **🪝 Webhook Deployments** - Auto-deploy on GitHub/GitLab push
+  - HMAC-SHA256 signature verification
+  - Branch filtering and delivery tracking
+- ✅ **🔐 SSL Certificate Management** - Let's Encrypt integration
+  - Auto-renewal via scheduler
+  - Certificate issuance, renewal, revocation
+- ✅ **🏥 Automated Health Checks** - HTTP, TCP, Ping, SSL checks
+  - Multi-channel notifications
+  - Configurable intervals and thresholds
+- ✅ **💾 Database Backups** - MySQL/PostgreSQL with scheduling
+  - S3 storage integration
+  - Manual backup trigger
+
+### Recently Added (v2.7.x) November 28, 2025
+- ✅ **📊 Server Monitoring Dashboard** - Real-time metrics with charts
+- ✅ **🏷️ Server Groups/Tags** - Organize servers with colored tags
+- ✅ **⚡ Bulk Server Actions** - Execute actions on multiple servers
+- ✅ **🔑 SSH Key Management UI** - Generate, import, deploy SSH keys
+- ✅ **⏪ Deployment Rollback UI** - One-click rollback to previous deployments
+- ✅ **🏥 Project Health Dashboard** - Health scores with filtering
+- ✅ **⏰ Deployment Scheduling** - Schedule deployments with timezone support
+- ✅ **📋 Project Templates** - Pre-configured templates for common frameworks
+
+### Previously Added (v2.5.6) November 27, 2025
 - ✅ **🖥️ Web-Based SSH Terminal** - Execute commands directly from the browser
   - macOS-style terminal interface with traffic light controls
   - Execute SSH commands in real-time with 5-minute timeout
@@ -722,7 +844,7 @@ See [COMPREHENSIVE_IMPROVEMENT_PLAN.md](COMPREHENSIVE_IMPROVEMENT_PLAN.md) for t
 
 ---
 
-## 📅 Latest Deployment (November 25, 2025)
+## 📅 Latest Deployment (November 28, 2025)
 
 ### 🚀 Production Environment Status
 
@@ -745,7 +867,7 @@ See [COMPREHENSIVE_IMPROVEMENT_PLAN.md](COMPREHENSIVE_IMPROVEMENT_PLAN.md) for t
    - URL: http://admin.nilestack.duckdns.org
    - Framework: Laravel 12 + Livewire 3
    - Database: devflow_pro
-   - Features: All v2.5 features active including Kubernetes, CI/CD, Scripts, Notifications, Multi-tenant
+   - Features: All v3.0 features active including GitHub Integration, Teams, API v1
 
 3. **ATS Pro** (Applicant Tracking)
    - URL: http://ats.nilestack.duckdns.org
@@ -753,15 +875,17 @@ See [COMPREHENSIVE_IMPROVEMENT_PLAN.md](COMPREHENSIVE_IMPROVEMENT_PLAN.md) for t
    - Database: ats_pro
    - Status: ✅ Database configured, migrations complete
 
-### 🔧 Recent Configuration Updates
-- ✅ Portfolio set as main site on nilestack.duckdns.org
-- ✅ DevFlow Pro moved to secure admin subdomain
-- ✅ MySQL user `devflow_user` created with access to all databases
-- ✅ All three applications configured with proper environment variables
-- ✅ PHP 8.3 installed for ATS Pro compatibility
-- ✅ Redis configured for caching and queues
-- ✅ All nginx configurations optimized for production
-- ✅ **Step Indicators** - Visual deployment step progress
+### 🔧 v3.0.0 Features Active
+- ✅ GitHub Integration - OAuth-based repository management
+- ✅ Team Collaboration - Multi-user teams with roles
+- ✅ API v1 - RESTful API with 16 endpoints
+- ✅ Server Backups - Full/incremental with S3 support
+- ✅ Resource Alerts - CPU/RAM/Disk threshold monitoring
+- ✅ Log Aggregation - Centralized log management
+- ✅ Webhook Deployments - Auto-deploy on push
+- ✅ SSL Certificate Management - Let's Encrypt integration
+- ✅ Health Checks - Automated monitoring with notifications
+- ✅ Database Backups - Scheduled with cloud storage
 
 ### Completed (v2.0)
 - ✅ Project editing
@@ -769,15 +893,12 @@ See [COMPREHENSIVE_IMPROVEMENT_PLAN.md](COMPREHENSIVE_IMPROVEMENT_PLAN.md) for t
 - ✅ Static site support
 - ✅ SSH authentication for private repos
 
-### Coming Soon (v2.3+)
-- 🔄 Environment variables manager UI
-- 🔄 Project templates library
-- 🔄 One-click rollback system
-- 🔄 Automatic SSL with Let's Encrypt
-- 🔄 Team collaboration features
-- 🔄 Deployment scheduling
-- 🔄 Container health monitoring UI
-- 🔄 Kubernetes integration
+### Coming Soon (v3.1+)
+- 🔄 Mobile App - React Native app for monitoring on-the-go
+- 🔄 Blue-green deployments
+- 🔄 Canary releases
+- 🔄 Advanced analytics dashboard
+- 🔄 Multi-region deployment support
 
 ---
 

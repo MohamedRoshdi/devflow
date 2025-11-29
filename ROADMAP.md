@@ -1,6 +1,6 @@
 # DevFlow Pro - Roadmap & Task Planning
 
-> **Version:** 2.6.3 | **Last Updated:** 2025-11-28
+> **Version:** 3.1.0 | **Last Updated:** 2025-11-29
 
 ---
 
@@ -8,7 +8,7 @@
 
 | Metric | Value |
 |--------|-------|
-| Current Version | v2.6.3 |
+| Current Version | v3.1.0 |
 | Core Features | ✅ Complete |
 | Test Coverage | ~60% |
 | PHPStan Level | 8 |
@@ -18,550 +18,343 @@
 
 ## 🎯 Roadmap Phases
 
-### Phase 1: Quick Wins (v2.7.x)
+### Phase 1: Quick Wins (v2.7.x) ✅ COMPLETE
 **Target: 1-2 weeks per feature**
 
 - [x] **Deployment Rollback UI** - One-click rollback to previous deployment ✅ (v2.7.0)
 - [x] **Project Health Dashboard** - Aggregate health view of all projects ✅ (v2.7.0)
 - [x] **Deployment Scheduling** - Schedule deployments for off-peak hours ✅ (v2.7.0)
 - [x] **Project Templates** - Pre-configured templates for Laravel, Node, etc. ✅ (v2.7.0)
-- [ ] **Server Monitoring Dashboard** - Real-time metrics charts for all servers
-- [ ] **Server Groups/Tags** - Organize servers with tags and groups
-- [ ] **Bulk Server Actions** - Execute actions on multiple servers at once
-- [ ] **SSH Key Management UI** - Manage SSH keys from the interface
+- [x] **Server Monitoring Dashboard** - Real-time metrics charts for all servers ✅ (v2.7.1)
+- [x] **Server Groups/Tags** - Organize servers with tags and groups ✅ (v2.7.1)
+- [x] **Bulk Server Actions** - Execute actions on multiple servers at once ✅ (v2.7.1)
+- [x] **SSH Key Management UI** - Manage SSH keys from the interface ✅ (v2.7.1)
 
-### Phase 2: Feature Expansion (v2.8.x)
+### Phase 2: Feature Expansion (v2.8.x - v2.9.x) ✅ COMPLETE
 **Target: 2-4 weeks per feature**
 
-- [ ] **Webhook Deployments** - Auto-deploy on GitHub/GitLab push events
-- [ ] **SSL Certificate Management** - Let's Encrypt auto-renewal integration
-- [ ] **Database Backups** - Scheduled MySQL/PostgreSQL backups with S3 storage
-- [ ] **Server Backups** - Full server backup management with scheduling
-- [ ] **Log Aggregation** - Centralized log viewing with search/filter
-- [ ] **Resource Alerts** - CPU/RAM/Disk threshold notifications
-- [ ] **Automated Health Checks** - Scheduled health checks with email/Slack alerts
+- [x] **Webhook Deployments** - Auto-deploy on GitHub/GitLab push events ✅ (v2.8.0)
+- [x] **SSL Certificate Management** - Let's Encrypt auto-renewal integration ✅ (v2.8.0)
+- [x] **Database Backups** - Scheduled MySQL/PostgreSQL backups with S3 storage ✅ (v2.8.0)
+- [x] **Automated Health Checks** - Scheduled health checks with email/Slack alerts ✅ (v2.8.0)
+- [x] **Server Backups** - Full server backup management with scheduling ✅ (v2.9.0)
+- [x] **Log Aggregation** - Centralized log viewing with search/filter ✅ (v2.9.0)
+- [x] **Resource Alerts** - CPU/RAM/Disk threshold notifications ✅ (v2.9.0)
 
-### Phase 3: Enterprise Features (v3.0.x)
+### Phase 3: Enterprise Features (v3.0.0) ✅ COMPLETE
 **Target: 1-2 months per feature**
 
-- [ ] **GitHub App Integration** - OAuth-based repo access, PR status checks
-- [ ] **Team Collaboration** - Multiple users per project with roles
-- [ ] **API v1** - RESTful API for external integrations
+- [x] **GitHub App Integration** - OAuth-based repo access, repository linking ✅ (v3.0.0)
+- [x] **Team Collaboration** - Multiple users per project with roles ✅ (v3.0.0)
+- [x] **API v1** - RESTful API for external integrations ✅ (v3.0.0)
+
+### Phase 3.5: Security Features (v3.1.0) ✅ COMPLETE
+**Target: 1-2 weeks**
+
+- [x] **Server Security Management** - Comprehensive security suite ✅ (v3.1.0)
+  - [x] Security Dashboard with score (0-100)
+  - [x] UFW Firewall management
+  - [x] Fail2ban intrusion prevention
+  - [x] SSH Hardening
+  - [x] Security Scans with recommendations
+  - [x] Audit trail for security events
+
+### Phase 4: Future Enhancements (v3.2.x+)
+**Target: Ongoing**
+
 - [ ] **Mobile App** - React Native app for monitoring on-the-go
+- [ ] **Blue-Green Deployments** - Zero-downtime deployment strategy
+- [ ] **Canary Releases** - Gradual rollout to subset of users
+- [ ] **Advanced Analytics** - Detailed deployment and performance metrics
+- [ ] **Multi-Region Support** - Deploy across multiple geographic regions
 
 ---
 
 ## 📋 Detailed Task Breakdown
 
-### 🔥 High Priority Tasks
+### ✅ COMPLETED FEATURES
 
-#### 1. Webhook Deployments
-**Priority:** 🔴 High | **Effort:** Medium | **Version:** v2.8.0
+#### 1. Webhook Deployments ✅ v2.8.0
+**Status:** COMPLETE | **Completed:** November 28, 2025
 
-**Description:** Enable automatic deployments triggered by GitHub/GitLab webhook events (push, merge).
-
-**Tasks:**
-- [ ] Create `WebhookController` for receiving payloads
-- [ ] Add webhook secret token per project
-- [ ] Implement payload signature verification (HMAC)
-- [ ] Support GitHub push events
-- [ ] Support GitLab push events
-- [ ] Support Bitbucket push events
-- [ ] Add webhook URL display in project settings
-- [ ] Create webhook delivery log table
-- [ ] Add retry mechanism for failed deployments
-- [ ] Write tests for webhook handling
-
-**Database Changes:**
-```sql
-ALTER TABLE projects ADD COLUMN webhook_secret VARCHAR(64) NULL;
-ALTER TABLE projects ADD COLUMN webhook_enabled BOOLEAN DEFAULT FALSE;
-
-CREATE TABLE webhook_deliveries (
-    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    project_id BIGINT UNSIGNED NOT NULL,
-    provider ENUM('github', 'gitlab', 'bitbucket', 'custom') NOT NULL,
-    event_type VARCHAR(50) NOT NULL,
-    payload JSON NOT NULL,
-    signature VARCHAR(255) NULL,
-    status ENUM('pending', 'success', 'failed', 'ignored') DEFAULT 'pending',
-    response TEXT NULL,
-    deployment_id BIGINT UNSIGNED NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
-    FOREIGN KEY (deployment_id) REFERENCES deployments(id) ON DELETE SET NULL
-);
-```
-
-**Files to Create/Modify:**
-- `app/Http/Controllers/WebhookController.php` (new)
-- `app/Services/WebhookService.php` (new)
-- `database/migrations/xxxx_create_webhook_deliveries_table.php` (new)
-- `routes/api.php` (add webhook routes)
-- `resources/views/livewire/projects/project-settings.blade.php` (add webhook config)
+- [x] Create `WebhookController` for receiving payloads
+- [x] Add webhook secret token per project
+- [x] Implement payload signature verification (HMAC-SHA256)
+- [x] Support GitHub push events
+- [x] Support GitLab push events
+- [x] Add webhook URL display in project settings
+- [x] Create webhook delivery log table
+- [x] `ProjectWebhookSettings` Livewire component
 
 ---
 
-#### 2. Deployment Rollback UI
-**Priority:** 🔴 High | **Effort:** Low | **Version:** v2.7.0
+#### 2. Deployment Rollback UI ✅ v2.7.0
+**Status:** COMPLETE | **Completed:** November 28, 2025
 
-**Description:** Allow users to rollback to any previous successful deployment with one click.
-
-**Tasks:**
-- [ ] Add "Rollback" button to deployment history
-- [ ] Create `RollbackService` for handling rollback logic
-- [ ] Store deployment snapshots (commit hash, env vars)
-- [ ] Implement git checkout to specific commit
-- [ ] Run post-deployment commands after rollback
-- [ ] Add rollback confirmation modal
-- [ ] Track rollback in deployment history
-- [ ] Add rollback status indicator
-- [ ] Write tests for rollback functionality
-
-**Files to Create/Modify:**
-- `app/Services/RollbackService.php` (enhance existing)
-- `app/Livewire/Deployments/DeploymentRollback.php` (enhance)
-- `resources/views/livewire/deployments/deployment-history.blade.php`
+- [x] Add "Rollback" button to deployment history
+- [x] Store deployment snapshots (commit hash)
+- [x] Implement git checkout to specific commit
+- [x] Add rollback confirmation modal
+- [x] Track rollback in deployment history
+- [x] `DeploymentRollback` Livewire component
 
 ---
 
-#### 3. SSL Certificate Management
-**Priority:** 🔴 High | **Effort:** Medium | **Version:** v2.8.0
+#### 3. SSL Certificate Management ✅ v2.8.0
+**Status:** COMPLETE | **Completed:** November 28, 2025
 
-**Description:** Integrate Let's Encrypt for automatic SSL certificate provisioning and renewal.
-
-**Tasks:**
-- [ ] Install acme.sh or certbot on servers
-- [ ] Create `SSLService` for certificate management
-- [ ] Add SSL status to domain model
-- [ ] Implement certificate issuance flow
-- [ ] Add auto-renewal cron job
-- [ ] Create SSL dashboard showing expiry dates
-- [ ] Add renewal notifications (7 days before expiry)
-- [ ] Support wildcard certificates
-- [ ] Handle DNS-01 challenge for wildcards
-- [ ] Write tests for SSL operations
-
-**Database Changes:**
-```sql
-ALTER TABLE domains ADD COLUMN ssl_provider ENUM('letsencrypt', 'custom', 'none') DEFAULT 'none';
-ALTER TABLE domains ADD COLUMN ssl_issued_at TIMESTAMP NULL;
-ALTER TABLE domains ADD COLUMN ssl_expires_at TIMESTAMP NULL;
-ALTER TABLE domains ADD COLUMN ssl_auto_renew BOOLEAN DEFAULT TRUE;
-```
+- [x] Create `SSLService` with Certbot integration via SSH
+- [x] Add SSL status to SSLCertificate model
+- [x] Implement certificate issuance flow
+- [x] Add auto-renewal via `SSLRenewCommand`
+- [x] Create SSL dashboard showing expiry dates
+- [x] `SSLManager` Livewire component
 
 ---
 
-#### 4. Project Health Dashboard
-**Priority:** 🟡 Medium | **Effort:** Low | **Version:** v2.7.0
+#### 4. Project Health Dashboard ✅ v2.7.0
+**Status:** COMPLETE | **Completed:** November 28, 2025
 
-**Description:** Aggregate dashboard showing health status of all projects at a glance.
-
-**Tasks:**
-- [ ] Create `HealthDashboard` Livewire component
-- [ ] Add health check endpoint per project
-- [ ] Implement periodic health polling
-- [ ] Show uptime percentage
-- [ ] Display response times
-- [ ] Add status indicators (green/yellow/red)
-- [ ] Create health history chart
-- [ ] Add filtering by status
-- [ ] Write tests for health checks
-
-**Files to Create:**
-- `app/Livewire/Dashboard/HealthDashboard.php`
-- `app/Services/HealthCheckService.php`
-- `resources/views/livewire/dashboard/health-dashboard.blade.php`
+- [x] Create `HealthDashboard` Livewire component
+- [x] Add health check endpoint per project
+- [x] Implement periodic health polling
+- [x] Health score calculation (0-100)
+- [x] Add status indicators (Healthy/Warning/Critical)
+- [x] Filter projects by health status
 
 ---
 
-#### 5. Server Monitoring Dashboard
-**Priority:** 🔴 High | **Effort:** Medium | **Version:** v2.7.1
+#### 5. Server Monitoring Dashboard ✅ v2.7.1
+**Status:** COMPLETE | **Completed:** November 28, 2025
 
-**Description:** Real-time server metrics dashboard with charts and historical data.
-
-**Tasks:**
-- [ ] Create `ServerMetricsDashboard` Livewire component
-- [ ] Add real-time CPU usage chart (Chart.js/ApexCharts)
-- [ ] Add real-time Memory usage chart
-- [ ] Add real-time Disk I/O chart
-- [ ] Add Network I/O chart
-- [ ] Implement WebSocket for live updates
-- [ ] Store metrics history in database
-- [ ] Add time range selector (1h, 6h, 24h, 7d, 30d)
-- [ ] Create aggregate view for all servers
-- [ ] Add export metrics to CSV
-- [ ] Write tests for metrics collection
-
-**Database Changes:**
-```sql
-CREATE TABLE server_metrics (
-    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    server_id BIGINT UNSIGNED NOT NULL,
-    cpu_usage DECIMAL(5,2) NOT NULL,
-    memory_usage DECIMAL(5,2) NOT NULL,
-    memory_used_mb INT NOT NULL,
-    memory_total_mb INT NOT NULL,
-    disk_usage DECIMAL(5,2) NOT NULL,
-    disk_used_gb INT NOT NULL,
-    disk_total_gb INT NOT NULL,
-    load_average_1 DECIMAL(5,2) NULL,
-    load_average_5 DECIMAL(5,2) NULL,
-    load_average_15 DECIMAL(5,2) NULL,
-    network_in_bytes BIGINT UNSIGNED NULL,
-    network_out_bytes BIGINT UNSIGNED NULL,
-    recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_server_time (server_id, recorded_at),
-    FOREIGN KEY (server_id) REFERENCES servers(id) ON DELETE CASCADE
-);
-```
-
-**Files to Create:**
-- `app/Livewire/Servers/ServerMetricsDashboard.php`
-- `app/Services/ServerMetricsService.php`
-- `resources/views/livewire/servers/server-metrics-dashboard.blade.php`
-- `app/Console/Commands/CollectServerMetrics.php`
+- [x] Create `ServerMetricsDashboard` Livewire component
+- [x] Real-time CPU, Memory, Disk usage display
+- [x] `server_metrics` table for historical data
+- [x] `CollectServerMetrics` command for automated collection
+- [x] `ServerMetricsService` for metrics management
 
 ---
 
-#### 6. Server Groups/Tags
-**Priority:** 🟡 Medium | **Effort:** Low | **Version:** v2.7.1
+#### 6. Server Groups/Tags ✅ v2.7.1
+**Status:** COMPLETE | **Completed:** November 28, 2025
 
-**Description:** Organize servers with tags and groups for better management.
-
-**Tasks:**
-- [ ] Create `ServerTag` model
-- [ ] Create `ServerGroup` model
-- [ ] Add tag management UI
-- [ ] Add group management UI
-- [ ] Implement tag filtering on server list
-- [ ] Implement group filtering on server list
-- [ ] Add color picker for tags
-- [ ] Show tags on server cards
-- [ ] Add bulk tag assignment
-- [ ] Write tests for tags/groups
-
-**Database Changes:**
-```sql
-CREATE TABLE server_tags (
-    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT UNSIGNED NOT NULL,
-    name VARCHAR(50) NOT NULL,
-    color VARCHAR(7) DEFAULT '#6366f1',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY unique_user_tag (user_id, name),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
-CREATE TABLE server_tag_pivot (
-    server_id BIGINT UNSIGNED NOT NULL,
-    tag_id BIGINT UNSIGNED NOT NULL,
-    PRIMARY KEY (server_id, tag_id),
-    FOREIGN KEY (server_id) REFERENCES servers(id) ON DELETE CASCADE,
-    FOREIGN KEY (tag_id) REFERENCES server_tags(id) ON DELETE CASCADE
-);
-
-CREATE TABLE server_groups (
-    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT UNSIGNED NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    description TEXT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
-ALTER TABLE servers ADD COLUMN group_id BIGINT UNSIGNED NULL;
-ALTER TABLE servers ADD FOREIGN KEY (group_id) REFERENCES server_groups(id) ON DELETE SET NULL;
-```
+- [x] Create `ServerTag` model with colors
+- [x] Add tag management UI (`ServerTagManager`)
+- [x] Add tag assignment UI (`ServerTagAssignment`)
+- [x] Implement tag filtering on server list
+- [x] Bulk tag assignment support
 
 ---
 
-#### 7. Bulk Server Actions
-**Priority:** 🟡 Medium | **Effort:** Low | **Version:** v2.7.1
+#### 7. Bulk Server Actions ✅ v2.7.1
+**Status:** COMPLETE | **Completed:** November 28, 2025
 
-**Description:** Execute actions on multiple servers simultaneously.
-
-**Tasks:**
-- [ ] Add checkbox selection to server list
-- [ ] Create bulk action dropdown (Ping All, Reboot All, etc.)
-- [ ] Implement parallel SSH execution
-- [ ] Add progress indicator for bulk operations
-- [ ] Show results summary after completion
-- [ ] Add confirmation modal for destructive actions
-- [ ] Support bulk Docker installation
-- [ ] Support bulk service restart
-- [ ] Add bulk action history log
-- [ ] Write tests for bulk operations
-
-**Files to Create:**
-- `app/Livewire/Servers/BulkServerActions.php`
-- `app/Services/BulkServerActionService.php`
-- `resources/views/livewire/servers/bulk-server-actions.blade.php`
+- [x] `BulkServerActionService` for parallel operations
+- [x] Ping All, Reboot All actions
+- [x] Progress indicator for bulk operations
+- [x] Confirmation modal for destructive actions
 
 ---
 
-#### 8. SSH Key Management UI
-**Priority:** 🟡 Medium | **Effort:** Medium | **Version:** v2.7.1
+#### 8. SSH Key Management UI ✅ v2.7.1
+**Status:** COMPLETE | **Completed:** November 28, 2025
 
-**Description:** Manage SSH keys from the web interface instead of manually.
-
-**Tasks:**
-- [ ] Create `SSHKey` model
-- [ ] Add SSH key generation (RSA, Ed25519)
-- [ ] Add SSH key import from file
-- [ ] Add SSH key export/download
-- [ ] Show public key for copying
-- [ ] Add key deployment to servers
-- [ ] Create key rotation workflow
-- [ ] Add key expiry tracking
-- [ ] Show which servers use which keys
-- [ ] Write tests for SSH key management
-
-**Database Changes:**
-```sql
-CREATE TABLE ssh_keys (
-    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT UNSIGNED NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    type ENUM('rsa', 'ed25519', 'ecdsa') DEFAULT 'ed25519',
-    public_key TEXT NOT NULL,
-    private_key_encrypted TEXT NOT NULL,
-    fingerprint VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    expires_at TIMESTAMP NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
-CREATE TABLE server_ssh_key (
-    server_id BIGINT UNSIGNED NOT NULL,
-    ssh_key_id BIGINT UNSIGNED NOT NULL,
-    deployed_at TIMESTAMP NULL,
-    PRIMARY KEY (server_id, ssh_key_id),
-    FOREIGN KEY (server_id) REFERENCES servers(id) ON DELETE CASCADE,
-    FOREIGN KEY (ssh_key_id) REFERENCES ssh_keys(id) ON DELETE CASCADE
-);
-```
-
-**Files to Create:**
-- `app/Models/SSHKey.php`
-- `app/Livewire/Settings/SSHKeyManager.php`
-- `app/Services/SSHKeyService.php`
-- `resources/views/livewire/settings/ssh-key-manager.blade.php`
+- [x] Create `SSHKey` model
+- [x] Add SSH key generation (RSA, Ed25519)
+- [x] Add SSH key import
+- [x] Show public key for copying
+- [x] Add key deployment to servers
+- [x] `SSHKeyService` for key operations
 
 ---
 
-### 🚀 Medium Priority Tasks
+#### 9. GitHub Integration ✅ v3.0.0
+**Status:** COMPLETE | **Completed:** November 28, 2025
 
-#### 9. Database Backups
-**Priority:** 🟡 Medium | **Effort:** Medium | **Version:** v2.8.0
-
-**Description:** Scheduled database backups with cloud storage support.
-
-**Tasks:**
-- [ ] Create `BackupService` for database dumps
-- [ ] Support MySQL and PostgreSQL
-- [ ] Implement S3 storage integration
-- [ ] Add backup scheduling (daily, weekly, monthly)
-- [ ] Create backup retention policies
-- [ ] Add backup restore functionality
-- [ ] Show backup history with download links
-- [ ] Add backup notifications
-- [ ] Implement backup encryption
-- [ ] Write tests for backup operations
-
-**Database Changes:**
-```sql
-CREATE TABLE backups (
-    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    project_id BIGINT UNSIGNED NOT NULL,
-    type ENUM('database', 'files', 'full') NOT NULL,
-    storage_driver ENUM('local', 's3', 'gcs', 'dropbox') DEFAULT 'local',
-    file_path VARCHAR(500) NOT NULL,
-    file_size BIGINT UNSIGNED NULL,
-    status ENUM('pending', 'running', 'completed', 'failed') DEFAULT 'pending',
-    started_at TIMESTAMP NULL,
-    completed_at TIMESTAMP NULL,
-    expires_at TIMESTAMP NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
-);
-
-CREATE TABLE backup_schedules (
-    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    project_id BIGINT UNSIGNED NOT NULL,
-    frequency ENUM('hourly', 'daily', 'weekly', 'monthly') NOT NULL,
-    time TIME DEFAULT '02:00:00',
-    day_of_week TINYINT NULL,
-    day_of_month TINYINT NULL,
-    retention_days INT DEFAULT 30,
-    is_active BOOLEAN DEFAULT TRUE,
-    last_run_at TIMESTAMP NULL,
-    next_run_at TIMESTAMP NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
-);
-```
+- [x] `GitHubConnection` model with encrypted token storage
+- [x] `GitHubRepository` model for synced repositories
+- [x] `GitHubService` for OAuth flow and API operations
+- [x] `GitHubAuthController` for OAuth handling
+- [x] `GitHubSettings` Livewire component with full UI
+- [x] `GitHubRepoPicker` for project repository selection
+- [x] Repository sync, search, and filtering
+- [x] Link repositories to DevFlow projects
+- [x] Full dark mode support
 
 ---
 
-#### 6. Log Aggregation
-**Priority:** 🟡 Medium | **Effort:** Medium | **Version:** v2.8.0
+#### 10. Team Collaboration ✅ v3.0.0
+**Status:** COMPLETE | **Completed:** November 28, 2025
 
-**Description:** Centralized log viewing with search, filter, and real-time streaming.
-
-**Tasks:**
-- [ ] Create `LogAggregatorService`
-- [ ] Implement log file parsing
-- [ ] Add log level filtering (error, warning, info, debug)
-- [ ] Create full-text search functionality
-- [ ] Implement real-time log streaming (WebSocket)
-- [ ] Add log retention settings
-- [ ] Create log export functionality
-- [ ] Add log pattern alerts
-- [ ] Support multiple log formats (Laravel, Apache, Nginx)
-- [ ] Write tests for log operations
+- [x] `Team`, `TeamMember`, `TeamInvitation` models
+- [x] `TeamService` for team operations
+- [x] `EnsureTeamAccess` middleware for permissions
+- [x] `TeamList` - Teams dashboard with create modal
+- [x] `TeamSettings` - Full settings with tabs
+- [x] `TeamSwitcher` - Dropdown for quick team switching
+- [x] Role-based access: Owner, Admin, Member, Viewer
+- [x] Email invitations with 7-day expiration
+- [x] Transfer ownership functionality
+- [x] Team-scoped projects and servers
 
 ---
 
-#### 7. Resource Alerts
-**Priority:** 🟡 Medium | **Effort:** Medium | **Version:** v2.8.0
+#### 11. API v1 ✅ v3.0.0
+**Status:** COMPLETE | **Completed:** November 28, 2025
 
-**Description:** Configurable alerts when server resources exceed thresholds.
-
-**Tasks:**
-- [ ] Create `AlertService` for monitoring
-- [ ] Add threshold configuration per server
-- [ ] Implement CPU usage monitoring
-- [ ] Implement RAM usage monitoring
-- [ ] Implement Disk usage monitoring
-- [ ] Add notification channels (email, Slack, Discord)
-- [ ] Create alert history log
-- [ ] Add alert acknowledgment feature
-- [ ] Implement alert escalation
-- [ ] Write tests for alert system
-
-**Database Changes:**
-```sql
-CREATE TABLE alert_rules (
-    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    server_id BIGINT UNSIGNED NOT NULL,
-    metric ENUM('cpu', 'ram', 'disk', 'load', 'network') NOT NULL,
-    operator ENUM('gt', 'lt', 'eq', 'gte', 'lte') NOT NULL,
-    threshold DECIMAL(10,2) NOT NULL,
-    duration_minutes INT DEFAULT 5,
-    notification_channels JSON NOT NULL,
-    is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (server_id) REFERENCES servers(id) ON DELETE CASCADE
-);
-
-CREATE TABLE alerts (
-    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    alert_rule_id BIGINT UNSIGNED NOT NULL,
-    server_id BIGINT UNSIGNED NOT NULL,
-    metric VARCHAR(50) NOT NULL,
-    current_value DECIMAL(10,2) NOT NULL,
-    threshold_value DECIMAL(10,2) NOT NULL,
-    status ENUM('triggered', 'acknowledged', 'resolved') DEFAULT 'triggered',
-    triggered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    acknowledged_at TIMESTAMP NULL,
-    acknowledged_by BIGINT UNSIGNED NULL,
-    resolved_at TIMESTAMP NULL,
-    FOREIGN KEY (alert_rule_id) REFERENCES alert_rules(id) ON DELETE CASCADE,
-    FOREIGN KEY (server_id) REFERENCES servers(id) ON DELETE CASCADE
-);
-```
+- [x] `ApiToken` model with abilities and expiration
+- [x] `AuthenticateApiToken` middleware
+- [x] API Controllers for Projects, Servers, Deployments
+- [x] API Resources for consistent JSON responses
+- [x] Form Requests for validation
+- [x] `ApiTokenManager` - Create, regenerate, revoke tokens
+- [x] `ApiDocumentation` - Interactive API docs with examples
+- [x] 16 API endpoints
+- [x] Bearer token authentication
+- [x] Granular permissions (read/write per resource)
 
 ---
 
-#### 8. Deployment Scheduling
-**Priority:** 🟢 Low | **Effort:** Low | **Version:** v2.7.0
+#### 12. Server Backups ✅ v2.9.0
+**Status:** COMPLETE | **Completed:** November 28, 2025
 
-**Description:** Schedule deployments for specific times (maintenance windows).
-
-**Tasks:**
-- [ ] Add scheduled deployment option to deploy modal
-- [ ] Create `ScheduledDeployment` model
-- [ ] Implement Laravel scheduler integration
-- [ ] Add timezone support
-- [ ] Create scheduled deployment list view
-- [ ] Add cancel/edit scheduled deployment
-- [ ] Send reminder notifications before deployment
-- [ ] Write tests for scheduling
+- [x] `ServerBackup` model with full/incremental/snapshot types
+- [x] `ServerBackupSchedule` model for automated backups
+- [x] `ServerBackupService` with tar, rsync, LVM snapshot support
+- [x] `ServerBackupManager` Livewire component
+- [x] `RunServerBackupsCommand` for scheduled processing
+- [x] S3 upload support
+- [x] Configurable retention periods
+- [x] One-click restore functionality
 
 ---
 
-#### 9. Project Templates
-**Priority:** 🟢 Low | **Effort:** Low | **Version:** v2.7.0
+#### 13. Resource Alerts ✅ v2.9.0
+**Status:** COMPLETE | **Completed:** November 28, 2025
 
-**Description:** Pre-configured project templates for common frameworks.
-
-**Tasks:**
-- [ ] Create template seeder with common configurations
-- [ ] Add template selection to project creation
-- [ ] Include Laravel template (with standard commands)
-- [ ] Include Node.js/Express template
-- [ ] Include Next.js template
-- [ ] Include static site template
-- [ ] Allow custom template creation
-- [ ] Write tests for template application
+- [x] `ResourceAlert` model with CPU/RAM/Disk/Load thresholds
+- [x] `AlertHistory` model for audit trail
+- [x] `ResourceAlertService` for threshold evaluation
+- [x] `AlertNotificationService` (Email, Slack, Discord)
+- [x] `ResourceAlertManager` Livewire component with gauges
+- [x] `CheckResourceAlertsCommand` for automated checks
+- [x] Cooldown periods to prevent alert spam
 
 ---
 
-### 🏗️ Large Initiatives
+#### 14. Log Aggregation ✅ v2.9.0
+**Status:** COMPLETE | **Completed:** November 28, 2025
 
-#### 10. GitHub App Integration
-**Priority:** 🟢 Low | **Effort:** High | **Version:** v3.0.0
-
-**Description:** Full GitHub App integration with OAuth, PR status checks, and enhanced repository access.
-
-**Tasks:**
-- [ ] Register GitHub App
-- [ ] Implement OAuth2 flow
-- [ ] Add installation webhook handling
-- [ ] Implement repository listing from GitHub
-- [ ] Add PR status check updates
-- [ ] Create deployment status notifications
-- [ ] Support GitHub Actions integration
-- [ ] Add repository permissions management
-- [ ] Write comprehensive tests
+- [x] `LogEntry` model with multi-source support
+- [x] `LogSource` model for source configuration
+- [x] `LogAggregationService` with parsers
+- [x] `LogViewer` Livewire component with filtering
+- [x] `LogSourceManager` for source management
+- [x] `SyncLogsCommand` for automated sync
+- [x] Full-text search with debounce
+- [x] Export to CSV
 
 ---
 
-#### 11. Team Collaboration
-**Priority:** 🟢 Low | **Effort:** High | **Version:** v3.0.0
+#### 15. Server Security Management ✅ v3.1.0
+**Status:** COMPLETE | **Completed:** November 29, 2025
 
-**Description:** Multi-user access per project with granular permissions.
-
-**Tasks:**
-- [ ] Create `Team` model
-- [ ] Create `TeamMember` model with roles
-- [ ] Implement permission system (view, deploy, edit, admin)
-- [ ] Add team invitation system
-- [ ] Create team management UI
-- [ ] Add activity log per team
-- [ ] Implement project sharing between teams
-- [ ] Add team billing (if needed)
-- [ ] Write tests for team features
+- [x] Database migrations for security tables
+  - [x] `firewall_rules` - Store firewall rules
+  - [x] `security_events` - Audit trail
+  - [x] `ssh_configurations` - SSH config cache
+  - [x] `security_scans` - Scan results
+  - [x] Add security fields to `servers` table
+- [x] Models created
+  - [x] `FirewallRule` with toUfwCommand()
+  - [x] `SecurityEvent` with event types
+  - [x] `SshConfiguration` with isHardened()
+  - [x] `SecurityScan` with risk levels
+- [x] Security Services
+  - [x] `ServerSecurityService` - Main facade
+  - [x] `FirewallService` - UFW management
+  - [x] `Fail2banService` - Jail/ban management
+  - [x] `SSHSecurityService` - SSH config management
+  - [x] `SecurityScoreService` - 100-point scoring
+- [x] Livewire Components
+  - [x] `ServerSecurityDashboard` - Main dashboard
+  - [x] `FirewallManager` - UFW control
+  - [x] `Fail2banManager` - Fail2ban control
+  - [x] `SSHSecurityManager` - SSH hardening
+  - [x] `SecurityScanDashboard` - Scan history
+- [x] Routes and navigation
+- [x] SSH command escaping fixes for sudo with password
 
 ---
 
-#### 12. API v1
-**Priority:** 🟢 Low | **Effort:** High | **Version:** v3.0.0
+### 🔮 Future Tasks
 
-**Description:** RESTful API for external integrations and automation.
+#### 1. Mobile App
+**Priority:** 🟡 Medium | **Effort:** High | **Version:** v3.1.0
+
+**Description:** React Native mobile app for monitoring deployments on-the-go.
 
 **Tasks:**
-- [ ] Design API structure (OpenAPI spec)
-- [ ] Implement API authentication (tokens)
-- [ ] Create project endpoints (CRUD)
-- [ ] Create deployment endpoints
-- [ ] Create server endpoints
-- [ ] Add rate limiting
-- [ ] Generate API documentation
-- [ ] Create API versioning strategy
-- [ ] Add webhook event system
-- [ ] Write API tests
+- [ ] Setup React Native project
+- [ ] Implement authentication flow
+- [ ] Dashboard screen with project overview
+- [ ] Server status monitoring
+- [ ] Push notifications for deployment events
+- [ ] Deployment trigger and history
+- [ ] Real-time logs viewer
+
+---
+
+#### 2. Blue-Green Deployments
+**Priority:** 🟡 Medium | **Effort:** Medium | **Version:** v3.1.0
+
+**Description:** Zero-downtime deployment strategy with instant rollback capability.
+
+**Tasks:**
+- [ ] Create blue/green environment management
+- [ ] Implement traffic switching
+- [ ] Add health check verification before switch
+- [ ] Automatic rollback on failure
+- [ ] Dashboard for deployment status
+
+---
+
+#### 3. Canary Releases
+**Priority:** 🟢 Low | **Effort:** High | **Version:** v3.2.0
+
+**Description:** Gradual rollout to subset of users before full deployment.
+
+**Tasks:**
+- [ ] Implement percentage-based traffic routing
+- [ ] Add metrics comparison between versions
+- [ ] Automatic promotion/rollback based on error rates
+- [ ] Custom canary rules configuration
+
+---
+
+#### 4. Advanced Analytics Dashboard
+**Priority:** 🟢 Low | **Effort:** Medium | **Version:** v3.1.0
+
+**Description:** Detailed deployment analytics and performance metrics.
+
+**Tasks:**
+- [ ] Deployment success rate charts
+- [ ] Average deployment time tracking
+- [ ] Resource usage trends
+- [ ] Cost estimation features
+
+---
+
+#### 5. Multi-Region Support
+**Priority:** 🟢 Low | **Effort:** High | **Version:** v3.2.0
+
+**Description:** Deploy applications across multiple geographic regions.
+
+**Tasks:**
+- [ ] Region-aware server management
+- [ ] Cross-region deployment coordination
+- [ ] Latency-based routing
+- [ ] Regional failover configuration
 
 ---
 
@@ -595,11 +388,16 @@ CREATE TABLE alerts (
 
 ## 📅 Release Schedule
 
-| Version | Target Date | Focus |
-|---------|-------------|-------|
-| v2.7.0 | Dec 2025 | Rollback UI, Health Dashboard, Scheduling, Templates |
-| v2.8.0 | Jan 2026 | Webhooks, SSL, Backups, Log Aggregation, Alerts |
-| v3.0.0 | Mar 2026 | GitHub App, Teams, API v1 |
+| Version | Release Date | Focus | Status |
+|---------|--------------|-------|--------|
+| v2.7.0 | Nov 28, 2025 | Rollback UI, Health Dashboard, Scheduling, Templates | ✅ Released |
+| v2.7.1 | Nov 28, 2025 | Server Metrics, Tags, Bulk Actions, SSH Keys | ✅ Released |
+| v2.8.0 | Nov 28, 2025 | Webhooks, SSL, Health Checks, DB Backups | ✅ Released |
+| v2.9.0 | Nov 28, 2025 | Server Backups, Resource Alerts, Log Aggregation | ✅ Released |
+| v3.0.0 | Nov 28, 2025 | GitHub Integration, Teams, API v1 | ✅ Released |
+| v3.1.0 | Nov 29, 2025 | Server Security Management | ✅ Released |
+| v3.2.0 | Q1 2026 | Mobile App, Blue-Green Deployments, Analytics | 🔮 Planned |
+| v3.3.0 | Q2 2026 | Canary Releases, Multi-Region Support | 🔮 Planned |
 
 ---
 
@@ -607,6 +405,12 @@ CREATE TABLE alerts (
 
 | Version | Date | Highlights |
 |---------|------|------------|
+| **v3.1.0** | 2025-11-29 | Server Security Management (UFW, Fail2ban, SSH Hardening, Security Score) |
+| v3.0.0 | 2025-11-28 | GitHub Integration, Team Collaboration, API v1 |
+| v2.9.0 | 2025-11-28 | Server Backups, Resource Alerts, Log Aggregation |
+| v2.8.0 | 2025-11-28 | Webhook Deployments, SSL Management, Health Checks, DB Backups |
+| v2.7.1 | 2025-11-28 | Server Metrics Dashboard, Tags, Bulk Actions, SSH Key Management |
+| v2.7.0 | 2025-11-28 | Rollback UI, Health Dashboard, Scheduling, Templates |
 | v2.6.3 | 2025-11-28 | Server Quick Actions, Auto-ping, Docker sudo fix, UI redesign |
 | v2.6.2 | 2025-11-28 | Git auto-refresh, SSH command fix |
 | v2.6.1 | 2025-11-27 | SSH terminal enhancements, sudo support |
@@ -628,4 +432,4 @@ When working on tasks:
 
 ---
 
-*Last updated: 2025-11-28 by DevFlow Pro Team*
+*Last updated: 2025-11-29 by DevFlow Pro Team*
