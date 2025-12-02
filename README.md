@@ -2,7 +2,7 @@
 
 > **Enterprise-grade deployment platform with Kubernetes, CI/CD, and multi-tenant support for managing projects at scale.**
 
-[![Version](https://img.shields.io/badge/version-3.1.2-blue.svg)](https://github.com/yourusername/devflow-pro)
+[![Version](https://img.shields.io/badge/version-3.3.0-blue.svg)](https://github.com/yourusername/devflow-pro)
 [![Laravel](https://img.shields.io/badge/Laravel-12-red.svg)](https://laravel.com)
 [![Livewire](https://img.shields.io/badge/Livewire-3-purple.svg)](https://livewire.laravel.com)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg)](https://docker.com)
@@ -14,10 +14,10 @@
 
 | Service | URL | Purpose | Status |
 |---------|-----|---------|--------|
-| **Portfolio Site** | [nilestack.duckdns.org](http://nilestack.duckdns.org) | Main portfolio website | ✅ Active |
-| **DevFlow Admin** | [admin.nilestack.duckdns.org](http://admin.nilestack.duckdns.org) | Project management panel | ✅ Active |
-| **Workspace Pro** | [workspace.nilestack.duckdns.org](http://workspace.nilestack.duckdns.org) | Workspace management | ✅ Active |
-| **ATS Pro** | [ats.nilestack.duckdns.org](http://ats.nilestack.duckdns.org) | Applicant tracking system | ✅ Configured |
+| **Portfolio Site** | [nilestack.duckdns.org](https://nilestack.duckdns.org) | Main portfolio website | ✅ Active |
+| **DevFlow Admin** | [admin.nilestack.duckdns.org](https://admin.nilestack.duckdns.org) | Project management panel | ✅ Active |
+| **Workspace Pro** | [workspace.nilestack.duckdns.org](https://workspace.nilestack.duckdns.org) | Workspace management | ✅ Active |
+| **ATS Pro** | [ats.nilestack.duckdns.org](https://ats.nilestack.duckdns.org) | Applicant tracking system | ✅ Configured |
 | **Portainer** | [nilestack.duckdns.org:9443](https://nilestack.duckdns.org:9443) | Docker management | ✅ Active |
 | **Documentation** | [DOCUMENTATION.md](DOCUMENTATION.md) | Complete reference | 📚 Updated |
 
@@ -38,6 +38,7 @@ DevFlow Pro is a **complete deployment management system** that makes it easy to
 ## 🎯 Key Features
 
 ### 🚀 Project Management
+- **Project Creation Wizard** - 4-step guided setup with auto-configuration ⭐ NEW v3.2!
 - **Create & Edit Projects** - Full CRUD operations with validation
 - **Multiple Frameworks** - Laravel, Node.js, React, Vue, Next.js, Static sites
 - **Version Control** - Git integration (HTTPS & SSH)
@@ -1000,8 +1001,12 @@ systemctl restart php8.2-fpm
 
 <div align="center">
 
-**Made with ❤️ by developers, for developers**
+**Made with ❤️ by [NileStack](https://nilestack.duckdns.org)**
 
 [Get Started](#quick-start-5-minutes) • [Documentation](#documentation) • [Support](#support)
+
+---
+
+**© 2025 NileStack. All rights reserved.**
 
 </div>

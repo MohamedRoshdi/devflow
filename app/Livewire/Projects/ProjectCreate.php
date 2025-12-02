@@ -7,16 +7,28 @@ use App\Models\Project;
 use App\Models\Server;
 use App\Models\Domain;
 use App\Models\ProjectTemplate;
+use App\Models\UserSettings;
 use App\Services\ServerConnectivityService;
+use App\Services\ProjectSetupService;
+use App\Jobs\ProcessProjectSetupJob;
 use Illuminate\Support\Str;
 
 class ProjectCreate extends Component
 {
+    // Wizard state
+    public int $currentStep = 1;
+    public int $totalSteps = 4;
+    public bool $showProgressModal = false;
+    public ?int $createdProjectId = null;
+
+    // Step 1: Basic Info
     public $name = '';
     public $slug = '';
     public $server_id = '';
     public $repository_url = '';
     public $branch = 'main';
+
+    // Step 2: Framework & Build
     public $framework = '';
     public $php_version = '8.3';
     public $node_version = '20';
@@ -26,6 +38,14 @@ class ProjectCreate extends Component
     public $auto_deploy = false;
     public $latitude = null;
     public $longitude = null;
+
+    // Step 3: Setup Options (feature toggles)
+    public bool $enableSsl = true;
+    public bool $enableWebhooks = true;
+    public bool $enableHealthChecks = true;
+    public bool $enableBackups = true;
+    public bool $enableNotifications = true;
+    public bool $enableAutoDeploy = false;
 
     // Template fields
     public $selectedTemplateId = null;
@@ -43,6 +63,74 @@ class ProjectCreate extends Component
             ->get();
 
         $this->templates = ProjectTemplate::active()->get();
+
+        // Load user's default settings for setup options
+        if (auth()->check()) {
+            $settings = auth()->user()->getSettings();
+            $this->enableSsl = $settings->default_enable_ssl;
+            $this->enableWebhooks = $settings->default_enable_webhooks;
+            $this->enableHealthChecks = $settings->default_enable_health_checks;
+            $this->enableBackups = $settings->default_enable_backups;
+            $this->enableNotifications = $settings->default_enable_notifications;
+            $this->enableAutoDeploy = $settings->default_enable_auto_deploy;
+        }
+    }
+
+    // Wizard navigation methods
+    public function nextStep(): void
+    {
+        $this->validateCurrentStep();
+
+        if ($this->currentStep < $this->totalSteps) {
+            $this->currentStep++;
+        }
+    }
+
+    public function previousStep(): void
+    {
+        if ($this->currentStep > 1) {
+            $this->currentStep--;
+        }
+    }
+
+    public function goToStep(int $step): void
+    {
+        if ($step >= 1 && $step <= $this->totalSteps && $step <= $this->currentStep) {
+            $this->currentStep = $step;
+        }
+    }
+
+    protected function validateCurrentStep(): void
+    {
+        match ($this->currentStep) {
+            1 => $this->validateStep1(),
+            2 => $this->validateStep2(),
+            3 => true, // Step 3 has no required fields
+            default => true,
+        };
+    }
+
+    protected function validateStep1(): void
+    {
+        $this->validate([
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:projects,slug,NULL,id,deleted_at,NULL',
+            'server_id' => 'required|exists:servers,id',
+            'repository_url' => ['required', 'regex:/^(https?:\/\/|git@)[\w\-\.]+[\/:][\w\-\.]+\/[\w\-\.]+\.git$/'],
+            'branch' => 'required|string|max:255',
+        ]);
+    }
+
+    protected function validateStep2(): void
+    {
+        $this->validate([
+            'framework' => 'nullable|string|max:255',
+            'php_version' => 'nullable|string|max:255',
+            'node_version' => 'nullable|string|max:255',
+            'root_directory' => 'required|string|max:255',
+            'build_command' => 'nullable|string',
+            'start_command' => 'nullable|string',
+        ]);
     }
 
     public function selectTemplate($templateId)
@@ -128,6 +216,16 @@ class ProjectCreate extends Component
         // Find next available port
         $port = $this->getNextAvailablePort();
 
+        // Build setup config
+        $setupConfig = [
+            'ssl' => $this->enableSsl,
+            'webhook' => $this->enableWebhooks,
+            'health_check' => $this->enableHealthChecks,
+            'backup' => $this->enableBackups,
+            'notifications' => $this->enableNotifications,
+            'deployment' => $this->enableAutoDeploy,
+        ];
+
         $project = Project::create([
             'user_id' => auth()->id(),
             'server_id' => $this->server_id,
@@ -147,6 +245,8 @@ class ProjectCreate extends Component
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'status' => 'stopped',
+            'setup_status' => 'pending',
+            'setup_config' => $setupConfig,
             'install_commands' => $this->install_commands,
             'build_commands' => $this->build_commands,
             'post_deploy_commands' => $this->post_deploy_commands,
@@ -155,10 +255,40 @@ class ProjectCreate extends Component
         // Auto-create subdomain for the project
         $this->createDefaultDomain($project, $port);
 
+        // Initialize and run project setup
+        $hasAnySetup = array_filter($setupConfig);
+        if (!empty($hasAnySetup)) {
+            app(ProjectSetupService::class)->initializeSetup($project, $setupConfig);
+            ProcessProjectSetupJob::dispatch($project);
+        }
+
+        $this->createdProjectId = $project->id;
+        $this->showProgressModal = true;
+
         $this->dispatch('project-created');
 
-        return redirect()->route('projects.show', $project)
-            ->with('message', 'Project created successfully on port ' . $port . '!');
+        // Don't redirect immediately - show progress modal
+        session()->flash('message', 'Project created successfully on port ' . $port . '!');
+    }
+
+    public function closeProgressAndRedirect(): void
+    {
+        $this->showProgressModal = false;
+        $this->redirect(route('projects.show', $this->createdProjectId), navigate: true);
+    }
+
+    public function getSetupProgressProperty(): array
+    {
+        if (!$this->createdProjectId) {
+            return [];
+        }
+
+        $project = Project::with('setupTasks')->find($this->createdProjectId);
+        if (!$project) {
+            return [];
+        }
+
+        return app(ProjectSetupService::class)->getSetupProgress($project);
     }
 
     /**

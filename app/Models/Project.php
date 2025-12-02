@@ -33,6 +33,9 @@ class Project extends Model
         'post_deploy_commands',
         'env_variables',
         'status',
+        'setup_status',
+        'setup_config',
+        'setup_completed_at',
         'health_check_url',
         'last_deployed_at',
         'storage_used_mb',
@@ -55,10 +58,12 @@ class Project extends Model
             'install_commands' => 'array',
             'build_commands' => 'array',
             'post_deploy_commands' => 'array',
+            'setup_config' => 'array',
             'auto_deploy' => 'boolean',
             'webhook_enabled' => 'boolean',
             'last_deployed_at' => 'datetime',
             'last_commit_at' => 'datetime',
+            'setup_completed_at' => 'datetime',
             'storage_used_mb' => 'integer',
             'latitude' => 'decimal:8',
             'longitude' => 'decimal:8',
@@ -132,6 +137,41 @@ class Project extends Model
     public function backupSchedules()
     {
         return $this->hasMany(BackupSchedule::class);
+    }
+
+    public function setupTasks()
+    {
+        return $this->hasMany(ProjectSetupTask::class);
+    }
+
+    // Setup status helpers
+    public function isSetupPending(): bool
+    {
+        return $this->setup_status === 'pending';
+    }
+
+    public function isSetupInProgress(): bool
+    {
+        return $this->setup_status === 'in_progress';
+    }
+
+    public function isSetupCompleted(): bool
+    {
+        return $this->setup_status === 'completed';
+    }
+
+    public function isSetupFailed(): bool
+    {
+        return $this->setup_status === 'failed';
+    }
+
+    public function getSetupProgressAttribute(): int
+    {
+        $tasks = $this->setupTasks;
+        if ($tasks->isEmpty()) {
+            return 0;
+        }
+        return (int) round($tasks->avg('progress'));
     }
 
     // Webhook methods

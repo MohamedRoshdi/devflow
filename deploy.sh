@@ -109,6 +109,12 @@ if ! grep -q "QUEUE_CONNECTION=database" .env 2>/dev/null; then
     echo "✅ Queue driver set to database"
 fi
 
+# Ensure production environment settings
+echo "🔒 Enforcing production environment settings..."
+sed -i 's/APP_ENV=.*/APP_ENV=production/' .env
+sed -i 's/APP_DEBUG=.*/APP_DEBUG=false/' .env
+echo "✅ Production environment configured"
+
 # Set permissions
 echo "🔐 Setting permissions..."
 chown -R www-data:www-data $REMOTE_PATH
@@ -133,11 +139,23 @@ php artisan migrate --force
 echo "📦 Publishing Livewire assets..."
 php artisan livewire:publish --assets
 
+# Clear all caches first
+echo "🧹 Clearing existing caches..."
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+
 # Optimize Laravel
 echo "⚡ Optimizing Laravel..."
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
+
+# Fix public directory permissions
+echo "🔐 Setting public directory permissions..."
+chown -R www-data:www-data public/
+chmod -R 755 public/
 
 # Install supervisor if not present
 echo "📦 Checking supervisor installation..."

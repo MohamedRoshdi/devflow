@@ -5,13 +5,16 @@
             <div class="flex h-20 items-center justify-between rounded-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl shadow-sm shadow-blue-500/5 mt-6 px-6">
                 <div class="flex items-center space-x-3">
                     <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 shadow-lg shadow-blue-500/30">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12h4l3-3 4 6 3-3h4"></path>
                         </svg>
                     </div>
                     <div>
-                        <p class="text-lg font-semibold text-gray-900 dark:text-white">DevFlow Pro</p>
-                        <p class="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">Deployment Management System</p>
+                        <p class="text-lg font-bold text-gray-900 dark:text-white">NileStack</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            <span class="font-medium text-blue-600 dark:text-blue-400">DevFlow Pro</span> Platform
+                        </p>
                     </div>
                 </div>
 
@@ -204,14 +207,15 @@
                 <div class="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                     @foreach($projects as $project)
                         @php
-                            $server = optional($project->server);
-                            $fallbackHost = $server->ip_address ?? $server->ip ?? null;
+                            // Security: Only use domain, never expose server IPs or internal infrastructure
                             $url = $project->domain
-                                ? (str_starts_with($project->domain, 'http') ? $project->domain : 'http://' . $project->domain)
-                                : ($fallbackHost ? 'http://' . $fallbackHost . ($project->port ? ':' . $project->port : '') : '#');
+                                ? (str_starts_with($project->domain, 'http')
+                                    ? preg_replace('/^http:/', 'https:', $project->domain)
+                                    : 'https://' . $project->domain)
+                                : null;
                         @endphp
 
-                        <a href="{{ $url !== '#' ? $url : 'javascript:void(0)' }}" @if($url !== '#') target="_blank" @endif class="group relative flex flex-col rounded-3xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-8 shadow-xl shadow-slate-200/50 transition hover:-translate-y-1 hover:shadow-2xl dark:border-slate-800 dark:from-slate-900 dark:to-slate-950 dark:shadow-none">
+                        <a href="{{ $url ?? 'javascript:void(0)' }}" @if($url) target="_blank" rel="noopener noreferrer" @endif class="group relative flex flex-col rounded-3xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-8 shadow-xl shadow-slate-200/50 transition hover:-translate-y-1 hover:shadow-2xl dark:border-slate-800 dark:from-slate-900 dark:to-slate-950 dark:shadow-none">
                             <div class="flex items-center justify-between">
                                 <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600/10 text-blue-700 dark:bg-blue-500/20 dark:text-blue-200">
                                     @if($project->framework === 'Laravel')
@@ -248,12 +252,14 @@
                                         <span class="truncate">{{ $project->domain }}</span>
                                     </div>
                                 @endif
-                                <div class="flex items-center gap-2">
-                                    <svg class="h-4 w-4 text-purple-500 dark:text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
-                                    </svg>
-                                    <span>{{ optional($project->server)->name ?? 'Server pending' }}</span>
-                                </div>
+                                @if($project->php_version)
+                                    <div class="flex items-center gap-2">
+                                        <svg class="h-4 w-4 text-purple-500 dark:text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                                        </svg>
+                                        <span>PHP {{ $project->php_version }}</span>
+                                    </div>
+                                @endif
                                 @if($project->environment)
                                     <div class="flex items-center gap-2">
                                         <svg class="h-4 w-4 text-emerald-500 dark:text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -373,11 +379,39 @@
 
     <!-- Footer -->
     <footer class="border-t border-slate-200 bg-white py-12 dark:border-slate-800 dark:bg-slate-900">
-        <div class="mx-auto flex w-full max-w-[1560px] flex-col items-center justify-between gap-4 px-6 md:px-10 lg:px-16 text-center text-sm text-slate-600 dark:text-slate-400 md:flex-row md:text-left">
-            <p>
-                Powered by <span class="font-semibold text-slate-900 dark:text-white">DevFlow Pro</span> — Professional Deployment Management
-            </p>
-            <p>© {{ date('Y') }} All rights reserved.</p>
+        <div class="mx-auto w-full max-w-[1560px] px-6 md:px-10 lg:px-16">
+            <div class="flex flex-col items-center justify-between gap-6 md:flex-row">
+                <!-- NileStack Branding -->
+                <div class="flex items-center space-x-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12h4l3-3 4 6 3-3h4"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-slate-900 dark:text-white">NileStack</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Professional Software Development</p>
+                    </div>
+                </div>
+
+                <!-- Platform Attribution -->
+                <div class="text-center">
+                    <p class="text-sm text-slate-600 dark:text-slate-400">
+                        Powered by <span class="font-semibold text-blue-600 dark:text-blue-400">DevFlow Pro</span>
+                    </p>
+                    <p class="text-xs text-slate-500 dark:text-slate-500 mt-1">
+                        Multi-Project Deployment & Management
+                    </p>
+                </div>
+
+                <!-- Copyright -->
+                <div class="flex flex-col items-center md:items-end gap-2">
+                    <p class="text-xs text-slate-500 dark:text-slate-500">
+                        &copy; {{ date('Y') }} NileStack. All rights reserved.
+                    </p>
+                </div>
+            </div>
         </div>
     </footer>
 </div>

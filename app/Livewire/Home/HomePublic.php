@@ -11,9 +11,11 @@ class HomePublic extends Component
 
     public function mount()
     {
-        // Get all running projects with their servers
-        $this->projects = Project::with('server')
+        // Get all running projects with domains only (security: no internal infrastructure exposed)
+        $this->projects = Project::query()
             ->where('status', 'running')
+            ->whereNotNull('domain')
+            ->where('domain', '!=', '')
             ->orderBy('name')
             ->get();
     }

@@ -1,7 +1,7 @@
 # DevFlow Pro - Complete Documentation
 
-**Version:** 3.1.2
-**Last Updated:** November 29, 2025
+**Version:** 3.2.0
+**Last Updated:** December 2, 2025
 
 This is the comprehensive documentation combining user guides, deployment instructions, features overview, and troubleshooting.
 
@@ -25,11 +25,16 @@ This is the comprehensive documentation combining user guides, deployment instru
    - [GitHub Integration](#github-integration)
    - [Team Collaboration](#team-collaboration)
    - [API v1](#api-v1)
-9. [v3.1 Features](#v31-features) ⭐ NEW
+9. [v3.1 Features](#v31-features)
    - [Server Security Management](#server-security-management)
-10. [Troubleshooting](#troubleshooting)
-11. [API Reference](#api-reference)
-12. [Best Practices](#best-practices)
+10. [v3.2 Features](#v32-features) ⭐ NEW
+    - [Project Auto-Setup](#project-auto-setup)
+    - [Project Creation Wizard](#project-creation-wizard)
+    - [Enhanced Dashboard](#enhanced-dashboard)
+    - [Feature Toggles](#feature-toggles)
+11. [Troubleshooting](#troubleshooting)
+12. [API Reference](#api-reference)
+13. [Best Practices](#best-practices)
 
 ---
 
@@ -41,11 +46,11 @@ This is the comprehensive documentation combining user guides, deployment instru
 
 1. **Access Your Installation:**
    ```
-   Main Hub: http://nilestack.duckdns.org
-   Admin Panel: http://admin.nilestack.duckdns.org
-   Workspace Pro: http://workspace.nilestack.duckdns.org
-   ATS Pro: http://ats.nilestack.duckdns.org
-   Direct IP: http://31.220.90.121
+   Main Hub: https://nilestack.duckdns.org
+   Admin Panel: https://admin.nilestack.duckdns.org
+   Workspace Pro: https://workspace.nilestack.duckdns.org
+   ATS Pro: https://ats.nilestack.duckdns.org
+   Direct IP: https://31.220.90.121
    ```
 
 2. **Create Admin User:**
@@ -164,9 +169,9 @@ php artisan tinker
 ... ]);
 
 # Access application
-Portfolio: http://nilestack.duckdns.org
-Admin Panel: http://admin.nilestack.duckdns.org
-Direct IP: http://31.220.90.121
+Portfolio: https://nilestack.duckdns.org
+Admin Panel: https://admin.nilestack.duckdns.org
+Direct IP: https://31.220.90.121
 ```
 
 ---
@@ -1030,6 +1035,274 @@ All security actions are logged:
 
 ---
 
+## 🆕 v3.2 Features
+
+DevFlow Pro v3.2 introduces an enhanced project creation experience, auto-setup capabilities, and a redesigned dashboard.
+
+### 🚀 Project Auto-Setup
+
+**Overview:**
+Automatically configure SSL, webhooks, health checks, backups, and notifications when creating a new project.
+
+**Auto-Setup Features:**
+
+**SSL Certificate Provisioning:**
+- Automatic Let's Encrypt certificate generation
+- Auto-renewal setup before expiration
+- HTTPS redirection configuration
+- Multi-domain/subdomain support
+
+**Webhook Configuration:**
+- GitHub webhook auto-setup
+- GitLab webhook auto-setup
+- Automatic secret generation
+- Branch filtering configuration
+- Deployment trigger on push
+
+**Health Check Setup:**
+- Default health check endpoint configuration
+- Configurable check intervals (30s, 60s, 5m, 10m)
+- Email notification setup
+- Check type selection (HTTP, TCP, Ping, SSL)
+
+**Backup Scheduling:**
+- Automatic database backup configuration
+- Daily/weekly/monthly schedule options
+- Retention policy setup (7, 30, 90 days)
+- S3 cloud storage configuration
+- Automated backup cleanup
+
+**Notification Setup:**
+- Email channel configuration
+- Optional Slack/Discord setup
+- Notification template selection
+- Event filtering (deployment, health, alerts)
+
+**How to Enable Auto-Setup:**
+1. During project creation, reach Step 4 (Auto-Setup Options)
+2. Toggle desired features on
+3. Configure initial settings if needed
+4. Complete wizard - auto-setup runs automatically
+5. View configured features in Project Settings → Setup Summary
+
+---
+
+### 🧙 Project Creation Wizard
+
+**Overview:**
+Guided 4-step workflow for creating and configuring new projects with validation and helpful tips.
+
+**Wizard Steps:**
+
+**Step 1: Project Details**
+- Project name (required)
+- Auto-generated slug (can edit)
+- Framework selection (Laravel, Node.js, React, Vue, Next.js, Static, etc.)
+- Repository URL (HTTPS or SSH)
+- Branch (default: main)
+
+**Step 2: Environment Configuration**
+- Application environment (Local/Development/Staging/Production)
+- Database connection details
+  - Host (default: 172.17.0.1 for Docker)
+  - Database name
+  - Username and password
+- Redis configuration (optional)
+- Custom environment variables
+
+**Step 3: Deployment Settings**
+- Deployment branch confirmation
+- Build commands (npm install, npm run build, etc.)
+- Install commands (composer install, etc.)
+- Health check URL (auto-detected or custom)
+- Health check interval
+
+**Step 4: Auto-Setup Options**
+- SSL certificate provisioning toggle
+- Webhook auto-setup toggle
+- Health check configuration toggle
+- Backup scheduling toggle
+- Notification setup toggle
+- Review and confirm selections
+
+**Wizard Features:**
+- Visual progress bar showing current step
+- Step validation (can't proceed with missing required fields)
+- Back/Next navigation buttons
+- Summary preview before creation
+- Helpful tooltips on each field
+- Can skip auto-setup and configure manually later
+- Saves draft if user navigates away (recovers on return)
+
+**Using the Wizard:**
+```
+1. Click "Create Project" in Projects menu
+2. Follow 4 steps with guidance
+3. Validate entries as you go
+4. Preview configuration in final step
+5. Click "Create Project"
+6. Auto-setup runs (visible in progress)
+7. Project created with full configuration
+```
+
+---
+
+### 📊 Enhanced Dashboard
+
+**Overview:**
+Redesigned dashboard with 6 stat cards, quick actions, and activity feed for better at-a-glance insights.
+
+**Dashboard Components:**
+
+**Stat Cards (6 Total):**
+
+1. **Total Projects**
+   - Shows project count
+   - Green/Red trend indicator (↑ new, ↓ removed)
+   - Click to view all projects
+
+2. **Active Deployments**
+   - Real-time deployment count
+   - Active status indicator
+   - Link to deployment queue
+
+3. **Server Health Score**
+   - Overall health 0-100 scale
+   - Color coded: Green (80+), Yellow (50-79), Red (<50)
+   - Click for detailed health breakdown
+
+4. **Uptime Percentage**
+   - Combined uptime across all projects
+   - Last 24h/7d/30d selector
+   - Downtime incidents listed
+
+5. **Last 24h Deployments**
+   - Success/Failed deployment ratio
+   - Visual progress bar
+   - Click for deployment history
+
+6. **System Alerts**
+   - Critical alert count (red)
+   - Warning count (yellow)
+   - Click to view alert details
+
+**Quick Actions Panel:**
+- **+ Create New Project** - New project button with wizard shortcut
+- **Deploy Latest Update** - Quick action for projects with pending updates
+- **View Health Dashboard** - Direct link if critical alerts exist
+- **View Activity Feed** - Link to detailed activity log
+
+**Activity Feed:**
+- Recent deployments (last 10)
+  - Project name and status
+  - Deployed commit info
+  - Duration and timestamp
+- System events
+  - Server added/removed
+  - SSL certificate expiring soon
+  - Backup completed
+- Team member activities
+  - User logged in
+  - Project created
+  - Settings modified
+- Each item timestamped with "X minutes ago" format
+
+**Dashboard Features:**
+- Real-time updates (refreshes every 30 seconds)
+- Responsive grid layout (1 col mobile, 2 col tablet, 3 col desktop)
+- Dark mode support
+- Customizable stat cards visibility
+- Activity feed pagination
+- Filter activity by type (deployments, system, team)
+- Export dashboard data as CSV
+
+---
+
+### 🎛️ Feature Toggles System
+
+**Overview:**
+Customizable feature availability at user, project, and system levels for flexible feature management.
+
+**Three-Level Toggle System:**
+
+**User Preferences (Per-User Settings):**
+```
+Settings → Preferences → Feature Toggles
+```
+- **Advanced Metrics** - Show CPU/Memory graphs and detailed stats
+- **Real-time Notifications** - Enable/disable Livewire push notifications
+- **Dark Mode** - Persistent dark mode preference
+- **Auto-refresh** - Enable automatic page refresh (customizable interval)
+- **Show Tips & Tutorials** - Display contextual help and onboarding
+
+**Per-Project Settings:**
+```
+Project Page → Settings → Feature Toggles
+```
+- **Auto-Deploy Enabled** - Allow webhook auto-deployments
+- **Webhook Processing** - Process GitHub/GitLab webhooks
+- **Health Checks Active** - Run automated health checks
+- **Monitoring & Alerts** - Send system alerts and notifications
+- **Backup Scheduling** - Automated backup execution
+- **SSL Auto-Renewal** - Automatic certificate renewal
+
+**Admin Global Settings:**
+```
+Settings → Admin → Feature Flags
+```
+- **Enable New Features** - Turn features on/off globally
+- **Beta Features** - Enable experimental features
+- **Feature Rollout** - Gradual rollout to percentage of users
+- **Deprecation Notices** - Show notices for deprecated features
+- **Feature Documentation** - Link to feature docs
+
+**Feature Toggle Benefits:**
+- Users can customize their experience
+- Projects can disable unwanted automation
+- Admins can gradually roll out new features
+- Beta features tested safely before full release
+- Deprecated features can be phased out
+- Performance optimization (disable unused features)
+
+**Managing Toggles:**
+
+**User Level:**
+```
+1. Go to Settings
+2. Click "Preferences"
+3. Scroll to "Feature Toggles"
+4. Toggle features on/off
+5. Changes apply immediately
+```
+
+**Project Level:**
+```
+1. Open project page
+2. Click "Settings"
+3. Scroll to "Feature Toggles"
+4. Toggle per-project features
+5. Restart project for deployment-related changes
+```
+
+**Admin Level:**
+```
+1. Go to Settings
+2. Click "Admin" (admin users only)
+3. Click "Feature Flags"
+4. Enable/disable features
+5. Configure rollout percentage if applicable
+6. Save changes
+```
+
+**Example Use Cases:**
+- Disable real-time notifications for low-bandwidth users
+- Turn off monitoring for development projects
+- Enable beta features for specific teams
+- Gradually roll out new deployment system to 50% of users
+- Disable auto-deploy for critical production projects
+
+---
+
 ## 🐛 Troubleshooting
 
 ### Critical Issues & Quick Fixes
@@ -1088,6 +1361,63 @@ mysql -e "GRANT ALL PRIVILEGES ON devflow_pro.* TO 'devflow'@'172.17.%';"
 - Hard refresh: `Ctrl + Shift + R` (Windows/Linux)
 - Or: `Cmd + Shift + R` (Mac)
 - Or: Test in incognito window
+
+#### ❌ Mobile Styles Not Loading (Mixed Content)
+
+**Symptoms:** CSS/JS not loading on mobile, "Mixed Content" errors in browser console
+**Cause:** `APP_URL` is `http://` but site served over HTTPS. Mobile browsers block mixed content.
+**Fix:**
+
+1. **Update APP_URL to HTTPS:**
+   ```bash
+   # In .env file
+   APP_URL=https://your-domain.com
+   ```
+
+2. **Add TrustProxies Middleware (Laravel 11+):**
+   ```php
+   // bootstrap/app.php
+   ->withMiddleware(function (Middleware $middleware): void {
+       $middleware->trustProxies(at: '*');
+       // ... other middleware
+   })
+   ```
+
+3. **Clear and rebuild config cache:**
+   ```bash
+   php artisan config:clear
+   php artisan config:cache
+   ```
+
+4. **For Docker apps - rebuild cache INSIDE the container:**
+   ```bash
+   docker exec your-container php artisan config:cache
+   ```
+
+5. **Force HTTP to HTTPS redirect in Nginx:**
+   ```nginx
+   server {
+       listen 80;
+       server_name your-domain.com;
+       return 301 https://$server_name$request_uri;
+   }
+   ```
+
+#### ❌ Docker Config Cache Shows Wrong Paths
+
+**Symptoms:** 500 error mentioning wrong storage path (e.g., `/var/www/project-name/storage/` instead of `/var/www/storage/`)
+**Cause:** Config was cached on host with host paths, but container has different paths
+**Fix:**
+
+```bash
+# WRONG - caching from host
+php artisan config:cache
+
+# CORRECT - cache inside container
+docker exec your-container php artisan config:cache
+```
+
+**Important Rule:** Always run `php artisan config:cache` **inside the Docker container**, not on the host.
 
 ### Common Issues
 

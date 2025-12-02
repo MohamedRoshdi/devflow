@@ -89,6 +89,19 @@ class User extends Authenticatable
         return $this->hasMany(TeamInvitation::class, 'invited_by');
     }
 
+    public function settings()
+    {
+        return $this->hasOne(UserSettings::class);
+    }
+
+    /**
+     * Get user settings or create default ones
+     */
+    public function getSettings(): UserSettings
+    {
+        return UserSettings::getForUser($this);
+    }
+
     // Helper method for avatar URL
     public function getAvatarUrlAttribute(): string
     {

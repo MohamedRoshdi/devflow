@@ -5,7 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ $title ?? config('app.name') }}</title>
+    <title>{{ $title ?? 'NileStack - DevFlow Pro Platform' }}</title>
+    <meta name="title" content="{{ $title ?? 'NileStack - DevFlow Pro Platform' }}">
+    <meta name="description" content="Professional multi-project deployment and management platform. Automated DevOps, CI/CD pipelines, and infrastructure management by NileStack.">
+    <meta name="author" content="NileStack">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="{{ $title ?? 'NileStack - DevFlow Pro Platform' }}">
+    <meta property="og:description" content="Professional multi-project deployment and management platform by NileStack.">
+    <meta property="og:site_name" content="NileStack">
+    <meta name="theme-color" content="#2563eb">
 
     <script>
         const theme = localStorage.getItem('theme') || 'light';

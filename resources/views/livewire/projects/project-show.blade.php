@@ -96,10 +96,19 @@
                             @endif
                         </div>
 
-                        @if($project->status === 'running' && $project->port && $project->server)
+                        @if($project->status === 'running')
                             @php
-                                $url = 'http://' . $project->server->ip_address . ':' . $project->port;
+                                $primaryDomain = $project->domains->where('is_primary', true)->first();
+                                if ($primaryDomain) {
+                                    $protocol = $primaryDomain->ssl_enabled ? 'https://' : 'http://';
+                                    $url = $protocol . $primaryDomain->domain;
+                                } elseif ($project->port && $project->server) {
+                                    $url = 'http://' . $project->server->ip_address . ':' . $project->port;
+                                } else {
+                                    $url = null;
+                                }
                             @endphp
+                            @if($url)
                             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white/10 border border-white/10 rounded-2xl px-4 py-3">
                                 <div class="flex items-center gap-3">
                                     <span class="w-2.5 h-2.5 rounded-full bg-emerald-300 animate-pulse"></span>
@@ -119,6 +128,7 @@
                                     Copy URL
                                 </button>
                             </div>
+                            @endif
                         @endif
                     </div>
 

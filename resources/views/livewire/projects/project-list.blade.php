@@ -114,10 +114,19 @@
                         </div>
 
                         <!-- Access URL for running projects -->
-                        @if($project->status === 'running' && $project->port && $project->server)
+                        @if($project->status === 'running')
                             @php
-                                $url = 'http://' . $project->server->ip_address . ':' . $project->port;
+                                $primaryDomain = $project->domains->where('is_primary', true)->first();
+                                if ($primaryDomain) {
+                                    $protocol = $primaryDomain->ssl_enabled ? 'https://' : 'http://';
+                                    $url = $protocol . $primaryDomain->domain;
+                                } elseif ($project->port && $project->server) {
+                                    $url = 'http://' . $project->server->ip_address . ':' . $project->port;
+                                } else {
+                                    $url = null;
+                                }
                             @endphp
+                            @if($url)
                             <div class="mb-3 p-3 bg-gradient-to-br from-green-500/10 to-emerald-500/10 dark:from-green-500/20 dark:to-emerald-500/20 border border-green-200 dark:border-green-700 rounded-lg backdrop-blur-sm">
                                 <p class="text-xs text-green-700 dark:text-green-400 font-medium mb-1">🚀 Live at:</p>
                                 <a href="{{ $url }}" target="_blank"
@@ -129,6 +138,7 @@
                                     </svg>
                                 </a>
                             </div>
+                            @endif
                         @endif
 
                         <div class="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700">

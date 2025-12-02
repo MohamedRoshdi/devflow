@@ -108,6 +108,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings/github', GitHubSettings::class)->name('settings.github');
     Route::get('/settings/api-tokens', \App\Livewire\Settings\ApiTokenManager::class)->name('settings.api-tokens');
     Route::get('/settings/queue-monitor', \App\Livewire\Settings\QueueMonitor::class)->name('settings.queue-monitor');
+    Route::get('/settings/preferences', \App\Livewire\Settings\DefaultSetupPreferences::class)->name('settings.preferences');
 
     // API Documentation
     Route::get('/docs/api', \App\Livewire\Docs\ApiDocumentation::class)->name('docs.api');

@@ -7,6 +7,212 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.3.0] - 2025-12-02
+
+### Added ✨
+
+- **🏢 NileStack Branding** - Company branding throughout the platform
+  - NileStack logo in navigation header with gradient icon
+  - Company attribution in footer with "Powered by DevFlow Pro"
+  - Updated meta tags (og:site_name, author, theme-color)
+  - Professional branding for public-facing pages
+
+- **📊 Complete Dashboard Redesign** - Modern dashboard with comprehensive metrics
+  - 8 Stat Cards (expanded from 6):
+    1. Total Servers (with online/offline breakdown)
+    2. Total Projects (with running count)
+    3. Active Deployments (real-time with pulse indicator)
+    4. SSL Certificates (expiring soon warnings)
+    5. Health Checks (healthy/down counts)
+    6. Queue Jobs (pending/failed stats)
+    7. Deployments Today (success/failed ratio)
+    8. Security Score (average across servers)
+  - Quick Actions Panel with 7 action buttons:
+    - New Project, Add Server, Deploy All
+    - Clear Caches, View Logs, Health Checks, Settings
+  - Real-time Activity Feed with timeline layout
+  - Server Health Summary with CPU/Memory/Disk progress bars
+  - Collapsible sections with user preferences
+  - Auto-refresh with `wire:poll.30s`
+
+### Security 🔒
+
+- **CRITICAL: Public Home Page Security Fixes**
+  - Removed server IP address exposure from public portfolio
+  - Removed port numbers from public URLs
+  - Removed server names from public display
+  - All external links now use HTTPS only
+  - Projects without domains are hidden from public view
+  - Added `rel="noopener noreferrer"` to all external links
+
+### Changed 🔄
+
+- **Home Page** - Now shows only projects with configured domains
+  - URL construction uses HTTPS only (no HTTP fallback)
+  - PHP version shown instead of server name
+  - Projects without domain configurations are excluded
+
+- **Design Consistency** - Unified styling across all pages
+  - Team List page now uses gradient hero header
+  - Upgraded cards from shadow-sm to shadow-xl
+  - Upgraded borders from rounded-lg to rounded-2xl
+  - Consistent hover effects with scale and shadow transitions
+
+### Improved 💪
+
+- Dashboard information density and visual hierarchy
+- Better security posture for public-facing pages
+- Professional company branding throughout
+- Mobile responsiveness on dashboard
+- Dark mode support on all new components
+
+### Technical
+
+- New Dashboard properties: `$showQuickActions`, `$showActivityFeed`, `$showServerHealth`, `$queueStats`, `$overallSecurityScore`, `$collapsedSections`, `$activeDeployments`
+- New Dashboard methods: `loadQueueStats()`, `loadSecurityScore()`, `loadActiveDeployments()`, `toggleSection()`, `refreshDashboard()`, `clearAllCaches()`
+- HomePublic now filters projects: `->whereNotNull('domain')->where('domain', '!=', '')`
+- Secure URL construction with HTTPS enforcement
+
+---
+
+## [3.2.0] - 2025-12-02
+
+### Added ✨
+
+- **🚀 Project Auto-Setup** - Automatic configuration on project creation
+  - SSL certificate provisioning (Let's Encrypt integration)
+  - Webhook setup for GitHub/GitLab auto-deployment
+  - Health check configuration with default endpoints
+  - Backup scheduling with retention policies
+  - Notification channel setup with email defaults
+  - One-click setup from project creation wizard
+
+- **🧙 Project Creation Wizard** - 4-step guided project setup
+  - Step 1: Project Details (Name, slug, framework, repository)
+  - Step 2: Environment Configuration (APP_ENV, database, redis)
+  - Step 3: Deployment Settings (Branch, build commands, health checks)
+  - Step 4: Auto-Setup Options (SSL, webhooks, backups, notifications)
+  - Visual progress indicator with step validation
+  - Can skip auto-setup steps and configure manually later
+  - Helpful tooltips and field descriptions
+
+- **📊 Enhanced Dashboard** - New v3.2 dashboard layout
+  - 6 Stat Cards:
+    1. Total Projects (with trend indicator)
+    2. Active Deployments (real-time count)
+    3. Server Health Score (0-100 with color coding)
+    4. Uptime Percentage (across all projects)
+    5. Last 24h Deployments (success/failed ratio)
+    6. System Alerts (critical/warning count)
+  - Quick Actions Panel:
+    - Create New Project (button)
+    - Deploy Latest Update (for subscribed projects)
+    - View Health Dashboard (for critical alerts)
+  - Activity Feed showing:
+    - Recent deployments (last 10)
+    - System events and alerts
+    - Team member activities
+    - Deployment status with timestamps
+  - Responsive grid layout for all screen sizes
+
+- **🎛️ Feature Toggles System** - Customizable feature availability
+  - User Preferences (per-user toggles):
+    - Show advanced metrics on dashboard
+    - Enable real-time notifications
+    - Dark mode persistence
+    - Auto-refresh intervals
+    - Show deployment tips and tutorials
+  - Per-Project Settings:
+    - Enable/disable auto-deployments
+    - Toggle webhook processing
+    - Enable/disable health checks
+    - Toggle monitoring and alerts
+    - Backup scheduling on/off
+  - Admin Global Settings:
+    - Enable/disable new features per system
+    - Feature flag management
+    - Gradual rollout configuration
+    - Beta feature opt-in
+
+### Changed 🔄
+
+- **Project Creation Flow** - Now uses new 4-step wizard instead of single form
+- **Dashboard Layout** - Complete redesign with stats cards and activity feed
+- **Settings UI** - New toggle-based feature management interface
+
+### Improved 💪
+
+- User onboarding with guided project setup
+- Dashboard information density and visual hierarchy
+- Customization options for different user preferences
+- System performance with feature flag optimization
+
+### Technical
+
+- New `ProjectCreationWizard` Livewire component (4 steps)
+- New `Dashboard\EnhancedDashboard` component with stats and feed
+- New `FeatureToggle` model for managing features
+- New database migrations:
+  - `create_feature_toggles_table`
+  - `add_feature_toggles_to_users_table`
+  - `add_feature_toggles_to_projects_table`
+- New traits: `FeatureToggleable` for models
+- Service layer: `ProjectAutoSetupService` for automation
+
+---
+
+## [3.1.5] - 2025-11-29
+
+### Fixed
+- **Mobile Styles Not Loading (Mixed Content)** - CSS/JS assets blocked on mobile browsers
+  - Root cause: `APP_URL` set to `http://` while sites served over HTTPS
+  - Mobile browsers strictly block mixed content (HTTPS page loading HTTP assets)
+  - Fixed across all three sites: DevFlow Pro, ATS Pro, Portfolio
+
+- **TrustProxies Middleware** - Laravel 12 apps behind nginx proxy now correctly detect HTTPS
+  - Added `$middleware->trustProxies(at: '*')` to `bootstrap/app.php`
+  - Required for apps behind reverse proxy to honor `X-Forwarded-Proto` header
+  - Applied to Portfolio and ATS Pro
+
+- **Docker Config Cache Path Mismatch** - ATS Pro 500 error on storage/framework/views
+  - Config was cached on host (paths: `/var/www/ats-pro/...`)
+  - Container expected paths: `/var/www/...`
+  - Fixed by rebuilding config cache inside container, not on host
+
+- **ATS Pro Storage Permissions** - Fixed UID mismatch between host and container
+  - Container runs as UID 1000, files were owned by www-data (different UID)
+  - Changed ownership to `1000:1000` for container compatibility
+
+### Changed
+- **Nginx HTTP to HTTPS Redirect** - All sites now force HTTPS
+  - Port 80 returns 301 redirect to HTTPS
+  - Prevents accidental HTTP access causing mixed content
+
+- **docker-compose.yml (Portfolio)** - Updated `APP_URL` from `https://nilestack.com` to `https://nilestack.duckdns.org`
+
+### Documentation
+- Updated deployment guide with HTTPS/proxy configuration requirements
+- Added "Config Cache in Docker" section explaining host vs container caching
+
+---
+
+## [3.1.4] - 2025-11-29
+
+### Added
+- **Domain URL Display** - Projects now display primary domain URLs instead of IP:port
+  - Project list cards show clickable domain links (e.g., `http://nilestack.duckdns.org`)
+  - Project show page displays primary domain in Live URL section
+  - Automatic SSL protocol detection (https:// when SSL enabled)
+  - Falls back to IP:port only if no domain configured
+
+### Changed
+- **Project Live URL Logic** - Smart URL resolution priority:
+  1. Primary domain with SSL detection
+  2. Fallback to server IP:port
+  3. Hidden if neither available
+
+---
+
 ## [3.1.3] - 2025-11-29
 
 ### Added
