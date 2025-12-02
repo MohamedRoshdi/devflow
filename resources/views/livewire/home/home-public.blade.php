@@ -207,11 +207,12 @@
                 <div class="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                     @foreach($projects as $project)
                         @php
-                            // Security: Only use domain, never expose server IPs or internal infrastructure
-                            $url = $project->domain
-                                ? (str_starts_with($project->domain, 'http')
-                                    ? preg_replace('/^http:/', 'https:', $project->domain)
-                                    : 'https://' . $project->domain)
+                            // Security: Only use domain from relationship, never expose server IPs or internal infrastructure
+                            $primaryDomain = $project->domains->first()?->domain;
+                            $url = $primaryDomain
+                                ? (str_starts_with($primaryDomain, 'http')
+                                    ? preg_replace('/^http:/', 'https:', $primaryDomain)
+                                    : 'https://' . $primaryDomain)
                                 : null;
                         @endphp
 
@@ -244,12 +245,12 @@
                             </div>
 
                             <dl class="mt-6 space-y-3 text-sm text-slate-600 dark:text-slate-400">
-                                @if($project->domain)
+                                @if($primaryDomain)
                                     <div class="flex items-center gap-2">
                                         <svg class="h-4 w-4 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
                                         </svg>
-                                        <span class="truncate">{{ $project->domain }}</span>
+                                        <span class="truncate">{{ $primaryDomain }}</span>
                                     </div>
                                 @endif
                                 @if($project->php_version)
