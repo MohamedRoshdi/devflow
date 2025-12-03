@@ -4,17 +4,84 @@ namespace App\Livewire\Deployments;
 
 use Livewire\Component;
 use App\Models\Deployment;
+use Livewire\Attributes\On;
 
 class DeploymentShow extends Component
 {
     public Deployment $deployment;
     public $currentStep = '';
     public $progress = 0;
+    public array $liveLogs = [];
 
     public function mount(Deployment $deployment)
     {
         // All deployments are shared across all users
         $this->deployment = $deployment;
+        $this->analyzeProgress();
+
+        // Initialize live logs with existing logs if deployment is complete
+        if (in_array($this->deployment->status, ['success', 'failed'])) {
+            $this->initializeLiveLogs();
+        }
+    }
+
+    /**
+     * Initialize live logs from stored output_log for completed deployments
+     */
+    protected function initializeLiveLogs(): void
+    {
+        if ($this->deployment->output_log) {
+            $lines = explode("\n", $this->deployment->output_log);
+            foreach ($lines as $line) {
+                $this->liveLogs[] = [
+                    'line' => $line,
+                    'level' => $this->detectLogLevel($line),
+                    'timestamp' => now()->toIso8601String(),
+                ];
+            }
+        }
+    }
+
+    /**
+     * Detect log level based on content
+     */
+    protected function detectLogLevel(string $line): string
+    {
+        $lowerLine = strtolower($line);
+
+        // Check for error patterns
+        if (preg_match('/^(error|fatal|failed)/i', $line) ||
+            str_contains($lowerLine, 'exception') ||
+            str_contains($lowerLine, 'fatal error') ||
+            str_contains($lowerLine, 'failed')) {
+            return 'error';
+        }
+
+        // Check for warning patterns
+        if (preg_match('/^(warning|warn|notice)/i', $line) ||
+            str_contains($lowerLine, 'deprecated') ||
+            str_contains($lowerLine, 'skipped')) {
+            return 'warning';
+        }
+
+        // Everything else is info
+        return 'info';
+    }
+
+    /**
+     * Listen for new log lines broadcasted via WebSocket
+     */
+    #[On('echo:deployment-logs.{deployment.id},DeploymentLogUpdated')]
+    public function onLogUpdated($event): void
+    {
+        $this->liveLogs[] = [
+            'line' => $event['line'],
+            'level' => $event['level'],
+            'timestamp' => $event['timestamp'],
+        ];
+
+        // Also update the deployment model to keep in sync
+        $this->deployment->refresh();
         $this->analyzeProgress();
     }
 

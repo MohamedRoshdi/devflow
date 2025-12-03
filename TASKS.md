@@ -1,14 +1,14 @@
 # DevFlow Pro - Task Management
 
 **Last updated:** December 3, 2025
-**Current Version:** v3.14.0
+**Current Version:** v3.15.0
 **Next Target:** v4.0.0
 
 ---
 
 ## 🚀 Roadmap v4.0
 
-### Phase 1: Real-time Server Metrics (High Priority) - 80% Complete
+### Phase 1: Real-time Server Metrics (High Priority) - 100% Complete ✅
 > *Goal: Live monitoring dashboard with WebSocket-powered charts*
 
 | Task | Status | Description |
@@ -19,11 +19,11 @@
 | Real-time Disk chart | [x] | Progress bars + Chart.js trend |
 | Network I/O monitoring | [x] | Total incoming/outgoing bandwidth display |
 | Load average visualization | [x] | Dual-axis chart with disk usage |
-| Process list viewer | [ ] | Top processes by CPU/Memory |
+| Process list viewer | [x] | Top processes by CPU/Memory with tabs |
 | **Deployment Logs Streaming** | | |
-| Live deployment output | [ ] | Stream via WebSocket |
-| Color-coded log levels | [ ] | Error=red, Warning=yellow, Info=blue |
-| Auto-scroll with pause | [ ] | Click to pause, resume button |
+| Live deployment output | [x] | Stream via WebSocket (DeploymentLogUpdated) |
+| Color-coded log levels | [x] | Error=red, Warning=yellow, Info=gray |
+| Auto-scroll with pause | [x] | Click to pause, resume button |
 | **Server Metrics Collection** | | |
 | Background job (1min interval) | [x] | Scheduled via Laravel console |
 | Metrics history (7 days) | [x] | Stored in server_metrics table |
@@ -114,6 +114,20 @@
 ---
 
 ## ✅ Completed Versions
+
+<details>
+<summary><strong>v3.15.0</strong> - Phase 1 Complete: Process Viewer & Live Logs</summary>
+
+- [x] Process list viewer with CPU/Memory tabs
+- [x] Top 10 processes via SSH command execution
+- [x] Auto-refresh processes every 30 seconds
+- [x] DeploymentLogUpdated WebSocket broadcast event
+- [x] Live deployment log streaming
+- [x] Color-coded log levels (error=red, warning=yellow, info=gray)
+- [x] Terminal-style log viewer with line numbers
+- [x] Auto-scroll with pause/resume functionality
+- [x] "Live Streaming" indicator during deployments
+</details>
 
 <details>
 <summary><strong>v3.14.0</strong> - Real-time Server Metrics Dashboard</summary>

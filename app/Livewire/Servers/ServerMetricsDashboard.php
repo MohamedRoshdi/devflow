@@ -16,6 +16,9 @@ class ServerMetricsDashboard extends Component
     public $latestMetric = null;
     public bool $isCollecting = false;
     public bool $liveMode = true;
+    public string $processView = 'cpu'; // 'cpu' or 'memory'
+    public array $topProcesses = [];
+    public bool $isLoadingProcesses = false;
 
     protected ServerMetricsService $metricsService;
 
@@ -29,6 +32,7 @@ class ServerMetricsDashboard extends Component
         // All servers are shared across all users
         $this->server = $server;
         $this->loadMetrics();
+        $this->loadTopProcesses();
     }
 
     public function loadMetrics()
@@ -121,11 +125,49 @@ class ServerMetricsDashboard extends Component
         $this->liveMode = !$this->liveMode;
     }
 
+    public function loadTopProcesses()
+    {
+        $this->isLoadingProcesses = true;
+
+        try {
+            if ($this->processView === 'cpu') {
+                $this->topProcesses = $this->metricsService->getTopProcessesByCPU($this->server, 10);
+            } else {
+                $this->topProcesses = $this->metricsService->getTopProcessesByMemory($this->server, 10);
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('notification', type: 'error', message: 'Failed to load processes: ' . $e->getMessage());
+            $this->topProcesses = [];
+        }
+
+        $this->isLoadingProcesses = false;
+    }
+
+    public function switchProcessView(string $view)
+    {
+        if (in_array($view, ['cpu', 'memory'])) {
+            $this->processView = $view;
+            $this->loadTopProcesses();
+        }
+    }
+
+    public function refreshProcesses()
+    {
+        $this->loadTopProcesses();
+        $this->dispatch('notification', type: 'success', message: 'Process list refreshed!');
+    }
+
     #[On('metrics-updated')]
     public function onMetricsUpdated()
     {
         $this->loadMetrics();
         $this->dispatch('metrics-chart-update', data: $this->chartData);
+    }
+
+    #[On('refresh-processes')]
+    public function onRefreshProcesses()
+    {
+        $this->loadTopProcesses();
     }
 
     public function getListeners(): array

@@ -285,6 +285,162 @@
                 </div>
             </div>
         </div>
+
+        <!-- Process List Viewer -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl transition-colors overflow-hidden">
+            <div class="p-6 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-750">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                            </svg>
+                            Top Running Processes
+                        </h2>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Real-time process monitoring</p>
+                    </div>
+                    <button wire:click="refreshProcesses"
+                            wire:loading.attr="disabled"
+                            wire:loading.class="opacity-50 cursor-not-allowed"
+                            wire:target="refreshProcesses"
+                            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all duration-200 font-medium flex items-center gap-2">
+                        <svg wire:loading.remove wire:target="refreshProcesses" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        <svg wire:loading wire:target="refreshProcesses" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span wire:loading.remove wire:target="refreshProcesses">Refresh</span>
+                        <span wire:loading wire:target="refreshProcesses">Loading...</span>
+                    </button>
+                </div>
+
+                <!-- Tab Navigation -->
+                <div class="flex gap-2 mt-4">
+                    <button wire:click="switchProcessView('cpu')"
+                            class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                            @if($processView === 'cpu') bg-indigo-600 text-white shadow-md @else bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 @endif">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+                            </svg>
+                            By CPU Usage
+                        </div>
+                    </button>
+                    <button wire:click="switchProcessView('memory')"
+                            class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                            @if($processView === 'memory') bg-indigo-600 text-white shadow-md @else bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 @endif">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                            </svg>
+                            By Memory Usage
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6">
+                @if($isLoadingProcesses)
+                    <div class="flex items-center justify-center py-12">
+                        <div class="flex flex-col items-center gap-4">
+                            <svg class="animate-spin w-12 h-12 text-indigo-600" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <p class="text-gray-500 dark:text-gray-400 font-medium">Loading processes...</p>
+                        </div>
+                    </div>
+                @elseif(count($topProcesses) > 0)
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50 dark:bg-gray-700/50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">PID</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">User</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">CPU %</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Memory %</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Command</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                @foreach($topProcesses as $index => $process)
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
+                                        <td class="px-4 py-3 text-sm font-mono text-gray-900 dark:text-white whitespace-nowrap">
+                                            {{ $process['pid'] }}
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300">
+                                                {{ $process['user'] }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 text-sm font-semibold whitespace-nowrap
+                                            @if($process['cpu'] > 50) text-red-600 dark:text-red-400
+                                            @elseif($process['cpu'] > 20) text-yellow-600 dark:text-yellow-400
+                                            @else text-green-600 dark:text-green-400
+                                            @endif">
+                                            <div class="flex items-center gap-2">
+                                                <span>{{ number_format($process['cpu'], 1) }}%</span>
+                                                @if($index === 0 && $processView === 'cpu')
+                                                    <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                @endif
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 text-sm font-semibold whitespace-nowrap
+                                            @if($process['mem'] > 10) text-red-600 dark:text-red-400
+                                            @elseif($process['mem'] > 5) text-yellow-600 dark:text-yellow-400
+                                            @else text-green-600 dark:text-green-400
+                                            @endif">
+                                            <div class="flex items-center gap-2">
+                                                <span>{{ number_format($process['mem'], 1) }}%</span>
+                                                @if($index === 0 && $processView === 'memory')
+                                                    <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                @endif
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                            <div class="font-mono text-xs" title="{{ $process['full_command'] }}">
+                                                {{ $process['command'] }}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @if($liveMode)
+                        <div class="mt-4 flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                            </span>
+                            Auto-refreshing every 30 seconds
+                        </div>
+                    @endif
+                @else
+                    <div class="text-center py-12">
+                        <svg class="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                        </svg>
+                        <p class="text-gray-500 dark:text-gray-400 text-lg font-medium">No processes found</p>
+                        <p class="text-sm text-gray-400 dark:text-gray-500 mt-2">Unable to retrieve process information from the server</p>
+                        <button wire:click="refreshProcesses"
+                                class="mt-4 inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors font-medium">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            Try Again
+                        </button>
+                    </div>
+                @endif
+            </div>
+        </div>
     @endif
 
     <!-- Metrics History Table -->
@@ -380,6 +536,7 @@
         cpuMemoryChart: null,
         diskLoadChart: null,
         lastUpdate: '{{ $latestMetric?->recorded_at?->diffForHumans() ?? "Never" }}',
+        processRefreshInterval: null,
         currentMetrics: {
             cpu: {{ $latestMetric?->cpu_usage ?? 0 }},
             memory: {{ $latestMetric?->memory_usage ?? 0 }},
@@ -390,6 +547,9 @@
             const chartData = @json($this->chartData);
             this.createCpuMemoryChart(chartData);
             this.createDiskLoadChart(chartData);
+
+            // Start auto-refresh for processes if live mode is enabled
+            this.startProcessAutoRefresh();
 
             // Listen for chart updates from Livewire
             Livewire.on('metrics-chart-update', (event) => {
@@ -416,6 +576,33 @@
                             });
                         }
                     });
+            }
+
+            // Clean up on component destroy
+            this.$watch('$wire.liveMode', (value) => {
+                if (value) {
+                    this.startProcessAutoRefresh();
+                } else {
+                    this.stopProcessAutoRefresh();
+                }
+            });
+        },
+
+        startProcessAutoRefresh() {
+            const liveMode = @json($this->liveMode);
+            if (liveMode && !this.processRefreshInterval) {
+                // Refresh processes every 30 seconds
+                this.processRefreshInterval = setInterval(() => {
+                    console.log('Auto-refreshing processes...');
+                    Livewire.dispatch('refresh-processes');
+                }, 30000);
+            }
+        },
+
+        stopProcessAutoRefresh() {
+            if (this.processRefreshInterval) {
+                clearInterval(this.processRefreshInterval);
+                this.processRefreshInterval = null;
             }
         },
 

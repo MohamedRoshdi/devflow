@@ -283,4 +283,98 @@ class ServerMetricsService
 
         return round($float, 2);
     }
+
+    /**
+     * Get top processes by CPU usage
+     */
+    public function getTopProcessesByCPU(Server $server, int $limit = 10): array
+    {
+        try {
+            $command = "ps aux --sort=-%cpu | head -" . ($limit + 1);
+
+            if ($this->isLocalhost($server->ip_address)) {
+                $output = $this->executeLocal($command);
+            } else {
+                $output = $this->executeSSHCommand($server, $command);
+            }
+
+            return $this->parseProcessOutput($output);
+        } catch (\Exception $e) {
+            Log::error('Failed to get top processes by CPU', [
+                'server_id' => $server->id,
+                'error' => $e->getMessage(),
+            ]);
+            return [];
+        }
+    }
+
+    /**
+     * Get top processes by Memory usage
+     */
+    public function getTopProcessesByMemory(Server $server, int $limit = 10): array
+    {
+        try {
+            $command = "ps aux --sort=-%mem | head -" . ($limit + 1);
+
+            if ($this->isLocalhost($server->ip_address)) {
+                $output = $this->executeLocal($command);
+            } else {
+                $output = $this->executeSSHCommand($server, $command);
+            }
+
+            return $this->parseProcessOutput($output);
+        } catch (\Exception $e) {
+            Log::error('Failed to get top processes by Memory', [
+                'server_id' => $server->id,
+                'error' => $e->getMessage(),
+            ]);
+            return [];
+        }
+    }
+
+    /**
+     * Parse ps aux output into structured array
+     */
+    protected function parseProcessOutput(string $output): array
+    {
+        $lines = explode("\n", trim($output));
+        $processes = [];
+
+        // Skip header line
+        array_shift($lines);
+
+        foreach ($lines as $line) {
+            if (empty(trim($line))) {
+                continue;
+            }
+
+            // Parse ps aux format: USER PID %CPU %MEM VSZ RSS TTY STAT START TIME COMMAND
+            preg_match('/^(\S+)\s+(\d+)\s+(\S+)\s+(\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)$/', $line, $matches);
+
+            if (count($matches) === 6) {
+                $processes[] = [
+                    'user' => $matches[1],
+                    'pid' => (int)$matches[2],
+                    'cpu' => (float)$matches[3],
+                    'mem' => (float)$matches[4],
+                    'command' => $this->truncateCommand($matches[5], 80),
+                    'full_command' => $matches[5],
+                ];
+            }
+        }
+
+        return $processes;
+    }
+
+    /**
+     * Truncate command string to specified length
+     */
+    protected function truncateCommand(string $command, int $length = 80): string
+    {
+        if (strlen($command) <= $length) {
+            return $command;
+        }
+
+        return substr($command, 0, $length - 3) . '...';
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Events\DeploymentLogUpdated;
 use App\Models\Deployment;
 use App\Services\DockerService;
 use App\Services\GitService;
@@ -26,6 +27,41 @@ class DeployProjectJob implements ShouldQueue
         public Deployment $deployment
     ) {}
 
+    /**
+     * Broadcast a log line to WebSocket listeners
+     */
+    private function broadcastLog(string $line): void
+    {
+        $level = $this->detectLogLevel($line);
+        broadcast(new DeploymentLogUpdated($this->deployment->id, $line, $level));
+    }
+
+    /**
+     * Detect log level based on content
+     */
+    private function detectLogLevel(string $line): string
+    {
+        $lowerLine = strtolower($line);
+
+        // Check for error patterns
+        if (preg_match('/^(error|fatal|failed)/i', $line) ||
+            str_contains($lowerLine, 'exception') ||
+            str_contains($lowerLine, 'fatal error') ||
+            str_contains($lowerLine, 'failed')) {
+            return 'error';
+        }
+
+        // Check for warning patterns
+        if (preg_match('/^(warning|warn|notice)/i', $line) ||
+            str_contains($lowerLine, 'deprecated') ||
+            str_contains($lowerLine, 'skipped')) {
+            return 'warning';
+        }
+
+        // Everything else is info
+        return 'info';
+    }
+
     public function handle(): void
     {
         $startTime = now();
@@ -42,11 +78,17 @@ class DeployProjectJob implements ShouldQueue
             $logs = [];
             $projectPath = "/var/www/{$project->slug}";
 
+            // Helper function to add log and broadcast
+            $addLog = function(string $line) use (&$logs) {
+                $logs[] = $line;
+                $this->broadcastLog($line);
+            };
+
             // Step 1: Setup Git repository
-            $logs[] = "=== Setting Up Repository ===";
-            $logs[] = "Repository: {$project->repository_url}";
-            $logs[] = "Branch: {$project->branch}";
-            $logs[] = "Path: {$projectPath}";
+            $addLog("=== Setting Up Repository ===");
+            $addLog("Repository: {$project->repository_url}");
+            $addLog("Branch: {$project->branch}");
+            $addLog("Path: {$projectPath}");
 
             // Build SSH command helper for running commands as root on the server
             $server = $project->server;
@@ -57,7 +99,7 @@ class DeployProjectJob implements ShouldQueue
             $repoExists = trim($checkResult->output()) === 'exists';
 
             if ($repoExists) {
-                $logs[] = "Repository already exists, pulling latest changes...";
+                $addLog("Repository already exists, pulling latest changes...");
 
                 // Run git operations via SSH as root (fixes permission issues)
                 $gitCommand = "cd {$projectPath} && " .
@@ -74,10 +116,10 @@ class DeployProjectJob implements ShouldQueue
                     throw new \Exception('Git pull failed: ' . $pullResult->errorOutput());
                 }
 
-                $logs[] = "✓ Repository updated successfully";
+                $addLog("✓ Repository updated successfully");
             } else {
                 // Repository doesn't exist, clone it
-                $logs[] = "Cloning repository...";
+                $addLog("Cloning repository...");
 
                 // Run clone via SSH as root
                 $cloneCommand = "git config --global safe.directory '*' && " .
@@ -92,19 +134,19 @@ class DeployProjectJob implements ShouldQueue
                     throw new \Exception('Git clone failed: ' . $cloneResult->errorOutput());
                 }
 
-                $logs[] = "✓ Repository cloned successfully";
+                $addLog("✓ Repository cloned successfully");
             }
-            $logs[] = "";
+            $addLog("");
 
             // Get current commit information
-            $logs[] = "=== Recording Commit Information ===";
+            $addLog("=== Recording Commit Information ===");
             $gitService = app(GitService::class);
             $commitInfo = $gitService->getCurrentCommit($project);
-            
+
             if ($commitInfo) {
-                $logs[] = "Commit: {$commitInfo['short_hash']}";
-                $logs[] = "Author: {$commitInfo['author']}";
-                $logs[] = "Message: {$commitInfo['message']}";
+                $addLog("Commit: {$commitInfo['short_hash']}");
+                $addLog("Author: {$commitInfo['author']}");
+                $addLog("Message: {$commitInfo['message']}");
                 
                 // Update project with commit info
                 $project->update([
@@ -119,18 +161,18 @@ class DeployProjectJob implements ShouldQueue
                     'commit_message' => $commitInfo['message'],
                 ]);
                 
-                $logs[] = "✓ Commit information recorded";
+                $addLog("✓ Commit information recorded");
             } else {
-                $logs[] = "⚠ Could not retrieve commit information";
+                $addLog("⚠ Could not retrieve commit information");
             }
-            $logs[] = "";
+            $addLog("");
 
             // Step 2: Build container
-            $logs[] = "=== Building Docker Container ===";
-            $logs[] = "Environment: " . ($project->environment ?? 'production');
-            $logs[] = "This may take 10-20 minutes for large projects with npm builds...";
-            $logs[] = "Please be patient!";
-            $logs[] = "";
+            $addLog("=== Building Docker Container ===");
+            $addLog("Environment: " . ($project->environment ?? 'production'));
+            $addLog("This may take 10-20 minutes for large projects with npm builds...");
+            $addLog("Please be patient!");
+            $addLog("");
             
             // Save initial logs so user can see progress started
             $this->deployment->update([
@@ -143,15 +185,22 @@ class DeployProjectJob implements ShouldQueue
                 throw new \Exception('Build failed: ' . ($buildResult['error'] ?? 'Unknown error'));
             }
             
-            $logs[] = $buildResult['output'] ?? 'Build successful';
-            $logs[] = "✓ Build successful";
+            // Broadcast build output line by line if available
+            if (!empty($buildResult['output'])) {
+                foreach (explode("\n", $buildResult['output']) as $buildLine) {
+                    if (trim($buildLine)) {
+                        $addLog($buildLine);
+                    }
+                }
+            }
+            $addLog("✓ Build successful");
 
             // Step 3: Stop old container if running
-            $logs[] = "";
-            $logs[] = "=== Stopping Old Container ===";
+            $addLog("");
+            $addLog("=== Stopping Old Container ===");
             $dockerService->stopContainer($project);
-            $logs[] = "✓ Old container stopped (if any)";
-            $logs[] = "";
+            $addLog("✓ Old container stopped (if any)");
+            $addLog("");
             
             // Save logs before starting
             $this->deployment->update([
@@ -159,27 +208,27 @@ class DeployProjectJob implements ShouldQueue
             ]);
 
             // Step 4: Start new container
-            $logs[] = "=== Starting Container ===";
-            $logs[] = "Environment: " . ($project->environment ?? 'production');
+            $addLog("=== Starting Container ===");
+            $addLog("Environment: " . ($project->environment ?? 'production'));
             if ($project->env_variables && count((array)$project->env_variables) > 0) {
-                $logs[] = "Custom Variables: " . count((array)$project->env_variables) . " variable(s)";
+                $addLog("Custom Variables: " . count((array)$project->env_variables) . " variable(s)");
             }
-            $logs[] = "Starting new container...";
+            $addLog("Starting new container...");
             $startResult = $dockerService->startContainer($project);
-            
+
             if (!$startResult['success']) {
                 throw new \Exception('Start failed: ' . ($startResult['error'] ?? 'Unknown error'));
             }
-            
-            $logs[] = "Container started successfully";
+
+            $addLog("Container started successfully");
             if (isset($startResult['message'])) {
-                $logs[] = $startResult['message'];
+                $addLog($startResult['message']);
             }
-            $logs[] = "";
+            $addLog("");
 
             // Step 5: Laravel Optimization (inside container)
-            $logs[] = "=== Laravel Optimization ===";
-            $logs[] = "Running Laravel optimization commands inside container...";
+            $addLog("=== Laravel Optimization ===");
+            $addLog("Running Laravel optimization commands inside container...");
 
             // Determine the correct container name
             $usesCompose = $dockerService->usesDockerCompose($project);
@@ -187,8 +236,8 @@ class DeployProjectJob implements ShouldQueue
                 ? $dockerService->getAppContainerName($project)
                 : $project->slug;
 
-            $logs[] = "Target container: {$containerName}";
-            $logs[] = "";
+            $addLog("Target container: {$containerName}");
+            $addLog("");
 
             $optimizationCommands = [
                 'composer install --optimize-autoloader --no-dev' => 'Installing/updating dependencies',
@@ -202,20 +251,20 @@ class DeployProjectJob implements ShouldQueue
             ];
 
             foreach ($optimizationCommands as $cmd => $description) {
-                $logs[] = "→ {$description}...";
+                $addLog("→ {$description}...");
                 $dockerCmd = "docker exec {$containerName} {$cmd} 2>&1 || echo 'Command may have already run or not applicable'";
                 $result = \Illuminate\Support\Facades\Process::run($dockerCmd);
 
                 // Log output but don't fail deployment if optimization fails
                 if ($result->successful() || str_contains($result->output(), 'already')) {
-                    $logs[] = "  ✓ {$description} completed";
+                    $addLog("  ✓ {$description} completed");
                 } else {
-                    $logs[] = "  ⚠ {$description} skipped or failed (not critical)";
+                    $addLog("  ⚠ {$description} skipped or failed (not critical)");
                 }
             }
 
-            $logs[] = "✓ Laravel optimization completed";
-            $logs[] = "";
+            $addLog("✓ Laravel optimization completed");
+            $addLog("");
 
             // Update logs with optimization progress
             $this->deployment->update([
@@ -223,7 +272,7 @@ class DeployProjectJob implements ShouldQueue
             ]);
 
             // Step 6: Fix Permissions & Environment Configuration
-            $logs[] = "=== Fixing Permissions & Environment ===";
+            $addLog("=== Fixing Permissions & Environment ===");
 
             try {
                 // Determine container UID (Docker containers typically run as UID 1000)
@@ -233,10 +282,10 @@ class DeployProjectJob implements ShouldQueue
                 if ($uidResult->successful() && is_numeric(trim($uidResult->output()))) {
                     $containerUid = trim($uidResult->output());
                 }
-                $logs[] = "Container UID: {$containerUid}";
+                $addLog("Container UID: {$containerUid}");
 
                 // Fix permissions via SSH on the server with correct UID
-                $logs[] = "Setting proper ownership and permissions...";
+                $addLog("Setting proper ownership and permissions...");
                 $permissionCommand = "cd {$projectPath} && " .
                     "chown -R {$containerUid}:{$containerUid} storage bootstrap/cache 2>/dev/null && " .
                     "chmod -R 777 storage bootstrap/cache";
@@ -244,13 +293,13 @@ class DeployProjectJob implements ShouldQueue
                 $permResult = \Illuminate\Support\Facades\Process::timeout(60)->run("{$sshPrefix} \"{$permissionCommand}\"");
 
                 if ($permResult->successful()) {
-                    $logs[] = "  ✓ Permissions fixed (UID:{$containerUid}, 777)";
+                    $addLog("  ✓ Permissions fixed (UID:{$containerUid}, 777)");
                 } else {
-                    $logs[] = "  ⚠ Permission fix partially completed: " . $permResult->errorOutput();
+                    $addLog("  ⚠ Permission fix partially completed: " . $permResult->errorOutput());
                 }
 
                 // Fix .env file for Docker (DB_HOST, REDIS_HOST should use service names)
-                $logs[] = "Checking .env configuration for Docker...";
+                $addLog("Checking .env configuration for Docker...");
                 $envFixCommand = "cd {$projectPath} && " .
                     "sed -i 's/^DB_HOST=127.0.0.1\$/DB_HOST=mysql/' .env 2>/dev/null; " .
                     "sed -i 's/^DB_HOST=localhost\$/DB_HOST=mysql/' .env 2>/dev/null; " .
@@ -260,11 +309,11 @@ class DeployProjectJob implements ShouldQueue
 
                 $envResult = \Illuminate\Support\Facades\Process::timeout(30)->run("{$sshPrefix} \"{$envFixCommand}\"");
                 if ($envResult->successful()) {
-                    $logs[] = "  ✓ Environment configuration validated";
+                    $addLog("  ✓ Environment configuration validated");
                 }
 
                 // Clear Laravel caches inside container
-                $logs[] = "Clearing Laravel caches...";
+                $addLog("Clearing Laravel caches...");
                 $cacheCommands = [
                     'php artisan config:clear' => 'Configuration cache',
                     'php artisan cache:clear' => 'Application cache',
@@ -277,14 +326,14 @@ class DeployProjectJob implements ShouldQueue
                     $result = \Illuminate\Support\Facades\Process::run($dockerCmd);
 
                     if ($result->successful() && !str_contains($result->output(), 'skipped')) {
-                        $logs[] = "  ✓ {$description} cleared";
+                        $addLog("  ✓ {$description} cleared");
                     } else {
-                        $logs[] = "  ⚠ {$description} clear skipped";
+                        $addLog("  ⚠ {$description} clear skipped");
                     }
                 }
 
                 // Rebuild config cache with corrected .env values
-                $logs[] = "Rebuilding configuration cache...";
+                $addLog("Rebuilding configuration cache...");
                 $rebuildCommands = [
                     'php artisan config:cache' => 'Configuration',
                     'php artisan route:cache' => 'Routes',
@@ -296,22 +345,22 @@ class DeployProjectJob implements ShouldQueue
                     $result = \Illuminate\Support\Facades\Process::run($dockerCmd);
 
                     if ($result->successful() && !str_contains($result->output(), 'skipped')) {
-                        $logs[] = "  ✓ {$description} cached";
+                        $addLog("  ✓ {$description} cached");
                     }
                 }
 
-                $logs[] = "✓ Permissions, environment, and caches handled";
+                $addLog("✓ Permissions, environment, and caches handled");
 
             } catch (\Exception $permError) {
                 // Don't fail deployment if permission fix fails
-                $logs[] = "  ⚠ Permission fix encountered an error (non-critical): " . $permError->getMessage();
+                $addLog("  ⚠ Permission fix encountered an error (non-critical): " . $permError->getMessage());
                 Log::warning('Permission fix failed but deployment continues', [
                     'deployment_id' => $this->deployment->id,
                     'error' => $permError->getMessage(),
                 ]);
             }
 
-            $logs[] = "";
+            $addLog("");
 
             // Update logs with permission fix progress
             $this->deployment->update([

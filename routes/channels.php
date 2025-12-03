@@ -23,3 +23,8 @@ Broadcast::channel('server-metrics.{serverId}', function () {
     return true; // Allow all authenticated users to listen
 });
 
+// Public channel for deployment logs - allow all authenticated users to view deployment logs in real-time
+Broadcast::channel('deployment-logs.{deploymentId}', function () {
+    return true; // Allow all authenticated users to listen to deployment logs
+});
+

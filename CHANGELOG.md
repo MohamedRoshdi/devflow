@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.15.0] - 2025-12-03
+
+### Added
+
+- **Process List Viewer** - Real-time top processes on server metrics dashboard
+  - **CPU Tab** - Top 10 processes sorted by CPU usage
+  - **Memory Tab** - Top 10 processes sorted by memory usage
+  - **Auto-refresh** - Updates every 30 seconds when live mode enabled
+  - **Color-coded metrics** - Green (<20%), yellow (<50%), red (≥50%) for CPU
+  - **Full command tooltips** - Hover to see truncated commands in full
+
+- **Live Deployment Logs** - Real-time log streaming via WebSocket
+  - **Terminal-style viewer** - Dark theme with monospace font
+  - **Color-coded log levels**
+    - Error: red (`text-red-400`)
+    - Warning: yellow (`text-yellow-400`)
+    - Info: gray (`text-gray-300`)
+  - **Line numbers** - Left column with sequential numbering
+  - **Auto-scroll** - Automatically follows new log entries
+  - **Pause/Resume** - Control buttons for auto-scroll behavior
+  - **Live Streaming indicator** - Shows when deployment is in progress
+
+### Technical
+
+- **DeploymentLogUpdated Broadcast Event** - Real-time logs via WebSocket
+  - Broadcasts on `deployment-logs.{deploymentId}` channel
+  - Includes: deployment_id, line, level (info/warning/error), timestamp
+  - Pattern detection for error/warning keywords
+- **ServerMetricsService** - New methods for process listing
+  - `getTopProcessesByCPU()` - Fetches via `ps aux --sort=-%cpu`
+  - `getTopProcessesByMemory()` - Fetches via `ps aux --sort=-%mem`
+  - `parseProcessOutput()` - Parses ps output into structured data
+- **DeployProjectJob** - Updated to broadcast log lines during deployment
+
+### Phase 1 Complete
+
+This release completes Phase 1 (Real-time Server Metrics) of the v4.0 roadmap:
+- ✅ Live monitoring dashboard with Chart.js
+- ✅ Process list viewer
+- ✅ Deployment logs streaming
+- ✅ Color-coded log levels
+- ✅ Auto-scroll with pause
+
+---
+
 ## [3.14.0] - 2025-12-03
 
 ### Added

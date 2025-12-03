@@ -252,46 +252,148 @@
     <!-- Logs -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
         <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-            <h2 class="text-xl font-bold text-gray-900 dark:text-white dark:text-white">Deployment Logs</h2>
-            @if(in_array($deployment->status, ['pending', 'running']))
-                <span class="flex items-center text-sm text-blue-600">
-                    <span class="h-2 w-2 bg-blue-600 rounded-full mr-2 animate-pulse"></span>
-                    Live updating
-                </span>
-            @endif
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Deployment Logs</h2>
+            <div class="flex items-center space-x-3">
+                @if(in_array($deployment->status, ['pending', 'running']))
+                    <span class="flex items-center text-sm text-blue-600">
+                        <span class="h-2 w-2 bg-blue-600 rounded-full mr-2 animate-pulse"></span>
+                        Live Streaming
+                    </span>
+                @endif
+            </div>
         </div>
         <div class="p-6">
-            @if($deployment->output_log)
-                <div class="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm overflow-x-auto max-h-96 overflow-y-auto"
-                     id="deployment-logs"
-                     x-data="{ autoScroll: true }"
-                     x-init="
-                        // Auto-scroll to bottom on load
-                        $el.scrollTop = $el.scrollHeight;
-                        
-                        // Set up interval to check for updates and scroll
-                        setInterval(() => {
-                            if (autoScroll) {
-                                $el.scrollTop = $el.scrollHeight;
+            @if(count($liveLogs) > 0 || $deployment->output_log)
+                <div x-data="{
+                    autoScroll: true,
+                    isPaused: false,
+                    lineCount: {{ count($liveLogs) }},
+                    init() {
+                        this.scrollToBottom();
+
+                        // Watch for new log lines
+                        this.$watch('lineCount', () => {
+                            if (this.autoScroll && !this.isPaused) {
+                                this.$nextTick(() => this.scrollToBottom());
                             }
-                        }, 500);
-                     "
-                     @scroll="autoScroll = ($el.scrollHeight - $el.scrollTop - $el.clientHeight) < 10">
-                    <pre>{{ $deployment->output_log }}</pre>
+                        });
+                    },
+                    scrollToBottom() {
+                        const container = this.$refs.logContainer;
+                        if (container) {
+                            container.scrollTop = container.scrollHeight;
+                        }
+                    },
+                    togglePause() {
+                        this.isPaused = !this.isPaused;
+                        if (!this.isPaused && this.autoScroll) {
+                            this.scrollToBottom();
+                        }
+                    },
+                    handleScroll() {
+                        const container = this.$refs.logContainer;
+                        const threshold = 50;
+                        const isAtBottom = (container.scrollHeight - container.scrollTop - container.clientHeight) < threshold;
+                        this.autoScroll = isAtBottom;
+                    }
+                }" class="relative">
+
+                    <!-- Control Buttons -->
+                    <div class="mb-3 flex justify-end space-x-2">
+                        <button
+                            @click="togglePause()"
+                            class="px-3 py-1 text-xs rounded-lg font-medium transition-colors"
+                            :class="isPaused ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-yellow-600 hover:bg-yellow-700 text-white'">
+                            <span x-show="!isPaused">Pause Auto-scroll</span>
+                            <span x-show="isPaused">Resume Auto-scroll</span>
+                        </button>
+                        <button
+                            @click="scrollToBottom()"
+                            class="px-3 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+                            Scroll to Bottom
+                        </button>
+                    </div>
+
+                    <!-- Log Terminal -->
+                    <div
+                        x-ref="logContainer"
+                        @scroll="handleScroll()"
+                        wire:poll.3s
+                        x-init="lineCount = {{ count($liveLogs) }}"
+                        x-effect="lineCount = {{ count($liveLogs) }}"
+                        class="bg-[#1a1a2e] text-gray-300 p-6 rounded-lg font-mono text-sm overflow-x-auto max-h-[600px] overflow-y-auto border border-gray-700 shadow-inner">
+
+                        @if(count($liveLogs) > 0)
+                            @foreach($liveLogs as $index => $log)
+                                <div class="flex hover:bg-gray-800/50 transition-colors py-0.5">
+                                    <!-- Line Number -->
+                                    <div class="flex-shrink-0 w-12 text-right pr-4 text-gray-600 select-none">
+                                        {{ $index + 1 }}
+                                    </div>
+
+                                    <!-- Log Line -->
+                                    <div class="flex-1 @if($log['level'] === 'error') text-red-400 font-semibold @elseif($log['level'] === 'warning') text-yellow-400 @else text-gray-300 @endif">
+                                        {{ $log['line'] }}
+                                    </div>
+                                </div>
+                            @endforeach
+                        @elseif($deployment->output_log)
+                            @foreach(explode("\n", $deployment->output_log) as $index => $line)
+                                @php
+                                    $level = 'info';
+                                    $lowerLine = strtolower($line);
+                                    if (preg_match('/^(error|fatal|failed)/i', $line) || str_contains($lowerLine, 'exception')) {
+                                        $level = 'error';
+                                    } elseif (preg_match('/^(warning|warn|notice)/i', $line) || str_contains($lowerLine, 'skipped')) {
+                                        $level = 'warning';
+                                    }
+                                @endphp
+                                <div class="flex hover:bg-gray-800/50 transition-colors py-0.5">
+                                    <!-- Line Number -->
+                                    <div class="flex-shrink-0 w-12 text-right pr-4 text-gray-600 select-none">
+                                        {{ $index + 1 }}
+                                    </div>
+
+                                    <!-- Log Line -->
+                                    <div class="flex-1 @if($level === 'error') text-red-400 font-semibold @elseif($level === 'warning') text-yellow-400 @else text-gray-300 @endif">
+                                        {{ $line }}
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
+                    </div>
+
+                    <!-- Status Indicator -->
+                    <div class="mt-3 flex justify-between items-center">
+                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                            @if(in_array($deployment->status, ['pending', 'running']))
+                                <span class="flex items-center">
+                                    <svg class="animate-spin h-3 w-3 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Real-time streaming via WebSocket
+                                </span>
+                            @else
+                                <span>{{ count($liveLogs) }} log lines</span>
+                            @endif
+                        </div>
+
+                        <div class="text-xs" x-show="!autoScroll">
+                            <span class="px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded">
+                                Auto-scroll paused
+                            </span>
+                        </div>
+                    </div>
                 </div>
-                @if(in_array($deployment->status, ['pending', 'running']))
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
-                        💡 Logs auto-scroll to bottom. Scroll up to pause auto-scrolling.
-                    </p>
-                @endif
             @elseif(in_array($deployment->status, ['pending', 'running']))
                 <div class="text-center py-12">
                     <svg class="animate-spin h-12 w-12 mx-auto text-blue-600 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <p class="text-gray-500 dark:text-gray-400 dark:text-gray-400">⏳ Starting deployment...</p>
-                    <p class="text-xs text-gray-400 mt-2">Logs will appear shortly</p>
+                    <p class="text-gray-500 dark:text-gray-400">Starting deployment...</p>
+                    <p class="text-xs text-gray-400 mt-2">Logs will stream in real-time shortly</p>
                 </div>
             @else
                 <p class="text-gray-500 dark:text-gray-400 text-center py-8">No logs available</p>
