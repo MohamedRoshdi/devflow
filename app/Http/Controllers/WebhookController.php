@@ -80,14 +80,14 @@ class WebhookController extends Controller
             $parsed = $this->webhookService->parseGitHubPayload($payloadData);
 
             // Check if deployment should be triggered
-            if (!$this->webhookService->shouldTriggerDeployment($project, $parsed['branch'])) {
+            if (!$this->webhookService->shouldTriggerDeployment($project, $parsed['branch'], $parsed['commit_message'])) {
                 $this->webhookService->updateDeliveryStatus(
                     $delivery,
                     'ignored',
-                    "Branch '{$parsed['branch']}' does not match project branch '{$project->branch}'"
+                    "Deployment conditions not met (branch or commit message patterns)"
                 );
 
-                return response()->json(['message' => 'Branch mismatch, deployment not triggered'], 200);
+                return response()->json(['message' => 'Deployment conditions not met', 'reason' => 'Branch or commit message pattern check failed'], 200);
             }
 
             // Create deployment
@@ -209,14 +209,14 @@ class WebhookController extends Controller
             $parsed = $this->webhookService->parseGitLabPayload($payloadData);
 
             // Check if deployment should be triggered
-            if (!$this->webhookService->shouldTriggerDeployment($project, $parsed['branch'])) {
+            if (!$this->webhookService->shouldTriggerDeployment($project, $parsed['branch'], $parsed['commit_message'])) {
                 $this->webhookService->updateDeliveryStatus(
                     $delivery,
                     'ignored',
-                    "Branch '{$parsed['branch']}' does not match project branch '{$project->branch}'"
+                    "Deployment conditions not met (branch or commit message patterns)"
                 );
 
-                return response()->json(['message' => 'Branch mismatch, deployment not triggered'], 200);
+                return response()->json(['message' => 'Deployment conditions not met', 'reason' => 'Branch or commit message pattern check failed'], 200);
             }
 
             // Create deployment

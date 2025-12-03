@@ -1,175 +1,321 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\CICD;
 
 use App\Models\Pipeline;
+use App\Models\PipelineStage;
 use App\Models\Project;
-use App\Services\CICD\PipelineService;
 use Livewire\Component;
-use Livewire\WithPagination;
+use Livewire\Attributes\On;
 
 class PipelineBuilder extends Component
 {
-    use WithPagination;
+    public ?Project $project = null;
+    public array $stages = [];
 
-    public $showCreateModal = false;
-    public $showConfigModal = false;
-    public $editingPipeline = null;
+    // Modal states
+    public bool $showStageModal = false;
+    public bool $showTemplateModal = false;
 
-    // Pipeline configuration
-    public $projectId = '';
-    public $name = '';
-    public $provider = 'github';
-    public $triggerEvents = ['push'];
-    public $branchFilters = ['main'];
-    public $enableTests = true;
-    public $enableBuild = true;
-    public $enableDeploy = true;
-    public $enableSecurityScan = false;
-    public $enableQualityCheck = false;
-    public $deploymentStrategy = 'docker';
-    public $customConfig = '';
+    // Stage form fields
+    public ?int $editingStageId = null;
+    public string $stageName = '';
+    public string $stageType = 'pre_deploy';
+    public string $commands = '';
+    public int $timeoutSeconds = 300;
+    public bool $continueOnFailure = false;
+    public array $envVariables = [];
+    public string $newEnvKey = '';
+    public string $newEnvValue = '';
 
-    // Pipeline run details
-    public $selectedPipeline = null;
-    public $pipelineRuns = [];
+    protected function rules(): array
+    {
+        return [
+            'stageName' => 'required|string|max:255',
+            'stageType' => 'required|in:pre_deploy,deploy,post_deploy',
+            'commands' => 'required|string',
+            'timeoutSeconds' => 'required|integer|min:10|max:3600',
+            'continueOnFailure' => 'boolean',
+        ];
+    }
 
-    protected $rules = [
-        'projectId' => 'required|exists:projects,id',
-        'name' => 'required|string|max:255',
-        'provider' => 'required|in:github,gitlab,bitbucket,jenkins,custom',
-        'triggerEvents' => 'required|array|min:1',
-        'branchFilters' => 'required|array|min:1',
-    ];
+    public function mount(?Project $project = null): void
+    {
+        $this->project = $project;
+        $this->loadStages();
+    }
+
+    public function loadStages(): void
+    {
+        if (!$this->project) {
+            $this->stages = [
+                'pre_deploy' => [],
+                'deploy' => [],
+                'post_deploy' => [],
+            ];
+            return;
+        }
+
+        $stages = $this->project->pipelineStages()->ordered()->get();
+
+        $this->stages = [
+            'pre_deploy' => $stages->where('type', 'pre_deploy')->values()->toArray(),
+            'deploy' => $stages->where('type', 'deploy')->values()->toArray(),
+            'post_deploy' => $stages->where('type', 'post_deploy')->values()->toArray(),
+        ];
+    }
+
+    public function addStage(string $type): void
+    {
+        $this->resetStageForm();
+        $this->stageType = $type;
+        $this->showStageModal = true;
+    }
+
+    public function editStage(int $stageId): void
+    {
+        $stage = PipelineStage::findOrFail($stageId);
+
+        $this->editingStageId = $stage->id;
+        $this->stageName = $stage->name;
+        $this->stageType = $stage->type;
+        $this->commands = implode("\n", $stage->commands);
+        $this->timeoutSeconds = $stage->timeout_seconds;
+        $this->continueOnFailure = $stage->continue_on_failure;
+        $this->envVariables = $stage->environment_variables ?? [];
+
+        $this->showStageModal = true;
+    }
+
+    public function saveStage(): void
+    {
+        if (!$this->project) {
+            $this->dispatch('notification', type: 'error', message: 'Please select a project first');
+            return;
+        }
+
+        $this->validate();
+
+        $commandsArray = array_filter(
+            array_map('trim', explode("\n", $this->commands)),
+            fn($cmd) => !empty($cmd)
+        );
+
+        $data = [
+            'project_id' => $this->project->id,
+            'name' => $this->stageName,
+            'type' => $this->stageType,
+            'commands' => $commandsArray,
+            'timeout_seconds' => $this->timeoutSeconds,
+            'continue_on_failure' => $this->continueOnFailure,
+            'environment_variables' => $this->envVariables,
+        ];
+
+        if ($this->editingStageId) {
+            $stage = PipelineStage::findOrFail($this->editingStageId);
+            $stage->update($data);
+            $message = 'Stage updated successfully!';
+        } else {
+            // Get the max order for this type
+            $maxOrder = PipelineStage::where('project_id', $this->project->id)
+                ->where('type', $this->stageType)
+                ->max('order') ?? -1;
+
+            $data['order'] = $maxOrder + 1;
+            PipelineStage::create($data);
+            $message = 'Stage created successfully!';
+        }
+
+        $this->dispatch('notification', type: 'success', message: $message);
+        $this->showStageModal = false;
+        $this->resetStageForm();
+        $this->loadStages();
+    }
+
+    public function deleteStage(int $stageId): void
+    {
+        $stage = PipelineStage::findOrFail($stageId);
+        $stage->delete();
+
+        // Reorder remaining stages
+        $this->reorderStagesAfterDelete($stage->type, $stage->order);
+
+        $this->dispatch('notification', type: 'success', message: 'Stage deleted successfully');
+        $this->loadStages();
+    }
+
+    public function toggleStage(int $stageId): void
+    {
+        $stage = PipelineStage::findOrFail($stageId);
+        $stage->update(['enabled' => !$stage->enabled]);
+
+        $message = $stage->enabled ? 'Stage enabled' : 'Stage disabled';
+        $this->dispatch('notification', type: 'success', message: $message);
+        $this->loadStages();
+    }
+
+    #[On('stages-reordered')]
+    public function updateStageOrder(array $stageIds, string $type): void
+    {
+        foreach ($stageIds as $index => $stageId) {
+            PipelineStage::where('id', $stageId)->update(['order' => $index]);
+        }
+
+        $this->loadStages();
+    }
+
+    public function addEnvVariable(): void
+    {
+        if ($this->newEnvKey && $this->newEnvValue) {
+            $this->envVariables[$this->newEnvKey] = $this->newEnvValue;
+            $this->reset('newEnvKey', 'newEnvValue');
+        }
+    }
+
+    public function removeEnvVariable(string $key): void
+    {
+        unset($this->envVariables[$key]);
+    }
+
+    public function applyTemplate(string $template): void
+    {
+        if (!$this->project) {
+            $this->dispatch('notification', type: 'error', message: 'Please select a project first');
+            return;
+        }
+
+        $stages = $this->getTemplateStages($template);
+
+        foreach ($stages as $stage) {
+            $maxOrder = PipelineStage::where('project_id', $this->project->id)
+                ->where('type', $stage['type'])
+                ->max('order') ?? -1;
+
+            $stage['order'] = $maxOrder + 1;
+            $stage['project_id'] = $this->project->id;
+
+            PipelineStage::create($stage);
+        }
+
+        $this->showTemplateModal = false;
+        $this->dispatch('notification', type: 'success', message: 'Template applied successfully!');
+        $this->loadStages();
+    }
+
+    private function getTemplateStages(string $template): array
+    {
+        return match($template) {
+            'laravel' => [
+                [
+                    'name' => 'Install Composer Dependencies',
+                    'type' => 'pre_deploy',
+                    'commands' => ['composer install --optimize-autoloader --no-dev'],
+                    'timeout_seconds' => 300,
+                    'enabled' => true,
+                    'continue_on_failure' => false,
+                ],
+                [
+                    'name' => 'Install NPM Dependencies',
+                    'type' => 'pre_deploy',
+                    'commands' => ['npm install'],
+                    'timeout_seconds' => 300,
+                    'enabled' => true,
+                    'continue_on_failure' => false,
+                ],
+                [
+                    'name' => 'Build Frontend Assets',
+                    'type' => 'pre_deploy',
+                    'commands' => ['npm run build'],
+                    'timeout_seconds' => 300,
+                    'enabled' => true,
+                    'continue_on_failure' => false,
+                ],
+                [
+                    'name' => 'Run Database Migrations',
+                    'type' => 'deploy',
+                    'commands' => ['php artisan migrate --force'],
+                    'timeout_seconds' => 300,
+                    'enabled' => true,
+                    'continue_on_failure' => false,
+                ],
+                [
+                    'name' => 'Clear & Cache Config',
+                    'type' => 'post_deploy',
+                    'commands' => [
+                        'php artisan config:cache',
+                        'php artisan route:cache',
+                        'php artisan view:cache',
+                    ],
+                    'timeout_seconds' => 60,
+                    'enabled' => true,
+                    'continue_on_failure' => false,
+                ],
+            ],
+            'nodejs' => [
+                [
+                    'name' => 'Install Dependencies',
+                    'type' => 'pre_deploy',
+                    'commands' => ['npm install'],
+                    'timeout_seconds' => 300,
+                    'enabled' => true,
+                    'continue_on_failure' => false,
+                ],
+                [
+                    'name' => 'Run Tests',
+                    'type' => 'pre_deploy',
+                    'commands' => ['npm test'],
+                    'timeout_seconds' => 300,
+                    'enabled' => true,
+                    'continue_on_failure' => false,
+                ],
+                [
+                    'name' => 'Build Application',
+                    'type' => 'deploy',
+                    'commands' => ['npm run build'],
+                    'timeout_seconds' => 300,
+                    'enabled' => true,
+                    'continue_on_failure' => false,
+                ],
+            ],
+            'static' => [
+                [
+                    'name' => 'Copy Files',
+                    'type' => 'deploy',
+                    'commands' => ['cp -r ./* /var/www/html/'],
+                    'timeout_seconds' => 60,
+                    'enabled' => true,
+                    'continue_on_failure' => false,
+                ],
+            ],
+            default => [],
+        };
+    }
+
+    private function reorderStagesAfterDelete(string $type, int $deletedOrder): void
+    {
+        PipelineStage::where('project_id', $this->project->id)
+            ->where('type', $type)
+            ->where('order', '>', $deletedOrder)
+            ->decrement('order');
+    }
+
+    private function resetStageForm(): void
+    {
+        $this->editingStageId = null;
+        $this->stageName = '';
+        $this->stageType = 'pre_deploy';
+        $this->commands = '';
+        $this->timeoutSeconds = 300;
+        $this->continueOnFailure = false;
+        $this->envVariables = [];
+        $this->newEnvKey = '';
+        $this->newEnvValue = '';
+    }
 
     public function render()
     {
-        return view('livewire.cicd.pipeline-builder', [
-            'pipelines' => Pipeline::with(['project', 'lastRun'])->paginate(10),
-            'projects' => Project::all(),
-        ]);
-    }
-
-    public function createPipeline()
-    {
-        $this->resetForm();
-        $this->showCreateModal = true;
-    }
-
-    public function savePipeline()
-    {
-        $this->validate();
-
-        try {
-            $pipelineService = app(PipelineService::class);
-            $project = Project::find($this->projectId);
-
-            $config = [
-                'name' => $this->name,
-                'provider' => $this->provider,
-                'trigger_events' => $this->triggerEvents,
-                'branch_filters' => $this->branchFilters,
-                'enable_tests' => $this->enableTests,
-                'enable_build' => $this->enableBuild,
-                'enable_deploy' => $this->enableDeploy,
-                'enable_security_scan' => $this->enableSecurityScan,
-                'enable_quality_check' => $this->enableQualityCheck,
-                'deployment_strategy' => $this->deploymentStrategy,
-            ];
-
-            if ($this->customConfig) {
-                $config['custom'] = json_decode($this->customConfig, true);
-            }
-
-            $pipeline = $pipelineService->createPipeline($project, $config);
-
-            $this->dispatch('notify', type: 'success', message: 'Pipeline created successfully!');
-            $this->showCreateModal = false;
-            $this->resetForm();
-        } catch (\Exception $e) {
-            $this->dispatch('notify', type: 'error', message: 'Failed to create pipeline: ' . $e->getMessage());
-        }
-    }
-
-    public function editPipeline(Pipeline $pipeline)
-    {
-        $this->editingPipeline = $pipeline;
-        $this->projectId = $pipeline->project_id;
-        $this->name = $pipeline->name;
-        $this->provider = $pipeline->provider;
-        $this->triggerEvents = $pipeline->trigger_events;
-        $this->branchFilters = $pipeline->branch_filters;
-
-        $config = $pipeline->configuration;
-        $this->enableTests = $config['enable_tests'] ?? true;
-        $this->enableBuild = $config['enable_build'] ?? true;
-        $this->enableDeploy = $config['enable_deploy'] ?? true;
-        $this->enableSecurityScan = $config['enable_security_scan'] ?? false;
-        $this->enableQualityCheck = $config['enable_quality_check'] ?? false;
-        $this->deploymentStrategy = $config['deployment_strategy'] ?? 'docker';
-
-        $this->showCreateModal = true;
-    }
-
-    public function runPipeline(Pipeline $pipeline)
-    {
-        try {
-            $pipelineService = app(PipelineService::class);
-            $run = $pipelineService->executePipeline($pipeline, 'manual');
-
-            $this->dispatch('notify', type: 'success', message: 'Pipeline execution started!');
-        } catch (\Exception $e) {
-            $this->dispatch('notify', type: 'error', message: 'Failed to run pipeline: ' . $e->getMessage());
-        }
-    }
-
-    public function showPipelineConfig(Pipeline $pipeline)
-    {
-        $this->selectedPipeline = $pipeline;
-        $this->showConfigModal = true;
-    }
-
-    public function deletePipeline(Pipeline $pipeline)
-    {
-        $pipeline->delete();
-        $this->dispatch('notify', type: 'success', message: 'Pipeline deleted successfully');
-    }
-
-    public function togglePipeline(Pipeline $pipeline)
-    {
-        $pipeline->update(['enabled' => !$pipeline->enabled]);
-        $this->dispatch('notify', type: 'success', message: $pipeline->enabled ? 'Pipeline enabled' : 'Pipeline disabled');
-    }
-
-    public function downloadConfig(Pipeline $pipeline)
-    {
-        $filename = match($pipeline->provider) {
-            'github' => '.github/workflows/devflow.yml',
-            'gitlab' => '.gitlab-ci.yml',
-            'bitbucket' => 'bitbucket-pipelines.yml',
-            'jenkins' => 'Jenkinsfile',
-            default => 'pipeline-config.yml'
-        };
-
-        return response()->streamDownload(function() use ($pipeline) {
-            echo yaml_emit($pipeline->configuration);
-        }, $filename);
-    }
-
-    private function resetForm()
-    {
-        $this->projectId = '';
-        $this->name = '';
-        $this->provider = 'github';
-        $this->triggerEvents = ['push'];
-        $this->branchFilters = ['main'];
-        $this->enableTests = true;
-        $this->enableBuild = true;
-        $this->enableDeploy = true;
-        $this->enableSecurityScan = false;
-        $this->enableQualityCheck = false;
-        $this->deploymentStrategy = 'docker';
-        $this->customConfig = '';
-        $this->editingPipeline = null;
+        return view('livewire.cicd.pipeline-builder');
     }
 }

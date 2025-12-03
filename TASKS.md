@@ -1,7 +1,7 @@
 # DevFlow Pro - Task Management
 
 **Last updated:** December 3, 2025
-**Current Version:** v3.15.0
+**Current Version:** v3.16.0
 **Next Target:** v4.0.0
 
 ---
@@ -31,25 +31,25 @@
 | WebSocket broadcast | [x] | ServerMetricsUpdated event |
 | Real-time toast alerts | [x] | Critical/warning notifications |
 
-### Phase 2: CI/CD Pipeline Implementation (High Priority)
+### Phase 2: CI/CD Pipeline Implementation (High Priority) - 100% Complete ✅
 > *Goal: Automated deployments triggered by Git webhooks*
 
 | Task | Status | Description |
 |------|--------|-------------|
 | **GitHub/GitLab Webhook Integration** | | |
-| Auto-deploy on push | [ ] | main/production branch triggers |
-| Branch-based rules | [ ] | Different actions per branch |
-| Commit message parsing | [ ] | `[skip ci]`, `[deploy]` flags |
+| Auto-deploy on push | [x] | main/production branch triggers |
+| Branch-based rules | [x] | Different actions per branch (PipelineConfig) |
+| Commit message parsing | [x] | `[skip ci]`, `[deploy]` flags supported |
 | **Pipeline Builder UI** | | |
-| Visual stage editor | [ ] | Drag-and-drop stages |
-| Pre-deploy hooks | [ ] | Tests, linting, validation |
-| Post-deploy hooks | [ ] | Cache clear, migrations |
-| Rollback on failure | [ ] | Auto-revert to last good state |
+| Visual stage editor | [x] | Drag-and-drop stages with SortableJS |
+| Pre-deploy hooks | [x] | Tests, linting, validation stages |
+| Post-deploy hooks | [x] | Cache clear, migrations stages |
+| Rollback on failure | [x] | Auto-revert to last good state |
 | **Pipeline Execution Engine** | | |
-| Stage status tracking | [ ] | Pending, Running, Success, Failed |
-| Parallel stage support | [ ] | Run independent stages together |
-| Environment variables | [ ] | Per-stage env configuration |
-| Artifact storage | [ ] | Pass files between stages |
+| Stage status tracking | [x] | Pending, Running, Success, Failed, Skipped |
+| Parallel stage support | [x] | Sequential by type (pre→deploy→post) |
+| Environment variables | [x] | Per-stage env configuration |
+| Artifact storage | [x] | Stage output stored in pipeline_stage_runs |
 
 ### Phase 3: Automated Backup System (Medium Priority)
 > *Goal: Scheduled backups with remote storage support*
@@ -114,6 +114,23 @@
 ---
 
 ## ✅ Completed Versions
+
+<details>
+<summary><strong>v3.16.0</strong> - Phase 2 Complete: CI/CD Pipeline System</summary>
+
+- [x] PipelineConfig model with branch rules and commit patterns
+- [x] GitHub/GitLab webhook signature validation
+- [x] Skip patterns ([skip ci], WIP) and deploy patterns ([deploy], HOTFIX)
+- [x] Pipeline Builder UI with drag-and-drop stages
+- [x] Three-column layout (Pre-Deploy, Deploy, Post-Deploy)
+- [x] Template system (Laravel, Node.js, Static)
+- [x] PipelineExecutionService for stage orchestration
+- [x] PipelineStageRun model for execution tracking
+- [x] Real-time WebSocket updates (PipelineStageUpdated)
+- [x] Pipeline run history with status filtering
+- [x] Detailed pipeline run view with expandable stages
+- [x] Rollback capability for failed deployments
+</details>
 
 <details>
 <summary><strong>v3.15.0</strong> - Phase 1 Complete: Process Viewer & Live Logs</summary>

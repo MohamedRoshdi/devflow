@@ -4,8 +4,10 @@ namespace App\Jobs;
 
 use App\Events\DeploymentLogUpdated;
 use App\Models\Deployment;
+use App\Models\PipelineStage;
 use App\Services\DockerService;
 use App\Services\GitService;
+use App\Services\CICD\PipelineExecutionService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -65,15 +67,101 @@ class DeployProjectJob implements ShouldQueue
     public function handle(): void
     {
         $startTime = now();
-        
+
         try {
             $this->deployment->update([
                 'status' => 'running',
                 'started_at' => $startTime,
             ]);
 
-            $dockerService = app(DockerService::class);
             $project = $this->deployment->project;
+
+            // Check if project has pipeline stages configured
+            $hasPipelineStages = PipelineStage::where('project_id', $project->id)
+                ->enabled()
+                ->exists();
+
+            if ($hasPipelineStages) {
+                // Use pipeline execution service
+                $this->handlePipelineDeployment($project, $startTime);
+            } else {
+                // Use traditional direct deployment
+                $this->handleDirectDeployment($project, $startTime);
+            }
+
+        } catch (\Exception $e) {
+            $endTime = now();
+            $duration = $endTime->diffInSeconds($startTime);
+
+            $this->deployment->update([
+                'status' => 'failed',
+                'completed_at' => $endTime,
+                'duration_seconds' => $duration,
+                'error_log' => $e->getMessage(),
+            ]);
+
+            Log::error('Deployment failed', [
+                'deployment_id' => $this->deployment->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Handle deployment using pipeline stages
+     */
+    private function handlePipelineDeployment(Project $project, $startTime): void
+    {
+        $pipelineService = app(PipelineExecutionService::class);
+
+        $this->broadcastLog("=== Using Pipeline Execution ===");
+        $this->broadcastLog("Project: {$project->name}");
+        $this->broadcastLog("Branch: {$project->branch}");
+        $this->broadcastLog("");
+
+        // Execute pipeline
+        $pipelineRun = $pipelineService->executePipeline($project, [
+            'triggered_by' => $this->deployment->triggered_by ?? 'manual',
+            'deployment_id' => $this->deployment->id,
+            'commit_sha' => $this->deployment->commit_hash,
+        ]);
+
+        // Update deployment based on pipeline result
+        $endTime = now();
+        $duration = $endTime->diffInSeconds($startTime);
+
+        $this->deployment->update([
+            'status' => $pipelineRun->status === 'success' ? 'success' : 'failed',
+            'completed_at' => $endTime,
+            'duration_seconds' => $duration,
+        ]);
+
+        if ($pipelineRun->status === 'success') {
+            $project->update([
+                'status' => 'running',
+                'last_deployed_at' => now(),
+            ]);
+
+            Log::info('Pipeline deployment successful', [
+                'deployment_id' => $this->deployment->id,
+                'pipeline_run_id' => $pipelineRun->id,
+                'project_id' => $project->id,
+            ]);
+        } else {
+            Log::error('Pipeline deployment failed', [
+                'deployment_id' => $this->deployment->id,
+                'pipeline_run_id' => $pipelineRun->id,
+                'project_id' => $project->id,
+            ]);
+        }
+    }
+
+    /**
+     * Handle traditional direct deployment (existing logic)
+     */
+    private function handleDirectDeployment(Project $project, $startTime): void
+    {
+        $dockerService = app(DockerService::class);
             
             $logs = [];
             $projectPath = "/var/www/{$project->slug}";
@@ -387,23 +475,6 @@ class DeployProjectJob implements ShouldQueue
                 'deployment_id' => $this->deployment->id,
                 'project_id' => $project->id,
             ]);
-
-        } catch (\Exception $e) {
-            $endTime = now();
-            $duration = $endTime->diffInSeconds($startTime);
-
-            $this->deployment->update([
-                'status' => 'failed',
-                'completed_at' => $endTime,
-                'duration_seconds' => $duration,
-                'error_log' => $e->getMessage(),
-            ]);
-
-            Log::error('Deployment failed', [
-                'deployment_id' => $this->deployment->id,
-                'error' => $e->getMessage(),
-            ]);
-        }
     }
 }
 

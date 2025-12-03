@@ -7,6 +7,71 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.16.0] - 2025-12-03
+
+### Added
+
+- **CI/CD Pipeline System** - Complete pipeline management for automated deployments
+
+  **Webhook Integration:**
+  - GitHub webhook handler with HMAC-SHA256 signature validation
+  - GitLab webhook handler with token validation
+  - Branch-based deployment rules (auto_deploy_branches)
+  - Commit message patterns: `[skip ci]`, `[deploy]`, `WIP`, `HOTFIX`
+  - PipelineConfig model for per-project configuration
+
+  **Pipeline Builder UI:**
+  - Visual drag-and-drop stage editor using SortableJS
+  - Three-column layout: Pre-Deploy | Deploy | Post-Deploy
+  - Stage cards with enable/disable toggles
+  - Template system (Laravel, Node.js, Static Site)
+  - Command editor with multi-line support
+  - Environment variables per stage
+  - Timeout configuration (10-3600 seconds)
+
+  **Pipeline Execution Engine:**
+  - PipelineExecutionService for orchestrating deployments
+  - Sequential stage execution (pre_deploy → deploy → post_deploy)
+  - Real-time output streaming via WebSocket
+  - Stage status tracking: pending, running, success, failed, skipped
+  - Continue on failure option per stage
+  - Automatic rollback for failed deployments
+
+  **Pipeline Run Views:**
+  - Run history with status filtering
+  - Detailed run view with expandable stages
+  - Terminal-style output display
+  - Cancel running pipelines
+  - Retry failed pipelines
+  - Download stage outputs
+
+### Technical
+
+- **New Models:** PipelineConfig, PipelineStage, PipelineStageRun
+- **New Service:** PipelineExecutionService
+- **New Event:** PipelineStageUpdated (broadcasts on `pipeline.{runId}`)
+- **New Components:** PipelineSettings, PipelineBuilder, PipelineRunHistory, PipelineRunShow
+- **Database Migrations:** pipeline_configs, pipeline_stages, pipeline_stage_runs tables
+
+### Routes
+
+- `GET /projects/{project}/pipeline` - Pipeline settings & builder
+- `GET /projects/{project}/pipeline/runs` - Pipeline run history
+- `GET /pipelines/runs/{run}` - Pipeline run details
+- `POST /webhooks/github/{project}` - GitHub webhook endpoint
+- `POST /webhooks/gitlab/{project}` - GitLab webhook endpoint
+
+### Phase 2 Complete
+
+This release completes Phase 2 (CI/CD Pipeline Implementation) of the v4.0 roadmap:
+- ✅ GitHub/GitLab webhook integration
+- ✅ Branch-based rules and commit message parsing
+- ✅ Visual pipeline builder with drag-and-drop
+- ✅ Pipeline execution engine with stage tracking
+- ✅ Rollback on failure
+
+---
+
 ## [3.15.0] - 2025-12-03
 
 ### Added

@@ -62,6 +62,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/projects/{project}', ProjectShow::class)->name('projects.show');
     Route::get('/projects/{project}/edit', \App\Livewire\Projects\ProjectEdit::class)->name('projects.edit');
     Route::get('/projects/{project}/configuration', \App\Livewire\Projects\ProjectConfiguration::class)->name('projects.configuration');
+    Route::get('/projects/{project}/pipeline', \App\Livewire\Projects\PipelineSettings::class)->name('projects.pipeline');
     Route::get('/projects/{project}/backups', \App\Livewire\Projects\DatabaseBackupManager::class)->name('projects.backups');
 
     // Deployments
@@ -94,6 +95,7 @@ Route::middleware('auth')->group(function () {
 
     // CI/CD Pipelines
     Route::get('/pipelines', \App\Livewire\CICD\PipelineBuilder::class)->name('pipelines.index');
+    Route::get('/projects/{project}/pipeline', \App\Livewire\CICD\PipelineBuilder::class)->name('projects.pipeline');
 
     // Deployment Scripts
     Route::get('/scripts', \App\Livewire\Scripts\ScriptManager::class)->name('scripts.index');

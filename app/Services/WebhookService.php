@@ -132,7 +132,7 @@ class WebhookService
     /**
      * Check if the webhook should trigger a deployment
      */
-    public function shouldTriggerDeployment(Project $project, string $branch): bool
+    public function shouldTriggerDeployment(Project $project, string $branch, ?string $commitMessage = null): bool
     {
         // Check if webhooks are enabled for this project
         if (!$project->webhook_enabled) {
@@ -140,10 +140,24 @@ class WebhookService
             return false;
         }
 
-        // Check if the branch matches the project's configured branch
-        if ($project->branch !== $branch) {
-            Log::info("Webhook ignored: branch mismatch for project {$project->slug}. Expected: {$project->branch}, Got: {$branch}");
-            return false;
+        // Check if pipeline config exists and is enabled
+        $pipelineConfig = $project->pipelineConfig;
+
+        if ($pipelineConfig && $pipelineConfig->enabled) {
+            // Use pipeline config for advanced filtering
+            if (!$pipelineConfig->shouldDeploy($branch, $commitMessage ?? '')) {
+                Log::info("Webhook ignored: pipeline config conditions not met for project {$project->slug}", [
+                    'branch' => $branch,
+                    'commit_message' => $commitMessage,
+                ]);
+                return false;
+            }
+        } else {
+            // Fallback to simple branch matching for backward compatibility
+            if ($project->branch !== $branch) {
+                Log::info("Webhook ignored: branch mismatch for project {$project->slug}. Expected: {$project->branch}, Got: {$branch}");
+                return false;
+            }
         }
 
         return true;

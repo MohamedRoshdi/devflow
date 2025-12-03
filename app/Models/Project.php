@@ -144,6 +144,16 @@ class Project extends Model
         return $this->hasMany(ProjectSetupTask::class);
     }
 
+    public function pipelineStages()
+    {
+        return $this->hasMany(PipelineStage::class);
+    }
+
+    public function pipelineConfig()
+    {
+        return $this->hasOne(PipelineConfig::class);
+    }
+
     // Setup status helpers
     public function isSetupPending(): bool
     {
