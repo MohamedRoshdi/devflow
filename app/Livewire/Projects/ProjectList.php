@@ -35,7 +35,7 @@ class ProjectList extends Component
         // Optimized: Eager load relationships and select specific columns to reduce memory
         $projects = Project::with([
                 'server:id,name,status',
-                'domains:id,project_id,domain,subdomain',
+                'domains:id,project_id,domain',
                 'user:id,name'
             ])
             ->select(['id', 'name', 'slug', 'status', 'server_id', 'user_id', 'framework', 'created_at', 'updated_at'])

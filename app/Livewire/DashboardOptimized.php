@@ -110,7 +110,7 @@ class DashboardOptimized extends Component
     public function loadProjects()
     {
         // Optimized with eager loading and select specific columns
-        $this->projects = Project::with(['server:id,name', 'domains:id,project_id,domain,subdomain'])
+        $this->projects = Project::with(['server:id,name', 'domains:id,project_id,domain'])
             ->select(['id', 'name', 'slug', 'status', 'server_id', 'framework', 'created_at'])
             ->latest()
             ->take(6)
@@ -137,7 +137,7 @@ class DashboardOptimized extends Component
                 'failed' => SSLCertificate::where('status', 'failed')->count(),
                 'expiring_certificates' => SSLCertificate::where('expires_at', '<=', $expiringSoonDate)
                     ->where('expires_at', '>', $now)
-                    ->with(['domain:id,domain,subdomain', 'server:id,name'])
+                    ->with(['domain:id,domain', 'server:id,name'])
                     ->select(['id', 'domain_id', 'server_id', 'expires_at', 'status'])
                     ->orderBy('expires_at', 'asc')
                     ->take(5)
