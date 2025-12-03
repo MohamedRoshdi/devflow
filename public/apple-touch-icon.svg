@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <defs>
+    <linearGradient id="apple-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6"/>
+      <stop offset="50%" style="stop-color:#6366F1"/>
+      <stop offset="100%" style="stop-color:#8B5CF6"/>
+    </linearGradient>
+  </defs>
+  <!-- Background rounded square optimized for iOS -->
+  <rect width="180" height="180" rx="40" ry="40" fill="url(#apple-gradient)"/>
+  <!-- NileStack Logo - Letter N with layers and wave -->
+  <g fill="white">
+    <!-- Left pillar of N -->
+    <rect x="45" y="45" width="22" height="90" rx="5"/>
+    <!-- Right pillar of N -->
+    <rect x="113" y="45" width="22" height="90" rx="5"/>
+    <!-- Diagonal connecting bar -->
+    <path d="M56 45 L124 124 L124 135 L113 135 L113 124 L56 56 L56 45 Z" fill="white" opacity="0.95"/>
+    <!-- Wave element representing Nile -->
+    <path d="M45 147 Q67 135 90 147 Q113 159 135 147" stroke="white" stroke-width="8" fill="none" stroke-linecap="round" opacity="0.8"/>
+  </g>
+</svg>

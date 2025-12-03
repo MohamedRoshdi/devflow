@@ -1,18 +1,18 @@
 <div>
-    <!-- Hero Section -->
-    <div class="relative mb-8 rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500 dark:from-blue-600 dark:via-indigo-600 dark:to-purple-600 p-8 shadow-xl overflow-hidden">
-        <div class="absolute inset-0 bg-black/10 dark:bg-black/20 backdrop-blur-sm"></div>
-        <div class="relative z-10 flex justify-between items-center">
+    <!-- Hero Section with Gradient -->
+    <div class="relative mb-8 rounded-2xl bg-gradient-to-br from-amber-500 via-orange-500 to-red-500 dark:from-amber-600 dark:via-orange-600 dark:to-red-600 p-8 shadow-xl overflow-hidden">
+        <div class="absolute inset-0 bg-black/10 dark:bg-black/20"></div>
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
                 <div class="flex items-center space-x-3 mb-2">
                     <div class="p-2 bg-white/20 dark:bg-white/10 backdrop-blur-md rounded-lg">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
                         </svg>
                     </div>
-                    <h1 class="text-4xl font-bold text-white">API Tokens</h1>
+                    <h1 class="text-3xl md:text-4xl font-bold text-white">API Tokens</h1>
                 </div>
-                <p class="text-white/90 text-lg">Manage API tokens for programmatic access to DevFlow Pro</p>
+                <p class="text-white/90 text-lg">Manage your API tokens for programmatic access</p>
             </div>
             <button wire:click="openCreateModal"
                     class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105 shadow-lg">

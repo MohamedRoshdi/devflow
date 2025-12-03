@@ -1,22 +1,36 @@
-<div>
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Deployment Scripts</h2>
-        <div class="flex space-x-3">
-            <button wire:click="$set('showTemplateModal', true)" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
-                <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-                Templates
-            </button>
-            <button wire:click="createScript" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                </svg>
-                Create Script
-            </button>
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Hero Section with Gradient -->
+        <div class="relative mb-8 rounded-2xl bg-gradient-to-br from-slate-600 via-gray-600 to-zinc-600 dark:from-slate-700 dark:via-gray-700 dark:to-zinc-700 p-8 shadow-xl overflow-hidden">
+            <div class="absolute inset-0 bg-black/10 dark:bg-black/20"></div>
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <div class="flex items-center space-x-3 mb-2">
+                        <div class="p-2 bg-white/20 dark:bg-white/10 backdrop-blur-md rounded-lg">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <h1 class="text-3xl md:text-4xl font-bold text-white">Script Manager</h1>
+                    </div>
+                    <p class="text-white/90 text-lg">Create and manage deployment scripts and automation tasks</p>
+                </div>
+                <div class="flex space-x-3">
+                    <button wire:click="$set('showTemplateModal', true)" class="px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-md text-white rounded-lg transition-colors">
+                        <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Templates
+                    </button>
+                    <button wire:click="createScript" class="px-4 py-2 bg-white hover:bg-white/90 text-gray-900 rounded-lg transition-colors font-medium">
+                        <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Create Script
+                    </button>
+                </div>
+            </div>
         </div>
-    </div>
 
     <!-- Scripts Table -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
@@ -311,4 +325,5 @@
             </div>
         </div>
     @endif
+    </div>
 </div>

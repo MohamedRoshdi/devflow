@@ -27,6 +27,9 @@ use App\Http\Controllers\TeamInvitationController;
 // Public Home Page - Shows all projects
 Route::get('/', HomePublic::class)->name('home');
 
+// Public Project Detail Page
+Route::get('/project/{slug}', \App\Livewire\Home\ProjectDetail::class)->name('project.public');
+
 // Team Invitation (requires auth to accept)
 Route::get('/invitations/{token}', [TeamInvitationController::class, 'show'])->name('invitations.show');
 Route::post('/invitations/{token}/accept', [TeamInvitationController::class, 'accept'])->name('invitations.accept')->middleware('auth');
@@ -120,7 +123,13 @@ Route::middleware('auth')->group(function () {
 
     // Log Aggregation
     Route::get('/logs', \App\Livewire\Logs\LogViewer::class)->name('logs.index');
+    Route::get('/logs/notifications', \App\Livewire\Logs\NotificationLogs::class)->name('logs.notifications');
+    Route::get('/logs/webhooks', \App\Livewire\Logs\WebhookLogs::class)->name('logs.webhooks');
+    Route::get('/logs/security', \App\Livewire\Logs\SecurityAuditLog::class)->name('logs.security');
     Route::get('/servers/{server}/log-sources', \App\Livewire\Logs\LogSourceManager::class)->name('servers.log-sources');
+
+    // System Status
+    Route::get('/settings/system-status', \App\Livewire\Settings\SystemStatus::class)->name('settings.system-status');
 });
 
 // Webhook endpoints (public, no auth required)

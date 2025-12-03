@@ -5,15 +5,17 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\Server;
 use App\Services\ServerMetricsService;
+use App\Events\ServerMetricsUpdated;
 
 class CollectServerMetrics extends Command
 {
-    protected $signature = 'servers:collect-metrics {server_id?}';
+    protected $signature = 'servers:collect-metrics {server_id?} {--broadcast : Broadcast metrics via WebSocket}';
     protected $description = 'Collect metrics from servers';
 
     public function handle(ServerMetricsService $metricsService): int
     {
         $serverId = $this->argument('server_id');
+        $shouldBroadcast = $this->option('broadcast');
 
         if ($serverId) {
             $server = Server::find($serverId);
@@ -23,7 +25,7 @@ class CollectServerMetrics extends Command
                 return self::FAILURE;
             }
 
-            return $this->collectMetricsForServer($server, $metricsService);
+            return $this->collectMetricsForServer($server, $metricsService, $shouldBroadcast);
         }
 
         // Collect metrics for all online servers
@@ -40,7 +42,7 @@ class CollectServerMetrics extends Command
         $failCount = 0;
 
         foreach ($servers as $server) {
-            $result = $this->collectMetricsForServer($server, $metricsService);
+            $result = $this->collectMetricsForServer($server, $metricsService, $shouldBroadcast);
 
             if ($result === self::SUCCESS) {
                 $successCount++;
@@ -54,7 +56,7 @@ class CollectServerMetrics extends Command
         return self::SUCCESS;
     }
 
-    protected function collectMetricsForServer(Server $server, ServerMetricsService $metricsService): int
+    protected function collectMetricsForServer(Server $server, ServerMetricsService $metricsService, bool $broadcast = false): int
     {
         $this->info("Collecting metrics for: {$server->name} ({$server->ip_address})");
 
@@ -65,6 +67,13 @@ class CollectServerMetrics extends Command
                 $this->line("  ✓ CPU: {$metric->cpu_usage}%");
                 $this->line("  ✓ Memory: {$metric->memory_usage}%");
                 $this->line("  ✓ Disk: {$metric->disk_usage}%");
+
+                // Broadcast the metrics update via WebSocket
+                if ($broadcast) {
+                    event(new ServerMetricsUpdated($server, $metric));
+                    $this->line("  ✓ Broadcast sent");
+                }
+
                 return self::SUCCESS;
             } else {
                 $this->error("  ✗ Failed to collect metrics");

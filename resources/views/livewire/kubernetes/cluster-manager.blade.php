@@ -1,14 +1,30 @@
-<div>
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Kubernetes Clusters</h2>
-        <button wire:click="addCluster" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-            <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            Add Cluster
-        </button>
-    </div>
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Hero Section with Gradient -->
+        <div class="relative mb-8 rounded-2xl bg-gradient-to-br from-sky-500 via-blue-500 to-indigo-500 dark:from-sky-600 dark:via-blue-600 dark:to-indigo-600 p-8 shadow-xl overflow-hidden">
+            <div class="absolute inset-0 bg-black/10 dark:bg-black/20"></div>
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <div class="flex items-center space-x-3 mb-2">
+                        <div class="p-2 bg-white/20 dark:bg-white/10 backdrop-blur-md rounded-lg">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M10.8 3.9l-6 3.5c-.5.3-.8.8-.8 1.4v6.5c0 .5.3 1.1.8 1.4l6 3.5c.5.3 1.1.3 1.5 0l6-3.5c.5-.3.8-.8.8-1.4V8.7c0-.5-.3-1.1-.8-1.4l-6-3.5c-.4-.2-1-.2-1.5.1zm8.9 4.4l-2.3 1.3V7.2c0-.3-.2-.5-.5-.5s-.5.2-.5.5v2.4l-4.4 2.5V9.7c0-.3-.2-.5-.5-.5s-.5.2-.5.5v2.4l-4.4-2.5V7.2c0-.3-.2-.5-.5-.5s-.5.2-.5.5v2.4L4.3 8.3c.1-.1.3-.2.5-.1l6 3.5c.1.1.3.1.4 0l6-3.5c.2-.1.4 0 .5.1zm-7.6 8.8v-2.4c0-.3-.2-.5-.5-.5s-.5.2-.5.5v2.4l-4.4 2.5V17c0-.3-.2-.5-.5-.5s-.5.2-.5.5v2.4L4.3 18c-.2-.1-.3-.3-.3-.5V11l2.3 1.3v2.4c0 .3.2.5.5.5s.5-.2.5-.5v-2.4L12 15l4.6-2.7v2.4c0 .3.2.5.5.5s.5-.2.5-.5v-2.4l2.3-1.3v6.5c0 .2-.1.4-.3.5l-1.9 1.1V17c0-.3-.2-.5-.5-.5s-.5.2-.5.5v2.7l-4.6 2.4z"/>
+                            </svg>
+                        </div>
+                        <h1 class="text-3xl md:text-4xl font-bold text-white">Kubernetes Clusters</h1>
+                    </div>
+                    <p class="text-white/90 text-lg">Manage your Kubernetes clusters and deployments</p>
+                </div>
+                <div>
+                    <button wire:click="addCluster" class="px-6 py-3 bg-white/20 dark:bg-white/10 backdrop-blur-md text-white rounded-xl hover:bg-white/30 dark:hover:bg-white/20 transition-all duration-200 border border-white/30 shadow-lg flex items-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        <span class="font-medium">Add Cluster</span>
+                    </button>
+                </div>
+            </div>
+        </div>
 
     <!-- Clusters Table -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
@@ -257,4 +273,5 @@
             </div>
         </div>
     @endif
+    </div>
 </div>

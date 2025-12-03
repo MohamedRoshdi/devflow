@@ -1,4 +1,17 @@
 <div class="space-y-6">
+    <!-- Deployments Overview -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Deployments API</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">
+            Manage and track deployments for your projects. View deployment history, trigger new deployments, and rollback to previous versions.
+        </p>
+
+        <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-4 rounded">
+            <h4 class="font-semibold text-blue-900 dark:text-blue-400 mb-2">Base URL</h4>
+            <code class="text-sm text-gray-700 dark:text-gray-300">{{ url('/api/v1') }}</code>
+        </div>
+    </div>
+
     <!-- List Deployments -->
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
         <div class="flex items-center justify-between mb-4">

@@ -1,18 +1,32 @@
-<div>
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Notification Channels</h2>
-        <button wire:click="addChannel"
-                wire:loading.attr="disabled"
-                wire:loading.class="opacity-50 cursor-not-allowed"
-                wire:target="addChannel"
-                class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
-            <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            Add Channel
-        </button>
-    </div>
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Hero Section with Gradient -->
+        <div class="relative mb-8 rounded-2xl bg-gradient-to-br from-rose-500 via-pink-500 to-fuchsia-500 dark:from-rose-600 dark:via-pink-600 dark:to-fuchsia-600 p-8 shadow-xl overflow-hidden">
+            <div class="absolute inset-0 bg-black/10 dark:bg-black/20"></div>
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <div class="flex items-center space-x-3 mb-2">
+                        <div class="p-2 bg-white/20 dark:bg-white/10 backdrop-blur-md rounded-lg">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                            </svg>
+                        </div>
+                        <h1 class="text-3xl md:text-4xl font-bold text-white">Notification Channels</h1>
+                    </div>
+                    <p class="text-white/90 text-lg">Configure notification channels for alerts and updates</p>
+                </div>
+                <button wire:click="addChannel"
+                        wire:loading.attr="disabled"
+                        wire:loading.class="opacity-50 cursor-not-allowed"
+                        wire:target="addChannel"
+                        class="px-6 py-3 bg-white/20 dark:bg-white/10 backdrop-blur-md text-white rounded-xl hover:bg-white/30 dark:hover:bg-white/20 transition-all shadow-lg hover:shadow-xl whitespace-nowrap">
+                    <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Add Channel
+                </button>
+            </div>
+        </div>
 
     <!-- Channels Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -221,4 +235,5 @@
             </div>
         </div>
     @endif
+    </div>
 </div>

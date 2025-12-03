@@ -1,14 +1,30 @@
-<div>
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">CI/CD Pipelines</h2>
-        <button wire:click="createPipeline" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
-            <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            Create Pipeline
-        </button>
-    </div>
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Hero Section with Gradient -->
+        <div class="relative mb-8 rounded-2xl bg-gradient-to-br from-violet-500 via-purple-500 to-fuchsia-500 dark:from-violet-600 dark:via-purple-600 dark:to-fuchsia-600 p-8 shadow-xl overflow-hidden">
+            <div class="absolute inset-0 bg-black/10 dark:bg-black/20"></div>
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <div class="flex items-center space-x-3 mb-2">
+                        <div class="p-2 bg-white/20 dark:bg-white/10 backdrop-blur-md rounded-lg">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <h1 class="text-3xl md:text-4xl font-bold text-white">CI/CD Pipelines</h1>
+                    </div>
+                    <p class="text-white/90 text-lg">Build and manage your continuous integration and deployment pipelines</p>
+                </div>
+                <div>
+                    <button wire:click="createPipeline" class="px-6 py-3 bg-white text-violet-600 rounded-lg hover:bg-white/90 transition-all shadow-lg hover:shadow-xl font-semibold flex items-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        <span>Create Pipeline</span>
+                    </button>
+                </div>
+            </div>
+        </div>
 
     <!-- Pipelines Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -294,4 +310,5 @@
             </div>
         </div>
     @endif
+    </div>
 </div>

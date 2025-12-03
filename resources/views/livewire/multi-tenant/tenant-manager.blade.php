@@ -1,10 +1,25 @@
-<div>
-    <!-- Header -->
-    <div class="mb-6">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Multi-Tenant Management</h2>
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Hero Section with Gradient -->
+        <div class="relative mb-8 rounded-2xl bg-gradient-to-br from-cyan-500 via-teal-500 to-emerald-500 dark:from-cyan-600 dark:via-teal-600 dark:to-emerald-600 p-8 shadow-xl overflow-hidden">
+            <div class="absolute inset-0 bg-black/10 dark:bg-black/20"></div>
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <div class="flex items-center space-x-3 mb-2">
+                        <div class="p-2 bg-white/20 dark:bg-white/10 backdrop-blur-md rounded-lg">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                        </div>
+                        <h1 class="text-3xl md:text-4xl font-bold text-white">Tenant Manager</h1>
+                    </div>
+                    <p class="text-white/90 text-lg">Manage multi-tenant configurations and tenant databases</p>
+                </div>
+            </div>
+        </div>
 
         <!-- Project Selector -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Multi-Tenant Project</label>
             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
                 @forelse($projects as $project)
@@ -25,7 +40,6 @@
                 @endforelse
             </div>
         </div>
-    </div>
 
     @if($selectedProject)
         <!-- Actions Bar -->
@@ -391,6 +405,7 @@
             </div>
         </div>
     @endif
+    </div>
 </div>
 
 @push('scripts')

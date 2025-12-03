@@ -25,6 +25,57 @@
         </div>
     </div>
 
+    <!-- Dashboard Customization Controls -->
+    <div class="mb-6 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            @if($editMode)
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                    <svg class="w-4 h-4 mr-1.5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                    </svg>
+                    Edit Mode - Drag widgets to reorder
+                </span>
+            @endif
+        </div>
+        <div class="flex items-center space-x-2">
+            @if($editMode)
+                <button wire:click="resetWidgetOrder" class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Reset Layout
+                </button>
+            @endif
+            <button wire:click="toggleEditMode" class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 {{ $editMode ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700' }}">
+                @if($editMode)
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Done
+                @else
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
+                    </svg>
+                    Customize Layout
+                @endif
+            </button>
+        </div>
+    </div>
+
+    <!-- Draggable Widgets Container -->
+    <div id="dashboard-widgets" class="space-y-8">
+        @foreach($widgetOrder as $widgetId)
+            @if($widgetId === 'stats_cards')
+            <!-- Stats Cards Widget -->
+            <div data-widget-id="stats_cards" class="relative {{ $editMode ? 'ring-2 ring-dashed ring-gray-300 dark:ring-gray-600 rounded-2xl p-2' : '' }}">
+                @if($editMode)
+                <div class="widget-drag-handle absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 cursor-move bg-white dark:bg-gray-800 px-3 py-1 rounded-full shadow-md border border-gray-200 dark:border-gray-700 flex items-center space-x-2">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
+                    </svg>
+                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Stats Cards</span>
+                </div>
+                @endif
     <!-- 8 Stats Cards Grid (2x4) -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- 1. Total Servers Card -->
@@ -198,7 +249,18 @@
             </div>
         </div>
     </div>
-
+            </div>
+            @elseif($widgetId === 'quick_actions')
+            <!-- Quick Actions Widget -->
+            <div data-widget-id="quick_actions" class="relative {{ $editMode ? 'ring-2 ring-dashed ring-gray-300 dark:ring-gray-600 rounded-2xl p-2' : '' }}">
+                @if($editMode)
+                <div class="widget-drag-handle absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 cursor-move bg-white dark:bg-gray-800 px-3 py-1 rounded-full shadow-md border border-gray-200 dark:border-gray-700 flex items-center space-x-2">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
+                    </svg>
+                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Quick Actions</span>
+                </div>
+                @endif
     <!-- Quick Actions Panel -->
     @if($showQuickActions)
     <div class="mb-8">
@@ -287,7 +349,18 @@
         @endif
     </div>
     @endif
-
+            </div>
+            @elseif($widgetId === 'activity_server_grid')
+            <!-- Activity & Server Health Widget -->
+            <div data-widget-id="activity_server_grid" class="relative {{ $editMode ? 'ring-2 ring-dashed ring-gray-300 dark:ring-gray-600 rounded-2xl p-2' : '' }}">
+                @if($editMode)
+                <div class="widget-drag-handle absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 cursor-move bg-white dark:bg-gray-800 px-3 py-1 rounded-full shadow-md border border-gray-200 dark:border-gray-700 flex items-center space-x-2">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
+                    </svg>
+                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Activity & Health</span>
+                </div>
+                @endif
     <!-- Activity Feed and Server Health Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Activity Feed (2/3 width) -->
@@ -382,6 +455,42 @@
                             @endforelse
                         </ul>
                     </div>
+
+                    <!-- Load More Button -->
+                    @if(count($recentActivity) > 0 && count($recentActivity) < 20)
+                    <div class="px-6 pb-6">
+                        <button
+                            wire:click="loadMoreActivity"
+                            wire:loading.attr="disabled"
+                            class="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2"
+                        >
+                            <span wire:loading.remove wire:target="loadMoreActivity">
+                                <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m0 0l-4-4m4 4l4-4"></path>
+                                </svg>
+                                Load More Activity
+                            </span>
+                            <span wire:loading wire:target="loadMoreActivity" class="flex items-center">
+                                <svg class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Loading...
+                            </span>
+                        </button>
+                    </div>
+                    @endif
+
+                    <!-- Max Items Reached Message -->
+                    @if(count($recentActivity) >= 20)
+                    <div class="px-6 pb-6">
+                        <div class="text-center py-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                Showing maximum of 20 items
+                            </p>
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -491,4 +600,155 @@
         </div>
         @endif
     </div>
+            </div>
+            @elseif($widgetId === 'deployment_timeline')
+            <!-- Deployment Timeline Widget -->
+            <div data-widget-id="deployment_timeline" class="relative {{ $editMode ? 'ring-2 ring-dashed ring-gray-300 dark:ring-gray-600 rounded-2xl p-2' : '' }}">
+                @if($editMode)
+                <div class="widget-drag-handle absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 cursor-move bg-white dark:bg-gray-800 px-3 py-1 rounded-full shadow-md border border-gray-200 dark:border-gray-700 flex items-center space-x-2">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
+                    </svg>
+                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Deployment Timeline</span>
+                </div>
+                @endif
+    <!-- Deployment Timeline Section -->
+    <div class="mt-0">
+        <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-900 dark:text-white">Deployment Timeline (Last 7 Days)</h2>
+                    </div>
+                    <button wire:click="toggleSection('deploymentTimeline')" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
+                        <svg class="w-5 h-5 transform transition-transform {{ in_array('deploymentTimeline', $collapsedSections) ? '' : 'rotate-180' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            @if(!in_array('deploymentTimeline', $collapsedSections))
+            <div class="p-6">
+                @if(count($deploymentTimeline) > 0)
+                    <div class="space-y-4">
+                        @foreach($deploymentTimeline as $day)
+                            <div class="flex items-center space-x-4">
+                                <!-- Date Label -->
+                                <div class="w-20 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    {{ $day['date'] }}
+                                </div>
+
+                                <!-- Bar Chart -->
+                                <div class="flex-1">
+                                    @if($day['total'] > 0)
+                                        <div class="relative">
+                                            <!-- Bar Container -->
+                                            <div class="flex h-8 rounded-lg overflow-hidden shadow-md bg-gray-200 dark:bg-gray-700">
+                                                <!-- Success Bar -->
+                                                @if($day['successful'] > 0)
+                                                    <div
+                                                        class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 transition-all duration-300 flex items-center justify-center"
+                                                        style="width: {{ $day['success_percent'] }}%"
+                                                        title="Successful: {{ $day['successful'] }} ({{ $day['success_percent'] }}%)"
+                                                    >
+                                                        @if($day['success_percent'] > 15)
+                                                            <span class="text-xs font-semibold text-white">{{ $day['successful'] }}</span>
+                                                        @endif
+                                                    </div>
+                                                @endif
+
+                                                <!-- Failed Bar -->
+                                                @if($day['failed'] > 0)
+                                                    <div
+                                                        class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 transition-all duration-300 flex items-center justify-center"
+                                                        style="width: {{ $day['failed_percent'] }}%"
+                                                        title="Failed: {{ $day['failed'] }} ({{ $day['failed_percent'] }}%)"
+                                                    >
+                                                        @if($day['failed_percent'] > 15)
+                                                            <span class="text-xs font-semibold text-white">{{ $day['failed'] }}</span>
+                                                        @endif
+                                                    </div>
+                                                @endif
+                                            </div>
+
+                                            <!-- Hover Tooltip (positioned above the bar) -->
+                                            <div class="absolute left-0 right-0 -top-10 opacity-0 hover:opacity-100 transition-opacity pointer-events-none">
+                                                <div class="bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg py-2 px-3 inline-block shadow-lg">
+                                                    <div class="flex items-center space-x-2">
+                                                        <span class="text-emerald-400">✓ {{ $day['successful'] }}</span>
+                                                        <span class="text-gray-400">|</span>
+                                                        <span class="text-red-400">✗ {{ $day['failed'] }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <div class="h-8 rounded-lg bg-gray-100 dark:bg-gray-700/30 flex items-center justify-center">
+                                            <span class="text-xs text-gray-400 dark:text-gray-500">No deployments</span>
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <!-- Total Count -->
+                                <div class="w-16 text-right">
+                                    @if($day['total'] > 0)
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
+                                            {{ $day['total'] }}
+                                        </span>
+                                    @else
+                                        <span class="text-sm text-gray-400 dark:text-gray-500">0</span>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <div class="flex items-center justify-center space-x-6 text-sm">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-4 h-4 rounded bg-gradient-to-r from-emerald-500 to-emerald-600"></div>
+                                <span class="text-gray-700 dark:text-gray-300">Successful</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-4 h-4 rounded bg-gradient-to-r from-red-500 to-red-600"></div>
+                                <span class="text-gray-700 dark:text-gray-300">Failed</span>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <div class="text-center py-12">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">No deployment data available</p>
+                    </div>
+                @endif
+            </div>
+            @endif
+        </div>
+    </div>
+            </div>
+            @endif
+        @endforeach
+    </div>
+
+    <!-- Initialize SortableJS after Livewire updates -->
+    @script
+    <script>
+        // Initialize on component load
+        $wire.on('refresh', () => {
+            setTimeout(() => window.initDashboardSortable?.(), 100);
+        });
+
+        // Initialize on first load
+        setTimeout(() => window.initDashboardSortable?.(), 100);
+    </script>
+    @endscript
 </div>

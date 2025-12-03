@@ -1,4 +1,17 @@
 <div class="space-y-6">
+    <!-- Projects Overview -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Projects API</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">
+            Manage your deployment projects through the DevFlow Pro API. All endpoints require authentication with a valid API token with appropriate permissions.
+        </p>
+
+        <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-4 rounded">
+            <h4 class="font-semibold text-blue-900 dark:text-blue-400 mb-2">Base URL</h4>
+            <code class="text-sm text-gray-700 dark:text-gray-300">{{ url('/api/v1/projects') }}</code>
+        </div>
+    </div>
+
     <!-- List Projects -->
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
         <div class="flex items-center justify-between mb-4">

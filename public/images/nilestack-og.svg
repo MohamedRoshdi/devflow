@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="og-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6"/>
+      <stop offset="50%" style="stop-color:#6366F1"/>
+      <stop offset="100%" style="stop-color:#8B5CF6"/>
+    </linearGradient>
+    <linearGradient id="og-gradient-overlay" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:0.3"/>
+      <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:0.1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0F172A"/>
+
+  <!-- Gradient overlay -->
+  <rect width="1200" height="630" fill="url(#og-gradient-overlay)"/>
+
+  <!-- Decorative grid pattern -->
+  <g opacity="0.05" stroke="#3B82F6" stroke-width="1" fill="none">
+    <line x1="0" y1="157.5" x2="1200" y2="157.5"/>
+    <line x1="0" y1="315" x2="1200" y2="315"/>
+    <line x1="0" y1="472.5" x2="1200" y2="472.5"/>
+    <line x1="300" y1="0" x2="300" y2="630"/>
+    <line x1="600" y1="0" x2="600" y2="630"/>
+    <line x1="900" y1="0" x2="900" y2="630"/>
+  </g>
+
+  <!-- Logo Container - Left Side -->
+  <g transform="translate(100, 190)">
+    <!-- Logo Background Circle -->
+    <circle cx="125" cy="125" r="125" fill="url(#og-gradient)" opacity="0.9"/>
+
+    <!-- NileStack Logo -->
+    <g fill="white">
+      <!-- Left pillar of N -->
+      <rect x="70" y="70" width="28" height="110" rx="6"/>
+      <!-- Right pillar of N -->
+      <rect x="152" y="70" width="28" height="110" rx="6"/>
+      <!-- Diagonal connecting bar -->
+      <path d="M84 70 L166 166 L166 180 L152 180 L152 166 L84 84 L84 70 Z" fill="white" opacity="0.95"/>
+      <!-- Wave element representing Nile -->
+      <path d="M70 195 Q98 175 125 195 Q152 215 180 195" stroke="white" stroke-width="10" fill="none" stroke-linecap="round" opacity="0.8"/>
+    </g>
+  </g>
+
+  <!-- Brand Text - Right Side -->
+  <g transform="translate(400, 0)">
+    <!-- Main Title -->
+    <text x="0" y="250" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="white">
+      NileStack
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="310" font-family="Arial, sans-serif" font-size="36" font-weight="500" fill="url(#og-gradient)">
+      DevFlow Pro Platform
+    </text>
+
+    <!-- Description -->
+    <text x="0" y="370" font-family="Arial, sans-serif" font-size="24" font-weight="300" fill="#94A3B8">
+      Multi-Project Deployment &amp; Management
+    </text>
+
+    <!-- Features -->
+    <g font-family="Arial, sans-serif" font-size="18" fill="#CBD5E1">
+      <text x="0" y="420">
+        <tspan fill="#3B82F6">✓</tspan> Automated CI/CD Pipelines
+      </text>
+      <text x="0" y="450">
+        <tspan fill="#6366F1">✓</tspan> Docker Orchestration
+      </text>
+      <text x="0" y="480">
+        <tspan fill="#8B5CF6">✓</tspan> Multi-Tenant Support
+      </text>
+    </g>
+  </g>
+
+  <!-- Bottom gradient accent -->
+  <rect y="580" width="1200" height="50" fill="url(#og-gradient)" opacity="0.15"/>
+</svg>

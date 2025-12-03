@@ -1,0 +1,1313 @@
+<?php
+    use Illuminate\Support\Str;
+
+    $isUpdatePending = $updateStatus && !(($updateStatus['up_to_date'] ?? true));
+?>
+
+<div wire:key="project-show-<?php echo e($project->id); ?>"
+     wire:init="preloadUpdateStatus">
+    <!-- Hero Section with Project Status -->
+    <div class="mb-10 relative">
+        <div class="absolute inset-0 rounded-3xl bg-gradient-to-r from-indigo-500 via-purple-500 to-sky-500 opacity-80 blur-xl"></div>
+        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-900/90 to-blue-900 text-white shadow-2xl">
+            <div class="absolute inset-y-0 right-0 w-1/2 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.12),_transparent_55%)]"></div>
+            <div class="relative p-8 xl:p-10 space-y-8">
+                <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
+                    <div class="flex-1 space-y-5">
+                        <div class="flex flex-wrap items-center gap-3">
+                            <span class="px-3 py-1 text-xs font-semibold tracking-wide uppercase bg-white/10 text-white/80 rounded-full">Project</span>
+                            <span class="px-3 py-1 text-xs font-semibold tracking-wide uppercase bg-white/10 text-white/60 rounded-full"><?php echo e($project->framework ?? 'Unknown Stack'); ?></span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-4">
+                            <h1 class="text-4xl lg:text-5xl font-extrabold tracking-tight"><?php echo e($project->name); ?></h1>
+                            <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold shadow-lg backdrop-blur-sm
+                                class="<?php echo \Illuminate\Support\Arr::toCssClasses([
+                                    'bg-gradient-to-r from-green-500 to-emerald-500 ring-2 ring-green-400/50' => $project->status === 'running',
+                                    'bg-gradient-to-r from-yellow-500 to-amber-500 ring-2 ring-yellow-400/50' => $project->status === 'building',
+                                    'bg-gradient-to-r from-slate-500 to-gray-500 ring-2 ring-slate-400/50' => $project->status === 'stopped',
+                                    'bg-gradient-to-r from-red-500 to-rose-500 ring-2 ring-red-400/50' => $project->status === 'failed' || $project->status === 'error',
+                                    'bg-gradient-to-r from-blue-500 to-indigo-500 ring-2 ring-blue-400/50' => !in_array($project->status, ['running','building','stopped','failed','error'])
+                                ]); ?>"">
+                                <?php if($project->status === 'running'): ?>
+                                    <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                                <?php elseif($project->status === 'building'): ?>
+                                    <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    </svg>
+                                <?php elseif($project->status === 'stopped'): ?>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path>
+                                    </svg>
+                                <?php elseif($project->status === 'failed' || $project->status === 'error'): ?>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                <?php else: ?>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                <?php endif; ?>
+                                <?php echo e(ucfirst($project->status)); ?>
+
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 text-sm text-indigo-100">
+                            <div class="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2 border border-white/10">
+                                <svg class="w-4 h-4 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                </svg>
+                                <span class="font-medium">Slug</span>
+                                <span class="font-mono text-white/90"><?php echo e($project->slug); ?></span>
+                            </div>
+                            <div class="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2 border border-white/10">
+                                <svg class="w-4 h-4 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"></path>
+                                </svg>
+                                <span class="font-medium">Server</span>
+                                <span class="text-white/90"><?php echo e($project->server->name ?? 'No Server'); ?></span>
+                            </div>
+                            <div class="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2 border border-white/10">
+                                <svg class="w-4 h-4 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h7"></path>
+                                </svg>
+                                <span class="font-medium">Branch</span>
+                                <span class="font-mono text-white/90"><?php echo e($project->branch); ?></span>
+                            </div>
+                            <?php if($project->environment): ?>
+                                <div class="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2 border border-white/10">
+                                    <svg class="w-4 h-4 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 16v-2m8-6h2M4 12H2m15.364-7.364l1.414-1.414M6.343 17.657l-1.414 1.414m0-13.657L6.343 6.343m11.314 11.314l1.414 1.414" />
+                                    </svg>
+                                    <span class="font-medium">Environment</span>
+                                    <span class="inline-flex items-center gap-1 text-white/90">
+                                        <?php if($project->environment === 'production'): ?>
+                                            <span class="text-lg">🚀</span>
+                                        <?php elseif($project->environment === 'staging'): ?>
+                                            <span class="text-lg">🔧</span>
+                                        <?php elseif($project->environment === 'development'): ?>
+                                            <span class="text-lg">💻</span>
+                                        <?php else: ?>
+                                            <span class="text-lg">🏠</span>
+                                        <?php endif; ?>
+                                        <?php echo e(ucfirst($project->environment)); ?>
+
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+
+                        <?php if($project->status === 'running'): ?>
+                            <?php
+                                $primaryDomain = $project->domains->where('is_primary', true)->first();
+                                if ($primaryDomain) {
+                                    $protocol = $primaryDomain->ssl_enabled ? 'https://' : 'http://';
+                                    $url = $protocol . $primaryDomain->domain;
+                                } elseif ($project->port && $project->server) {
+                                    $url = 'http://' . $project->server->ip_address . ':' . $project->port;
+                                } else {
+                                    $url = null;
+                                }
+                            ?>
+                            <?php if($url): ?>
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white/10 border border-white/10 rounded-2xl px-4 py-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-300 animate-pulse"></span>
+                                    <div class="text-xs font-semibold uppercase tracking-wide text-white/70">Live URL</div>
+                                    <a href="<?php echo e($url); ?>" target="_blank" class="font-mono text-sm text-white hover:text-blue-100 transition flex items-center gap-2">
+                                        <?php echo e($url); ?>
+
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                        </svg>
+                                    </a>
+                                </div>
+                                <button onclick="navigator.clipboard.writeText('<?php echo e($url); ?>'); window.dispatchEvent(new CustomEvent('devflow-toast',{detail:{message:'Live URL copied!',type:'success'}}));"
+                                        class="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold uppercase tracking-wide bg-white/20 hover:bg-white/30 rounded-lg transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16h8M8 12h8m-1-8H9a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V6a2 2 0 00-2-2z" />
+                                    </svg>
+                                    Copy URL
+                                </button>
+                            </div>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row lg:flex-col items-stretch gap-3">
+                        <?php if($project->status === 'running'): ?>
+                            <button wire:click="stopProject" wire:confirm="Stop this project?"
+                                    wire:loading.attr="disabled"
+                                    wire:target="stopProject"
+                                    class="group px-6 py-3 rounded-xl bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-semibold shadow-lg transition-transform transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                                <div wire:loading.remove wire:target="stopProject" class="flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9h6v6H9z" />
+                                    </svg>
+                                    Stop Project
+                                </div>
+                                <div wire:loading wire:target="stopProject" class="flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Stopping...
+                                </div>
+                                <p class="text-[11px] text-white/70 tracking-wide">Gracefully shuts down container</p>
+                            </button>
+                        <?php else: ?>
+                            <button wire:click="startProject"
+                                    wire:loading.attr="disabled"
+                                    wire:target="startProject"
+                                    class="group px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold shadow-lg transition-transform transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                                <div wire:loading.remove wire:target="startProject" class="flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                    </svg>
+                                    Start Project
+                                </div>
+                                <div wire:loading wire:target="startProject" class="flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Starting...
+                                </div>
+                                <p class="text-[11px] text-white/70 tracking-wide">Boots container and services</p>
+                            </button>
+                        <?php endif; ?>
+
+                        <button wire:click="$set('showDeployModal', true)"
+                                class="group px-6 py-3 rounded-xl bg-white text-indigo-700 font-semibold shadow-lg hover:shadow-xl transition-transform transform hover:-translate-y-0.5">
+                            <div class="flex items-center justify-center gap-2">
+                                <span class="text-lg">🚀</span>
+                                Deploy Update
+                            </div>
+                            <p class="text-[11px] text-indigo-500 tracking-wide">Guided deployment workflow</p>
+                        </button>
+
+                        <a href="<?php echo e(route('projects.edit', $project)); ?>"
+                           class="px-6 py-3 rounded-xl bg-white/10 border border-white/20 text-white font-semibold hover:bg-white/15 transition">
+                            <div class="flex items-center justify-center gap-2">
+                                <span>✏️</span>
+                                Configure Project
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerts -->
+    <?php if(session()->has('message')): ?>
+        <div class="mb-6 bg-green-50 dark:bg-green-900/30 border-l-4 border-green-500 text-green-800 dark:text-green-400 px-6 py-4 rounded-r-lg shadow">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                <?php echo e(session('message')); ?>
+
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <?php if(session()->has('error')): ?>
+        <div class="mb-6 bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 text-red-800 dark:text-red-400 px-6 py-4 rounded-r-lg shadow">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                </svg>
+                <?php echo e(session('error')); ?>
+
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <!-- Git Update Alert -->
+    <?php if($checkingForUpdates && !$updateStatusLoaded): ?>
+        <div class="mb-8 rounded-3xl border border-blue-200/70 bg-gradient-to-br from-blue-50 via-slate-50 to-white dark:from-blue-900/10 dark:via-slate-900/10 dark:to-slate-900 shadow-xl">
+            <div class="flex items-center justify-between gap-6 p-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-blue-500/90 text-white flex items-center justify-center animate-pulse">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-blue-900 dark:text-blue-200">Checking repository status…</h3>
+                        <p class="text-sm text-blue-600 dark:text-blue-300">Fetching latest commits from origin/<?php echo e($project->branch); ?>.</p>
+                    </div>
+                </div>
+                <div class="text-xs text-blue-500 dark:text-blue-300 uppercase tracking-wide">Please wait</div>
+            </div>
+        </div>
+    <?php elseif($updateStatus && !$updateStatus['up_to_date']): ?>
+        <div class="mb-8 rounded-3xl border border-amber-200/70 bg-gradient-to-br from-amber-50 via-orange-50 to-white dark:from-amber-900/10 dark:to-slate-900 shadow-xl">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 p-6">
+                <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 rounded-full bg-amber-400 text-white flex items-center justify-center shadow animate-bounce">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div>
+                            <h3 class="text-xl font-bold text-amber-800 dark:text-amber-200"><?php echo e($updateStatus['commits_behind']); ?> new <?php echo e(Str::plural('commit', $updateStatus['commits_behind'])); ?> ready for deployment</h3>
+                            <p class="text-sm text-amber-600 dark:text-amber-300">Pull in the latest changes from <span class="font-semibold">origin/<?php echo e($project->branch); ?></span> to keep production current.</p>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                            <div class="flex items-center gap-3 bg-white/70 dark:bg-amber-900/30 border border-white/80 dark:border-amber-800 rounded-xl px-4 py-3">
+                                <div class="text-xs font-semibold uppercase text-amber-600 dark:text-amber-200">Current</div>
+                                <code class="font-mono text-sm text-amber-900 dark:text-amber-100"><?php echo e($updateStatus['local_commit']); ?></code>
+                            </div>
+                            <div class="flex items-center gap-3 bg-white/70 dark:bg-amber-900/30 border border-white/80 dark:border-amber-800 rounded-xl px-4 py-3">
+                                <div class="text-xs font-semibold uppercase text-emerald-600 dark:text-emerald-200">Latest</div>
+                                <code class="font-mono text-sm text-emerald-700 dark:text-emerald-100"><?php echo e($updateStatus['remote_commit']); ?></code>
+                            </div>
+                        </div>
+                        <?php if(isset($updateStatus['remote_meta']['message'])): ?>
+                            <p class="text-xs text-amber-500 dark:text-amber-200 italic">Latest change: "<?php echo e(Str::limit($updateStatus['remote_meta']['message'], 120)); ?>"</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <div class="flex flex-col items-stretch gap-3">
+                    <button wire:click="$set('showDeployModal', true)"
+                            class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold shadow-lg hover:shadow-xl transition-transform transform hover:-translate-y-0.5">
+                        <span class="text-lg">🚀</span>
+                        Deploy Latest Changes
+                    </button>
+                    <div class="text-xs text-amber-500 dark:text-amber-300 text-center">Automated Laravel optimizations run post-deploy.</div>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <!-- Quick Stats Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 p-6 transition-all hover:shadow-xl">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Deployments</p>
+                    <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2"><?php echo e($project->deployments()->count()); ?></p>
+                </div>
+                <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full">
+                    <svg class="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 p-6 transition-all hover:shadow-xl">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Domains</p>
+                    <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2"><?php echo e($project->domains->count()); ?></p>
+                </div>
+                <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full">
+                    <svg class="w-8 h-8 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 p-6 transition-all hover:shadow-xl">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Storage</p>
+                    <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2"><?php echo e(number_format($project->storage_used_mb / 1024, 1)); ?>GB</p>
+                </div>
+                <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-full">
+                    <svg class="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 p-6 transition-all hover:shadow-xl">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Last Deploy</p>
+                    <p class="text-lg font-bold text-gray-900 dark:text-white mt-2"><?php echo e($project->last_deployed_at ? $project->last_deployed_at->diffForHumans() : 'Never'); ?></p>
+                </div>
+                <div class="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-full">
+                    <svg class="w-8 h-8 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabbed Navigation -->
+    <div class="mb-6">
+        <div class="border-b border-gray-200 dark:border-gray-700">
+            <nav class="-mb-px flex space-x-8 overflow-x-auto">
+                <button wire:click="setActiveTab('overview')"
+                        wire:loading.class="opacity-50"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center space-x-2 <?php echo e($activeTab === 'overview' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'); ?>">
+                    <svg wire:loading.remove wire:target="setActiveTab('overview')" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <svg wire:loading wire:target="setActiveTab('overview')" class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Overview</span>
+                </button>
+
+                <button wire:click="setActiveTab('docker')"
+                        wire:loading.class="opacity-50"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center space-x-2 <?php echo e($activeTab === 'docker' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'); ?>">
+                    <svg wire:loading.remove wire:target="setActiveTab('docker')" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
+                    <svg wire:loading wire:target="setActiveTab('docker')" class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Docker</span>
+                </button>
+
+                <button wire:click="setActiveTab('environment')"
+                        wire:loading.class="opacity-50"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center space-x-2 <?php echo e($activeTab === 'environment' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'); ?>">
+                    <svg wire:loading.remove wire:target="setActiveTab('environment')" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <svg wire:loading wire:target="setActiveTab('environment')" class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Environment</span>
+                </button>
+
+                <button wire:click="setActiveTab('git')"
+                        wire:loading.class="opacity-50"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center space-x-2 <?php echo e($activeTab === 'git' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'); ?>">
+                    <svg wire:loading.remove wire:target="setActiveTab('git')" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                    <svg wire:loading wire:target="setActiveTab('git')" class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Git & Commits</span>
+                    <?php if($project->status === 'running' && $isUpdatePending): ?>
+                        <span class="ml-1 w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></span>
+                    <?php endif; ?>
+                </button>
+
+                <button wire:click="setActiveTab('logs')"
+                        wire:loading.class="opacity-50"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center space-x-2 <?php echo e($activeTab === 'logs' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'); ?>">
+                    <svg wire:loading.remove wire:target="setActiveTab('logs')" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <svg wire:loading wire:target="setActiveTab('logs')" class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Logs</span>
+                </button>
+
+                <button wire:click="setActiveTab('deployments')"
+                        wire:loading.class="opacity-50"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center space-x-2 <?php echo e($activeTab === 'deployments' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'); ?>">
+                    <svg wire:loading.remove wire:target="setActiveTab('deployments')" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    <svg wire:loading wire:target="setActiveTab('deployments')" class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Deployments</span>
+                </button>
+
+                <button wire:click="setActiveTab('webhooks')"
+                        wire:loading.class="opacity-50"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center space-x-2 <?php echo e($activeTab === 'webhooks' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'); ?>">
+                    <svg wire:loading.remove wire:target="setActiveTab('webhooks')" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    <svg wire:loading wire:target="setActiveTab('webhooks')" class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Webhooks</span>
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="relative">
+        <!-- Overview Tab -->
+        <?php if($activeTab === 'overview'): ?>
+        <div class="space-y-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Project Details Card -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6">
+                        <h2 class="text-2xl font-bold text-white flex items-center">
+                            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Project Details
+                        </h2>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div class="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700">
+                            <span class="text-gray-600 dark:text-gray-400 flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"></path>
+                                </svg>
+                                Server
+                            </span>
+                            <span class="font-semibold text-gray-900 dark:text-white"><?php echo e($project->server->name ?? 'None'); ?></span>
+                        </div>
+                        <div class="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700">
+                            <span class="text-gray-600 dark:text-gray-400 flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                                </svg>
+                                Framework
+                            </span>
+                            <span class="font-semibold text-gray-900 dark:text-white"><?php echo e($project->framework ?? 'Unknown'); ?></span>
+                        </div>
+                        <div class="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700">
+                            <span class="text-gray-600 dark:text-gray-400 flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                PHP Version
+                            </span>
+                            <span class="font-semibold text-gray-900 dark:text-white"><?php echo e($project->php_version ?? 'N/A'); ?></span>
+                        </div>
+                        <div class="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700">
+                            <span class="text-gray-600 dark:text-gray-400 flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                                Node Version
+                            </span>
+                            <span class="font-semibold text-gray-900 dark:text-white"><?php echo e($project->node_version ?? 'N/A'); ?></span>
+                        </div>
+                        <div class="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700">
+                            <span class="text-gray-600 dark:text-gray-400 flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                </svg>
+                                Branch
+                            </span>
+                            <span class="font-semibold text-gray-900 dark:text-white font-mono"><?php echo e($project->branch); ?></span>
+                        </div>
+                        <div class="flex items-center justify-between py-3">
+                            <span class="text-gray-600 dark:text-gray-400 flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                                Auto Deploy
+                            </span>
+                            <span class="font-semibold <?php echo e($project->auto_deploy ? 'text-green-600 dark:text-green-400' : 'text-gray-900 dark:text-white'); ?>">
+                                <?php echo e($project->auto_deploy ? '✅ Enabled' : 'Disabled'); ?>
+
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Domains Card -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 overflow-hidden">
+                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-6">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-2xl font-bold text-white flex items-center">
+                                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                                </svg>
+                                Domains
+                            </h2>
+                            <button class="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-medium transition">
+                                + Add
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <?php if($domains->count() > 0): ?>
+                            <div class="space-y-3">
+                                <?php $__currentLoopData = $domains; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $domain): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <?php
+                                        $isIpPort = str_contains($domain->domain, ':');
+                                        $protocol = $domain->ssl_enabled ? 'https' : 'http';
+                                        $url = $protocol . '://' . $domain->domain;
+                                    ?>
+                                    <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex-1">
+                                                <a href="<?php echo e($url); ?>" target="_blank" class="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline flex items-center">
+                                                    <?php echo e($domain->domain); ?>
+
+                                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                                    </svg>
+                                                </a>
+                                                <div class="flex items-center space-x-3 mt-2">
+                                                    <?php if($isIpPort): ?>
+                                                        <span class="inline-flex items-center text-xs text-purple-600 dark:text-purple-400 font-medium">
+                                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                                            </svg>
+                                                            Direct Access
+                                                        </span>
+                                                    <?php elseif($domain->ssl_enabled): ?>
+                                                        <span class="inline-flex items-center text-xs text-green-600 dark:text-green-400 font-medium">
+                                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                                                            </svg>
+                                                            SSL Active
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <span class="inline-flex items-center text-xs text-gray-500 dark:text-gray-400">
+                                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd"/>
+                                                            </svg>
+                                                            No SSL
+                                                        </span>
+                                                    <?php endif; ?>
+                                                    <?php if($domain->is_primary): ?>
+                                                        <span class="px-2 py-1 bg-blue-500 text-white text-xs rounded-full font-medium">Primary</span>
+                                                    <?php endif; ?>
+                                                    <span class="text-xs font-medium
+                                                        <?php if($domain->status === 'active'): ?> text-green-600 dark:text-green-400
+                                                        <?php elseif($domain->status === 'pending'): ?> text-yellow-600 dark:text-yellow-400
+                                                        <?php elseif($domain->status === 'failed' || $domain->status === 'expired'): ?> text-red-600 dark:text-red-400
+                                                        <?php else: ?> text-gray-600 dark:text-gray-400
+                                                        <?php endif; ?>"><?php echo e(ucfirst($domain->status)); ?></span>
+                                                </div>
+                                            </div>
+                                            <a href="<?php echo e($url); ?>" target="_blank" class="p-2 text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </div>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </div>
+                        <?php else: ?>
+                            <div class="text-center py-12">
+                                <svg class="mx-auto h-16 w-16 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                                </svg>
+                                <p class="mt-4 text-gray-500 dark:text-gray-400">No domains configured</p>
+                                <button class="mt-4 btn btn-primary">+ Add First Domain</button>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+
+        <!-- Docker Tab -->
+        <?php if($activeTab === 'docker'): ?>
+        <div class="space-y-8">
+            <?php
+$__split = function ($name, $params = []) {
+    return [$name, $params];
+};
+[$__name, $__params] = $__split('projects.project-docker-management', ['project' => $project]);
+
+$__html = app('livewire')->mount($__name, $__params, 'docker-' . $project->id, $__slots ?? [], get_defined_vars());
+
+echo $__html;
+
+unset($__html);
+unset($__name);
+unset($__params);
+unset($__split);
+if (isset($__slots)) unset($__slots);
+?>
+        </div>
+        <?php endif; ?>
+
+        <!-- Environment Tab -->
+        <?php if($activeTab === 'environment'): ?>
+        <div class="space-y-8">
+            <?php
+$__split = function ($name, $params = []) {
+    return [$name, $params];
+};
+[$__name, $__params] = $__split('projects.project-environment', ['project' => $project]);
+
+$__html = app('livewire')->mount($__name, $__params, 'env-' . $project->id, $__slots ?? [], get_defined_vars());
+
+echo $__html;
+
+unset($__html);
+unset($__name);
+unset($__params);
+unset($__split);
+if (isset($__slots)) unset($__slots);
+?>
+        </div>
+        <?php endif; ?>
+
+        <!-- Git & Commits Tab -->
+        <?php if($activeTab === 'git'): ?>
+        <div class="space-y-8" <?php if($autoRefreshEnabled): ?> wire:poll.<?php echo e($autoRefreshInterval); ?>s="autoRefreshGit" <?php endif; ?>>
+
+            <!-- Git Content -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 overflow-hidden">
+                <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-blue-900 p-6 sm:p-8">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-white flex items-center">
+                                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12A4 4 0 108 12a4 4 0 108 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v2m6.364.636l-1.414 1.414M22 12h-2m-.636 6.364l-1.414-1.414M12 20v-2m-6.364.636l1.414-1.414M4 12H2m.636-6.364l1.414 1.414" />
+                                </svg>
+                                Repository & Git Activity
+                            </h2>
+                            <p class="text-white/70 text-sm mt-2 max-w-2xl">
+                                Keep your deployment in sync with <span class="font-semibold"><?php echo e($project->branch); ?></span>. Review the current deployment commit, compare remote changes, and explore recent history – all without leaving DevFlow Pro.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <!-- Auto-refresh Toggle -->
+                            <div class="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/10">
+                                <button wire:click="toggleAutoRefresh"
+                                        class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none <?php echo e($autoRefreshEnabled ? 'bg-emerald-500' : 'bg-white/30'); ?>"
+                                        role="switch"
+                                        aria-checked="<?php echo e($autoRefreshEnabled ? 'true' : 'false'); ?>"
+                                        title="<?php echo e($autoRefreshEnabled ? 'Disable auto-refresh' : 'Enable auto-refresh'); ?>">
+                                    <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out <?php echo e($autoRefreshEnabled ? 'translate-x-4' : 'translate-x-0'); ?>"></span>
+                                </button>
+                                <span class="text-xs font-medium text-white/80">Auto</span>
+                                <?php if($autoRefreshEnabled): ?>
+                                    <select wire:change="setAutoRefreshInterval($event.target.value)"
+                                            class="text-xs bg-slate-800 text-white border border-white/20 rounded-lg py-1.5 px-2 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 cursor-pointer appearance-none pr-6"
+                                            style="background-image: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27none%27 viewBox=%270 0 20 20%27%3E%3Cpath stroke=%27%23ffffff%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%271.5%27 d=%27M6 8l4 4 4-4%27/%3E%3C/svg%3E'); background-position: right 0.25rem center; background-repeat: no-repeat; background-size: 1.25em 1.25em;">
+                                        <option value="10" <?php echo e($autoRefreshInterval == 10 ? 'selected' : ''); ?> class="bg-slate-800 text-white">10s</option>
+                                        <option value="30" <?php echo e($autoRefreshInterval == 30 ? 'selected' : ''); ?> class="bg-slate-800 text-white">30s</option>
+                                        <option value="60" <?php echo e($autoRefreshInterval == 60 ? 'selected' : ''); ?> class="bg-slate-800 text-white">1m</option>
+                                        <option value="120" <?php echo e($autoRefreshInterval == 120 ? 'selected' : ''); ?> class="bg-slate-800 text-white">2m</option>
+                                        <option value="300" <?php echo e($autoRefreshInterval == 300 ? 'selected' : ''); ?> class="bg-slate-800 text-white">5m</option>
+                                    </select>
+                                <?php endif; ?>
+                            </div>
+                            <button wire:click="refreshGitData"
+                                    wire:loading.attr="disabled"
+                                    wire:loading.class="!bg-blue-600 scale-105"
+                                    wire:target="refreshGitData, autoRefreshGit"
+                                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-full font-semibold transition-all duration-200">
+                                <svg wire:loading.remove wire:target="refreshGitData, autoRefreshGit" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v6h6M20 20v-6h-6M5.63 18.37A9 9 0 1118.37 5.63L19 6M5 19l.63-.63" />
+                                </svg>
+                                <svg wire:loading wire:target="refreshGitData, autoRefreshGit" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span wire:loading.remove wire:target="refreshGitData, autoRefreshGit">Refresh</span>
+                                <span wire:loading wire:target="refreshGitData, autoRefreshGit">Refreshing...</span>
+                            </button>
+                            <a href="<?php echo e(route('deployments.index')); ?>" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-slate-900 rounded-full font-semibold hover:bg-slate-100 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h4a1 1 0 011 1v16l-3-2-3 2V4zM14 4h7" />
+                                </svg>
+                                View All Deployments
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Last refresh indicator -->
+                    <?php if($lastGitRefreshAt): ?>
+                        <div class="mt-4 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex items-center gap-2 text-xs text-white/60">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span>Last updated: <span class="text-white/80 font-medium"><?php echo e(\Carbon\Carbon::parse($lastGitRefreshAt)->diffForHumans()); ?></span></span>
+                            </div>
+                            <?php if($autoRefreshEnabled): ?>
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-xs font-medium">
+                                    <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+                                    Auto-refresh: <?php echo e($autoRefreshInterval < 60 ? $autoRefreshInterval . 's' : ($autoRefreshInterval / 60) . 'm'); ?>
+
+                                </span>
+                            <?php else: ?>
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/10 text-white/50 rounded-full text-xs">
+                                    <span class="w-2 h-2 bg-white/30 rounded-full"></span>
+                                    Auto-refresh paused
+                                </span>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <div class="p-6 sm:p-8 space-y-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="p-5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40">
+                            <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-4">Repository Overview</h4>
+                            <dl class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                                <div class="flex items-start gap-2">
+                                    <dt class="mt-0.5">
+                                        <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M6.343 6.343a4 4 0 115.657 5.657M9 19a3 3 0 006 0" />
+                                        </svg>
+                                    </dt>
+                                    <dd class="flex-1">
+                                        <span class="font-semibold text-gray-900 dark:text-white block">Remote</span>
+                                        <a href="<?php echo e($project->repository_url); ?>" target="_blank" class="text-xs text-blue-600 dark:text-blue-400 hover:underline break-all">
+                                            <?php echo e($project->repository_url); ?>
+
+                                        </a>
+                                    </dd>
+                                </div>
+                                <div class="flex items-start gap-2">
+                                    <dt class="mt-0.5">
+                                        <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v4a1 1 0 001 1h3v8l7-12h3a1 1 0 001-1V7a1 1 0 00-1-1H4a1 1 0 00-1 1z" />
+                                        </svg>
+                                    </dt>
+                                    <dd class="flex-1">
+                                        <span class="font-semibold text-gray-900 dark:text-white block">Branch</span>
+                                        <span class="inline-flex items-center gap-2 text-xs font-mono px-2 py-1 bg-purple-100 dark:bg-purple-900/40 rounded-full text-purple-700 dark:text-purple-200">
+                                            <?php echo e($project->branch); ?>
+
+                                        </span>
+                                    </dd>
+                                </div>
+                                <div class="flex items-start gap-2">
+                                    <dt class="mt-0.5">
+                                        <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18" />
+                                        </svg>
+                                    </dt>
+                                    <dd class="flex-1">
+                                        <span class="font-semibold text-gray-900 dark:text-white block">Root Directory</span>
+                                        <code class="text-xs bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-200 px-2 py-1 rounded-lg"><?php echo e($project->root_directory ?? '/'); ?></code>
+                                    </dd>
+                                </div>
+                                <div class="flex items-start gap-2">
+                                    <dt class="mt-0.5">
+                                        <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h8l4 4v13a2 2 0 01-2 2z" />
+                                        </svg>
+                                    </dt>
+                                    <dd class="flex-1">
+                                        <span class="font-semibold text-gray-900 dark:text-white block">Repository Notes</span>
+                                        <span class="text-xs leading-relaxed text-gray-600 dark:text-gray-400">
+                                            Auto deploy is <?php echo e($project->auto_deploy ? 'enabled – new commits trigger deployments.' : 'disabled – deployments run manually.'); ?>
+
+                                        </span>
+                                    </dd>
+                                </div>
+                            </dl>
+                        </div>
+
+                        <div class="lg:col-span-2 space-y-6">
+                            <?php if($updateStatus): ?>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="p-5 rounded-xl border border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800">
+                                        <h5 class="text-xs font-semibold uppercase tracking-wide text-blue-700 dark:text-blue-300 mb-2">Local (Deployed)</h5>
+                                        <code class="text-sm font-mono bg-blue-600 text-white px-2.5 py-1 rounded-lg shadow"><?php echo e($updateStatus['local_meta']['short_hash'] ?? substr($updateStatus['local_commit'] ?? 'unknown', 0, 7)); ?></code>
+                                        <p class="mt-3 text-sm font-medium text-blue-900 dark:text-blue-100 leading-snug">
+                                            <?php echo e($updateStatus['local_meta']['message'] ?? 'Local commit metadata unavailable.'); ?>
+
+                                        </p>
+                                        <?php if(isset($updateStatus['local_meta']['author'])): ?>
+                                            <p class="mt-2 text-xs text-blue-700 dark:text-blue-300">
+                                                <?php echo e($updateStatus['local_meta']['author']); ?> • <?php echo e(\Carbon\Carbon::parse($updateStatus['local_meta']['date'])->diffForHumans()); ?>
+
+                                            </p>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="p-5 rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-700">
+                                        <h5 class="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-300 mb-2">Remote (origin/<?php echo e($project->branch); ?>)</h5>
+                                        <code class="text-sm font-mono bg-emerald-600 text-white px-2.5 py-1 rounded-lg shadow"><?php echo e($updateStatus['remote_meta']['short_hash'] ?? substr($updateStatus['remote_commit'] ?? 'unknown', 0, 7)); ?></code>
+                                        <p class="mt-3 text-sm font-medium text-emerald-900 dark:text-emerald-100 leading-snug">
+                                            <?php echo e($updateStatus['remote_meta']['message'] ?? 'Remote commit metadata unavailable.'); ?>
+
+                                        </p>
+                                        <?php if(isset($updateStatus['remote_meta']['author'])): ?>
+                                            <p class="mt-2 text-xs text-emerald-700 dark:text-emerald-300">
+                                                <?php echo e($updateStatus['remote_meta']['author']); ?> • <?php echo e(\Carbon\Carbon::parse($updateStatus['remote_meta']['date'])->diffForHumans()); ?>
+
+                                            </p>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="p-5 rounded-xl border border-amber-200 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-700">
+                                        <h5 class="text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-300 mb-2">Sync Status</h5>
+                                        <p class="text-2xl font-bold text-amber-700 dark:text-amber-300">
+                                            <?php if($updateStatus['up_to_date']): ?>
+                                                Up-to-date ✅
+                                            <?php else: ?>
+                                                <?php echo e($updateStatus['commits_behind']); ?> commit<?php echo e($updateStatus['commits_behind'] === 1 ? '' : 's'); ?> behind
+                                            <?php endif; ?>
+                                        </p>
+                                        <p class="mt-3 text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
+                                            Local: <code class="bg-amber-200/70 dark:bg-amber-900/40 px-1.5 py-0.5 rounded font-mono"><?php echo e($updateStatus['local_commit']); ?></code><br>
+                                            Remote: <code class="bg-amber-200/70 dark:bg-amber-900/40 px-1.5 py-0.5 rounded font-mono"><?php echo e($updateStatus['remote_commit']); ?></code>
+                                        </p>
+                                        <?php if (! ($updateStatus['up_to_date'])): ?>
+                                            <p class="mt-3 text-xs text-amber-600 dark:text-amber-200">Trigger a deployment to bring this project in sync with origin/<?php echo e($project->branch); ?>.</p>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if($project->current_commit_hash): ?>
+                                <div class="p-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200 dark:border-blue-700 rounded-xl">
+                                    <h4 class="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-3 flex items-center">
+                                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                                        </svg>
+                                        Currently Deployed Commit
+                                    </h4>
+                                    <div class="flex flex-wrap items-start gap-4">
+                                        <code class="text-sm bg-blue-600 text-white px-3 py-1.5 rounded-lg font-mono font-bold"><?php echo e(substr($project->current_commit_hash, 0, 7)); ?></code>
+                                        <div class="flex-1 min-w-[12rem]">
+                                            <p class="text-base font-medium text-blue-900 dark:text-blue-200"><?php echo e($project->current_commit_message); ?></p>
+                                            <p class="text-sm text-blue-700 dark:text-blue-400 mt-2 flex items-center gap-2">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                <?php echo e($project->last_commit_at ? $project->last_commit_at->diffForHumans() : 'Unknown time'); ?>
+
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <!-- Commits Loading State -->
+                    <div wire:loading wire:target="refreshGitData, autoRefreshGit, loadCommits" class="py-8">
+                        <div class="flex flex-col items-center justify-center space-y-4">
+                            <div class="relative">
+                                <div class="w-12 h-12 border-4 border-blue-200 dark:border-blue-800 rounded-full"></div>
+                                <div class="w-12 h-12 border-4 border-blue-600 dark:border-blue-400 rounded-full animate-spin absolute top-0 left-0 border-t-transparent"></div>
+                            </div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 animate-pulse">Loading commits...</p>
+                        </div>
+                    </div>
+
+                    <div wire:loading.remove wire:target="refreshGitData, autoRefreshGit, loadCommits">
+                    <?php if(count($commits) > 0): ?>
+                        <?php
+                            $commitPages = max(1, (int) ceil(max(0, $commitTotal) / $commitPerPage));
+                        ?>
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            <div class="text-sm text-gray-600 dark:text-gray-400">
+                                Showing <span class="font-semibold text-gray-900 dark:text-white"><?php echo e($this->commitRange['start']); ?></span>
+                                to <span class="font-semibold text-gray-900 dark:text-white"><?php echo e($this->commitRange['end']); ?></span>
+                                of <span class="font-semibold text-gray-900 dark:text-white"><?php echo e($commitTotal); ?></span> commits.
+                            </div>
+                            <div class="flex flex-wrap items-center gap-3">
+                                <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Per page</label>
+                                <select wire:change="setCommitPerPage($event.target.value)" class="border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1.5 text-sm bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500">
+                                    <?php $__currentLoopData = [5, 8, 10, 15]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $size): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($size); ?>" <?php if($commitPerPage === $size): echo 'selected'; endif; ?>><?php echo e($size); ?></option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </select>
+                                <div class="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                                    <button wire:click="firstCommitPage" wire:loading.attr="disabled" <?php if($commitPage <= 1): echo 'disabled'; endif; ?>
+                                            class="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition disabled:opacity-40 disabled:cursor-not-allowed">« First</button>
+                                    <button wire:click="previousCommitPage" wire:loading.attr="disabled" <?php if($commitPage <= 1): echo 'disabled'; endif; ?>
+                                            class="px-2.5 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition disabled:opacity-40 disabled:cursor-not-allowed">‹ Prev</button>
+                                    <span>Page <span class="font-semibold text-gray-900 dark:text-white"><?php echo e($commitPage); ?></span> of <span class="font-semibold text-gray-900 dark:text-white"><?php echo e($commitPages); ?></span></span>
+                                    <button wire:click="nextCommitPage" wire:loading.attr="disabled" <?php if($commitPage >= $commitPages): echo 'disabled'; endif; ?>
+                                            class="px-2.5 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition disabled:opacity-40 disabled:cursor-not-allowed">Next ›</button>
+                                    <button wire:click="lastCommitPage" wire:loading.attr="disabled" <?php if($commitPage >= $commitPages): echo 'disabled'; endif; ?>
+                                            class="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition disabled:opacity-40 disabled:cursor-not-allowed">Last »</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4 class="text-lg font-bold text-gray-900 dark:text-white mt-2 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            Recent Commits on <span class="font-mono ml-2 text-green-600 dark:text-green-400"><?php echo e($project->branch); ?></span>
+                        </h4>
+
+                        <div class="relative pl-6">
+                            <span class="absolute left-2 top-0 bottom-0 w-px bg-gradient-to-b from-green-200 via-blue-200 to-purple-200 dark:from-green-700/60 dark:via-blue-700/60 dark:to-purple-700/60"></span>
+                            <div class="space-y-4">
+                                <?php
+                                    $currentCommitHash = $project->current_commit_hash;
+                                    $foundCurrentCommit = false;
+                                ?>
+                                <?php $__currentLoopData = $commits; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $commit): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <?php
+                                        $isCurrentCommit = $currentCommitHash && str_starts_with($commit['hash'], substr($currentCommitHash, 0, 7));
+                                        $isUnmerged = !$foundCurrentCommit && !$isCurrentCommit && $currentCommitHash;
+                                        $isMerged = $foundCurrentCommit;
+                                        if ($isCurrentCommit) $foundCurrentCommit = true;
+                                    ?>
+                                    <div class="relative pl-6"
+                                         wire:key="commit-<?php echo e($commit['hash']); ?>">
+                                        
+                                        <span class="absolute left-0 top-2 w-3 h-3 rounded-full border-2 border-white dark:border-gray-900 shadow
+                                            <?php if($isCurrentCommit): ?>
+                                                bg-green-500
+                                            <?php elseif($isUnmerged): ?>
+                                                bg-amber-500
+                                            <?php else: ?>
+                                                bg-blue-500
+                                            <?php endif; ?>"></span>
+
+                                        
+                                        <div class="p-5 rounded-xl border-2 hover:-translate-y-0.5 transition-all
+                                            <?php if($isCurrentCommit): ?>
+                                                bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-green-300 dark:border-green-700
+                                            <?php elseif($isUnmerged): ?>
+                                                bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-amber-300 dark:border-amber-700
+                                            <?php else: ?>
+                                                bg-gradient-to-r from-blue-50/50 to-indigo-50/50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800
+                                            <?php endif; ?>">
+                                            <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                                                <div class="flex items-center gap-3">
+                                                    <code class="text-xs px-3 py-1.5 rounded-lg font-mono font-bold
+                                                        <?php if($isCurrentCommit): ?>
+                                                            bg-green-600 text-white
+                                                        <?php elseif($isUnmerged): ?>
+                                                            bg-amber-600 text-white
+                                                        <?php else: ?>
+                                                            bg-blue-600 text-white
+                                                        <?php endif; ?>"><?php echo e($commit['short_hash']); ?></code>
+                                                    
+                                                    <?php if($isCurrentCommit): ?>
+                                                        <span class="text-xs px-2 py-0.5 rounded-full bg-green-500 text-white font-medium shadow-sm">
+                                                            Deployed
+                                                        </span>
+                                                    <?php elseif($isUnmerged): ?>
+                                                        <span class="text-xs px-2 py-0.5 rounded-full bg-amber-500 text-white font-medium shadow-sm">
+                                                            Unmerged
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <span class="text-xs px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 font-medium">
+                                                            Merged
+                                                        </span>
+                                                    <?php endif; ?>
+                                                    <button type="button"
+                                                            onclick="navigator.clipboard.writeText('<?php echo e($commit['hash']); ?>')"
+                                                            class="text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">
+                                                        Copy full hash
+                                                    </button>
+                                                </div>
+                                                <span class="inline-flex items-center gap-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                    <?php echo e(\Carbon\Carbon::createFromTimestamp($commit['timestamp'])->format('M d, Y • H:i')); ?>
+
+                                                    <span class="text-[11px] text-gray-400">(<?php echo e(\Carbon\Carbon::createFromTimestamp($commit['timestamp'])->diffForHumans()); ?>)</span>
+                                                </span>
+                                            </div>
+                                            <p class="mt-3 text-sm font-medium text-gray-900 dark:text-white leading-relaxed"><?php echo e($commit['message']); ?></p>
+                                            <div class="mt-3 flex flex-wrap items-center gap-3 text-xs text-gray-600 dark:text-gray-400">
+                                                <span class="inline-flex items-center gap-2 px-2 py-1 bg-white/60 dark:bg-gray-700/60 rounded-lg">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <?php echo e($commit['author']); ?>
+
+                                                </span>
+                                                <span class="inline-flex items-center gap-2 px-2 py-1 bg-white/40 dark:bg-gray-700/40 rounded-lg">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.88 3.549l3.536 3.536-9.193 9.193a4 4 0 01-1.414.943l-3.086.924.924-3.086a4 4 0 01.943-1.414l9.29-9.29z" />
+                                                    </svg>
+                                                    <?php echo e($commit['email']); ?>
+
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-gray-500 dark:text-gray-400">
+                            <span>Page <?php echo e($commitPage); ?> of <?php echo e($commitPages); ?></span>
+                            <div class="flex items-center gap-2">
+                                <button wire:click="firstCommitPage" wire:loading.attr="disabled" <?php if($commitPage <= 1): echo 'disabled'; endif; ?>
+                                        class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition disabled:opacity-40 disabled:cursor-not-allowed">First</button>
+                                <button wire:click="previousCommitPage" wire:loading.attr="disabled" <?php if($commitPage <= 1): echo 'disabled'; endif; ?>
+                                        class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition disabled:opacity-40 disabled:cursor-not-allowed">Previous</button>
+                                <button wire:click="nextCommitPage" wire:loading.attr="disabled" <?php if($commitPage >= $commitPages): echo 'disabled'; endif; ?>
+                                        class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition disabled:opacity-40 disabled:cursor-not-allowed">Next</button>
+                                <button wire:click="lastCommitPage" wire:loading.attr="disabled" <?php if($commitPage >= $commitPages): echo 'disabled'; endif; ?>
+                                        class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition disabled:opacity-40 disabled:cursor-not-allowed">Last</button>
+                            </div>
+                        </div>
+                    <?php else: ?>
+                        <div class="text-center py-16">
+                            <svg class="mx-auto h-20 w-20 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                            </svg>
+                            <p class="mt-4 text-gray-500 dark:text-gray-400 text-lg">No commit history available</p>
+                            <p class="text-sm text-gray-400 dark:text-gray-500 mt-2">Deploy the project first to start tracking commits.</p>
+                        </div>
+                    <?php endif; ?>
+                    </div><!-- End wire:loading.remove wrapper -->
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+
+        <!-- Logs Tab -->
+        <?php if($activeTab === 'logs'): ?>
+        <div class="space-y-8">
+            <?php
+$__split = function ($name, $params = []) {
+    return [$name, $params];
+};
+[$__name, $__params] = $__split('projects.project-logs', ['project' => $project]);
+
+$__html = app('livewire')->mount($__name, $__params, 'logs-' . $project->id, $__slots ?? [], get_defined_vars());
+
+echo $__html;
+
+unset($__html);
+unset($__name);
+unset($__params);
+unset($__split);
+if (isset($__slots)) unset($__slots);
+?>
+        </div>
+        <?php endif; ?>
+
+        <!-- Deployments Tab -->
+        <?php if($activeTab === 'deployments'): ?>
+        <div class="space-y-8">
+            <!-- Scheduled Deployments Section -->
+            <?php
+$__split = function ($name, $params = []) {
+    return [$name, $params];
+};
+[$__name, $__params] = $__split('deployments.scheduled-deployments', ['project' => $project]);
+
+$__html = app('livewire')->mount($__name, $__params, 'scheduled-' . $project->id, $__slots ?? [], get_defined_vars());
+
+echo $__html;
+
+unset($__html);
+unset($__name);
+unset($__params);
+unset($__split);
+if (isset($__slots)) unset($__slots);
+?>
+
+            <!-- Rollback Section -->
+            <?php
+$__split = function ($name, $params = []) {
+    return [$name, $params];
+};
+[$__name, $__params] = $__split('deployments.deployment-rollback', ['project' => $project]);
+
+$__html = app('livewire')->mount($__name, $__params, 'rollback-' . $project->id, $__slots ?? [], get_defined_vars());
+
+echo $__html;
+
+unset($__html);
+unset($__name);
+unset($__params);
+unset($__split);
+if (isset($__slots)) unset($__slots);
+?>
+
+            <!-- Deployment History Section -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 overflow-hidden">
+                <div class="bg-gradient-to-r from-orange-500 to-red-500 p-6">
+                    <h2 class="text-2xl font-bold text-white flex items-center">
+                        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Deployment History
+                    </h2>
+                    <p class="text-white/80 text-sm mt-2">Track all deployments with detailed status and logs</p>
+                </div>
+                <div class="p-6">
+                    <?php if($deployments->count() > 0): ?>
+                        <div class="space-y-4">
+                            <?php $__currentLoopData = $deployments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $deployment): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <div class="p-5 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-all border border-gray-200 dark:border-gray-600 hover:shadow-md">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <div class="flex items-center space-x-4 mb-3">
+                                                <span class="px-4 py-1.5 rounded-full text-sm font-bold shadow-sm
+                                                    <?php if($deployment->status === 'success'): ?> bg-gradient-to-r from-green-400 to-green-500 text-white
+                                                    <?php elseif($deployment->status === 'failed'): ?> bg-gradient-to-r from-red-400 to-red-500 text-white
+                                                    <?php elseif($deployment->status === 'running'): ?> bg-gradient-to-r from-yellow-400 to-yellow-500 text-white animate-pulse
+                                                    <?php else: ?> bg-gradient-to-r from-gray-400 to-gray-500 text-white
+                                                    <?php endif; ?>">
+                                                    <?php echo e(ucfirst($deployment->status)); ?>
+
+                                                </span>
+                                                <?php if($deployment->commit_hash): ?>
+                                                    <code class="text-xs bg-gray-700 dark:bg-gray-600 text-white px-3 py-1.5 rounded-lg font-mono font-bold">
+                                                        <?php echo e(substr($deployment->commit_hash, 0, 7)); ?>
+
+                                                    </code>
+                                                <?php endif; ?>
+                                            </div>
+                                            <p class="text-base font-medium text-gray-900 dark:text-white mb-2">
+                                                <?php echo e($deployment->commit_message ?? 'No commit message'); ?>
+
+                                            </p>
+                                            <div class="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
+                                                <span class="flex items-center">
+                                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                    <?php echo e($deployment->created_at->diffForHumans()); ?>
+
+                                                </span>
+                                                <?php if($deployment->duration_seconds): ?>
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                        Duration: <?php echo e(number_format($deployment->duration_seconds / 60, 1)); ?> min
+                                                    </span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                        <a href="<?php echo e(route('deployments.show', $deployment)); ?>" 
+                                           class="px-6 py-3 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-lg font-semibold transition-all transform hover:scale-105 shadow">
+                                            View Details →
+                                        </a>
+                                    </div>
+                                </div>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="text-center py-16">
+                            <svg class="mx-auto h-20 w-20 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <p class="mt-4 text-gray-500 dark:text-gray-400 text-lg">No deployments yet</p>
+                            <button wire:click="$set('showDeployModal', true)" class="mt-6 btn btn-primary btn-lg">
+                                🚀 Start First Deployment
+                            </button>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="mt-6">
+                <?php echo e($deployments->onEachSide(1)->links()); ?>
+
+            </div>
+        </div>
+        <?php endif; ?>
+        <!-- End of Deployments Tab -->
+
+        <!-- Webhooks Tab -->
+        <?php if($activeTab === 'webhooks'): ?>
+            <?php
+$__split = function ($name, $params = []) {
+    return [$name, $params];
+};
+[$__name, $__params] = $__split('projects.project-webhook-settings', ['project' => $project]);
+
+$__html = app('livewire')->mount($__name, $__params, 'webhooks-' . $project->id, $__slots ?? [], get_defined_vars());
+
+echo $__html;
+
+unset($__html);
+unset($__name);
+unset($__params);
+unset($__split);
+if (isset($__slots)) unset($__slots);
+?>
+        <?php endif; ?>
+        <!-- End of Webhooks Tab -->
+    </div>
+    <!-- End of Tab Content Container -->
+
+    <!-- Deploy Modal -->
+    <?php if($showDeployModal): ?>
+        <div wire:key="deploy-modal-<?php echo e($project->id); ?>"
+             class="fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4"
+             x-data="{ deploying: false }"
+             @click.self="if(!deploying) $wire.set('showDeployModal', false)">
+            <div class="relative mx-auto border border-gray-200 dark:border-gray-700 w-full max-w-lg shadow-2xl rounded-2xl bg-white dark:bg-gray-800 transform transition-all" 
+                 @click.stop>
+                <div class="p-8">
+                    <div class="flex items-center justify-center w-16 h-16 mx-auto bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-6">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3 text-center">Deploy Project</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-6 text-center">
+                        This will deploy the latest changes from the <span class="font-mono font-semibold text-blue-600 dark:text-blue-400"><?php echo e($project->branch); ?></span> branch.
+                    </p>
+
+                    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-6">
+                        <h4 class="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-2">Deployment will:</h4>
+                        <ul class="text-sm text-blue-800 dark:text-blue-400 space-y-1">
+                            <li>✓ Pull latest code from GitHub</li>
+                            <li>✓ Build Docker container (12-18 min)</li>
+                            <li>✓ Inject environment variables</li>
+                            <li>✓ Start the application</li>
+                        </ul>
+                    </div>
+
+                    <div class="flex space-x-3">
+                        <button @click="if(!deploying) $wire.set('showDeployModal', false)"
+                                :disabled="deploying"
+                                :class="{ 'opacity-50 cursor-not-allowed': deploying }"
+                                class="flex-1 px-6 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                            Cancel
+                        </button>
+                        <button @click="deploying = true; $wire.deploy()"
+                                :disabled="deploying"
+                                :class="{ 'scale-100 cursor-wait opacity-75': deploying }"
+                                class="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-bold transition-all transform hover:scale-105 shadow-lg">
+                            <span x-show="!deploying" class="flex items-center justify-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                                Deploy Now
+                            </span>
+                            <span x-show="deploying" x-cloak class="flex items-center justify-center">
+                                <svg class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span class="animate-pulse">Starting deployment...</span>
+                            </span>
+                        </button>
+                    </div>
+                    
+                    <!-- Loading Overlay -->
+                    <div x-show="deploying" x-cloak class="absolute inset-0 bg-white dark:bg-gray-800 bg-opacity-95 dark:bg-opacity-95 flex items-center justify-center rounded-2xl z-10">
+                        <div class="text-center">
+                            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-4 animate-pulse">
+                                <svg class="animate-spin h-10 w-10 text-white" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </div>
+                            <p class="text-lg font-bold text-gray-900 dark:text-white mb-2">Starting Deployment...</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Please wait, you'll be redirected shortly</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+</div>
+<?php /**PATH /home/roshdy/Work/projects/DEVFLOW_PRO/resources/views/livewire/projects/project-show.blade.php ENDPATH**/ ?>

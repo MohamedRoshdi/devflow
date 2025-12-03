@@ -154,6 +154,11 @@ class Server extends Model
         return $this->hasOne(SecurityScan::class)->latestOfMany();
     }
 
+    public function latestMetric()
+    {
+        return $this->hasOne(ServerMetric::class)->latestOfMany('recorded_at');
+    }
+
     // Status helpers
     public function isOnline(): bool
     {

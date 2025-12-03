@@ -1,27 +1,22 @@
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <!-- Hero Header -->
-    <div class="bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500 dark:from-blue-600 dark:via-indigo-600 dark:to-purple-600 text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="flex items-center space-x-4 mb-4">
-                <div class="p-3 bg-white/20 backdrop-blur-md rounded-xl">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                </div>
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Hero Section with Gradient -->
+        <div class="relative mb-8 rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-500 to-violet-500 dark:from-blue-600 dark:via-indigo-600 dark:to-violet-600 p-8 shadow-xl overflow-hidden">
+            <div class="absolute inset-0 bg-black/10 dark:bg-black/20"></div>
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                    <h1 class="text-4xl font-bold">API Documentation</h1>
-                    <p class="text-white/90 text-lg mt-1">Complete API reference for DevFlow Pro v1</p>
+                    <div class="flex items-center space-x-3 mb-2">
+                        <div class="p-2 bg-white/20 dark:bg-white/10 backdrop-blur-md rounded-lg">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                            </svg>
+                        </div>
+                        <h1 class="text-3xl md:text-4xl font-bold text-white">API Documentation</h1>
+                    </div>
+                    <p class="text-white/90 text-lg">Complete reference for the DevFlow Pro REST API</p>
                 </div>
-            </div>
-            <div class="flex items-center space-x-4 mt-6">
-                <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-sm font-medium">Version 1.0</span>
-                <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-sm font-medium">REST API</span>
-                <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-sm font-medium">JSON</span>
             </div>
         </div>
-    </div>
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex gap-8">
             <!-- Sidebar Navigation -->
             <div class="w-64 flex-shrink-0">
@@ -62,6 +57,15 @@
                             </svg>
                             Deployments
                         </button>
+
+                        <!-- Webhooks -->
+                        <button wire:click="setSection('webhooks')"
+                                class="w-full text-left px-4 py-2 rounded-lg transition-colors {{ $activeSection === 'webhooks' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                            </svg>
+                            Webhooks
+                        </button>
                     </nav>
                 </div>
             </div>
@@ -76,6 +80,8 @@
                     @include('livewire.docs.partials.servers')
                 @elseif($activeSection === 'deployments')
                     @include('livewire.docs.partials.deployments')
+                @elseif($activeSection === 'webhooks')
+                    @include('livewire.docs.partials.webhooks')
                 @endif
             </div>
         </div>

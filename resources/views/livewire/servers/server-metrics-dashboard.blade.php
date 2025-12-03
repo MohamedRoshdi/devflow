@@ -1,4 +1,4 @@
-<div wire:poll.30s="loadMetrics">
+<div x-data="serverMetrics()" x-init="initCharts()" wire:ignore.self>
     <!-- Hero Section -->
     <div class="relative mb-8 rounded-2xl bg-gradient-to-br from-indigo-800 via-purple-900 to-indigo-800 p-8 shadow-2xl overflow-hidden">
         <!-- Background Pattern -->
@@ -24,7 +24,7 @@
                     </div>
 
                     <div>
-                        <h1 class="text-3xl font-bold text-white">Server Metrics Dashboard</h1>
+                        <h1 class="text-3xl font-bold text-white">Real-time Server Metrics</h1>
                         <div class="flex flex-wrap items-center gap-3 mt-2">
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white/10 text-white/90">
                                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,8 +32,13 @@
                                 </svg>
                                 {{ $server->name }}
                             </span>
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white/10 text-white/90">
-                                {{ $server->ip_address }}
+                            <!-- Live Indicator -->
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-500/20 text-green-300 border border-green-500/30">
+                                <span class="relative flex h-2 w-2 mr-2">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                </span>
+                                Live Updates
                             </span>
                         </div>
                     </div>
@@ -63,55 +68,48 @@
         </div>
     </div>
 
-    <!-- Flash Messages -->
-    @if (session()->has('message'))
-        <div class="mb-6 bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 text-green-400 px-5 py-4 rounded-xl flex items-center gap-3">
-            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            {{ session('message') }}
-        </div>
-    @endif
-
-    @if (session()->has('error'))
-        <div class="mb-6 bg-gradient-to-r from-red-500/20 to-red-600/20 border border-red-500/30 text-red-400 px-5 py-4 rounded-xl flex items-center gap-3">
-            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            {{ session('error') }}
+    <!-- Alert Banner -->
+    @if($this->alertStatus['status'] !== 'healthy' && $this->alertStatus['status'] !== 'unknown')
+        <div class="mb-6 rounded-xl p-4 {{ $this->alertStatus['status'] === 'critical' ? 'bg-red-500/10 border border-red-500/30' : 'bg-yellow-500/10 border border-yellow-500/30' }}">
+            <div class="flex items-start gap-3">
+                <div class="p-2 rounded-lg {{ $this->alertStatus['status'] === 'critical' ? 'bg-red-500/20' : 'bg-yellow-500/20' }}">
+                    <svg class="w-5 h-5 {{ $this->alertStatus['status'] === 'critical' ? 'text-red-400' : 'text-yellow-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-semibold {{ $this->alertStatus['status'] === 'critical' ? 'text-red-400' : 'text-yellow-400' }}">
+                        {{ $this->alertStatus['status'] === 'critical' ? 'Critical Alert' : 'Warning' }}
+                    </h3>
+                    <div class="mt-1 space-y-1">
+                        @foreach($this->alertStatus['alerts'] as $alert)
+                            <p class="text-sm {{ $alert['type'] === 'critical' ? 'text-red-300' : 'text-yellow-300' }}">
+                                {{ $alert['metric'] }} usage is at {{ number_format($alert['value'], 1) }}%
+                            </p>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
         </div>
     @endif
 
     <!-- Time Range Selector -->
     <div class="mb-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 transition-colors">
-        <div class="flex flex-wrap items-center gap-3">
-            <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Time Range:</span>
-            <div class="flex gap-2">
-                <button wire:click="setPeriod('1h')"
-                        class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                        @if($period === '1h') bg-indigo-600 text-white shadow-md @else bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 @endif">
-                    1 Hour
-                </button>
-                <button wire:click="setPeriod('6h')"
-                        class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                        @if($period === '6h') bg-indigo-600 text-white shadow-md @else bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 @endif">
-                    6 Hours
-                </button>
-                <button wire:click="setPeriod('24h')"
-                        class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                        @if($period === '24h') bg-indigo-600 text-white shadow-md @else bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 @endif">
-                    24 Hours
-                </button>
-                <button wire:click="setPeriod('7d')"
-                        class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                        @if($period === '7d') bg-indigo-600 text-white shadow-md @else bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 @endif">
-                    7 Days
-                </button>
-                <button wire:click="setPeriod('30d')"
-                        class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                        @if($period === '30d') bg-indigo-600 text-white shadow-md @else bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 @endif">
-                    30 Days
-                </button>
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Time Range:</span>
+                <div class="flex gap-2">
+                    @foreach(['1h' => '1 Hour', '6h' => '6 Hours', '24h' => '24 Hours', '7d' => '7 Days'] as $key => $label)
+                        <button wire:click="setPeriod('{{ $key }}')"
+                                class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                                @if($period === $key) bg-indigo-600 text-white shadow-md @else bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 @endif">
+                            {{ $label }}
+                        </button>
+                    @endforeach
+                </div>
+            </div>
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+                Last updated: <span x-text="lastUpdate">{{ $latestMetric?->recorded_at?->diffForHumans() ?? 'Never' }}</span>
             </div>
         </div>
     </div>
@@ -138,7 +136,7 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <span class="text-4xl font-bold text-gray-900 dark:text-white">{{ number_format($latestMetric->cpu_usage, 1) }}</span>
+                    <span class="text-4xl font-bold text-gray-900 dark:text-white" x-text="currentMetrics.cpu">{{ number_format($latestMetric->cpu_usage, 1) }}</span>
                     <span class="text-xl text-gray-500 dark:text-gray-400">%</span>
                 </div>
                 <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
@@ -146,7 +144,7 @@
                         @if($latestMetric->cpu_usage > 80) bg-gradient-to-r from-red-500 to-red-600
                         @elseif($latestMetric->cpu_usage > 60) bg-gradient-to-r from-yellow-500 to-orange-500
                         @else bg-gradient-to-r from-blue-500 to-indigo-600
-                        @endif" style="width: {{ min($latestMetric->cpu_usage, 100) }}%"></div>
+                        @endif" :style="'width: ' + Math.min(currentMetrics.cpu, 100) + '%'"></div>
                 </div>
                 <div class="mt-3 text-xs text-gray-500 dark:text-gray-400">
                     Load Avg: {{ $latestMetric->load_average_1 }}, {{ $latestMetric->load_average_5 }}, {{ $latestMetric->load_average_15 }}
@@ -172,7 +170,7 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <span class="text-4xl font-bold text-gray-900 dark:text-white">{{ number_format($latestMetric->memory_usage, 1) }}</span>
+                    <span class="text-4xl font-bold text-gray-900 dark:text-white" x-text="currentMetrics.memory">{{ number_format($latestMetric->memory_usage, 1) }}</span>
                     <span class="text-xl text-gray-500 dark:text-gray-400">%</span>
                 </div>
                 <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
@@ -180,7 +178,7 @@
                         @if($latestMetric->memory_usage > 80) bg-gradient-to-r from-red-500 to-red-600
                         @elseif($latestMetric->memory_usage > 60) bg-gradient-to-r from-yellow-500 to-orange-500
                         @else bg-gradient-to-r from-green-500 to-emerald-600
-                        @endif" style="width: {{ min($latestMetric->memory_usage, 100) }}%"></div>
+                        @endif" :style="'width: ' + Math.min(currentMetrics.memory, 100) + '%'"></div>
                 </div>
                 <div class="mt-3 text-xs text-gray-500 dark:text-gray-400">
                     {{ number_format($latestMetric->memory_used_mb / 1024, 1) }} GB / {{ number_format($latestMetric->memory_total_mb / 1024, 1) }} GB
@@ -206,7 +204,7 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <span class="text-4xl font-bold text-gray-900 dark:text-white">{{ number_format($latestMetric->disk_usage, 1) }}</span>
+                    <span class="text-4xl font-bold text-gray-900 dark:text-white" x-text="currentMetrics.disk">{{ number_format($latestMetric->disk_usage, 1) }}</span>
                     <span class="text-xl text-gray-500 dark:text-gray-400">%</span>
                 </div>
                 <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
@@ -214,10 +212,39 @@
                         @if($latestMetric->disk_usage > 80) bg-gradient-to-r from-red-500 to-red-600
                         @elseif($latestMetric->disk_usage > 60) bg-gradient-to-r from-yellow-500 to-orange-500
                         @else bg-gradient-to-r from-purple-500 to-pink-600
-                        @endif" style="width: {{ min($latestMetric->disk_usage, 100) }}%"></div>
+                        @endif" :style="'width: ' + Math.min(currentMetrics.disk, 100) + '%'"></div>
                 </div>
                 <div class="mt-3 text-xs text-gray-500 dark:text-gray-400">
                     {{ $latestMetric->disk_used_gb }} GB / {{ $latestMetric->disk_total_gb }} GB
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- CPU & Memory Chart -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 transition-colors">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+                    </svg>
+                    CPU & Memory Trend
+                </h3>
+                <div class="h-64">
+                    <canvas id="cpuMemoryChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Disk & Load Chart -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 transition-colors">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    Disk Usage & Load Average
+                </h3>
+                <div class="h-64">
+                    <canvas id="diskLoadChart"></canvas>
                 </div>
             </div>
         </div>
@@ -233,7 +260,7 @@
                         </svg>
                     </div>
                     <div>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Network In</p>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Network In (Total)</p>
                         <p class="text-2xl font-bold text-gray-900 dark:text-white">
                             {{ number_format($latestMetric->network_in_bytes / 1024 / 1024 / 1024, 2) }} GB
                         </p>
@@ -250,7 +277,7 @@
                         </svg>
                     </div>
                     <div>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Network Out</p>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Network Out (Total)</p>
                         <p class="text-2xl font-bold text-gray-900 dark:text-white">
                             {{ number_format($latestMetric->network_out_bytes / 1024 / 1024 / 1024, 2) }} GB
                         </p>
@@ -287,10 +314,10 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                            @foreach($metrics as $metric)
+                            @foreach($metrics->take(20) as $metric)
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
                                     <td class="px-4 py-3 text-sm text-gray-900 dark:text-white whitespace-nowrap">
-                                        {{ $metric->recorded_at->format('M d, Y H:i') }}
+                                        {{ $metric->recorded_at->format('M d, H:i') }}
                                     </td>
                                     <td class="px-4 py-3 text-sm font-semibold whitespace-nowrap
                                         @if($metric->cpu_usage > 80) text-red-600 dark:text-red-400
@@ -346,3 +373,219 @@
         </div>
     </div>
 </div>
+
+@script
+<script>
+    Alpine.data('serverMetrics', () => ({
+        cpuMemoryChart: null,
+        diskLoadChart: null,
+        lastUpdate: '{{ $latestMetric?->recorded_at?->diffForHumans() ?? "Never" }}',
+        currentMetrics: {
+            cpu: {{ $latestMetric?->cpu_usage ?? 0 }},
+            memory: {{ $latestMetric?->memory_usage ?? 0 }},
+            disk: {{ $latestMetric?->disk_usage ?? 0 }}
+        },
+
+        initCharts() {
+            const chartData = @json($this->chartData);
+            this.createCpuMemoryChart(chartData);
+            this.createDiskLoadChart(chartData);
+
+            // Listen for chart updates from Livewire
+            Livewire.on('metrics-chart-update', (event) => {
+                this.updateCharts(event.data);
+                this.lastUpdate = 'Just now';
+            });
+
+            // Listen for real-time WebSocket updates
+            if (window.Echo) {
+                window.Echo.channel('server-metrics.{{ $server->id }}')
+                    .listen('ServerMetricsUpdated', (e) => {
+                        console.log('Real-time metrics received:', e);
+                        this.currentMetrics = {
+                            cpu: e.metrics.cpu_usage,
+                            memory: e.metrics.memory_usage,
+                            disk: e.metrics.disk_usage
+                        };
+                        this.lastUpdate = 'Just now';
+
+                        // Show toast for alerts
+                        if (e.alerts && e.alerts.length > 0) {
+                            e.alerts.forEach(alert => {
+                                window.showToast(alert.message, alert.type === 'critical' ? 'error' : 'warning');
+                            });
+                        }
+                    });
+            }
+        },
+
+        createCpuMemoryChart(data) {
+            const ctx = document.getElementById('cpuMemoryChart');
+            if (!ctx || !window.Chart) return;
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            const textColor = isDark ? '#9CA3AF' : '#6B7280';
+
+            this.cpuMemoryChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'CPU %',
+                            data: data.cpu,
+                            borderColor: 'rgb(99, 102, 241)',
+                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 2,
+                            pointHoverRadius: 5
+                        },
+                        {
+                            label: 'Memory %',
+                            data: data.memory,
+                            borderColor: 'rgb(16, 185, 129)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 2,
+                            pointHoverRadius: 5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { color: textColor }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: gridColor },
+                            ticks: { color: textColor }
+                        },
+                        x: {
+                            grid: { color: gridColor },
+                            ticks: { color: textColor, maxRotation: 0 }
+                        }
+                    }
+                }
+            });
+        },
+
+        createDiskLoadChart(data) {
+            const ctx = document.getElementById('diskLoadChart');
+            if (!ctx || !window.Chart) return;
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            const textColor = isDark ? '#9CA3AF' : '#6B7280';
+
+            this.diskLoadChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Disk %',
+                            data: data.disk,
+                            borderColor: 'rgb(168, 85, 247)',
+                            backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 2,
+                            pointHoverRadius: 5,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Load Avg',
+                            data: data.load,
+                            borderColor: 'rgb(245, 158, 11)',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 2,
+                            pointHoverRadius: 5,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { color: textColor }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: gridColor },
+                            ticks: { color: textColor }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            beginAtZero: true,
+                            grid: { drawOnChartArea: false },
+                            ticks: { color: textColor }
+                        },
+                        x: {
+                            grid: { color: gridColor },
+                            ticks: { color: textColor, maxRotation: 0 }
+                        }
+                    }
+                }
+            });
+        },
+
+        updateCharts(data) {
+            if (this.cpuMemoryChart) {
+                this.cpuMemoryChart.data.labels = data.labels;
+                this.cpuMemoryChart.data.datasets[0].data = data.cpu;
+                this.cpuMemoryChart.data.datasets[1].data = data.memory;
+                this.cpuMemoryChart.update('none');
+            }
+
+            if (this.diskLoadChart) {
+                this.diskLoadChart.data.labels = data.labels;
+                this.diskLoadChart.data.datasets[0].data = data.disk;
+                this.diskLoadChart.data.datasets[1].data = data.load;
+                this.diskLoadChart.update('none');
+            }
+
+            // Update current metrics
+            if (data.cpu.length > 0) {
+                this.currentMetrics.cpu = data.cpu[data.cpu.length - 1];
+            }
+            if (data.memory.length > 0) {
+                this.currentMetrics.memory = data.memory[data.memory.length - 1];
+            }
+            if (data.disk.length > 0) {
+                this.currentMetrics.disk = data.disk[data.disk.length - 1];
+            }
+        }
+    }));
+</script>
+@endscript

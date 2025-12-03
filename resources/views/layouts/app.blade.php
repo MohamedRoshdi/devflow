@@ -6,11 +6,16 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
     <title>{{ $title ?? config('app.name') }}</title>
-    
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg">
+
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#2563eb" id="theme-color-meta">
     <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/icon-192.png">
     
     <!-- Theme Script (must load before body to prevent flash) -->
     <script>
@@ -42,109 +47,169 @@
                             DevFlow Pro
                         </a>
                     </div>
-                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                        <a href="{{ route('home') }}" 
-                           class="{{ request()->routeIs('home') ? 'border-blue-500 text-gray-900 dark:text-white' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500 transition-colors">
+                    <div class="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-1">
+                        <a href="{{ route('home') }}"
+                           class="{{ request()->routeIs('home') ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors">
                             Home
                         </a>
-                        <a href="{{ route('dashboard') }}" 
-                           class="{{ request()->routeIs('dashboard') ? 'border-blue-500 text-gray-900 dark:text-white' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500 transition-colors">
+                        <a href="{{ route('dashboard') }}"
+                           class="{{ request()->routeIs('dashboard') ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors">
                             Dashboard
                         </a>
-                        <a href="{{ route('servers.index') }}" 
-                           class="{{ request()->routeIs('servers.*') ? 'border-blue-500 text-gray-900 dark:text-white' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500 transition-colors">
+                        <a href="{{ route('servers.index') }}"
+                           class="{{ request()->routeIs('servers.*') ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors">
                             Servers
                         </a>
-                        <a href="{{ route('projects.index') }}" 
-                           class="{{ request()->routeIs('projects.*') ? 'border-blue-500 text-gray-900 dark:text-white' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500 transition-colors">
+                        <a href="{{ route('projects.index') }}"
+                           class="{{ request()->routeIs('projects.*') ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors">
                             Projects
                         </a>
-                        <a href="{{ route('deployments.index') }}" 
-                           class="{{ request()->routeIs('deployments.*') ? 'border-blue-500 text-gray-900 dark:text-white' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500 transition-colors">
+                        <a href="{{ route('deployments.index') }}"
+                           class="{{ request()->routeIs('deployments.*') ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors">
                             Deployments
                         </a>
                         <a href="{{ route('analytics') }}"
-                           class="{{ request()->routeIs('analytics') ? 'border-blue-500 text-gray-900 dark:text-white' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500 transition-colors">
+                           class="{{ request()->routeIs('analytics') ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors">
                             Analytics
                         </a>
                         <a href="{{ route('health.dashboard') }}"
-                           class="{{ request()->routeIs('health.*') ? 'border-blue-500 text-gray-900 dark:text-white' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500 transition-colors">
+                           class="{{ request()->routeIs('health.*') ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors">
                             Health
                         </a>
                         <a href="{{ route('users.index') }}"
-                           class="{{ request()->routeIs('users.*') ? 'border-blue-500 text-gray-900 dark:text-white' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500 transition-colors">
+                           class="{{ request()->routeIs('users.*') ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors">
                             Users
                         </a>
-                        <!-- Advanced Features Dropdown -->
-                        <div class="relative flex items-center" x-data="{ open: false }">
+                        <!-- Logs Dropdown -->
+                        <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open" @click.away="open = false"
-                                class="{{ request()->routeIs(['kubernetes.*', 'pipelines.*', 'scripts.*', 'notifications.*', 'tenants.*', 'admin.*']) ? 'border-blue-500 text-gray-900 dark:text-white' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium hover:border-blue-500 transition-colors h-full">
-                                Advanced
-                                <svg class="ml-2 w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="currentColor" viewBox="0 0 20 20">
+                                class="{{ request()->routeIs('logs.*') ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                                Logs
+                                <svg class="ml-1.5 w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                                 </svg>
                             </button>
 
-                            <div x-show="open" x-transition
-                                class="absolute z-50 top-full mt-1 w-56 rounded-lg shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5" style="top: calc(100% + 4px);">
+                            <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95"
+                                class="absolute left-0 z-50 mt-2 w-56 rounded-xl shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black/5 dark:ring-white/10 overflow-hidden">
                                 <div class="py-1">
+                                    <a href="{{ route('logs.index') }}"
+                                       class="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 {{ request()->routeIs('logs.index') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : '' }}">
+                                        <svg class="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                                        </svg>
+                                        Application Logs
+                                    </a>
+                                    <a href="{{ route('logs.notifications') }}"
+                                       class="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 {{ request()->routeIs('logs.notifications') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : '' }}">
+                                        <svg class="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                                        </svg>
+                                        Notification Logs
+                                    </a>
+                                    <a href="{{ route('logs.webhooks') }}"
+                                       class="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 {{ request()->routeIs('logs.webhooks') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : '' }}">
+                                        <svg class="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                        Webhook Logs
+                                    </a>
+                                    <a href="{{ route('logs.security') }}"
+                                       class="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 {{ request()->routeIs('logs.security') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : '' }}">
+                                        <svg class="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                        Security Audit
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Advanced Features Dropdown -->
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open" @click.away="open = false"
+                                class="{{ request()->routeIs(['kubernetes.*', 'pipelines.*', 'scripts.*', 'notifications.*', 'tenants.*', 'admin.*', 'settings.*', 'docs.*']) ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }} inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                                More
+                                <svg class="ml-1.5 w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+
+                            <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95"
+                                class="absolute right-0 z-50 mt-2 w-56 rounded-xl shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black/5 dark:ring-white/10 overflow-hidden">
+                                <div class="py-1">
+                                    <div class="px-4 py-2 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Infrastructure</div>
                                     <a href="{{ route('kubernetes.index') }}"
-                                       class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 {{ request()->routeIs('kubernetes.*') ? 'bg-gray-100 dark:bg-gray-700' : '' }}">
-                                        <svg class="inline w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                       class="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 {{ request()->routeIs('kubernetes.*') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : '' }}">
+                                        <svg class="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM7 9H5v2h2V9zm8 0h-2v2h2V9zm-2 4h-2v2h2v-2zm-6 0H5v2h2v-2zm2-8v2h2V5H9zm2 4H9v2h2V9z" />
                                         </svg>
                                         Kubernetes
                                     </a>
                                     <a href="{{ route('pipelines.index') }}"
-                                       class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 {{ request()->routeIs('pipelines.*') ? 'bg-gray-100 dark:bg-gray-700' : '' }}">
-                                        <svg class="inline w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                       class="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 {{ request()->routeIs('pipelines.*') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : '' }}">
+                                        <svg class="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
                                         </svg>
                                         CI/CD Pipelines
                                     </a>
                                     <a href="{{ route('scripts.index') }}"
-                                       class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 {{ request()->routeIs('scripts.*') ? 'bg-gray-100 dark:bg-gray-700' : '' }}">
-                                        <svg class="inline w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                       class="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 {{ request()->routeIs('scripts.*') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : '' }}">
+                                        <svg class="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414zM11 12a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" />
                                         </svg>
-                                        Deployment Scripts
+                                        Scripts
                                     </a>
                                     <a href="{{ route('notifications.index') }}"
-                                       class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 {{ request()->routeIs('notifications.*') ? 'bg-gray-100 dark:bg-gray-700' : '' }}">
-                                        <svg class="inline w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                       class="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 {{ request()->routeIs('notifications.*') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : '' }}">
+                                        <svg class="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
                                         </svg>
                                         Notifications
                                     </a>
                                     <a href="{{ route('tenants.index') }}"
-                                       class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 {{ request()->routeIs('tenants.*') ? 'bg-gray-100 dark:bg-gray-700' : '' }}">
-                                        <svg class="inline w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                       class="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 {{ request()->routeIs('tenants.*') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : '' }}">
+                                        <svg class="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M9 2a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V6.414A2 2 0 0016.414 5L14 2.586A2 2 0 0012.586 2H9z" />
                                             <path d="M3 8a2 2 0 012-2v10h8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" />
                                         </svg>
                                         Multi-Tenant
                                     </a>
-                                    <div class="border-t border-gray-200 dark:border-gray-700 my-1"></div>
+                                    <div class="border-t border-gray-100 dark:border-gray-700 my-1"></div>
+                                    <div class="px-4 py-2 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">System</div>
                                     <a href="{{ route('admin.system') }}"
-                                       class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 {{ request()->routeIs('admin.*') ? 'bg-gray-100 dark:bg-gray-700' : '' }}">
-                                        <svg class="inline w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                       class="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 {{ request()->routeIs('admin.*') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : '' }}">
+                                        <svg class="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z" />
                                         </svg>
                                         System Admin
                                     </a>
                                     <a href="{{ route('settings.queue-monitor') }}"
-                                       class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 {{ request()->routeIs('settings.queue-monitor') ? 'bg-gray-100 dark:bg-gray-700' : '' }}">
-                                        <svg class="inline w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                       class="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 {{ request()->routeIs('settings.queue-monitor') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : '' }}">
+                                        <svg class="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v7a1 1 0 102 0V8z" clip-rule="evenodd" />
                                         </svg>
                                         Queue Monitor
                                     </a>
+                                    <a href="{{ route('settings.system-status') }}"
+                                       class="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 {{ request()->routeIs('settings.system-status') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : '' }}">
+                                        <svg class="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 6a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2zm0 6a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z" clip-rule="evenodd" />
+                                        </svg>
+                                        System Status
+                                    </a>
                                     <a href="{{ route('settings.preferences') }}"
-                                       class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 {{ request()->routeIs('settings.preferences') ? 'bg-gray-100 dark:bg-gray-700' : '' }}">
-                                        <svg class="inline w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                       class="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 {{ request()->routeIs('settings.preferences') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : '' }}">
+                                        <svg class="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
                                         </svg>
                                         Preferences
+                                    </a>
+                                    <a href="{{ route('docs.api') }}"
+                                       class="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 {{ request()->routeIs('docs.api') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : '' }}">
+                                        <svg class="w-4 h-4 mr-3 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                                        </svg>
+                                        API Docs
                                     </a>
                                 </div>
                             </div>
@@ -201,6 +266,15 @@
                 <a href="{{ route('health.dashboard') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('health.*') ? 'border-blue-500 text-blue-700 bg-blue-50 dark:bg-blue-900/20' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700' }} text-base font-medium">Health</a>
                 <a href="{{ route('users.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('users.*') ? 'border-blue-500 text-blue-700 bg-blue-50 dark:bg-blue-900/20' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700' }} text-base font-medium">Users</a>
 
+                <!-- Logs Section -->
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-2">
+                    <div class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Logs & Monitoring</div>
+                    <a href="{{ route('logs.index') }}" class="block pl-6 pr-4 py-2 border-l-4 {{ request()->routeIs('logs.index') ? 'border-blue-500 text-blue-700 bg-blue-50 dark:bg-blue-900/20' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700' }} text-base font-medium">Application Logs</a>
+                    <a href="{{ route('logs.notifications') }}" class="block pl-6 pr-4 py-2 border-l-4 {{ request()->routeIs('logs.notifications') ? 'border-blue-500 text-blue-700 bg-blue-50 dark:bg-blue-900/20' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700' }} text-base font-medium">Notification Logs</a>
+                    <a href="{{ route('logs.webhooks') }}" class="block pl-6 pr-4 py-2 border-l-4 {{ request()->routeIs('logs.webhooks') ? 'border-blue-500 text-blue-700 bg-blue-50 dark:bg-blue-900/20' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700' }} text-base font-medium">Webhook Logs</a>
+                    <a href="{{ route('logs.security') }}" class="block pl-6 pr-4 py-2 border-l-4 {{ request()->routeIs('logs.security') ? 'border-blue-500 text-blue-700 bg-blue-50 dark:bg-blue-900/20' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700' }} text-base font-medium">Security Audit</a>
+                </div>
+
                 <!-- Advanced Features Section -->
                 <div class="border-t border-gray-200 dark:border-gray-700 pt-2">
                     <div class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Advanced Features</div>
@@ -212,6 +286,8 @@
                     <a href="{{ route('admin.system') }}" class="block pl-6 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.*') ? 'border-blue-500 text-blue-700 bg-blue-50 dark:bg-blue-900/20' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700' }} text-base font-medium">System Admin</a>
                     <a href="{{ route('settings.queue-monitor') }}" class="block pl-6 pr-4 py-2 border-l-4 {{ request()->routeIs('settings.queue-monitor') ? 'border-blue-500 text-blue-700 bg-blue-50 dark:bg-blue-900/20' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700' }} text-base font-medium">Queue Monitor</a>
                     <a href="{{ route('settings.preferences') }}" class="block pl-6 pr-4 py-2 border-l-4 {{ request()->routeIs('settings.preferences') ? 'border-blue-500 text-blue-700 bg-blue-50 dark:bg-blue-900/20' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700' }} text-base font-medium">Preferences</a>
+                    <a href="{{ route('settings.system-status') }}" class="block pl-6 pr-4 py-2 border-l-4 {{ request()->routeIs('settings.system-status') ? 'border-blue-500 text-blue-700 bg-blue-50 dark:bg-blue-900/20' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700' }} text-base font-medium">System Status</a>
+                    <a href="{{ route('docs.api') }}" class="block pl-6 pr-4 py-2 border-l-4 {{ request()->routeIs('docs.api') ? 'border-blue-500 text-blue-700 bg-blue-50 dark:bg-blue-900/20' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700' }} text-base font-medium">API Documentation</a>
                 </div>
             </div>
         </div>

@@ -18,3 +18,8 @@ Broadcast::channel('deployment.{deploymentId}', function ($user, $deploymentId) 
     return $user->deployments()->where('id', $deploymentId)->exists();
 });
 
+// Public channel for server metrics - no auth required for real-time updates
+Broadcast::channel('server-metrics.{serverId}', function () {
+    return true; // Allow all authenticated users to listen
+});
+

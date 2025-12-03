@@ -34,10 +34,6 @@ class LogViewer extends Component
         'search' => ['except' => ''],
     ];
 
-    public function __construct(
-        private readonly LogAggregationService $logService
-    ) {}
-
     public function mount(): void
     {
         $this->dateFrom = now()->subHours(24)->format('Y-m-d\TH:i');
@@ -140,7 +136,8 @@ class LogViewer extends Component
         $server = Server::findOrFail($this->server_id);
 
         try {
-            $results = $this->logService->syncLogs($server);
+            $logService = app(LogAggregationService::class);
+            $results = $logService->syncLogs($server);
 
             $message = "Synced {$results['total_entries']} log entries from {$results['success']} sources";
             if ($results['failed'] > 0) {
@@ -165,7 +162,8 @@ class LogViewer extends Component
 
     public function exportLogs(): void
     {
-        $logs = $this->logService->searchLogs([
+        $logService = app(LogAggregationService::class);
+        $logs = $logService->searchLogs([
             'server_id' => $this->server_id,
             'project_id' => $this->project_id,
             'source' => $this->source !== 'all' ? $this->source : null,

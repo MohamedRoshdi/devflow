@@ -6,23 +6,27 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "doctrine/dbal": "^3.8",
+        "guzzlehttp/guzzle": "^7.8",
         "laravel/framework": "^12.0",
+        "laravel/reverb": "^1.6",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^3.5",
-        "guzzlehttp/guzzle": "^7.8",
-        "symfony/process": "^7.0",
         "predis/predis": "^2.2",
         "pusher/pusher-php-server": "^7.2",
-        "doctrine/dbal": "^3.8",
         "spatie/laravel-permission": "^6.0",
-        "laravel/sanctum": "^4.0"
+        "symfony/process": "^7.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^3.0",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.29",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.1",
+        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-deprecation-rules": "^2.0",
         "phpunit/phpunit": "^11.0"
     },
     "autoload": {
@@ -69,5 +73,3 @@
     "minimum-stability": "stable",
     "prefer-stable": true
 }
-
-

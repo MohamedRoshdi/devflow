@@ -19,9 +19,6 @@
                 </div>
 
                 <div class="flex items-center space-x-4">
-                    <a href="#projects" class="hidden md:inline-flex px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
-                        Projects
-                    </a>
                     <a href="#platform" class="hidden md:inline-flex px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
                         Platform
                     </a>
@@ -63,15 +60,13 @@
             <div class="relative z-10 mx-auto w-full max-w-[1560px] px-6 md:px-10 lg:px-16">
                 <div class="grid gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
                     <div>
-                        @if($projects->count() > 0)
-                            <div class="inline-flex items-center space-x-3 rounded-full bg-white/10 px-5 py-2 text-sm font-medium text-white/80 ring-1 ring-white/20 backdrop-blur">
-                                <span class="flex h-2 w-2">
-                                    <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-                                    <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-300"></span>
-                                </span>
-                                <span>{{ $projects->count() }} {{ $projects->count() === 1 ? 'Project' : 'Projects' }} Live Now</span>
-                            </div>
-                        @endif
+                        <div class="inline-flex items-center space-x-3 rounded-full bg-white/10 px-5 py-2 text-sm font-medium text-white/80 ring-1 ring-white/20 backdrop-blur">
+                            <span class="flex h-2 w-2">
+                                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-300"></span>
+                            </span>
+                            <span>Platform Status: Operational</span>
+                        </div>
 
                         <h1 class="mt-8 text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl xl:text-7xl">
                             Deploy production apps in minutes, not days.
@@ -100,12 +95,12 @@
 
                         <dl class="mt-12 grid gap-8 sm:grid-cols-3">
                             <div>
-                                <dt class="text-sm font-medium text-white/60">Active Projects</dt>
-                                <dd class="mt-2 text-3xl font-semibold text-white">{{ $projects->count() }}</dd>
+                                <dt class="text-sm font-medium text-white/60">Platform Uptime</dt>
+                                <dd class="mt-2 text-3xl font-semibold text-white">99.9%</dd>
                             </div>
                             <div>
-                                <dt class="text-sm font-medium text-white/60">Uptime</dt>
-                                <dd class="mt-2 text-3xl font-semibold text-white">100%</dd>
+                                <dt class="text-sm font-medium text-white/60">Deploy Time</dt>
+                                <dd class="mt-2 text-3xl font-semibold text-white">&lt;5 min</dd>
                             </div>
                             <div>
                                 <dt class="text-sm font-medium text-white/60">Support</dt>
@@ -153,156 +148,96 @@
         </section>
 
         <!-- Platform Highlights -->
-        <section id="platform" class="-mt-12 pb-24">
+        <section id="platform" class="py-24 bg-slate-50 dark:bg-slate-900/50">
             <div class="mx-auto w-full max-w-[1560px] px-6 md:px-10 lg:px-16">
-                <div class="grid gap-6 lg:grid-cols-3">
-                    <div class="rounded-3xl bg-white shadow-xl shadow-slate-200/70 p-8 dark:bg-slate-900 dark:shadow-none dark:ring-1 dark:ring-white/5">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600/10 text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">
-                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7l9-4 9 4-9 4-9-4zm0 6l9 4 9-4M3 7v6m18-6v6"></path>
-                            </svg>
-                        </div>
-                        <h3 class="mt-6 text-xl font-semibold text-slate-900 dark:text-white">Infrastructure Ready</h3>
-                        <p class="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                            Zero-touch provisioning for Dockerized Laravel, Vue, React, and Next.js workloads. Each deploy inherits best-practice environment defaults, secrets, and queues.
-                        </p>
-                    </div>
-                    <div class="rounded-3xl bg-white shadow-xl shadow-slate-200/70 p-8 dark:bg-slate-900 dark:shadow-none dark:ring-1 dark:ring-white/5">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-600/10 text-purple-700 dark:bg-purple-500/10 dark:text-purple-300">
-                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 6L3 3v13l6 3m6-3l6 3"></path>
-                            </svg>
-                        </div>
-                        <h3 class="mt-6 text-xl font-semibold text-slate-900 dark:text-white">Continuous Delivery</h3>
-                        <p class="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                            One-click deployments trigger git pulls, dependency installs, cache clears, migrations, and queue restarts—all logged in real-time Livewire dashboards.
-                        </p>
-                    </div>
-                    <div class="rounded-3xl bg-white shadow-xl shadow-slate-200/70 p-8 dark:bg-slate-900 dark:shadow-none dark:ring-1 dark:ring-white/5">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600/10 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
-                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="mt-6 text-xl font-semibold text-slate-900 dark:text-white">Operations Visibility</h3>
-                        <p class="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                            Deployment history, environment diffs, server health, and activity feeds keep stakeholders aligned and engineers confident about every release.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Projects Section -->
-        <section id="projects" class="py-24 bg-white dark:bg-slate-900">
-            <div class="mx-auto w-full max-w-[1560px] px-6 md:px-10 lg:px-16">
-                <div class="mx-auto max-w-3xl text-center">
-                    <h2 class="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-4xl">Live portfolio</h2>
+                <!-- Section Header -->
+                <div class="mx-auto max-w-3xl text-center mb-16">
+                    <h2 class="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-4xl">Platform Features</h2>
                     <p class="mt-4 text-lg text-slate-600 dark:text-slate-400">
-                        Explore the platforms running on DevFlow Pro today. Each project inherits automated backups, environment syncing, and instant rollback support.
+                        Everything you need to deploy, manage, and monitor your applications with confidence.
                     </p>
                 </div>
 
-        @if($projects->count() > 0)
-                <div class="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                    @foreach($projects as $project)
-                        @php
-                            // Security: Only use domain from relationship, never expose server IPs or internal infrastructure
-                            $primaryDomain = $project->domains->first()?->domain;
-                            $url = $primaryDomain
-                                ? (str_starts_with($primaryDomain, 'http')
-                                    ? preg_replace('/^http:/', 'https:', $primaryDomain)
-                                    : 'https://' . $primaryDomain)
-                                : null;
-                        @endphp
-
-                        <a href="{{ $url ?? 'javascript:void(0)' }}" @if($url) target="_blank" rel="noopener noreferrer" @endif class="group relative flex flex-col rounded-3xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-8 shadow-xl shadow-slate-200/50 transition hover:-translate-y-1 hover:shadow-2xl dark:border-slate-800 dark:from-slate-900 dark:to-slate-950 dark:shadow-none">
-                            <div class="flex items-center justify-between">
-                                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600/10 text-blue-700 dark:bg-blue-500/20 dark:text-blue-200">
-                                    @if($project->framework === 'Laravel')
-                                        <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M23.642 5.43a.364.364 0 01.014.1v5.149c0 .135-.073.26-.189.326l-4.323 2.49v4.934a.378.378 0 01-.188.326L9.93 23.949a.316.316 0 01-.066.027c-.008.002-.016.008-.024.01a.348.348 0 01-.192 0c-.011-.002-.02-.008-.03-.012-.02-.008-.042-.014-.062-.025L.533 18.755a.376.376 0 01-.189-.326V2.974c0-.033.005-.066.014-.098.003-.012.01-.02.014-.032a.369.369 0 01.023-.058c.004-.013.015-.022.023-.033l.033-.045c.012-.01.025-.018.037-.027.014-.012.027-.024.041-.034H.53L5.043.05a.375.375 0 01.375 0L9.93 2.647h.002c.015.01.027.021.04.033l.038.027c.013.014.02.03.033.045.008.011.02.021.025.033.01.02.017.038.024.058.003.011.01.021.013.032.01.031.014.064.014.098v9.652l3.76-2.164V5.527c0-.033.004-.066.013-.098.003-.01.01-.02.013-.032a.487.487 0 01.024-.059c.007-.012.018-.02.025-.033.012-.015.021-.03.033-.043.012-.012.025-.02.037-.028.013-.012.027-.023.04-.032h.001l4.513-2.598a.375.375 0 01.375 0l4.513 2.598c.016.01.029.021.041.033l.038.027c.013.014.02.03.032.045.009.012.02.021.025.033.01.02.017.038.024.058.003.012.01.022.013.032zm-.74 5.032V6.179l-1.578.908-2.182 1.256v4.283zm-4.51 7.75v-4.287l-2.147 1.225-6.126 3.498v4.325zM1.093 3.624v14.588l8.273 4.761v-4.325l-4.322-2.445-.002-.003H5.04c-.014-.01-.025-.021-.04-.031-.011-.01-.024-.018-.035-.027l-.001-.002c-.013-.012-.021-.025-.031-.039-.01-.012-.021-.023-.028-.037h-.002c-.008-.014-.013-.031-.02-.047-.006-.016-.014-.027-.018-.043a.49.49 0 01-.008-.057c-.002-.014-.006-.027-.006-.041V5.789l-2.18-1.257zM5.23.81L1.47 2.974l3.76 2.164 3.758-2.164zm1.956 13.505l2.182-1.256V3.624l-1.58.91-2.182 1.255v9.435zm11.581-10.95l-3.76 2.163 3.76 2.163 3.759-2.164zm-.376 4.978L16.21 7.087 14.63 6.18v4.283l2.182 1.256 1.58.908zm-8.65 9.654l5.514-3.148 2.756-1.572-3.757-2.163-4.323 2.489-3.941 2.27z"/>
-                                        </svg>
-                                    @else
-                                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-                                        </svg>
-                                    @endif
-                                </div>
-                                <span class="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-300">
-                                    <span class="mr-2 h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                    Live
-                                </span>
-                            </div>
-
-                            <div class="mt-6">
-                                <h3 class="text-2xl font-semibold text-slate-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-300 transition">
-                                    {{ $project->name }}
-                                </h3>
-                                <p class="mt-2 text-sm font-medium uppercase tracking-wide text-blue-600 dark:text-blue-300">
-                                    {{ $project->framework ?? 'Framework' }}
-                                </p>
-                            </div>
-
-                            <dl class="mt-6 space-y-3 text-sm text-slate-600 dark:text-slate-400">
-                                @if($primaryDomain)
-                                    <div class="flex items-center gap-2">
-                                        <svg class="h-4 w-4 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
-                                        </svg>
-                                        <span class="truncate">{{ $primaryDomain }}</span>
-                                    </div>
-                                @endif
-                                @if($project->php_version)
-                                    <div class="flex items-center gap-2">
-                                        <svg class="h-4 w-4 text-purple-500 dark:text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-                                        </svg>
-                                        <span>PHP {{ $project->php_version }}</span>
-                                    </div>
-                                @endif
-                                @if($project->environment)
-                                    <div class="flex items-center gap-2">
-                                        <svg class="h-4 w-4 text-emerald-500 dark:text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        <span>{{ ucfirst($project->environment) }} environment</span>
-                                    </div>
-                                @endif
-                            </dl>
-
-                            <div class="mt-8 flex items-center text-sm font-semibold text-blue-600 dark:text-blue-300">
-                                Visit project
-                                <svg class="ml-2 h-4 w-4 transition group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                                </svg>
-                            </div>
-
-                            <div class="absolute inset-0 rounded-3xl border border-transparent transition duration-300 group-hover:border-blue-500/40"></div>
-                        </a>
-                    @endforeach
-                </div>
-        @else
-                <div class="mt-16 flex flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300 p-16 text-center dark:border-slate-700">
-                    <div class="flex h-20 w-20 items-center justify-center rounded-3xl bg-slate-100 dark:bg-slate-800">
-                        <svg class="h-10 w-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
-                        </svg>
-                    </div>
-                    <h3 class="mt-8 text-2xl font-semibold text-slate-900 dark:text-white">Your first project is moments away.</h3>
-                    <p class="mt-4 max-w-xl text-sm text-slate-600 dark:text-slate-400">
-                        Spin up your first deployment in under five minutes. Define a repository, choose the target server, and DevFlow Pro handles the rest.
-                    </p>
-                    @auth
-                        <a href="{{ route('projects.create') }}" class="mt-8 inline-flex items-center rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-900/10 transition hover:-translate-y-0.5 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200">
-                            Create Your First Project
-                            <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                <!-- Features Grid -->
+                <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    <!-- Feature 1: Infrastructure -->
+                    <div class="rounded-3xl bg-white shadow-xl shadow-slate-200/70 p-8 dark:bg-slate-800 dark:shadow-none dark:ring-1 dark:ring-white/5 transition hover:shadow-2xl hover:-translate-y-1">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
                             </svg>
-                        </a>
-                    @endauth
+                        </div>
+                        <h3 class="mt-6 text-xl font-semibold text-slate-900 dark:text-white">Server Management</h3>
+                        <p class="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                            Connect unlimited servers via SSH. Monitor CPU, memory, disk usage in real-time with automated health checks and alerts.
+                        </p>
+                    </div>
+
+                    <!-- Feature 2: Deployments -->
+                    <div class="rounded-3xl bg-white shadow-xl shadow-slate-200/70 p-8 dark:bg-slate-800 dark:shadow-none dark:ring-1 dark:ring-white/5 transition hover:shadow-2xl hover:-translate-y-1">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 text-white shadow-lg shadow-purple-500/25">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                        </div>
+                        <h3 class="mt-6 text-xl font-semibold text-slate-900 dark:text-white">One-Click Deploys</h3>
+                        <p class="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                            Git-based deployments with automatic dependency installs, migrations, cache clearing, and queue restarts. Instant rollback support.
+                        </p>
+                    </div>
+
+                    <!-- Feature 3: SSL & Domains -->
+                    <div class="rounded-3xl bg-white shadow-xl shadow-slate-200/70 p-8 dark:bg-slate-800 dark:shadow-none dark:ring-1 dark:ring-white/5 transition hover:shadow-2xl hover:-translate-y-1">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/25">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="mt-6 text-xl font-semibold text-slate-900 dark:text-white">SSL & Security</h3>
+                        <p class="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                            Automatic SSL certificate provisioning and renewal. Firewall management, IP blocking, and security audit logging built-in.
+                        </p>
+                    </div>
+
+                    <!-- Feature 4: Docker -->
+                    <div class="rounded-3xl bg-white shadow-xl shadow-slate-200/70 p-8 dark:bg-slate-800 dark:shadow-none dark:ring-1 dark:ring-white/5 transition hover:shadow-2xl hover:-translate-y-1">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-cyan-600 text-white shadow-lg shadow-cyan-500/25">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                            </svg>
+                        </div>
+                        <h3 class="mt-6 text-xl font-semibold text-slate-900 dark:text-white">Docker Integration</h3>
+                        <p class="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                            Full Docker and Docker Compose management. Start, stop, restart containers. View logs and manage images directly from the dashboard.
+                        </p>
+                    </div>
+
+                    <!-- Feature 5: Monitoring -->
+                    <div class="rounded-3xl bg-white shadow-xl shadow-slate-200/70 p-8 dark:bg-slate-800 dark:shadow-none dark:ring-1 dark:ring-white/5 transition hover:shadow-2xl hover:-translate-y-1">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/25">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="mt-6 text-xl font-semibold text-slate-900 dark:text-white">Real-time Monitoring</h3>
+                        <p class="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                            Live metrics dashboard with CPU, memory, and disk tracking. WebSocket-powered updates keep you informed without refreshing.
+                        </p>
+                    </div>
+
+                    <!-- Feature 6: Backups -->
+                    <div class="rounded-3xl bg-white shadow-xl shadow-slate-200/70 p-8 dark:bg-slate-800 dark:shadow-none dark:ring-1 dark:ring-white/5 transition hover:shadow-2xl hover:-translate-y-1">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-lg shadow-rose-500/25">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
+                            </svg>
+                        </div>
+                        <h3 class="mt-6 text-xl font-semibold text-slate-900 dark:text-white">Database Backups</h3>
+                        <p class="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                            Scheduled database backups with retention policies. One-click restore and download. Multiple storage destinations supported.
+                        </p>
+                    </div>
                 </div>
-        @endif
             </div>
         </section>
 

@@ -13,8 +13,22 @@
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="{{ $title ?? 'NileStack - DevFlow Pro Platform' }}">
     <meta property="og:description" content="Professional multi-project deployment and management platform by NileStack.">
+    <meta property="og:image" content="{{ url('/images/nilestack-og.svg') }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/svg+xml">
     <meta property="og:site_name" content="NileStack">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $title ?? 'NileStack - DevFlow Pro Platform' }}">
+    <meta name="twitter:description" content="Professional multi-project deployment and management platform by NileStack.">
+    <meta name="twitter:image" content="{{ url('/images/nilestack-og.svg') }}">
     <meta name="theme-color" content="#2563eb">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg">
 
     <script>
         const theme = localStorage.getItem('theme') || 'light';

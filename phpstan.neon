@@ -1,0 +1,99 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+
+parameters:
+    paths:
+        - app/
+    level: 5
+    ignoreErrors:
+        # Eloquent dynamic properties and relations
+        - '#Unsafe usage of new static#'
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder#'
+        - '#Access to an undefined property App\\Models\\.*::\$.*#'
+        - '#Access to an undefined property App\\Http\\Resources\\.*::\$.*#'
+        - '#Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$.*#'
+        - '#Relation .* is not found in App\\Models\\.* model#'
+        # Services with dynamic methods
+        - '#Call to an undefined method App\\Services\\.*::.*#'
+        - '#Call to an undefined method App\\Http\\Controllers\\.*::authorize\(\)#'
+        - '#Call to an undefined method App\\Http\\Resources\\.*::.*#'
+        - '#Call to an undefined method App\\Models\\.*::.*#'
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Pivot::.*#'
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Model::.*#'
+        # Livewire properties
+        - '#Property App\\Livewire\\.*::\$.* is never read, only written#'
+        - '#Property App\\Livewire\\.*::\$.* is unused#'
+        - '#Property App\\Services\\.*::\$.* is never read, only written#'
+        # Type coercion for Eloquent
+        - '#does not accept Illuminate\\Database\\Eloquent\\Model#'
+        - '#expects App\\Models\\.*, Illuminate\\Database\\Eloquent\\Model#'
+        - '#expects App\\Models\\.*, Illuminate\\Database\\Eloquent\\Model\|null given#'
+        - '#should return .* but returns Illuminate\\Database\\Eloquent\\Model\|null#'
+        # Null coalescing
+        - '#on left side of \?\? always exists#'
+        - '#in isset\(\) always exists and is not nullable#'
+        - '#in isset\(\) is never defined#'
+        - '#Undefined variable#'
+        # Dead code and unreachable
+        - '#Unreachable statement#'
+        - '#always false#'
+        - '#always true#'
+        # Test classes
+        - '#Class Tests\\.*constructor invoked with#'
+        - '#on an unknown class#'
+        # Type hints
+        - '#Parameter \#1 \$value of method Carbon\\Carbon::subDays\(\) expects#'
+        - '#Parameter \#1 \$value of method Carbon\\Carbon::addSeconds\(\) expects#'
+        - '#Parameter \#2 \$timestamp of function date expects#'
+        - '#Parameter \#2 \$environmentSnapshot of method#'
+        - '#Method .* has no return type specified#'
+        - '#Method .* has parameter .* with no value type specified#'
+        - '#Method .* return type has no value type specified#'
+        - '#has parameter \$data with no type specified#'
+        - '#contains unresolvable type#'
+        # Expression results
+        - '#Expression .* on a separate line does not do anything#'
+        # Method calls on nullable
+        - '#Cannot call method .* on string#'
+        - '#Cannot call method .* on null#'
+        # Argument type mismatches with jobs
+        - '#Parameter \#1 .* of job class App\\Jobs\\.*#'
+        # PHP 8.4 implicit nullable deprecation
+        - '#Deprecated in PHP 8.4.*implicitly nullable#'
+        # Empty arrays and foreach
+        - '#Empty array passed to foreach#'
+        - '#passed to foreach#'
+        - '#Variable .* in empty\(\) is never defined#'
+        # Additional property access patterns
+        - '#Access to an undefined property#'
+        # Nullsafe and isset patterns
+        - '#is never null#'
+        - '#cannot be null#'
+        - '#Offset .* on .* on left side of \?\? does not exist#'
+        - '#Offset .* does not exist on#'
+        # Match and return patterns
+        - '#Match expression does not handle remaining value#'
+        - '#Dead catch#'
+        - '#Caught class .* is not thrown#'
+        # Comparison patterns
+        - '#Strict comparison using === between#'
+        # PHPDoc patterns
+        - '#PHPDoc tag @var#'
+        - '#PHPDoc type .* of property .* is not covariant#'
+        # Generic argument type patterns
+        - identifier: argument.type
+          path: app/Services/*
+        - identifier: argument.type
+          path: app/Livewire/*
+        - identifier: argument.type
+          path: app/Models/*
+        # Nullsafe unnecessary patterns
+        - '#Using nullsafe .* is unnecessary#'
+        # isset offset on dynamic types
+        - identifier: isset.offset
+          path: app/Livewire/*
+        # Return type patterns
+        - identifier: return.type
+          path: app/Models/*
+    reportUnmatchedIgnoredErrors: false

@@ -7,6 +7,240 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.14.0] - 2025-12-03
+
+### Added
+
+- **Real-time Server Metrics Dashboard** - Live monitoring with Chart.js
+  - **CPU & Memory Trend Chart** - Line chart showing historical data
+  - **Disk & Load Average Chart** - Dual-axis chart for storage and system load
+  - **Live Progress Bars** - Animated bars for current CPU/Memory/Disk usage
+  - **Alert System** - Critical (red) and warning (yellow) alerts for thresholds
+    - CPU > 90% = critical, > 80% = warning
+    - Memory > 85% = critical, > 75% = warning
+    - Disk > 90% = critical, > 80% = warning
+  - **Time Range Selector** - View metrics for 1h, 6h, 24h, or 7 days
+  - **Live Updates Indicator** - Pulsing green dot showing WebSocket connection
+
+### Technical
+
+- **ServerMetricsUpdated Broadcast Event** - Real-time metrics via WebSocket
+  - Broadcasts on `server-metrics.{serverId}` channel
+  - Includes CPU, Memory, Disk, Load, Network data
+  - Alert threshold detection in event payload
+- **Chart.js Integration** - Added to frontend bundle (~208KB gzipped)
+- **Updated Scheduler** - Metrics collection now runs every minute with `--broadcast` flag
+- **Database Migration** - Added missing columns to server_metrics table
+
+### Routes
+
+- `GET /servers/{server}/metrics` - Real-time metrics dashboard
+
+---
+
+## [3.13.0] - 2025-12-03
+
+### Changed
+
+- **Navigation Redesign** - Switched from border-bottom to pill-style buttons
+  - Consistent styling across all nav items including dropdowns
+  - Improved hover states and transitions
+  - Renamed "Advanced" dropdown to "More"
+  - Added section headers in dropdown menus
+
+### Removed
+
+- **Project Portfolio** - Removed from public home page for cleaner landing
+
+### Added
+
+- **Platform Status Display** - Home page now shows operational status
+- **Server Helper Commands** - SSH aliases for common operations
+  - `status`, `logs`, `deploy`, `restart`, `clear-cache`, `disk`, `mem`, `ports`
+- **tmux Configuration** - Custom setup with Ctrl+a prefix and NileStack branding
+
+---
+
+## [3.12.0] - 2025-12-03
+
+### Added
+
+- **Management UI Pages** - New admin interfaces for backend features
+  - **System Status Dashboard** (`/settings/system-status`)
+    - WebSocket (Reverb) server status and connectivity
+    - Queue worker statistics (pending, failed, processed)
+    - Cache health check
+    - Database connectivity test
+    - "Test Broadcast" button for WebSocket verification
+  - **Notification Logs Viewer** (`/logs/notifications`)
+    - Browse all notification deliveries
+    - Filter by status (success/failed/pending), channel, event type
+    - View notification details in modal
+    - Statistics: total, success, failed, pending counts
+  - **Webhook Logs Viewer** (`/logs/webhooks`)
+    - View GitHub/GitLab webhook deliveries
+    - Filter by provider, project, status, event type
+    - View payload and response data
+    - Statistics: total, success, failed, ignored counts
+  - **Security Audit Log** (`/logs/security`)
+    - View firewall changes, IP bans, SSH config changes
+    - Filter by server, event type
+    - View detailed event metadata
+    - Statistics: total, today, firewall events, IP bans
+
+### Technical
+
+- **New Livewire Components:**
+  - `App\Livewire\Settings\SystemStatus`
+  - `App\Livewire\Logs\NotificationLogs`
+  - `App\Livewire\Logs\WebhookLogs`
+  - `App\Livewire\Logs\SecurityAuditLog`
+
+- **New Routes:**
+  - `GET /settings/system-status` - System status dashboard
+  - `GET /logs/notifications` - Notification delivery logs
+  - `GET /logs/webhooks` - Webhook delivery logs
+  - `GET /logs/security` - Security audit log
+
+### Improved
+
+- Enhanced observability into system operations
+- Better debugging capabilities for webhook and notification failures
+- Security event tracking for audit compliance
+
+---
+
+## [3.11.0] - 2025-12-03
+
+### Added
+
+- **Real-Time WebSocket Updates** - Live dashboard updates without polling
+  - Installed Laravel Reverb v1.6.3 as self-hosted WebSocket server
+  - Created broadcast events for deployment lifecycle:
+    - `DeploymentStarted` - Fired when a deployment begins
+    - `DeploymentCompleted` - Fired when a deployment succeeds
+    - `DeploymentFailed` - Fired when a deployment fails
+    - `DashboardUpdated` - General dashboard update event
+  - Frontend listens via Laravel Echo on public 'dashboard' channel
+  - Toast notifications for real-time deployment status updates
+
+### Infrastructure
+
+- **Laravel Reverb WebSocket Server**
+  - Runs on port 8080, proxied via nginx at `/app` endpoint
+  - Supervisor managed process for automatic restart
+  - Uses Pusher protocol for client compatibility
+  - Configured for wss:// (secure WebSocket) via nginx proxy
+
+### Technical
+
+- **New Files:**
+  - `config/reverb.php` - Reverb server configuration
+  - `app/Events/DeploymentStarted.php` - Broadcast event
+  - `app/Events/DeploymentCompleted.php` - Broadcast event
+  - `app/Events/DeploymentFailed.php` - Broadcast event
+  - `app/Events/DashboardUpdated.php` - Broadcast event
+
+- **Modified Files:**
+  - `resources/js/bootstrap.js` - Laravel Echo with Reverb configuration
+  - `resources/js/app.js` - WebSocket event listeners and toast notifications
+  - `composer.json` - Added laravel/reverb dependency
+
+- **Production Configuration:**
+  - Nginx location block for `/app` WebSocket proxy
+  - Supervisor config at `/etc/supervisor/conf.d/reverb.conf`
+  - Environment variables: REVERB_APP_ID, REVERB_APP_KEY, REVERB_APP_SECRET
+
+### Commands
+
+```bash
+# Start Reverb WebSocket server
+php artisan reverb:start --host=0.0.0.0 --port=8080
+
+# Check Reverb status (production)
+supervisorctl status reverb
+```
+
+---
+
+## [3.10.0] - 2025-12-03
+
+### Added
+
+- **Dashboard Drag-and-Drop Customization** - Personalize your dashboard layout
+  - "Customize Layout" button to enter edit mode
+  - Drag widgets to reorder (Stats Cards, Quick Actions, Activity & Health, Deployment Timeline)
+  - Widget order persisted per user in database
+  - "Reset Layout" button to restore default order
+  - Visual indicators showing draggable areas in edit mode
+
+### Technical
+
+- **SortableJS Integration**
+  - Added SortableJS 1.15.2 for smooth drag-and-drop
+  - Livewire event `widget-order-updated` for real-time persistence
+  - User settings extended with `dashboard_widget_order` preference
+
+### Files Modified
+
+- `app/Livewire/Dashboard.php` - Added widget order management
+- `resources/views/livewire/dashboard.blade.php` - Wrapped widgets in draggable containers
+- `resources/js/app.js` - Added SortableJS initialization
+
+---
+
+## [3.9.1] - 2025-12-03
+
+### Fixed
+
+- **SSL Certificate Issues** - All subdomains now working with HTTPS
+  - Fixed `workspace.nilestack.duckdns.org` SSL via Let's Encrypt
+  - Updated nginx config to use proper certificate paths
+  - Verified HTTP/2 200 responses for all 4 subdomains
+
+### Infrastructure
+
+- **SSL Certificate Status**
+  - `nilestack.duckdns.org` - Working (ZeroSSL)
+  - `admin.nilestack.duckdns.org` - Working (ZeroSSL)
+  - `ats.nilestack.duckdns.org` - Working (ZeroSSL)
+  - `workspace.nilestack.duckdns.org` - Working (Let's Encrypt)
+
+### Notes
+
+- Wildcard certificate not possible with DuckDNS (single TXT record limitation)
+- Auto-renewal cron job active (runs daily at 1:21 AM via acme.sh)
+
+---
+
+## [3.9.0] - 2025-12-03
+
+### Added
+
+- **PHPStan Static Analysis** - Code quality tooling
+  - Installed PHPStan 2.1.32 with Larastan 3.8.0
+  - Installed PHPStan deprecation rules 2.0.3
+  - Created comprehensive `phpstan.neon` configuration
+  - Established level 5 as passing baseline (0 errors)
+
+### Developer Experience
+
+- **Static Analysis Baseline** - Laravel-specific ignore patterns
+  - Eloquent dynamic properties and relations
+  - Livewire component properties
+  - Service method calls with dynamic return types
+  - PHP 8.4 implicit nullable deprecation handling
+  - HTTP Resources and Controllers patterns
+
+### Commands
+
+```bash
+# Run PHPStan analysis
+vendor/bin/phpstan analyse
+```
+
+---
+
 ## [3.3.0] - 2025-12-02
 
 ### Added ✨

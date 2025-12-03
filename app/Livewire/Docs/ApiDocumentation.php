@@ -24,6 +24,7 @@ class ApiDocumentation extends Component
             'projects' => 'projects-list',
             'servers' => 'servers-list',
             'deployments' => 'deployments-list',
+            'webhooks' => 'webhooks-overview',
             default => 'auth-overview',
         };
     }

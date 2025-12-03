@@ -1,35 +1,22 @@
-<div>
-    <!-- Hero Section with Gradient -->
-    <div class="mb-10 relative">
-        <div class="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 opacity-80 blur-xl"></div>
-        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-900 via-pink-900/90 to-red-900 text-white shadow-2xl">
-            <div class="absolute inset-y-0 right-0 w-1/2 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.12),_transparent_55%)]"></div>
-            <div class="relative p-8 xl:p-10">
-                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-3 mb-4">
-                            <svg class="w-6 h-6 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Hero Section with Gradient -->
+        <div class="relative mb-8 rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 dark:from-emerald-600 dark:via-teal-600 dark:to-cyan-600 p-8 shadow-xl overflow-hidden">
+            <div class="absolute inset-0 bg-black/10 dark:bg-black/20"></div>
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <div class="flex items-center space-x-3 mb-2">
+                        <div class="p-2 bg-white/20 dark:bg-white/10 backdrop-blur-md rounded-lg">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                             </svg>
-                            <span class="px-3 py-1 text-xs font-semibold tracking-wide uppercase bg-white/10 text-white/80 rounded-full">Analytics Dashboard</span>
                         </div>
-                        <h1 class="text-4xl lg:text-5xl font-extrabold tracking-tight mb-3">Performance Insights</h1>
-                        <p class="text-lg text-white/80">Real-time monitoring of deployments, servers, and project metrics</p>
+                        <h1 class="text-3xl md:text-4xl font-bold text-white">Analytics Dashboard</h1>
                     </div>
-                    <div class="flex flex-wrap gap-4">
-                        <div class="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-4 border border-white/20">
-                            <p class="text-sm text-white/70 font-medium">Total Deployments</p>
-                            <p class="text-3xl font-bold mt-1">{{ $deploymentStats['total'] }}</p>
-                        </div>
-                        <div class="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-4 border border-white/20">
-                            <p class="text-sm text-white/70 font-medium">Success Rate</p>
-                            <p class="text-3xl font-bold mt-1">{{ $deploymentStats['total'] > 0 ? round(($deploymentStats['successful'] / $deploymentStats['total']) * 100, 1) : 0 }}%</p>
-                        </div>
-                    </div>
+                    <p class="text-white/90 text-lg">Track performance metrics and insights across all your projects</p>
                 </div>
             </div>
         </div>
-    </div>
 
     <!-- Filters Section with Enhanced Design -->
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 mb-8 border border-gray-100 dark:border-gray-700">
@@ -367,5 +354,6 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
 </div>
