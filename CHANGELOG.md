@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.0.1] - 2025-12-03
+
+### Fixed
+
+- **Cache::tags() Compatibility** - Fixed 500 errors on production
+  - Replaced `Cache::tags()` calls with `Cache::remember()` in DeploymentList and DashboardOptimized
+  - `Cache::tags()` only works with Redis/Memcached, not database cache driver
+  - Production uses database cache driver which doesn't support tagging
+  - Simplified caching code by removing unnecessary try/catch fallback patterns
+
+- **Domain Subdomain Column Error** - Fixed missing column reference
+  - Removed `subdomain` from domains eager loading in ProjectList and DashboardOptimized
+  - Production domains table doesn't have a `subdomain` column
+  - Eager loading now only selects existing columns: `id`, `project_id`, `domain`
+
+### Files Modified
+
+- `app/Livewire/Deployments/DeploymentList.php` - Removed Cache::tags()
+- `app/Livewire/DashboardOptimized.php` - Removed Cache::tags() and subdomain references
+- `app/Livewire/Projects/ProjectList.php` - Removed subdomain from eager loading
+
+---
+
 ## [5.0.0] - 2025-12-03
 
 ### Added

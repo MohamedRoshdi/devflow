@@ -5,7 +5,7 @@
 [![CI Status](https://github.com/yourusername/devflow-pro/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/devflow-pro/actions/workflows/ci.yml)
 [![Deploy Status](https://github.com/yourusername/devflow-pro/actions/workflows/deploy.yml/badge.svg)](https://github.com/yourusername/devflow-pro/actions/workflows/deploy.yml)
 [![Code Quality](https://github.com/yourusername/devflow-pro/actions/workflows/code-quality.yml/badge.svg)](https://github.com/yourusername/devflow-pro/actions/workflows/code-quality.yml)
-[![Version](https://img.shields.io/badge/version-4.0.0-blue.svg)](https://github.com/yourusername/devflow-pro)
+[![Version](https://img.shields.io/badge/version-5.0.1-blue.svg)](https://github.com/yourusername/devflow-pro)
 [![Laravel](https://img.shields.io/badge/Laravel-12-red.svg)](https://laravel.com)
 [![PHP](https://img.shields.io/badge/PHP-8.2%20|%208.3%20|%208.4-777BB4.svg)](https://php.net)
 [![Livewire](https://img.shields.io/badge/Livewire-3-purple.svg)](https://livewire.laravel.com)
