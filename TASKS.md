@@ -2,7 +2,8 @@
 
 **Last updated:** December 3, 2025
 **Current Version:** v4.0.0
-**Status:** All Phases Complete ✅
+**Next Target:** v4.1.0
+**Status:** v4.0 Complete ✅ | v4.1 In Progress
 
 ---
 
@@ -110,6 +111,66 @@
 | Deployment comments | [x] | DeploymentComment model |
 | Slack/Discord notifications | [x] | Block Kit + Discord Embeds |
 | Full audit log | [x] | AuditLog model with all actions |
+
+---
+
+## 🎯 Roadmap v4.1
+
+### Phase 6: Bug Fixes & Stability (High Priority)
+> *Goal: Identify and fix production issues*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| **Production Bug Fixes** | | |
+| Audit error logs | [ ] | Review Laravel logs for exceptions |
+| Fix 500 errors | [ ] | Identify and resolve server errors |
+| Fix validation issues | [ ] | Form validation edge cases |
+| Fix N+1 queries | [ ] | Identify with Laravel Debugbar |
+| **Code Quality** | | |
+| PHPStan Level 6 | [ ] | Increase static analysis strictness |
+| Fix deprecation warnings | [ ] | Update deprecated code |
+| Security audit | [ ] | Review OWASP top 10 |
+
+### Phase 7: Performance Optimization (Medium Priority)
+> *Goal: Improve database queries and caching*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| **Database Optimization** | | |
+| Query optimization | [ ] | Analyze slow queries with EXPLAIN |
+| Add missing indexes | [ ] | Index frequently queried columns |
+| Eager loading audit | [ ] | Fix N+1 queries across all models |
+| Database connection pooling | [ ] | Optimize connection handling |
+| **Caching Strategy** | | |
+| Redis cache implementation | [ ] | Cache dashboard stats |
+| Query result caching | [ ] | Cache expensive queries |
+| View caching | [ ] | Cache Blade partials |
+| API response caching | [ ] | Cache API endpoints |
+| **Asset Optimization** | | |
+| Image optimization | [ ] | Compress and lazy-load images |
+| JS/CSS minification | [ ] | Optimize Vite build |
+| CDN integration | [ ] | Serve static assets via CDN |
+
+### Phase 8: UI/UX Improvements (Medium Priority)
+> *Goal: Enhance dashboard and user experience*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| **Dashboard Enhancements** | | |
+| Customizable widgets | [ ] | Drag-and-drop widget arrangement |
+| Dashboard themes | [ ] | Light/Dark/System preference |
+| Quick stats cards | [ ] | Expandable stat details |
+| Activity timeline | [ ] | Improved activity feed design |
+| **Navigation & UX** | | |
+| Keyboard shortcuts | [ ] | Quick navigation (Cmd+K) |
+| Breadcrumb navigation | [ ] | Clear page hierarchy |
+| Mobile responsive | [ ] | Improve mobile experience |
+| Loading states | [ ] | Skeleton loaders for async content |
+| **Visual Improvements** | | |
+| Chart animations | [ ] | Smooth transitions on data updates |
+| Status indicators | [ ] | Clearer online/offline states |
+| Toast notifications | [ ] | Improved notification design |
+| Empty states | [ ] | Better empty state illustrations |
 
 ---
 
