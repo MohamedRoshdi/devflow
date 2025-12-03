@@ -1,7 +1,7 @@
 # DevFlow Pro - Complete Documentation
 
-**Version:** 3.2.0
-**Last Updated:** December 2, 2025
+**Version:** 4.0.0
+**Last Updated:** December 3, 2025
 
 This is the comprehensive documentation combining user guides, deployment instructions, features overview, and troubleshooting.
 
@@ -27,14 +27,38 @@ This is the comprehensive documentation combining user guides, deployment instru
    - [API v1](#api-v1)
 9. [v3.1 Features](#v31-features)
    - [Server Security Management](#server-security-management)
-10. [v3.2 Features](#v32-features) ⭐ NEW
+10. [v3.2 Features](#v32-features)
     - [Project Auto-Setup](#project-auto-setup)
     - [Project Creation Wizard](#project-creation-wizard)
-    - [Enhanced Dashboard](#enhanced-dashboard)
-    - [Feature Toggles](#feature-toggles)
-11. [Troubleshooting](#troubleshooting)
-12. [API Reference](#api-reference)
-13. [Best Practices](#best-practices)
+11. [v4.0 Features](#v40-features) ⭐ NEW
+    - [Real-time Server Metrics](#real-time-server-metrics)
+    - [CI/CD Pipeline Builder](#cicd-pipeline-builder)
+    - [Automated Backups](#automated-backups)
+    - [Server Provisioning](#server-provisioning)
+    - [SSL Management](#ssl-management)
+    - [Team Collaboration](#team-collaboration-v4)
+    - [Testing & CI/CD](#testing--cicd)
+12. [Feature Documentation](#feature-documentation)
+13. [Troubleshooting](#troubleshooting)
+14. [API Reference](#api-reference)
+15. [Best Practices](#best-practices)
+
+---
+
+## 📁 Feature Documentation
+
+Detailed documentation for v4.0 features:
+
+| Feature | Documentation |
+|---------|--------------|
+| CI/CD Pipelines | [docs/features/CICD_IMPLEMENTATION_SUMMARY.md](docs/features/CICD_IMPLEMENTATION_SUMMARY.md) |
+| Team Collaboration | [docs/features/COLLABORATION_FEATURES.md](docs/features/COLLABORATION_FEATURES.md) |
+| Collaboration Setup | [docs/features/COLLABORATION_SETUP.md](docs/features/COLLABORATION_SETUP.md) |
+| Database Backups | [docs/features/DATABASE_BACKUP_SYSTEM.md](docs/features/DATABASE_BACKUP_SYSTEM.md) |
+| Storage Integration | [docs/features/STORAGE_INTEGRATION.md](docs/features/STORAGE_INTEGRATION.md) |
+| Server Provisioning | [docs/features/SERVER_PROVISIONING_SSL_README.md](docs/features/SERVER_PROVISIONING_SSL_README.md) |
+| Testing Guide | [docs/features/TESTING_GUIDE.md](docs/features/TESTING_GUIDE.md) |
+| Running Tests | [docs/features/RUN_TESTS.md](docs/features/RUN_TESTS.md) |
 
 ---
 
