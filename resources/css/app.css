@@ -183,3 +183,182 @@
     animation: shine 3s infinite;
 }
 
+/* Toast Notification Styles */
+.toast {
+    @apply flex items-start gap-3 p-4 rounded-lg shadow-lg border transition-all duration-300 transform;
+    @apply bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700;
+    min-width: 300px;
+    max-width: 500px;
+}
+
+.toast-enter {
+    opacity: 0;
+    transform: translateY(1rem) scale(0.95);
+}
+
+.toast-enter-active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.toast-exit {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.toast-exit-active {
+    opacity: 0;
+    transform: translateX(20rem);
+}
+
+.toast-success {
+    @apply border-l-4 border-l-green-500 bg-green-50 dark:bg-green-900/20;
+}
+
+.toast-error {
+    @apply border-l-4 border-l-red-500 bg-red-50 dark:bg-red-900/20;
+}
+
+.toast-warning {
+    @apply border-l-4 border-l-yellow-500 bg-yellow-50 dark:bg-yellow-900/20;
+}
+
+.toast-info {
+    @apply border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-900/20;
+}
+
+.toast-progress {
+    @apply absolute bottom-0 left-0 h-1 bg-current rounded-b-lg;
+    animation: toast-progress 5s linear forwards;
+}
+
+@keyframes toast-progress {
+    from {
+        width: 100%;
+    }
+    to {
+        width: 0%;
+    }
+}
+
+/* Improved Focus Styles */
+.focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500;
+    @apply dark:focus:ring-blue-400 dark:focus:ring-offset-gray-900;
+}
+
+/* Smooth Transitions */
+.transition-smooth {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced Hover Effects */
+.hover-lift {
+    @apply transition-transform duration-200;
+}
+
+.hover-lift:hover {
+    transform: translateY(-2px);
+}
+
+/* Dark Mode Specific Improvements */
+.dark {
+    color-scheme: dark;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-track {
+    @apply bg-gray-800;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-gray-600 rounded-full;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-500;
+}
+
+/* Skeleton Loader Shimmer */
+@keyframes skeleton-shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+.skeleton-shimmer {
+    background: linear-gradient(
+        to right,
+        rgba(229, 231, 235, 0) 0%,
+        rgba(229, 231, 235, 0.8) 50%,
+        rgba(229, 231, 235, 0) 100%
+    );
+    background-size: 1000px 100%;
+    animation: skeleton-shimmer 2s infinite;
+}
+
+.dark .skeleton-shimmer {
+    background: linear-gradient(
+        to right,
+        rgba(55, 65, 81, 0) 0%,
+        rgba(55, 65, 81, 0.8) 50%,
+        rgba(55, 65, 81, 0) 100%
+    );
+    background-size: 1000px 100%;
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Slide Up Animation */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-slideUp {
+    animation: slideUp 0.4s ease-out;
+}
+
+/* Scale In Animation */
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.animate-scaleIn {
+    animation: scaleIn 0.2s ease-out;
+}
+

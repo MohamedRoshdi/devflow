@@ -13,6 +13,8 @@ class DashboardUpdated implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public string $updateType;
+
+    /** @var array<string, mixed> */
     public array $data;
 
     /**

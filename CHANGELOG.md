@@ -7,6 +7,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.0.0] - 2025-12-03
+
+### Added
+
+- **Phase 8: UI/UX Improvements Complete**
+
+  **Theme Management:**
+  - Theme toggle component with Light/Dark/System modes
+  - Persistent theme preference via localStorage
+  - Smooth transitions between themes
+  - System preference detection
+  - PWA theme-color meta tag updates
+
+  **Keyboard Shortcuts:**
+  - Global keyboard shortcuts manager (keyboard-shortcuts.js)
+  - Command palette (Cmd/Ctrl+K)
+  - Navigation shortcuts (Cmd+D, Cmd+S, Cmd+P, Cmd+E, Cmd+H)
+  - Action shortcuts (Cmd+N for new project, Cmd+F for search)
+  - Help modal (Cmd+/) showing all available shortcuts
+  - ESC key to close modals
+  - Cross-platform support (Mac ⌘ / Windows Ctrl)
+
+  **Loading States:**
+  - Skeleton loader component with multiple types (stats, card, list, table, text)
+  - Shimmer animation effect for realistic loading
+  - Dark mode compatible skeleton loaders
+  - Configurable count for repeated elements
+  - Already integrated in project detail views
+
+  **Empty States:**
+  - Empty state component with customizable icons
+  - 9 built-in icon variants (inbox, server, folder, document, code, clock, chart, database, search)
+  - Primary and secondary action buttons
+  - Support for routes and Livewire actions
+  - Dark mode styling
+
+  **Toast Notifications:**
+  - Enhanced toast system with icons (success, error, warning, info)
+  - Progress bar with auto-dismiss
+  - Manual close button
+  - Slide-in and slide-out animations
+  - Livewire event integration
+  - Configurable duration
+  - Stacking support for multiple toasts
+
+  **CSS Improvements:**
+  - New animation classes (fadeIn, slideUp, scaleIn)
+  - Hover lift effect for cards
+  - Enhanced focus ring styles
+  - Custom scrollbar styling for dark mode
+  - Smooth transition utilities
+  - Toast notification styles with progress indicators
+
+  **Developer Experience:**
+  - UI examples component showing all features
+  - Comprehensive documentation in component files
+  - Reusable blade components
+  - Easy integration with Livewire
+
 ## [4.0.0] - 2025-12-03
 
 ### Added

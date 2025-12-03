@@ -10,6 +10,7 @@ use Livewire\Component;
 use Livewire\Attributes\{Computed, Url};
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Cache;
 
 class AuditLogViewer extends Component
 {
@@ -76,27 +77,36 @@ class AuditLogViewer extends Component
     #[Computed]
     public function users()
     {
-        return User::orderBy('name')->get(['id', 'name']);
+        // Optimized: Cache users list for 10 minutes
+        return Cache::remember('audit_users_list', 600, function () {
+            return User::orderBy('name')->get(['id', 'name']);
+        });
     }
 
     #[Computed]
     public function actionCategories()
     {
-        return AuditLog::selectRaw('SUBSTRING_INDEX(action, ".", 1) as category')
-            ->distinct()
-            ->orderBy('category')
-            ->pluck('category');
+        // Optimized: Cache action categories for 30 minutes
+        return Cache::remember('audit_action_categories', 1800, function () {
+            return AuditLog::selectRaw('SUBSTRING_INDEX(action, ".", 1) as category')
+                ->distinct()
+                ->orderBy('category')
+                ->pluck('category');
+        });
     }
 
     #[Computed]
     public function modelTypes()
     {
-        return AuditLog::select('auditable_type')
-            ->distinct()
-            ->orderBy('auditable_type')
-            ->pluck('auditable_type')
-            ->map(fn($type) => class_basename($type))
-            ->unique();
+        // Optimized: Cache model types for 30 minutes
+        return Cache::remember('audit_model_types', 1800, function () {
+            return AuditLog::select('auditable_type')
+                ->distinct()
+                ->orderBy('auditable_type')
+                ->pluck('auditable_type')
+                ->map(fn($type) => class_basename($type))
+                ->unique();
+        });
     }
 
     #[Computed]

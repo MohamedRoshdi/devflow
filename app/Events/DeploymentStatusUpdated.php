@@ -15,9 +15,9 @@ class DeploymentStatusUpdated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $deployment;
-    public $message;
-    public $type;
+    public Deployment $deployment;
+    public string $message;
+    public string $type;
 
     /**
      * Create a new event instance.

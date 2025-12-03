@@ -286,6 +286,7 @@ class ProjectShow extends Component
     public function render()
     {
         $deployments = $this->project->deployments()
+            ->with(['user', 'server'])
             ->latest()
             ->paginate($this->deploymentsPerPage, ['*'], 'deploymentsPage');
 

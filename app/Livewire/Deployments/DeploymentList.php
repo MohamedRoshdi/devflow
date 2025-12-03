@@ -7,6 +7,7 @@ use Livewire\Attributes\Url;
 use App\Models\Deployment;
 use App\Models\Project;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\Cache;
 
 class DeploymentList extends Component
 {
@@ -56,16 +57,27 @@ class DeploymentList extends Component
 
     public function render()
     {
-        // Stats query - all deployments are shared
-        $stats = [
-            'total' => Deployment::count(),
-            'success' => Deployment::where('status', 'success')->count(),
-            'failed' => Deployment::where('status', 'failed')->count(),
-            'running' => Deployment::where('status', 'running')->count(),
-        ];
+        // Optimized: Cache stats for 2 minutes using tags
+        $stats = Cache::tags(['deployments', 'stats'])->remember('deployment_stats', 120, function () {
+            return [
+                'total' => Deployment::count(),
+                'success' => Deployment::where('status', 'success')->count(),
+                'failed' => Deployment::where('status', 'failed')->count(),
+                'running' => Deployment::where('status', 'running')->count(),
+            ];
+        });
 
-        // Filtered query for the list - all deployments are shared
-        $deployments = Deployment::with(['project', 'server', 'user'])
+        // Optimized: Eager load with specific columns
+        $deployments = Deployment::with([
+                'project:id,name,slug',
+                'server:id,name',
+                'user:id,name'
+            ])
+            ->select([
+                'id', 'project_id', 'server_id', 'user_id', 'status', 'branch',
+                'commit_message', 'commit_hash', 'started_at', 'completed_at',
+                'triggered_by', 'created_at', 'updated_at'
+            ])
             ->when($this->statusFilter, fn ($query) => $query->where('status', $this->statusFilter))
             ->when($this->projectFilter, fn ($query) => $query->where('project_id', $this->projectFilter))
             ->when($this->search, function ($query) {
@@ -78,8 +90,10 @@ class DeploymentList extends Component
             ->latest()
             ->paginate($this->perPage);
 
-        // All projects are shared
-        $projects = Project::orderBy('name')->get(['id', 'name']);
+        // Optimized: Cache projects list for 10 minutes
+        $projects = Cache::remember('projects_dropdown_list', 600, function () {
+            return Project::orderBy('name')->get(['id', 'name']);
+        });
 
         return view('livewire.deployments.deployment-list', [
             'deployments' => $deployments,

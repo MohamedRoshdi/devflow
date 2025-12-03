@@ -32,8 +32,13 @@ class ProjectList extends Component
 
     public function render()
     {
-        // All projects are shared across all users
-        $projects = Project::with(['server', 'domains', 'user'])
+        // Optimized: Eager load relationships and select specific columns to reduce memory
+        $projects = Project::with([
+                'server:id,name,status',
+                'domains:id,project_id,domain,subdomain',
+                'user:id,name'
+            ])
+            ->select(['id', 'name', 'slug', 'status', 'server_id', 'user_id', 'framework', 'created_at', 'updated_at'])
             ->when($this->search, function ($query) {
                 $query->where(function($q) {
                     $q->where('name', 'like', '%'.$this->search.'%')

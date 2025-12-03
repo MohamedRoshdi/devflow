@@ -23,7 +23,7 @@ class DeployProjectJob implements ShouldQueue
      * The number of seconds the job can run before timing out.
      * Increased for Docker builds which can take 10-20 minutes with npm builds
      */
-    public $timeout = 1200; // 20 minutes
+    public int $timeout = 1200; // 20 minutes
 
     public function __construct(
         public Deployment $deployment

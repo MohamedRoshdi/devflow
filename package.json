@@ -18,14 +18,13 @@
         "postcss": "^8.4.35",
         "prettier": "^3.1.0",
         "tailwindcss": "^3.4.1",
+        "terser": "^5.44.1",
         "vite": "^5.1.4"
     },
     "dependencies": {
         "chart.js": "^4.4.1",
-        "sortablejs": "^1.15.2",
         "laravel-echo": "^1.16.1",
-        "pusher-js": "^8.4.0-rc2"
+        "pusher-js": "^8.4.0-rc2",
+        "sortablejs": "^1.15.2"
     }
 }
-
-

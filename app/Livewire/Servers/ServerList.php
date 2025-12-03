@@ -8,6 +8,7 @@ use App\Services\ServerConnectivityService;
 use App\Services\BulkServerActionService;
 use Livewire\WithPagination;
 use Livewire\Attributes\On;
+use Illuminate\Support\Facades\Cache;
 
 class ServerList extends Component
 {
@@ -423,12 +424,24 @@ class ServerList extends Component
 
     public function render()
     {
-        $servers = $this->getServersQuery()->with(['tags', 'user'])->paginate(10);
+        // Optimized: Eager load relationships and select specific columns
+        $servers = $this->getServersQuery()
+            ->with([
+                'tags:id,name,color',
+                'user:id,name'
+            ])
+            ->select([
+                'id', 'name', 'hostname', 'ip_address', 'port', 'status',
+                'user_id', 'docker_installed', 'last_ping_at', 'created_at', 'updated_at'
+            ])
+            ->paginate(10);
 
-        // Get all tags for filtering (shared across all users)
-        $allTags = \App\Models\ServerTag::withCount('servers')
-            ->orderBy('name')
-            ->get();
+        // Get all tags for filtering (shared across all users) with caching
+        $allTags = Cache::remember('server_tags_list', 600, function () {
+            return \App\Models\ServerTag::withCount('servers')
+                ->orderBy('name')
+                ->get();
+        });
 
         return view('livewire.servers.server-list', [
             'servers' => $servers,
