@@ -7,6 +7,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.17.0] - 2025-12-03
+
+### Added
+
+- **Automated Backup System** - Complete backup infrastructure with remote storage
+
+  **Database Backup Management:**
+  - Scheduled backups via mysqldump over SSH
+  - Configurable retention policies (daily: 7, weekly: 4, monthly: 3)
+  - One-click restore with progress tracking
+  - SHA-256 checksum verification for integrity
+  - Backup metadata tracking (tables, size, duration)
+
+  **File Backup System:**
+  - Full backups with tar.gz compression
+  - Incremental backups (only changed files)
+  - Configurable exclude patterns per project
+  - Manifest generation for backup contents
+  - Parent-child backup chain tracking
+
+  **Remote Storage Integration:**
+  - Amazon S3 support (including DigitalOcean Spaces, MinIO)
+  - Google Cloud Storage support
+  - FTP/SFTP support with key or password auth
+  - AES-256-GCM encryption at rest
+  - Connection testing before save
+  - Streaming uploads for large files
+
+### Technical
+
+- **New Models:** DatabaseBackup, FileBackup, StorageConfiguration, BackupSchedule
+- **New Services:** DatabaseBackupService, FileBackupService, RemoteStorageService
+- **New Components:** DatabaseBackupManager, FileBackupManager, StorageSettings
+- **Artisan Commands:** backup:database, backup:files, backup:cleanup, backup:verify
+
+### Routes
+
+- `GET /projects/{project}/backups/database` - Database backup manager
+- `GET /projects/{project}/backups/files` - File backup manager
+- `GET /settings/storage` - Remote storage configuration
+
+### Phase 3 Complete
+
+This release completes Phase 3 (Automated Backup System) of the v4.0 roadmap:
+- ✅ Database backup management with scheduling
+- ✅ File backup system with incremental support
+- ✅ Remote storage integration (S3, GCS, FTP, SFTP)
+- ✅ Encryption at rest
+
+---
+
 ## [3.16.0] - 2025-12-03
 
 ### Added

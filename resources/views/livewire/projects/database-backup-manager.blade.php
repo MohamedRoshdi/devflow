@@ -249,6 +249,17 @@
                         <td class="whitespace-nowrap px-6 py-4 text-right text-sm">
                             <div class="flex items-center justify-end gap-2">
                                 @if($backup->status === 'completed')
+                                    @if($backup->isVerified())
+                                        <span class="text-green-600 dark:text-green-400" title="Verified at {{ $backup->verified_at->format('Y-m-d H:i') }}">
+                                            <i class="fas fa-shield-check"></i>
+                                        </span>
+                                    @else
+                                        <button wire:click="confirmVerifyBackup({{ $backup->id }})"
+                                                class="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300"
+                                                title="Verify Integrity">
+                                            <i class="fas fa-shield-alt"></i>
+                                        </button>
+                                    @endif
                                     <button wire:click="downloadBackup({{ $backup->id }})"
                                             class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
                                             title="Download">
@@ -434,6 +445,41 @@
                         Delete
                     </button>
                     <button wire:click="showDeleteModal = false" type="button" class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    {{-- Verify Backup Modal --}}
+    @if($showVerifyModal)
+    <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" wire:click="showVerifyModal = false"></div>
+            <span class="hidden sm:inline-block sm:h-screen sm:align-middle">&#8203;</span>
+            <div class="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all dark:bg-gray-800 sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
+                <div class="bg-white px-4 pb-4 pt-5 dark:bg-gray-800 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900 sm:mx-0 sm:h-10 sm:w-10">
+                            <i class="fas fa-shield-alt text-purple-600 dark:text-purple-400"></i>
+                        </div>
+                        <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                            <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white">Verify Backup Integrity</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500 dark:text-gray-400">This will verify the backup file integrity by comparing the stored checksum with the calculated checksum.</p>
+                                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">This process may take a few moments for large backups.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 dark:bg-gray-900 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button wire:click="verifyBackup" :disabled="isVerifying" class="inline-flex w-full justify-center rounded-md border border-transparent bg-purple-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 sm:ml-3 sm:w-auto sm:text-sm">
+                        <span wire:loading.remove wire:target="verifyBackup">Verify</span>
+                        <span wire:loading wire:target="verifyBackup"><i class="fas fa-spinner fa-spin mr-2"></i>Verifying...</span>
+                    </button>
+                    <button wire:click="showVerifyModal = false" type="button" class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                         Cancel
                     </button>
                 </div>

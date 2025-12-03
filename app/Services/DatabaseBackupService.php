@@ -12,15 +12,16 @@ use Carbon\Carbon;
 class DatabaseBackupService
 {
     /**
-     * Create backup based on schedule
+     * Create backup based on schedule or manual request
      */
-    public function createBackup(BackupSchedule $schedule): DatabaseBackup
+    public function createBackup(BackupSchedule $schedule, string $type = 'scheduled'): DatabaseBackup
     {
         $backup = DatabaseBackup::create([
             'project_id' => $schedule->project_id,
             'server_id' => $schedule->server_id,
             'database_type' => $schedule->database_type,
             'database_name' => $schedule->database_name,
+            'type' => $type,
             'file_name' => $this->generateFileName($schedule->database_name),
             'file_path' => '',
             'storage_disk' => $schedule->storage_disk,
@@ -34,7 +35,7 @@ class DatabaseBackupService
             $localPath = $this->getLocalBackupPath($backup);
 
             // Create backup based on database type
-            match($schedule->database_type) {
+            $metadata = match($schedule->database_type) {
                 'mysql' => $this->backupMySQL($schedule->server, $schedule->database_name, $localPath),
                 'postgresql' => $this->backupPostgreSQL($schedule->server, $schedule->database_name, $localPath),
                 'sqlite' => $this->backupSQLite($schedule->server, $schedule->database_name, $localPath),
@@ -42,6 +43,15 @@ class DatabaseBackupService
 
             // Get file size
             $fileSize = file_exists($localPath) ? filesize($localPath) : 0;
+
+            // Calculate checksum
+            $checksum = $this->calculateChecksum($localPath);
+
+            // Encrypt if requested
+            if ($schedule->encrypt ?? false) {
+                $localPath = $this->encryptBackup($localPath);
+                $backup->file_name .= '.enc';
+            }
 
             // Upload to S3 if configured
             if ($schedule->storage_disk === 's3') {
@@ -56,6 +66,8 @@ class DatabaseBackupService
 
             $backup->update([
                 'file_size' => $fileSize,
+                'checksum' => $checksum,
+                'metadata' => $metadata,
                 'status' => 'completed',
                 'completed_at' => now(),
             ]);
@@ -64,6 +76,7 @@ class DatabaseBackupService
                 'backup_id' => $backup->id,
                 'database' => $schedule->database_name,
                 'size' => $fileSize,
+                'checksum' => $checksum,
             ]);
 
         } catch (\Exception $e) {
@@ -87,13 +100,23 @@ class DatabaseBackupService
     /**
      * Backup MySQL database via SSH
      */
-    public function backupMySQL(Server $server, string $database, string $outputPath): void
+    public function backupMySQL(Server $server, string $database, string $outputPath): array
     {
         // Create directory if it doesn't exist
         $directory = dirname($outputPath);
         if (!is_dir($directory)) {
             mkdir($directory, 0755, true);
         }
+
+        // Get database metadata before backup
+        $metadataCommand = sprintf(
+            "mysql -e \"SELECT COUNT(*) as table_count FROM information_schema.tables WHERE table_schema = %s; SELECT SUM(data_length + index_length) as size FROM information_schema.tables WHERE table_schema = %s;\" %s",
+            escapeshellarg($database),
+            escapeshellarg($database),
+            escapeshellarg($database)
+        );
+
+        $metadataOutput = $this->executeSSHCommandOutput($server, $metadataCommand);
 
         // Build mysqldump command
         $dumpCommand = sprintf(
@@ -116,12 +139,20 @@ class DatabaseBackupService
         if (!$this->isLocalhost($server->ip_address)) {
             $this->downloadFile($server, $outputPath, $outputPath);
         }
+
+        return [
+            'database_type' => 'mysql',
+            'database_name' => $database,
+            'tables_count' => $this->parseTableCount($metadataOutput),
+            'backup_method' => 'mysqldump',
+            'compression' => 'gzip',
+        ];
     }
 
     /**
      * Backup PostgreSQL database via SSH
      */
-    public function backupPostgreSQL(Server $server, string $database, string $outputPath): void
+    public function backupPostgreSQL(Server $server, string $database, string $outputPath): array
     {
         // Create directory if it doesn't exist
         $directory = dirname($outputPath);
@@ -150,12 +181,19 @@ class DatabaseBackupService
         if (!$this->isLocalhost($server->ip_address)) {
             $this->downloadFile($server, $outputPath, $outputPath);
         }
+
+        return [
+            'database_type' => 'postgresql',
+            'database_name' => $database,
+            'backup_method' => 'pg_dump',
+            'compression' => 'gzip',
+        ];
     }
 
     /**
      * Backup SQLite database via SSH
      */
-    public function backupSQLite(Server $server, string $database, string $outputPath): void
+    public function backupSQLite(Server $server, string $database, string $outputPath): array
     {
         // Create directory if it doesn't exist
         $directory = dirname($outputPath);
@@ -184,6 +222,13 @@ class DatabaseBackupService
         if (!$this->isLocalhost($server->ip_address)) {
             $this->downloadFile($server, $outputPath, $outputPath);
         }
+
+        return [
+            'database_type' => 'sqlite',
+            'database_name' => $database,
+            'backup_method' => 'file_copy',
+            'compression' => 'gzip',
+        ];
     }
 
     /**
@@ -327,37 +372,157 @@ class DatabaseBackupService
     }
 
     /**
+     * Verify backup integrity using checksum
+     */
+    public function verifyBackup(DatabaseBackup $backup): bool
+    {
+        try {
+            $filePath = $this->downloadBackup($backup);
+
+            // Calculate current checksum
+            $currentChecksum = $this->calculateChecksum($filePath);
+
+            // Compare with stored checksum
+            $isValid = $currentChecksum === $backup->checksum;
+
+            if ($isValid) {
+                $backup->update(['verified_at' => now()]);
+
+                Log::info('Backup verified successfully', [
+                    'backup_id' => $backup->id,
+                    'checksum' => $currentChecksum,
+                ]);
+            } else {
+                Log::error('Backup verification failed - checksum mismatch', [
+                    'backup_id' => $backup->id,
+                    'stored_checksum' => $backup->checksum,
+                    'calculated_checksum' => $currentChecksum,
+                ]);
+            }
+
+            // Clean up temp file if S3
+            if ($backup->storage_disk === 's3' && file_exists($filePath)) {
+                @unlink($filePath);
+            }
+
+            return $isValid;
+
+        } catch (\Exception $e) {
+            Log::error('Backup verification error', [
+                'backup_id' => $backup->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Clean up old backups based on enhanced retention policy
+     */
+    public function applyRetentionPolicy(Project $project): int
+    {
+        $schedules = BackupSchedule::where('project_id', $project->id)
+            ->where('is_active', true)
+            ->get();
+
+        $totalDeleted = 0;
+
+        foreach ($schedules as $schedule) {
+            $totalDeleted += $this->cleanupOldBackups($schedule);
+        }
+
+        return $totalDeleted;
+    }
+
+    /**
      * Clean up old backups based on retention policy
      */
     public function cleanupOldBackups(BackupSchedule $schedule): int
     {
-        $cutoffDate = Carbon::now()->subDays($schedule->retention_days);
-
-        $oldBackups = DatabaseBackup::where('project_id', $schedule->project_id)
+        $backups = DatabaseBackup::where('project_id', $schedule->project_id)
             ->where('database_name', $schedule->database_name)
             ->where('status', 'completed')
-            ->where('created_at', '<', $cutoffDate)
+            ->orderBy('created_at', 'desc')
             ->get();
 
+        $toKeep = $this->selectBackupsToKeep(
+            $backups,
+            $schedule->retention_daily ?? 7,
+            $schedule->retention_weekly ?? 4,
+            $schedule->retention_monthly ?? 3
+        );
+
         $count = 0;
-        foreach ($oldBackups as $backup) {
-            try {
-                $this->deleteBackup($backup);
-                $count++;
-            } catch (\Exception $e) {
-                Log::error('Failed to cleanup old backup', [
-                    'backup_id' => $backup->id,
-                    'error' => $e->getMessage(),
-                ]);
+        foreach ($backups as $backup) {
+            if (!in_array($backup->id, $toKeep)) {
+                try {
+                    $this->deleteBackup($backup);
+                    $count++;
+                } catch (\Exception $e) {
+                    Log::error('Failed to cleanup old backup', [
+                        'backup_id' => $backup->id,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
             }
         }
 
         Log::info('Old backups cleaned up', [
             'schedule_id' => $schedule->id,
             'count' => $count,
+            'kept' => count($toKeep),
         ]);
 
         return $count;
+    }
+
+    /**
+     * Select backups to keep based on retention policy
+     */
+    protected function selectBackupsToKeep(
+        \Illuminate\Database\Eloquent\Collection $backups,
+        int $dailyCount,
+        int $weeklyCount,
+        int $monthlyCount
+    ): array {
+        $keep = [];
+        $now = Carbon::now();
+
+        // Keep daily backups
+        $dailyBackups = $backups->filter(function ($backup) use ($now) {
+            return $backup->created_at->isAfter($now->copy()->subDays(30));
+        })->sortByDesc('created_at')->take($dailyCount);
+
+        foreach ($dailyBackups as $backup) {
+            $keep[] = $backup->id;
+        }
+
+        // Keep weekly backups (one per week)
+        $weeklyBackups = $backups->filter(function ($backup) use ($now) {
+            return $backup->created_at->isAfter($now->copy()->subWeeks(12));
+        })->groupBy(function ($backup) {
+            return $backup->created_at->format('Y-W');
+        })->map(function ($group) {
+            return $group->sortByDesc('created_at')->first();
+        })->sortByDesc('created_at')->take($weeklyCount);
+
+        foreach ($weeklyBackups as $backup) {
+            $keep[] = $backup->id;
+        }
+
+        // Keep monthly backups (one per month)
+        $monthlyBackups = $backups->groupBy(function ($backup) {
+            return $backup->created_at->format('Y-m');
+        })->map(function ($group) {
+            return $group->sortByDesc('created_at')->first();
+        })->sortByDesc('created_at')->take($monthlyCount);
+
+        foreach ($monthlyBackups as $backup) {
+            $keep[] = $backup->id;
+        }
+
+        return array_unique($keep);
     }
 
     /**
@@ -582,5 +747,72 @@ class DatabaseBackupService
         }
 
         return false;
+    }
+
+    /**
+     * Calculate SHA-256 checksum for file
+     */
+    protected function calculateChecksum(string $filePath): string
+    {
+        if (!file_exists($filePath)) {
+            throw new \RuntimeException("File not found: {$filePath}");
+        }
+
+        return hash_file('sha256', $filePath);
+    }
+
+    /**
+     * Encrypt backup file (optional feature)
+     */
+    protected function encryptBackup(string $filePath): string
+    {
+        $key = config('app.key');
+        $encryptedPath = $filePath . '.enc';
+
+        $inputFile = fopen($filePath, 'rb');
+        $outputFile = fopen($encryptedPath, 'wb');
+
+        $iv = random_bytes(16);
+        fwrite($outputFile, $iv);
+
+        while (!feof($inputFile)) {
+            $chunk = fread($inputFile, 8192);
+            $encrypted = openssl_encrypt($chunk, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+            fwrite($outputFile, $encrypted);
+        }
+
+        fclose($inputFile);
+        fclose($outputFile);
+
+        // Remove original file
+        @unlink($filePath);
+
+        return $encryptedPath;
+    }
+
+    /**
+     * Parse table count from MySQL metadata output
+     */
+    protected function parseTableCount(string $output): int
+    {
+        preg_match('/table_count\s+(\d+)/i', $output, $matches);
+        return isset($matches[1]) ? (int)$matches[1] : 0;
+    }
+
+    /**
+     * Execute SSH command and return output
+     */
+    protected function executeSSHCommandOutput(Server $server, string $remoteCommand): string
+    {
+        $command = $this->buildSSHCommand($server, $remoteCommand);
+        $process = Process::fromShellCommandline($command);
+        $process->setTimeout(60);
+        $process->run();
+
+        if ($process->isSuccessful()) {
+            return trim($process->getOutput());
+        }
+
+        return '';
     }
 }

@@ -124,6 +124,11 @@ class Project extends Model
         return $this->hasMany(Pipeline::class);
     }
 
+    public function storageConfigurations()
+    {
+        return $this->hasMany(StorageConfiguration::class);
+    }
+
     public function webhookDeliveries()
     {
         return $this->hasMany(WebhookDelivery::class);
@@ -137,6 +142,11 @@ class Project extends Model
     public function backupSchedules()
     {
         return $this->hasMany(BackupSchedule::class);
+    }
+
+    public function fileBackups()
+    {
+        return $this->hasMany(FileBackup::class);
     }
 
     public function setupTasks()

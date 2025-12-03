@@ -17,14 +17,18 @@ class DatabaseBackup extends Model
         'server_id',
         'database_type',
         'database_name',
+        'type',
         'file_name',
         'file_path',
         'file_size',
+        'checksum',
         'storage_disk',
         'status',
         'started_at',
         'completed_at',
+        'verified_at',
         'error_message',
+        'metadata',
     ];
 
     protected function casts(): array
@@ -33,7 +37,9 @@ class DatabaseBackup extends Model
             'file_size' => 'integer',
             'started_at' => 'datetime',
             'completed_at' => 'datetime',
+            'verified_at' => 'datetime',
             'created_at' => 'datetime',
+            'metadata' => 'array',
         ];
     }
 
@@ -95,5 +101,62 @@ class DatabaseBackup extends Model
     public function scopeForProject($query, int $projectId)
     {
         return $query->where('project_id', $projectId);
+    }
+
+    public function scopeVerified($query)
+    {
+        return $query->whereNotNull('verified_at');
+    }
+
+    public function scopeUnverified($query)
+    {
+        return $query->whereNull('verified_at');
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->verified_at !== null;
+    }
+
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
+    }
+
+    public function isRunning(): bool
+    {
+        return $this->status === 'running';
+    }
+
+    public function isCompleted(): bool
+    {
+        return $this->status === 'completed';
+    }
+
+    public function isFailed(): bool
+    {
+        return $this->status === 'failed';
+    }
+
+    public function getStatusColorAttribute(): string
+    {
+        return match($this->status) {
+            'completed' => 'green',
+            'running' => 'blue',
+            'failed' => 'red',
+            'pending' => 'yellow',
+            default => 'gray',
+        };
+    }
+
+    public function getStatusIconAttribute(): string
+    {
+        return match($this->status) {
+            'completed' => 'fa-check-circle',
+            'running' => 'fa-spinner fa-spin',
+            'failed' => 'fa-exclamation-circle',
+            'pending' => 'fa-clock',
+            default => 'fa-question-circle',
+        };
     }
 }

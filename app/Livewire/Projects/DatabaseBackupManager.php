@@ -23,6 +23,7 @@ class DatabaseBackupManager extends Component
     public bool $showScheduleModal = false;
     public bool $showDeleteModal = false;
     public bool $showRestoreModal = false;
+    public bool $showVerifyModal = false;
 
     // Form properties for creating backup
     public string $databaseType = 'mysql';
@@ -41,8 +42,10 @@ class DatabaseBackupManager extends Component
     // Action tracking
     public ?int $backupIdToDelete = null;
     public ?int $backupIdToRestore = null;
+    public ?int $backupIdToVerify = null;
     public bool $isCreatingBackup = false;
     public bool $isCreatingSchedule = false;
+    public bool $isVerifying = false;
 
     protected function rules(): array
     {
@@ -335,6 +338,61 @@ class DatabaseBackupManager extends Component
                 'type' => 'error',
                 'message' => 'Failed to restore backup: ' . $e->getMessage(),
             ]);
+        }
+    }
+
+    public function confirmVerifyBackup(int $backupId): void
+    {
+        $this->backupIdToVerify = $backupId;
+        $this->showVerifyModal = true;
+    }
+
+    public function verifyBackup(): void
+    {
+        if (!$this->backupIdToVerify) {
+            return;
+        }
+
+        $this->isVerifying = true;
+
+        try {
+            $backup = DatabaseBackup::findOrFail($this->backupIdToVerify);
+
+            if ($backup->project_id !== $this->project->id) {
+                throw new \Exception('Unauthorized');
+            }
+
+            $backupService = app(DatabaseBackupService::class);
+            $isValid = $backupService->verifyBackup($backup);
+
+            if ($isValid) {
+                $this->dispatch('notification', [
+                    'type' => 'success',
+                    'message' => 'Backup verification passed! Checksum is valid.',
+                ]);
+            } else {
+                $this->dispatch('notification', [
+                    'type' => 'error',
+                    'message' => 'Backup verification failed! Checksum mismatch detected.',
+                ]);
+            }
+
+            $this->showVerifyModal = false;
+            $this->backupIdToVerify = null;
+            unset($this->backups);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to verify backup', [
+                'backup_id' => $this->backupIdToVerify,
+                'error' => $e->getMessage(),
+            ]);
+
+            $this->dispatch('notification', [
+                'type' => 'error',
+                'message' => 'Failed to verify backup: ' . $e->getMessage(),
+            ]);
+        } finally {
+            $this->isVerifying = false;
         }
     }
 

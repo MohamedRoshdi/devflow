@@ -22,7 +22,12 @@ class BackupSchedule extends Model
         'day_of_week',
         'day_of_month',
         'retention_days',
+        'retention_daily',
+        'retention_weekly',
+        'retention_monthly',
         'storage_disk',
+        'encrypt',
+        'notify_on_failure',
         'is_active',
         'last_run_at',
         'next_run_at',
@@ -32,11 +37,16 @@ class BackupSchedule extends Model
     {
         return [
             'is_active' => 'boolean',
+            'encrypt' => 'boolean',
+            'notify_on_failure' => 'boolean',
             'last_run_at' => 'datetime',
             'next_run_at' => 'datetime',
             'day_of_week' => 'integer',
             'day_of_month' => 'integer',
             'retention_days' => 'integer',
+            'retention_daily' => 'integer',
+            'retention_weekly' => 'integer',
+            'retention_monthly' => 'integer',
         ];
     }
 

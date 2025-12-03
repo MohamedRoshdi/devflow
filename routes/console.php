@@ -26,6 +26,9 @@ Schedule::command('deployments:process-scheduled')->everyMinute();
 // Run scheduled database backups
 Schedule::command('backups:run')->everyFifteenMinutes();
 
+// Clean up old backups (daily at midnight)
+Schedule::command('backup:cleanup')->daily()->at('00:00');
+
 // Run health checks
 Schedule::command('health:check')->everyMinute();
 

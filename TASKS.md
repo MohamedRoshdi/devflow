@@ -1,7 +1,7 @@
 # DevFlow Pro - Task Management
 
 **Last updated:** December 3, 2025
-**Current Version:** v3.16.0
+**Current Version:** v3.17.0
 **Next Target:** v4.0.0
 
 ---
@@ -51,25 +51,25 @@
 | Environment variables | [x] | Per-stage env configuration |
 | Artifact storage | [x] | Stage output stored in pipeline_stage_runs |
 
-### Phase 3: Automated Backup System (Medium Priority)
+### Phase 3: Automated Backup System (Medium Priority) - 100% Complete ✅
 > *Goal: Scheduled backups with remote storage support*
 
 | Task | Status | Description |
 |------|--------|-------------|
 | **Database Backup Management** | | |
-| Scheduled backups | [ ] | MySQL/PostgreSQL mysqldump |
-| Retention policies | [ ] | Daily(7), Weekly(4), Monthly(3) |
-| One-click restore | [ ] | Restore from any backup |
-| Backup verification | [ ] | Checksum validation |
+| Scheduled backups | [x] | MySQL/PostgreSQL mysqldump via SSH |
+| Retention policies | [x] | Daily(7), Weekly(4), Monthly(3) configurable |
+| One-click restore | [x] | Restore from any backup with UI |
+| Backup verification | [x] | SHA-256 checksum validation |
 | **File Backup System** | | |
-| Storage directory backups | [ ] | /storage/app files |
-| Incremental backups | [ ] | Only changed files |
-| Exclude patterns | [ ] | Skip cache, logs, temp |
+| Storage directory backups | [x] | Full tar.gz of /storage/app |
+| Incremental backups | [x] | Only changed files since last full |
+| Exclude patterns | [x] | Configurable per-project excludes |
 | **Remote Storage Integration** | | |
-| S3 support | [ ] | AWS S3 / DigitalOcean Spaces |
-| Google Cloud Storage | [ ] | GCS bucket support |
-| FTP/SFTP destinations | [ ] | Traditional backup servers |
-| Encryption at rest | [ ] | AES-256 encryption |
+| S3 support | [x] | AWS S3 / DigitalOcean Spaces / MinIO |
+| Google Cloud Storage | [x] | GCS bucket support |
+| FTP/SFTP destinations | [x] | Full FTP/SFTP support |
+| Encryption at rest | [x] | AES-256-GCM encryption |
 
 ### Phase 4: Testing & Quality (Medium Priority)
 > *Goal: Comprehensive test coverage and CI pipeline*
@@ -114,6 +114,23 @@
 ---
 
 ## ✅ Completed Versions
+
+<details>
+<summary><strong>v3.17.0</strong> - Phase 3 Complete: Automated Backup System</summary>
+
+- [x] DatabaseBackup model with checksum verification
+- [x] FileBackup model with full/incremental support
+- [x] StorageConfiguration model for remote storage
+- [x] DatabaseBackupService with mysqldump via SSH
+- [x] FileBackupService with tar.gz and incremental backups
+- [x] RemoteStorageService with S3, GCS, FTP, SFTP support
+- [x] Retention policies (daily/weekly/monthly)
+- [x] AES-256-GCM encryption at rest
+- [x] Backup verification with SHA-256 checksums
+- [x] One-click restore from any backup
+- [x] Configurable exclude patterns
+- [x] Storage settings UI with connection testing
+</details>
 
 <details>
 <summary><strong>v3.16.0</strong> - Phase 2 Complete: CI/CD Pipeline System</summary>
