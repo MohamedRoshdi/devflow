@@ -57,8 +57,8 @@ class DeploymentList extends Component
 
     public function render()
     {
-        // Optimized: Cache stats for 2 minutes using tags
-        $stats = Cache::tags(['deployments', 'stats'])->remember('deployment_stats', 120, function () {
+        // Optimized: Cache stats for 2 minutes (works with all cache drivers)
+        $stats = Cache::remember('deployment_stats', 120, function () {
             return [
                 'total' => Deployment::count(),
                 'success' => Deployment::where('status', 'success')->count(),

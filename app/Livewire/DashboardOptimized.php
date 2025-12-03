@@ -83,22 +83,9 @@ class DashboardOptimized extends Component
     #[On('refresh-dashboard')]
     public function loadStats()
     {
-        // Cache for 5 minutes (300 seconds) with tags for efficient invalidation
-        try {
-            $this->stats = Cache::tags(['dashboard', 'stats'])->remember('dashboard_stats_v2', 300, function () {
-                return [
-                    'total_servers' => Server::count(),
-                    'online_servers' => Server::where('status', 'online')->count(),
-                    'total_projects' => Project::count(),
-                    'running_projects' => Project::where('status', 'running')->count(),
-                    'total_deployments' => Deployment::count(),
-                    'successful_deployments' => Deployment::where('status', 'success')->count(),
-                    'failed_deployments' => Deployment::where('status', 'failed')->count(),
-                ];
-            });
-        } catch (\Exception $e) {
-            // If Redis is not available, fetch directly without caching
-            $this->stats = [
+        // Cache for 5 minutes (300 seconds) - works with all cache drivers
+        $this->stats = Cache::remember('dashboard_stats_v2', 300, function () {
+            return [
                 'total_servers' => Server::count(),
                 'online_servers' => Server::where('status', 'online')->count(),
                 'total_projects' => Project::count(),
@@ -107,7 +94,7 @@ class DashboardOptimized extends Component
                 'successful_deployments' => Deployment::where('status', 'success')->count(),
                 'failed_deployments' => Deployment::where('status', 'failed')->count(),
             ];
-        }
+        });
     }
 
     public function loadRecentDeployments()
@@ -132,37 +119,12 @@ class DashboardOptimized extends Component
 
     public function loadSSLStats()
     {
-        // Cache for 5 minutes with tags
-        try {
-            $this->sslStats = Cache::tags(['dashboard', 'ssl'])->remember('dashboard_ssl_stats_v2', 300, function () {
-                $now = now();
-                $expiringSoonDate = $now->copy()->addDays(7);
-
-                return [
-                    'total_certificates' => SSLCertificate::count(),
-                    'active_certificates' => SSLCertificate::where('status', 'issued')
-                        ->where('expires_at', '>', $now)
-                        ->count(),
-                    'expiring_soon' => SSLCertificate::where('expires_at', '<=', $expiringSoonDate)
-                        ->where('expires_at', '>', $now)
-                        ->count(),
-                    'expired' => SSLCertificate::where('expires_at', '<=', $now)->count(),
-                    'pending' => SSLCertificate::where('status', 'pending')->count(),
-                    'failed' => SSLCertificate::where('status', 'failed')->count(),
-                    'expiring_certificates' => SSLCertificate::where('expires_at', '<=', $expiringSoonDate)
-                        ->where('expires_at', '>', $now)
-                        ->with(['domain:id,domain,subdomain', 'server:id,name'])
-                        ->select(['id', 'domain_id', 'server_id', 'expires_at', 'status'])
-                        ->orderBy('expires_at', 'asc')
-                        ->take(5)
-                        ->get(),
-                ];
-            });
-        } catch (\Exception $e) {
+        // Cache for 5 minutes - works with all cache drivers
+        $this->sslStats = Cache::remember('dashboard_ssl_stats_v2', 300, function () {
             $now = now();
             $expiringSoonDate = $now->copy()->addDays(7);
 
-            $this->sslStats = [
+            return [
                 'total_certificates' => SSLCertificate::count(),
                 'active_certificates' => SSLCertificate::where('status', 'issued')
                     ->where('expires_at', '>', $now)
@@ -181,30 +143,14 @@ class DashboardOptimized extends Component
                     ->take(5)
                     ->get(),
             ];
-        }
+        });
     }
 
     public function loadHealthCheckStats()
     {
-        // Cache for 2 minutes with tags
-        try {
-            $this->healthCheckStats = Cache::tags(['dashboard', 'health'])->remember('dashboard_health_stats_v2', 120, function () {
-                return [
-                    'total_checks' => HealthCheck::count(),
-                    'active_checks' => HealthCheck::where('is_active', true)->count(),
-                    'healthy' => HealthCheck::where('status', 'healthy')->count(),
-                    'degraded' => HealthCheck::where('status', 'degraded')->count(),
-                    'down' => HealthCheck::where('status', 'down')->count(),
-                    'down_checks' => HealthCheck::where('status', 'down')
-                        ->with(['project:id,name', 'server:id,name'])
-                        ->select(['id', 'project_id', 'server_id', 'status', 'last_failure_at'])
-                        ->orderBy('last_failure_at', 'desc')
-                        ->take(5)
-                        ->get(),
-                ];
-            });
-        } catch (\Exception $e) {
-            $this->healthCheckStats = [
+        // Cache for 2 minutes - works with all cache drivers
+        $this->healthCheckStats = Cache::remember('dashboard_health_stats_v2', 120, function () {
+            return [
                 'total_checks' => HealthCheck::count(),
                 'active_checks' => HealthCheck::where('is_active', true)->count(),
                 'healthy' => HealthCheck::where('status', 'healthy')->count(),
@@ -217,7 +163,7 @@ class DashboardOptimized extends Component
                     ->take(5)
                     ->get(),
             ];
-        }
+        });
     }
 
     public function loadDeploymentsToday()
@@ -280,112 +226,61 @@ class DashboardOptimized extends Component
 
     public function loadServerHealth()
     {
-        // Cache for 2 minutes with tags
-        try {
-            $this->serverHealth = Cache::tags(['dashboard', 'server_health'])->remember('dashboard_server_health_v2', 120, function () {
-                // Optimized: Select only needed columns
-                $servers = Server::where('status', 'online')
-                    ->select(['id', 'name', 'status'])
-                    ->get();
+        // Cache for 2 minutes - works with all cache drivers
+        // Note: We can't cache closures that reference $this, so we fetch directly
+        $servers = Server::where('status', 'online')
+            ->select(['id', 'name', 'status'])
+            ->get();
 
-                return $servers->map(function ($server) {
-                    // Use optimized index: server_id + recorded_at
-                    $latestMetric = ServerMetric::where('server_id', $server->id)
-                        ->select([
-                            'cpu_usage', 'memory_usage', 'disk_usage',
-                            'memory_used_mb', 'memory_total_mb',
-                            'disk_used_gb', 'disk_total_gb',
-                            'load_average_1', 'load_average_5', 'load_average_15',
-                            'network_in_bytes', 'network_out_bytes', 'recorded_at'
-                        ])
-                        ->orderBy('recorded_at', 'desc')
-                        ->first();
+        $this->serverHealth = $servers->map(function ($server) {
+            // Use optimized index: server_id + recorded_at
+            $latestMetric = ServerMetric::where('server_id', $server->id)
+                ->select([
+                    'cpu_usage', 'memory_usage', 'disk_usage',
+                    'memory_used_mb', 'memory_total_mb',
+                    'disk_used_gb', 'disk_total_gb',
+                    'load_average_1', 'load_average_5', 'load_average_15',
+                    'network_in_bytes', 'network_out_bytes', 'recorded_at'
+                ])
+                ->orderBy('recorded_at', 'desc')
+                ->first();
 
-                    if (!$latestMetric) {
-                        return [
-                            'server_id' => $server->id,
-                            'server_name' => $server->name,
-                            'cpu_usage' => null,
-                            'memory_usage' => null,
-                            'disk_usage' => null,
-                            'status' => $server->status,
-                            'recorded_at' => null,
-                        ];
-                    }
-
-                    return [
-                        'server_id' => $server->id,
-                        'server_name' => $server->name,
-                        'cpu_usage' => (float) $latestMetric->cpu_usage,
-                        'memory_usage' => (float) $latestMetric->memory_usage,
-                        'memory_used_mb' => $latestMetric->memory_used_mb,
-                        'memory_total_mb' => $latestMetric->memory_total_mb,
-                        'disk_usage' => (float) $latestMetric->disk_usage,
-                        'disk_used_gb' => $latestMetric->disk_used_gb,
-                        'disk_total_gb' => $latestMetric->disk_total_gb,
-                        'load_average_1' => (float) $latestMetric->load_average_1,
-                        'load_average_5' => (float) $latestMetric->load_average_5,
-                        'load_average_15' => (float) $latestMetric->load_average_15,
-                        'network_in_bytes' => $latestMetric->network_in_bytes,
-                        'network_out_bytes' => $latestMetric->network_out_bytes,
-                        'status' => $server->status,
-                        'recorded_at' => $latestMetric->recorded_at,
-                        'health_status' => $this->getServerHealthStatus(
-                            $latestMetric->cpu_usage,
-                            $latestMetric->memory_usage,
-                            $latestMetric->disk_usage
-                        ),
-                    ];
-                })->all();
-            });
-        } catch (\Exception $e) {
-            // Fallback without caching
-            $servers = Server::where('status', 'online')
-                ->select(['id', 'name', 'status'])
-                ->get();
-
-            $this->serverHealth = $servers->map(function ($server) {
-                $latestMetric = ServerMetric::where('server_id', $server->id)
-                    ->orderBy('recorded_at', 'desc')
-                    ->first();
-
-                if (!$latestMetric) {
-                    return [
-                        'server_id' => $server->id,
-                        'server_name' => $server->name,
-                        'cpu_usage' => null,
-                        'memory_usage' => null,
-                        'disk_usage' => null,
-                        'status' => $server->status,
-                        'recorded_at' => null,
-                    ];
-                }
-
+            if (!$latestMetric) {
                 return [
                     'server_id' => $server->id,
                     'server_name' => $server->name,
-                    'cpu_usage' => (float) $latestMetric->cpu_usage,
-                    'memory_usage' => (float) $latestMetric->memory_usage,
-                    'memory_used_mb' => $latestMetric->memory_used_mb,
-                    'memory_total_mb' => $latestMetric->memory_total_mb,
-                    'disk_usage' => (float) $latestMetric->disk_usage,
-                    'disk_used_gb' => $latestMetric->disk_used_gb,
-                    'disk_total_gb' => $latestMetric->disk_total_gb,
-                    'load_average_1' => (float) $latestMetric->load_average_1,
-                    'load_average_5' => (float) $latestMetric->load_average_5,
-                    'load_average_15' => (float) $latestMetric->load_average_15,
-                    'network_in_bytes' => $latestMetric->network_in_bytes,
-                    'network_out_bytes' => $latestMetric->network_out_bytes,
+                    'cpu_usage' => null,
+                    'memory_usage' => null,
+                    'disk_usage' => null,
                     'status' => $server->status,
-                    'recorded_at' => $latestMetric->recorded_at,
-                    'health_status' => $this->getServerHealthStatus(
-                        $latestMetric->cpu_usage,
-                        $latestMetric->memory_usage,
-                        $latestMetric->disk_usage
-                    ),
+                    'recorded_at' => null,
                 ];
-            })->all();
-        }
+            }
+
+            return [
+                'server_id' => $server->id,
+                'server_name' => $server->name,
+                'cpu_usage' => (float) $latestMetric->cpu_usage,
+                'memory_usage' => (float) $latestMetric->memory_usage,
+                'memory_used_mb' => $latestMetric->memory_used_mb,
+                'memory_total_mb' => $latestMetric->memory_total_mb,
+                'disk_usage' => (float) $latestMetric->disk_usage,
+                'disk_used_gb' => $latestMetric->disk_used_gb,
+                'disk_total_gb' => $latestMetric->disk_total_gb,
+                'load_average_1' => (float) $latestMetric->load_average_1,
+                'load_average_5' => (float) $latestMetric->load_average_5,
+                'load_average_15' => (float) $latestMetric->load_average_15,
+                'network_in_bytes' => $latestMetric->network_in_bytes,
+                'network_out_bytes' => $latestMetric->network_out_bytes,
+                'status' => $server->status,
+                'recorded_at' => $latestMetric->recorded_at,
+                'health_status' => $this->getServerHealthStatus(
+                    $latestMetric->cpu_usage,
+                    $latestMetric->memory_usage,
+                    $latestMetric->disk_usage
+                ),
+            ];
+        })->all();
     }
 
     private function getServerHealthStatus(float $cpu, float $memory, float $disk): string
@@ -401,54 +296,32 @@ class DashboardOptimized extends Component
 
     public function loadQueueStats(): void
     {
-        // Cache for 1 minute with tags
-        try {
-            $this->queueStats = Cache::tags(['dashboard', 'queue'])->remember('dashboard_queue_stats_v2', 60, function () {
-                try {
-                    return [
-                        'pending' => DB::table('jobs')->count(),
-                        'failed' => DB::table('failed_jobs')->count(),
-                    ];
-                } catch (\Exception $e) {
-                    return [
-                        'pending' => 0,
-                        'failed' => 0,
-                    ];
-                }
-            });
-        } catch (\Exception $e) {
+        // Cache for 1 minute - works with all cache drivers
+        $this->queueStats = Cache::remember('dashboard_queue_stats_v2', 60, function () {
             try {
-                $this->queueStats = [
+                return [
                     'pending' => DB::table('jobs')->count(),
                     'failed' => DB::table('failed_jobs')->count(),
                 ];
             } catch (\Exception $e) {
-                $this->queueStats = [
+                return [
                     'pending' => 0,
                     'failed' => 0,
                 ];
             }
-        }
+        });
     }
 
     public function loadSecurityScore(): void
     {
-        // Cache for 5 minutes with tags
-        try {
-            $this->overallSecurityScore = Cache::tags(['dashboard', 'security'])->remember('dashboard_security_score_v2', 300, function () {
-                $avgScore = Server::where('status', 'online')
-                    ->whereNotNull('security_score')
-                    ->avg('security_score');
-
-                return $avgScore ? (int) round($avgScore) : 85;
-            });
-        } catch (\Exception $e) {
+        // Cache for 5 minutes - works with all cache drivers
+        $this->overallSecurityScore = Cache::remember('dashboard_security_score_v2', 300, function () {
             $avgScore = Server::where('status', 'online')
                 ->whereNotNull('security_score')
                 ->avg('security_score');
 
-            $this->overallSecurityScore = $avgScore ? (int) round($avgScore) : 85;
-        }
+            return $avgScore ? (int) round($avgScore) : 85;
+        });
     }
 
     public function loadActiveDeployments(): void
@@ -511,16 +384,16 @@ class DashboardOptimized extends Component
     }
 
     /**
-     * Clear all dashboard-related caches using tags for efficient invalidation
+     * Clear all dashboard-related caches
      */
     public function clearDashboardCache(): void
     {
-        try {
-            // Use cache tags for efficient bulk invalidation
-            Cache::tags(['dashboard'])->flush();
-        } catch (\Exception $e) {
-            // Silently fail if Redis is not available
-        }
+        // Clear individual cache keys (works with all cache drivers)
+        Cache::forget('dashboard_stats_v2');
+        Cache::forget('dashboard_ssl_stats_v2');
+        Cache::forget('dashboard_health_stats_v2');
+        Cache::forget('dashboard_queue_stats_v2');
+        Cache::forget('dashboard_security_score_v2');
     }
 
     #[On('refresh-dashboard')]
@@ -544,13 +417,9 @@ class DashboardOptimized extends Component
     #[On('deployment-completed')]
     public function onDeploymentCompleted(): void
     {
-        // Clear relevant caches using tags
-        try {
-            Cache::tags(['dashboard', 'stats'])->flush();
-            Cache::tags(['dashboard', 'health'])->flush();
-        } catch (\Exception $e) {
-            // Silently fail if Redis is not available
-        }
+        // Clear relevant caches (works with all cache drivers)
+        Cache::forget('dashboard_stats_v2');
+        Cache::forget('dashboard_health_stats_v2');
 
         $this->loadStats();
         $this->loadHealthCheckStats();
