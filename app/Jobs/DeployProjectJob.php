@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Events\DeploymentLogUpdated;
 use App\Models\Deployment;
 use App\Models\PipelineStage;
+use App\Models\Project;
 use App\Services\DockerService;
 use App\Services\GitService;
 use App\Services\CICD\PipelineExecutionService;
