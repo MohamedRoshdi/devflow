@@ -26,4 +26,15 @@ class NotificationLog extends Model
     {
         return $this->belongsTo(NotificationChannel::class, 'notification_channel_id');
     }
+
+    // Status helpers
+    public function isSent(): bool
+    {
+        return $this->status === 'sent';
+    }
+
+    public function isFailed(): bool
+    {
+        return $this->status === 'failed';
+    }
 }

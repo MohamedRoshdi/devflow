@@ -2,8 +2,12 @@
 
 > **Enterprise-grade deployment platform with Kubernetes, CI/CD, and multi-tenant support for managing projects at scale.**
 
+[![CI Status](https://github.com/yourusername/devflow-pro/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/devflow-pro/actions/workflows/ci.yml)
+[![Deploy Status](https://github.com/yourusername/devflow-pro/actions/workflows/deploy.yml/badge.svg)](https://github.com/yourusername/devflow-pro/actions/workflows/deploy.yml)
+[![Code Quality](https://github.com/yourusername/devflow-pro/actions/workflows/code-quality.yml/badge.svg)](https://github.com/yourusername/devflow-pro/actions/workflows/code-quality.yml)
 [![Version](https://img.shields.io/badge/version-3.3.0-blue.svg)](https://github.com/yourusername/devflow-pro)
 [![Laravel](https://img.shields.io/badge/Laravel-12-red.svg)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.2%20|%208.3%20|%208.4-777BB4.svg)](https://php.net)
 [![Livewire](https://img.shields.io/badge/Livewire-3-purple.svg)](https://livewire.laravel.com)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg)](https://docker.com)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-326CE5.svg)](https://kubernetes.io)

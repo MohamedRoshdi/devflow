@@ -104,5 +104,42 @@ class Deployment extends Model
             default => 'question-mark-circle',
         };
     }
+
+    // New collaboration relationships
+    public function approvals()
+    {
+        return $this->hasMany(DeploymentApproval::class);
+    }
+
+    public function pendingApproval()
+    {
+        return $this->hasOne(DeploymentApproval::class)->where('status', 'pending');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(DeploymentComment::class);
+    }
+
+    public function auditLogs()
+    {
+        return $this->morphMany(AuditLog::class, 'auditable');
+    }
+
+    // Approval helpers
+    public function requiresApproval(): bool
+    {
+        return $this->project && $this->project->requires_approval;
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->approvals()->where('status', 'approved')->exists();
+    }
+
+    public function isPendingApproval(): bool
+    {
+        return $this->approvals()->where('status', 'pending')->exists();
+    }
 }
 

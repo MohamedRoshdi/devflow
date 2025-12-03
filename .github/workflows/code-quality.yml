@@ -1,0 +1,221 @@
+name: Code Quality
+
+on:
+  pull_request:
+    branches: [main, master, develop]
+
+jobs:
+  phpstan:
+    name: PHPStan Analysis (Level 5)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, bcmath
+          tools: composer:v2
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse --memory-limit=2G --error-format=github
+
+  pint:
+    name: Laravel Pint (Code Style)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Run Pint
+        run: vendor/bin/pint --test
+
+      - name: Auto-fix with Pint (if test fails)
+        if: failure()
+        run: |
+          vendor/bin/pint
+          git diff > pint-fixes.patch
+
+      - name: Upload Pint fixes patch
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pint-fixes
+          path: pint-fixes.patch
+          retention-days: 7
+
+  prettier:
+    name: Prettier (JS/CSS/Vue)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check formatting
+        run: npx prettier --check "resources/**/*.{js,vue,css}"
+
+      - name: Auto-fix formatting (if check fails)
+        if: failure()
+        run: |
+          npx prettier --write "resources/**/*.{js,vue,css}"
+          git diff > prettier-fixes.patch
+
+      - name: Upload Prettier fixes patch
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prettier-fixes
+          path: prettier-fixes.patch
+          retention-days: 7
+
+  complexity:
+    name: Code Complexity Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2, phpmetrics
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Analyze code complexity
+        run: |
+          vendor/bin/phpstan analyse --memory-limit=2G --error-format=json > phpstan-report.json || true
+          echo "📊 Complexity Analysis Complete"
+
+      - name: Upload analysis report
+        uses: actions/upload-artifact@v4
+        with:
+          name: complexity-report
+          path: phpstan-report.json
+          retention-days: 30
+
+  test-coverage:
+    name: Test Coverage Report
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: devflow_test
+          MYSQL_ROOT_PASSWORD: password
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, pdo_mysql, bcmath, redis
+          coverage: xdebug
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Create .env.testing
+        run: |
+          cp .env .env.testing
+          echo "APP_ENV=testing" >> .env.testing
+          echo "DB_CONNECTION=mysql" >> .env.testing
+          echo "DB_HOST=127.0.0.1" >> .env.testing
+          echo "DB_PORT=3306" >> .env.testing
+          echo "DB_DATABASE=devflow_test" >> .env.testing
+          echo "DB_USERNAME=root" >> .env.testing
+          echo "DB_PASSWORD=password" >> .env.testing
+
+      - name: Generate app key
+        run: php artisan key:generate --env=testing
+
+      - name: Run migrations
+        run: php artisan migrate --env=testing --force
+
+      - name: Run tests with coverage
+        run: vendor/bin/phpunit --coverage-html coverage-report --coverage-clover coverage.xml
+
+      - name: Upload coverage HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage-report
+          retention-days: 30
+
+      - name: Comment coverage on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            if (!fs.existsSync('coverage.xml')) {
+              console.log('No coverage file found');
+              return;
+            }
+
+            const xml2js = require('xml2js');
+            const parser = new xml2js.Parser();
+            const coverage = fs.readFileSync('coverage.xml', 'utf8');
+
+            parser.parseString(coverage, (err, result) => {
+              if (err) return;
+
+              const metrics = result.coverage.project[0].metrics[0].$;
+              const lineRate = (parseFloat(metrics.coveredstatements) / parseFloat(metrics.statements) * 100).toFixed(2);
+
+              const comment = `## 📊 Test Coverage Report
+
+              - **Line Coverage:** ${lineRate}%
+              - **Covered Statements:** ${metrics.coveredstatements}/${metrics.statements}
+              - **Covered Methods:** ${metrics.coveredmethods}/${metrics.methods}
+
+              [View detailed coverage report in artifacts]`;
+
+              github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+            });

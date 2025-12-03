@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Notifications;
 
-use App\Models\NotificationChannel;
-use App\Services\Notifications\SlackDiscordNotificationService;
+use App\Models\{NotificationChannel, Project};
+use App\Services\NotificationService;
 use Livewire\Component;
+use Livewire\Attributes\{Computed, Validate};
 use Livewire\WithPagination;
 
 class NotificationChannelManager extends Component
@@ -15,49 +18,81 @@ class NotificationChannelManager extends Component
     public $editingChannel = null;
 
     // Channel form fields
+    #[Validate('required|string|max:255')]
     public $name = '';
+
+    #[Validate('required|in:slack,discord,email,webhook,teams')]
     public $provider = 'slack';
+
+    #[Validate('nullable|exists:projects,id')]
+    public $projectId = null;
+
+    #[Validate('required_unless:provider,email|url')]
     public $webhookUrl = '';
+
+    #[Validate('nullable|string')]
     public $webhookSecret = '';
+
+    #[Validate('required_if:provider,email|email')]
+    public $email = '';
+
     public $enabled = true;
+
+    #[Validate('required|array|min:1')]
     public $events = [];
 
     // Test notification
     public $testMessage = '';
     public $testingChannel = null;
 
-    protected $rules = [
-        'name' => 'required|string|max:255',
-        'provider' => 'required|in:slack,discord,teams,webhook',
-        'webhookUrl' => 'required|url',
-        'webhookSecret' => 'nullable|string',
-        'enabled' => 'boolean',
-        'events' => 'required|array|min:1',
-    ];
+    public function __construct(
+        private readonly NotificationService $notificationService
+    ) {}
 
-    public $availableEvents = [
-        'deployment_started' => 'Deployment Started',
-        'deployment_completed' => 'Deployment Completed',
-        'deployment_failed' => 'Deployment Failed',
-        'rollback_completed' => 'Rollback Completed',
-        'health_check_failed' => 'Health Check Failed',
-        'ssl_expiring' => 'SSL Certificate Expiring',
-        'storage_warning' => 'Storage Warning',
-        'security_alert' => 'Security Alert',
-        'backup_completed' => 'Backup Completed',
-        'system_error' => 'System Error',
-    ];
+    #[Computed]
+    public function projects()
+    {
+        return Project::orderBy('name')->get(['id', 'name']);
+    }
+
+    #[Computed]
+    public function availableEvents()
+    {
+        return [
+            'deployment.started' => 'Deployment Started',
+            'deployment.success' => 'Deployment Successful',
+            'deployment.failed' => 'Deployment Failed',
+            'deployment.approved' => 'Deployment Approved',
+            'deployment.rejected' => 'Deployment Rejected',
+            'deployment.rolled_back' => 'Deployment Rolled Back',
+            'server.down' => 'Server Down',
+            'server.recovered' => 'Server Recovered',
+            'health_check.failed' => 'Health Check Failed',
+            'health_check.recovered' => 'Health Check Recovered',
+            'ssl.expiring_soon' => 'SSL Certificate Expiring Soon',
+            'ssl.expired' => 'SSL Certificate Expired',
+            'storage.warning' => 'Storage Warning',
+            'backup.completed' => 'Backup Completed',
+            'backup.failed' => 'Backup Failed',
+        ];
+    }
 
     public function mount()
     {
         $this->resetForm();
     }
 
+    #[Computed]
+    public function channels()
+    {
+        return NotificationChannel::with('project')
+            ->latest()
+            ->paginate(15);
+    }
+
     public function render()
     {
-        return view('livewire.notifications.channel-manager', [
-            'channels' => NotificationChannel::paginate(10),
-        ]);
+        return view('livewire.notifications.channel-manager');
     }
 
     public function addChannel()
@@ -70,11 +105,20 @@ class NotificationChannelManager extends Component
     {
         $this->editingChannel = $channel;
         $this->name = $channel->name;
-        $this->provider = $channel->provider;
-        $this->webhookUrl = $channel->webhook_url;
-        $this->webhookSecret = $channel->webhook_secret;
+        $this->provider = $channel->type ?? $channel->provider;
+        $this->projectId = $channel->project_id;
         $this->enabled = $channel->enabled;
         $this->events = $channel->events ?? [];
+
+        // Load type-specific config
+        $config = $channel->config ?? [];
+        if ($this->provider === 'email') {
+            $this->email = $config['email'] ?? '';
+        } else {
+            $this->webhookUrl = $config['webhook_url'] ?? $channel->webhook_url ?? '';
+        }
+
+        $this->webhookSecret = $channel->webhook_secret ?? '';
         $this->showAddChannelModal = true;
     }
 
@@ -82,11 +126,21 @@ class NotificationChannelManager extends Component
     {
         $this->validate();
 
+        // Build config based on type
+        $config = match ($this->provider) {
+            'slack', 'discord', 'webhook', 'teams' => ['webhook_url' => $this->webhookUrl],
+            'email' => ['email' => $this->email],
+            default => [],
+        };
+
         $data = [
             'name' => $this->name,
-            'provider' => $this->provider,
-            'webhook_url' => $this->webhookUrl,
-            'webhook_secret' => $this->webhookSecret ? encrypt($this->webhookSecret) : null,
+            'type' => $this->provider,
+            'provider' => $this->provider, // Keep for backward compatibility
+            'project_id' => $this->projectId,
+            'config' => $config,
+            'webhook_url' => $this->webhookUrl ?: null,
+            'webhook_secret' => $this->webhookSecret ?: null,
             'enabled' => $this->enabled,
             'events' => $this->events,
         ];
@@ -101,32 +155,35 @@ class NotificationChannelManager extends Component
 
         $this->showAddChannelModal = false;
         $this->resetForm();
+        unset($this->channels);
     }
 
     public function deleteChannel(NotificationChannel $channel)
     {
         $channel->delete();
         $this->dispatch('notify', type: 'success', message: 'Notification channel deleted successfully');
+        unset($this->channels);
     }
 
     public function toggleChannel(NotificationChannel $channel)
     {
         $channel->update(['enabled' => !$channel->enabled]);
         $this->dispatch('notify', type: 'success', message: $channel->enabled ? 'Channel enabled' : 'Channel disabled');
+        unset($this->channels);
     }
 
     public function testChannel(NotificationChannel $channel)
     {
         try {
-            $service = app(SlackDiscordNotificationService::class);
+            $success = $this->notificationService->sendTestNotification($channel);
 
-            if ($service->testChannel($channel)) {
-                $this->dispatch('notify', type: 'success', message: 'Test notification sent successfully!');
+            if ($success) {
+                $this->dispatch('notify', type: 'success', message: 'Test notification sent successfully! Check your channel.');
             } else {
-                $this->dispatch('notify', type: 'error', message: 'Failed to send test notification');
+                $this->dispatch('notify', type: 'error', message: 'Failed to send test notification. Check the logs for details.');
             }
         } catch (\Exception $e) {
-            $this->dispatch('notify', type: 'error', message: 'Error: ' . $e->getMessage());
+            $this->dispatch('notify', type: 'error', message: 'Test failed: ' . $e->getMessage());
         }
     }
 
@@ -143,10 +200,12 @@ class NotificationChannelManager extends Component
     {
         $this->name = '';
         $this->provider = 'slack';
+        $this->projectId = null;
         $this->webhookUrl = '';
         $this->webhookSecret = '';
+        $this->email = '';
         $this->enabled = true;
-        $this->events = ['deployment_completed', 'deployment_failed'];
+        $this->events = ['deployment.success', 'deployment.failed'];
         $this->editingChannel = null;
     }
 }

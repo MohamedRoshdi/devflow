@@ -48,6 +48,8 @@ class Project extends Model
         'current_commit_hash',
         'current_commit_message',
         'last_commit_at',
+        'requires_approval',
+        'approval_settings',
     ];
 
     protected function casts(): array
@@ -59,8 +61,10 @@ class Project extends Model
             'build_commands' => 'array',
             'post_deploy_commands' => 'array',
             'setup_config' => 'array',
+            'approval_settings' => 'array',
             'auto_deploy' => 'boolean',
             'webhook_enabled' => 'boolean',
+            'requires_approval' => 'boolean',
             'last_deployed_at' => 'datetime',
             'last_commit_at' => 'datetime',
             'setup_completed_at' => 'datetime',
@@ -225,6 +229,16 @@ class Project extends Model
     public function getLatestDeployment()
     {
         return $this->deployments()->latest()->first();
+    }
+
+    public function notificationChannels()
+    {
+        return $this->hasMany(NotificationChannel::class);
+    }
+
+    public function auditLogs()
+    {
+        return $this->morphMany(AuditLog::class, 'auditable');
     }
 }
 

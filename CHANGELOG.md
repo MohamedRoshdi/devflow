@@ -7,6 +7,68 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.0.0] - 2025-12-03
+
+### Added
+
+- **Phase 4: Testing & Quality Complete**
+
+  **Comprehensive Test Suite:**
+  - Unit tests for all core services (ServerMetrics, Pipeline, Backup)
+  - Livewire component tests (Dashboard, HomePublic)
+  - 86+ test cases covering critical paths
+  - Test traits: CreatesProjects, CreatesServers, MocksSSH
+  - Factory files for rapid test data generation
+
+  **CI/CD for DevFlow Pro:**
+  - GitHub Actions workflow (ci.yml) - Multi-PHP version testing
+  - Code quality workflow (code-quality.yml) - PHPStan + Laravel Pint
+  - Deployment workflow (deploy.yml) - SSH-based automated deployment
+  - Scheduled workflow (scheduled.yml) - Security audits + dependency checks
+  - Release workflow (release.yml) - Automated releases with notes
+
+- **Phase 5: Advanced Features Complete**
+
+  **Server Provisioning:**
+  - ServerProvisioningService with SSH-based automation
+  - LEMP stack auto-installation (Nginx, MySQL, PHP)
+  - UFW firewall configuration with common ports
+  - Swap file setup for memory optimization
+  - Provisioning script download feature
+
+  **SSL Auto-Management:**
+  - SSLManagementService with Let's Encrypt integration
+  - Auto-issue certificates via Certbot
+  - Expiry monitoring with alerts (30/14/7 days)
+  - Auto-renewal with nginx reload
+  - SSL status tracking per domain
+
+  **Team Collaboration:**
+  - DeploymentApproval model with required approvers
+  - DeploymentComment model for team discussions
+  - AuditLog model for comprehensive action tracking
+  - Slack notifications with Block Kit formatting
+  - Discord notifications with rich embeds
+
+### Technical
+
+- **New Models:** DeploymentApproval, DeploymentComment, AuditLog, ProvisioningLog
+- **New Services:** ServerProvisioningService, SSLManagementService, DeploymentApprovalService, AuditService
+- **New Components:** ServerProvisioning, DeploymentApprovals, AuditLogViewer
+- **GitHub Actions:** 5 workflow files for complete CI/CD
+- **Tests:** 86+ tests in Unit/Services and Feature/Livewire
+
+### v4.0 Roadmap Complete
+
+All phases of the v4.0 roadmap are now complete:
+- ✅ Phase 1: Real-time Server Metrics
+- ✅ Phase 2: CI/CD Pipeline Implementation
+- ✅ Phase 3: Automated Backup System
+- ✅ Phase 4: Testing & Quality
+- ✅ Phase 5: Advanced Features
+
+---
+
 ## [3.17.0] - 2025-12-03
 
 ### Added

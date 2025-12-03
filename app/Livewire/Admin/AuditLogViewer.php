@@ -1,0 +1,179 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Livewire\Admin;
+
+use App\Models\{User, AuditLog};
+use App\Services\AuditService;
+use Livewire\Component;
+use Livewire\Attributes\{Computed, Url};
+use Livewire\WithPagination;
+use Illuminate\Support\Facades\Response;
+
+class AuditLogViewer extends Component
+{
+    use WithPagination;
+
+    #[Url]
+    public string $search = '';
+
+    #[Url]
+    public ?int $userId = null;
+
+    #[Url]
+    public string $action = '';
+
+    #[Url]
+    public string $actionCategory = '';
+
+    #[Url]
+    public string $modelType = '';
+
+    #[Url]
+    public ?string $fromDate = null;
+
+    #[Url]
+    public ?string $toDate = null;
+
+    #[Url]
+    public ?string $ipAddress = null;
+
+    public ?int $expandedLogId = null;
+
+    public function __construct(
+        private readonly AuditService $auditService
+    ) {}
+
+    #[Computed]
+    public function logs()
+    {
+        $filters = array_filter([
+            'user_id' => $this->userId,
+            'action' => $this->action,
+            'action_category' => $this->actionCategory,
+            'model_type' => $this->modelType,
+            'from_date' => $this->fromDate,
+            'to_date' => $this->toDate,
+            'ip_address' => $this->ipAddress,
+            'limit' => 50,
+        ]);
+
+        $logs = $this->auditService->getLogsFiltered($filters);
+
+        // Additional search filtering
+        if ($this->search) {
+            $logs = $logs->filter(function ($log) {
+                return str_contains(strtolower($log->action), strtolower($this->search))
+                    || ($log->user && str_contains(strtolower($log->user->name), strtolower($this->search)))
+                    || str_contains(strtolower($log->model_name), strtolower($this->search));
+            });
+        }
+
+        return $logs;
+    }
+
+    #[Computed]
+    public function users()
+    {
+        return User::orderBy('name')->get(['id', 'name']);
+    }
+
+    #[Computed]
+    public function actionCategories()
+    {
+        return AuditLog::selectRaw('SUBSTRING_INDEX(action, ".", 1) as category')
+            ->distinct()
+            ->orderBy('category')
+            ->pluck('category');
+    }
+
+    #[Computed]
+    public function modelTypes()
+    {
+        return AuditLog::select('auditable_type')
+            ->distinct()
+            ->orderBy('auditable_type')
+            ->pluck('auditable_type')
+            ->map(fn($type) => class_basename($type))
+            ->unique();
+    }
+
+    #[Computed]
+    public function stats()
+    {
+        $filters = array_filter([
+            'from_date' => $this->fromDate,
+            'to_date' => $this->toDate,
+        ]);
+
+        return $this->auditService->getActivityStats($filters);
+    }
+
+    public function toggleExpand(int $logId): void
+    {
+        $this->expandedLogId = $this->expandedLogId === $logId ? null : $logId;
+    }
+
+    public function clearFilters(): void
+    {
+        $this->reset([
+            'search',
+            'userId',
+            'action',
+            'actionCategory',
+            'modelType',
+            'fromDate',
+            'toDate',
+            'ipAddress',
+        ]);
+        $this->resetPage();
+    }
+
+    public function exportCsv(): Response
+    {
+        $filters = array_filter([
+            'user_id' => $this->userId,
+            'action' => $this->action,
+            'action_category' => $this->actionCategory,
+            'model_type' => $this->modelType,
+            'from_date' => $this->fromDate,
+            'to_date' => $this->toDate,
+            'ip_address' => $this->ipAddress,
+            'limit' => 10000,
+        ]);
+
+        $csv = $this->auditService->exportToCsv($filters);
+        $filename = 'audit-logs-' . now()->format('Y-m-d-His') . '.csv';
+
+        return Response::make($csv, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
+    }
+
+    public function updatingSearch(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatingUserId(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatingActionCategory(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatingModelType(): void
+    {
+        $this->resetPage();
+    }
+
+    public function render()
+    {
+        return view('livewire.admin.audit-log-viewer');
+    }
+}

@@ -1,0 +1,134 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Composer dependencies
+        run: composer install --optimize-autoloader --no-dev --no-interaction
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Build assets
+        run: npm run build
+
+      - name: Get changelog
+        id: changelog
+        run: |
+          # Extract version from tag
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+          # Extract changelog for this version
+          if [ -f CHANGELOG.md ]; then
+            sed -n "/## \[$VERSION\]/,/## \[/p" CHANGELOG.md | sed '$d' > release-notes.md
+            if [ ! -s release-notes.md ]; then
+              echo "No changelog entry found for $VERSION" > release-notes.md
+            fi
+          else
+            echo "Initial release" > release-notes.md
+          fi
+
+      - name: Create release archive
+        run: |
+          # Remove development files
+          rm -rf tests node_modules .git .github
+          rm -f .env .env.testing phpunit.xml phpstan.neon .prettierrc.json .prettierignore
+
+          # Create archive
+          cd ..
+          tar -czf devflow-pro-${{ steps.changelog.outputs.version }}.tar.gz DEVFLOW_PRO/
+          mv devflow-pro-${{ steps.changelog.outputs.version }}.tar.gz DEVFLOW_PRO/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: release-notes.md
+          files: devflow-pro-${{ steps.changelog.outputs.version }}.tar.gz
+          draft: false
+          prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notify release
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "🎉 New Release: ${{ steps.changelog.outputs.version }}"
+          description: |
+            A new version of DevFlow Pro has been released!
+
+            **Version:** ${{ steps.changelog.outputs.version }}
+            **Download:** [GitHub Releases](https://github.com/${{ github.repository }}/releases/tag/${{ steps.changelog.outputs.version }})
+          color: 0x00ff00
+          username: DevFlow Pro Releases
+
+  deploy-release:
+    name: Deploy Release to Production
+    needs: create-release
+    runs-on: ubuntu-latest
+    if: ${{ !contains(github.ref, 'alpha') && !contains(github.ref, 'beta') && !contains(github.ref, 'rc') }}
+
+    environment:
+      name: production
+      url: ${{ secrets.APP_URL }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy release to production
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            set -e
+            cd ${{ secrets.DEPLOY_PATH }}
+
+            VERSION=${GITHUB_REF#refs/tags/}
+            echo "🚀 Deploying version $VERSION to production..."
+
+            git fetch --tags
+            git checkout $VERSION
+
+            composer install --optimize-autoloader --no-dev --no-interaction
+            npm ci
+            npm run build
+
+            php artisan migrate --force
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            php artisan event:cache
+            php artisan queue:restart
+
+            echo "✅ Version $VERSION deployed successfully!"
+          EOF

@@ -37,6 +37,9 @@ class Server extends Model
         'longitude',
         'location_name',
         'last_ping_at',
+        'provisioned_at',
+        'provision_status',
+        'installed_packages',
         'metadata',
     ];
 
@@ -56,6 +59,8 @@ class Server extends Model
             'security_score' => 'integer',
             'last_security_scan_at' => 'datetime',
             'last_ping_at' => 'datetime',
+            'provisioned_at' => 'datetime',
+            'installed_packages' => 'array',
             'metadata' => 'array',
             'cpu_cores' => 'integer',
             'memory_gb' => 'integer',
@@ -159,6 +164,16 @@ class Server extends Model
         return $this->hasOne(ServerMetric::class)->latestOfMany('recorded_at');
     }
 
+    public function provisioningLogs()
+    {
+        return $this->hasMany(ProvisioningLog::class);
+    }
+
+    public function latestProvisioningLog()
+    {
+        return $this->hasOne(ProvisioningLog::class)->latestOfMany();
+    }
+
     // Status helpers
     public function isOnline(): bool
     {
@@ -202,6 +217,21 @@ class Server extends Model
             $this->security_score !== null => 'critical',
             default => 'unknown',
         };
+    }
+
+    public function isProvisioned(): bool
+    {
+        return $this->provision_status === 'completed';
+    }
+
+    public function isProvisioning(): bool
+    {
+        return $this->provision_status === 'provisioning';
+    }
+
+    public function hasPackageInstalled(string $package): bool
+    {
+        return in_array($package, $this->installed_packages ?? []);
     }
 }
 

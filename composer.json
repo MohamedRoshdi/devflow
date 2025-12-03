@@ -59,6 +59,18 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
+        ],
+        "test": "phpunit",
+        "test:coverage": "phpunit --coverage-html coverage",
+        "test:coverage-clover": "phpunit --coverage-clover coverage.xml",
+        "analyse": "phpstan analyse --memory-limit=2G",
+        "analyse:baseline": "phpstan analyse --memory-limit=2G --generate-baseline",
+        "lint": "pint --test",
+        "lint:fix": "pint",
+        "ci": [
+            "@lint",
+            "@analyse",
+            "@test"
         ]
     },
     "extra": {

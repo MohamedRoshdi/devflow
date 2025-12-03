@@ -16,6 +16,7 @@ class NotificationChannel extends Model
 
     protected $fillable = [
         'user_id',
+        'project_id',
         'type',
         'name',
         'config',
@@ -53,6 +54,11 @@ class NotificationChannel extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
     }
 
     public function healthChecks(): BelongsToMany

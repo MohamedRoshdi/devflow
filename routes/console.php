@@ -32,6 +32,9 @@ Schedule::command('backup:cleanup')->daily()->at('00:00');
 // Run health checks
 Schedule::command('health:check')->everyMinute();
 
+// Check SSL expiry and auto-renew (daily at 3 AM)
+Schedule::command('ssl:check-expiry --days=14 --renew')->daily()->at('03:00');
+
 // Renew SSL certificates (daily at 2 AM)
 Schedule::command('ssl:renew')->daily()->at('02:00');
 

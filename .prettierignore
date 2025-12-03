@@ -1,0 +1,31 @@
+# Dependencies
+node_modules
+vendor
+
+# Build output
+public/build
+public/hot
+public/storage
+public/js
+public/css
+
+# Laravel specific
+storage
+bootstrap/cache
+
+# Logs
+*.log
+
+# Lock files
+package-lock.json
+composer.lock
+
+# Coverage
+coverage
+coverage-report
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo

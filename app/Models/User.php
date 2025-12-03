@@ -102,6 +102,27 @@ class User extends Authenticatable
         return UserSettings::getForUser($this);
     }
 
+    // Collaboration relationships
+    public function requestedApprovals()
+    {
+        return $this->hasMany(DeploymentApproval::class, 'requested_by');
+    }
+
+    public function approvedDeployments()
+    {
+        return $this->hasMany(DeploymentApproval::class, 'approved_by');
+    }
+
+    public function deploymentComments()
+    {
+        return $this->hasMany(DeploymentComment::class);
+    }
+
+    public function auditLogs()
+    {
+        return $this->hasMany(AuditLog::class);
+    }
+
     // Helper method for avatar URL
     public function getAvatarUrlAttribute(): string
     {
