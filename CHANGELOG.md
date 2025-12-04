@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.0.2] - 2025-12-04
+
+### Fixed
+
+- **Deploy All Button Not Working** - Dashboard quick action now triggers deployments
+  - Added missing `wire:click="deployAll"` handler to the Deploy All button
+  - Added `wire:confirm` for user confirmation before mass deployment
+  - Fixed project status filter: was checking for 'active' but projects use 'running'
+  - Now correctly finds all active/running projects with assigned servers
+  - Creates deployment records and dispatches DeployProjectJob for each project
+
+- **Mixed Content Errors (HTTPS)** - All websites now load assets over HTTPS
+  - **ATS Pro**: Added `URL::forceScheme('https')` to AppServiceProvider
+  - **Portfolio**: Added `URL::forceScheme('https')` and `trustProxies(at: '*')` to bootstrap/app.php
+  - **Workspace Pro**: Added `URL::forceScheme('https')` to AppServiceProvider
+  - Added `ASSET_URL` environment variable to all apps
+  - Fixed CSS/JS assets being blocked by browsers due to Mixed Content policy
+  - All three sites now serve assets over HTTPS: ats.nilestack.duckdns.org, nilestack.duckdns.org, workspace.nilestack.duckdns.org
+
+### Files Modified
+
+- `app/Livewire/Dashboard.php` - Added `deployAll()` method with DeployProjectJob dispatch
+- `resources/views/livewire/dashboard.blade.php` - Added wire:click and wire:confirm to Deploy All button
+- Production: Updated AppServiceProvider.php and bootstrap/app.php for all 3 deployed sites
+
+---
+
 ## [5.0.1] - 2025-12-03
 
 ### Fixed

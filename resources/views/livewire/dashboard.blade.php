@@ -296,7 +296,7 @@
             </a>
 
             <!-- Deploy All -->
-            <button onclick="confirm('Deploy all projects?') || event.stopImmediatePropagation()" class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center hover:shadow-lg hover:scale-105 transform transition-all duration-300 border-2 border-transparent hover:border-purple-500">
+            <button wire:click="deployAll" wire:confirm="Are you sure you want to deploy all active projects?" class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center hover:shadow-lg hover:scale-105 transform transition-all duration-300 border-2 border-transparent hover:border-purple-500">
                 <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg inline-block mb-2">
                     <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>

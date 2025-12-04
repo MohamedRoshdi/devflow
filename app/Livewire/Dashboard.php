@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use App\Jobs\DeployProjectJob;
 
 class Dashboard extends Component
 {
@@ -650,6 +651,56 @@ class Dashboard extends Component
             $this->dispatch('notification', [
                 'type' => 'error',
                 'message' => 'Failed to clear caches: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Deploy all active projects
+     */
+    public function deployAll(): void
+    {
+        try {
+            $projects = Project::whereIn('status', ['active', 'running'])
+                ->whereNotNull('server_id')
+                ->get();
+
+            if ($projects->isEmpty()) {
+                $this->dispatch('notification', [
+                    'type' => 'warning',
+                    'message' => 'No active projects found to deploy.'
+                ]);
+                return;
+            }
+
+            $deploymentCount = 0;
+            foreach ($projects as $project) {
+                // Create a new deployment record
+                $deployment = Deployment::create([
+                    'project_id' => $project->id,
+                    'server_id' => $project->server_id,
+                    'user_id' => Auth::id(),
+                    'branch' => $project->branch ?? 'main',
+                    'commit_hash' => 'pending',
+                    'status' => 'pending',
+                    'triggered_by' => 'manual',
+                ]);
+
+                // Dispatch the deployment job
+                DeployProjectJob::dispatch($deployment);
+                $deploymentCount++;
+            }
+
+            $this->loadActiveDeployments();
+
+            $this->dispatch('notification', [
+                'type' => 'success',
+                'message' => "Deploying {$deploymentCount} projects. Check deployments page for progress."
+            ]);
+        } catch (\Exception $e) {
+            $this->dispatch('notification', [
+                'type' => 'error',
+                'message' => 'Failed to deploy projects: ' . $e->getMessage()
             ]);
         }
     }

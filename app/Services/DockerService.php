@@ -215,7 +215,14 @@ class DockerService
 
             if ($usesCompose) {
                 // Use docker compose for projects with docker-compose.yml (V2 syntax)
-                $startCommand = "cd {$projectPath} && docker compose up -d";
+                // First stop and remove any orphaned containers to prevent name conflicts
+                $cleanupCommand = "cd {$projectPath} && docker compose down --remove-orphans 2>/dev/null; true";
+                $cleanupCmd = $this->isLocalhost($server)
+                    ? $cleanupCommand
+                    : $this->buildSSHCommand($server, $cleanupCommand);
+                Process::fromShellCommandline($cleanupCmd)->run();
+
+                $startCommand = "cd {$projectPath} && docker compose up -d --remove-orphans";
 
                 $command = $this->isLocalhost($server)
                     ? $startCommand
@@ -394,8 +401,8 @@ class DockerService
             $usesCompose = trim($checkProcess->getOutput()) === 'compose';
 
             if ($usesCompose) {
-                // Use docker compose for projects with docker-compose.yml (V2 syntax)
-                $stopCommand = "cd {$projectPath} && docker compose stop";
+                // Use docker compose down with --remove-orphans to prevent name conflicts
+                $stopCommand = "cd {$projectPath} && docker compose down --remove-orphans";
 
                 $command = $this->isLocalhost($server)
                     ? $stopCommand
@@ -408,7 +415,7 @@ class DockerService
                 return [
                     'success' => true,
                     'output' => $process->getOutput(),
-                    'message' => 'Docker Compose services stopped',
+                    'message' => 'Docker Compose services stopped and orphans removed',
                 ];
             }
 

@@ -1,9 +1,9 @@
 # DevFlow Pro - Task Management
 
-**Last updated:** December 3, 2025
-**Current Version:** v5.0.1
+**Last updated:** December 4, 2025
+**Current Version:** v5.0.2
 **Next Target:** v5.1.0
-**Status:** v5.0 Complete ✅ | v5.0.1 Hotfix ✅
+**Status:** v5.0 Complete ✅ | v5.0.2 Hotfix ✅
 
 ---
 
