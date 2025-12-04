@@ -137,20 +137,37 @@ php artisan migrate --force
 
 # Publish Livewire assets
 echo "📦 Publishing Livewire assets..."
-php artisan livewire:publish --assets
+php artisan livewire:publish --assets 2>/dev/null || echo "   (Livewire assets published or not needed)"
 
-# Clear all caches first
-echo "🧹 Clearing existing caches..."
+# Clear ALL caches comprehensively
+echo "🧹 Clearing ALL caches comprehensively..."
+php artisan optimize:clear
 php artisan cache:clear
 php artisan config:clear
 php artisan route:clear
 php artisan view:clear
+php artisan event:clear 2>/dev/null || true
 
-# Optimize Laravel
-echo "⚡ Optimizing Laravel..."
+# Clear Livewire-specific cache files
+echo "🧹 Clearing Livewire cache files..."
+rm -rf storage/framework/cache/livewire-components.php 2>/dev/null || true
+rm -rf bootstrap/cache/livewire* 2>/dev/null || true
+rm -rf storage/framework/livewire* 2>/dev/null || true
+
+# Regenerate Composer autoload
+echo "🔄 Regenerating Composer autoload..."
+composer dump-autoload --optimize --no-scripts 2>/dev/null || true
+
+# Optimize Laravel for production
+echo "⚡ Optimizing Laravel for production..."
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
+php artisan event:cache 2>/dev/null || true
+
+# Restart PHP-FPM to clear opcache
+echo "🔄 Restarting PHP-FPM to clear opcache..."
+systemctl restart php8.2-fpm 2>/dev/null || systemctl restart php8.4-fpm 2>/dev/null || systemctl restart php-fpm 2>/dev/null || true
 
 # Fix public directory permissions
 echo "🔐 Setting public directory permissions..."
