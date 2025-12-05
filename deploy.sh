@@ -154,20 +154,29 @@ rm -rf storage/framework/cache/livewire-components.php 2>/dev/null || true
 rm -rf bootstrap/cache/livewire* 2>/dev/null || true
 rm -rf storage/framework/livewire* 2>/dev/null || true
 
+# Clear compiled blade views completely
+echo "🧹 Clearing compiled blade views..."
+rm -rf storage/framework/views/* 2>/dev/null || true
+
+# Clear bootstrap cache files
+echo "🧹 Clearing bootstrap cache..."
+rm -rf bootstrap/cache/*.php 2>/dev/null || true
+
 # Regenerate Composer autoload
 echo "🔄 Regenerating Composer autoload..."
 composer dump-autoload --optimize --no-scripts 2>/dev/null || true
 
-# Optimize Laravel for production
+# CRITICAL: Restart PHP-FPM BEFORE caching views (clears opcache first)
+echo "🔄 Restarting PHP-FPM to clear opcache BEFORE caching..."
+systemctl restart php8.2-fpm 2>/dev/null || systemctl restart php8.4-fpm 2>/dev/null || systemctl restart php-fpm 2>/dev/null || true
+sleep 3
+
+# NOW optimize Laravel for production (with fresh PHP code loaded)
 echo "⚡ Optimizing Laravel for production..."
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 php artisan event:cache 2>/dev/null || true
-
-# Restart PHP-FPM to clear opcache
-echo "🔄 Restarting PHP-FPM to clear opcache..."
-systemctl restart php8.2-fpm 2>/dev/null || systemctl restart php8.4-fpm 2>/dev/null || systemctl restart php-fpm 2>/dev/null || true
 
 # Fix public directory permissions
 echo "🔐 Setting public directory permissions..."

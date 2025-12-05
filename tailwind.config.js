@@ -6,6 +6,16 @@ export default {
     "./resources/**/*.js",
     "./app/Livewire/**/*.php",
   ],
+
+  // Safelist important modifier classes for sidebar visibility
+  safelist: [
+    'lg:!translate-x-0',
+    '!translate-x-0',
+    'translate-x-0',
+    'translate-x-full',
+    '-translate-x-full',
+    'lg:translate-x-0',
+  ],
   theme: {
     extend: {
       colors: {
