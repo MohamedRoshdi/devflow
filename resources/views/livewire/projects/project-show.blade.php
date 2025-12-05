@@ -626,7 +626,7 @@
 
         <!-- Git & Commits Tab -->
         @if($activeTab === 'git')
-        <div class="space-y-8" @if($autoRefreshEnabled) wire:poll.{{ $autoRefreshInterval }}s="autoRefreshGit" @endif>
+        <div class="space-y-8" wire:poll.{{ $autoRefreshInterval }}s="autoRefreshGit">
 
             <!-- Git Content -->
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 overflow-hidden">
