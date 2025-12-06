@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.26.0] - 2025-12-06
+
+### Added
+
+- **StorageServiceTest.php** - 41 unit tests for storage management
+  - Project storage calculation via SSH
+  - Total storage statistics with percentages
+  - Storage cleanup (logs, cache, sessions, views)
+  - SSH command building with custom ports and keys
+  - Error handling and logging
+
+- **ServerProvisioningServiceTest.php** - 43 unit tests for server provisioning
+  - Complete LEMP stack installation (Nginx, MySQL, PHP)
+  - Composer and Node.js installation
+  - Firewall configuration with custom ports
+  - Swap file setup and SSH hardening
+  - Provisioning script generation
+  - Notification sending on success/failure
+
+- **MultiTenantServiceTest.php** - 44 unit tests for multi-tenant management
+  - Tenant deployment with custom options
+  - Tenant creation with seed data and domains
+  - Tenant status updates (active, suspended)
+  - Cache clearing including Redis
+  - Service restart and migration handling
+  - Tenant statistics calculation
+
+- **BulkServerActionServiceTest.php** - 40 unit tests for bulk operations
+  - Bulk server ping with status updates
+  - Bulk server reboot operations
+  - Docker installation on multiple servers
+  - Service restart across server fleet
+  - Summary statistics calculation
+  - Error handling and continuation
+
+### Improved
+
+- Unit test coverage expanded with 168 new service tests
+- Total unit tests now at 1,046 (878 + 168)
+- PHPStan Level 6 compliance maintained (0 errors)
+- Laravel Pint code style compliance maintained (0 issues)
+- All 29 service classes now have comprehensive unit tests
+
+---
+
 ## [5.25.0] - 2025-12-06
 
 ### Added
