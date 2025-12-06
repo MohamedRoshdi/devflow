@@ -7,6 +7,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.25.0] - 2025-12-06
+
+### Added
+
+- **AlertNotificationServiceTest.php** - 39 unit tests for alert notifications
+  - Multi-channel notification dispatch (email, Slack, Discord)
+  - Email notification formatting and sending
+  - Slack webhook with Block Kit message structure
+  - Discord webhook with embed formatting
+  - Value formatting (CPU/memory/disk with %, load without)
+  - Error handling and channel failure isolation
+
+- **SSHKeyServiceTest.php** - 46 unit tests for SSH key management
+  - SSH key generation (ED25519, RSA, ECDSA)
+  - Key pair import and validation
+  - Fingerprint calculation (MD5, SHA256)
+  - Key deployment to local and remote servers
+  - Key removal from authorized_keys
+  - Localhost detection and SSH command building
+
+- **QueueMonitorServiceTest.php** - 51 unit tests for queue monitoring
+  - Queue statistics (pending, processing, failed counts)
+  - Recent jobs retrieval with pagination
+  - Failed jobs management (retry, delete, clear)
+  - Jobs per hour calculation with caching
+  - Worker status detection (standard, Horizon)
+  - Queue breakdown by name
+  - Processing rate and success rate calculation
+
+- **LogAggregationServiceTest.php** - 46 unit tests for log aggregation
+  - Log syncing from multiple sources (file, Docker, journald)
+  - Log parsing (Nginx, Laravel, PHP, MySQL, system, Docker)
+  - Log searching with filters (server, project, level, date range)
+  - Log cleanup with retention policies
+  - Level normalization (warn→warning, crit→critical)
+  - Edge cases (malformed lines, multiline messages)
+
+### Improved
+
+- Unit test coverage expanded with 182 new service tests
+- Total unit tests now at 878 (696 + 182)
+- PHPStan Level 6 compliance maintained (0 errors)
+- Laravel Pint code style compliance maintained (0 issues)
+- New factories: SSHKeyFactory, FailedJobFactory
+
+---
+
 ## [5.24.0] - 2025-12-06
 
 ### Added
