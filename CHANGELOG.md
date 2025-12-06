@@ -7,6 +7,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.24.0] - 2025-12-06
+
+### Added
+
+- **AuditServiceTest.php** - 40 unit tests for audit logging
+  - Audit logging with authenticated/unauthenticated users
+  - Old/new value tracking with change detection
+  - Sensitive data sanitization (passwords, SSH keys, API keys, secrets, tokens)
+  - Polymorphic model logging support
+  - Log filtering by user, action, model type, date range, IP
+  - Activity statistics generation
+  - CSV export with proper formatting
+
+- **GitHubServiceTest.php** - 50 unit tests for GitHub API integration
+  - OAuth authorization flow and callback handling
+  - Token refresh mechanism with expiration handling
+  - Repository listing with pagination
+  - Branch and commit history retrieval
+  - Repository synchronization to database
+  - Webhook creation and deletion
+  - Error handling (401, 404, 429, 500 errors)
+  - All HTTP methods (GET, POST, PUT, PATCH, DELETE)
+
+- **ProjectSetupServiceTest.php** - 45 unit tests for project initialization
+  - Setup initialization with various configurations
+  - SSL certificate setup scenarios
+  - Webhook configuration testing
+  - Health check monitoring setup
+  - Database backup scheduling
+  - Notification configuration
+  - Initial deployment triggering
+  - Progress tracking and reporting
+  - Failed task retry functionality
+  - Task skipping functionality
+
+- **ResourceAlertServiceTest.php** - 41 unit tests for resource monitoring
+  - Server resource checking with latest metrics
+  - CPU/memory/disk/load threshold evaluation
+  - Alert triggering when thresholds exceeded
+  - Alert resolution when thresholds normalize
+  - Cooldown period validation
+  - Notification dispatch on alerts
+  - Alert history tracking
+  - Test alert functionality
+  - Message formatting for different resource types
+
+### Improved
+
+- Unit test coverage expanded with 176 new service tests
+- Total unit tests now at 696 (520 + 176)
+- PHPStan Level 6 compliance maintained (0 errors)
+- Laravel Pint code style compliance maintained (0 issues)
+- New factories: GitHubConnectionFactory, GitHubRepositoryFactory, ProjectSetupTaskFactory, ResourceAlertFactory, AlertHistoryFactory
+
+---
+
 ## [5.23.0] - 2025-12-06
 
 ### Added
