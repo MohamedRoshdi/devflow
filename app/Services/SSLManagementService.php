@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\Server;
 use App\Models\Domain;
+use App\Models\Server;
 use App\Models\SSLCertificate;
-use Symfony\Component\Process\Process;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Collection;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\Process\Process;
 
 class SSLManagementService
 {
@@ -19,9 +19,9 @@ class SSLManagementService
      */
     public function issueCertificate(Domain $domain): bool
     {
-        $server = $domain->project->server;
+        $server = $domain->project?->server;
 
-        if (!$server) {
+        if (! $server) {
             throw new \RuntimeException('Domain has no associated server');
         }
 
@@ -59,9 +59,9 @@ class SSLManagementService
                 [
                     'provider' => 'letsencrypt',
                     'status' => 'issued',
-                    'certificate_path' => $certPath . '/cert.pem',
-                    'private_key_path' => $certPath . '/privkey.pem',
-                    'chain_path' => $certPath . '/chain.pem',
+                    'certificate_path' => $certPath.'/cert.pem',
+                    'private_key_path' => $certPath.'/privkey.pem',
+                    'chain_path' => $certPath.'/chain.pem',
                     'issued_at' => now(),
                     'expires_at' => $expiresAt,
                     'auto_renew' => true,
@@ -110,9 +110,9 @@ class SSLManagementService
      */
     public function renewCertificate(Domain $domain): bool
     {
-        $server = $domain->project->server;
+        $server = $domain->project?->server;
 
-        if (!$server) {
+        if (! $server) {
             throw new \RuntimeException('Domain has no associated server');
         }
 
@@ -120,7 +120,7 @@ class SSLManagementService
             ->where('server_id', $server->id)
             ->first();
 
-        if (!$certificate) {
+        if (! $certificate) {
             throw new \RuntimeException('No SSL certificate found for domain');
         }
 
@@ -188,9 +188,9 @@ class SSLManagementService
      */
     public function checkExpiry(Domain $domain): ?Carbon
     {
-        $server = $domain->project->server;
+        $server = $domain->project?->server;
 
-        if (!$server || !$domain->ssl_enabled) {
+        if (! $server || ! $domain->ssl_enabled) {
             return null;
         }
 
@@ -199,6 +199,7 @@ class SSLManagementService
             $command = "openssl x509 -enddate -noout -in {$certPath} | cut -d= -f2";
 
             $expiryDate = $this->executeSSHCommand($server, $command);
+
             return Carbon::parse($expiryDate);
 
         } catch (\Exception $e) {
@@ -253,6 +254,8 @@ class SSLManagementService
 
     /**
      * Get certificates expiring within threshold
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\SSLCertificate>
      */
     public function getExpiringCertificates(int $daysThreshold = 30): Collection
     {
@@ -306,9 +309,9 @@ class SSLManagementService
      */
     public function revokeCertificate(Domain $domain): bool
     {
-        $server = $domain->project->server;
+        $server = $domain->project?->server;
 
-        if (!$server) {
+        if (! $server) {
             throw new \RuntimeException('Domain has no associated server');
         }
 
@@ -351,9 +354,9 @@ class SSLManagementService
      */
     public function getCertificateInfo(Domain $domain): ?array
     {
-        $server = $domain->project->server;
+        $server = $domain->project?->server;
 
-        if (!$server || !$domain->ssl_enabled) {
+        if (! $server || ! $domain->ssl_enabled) {
             return null;
         }
 
@@ -413,7 +416,7 @@ class SSLManagementService
                 ]);
             }
         } catch (\Exception $e) {
-            throw new \RuntimeException('Failed to install certbot: ' . $e->getMessage());
+            throw new \RuntimeException('Failed to install certbot: '.$e->getMessage());
         }
     }
 
@@ -443,7 +446,7 @@ class SSLManagementService
             '-o UserKnownHostsFile=/dev/null',
             '-o ConnectTimeout=30',
             '-o LogLevel=ERROR',
-            '-p ' . $server->port,
+            '-p '.$server->port,
         ];
 
         if ($server->ssh_password) {
@@ -463,7 +466,7 @@ class SSLManagementService
                 $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
                 file_put_contents($keyFile, $server->ssh_key);
                 chmod($keyFile, 0600);
-                $sshOptions[] = '-i ' . $keyFile;
+                $sshOptions[] = '-i '.$keyFile;
             }
 
             $command = sprintf(
@@ -479,7 +482,7 @@ class SSLManagementService
         $process->setTimeout(300); // 5 minutes
         $process->run();
 
-        if (!$process->isSuccessful()) {
+        if (! $process->isSuccessful()) {
             throw new \RuntimeException("SSH command failed: {$remoteCommand}\nError: {$process->getErrorOutput()}");
         }
 

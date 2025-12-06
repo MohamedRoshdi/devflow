@@ -1,17 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Settings;
 
 use App\Services\QueueMonitorService;
-use Livewire\Component;
 use Livewire\Attributes\On;
+use Livewire\Component;
 
 class QueueMonitor extends Component
 {
+    /**
+     * @var array<string, mixed>
+     */
     public array $queueStats = [];
+
+    /**
+     * @var array<int, array<string, mixed>>
+     */
     public array $failedJobs = [];
+
+    /**
+     * @var array<string, mixed>
+     */
     public array $selectedJob = [];
+
     public bool $showJobDetails = false;
+
     public bool $isLoading = true;
 
     private QueueMonitorService $queueMonitor;
@@ -33,7 +48,7 @@ class QueueMonitor extends Component
             $this->queueStats = $this->queueMonitor->getQueueStatistics();
             $this->failedJobs = $this->queueMonitor->getFailedJobs(50);
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to load queue statistics: ' . $e->getMessage());
+            session()->flash('error', 'Failed to load queue statistics: '.$e->getMessage());
             $this->queueStats = [
                 'pending_jobs' => 0,
                 'processing_jobs' => 0,
@@ -101,7 +116,7 @@ class QueueMonitor extends Component
                 ]);
             }
         } catch (\Exception $e) {
-            session()->flash('error', 'Error retrying job: ' . $e->getMessage());
+            session()->flash('error', 'Error retrying job: '.$e->getMessage());
 
             $this->dispatch('notification', [
                 'type' => 'error',
@@ -132,7 +147,7 @@ class QueueMonitor extends Component
                 ]);
             }
         } catch (\Exception $e) {
-            session()->flash('error', 'Error retrying jobs: ' . $e->getMessage());
+            session()->flash('error', 'Error retrying jobs: '.$e->getMessage());
 
             $this->dispatch('notification', [
                 'type' => 'error',
@@ -163,7 +178,7 @@ class QueueMonitor extends Component
                 ]);
             }
         } catch (\Exception $e) {
-            session()->flash('error', 'Error deleting job: ' . $e->getMessage());
+            session()->flash('error', 'Error deleting job: '.$e->getMessage());
 
             $this->dispatch('notification', [
                 'type' => 'error',
@@ -194,7 +209,7 @@ class QueueMonitor extends Component
                 ]);
             }
         } catch (\Exception $e) {
-            session()->flash('error', 'Error clearing jobs: ' . $e->getMessage());
+            session()->flash('error', 'Error clearing jobs: '.$e->getMessage());
 
             $this->dispatch('notification', [
                 'type' => 'error',

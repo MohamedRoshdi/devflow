@@ -38,8 +38,9 @@ class ProvisionServer extends Command
             ? Server::find($serverIdentifier)
             : Server::where('hostname', $serverIdentifier)->orWhere('name', $serverIdentifier)->first();
 
-        if (!$server) {
+        if (! $server) {
             $this->error("Server not found: {$serverIdentifier}");
+
             return self::FAILURE;
         }
 
@@ -57,9 +58,9 @@ class ProvisionServer extends Command
             'install_php' => $allPackages || in_array('php', $requestedPackages),
             'install_composer' => $allPackages || in_array('composer', $requestedPackages),
             'install_nodejs' => $allPackages || in_array('nodejs', $requestedPackages),
-            'configure_firewall' => !$this->option('no-firewall'),
-            'setup_swap' => !$this->option('no-swap'),
-            'secure_ssh' => !$this->option('no-ssh-security'),
+            'configure_firewall' => ! $this->option('no-firewall'),
+            'setup_swap' => ! $this->option('no-swap'),
+            'secure_ssh' => ! $this->option('no-ssh-security'),
             'php_version' => $this->option('php-version'),
             'node_version' => $this->option('node-version'),
             'swap_size_gb' => (int) $this->option('swap-size'),
@@ -68,9 +69,9 @@ class ProvisionServer extends Command
         // Get MySQL password if installing MySQL
         if ($options['install_mysql']) {
             $mysqlPassword = $this->option('mysql-password');
-            if (!$mysqlPassword) {
+            if (! $mysqlPassword) {
                 $mysqlPassword = $this->secret('Enter MySQL root password (leave empty for auto-generated)');
-                if (!$mysqlPassword) {
+                if (! $mysqlPassword) {
                     $mysqlPassword = bin2hex(random_bytes(16));
                     $this->warn("Auto-generated MySQL root password: {$mysqlPassword}");
                     $this->warn('Please save this password securely!');
@@ -87,19 +88,20 @@ class ProvisionServer extends Command
                 ['Update System', $options['update_system'] ? '✓' : '✗'],
                 ['Install Nginx', $options['install_nginx'] ? '✓' : '✗'],
                 ['Install MySQL', $options['install_mysql'] ? '✓' : '✗'],
-                ['Install PHP ' . $options['php_version'], $options['install_php'] ? '✓' : '✗'],
+                ['Install PHP '.$options['php_version'], $options['install_php'] ? '✓' : '✗'],
                 ['Install Composer', $options['install_composer'] ? '✓' : '✗'],
-                ['Install Node.js ' . $options['node_version'], $options['install_nodejs'] ? '✓' : '✗'],
+                ['Install Node.js '.$options['node_version'], $options['install_nodejs'] ? '✓' : '✗'],
                 ['Configure Firewall', $options['configure_firewall'] ? '✓' : '✗'],
-                ['Setup Swap (' . $options['swap_size_gb'] . 'GB)', $options['setup_swap'] ? '✓' : '✗'],
+                ['Setup Swap ('.$options['swap_size_gb'].'GB)', $options['setup_swap'] ? '✓' : '✗'],
                 ['Secure SSH', $options['secure_ssh'] ? '✓' : '✗'],
             ]
         );
 
         $this->newLine();
 
-        if (!$this->confirm('Do you want to proceed with provisioning?', true)) {
+        if (! $this->confirm('Do you want to proceed with provisioning?', true)) {
             $this->warn('Provisioning cancelled.');
+
             return self::SUCCESS;
         }
 
@@ -115,8 +117,10 @@ class ProvisionServer extends Command
             $progressBar->finish();
             $this->newLine(2);
 
-            $this->info("✓ Server provisioned successfully!");
-            $this->info("Provisioned packages: " . implode(', ', $server->fresh()->installed_packages ?? []));
+            $this->info('✓ Server provisioned successfully!');
+            $freshServer = $server->fresh();
+            $packages = $freshServer?->installed_packages ?? [];
+            $this->info('Provisioned packages: '.implode(', ', $packages));
 
             return self::SUCCESS;
 

@@ -51,8 +51,9 @@ class FixPermissionsCommand extends Command
         // Get the project path
         $projectPath = $this->option('path') ?? base_path();
 
-        if (!is_dir($projectPath)) {
+        if (! is_dir($projectPath)) {
             $this->error("❌ Project path does not exist: {$projectPath}");
+
             return self::FAILURE;
         }
 
@@ -60,22 +61,22 @@ class FixPermissionsCommand extends Command
         $this->newLine();
 
         // Step 1: Create missing directories
-        if (!$this->createMissingDirectories($projectPath)) {
+        if (! $this->createMissingDirectories($projectPath)) {
             return self::FAILURE;
         }
 
         // Step 2: Fix ownership
-        if (!$this->fixOwnership($projectPath)) {
+        if (! $this->fixOwnership($projectPath)) {
             return self::FAILURE;
         }
 
         // Step 3: Fix permissions
-        if (!$this->fixPermissions($projectPath)) {
+        if (! $this->fixPermissions($projectPath)) {
             return self::FAILURE;
         }
 
         // Step 4: Clear caches
-        if (!$this->clearCaches($projectPath)) {
+        if (! $this->clearCaches($projectPath)) {
             return self::FAILURE;
         }
 
@@ -94,11 +95,12 @@ class FixPermissionsCommand extends Command
 
         try {
             foreach ($this->requiredDirectories as $directory) {
-                $fullPath = $projectPath . '/' . $directory;
+                $fullPath = $projectPath.'/'.$directory;
 
-                if (!is_dir($fullPath)) {
-                    if (!File::makeDirectory($fullPath, 0775, true)) {
+                if (! is_dir($fullPath)) {
+                    if (! File::makeDirectory($fullPath, 0775, true)) {
                         $this->error("   ❌ Failed to create: {$directory}");
+
                         return false;
                     }
                     $this->line("   ✓ Created: <fg=green>{$directory}</>");
@@ -108,9 +110,11 @@ class FixPermissionsCommand extends Command
             }
 
             $this->newLine();
+
             return true;
         } catch (\Exception $e) {
             $this->error("❌ Error creating directories: {$e->getMessage()}");
+
             return false;
         }
     }
@@ -123,18 +127,19 @@ class FixPermissionsCommand extends Command
         $this->info('👤 Fixing ownership to www-data:www-data...');
 
         $paths = [
-            $projectPath . '/storage',
-            $projectPath . '/bootstrap/cache',
+            $projectPath.'/storage',
+            $projectPath.'/bootstrap/cache',
         ];
 
         foreach ($paths as $path) {
-            if (!is_dir($path)) {
+            if (! is_dir($path)) {
                 $this->warn("   ⚠ Path not found, skipping: {$path}");
+
                 continue;
             }
 
             try {
-                $relativePath = str_replace($projectPath . '/', '', $path);
+                $relativePath = str_replace($projectPath.'/', '', $path);
 
                 // Check if running as root or with sudo capabilities
                 $currentUser = posix_getuid();
@@ -144,7 +149,7 @@ class FixPermissionsCommand extends Command
                     $process = new Process(['chown', '-R', 'www-data:www-data', $path]);
                 } else {
                     // Try with sudo
-                    $this->line("   ℹ Running with sudo (may require password)...");
+                    $this->line('   ℹ Running with sudo (may require password)...');
                     $process = new Process(['sudo', 'chown', '-R', 'www-data:www-data', $path]);
                 }
 
@@ -156,15 +161,16 @@ class FixPermissionsCommand extends Command
                 } else {
                     $this->warn("   ⚠ Could not change ownership for: {$relativePath}");
                     $this->line("   ℹ Error: {$process->getErrorOutput()}");
-                    $this->line("   ℹ Continuing with permission fixes...");
+                    $this->line('   ℹ Continuing with permission fixes...');
                 }
             } catch (\Exception $e) {
                 $this->warn("   ⚠ Ownership fix failed for {$path}: {$e->getMessage()}");
-                $this->line("   ℹ Continuing with permission fixes...");
+                $this->line('   ℹ Continuing with permission fixes...');
             }
         }
 
         $this->newLine();
+
         return true;
     }
 
@@ -176,18 +182,19 @@ class FixPermissionsCommand extends Command
         $this->info('🔐 Fixing permissions (775 for directories, 664 for files)...');
 
         $paths = [
-            $projectPath . '/storage',
-            $projectPath . '/bootstrap/cache',
+            $projectPath.'/storage',
+            $projectPath.'/bootstrap/cache',
         ];
 
         foreach ($paths as $path) {
-            if (!is_dir($path)) {
+            if (! is_dir($path)) {
                 $this->warn("   ⚠ Path not found, skipping: {$path}");
+
                 continue;
             }
 
             try {
-                $relativePath = str_replace($projectPath . '/', '', $path);
+                $relativePath = str_replace($projectPath.'/', '', $path);
 
                 // Set directory permissions
                 $this->setPermissionsRecursively($path, 0775, 0664);
@@ -195,11 +202,13 @@ class FixPermissionsCommand extends Command
                 $this->line("   ✓ Permissions fixed: <fg=green>{$relativePath}</>");
             } catch (\Exception $e) {
                 $this->error("   ❌ Permission fix failed for {$path}: {$e->getMessage()}");
+
                 return false;
             }
         }
 
         $this->newLine();
+
         return true;
     }
 
@@ -223,7 +232,7 @@ class FixPermissionsCommand extends Command
                     continue;
                 }
 
-                $fullPath = $path . DIRECTORY_SEPARATOR . $item;
+                $fullPath = $path.DIRECTORY_SEPARATOR.$item;
 
                 if (is_dir($fullPath)) {
                     $this->setPermissionsRecursively($fullPath, $dirMode, $fileMode);
@@ -261,22 +270,22 @@ class FixPermissionsCommand extends Command
 
         // Clear compiled files
         try {
-            $compiledPath = $projectPath . '/bootstrap/cache/compiled.php';
+            $compiledPath = $projectPath.'/bootstrap/cache/compiled.php';
             if (file_exists($compiledPath)) {
                 unlink($compiledPath);
-                $this->line("   ✓ Removed: <fg=green>Compiled classes</>");
+                $this->line('   ✓ Removed: <fg=green>Compiled classes</>');
             }
 
-            $servicesPath = $projectPath . '/bootstrap/cache/services.php';
+            $servicesPath = $projectPath.'/bootstrap/cache/services.php';
             if (file_exists($servicesPath)) {
                 unlink($servicesPath);
-                $this->line("   ✓ Removed: <fg=green>Services cache</>");
+                $this->line('   ✓ Removed: <fg=green>Services cache</>');
             }
 
-            $packagesPath = $projectPath . '/bootstrap/cache/packages.php';
+            $packagesPath = $projectPath.'/bootstrap/cache/packages.php';
             if (file_exists($packagesPath)) {
                 unlink($packagesPath);
-                $this->line("   ✓ Removed: <fg=green>Packages cache</>");
+                $this->line('   ✓ Removed: <fg=green>Packages cache</>');
             }
         } catch (\Exception $e) {
             $this->warn("   ⚠ Could not remove compiled files: {$e->getMessage()}");
@@ -286,7 +295,7 @@ class FixPermissionsCommand extends Command
         if (function_exists('opcache_reset')) {
             try {
                 opcache_reset();
-                $this->line("   ✓ Cleared: <fg=green>OPcache</>");
+                $this->line('   ✓ Cleared: <fg=green>OPcache</>');
             } catch (\Exception $e) {
                 $this->warn("   ⚠ Could not clear OPcache: {$e->getMessage()}");
             }

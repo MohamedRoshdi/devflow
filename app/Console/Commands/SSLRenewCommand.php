@@ -37,7 +37,7 @@ class SSLRenewCommand extends Command
             ->where('status', '!=', 'revoked')
             ->where(function ($query) {
                 $query->where('status', 'expired')
-                      ->orWhereNotNull('expires_at');
+                    ->orWhereNotNull('expires_at');
             })
             ->with('server')
             ->get()
@@ -47,6 +47,7 @@ class SSLRenewCommand extends Command
 
         if ($certificates->isEmpty()) {
             $this->info('No certificates need renewal at this time.');
+
             return Command::SUCCESS;
         }
 
@@ -82,7 +83,7 @@ class SSLRenewCommand extends Command
         }
 
         $this->newLine();
-        $this->info("Renewal complete:");
+        $this->info('Renewal complete:');
         $this->info("  Renewed: {$renewed}");
         if ($failed > 0) {
             $this->error("  Failed: {$failed}");

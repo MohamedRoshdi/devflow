@@ -2,14 +2,15 @@
 
 namespace Tests\Browser;
 
-use Tests\DuskTestCase;
-use Laravel\Dusk\Browser;
-use App\Models\User;
 use App\Models\Project;
+use App\Models\User;
+use Laravel\Dusk\Browser;
+use Tests\DuskTestCase;
 
 class MobileResponsivenessTest extends DuskTestCase
 {
     protected User $user;
+
     protected array $testResults = [];
 
     protected function setUp(): void
@@ -20,9 +21,10 @@ class MobileResponsivenessTest extends DuskTestCase
 
     /**
      * Test responsive design across different devices
+     *
      * @test
      */
-    public function testResponsiveDesignAcrossDevices()
+    public function test_responsive_design_across_devices()
     {
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->user);
@@ -44,7 +46,7 @@ class MobileResponsivenessTest extends DuskTestCase
     /**
      * Test specific device responsiveness
      */
-    protected function testDeviceResponsiveness(Browser $browser, string $device, array $dimensions)
+    protected function test_device_responsiveness(Browser $browser, string $device, array $dimensions)
     {
         $browser->resize($dimensions['width'], $dimensions['height']);
 
@@ -70,23 +72,23 @@ class MobileResponsivenessTest extends DuskTestCase
     /**
      * Test navigation menu responsiveness
      */
-    protected function testNavigationMenu(Browser $browser, string $device, array $dimensions)
+    protected function test_navigation_menu(Browser $browser, string $device, array $dimensions)
     {
         $browser->visit('/dashboard');
 
         if ($dimensions['width'] < 768) {
             // Mobile: Check hamburger menu
             $browser->assertPresent('[data-test="mobile-menu-button"]')
-                    ->click('[data-test="mobile-menu-button"]')
-                    ->assertVisible('[data-test="mobile-menu"]')
-                    ->screenshot("navigation-{$device}");
+                ->click('[data-test="mobile-menu-button"]')
+                ->assertVisible('[data-test="mobile-menu"]')
+                ->screenshot("navigation-{$device}");
 
             $this->testResults['navigation'][$device] = 'Mobile menu working';
         } else {
             // Desktop/Tablet: Check full menu
             $browser->assertVisible('nav')
-                    ->assertPresent('[data-test="desktop-menu"]')
-                    ->screenshot("navigation-{$device}");
+                ->assertPresent('[data-test="desktop-menu"]')
+                ->screenshot("navigation-{$device}");
 
             $this->testResults['navigation'][$device] = 'Desktop menu visible';
         }
@@ -95,14 +97,14 @@ class MobileResponsivenessTest extends DuskTestCase
     /**
      * Test dashboard layout
      */
-    protected function testDashboardLayout(Browser $browser, string $device, array $dimensions)
+    protected function test_dashboard_layout(Browser $browser, string $device, array $dimensions)
     {
         $browser->visit('/dashboard');
 
         if ($dimensions['width'] < 768) {
             // Mobile: Single column layout
             $browser->assertPresent('.grid-cols-1')
-                    ->screenshot("dashboard-{$device}");
+                ->screenshot("dashboard-{$device}");
 
             // Check if cards stack vertically
             $cards = $browser->elements('[data-test="stat-card"]');
@@ -112,17 +114,17 @@ class MobileResponsivenessTest extends DuskTestCase
 
                 $this->assertTrue(
                     $firstCard->getLocation()->getY() < $secondCard->getLocation()->getY(),
-                    "Cards should stack vertically on mobile"
+                    'Cards should stack vertically on mobile'
                 );
             }
         } elseif ($dimensions['width'] < 1024) {
             // Tablet: Two column layout
             $browser->assertPresent('.md\\:grid-cols-2')
-                    ->screenshot("dashboard-{$device}");
+                ->screenshot("dashboard-{$device}");
         } else {
             // Desktop: Multi-column layout
             $browser->assertPresent('.lg\\:grid-cols-4')
-                    ->screenshot("dashboard-{$device}");
+                ->screenshot("dashboard-{$device}");
         }
 
         $this->testResults['dashboard'][$device] = 'Layout responsive';
@@ -131,7 +133,7 @@ class MobileResponsivenessTest extends DuskTestCase
     /**
      * Test project cards responsiveness
      */
-    protected function testProjectCards(Browser $browser, string $device, array $dimensions)
+    protected function test_project_cards(Browser $browser, string $device, array $dimensions)
     {
         Project::factory()->count(3)->create(['user_id' => $this->user->id]);
 
@@ -140,15 +142,15 @@ class MobileResponsivenessTest extends DuskTestCase
         if ($dimensions['width'] < 640) {
             // Mobile: Full width cards
             $browser->assertPresent('.w-full')
-                    ->screenshot("projects-{$device}");
+                ->screenshot("projects-{$device}");
 
             // Check card content is readable
             $fontSize = $browser->script("return window.getComputedStyle(document.querySelector('.project-title')).fontSize")[0];
-            $this->assertGreaterThanOrEqual(14, intval($fontSize), "Font size should be readable on mobile");
+            $this->assertGreaterThanOrEqual(14, intval($fontSize), 'Font size should be readable on mobile');
         } else {
             // Tablet/Desktop: Grid layout
             $browser->assertPresent('.grid')
-                    ->screenshot("projects-{$device}");
+                ->screenshot("projects-{$device}");
         }
 
         $this->testResults['project_cards'][$device] = 'Cards responsive';
@@ -157,7 +159,7 @@ class MobileResponsivenessTest extends DuskTestCase
     /**
      * Test form layouts
      */
-    protected function testFormLayouts(Browser $browser, string $device, array $dimensions)
+    protected function test_form_layouts(Browser $browser, string $device, array $dimensions)
     {
         $browser->visit('/projects/create');
 
@@ -170,14 +172,14 @@ class MobileResponsivenessTest extends DuskTestCase
                 $containerWidth = $browser->script("return document.querySelector('form').offsetWidth")[0];
 
                 // Input should be at least 90% of container width on mobile
-                $this->assertGreaterThan($containerWidth * 0.9, $width, "Inputs should be full width on mobile");
+                $this->assertGreaterThan($containerWidth * 0.9, $width, 'Inputs should be full width on mobile');
             }
 
             $browser->screenshot("form-{$device}");
         } else {
             // Desktop: Multi-column forms possible
             $browser->assertPresent('form')
-                    ->screenshot("form-{$device}");
+                ->screenshot("form-{$device}");
         }
 
         // Test button visibility
@@ -189,7 +191,7 @@ class MobileResponsivenessTest extends DuskTestCase
     /**
      * Test table responsiveness
      */
-    protected function testTableResponsiveness(Browser $browser, string $device, array $dimensions)
+    protected function test_table_responsiveness(Browser $browser, string $device, array $dimensions)
     {
         $browser->visit('/deployments');
 
@@ -201,17 +203,17 @@ class MobileResponsivenessTest extends DuskTestCase
             if ($tableWidth > $containerWidth) {
                 // Table should be scrollable
                 $browser->assertPresent('.overflow-x-auto')
-                        ->screenshot("table-scroll-{$device}");
+                    ->screenshot("table-scroll-{$device}");
             } else {
                 // Or use responsive cards instead of table
                 $browser->assertPresent('[data-test="mobile-list-item"]')
-                        ->screenshot("table-cards-{$device}");
+                    ->screenshot("table-cards-{$device}");
             }
         } else {
             // Desktop: Full table
             $browser->assertPresent('table')
-                    ->assertVisible('thead')
-                    ->screenshot("table-{$device}");
+                ->assertVisible('thead')
+                ->screenshot("table-{$device}");
         }
 
         $this->testResults['tables'][$device] = 'Tables responsive';
@@ -220,10 +222,10 @@ class MobileResponsivenessTest extends DuskTestCase
     /**
      * Test modal responsiveness
      */
-    protected function testModalResponsiveness(Browser $browser, string $device, array $dimensions)
+    protected function test_modal_responsiveness(Browser $browser, string $device, array $dimensions)
     {
         $browser->visit('/projects')
-                ->click('[data-test="create-project-button"]');
+            ->click('[data-test="create-project-button"]');
 
         if ($dimensions['width'] < 768) {
             // Mobile: Full screen modals
@@ -231,13 +233,13 @@ class MobileResponsivenessTest extends DuskTestCase
             $viewportWidth = $dimensions['width'];
 
             // Modal should take most of viewport width on mobile
-            $this->assertGreaterThan($viewportWidth * 0.9, $modalWidth, "Modal should be nearly full width on mobile");
+            $this->assertGreaterThan($viewportWidth * 0.9, $modalWidth, 'Modal should be nearly full width on mobile');
 
             $browser->screenshot("modal-{$device}");
         } else {
             // Desktop: Centered modals
             $browser->assertVisible('.modal')
-                    ->screenshot("modal-{$device}");
+                ->screenshot("modal-{$device}");
         }
 
         // Close modal
@@ -248,38 +250,40 @@ class MobileResponsivenessTest extends DuskTestCase
 
     /**
      * Test touch interactions on mobile
+     *
      * @test
      */
-    public function testTouchInteractions()
+    public function test_touch_interactions()
     {
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->user)
-                    ->resize(375, 667); // Mobile size
+                ->resize(375, 667); // Mobile size
 
             // Test swipe gestures if implemented
             $browser->visit('/projects')
-                    ->swipeLeft('[data-test="swipeable-card"]')
-                    ->assertVisible('[data-test="card-actions"]')
-                    ->screenshot('swipe-actions');
+                ->swipeLeft('[data-test="swipeable-card"]')
+                ->assertVisible('[data-test="card-actions"]')
+                ->screenshot('swipe-actions');
 
             // Test tap targets size
             $buttons = $browser->elements('button, a');
             foreach ($buttons as $button) {
-                $height = $browser->script("return arguments[0].offsetHeight", [$button])[0];
-                $width = $browser->script("return arguments[0].offsetWidth", [$button])[0];
+                $height = $browser->script('return arguments[0].offsetHeight', [$button])[0];
+                $width = $browser->script('return arguments[0].offsetWidth', [$button])[0];
 
                 // Touch targets should be at least 44x44 pixels (iOS guideline)
-                $this->assertGreaterThanOrEqual(44, $height, "Button height should be at least 44px for touch");
-                $this->assertGreaterThanOrEqual(44, $width, "Button width should be at least 44px for touch");
+                $this->assertGreaterThanOrEqual(44, $height, 'Button height should be at least 44px for touch');
+                $this->assertGreaterThanOrEqual(44, $width, 'Button width should be at least 44px for touch');
             }
         });
     }
 
     /**
      * Test viewport meta tag
+     *
      * @test
      */
-    public function testViewportMetaTag()
+    public function test_viewport_meta_tag()
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/');
@@ -288,7 +292,7 @@ class MobileResponsivenessTest extends DuskTestCase
                 return document.querySelector('meta[name=viewport]')?.content
             ")[0];
 
-            $this->assertNotNull($viewport, "Viewport meta tag should be present");
+            $this->assertNotNull($viewport, 'Viewport meta tag should be present');
             $this->assertStringContainsString('width=device-width', $viewport);
             $this->assertStringContainsString('initial-scale=1', $viewport);
         });
@@ -296,14 +300,15 @@ class MobileResponsivenessTest extends DuskTestCase
 
     /**
      * Test font sizes on mobile
+     *
      * @test
      */
-    public function testReadabilityOnMobile()
+    public function test_readability_on_mobile()
     {
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->user)
-                    ->resize(375, 667)
-                    ->visit('/dashboard');
+                ->resize(375, 667)
+                ->visit('/dashboard');
 
             // Test minimum font sizes
             $elements = [
@@ -333,13 +338,14 @@ class MobileResponsivenessTest extends DuskTestCase
 
     /**
      * Test image responsiveness
+     *
      * @test
      */
-    public function testImageResponsiveness()
+    public function test_image_responsiveness()
     {
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->user)
-                    ->visit('/');
+                ->visit('/');
 
             $devices = [
                 ['width' => 375, 'height' => 667],
@@ -367,16 +373,16 @@ class MobileResponsivenessTest extends DuskTestCase
                     $this->assertLessThanOrEqual(
                         $device['width'],
                         $img['width'],
-                        "Image width should not exceed viewport"
+                        'Image width should not exceed viewport'
                     );
 
                     // Images should have alt text for accessibility
-                    $this->assertTrue($img['hasAlt'], "Images should have alt text");
+                    $this->assertTrue($img['hasAlt'], 'Images should have alt text');
 
                     // Check for responsive images
                     $this->assertTrue(
                         $img['isResponsive'],
-                        "Images should be responsive"
+                        'Images should be responsive'
                     );
                 }
             }
@@ -394,12 +400,12 @@ class MobileResponsivenessTest extends DuskTestCase
             'summary' => [
                 'total_tests' => count($this->testResults, COUNT_RECURSIVE),
                 'devices_tested' => ['mobile', 'tablet', 'desktop'],
-                'passed' => array_filter($this->testResults, fn($result) => !str_contains(json_encode($result), 'failed')),
+                'passed' => array_filter($this->testResults, fn ($result) => ! str_contains(json_encode($result), 'failed')),
             ],
             'recommendations' => $this->generateRecommendations(),
         ];
 
-        $reportPath = storage_path('app/responsiveness-reports/report-' . now()->format('Y-m-d-H-i-s') . '.json');
+        $reportPath = storage_path('app/responsiveness-reports/report-'.now()->format('Y-m-d-H-i-s').'.json');
         @mkdir(dirname($reportPath), 0755, true);
         file_put_contents($reportPath, json_encode($report, JSON_PRETTY_PRINT));
 

@@ -54,8 +54,9 @@ class CleanupBackups extends Command
             ? Project::find($identifier)
             : Project::where('slug', $identifier)->first();
 
-        if (!$project) {
+        if (! $project) {
             $this->error("Project not found: {$identifier}");
+
             return self::FAILURE;
         }
 
@@ -99,6 +100,7 @@ class CleanupBackups extends Command
 
         if ($projects->isEmpty()) {
             $this->warn('No projects with backup schedules found.');
+
             return self::SUCCESS;
         }
 
@@ -121,7 +123,7 @@ class CleanupBackups extends Command
             }
         }
 
-        if (!$dryRun) {
+        if (! $dryRun) {
             $this->info("\nTotal backups deleted: {$totalDeleted}");
 
             Log::info('Global backup cleanup completed', [
@@ -159,8 +161,10 @@ class CleanupBackups extends Command
 
     /**
      * Calculate how many backups would be kept
+     *
+     * @param  \Illuminate\Support\Collection<int, \App\Models\DatabaseBackup>  $backups
      */
-    protected function calculateKeepCount($backups, int $daily, int $weekly, int $monthly): int
+    protected function calculateKeepCount(\Illuminate\Support\Collection $backups, int $daily, int $weekly, int $monthly): int
     {
         // Simplified calculation - actual logic is in the service
         return min($backups->count(), max($daily, $weekly, $monthly));

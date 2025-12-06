@@ -6,21 +6,55 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $server_id
+ * @property string $status
+ * @property int|null $score
+ * @property string|null $risk_level
+ * @property array<int, array<string, mixed>> $findings
+ * @property array<int, string> $recommendations
+ * @property \Illuminate\Support\Carbon|null $started_at
+ * @property \Illuminate\Support\Carbon|null $completed_at
+ * @property int|null $triggered_by
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Server $server
+ * @property-read User|null $triggeredBy
+ * @property-read int|null $duration
+ * @property-read string $risk_level_color
+ * @property-read string $score_color
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static> query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static> newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static> newModelQuery()
+ */
 class SecurityScan extends Model
 {
+    /** @use HasFactory<\Database\Factories\SecurityScanFactory> */
     use HasFactory;
 
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_RUNNING = 'running';
+
     public const STATUS_COMPLETED = 'completed';
+
     public const STATUS_FAILED = 'failed';
 
     public const RISK_CRITICAL = 'critical';
+
     public const RISK_HIGH = 'high';
+
     public const RISK_MEDIUM = 'medium';
+
     public const RISK_LOW = 'low';
+
     public const RISK_SECURE = 'secure';
 
+    /**
+     * @var array<int, string>
+     */
     protected $fillable = [
         'server_id',
         'status',
@@ -33,6 +67,9 @@ class SecurityScan extends Model
         'triggered_by',
     ];
 
+    /**
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -44,11 +81,17 @@ class SecurityScan extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<Server, self>
+     */
     public function server(): BelongsTo
     {
         return $this->belongsTo(Server::class);
     }
 
+    /**
+     * @return BelongsTo<User, self>
+     */
     public function triggeredBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'triggered_by');

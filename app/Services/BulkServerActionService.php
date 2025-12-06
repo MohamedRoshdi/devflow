@@ -16,8 +16,8 @@ class BulkServerActionService
     /**
      * Ping multiple servers in parallel
      *
-     * @param Collection $servers Collection of Server models
-     * @return array Array with server_id => result mapping
+     * @param  Collection<int, Server>  $servers  Collection of Server models
+     * @return array<int, array{success: bool, server_name: string, message: string, latency_ms?: float|null}> Array with server_id => result mapping
      */
     public function pingServers(Collection $servers): array
     {
@@ -49,7 +49,7 @@ class BulkServerActionService
                 $results[$server->id] = [
                     'success' => false,
                     'server_name' => $server->name,
-                    'message' => 'Error: ' . $e->getMessage(),
+                    'message' => 'Error: '.$e->getMessage(),
                 ];
             }
         }
@@ -60,8 +60,8 @@ class BulkServerActionService
     /**
      * Reboot multiple servers
      *
-     * @param Collection $servers Collection of Server models
-     * @return array Array with server_id => result mapping
+     * @param  Collection<int, Server>  $servers  Collection of Server models
+     * @return array<int, array{success: bool, server_name: string, message: string}> Array with server_id => result mapping
      */
     public function rebootServers(Collection $servers): array
     {
@@ -90,7 +90,7 @@ class BulkServerActionService
                 $results[$server->id] = [
                     'success' => false,
                     'server_name' => $server->name,
-                    'message' => 'Error: ' . $e->getMessage(),
+                    'message' => 'Error: '.$e->getMessage(),
                 ];
             }
         }
@@ -101,8 +101,8 @@ class BulkServerActionService
     /**
      * Install Docker on multiple servers
      *
-     * @param Collection $servers Collection of Server models
-     * @return array Array with server_id => result mapping
+     * @param  Collection<int, Server>  $servers  Collection of Server models
+     * @return array<int, array{success: bool, server_name: string, message: string, already_installed?: bool, version?: string|null}> Array with server_id => result mapping
      */
     public function installDockerOnServers(Collection $servers): array
     {
@@ -117,9 +117,10 @@ class BulkServerActionService
                     $results[$server->id] = [
                         'success' => true,
                         'server_name' => $server->name,
-                        'message' => 'Docker is already installed (version: ' . ($verifyResult['version'] ?? 'unknown') . ')',
+                        'message' => 'Docker is already installed (version: '.($verifyResult['version'] ?? 'unknown').')',
                         'already_installed' => true,
                     ];
+
                     continue;
                 }
 
@@ -150,7 +151,7 @@ class BulkServerActionService
                 $results[$server->id] = [
                     'success' => false,
                     'server_name' => $server->name,
-                    'message' => 'Error: ' . $e->getMessage(),
+                    'message' => 'Error: '.$e->getMessage(),
                 ];
             }
         }
@@ -161,9 +162,9 @@ class BulkServerActionService
     /**
      * Restart a specific service on multiple servers
      *
-     * @param Collection $servers Collection of Server models
-     * @param string $service Service name (e.g., nginx, mysql, redis, php-fpm)
-     * @return array Array with server_id => result mapping
+     * @param  Collection<int, Server>  $servers  Collection of Server models
+     * @param  string  $service  Service name (e.g., nginx, mysql, redis, php-fpm)
+     * @return array<int, array{success: bool, server_name: string, message: string, service: string}> Array with server_id => result mapping
      */
     public function restartServiceOnServers(Collection $servers, string $service): array
     {
@@ -197,7 +198,7 @@ class BulkServerActionService
                 $results[$server->id] = [
                     'success' => false,
                     'server_name' => $server->name,
-                    'message' => 'Error: ' . $e->getMessage(),
+                    'message' => 'Error: '.$e->getMessage(),
                     'service' => $service,
                 ];
             }
@@ -209,8 +210,8 @@ class BulkServerActionService
     /**
      * Get summary statistics from bulk operation results
      *
-     * @param array $results Results array from any bulk operation
-     * @return array Summary with success/failure counts
+     * @param  array<int, array{success: bool}>  $results  Results array from any bulk operation
+     * @return array{total: int, successful: int, failed: int} Summary with success/failure counts
      */
     public function getSummaryStats(array $results): array
     {

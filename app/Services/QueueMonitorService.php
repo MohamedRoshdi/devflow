@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\FailedJob;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Process;
-use Illuminate\Support\Facades\Cache;
 
 class QueueMonitorService
 {
@@ -162,7 +162,7 @@ class QueueMonitorService
             // Check for queue:work processes
             $result = Process::run('ps aux | grep -E "queue:work|horizon" | grep -v grep');
 
-            $isRunning = $result->successful() && !empty(trim($result->output()));
+            $isRunning = $result->successful() && ! empty(trim($result->output()));
 
             // Count the number of workers
             $workerCount = 0;
@@ -215,9 +215,11 @@ class QueueMonitorService
     {
         try {
             $job = FailedJob::findOrFail($jobId);
+
             return $job->retry();
         } catch (\Exception $e) {
-            \Log::error("Failed to retry job {$jobId}: " . $e->getMessage());
+            \Log::error("Failed to retry job {$jobId}: ".$e->getMessage());
+
             return false;
         }
     }
@@ -230,7 +232,8 @@ class QueueMonitorService
         try {
             return FailedJob::retryAll();
         } catch (\Exception $e) {
-            \Log::error("Failed to retry all jobs: " . $e->getMessage());
+            \Log::error('Failed to retry all jobs: '.$e->getMessage());
+
             return false;
         }
     }
@@ -242,9 +245,11 @@ class QueueMonitorService
     {
         try {
             $job = FailedJob::findOrFail($jobId);
+
             return $job->forget();
         } catch (\Exception $e) {
-            \Log::error("Failed to delete job {$jobId}: " . $e->getMessage());
+            \Log::error("Failed to delete job {$jobId}: ".$e->getMessage());
+
             return false;
         }
     }
@@ -257,7 +262,8 @@ class QueueMonitorService
         try {
             return FailedJob::forgetAll();
         } catch (\Exception $e) {
-            \Log::error("Failed to clear all failed jobs: " . $e->getMessage());
+            \Log::error('Failed to clear all failed jobs: '.$e->getMessage());
+
             return false;
         }
     }

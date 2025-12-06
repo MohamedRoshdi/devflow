@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProjectSetupTask extends Model
 {
+    /** @use HasFactory<\Database\Factories\ProjectSetupTaskFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -32,17 +33,26 @@ class ProjectSetupTask extends Model
 
     // Task types
     public const TYPE_SSL = 'ssl';
+
     public const TYPE_WEBHOOK = 'webhook';
+
     public const TYPE_HEALTH_CHECK = 'health_check';
+
     public const TYPE_BACKUP = 'backup';
+
     public const TYPE_NOTIFICATIONS = 'notifications';
+
     public const TYPE_DEPLOYMENT = 'deployment';
 
     // Statuses
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_RUNNING = 'running';
+
     public const STATUS_COMPLETED = 'completed';
+
     public const STATUS_FAILED = 'failed';
+
     public const STATUS_SKIPPED = 'skipped';
 
     public static function getAllTypes(): array

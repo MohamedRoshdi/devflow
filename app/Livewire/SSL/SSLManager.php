@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Livewire\SSL;
 
-use App\Models\SSLCertificate;
 use App\Models\Domain;
+use App\Models\SSLCertificate;
 use App\Services\SSLManagementService;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use Livewire\Component;
-use Livewire\Attributes\{Computed, On};
 use Livewire\WithPagination;
 
 class SSLManager extends Component
@@ -16,14 +17,28 @@ class SSLManager extends Component
     use WithPagination;
 
     public string $search = '';
+
     public string $statusFilter = 'all';
+
     public int $expiryDaysFilter = 90; // Show all certificates expiring within 90 days
 
     public ?Domain $selectedDomain = null;
+
     public bool $showCertificateModal = false;
+
     public bool $showIssueModal = false;
+
     public bool $isProcessing = false;
 
+    public bool $showRenewAllConfirm = false;
+
+    public bool $showRevokeConfirm = false;
+
+    public ?int $revokeTargetDomainId = null;
+
+    /**
+     * @var array<string, array{except: string}>
+     */
     protected $queryString = [
         'search' => ['except' => ''],
         'statusFilter' => ['except' => 'all'],
@@ -33,7 +48,11 @@ class SSLManager extends Component
     public function certificates()
     {
         return SSLCertificate::query()
-            ->with(['domain.project', 'server'])
+            ->with([
+                'domain:id,project_id,domain',
+                'domain.project:id,name,slug',
+                'server:id,name',
+            ])
             ->when($this->search, function ($query) {
                 $query->where('domain_name', 'like', "%{$this->search}%");
             })
@@ -73,7 +92,11 @@ class SSLManager extends Component
         return SSLCertificate::where('status', 'issued')
             ->where('expires_at', '<=', now()->addDays(7))
             ->where('expires_at', '>=', now())
-            ->with(['domain', 'server'])
+            ->with([
+                'domain:id,project_id,domain',
+                'domain.project:id,name,slug',
+                'server:id,name',
+            ])
             ->orderBy('expires_at', 'asc')
             ->limit(5)
             ->get();
@@ -81,7 +104,11 @@ class SSLManager extends Component
 
     public function viewCertificate(int $certificateId): void
     {
-        $certificate = SSLCertificate::with(['domain', 'server'])->findOrFail($certificateId);
+        $certificate = SSLCertificate::with([
+            'domain:id,project_id,domain',
+            'domain.project:id,name,slug',
+            'server:id,name',
+        ])->findOrFail($certificateId);
         $this->selectedDomain = $certificate->domain;
         $this->showCertificateModal = true;
     }
@@ -123,7 +150,7 @@ class SSLManager extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Failed to issue certificate: ' . $e->getMessage(),
+                'message' => 'Failed to issue certificate: '.$e->getMessage(),
             ]);
         } finally {
             $this->isProcessing = false;
@@ -151,19 +178,26 @@ class SSLManager extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Failed to renew certificate: ' . $e->getMessage(),
+                'message' => 'Failed to renew certificate: '.$e->getMessage(),
             ]);
         } finally {
             $this->isProcessing = false;
         }
     }
 
+    public function confirmRenewAllExpiring(): void
+    {
+        $this->showRenewAllConfirm = true;
+    }
+
+    public function cancelRenewAll(): void
+    {
+        $this->showRenewAllConfirm = false;
+    }
+
     public function renewAllExpiring(): void
     {
-        if (!$this->confirm('Are you sure you want to renew all expiring certificates?')) {
-            return;
-        }
-
+        $this->showRenewAllConfirm = false;
         $this->isProcessing = true;
 
         try {
@@ -194,20 +228,33 @@ class SSLManager extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Bulk renewal failed: ' . $e->getMessage(),
+                'message' => 'Bulk renewal failed: '.$e->getMessage(),
             ]);
         } finally {
             $this->isProcessing = false;
         }
     }
 
-    public function revokeCertificate(int $domainId): void
+    public function confirmRevokeCertificate(int $domainId): void
     {
-        if (!$this->confirm('Are you sure you want to revoke this certificate? This action cannot be undone.')) {
+        $this->revokeTargetDomainId = $domainId;
+        $this->showRevokeConfirm = true;
+    }
+
+    public function cancelRevoke(): void
+    {
+        $this->showRevokeConfirm = false;
+        $this->revokeTargetDomainId = null;
+    }
+
+    public function revokeCertificate(): void
+    {
+        if ($this->revokeTargetDomainId === null) {
             return;
         }
 
-        $domain = Domain::findOrFail($domainId);
+        $domain = Domain::findOrFail($this->revokeTargetDomainId);
+        $this->showRevokeConfirm = false;
         $this->isProcessing = true;
 
         try {
@@ -225,10 +272,11 @@ class SSLManager extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Failed to revoke certificate: ' . $e->getMessage(),
+                'message' => 'Failed to revoke certificate: '.$e->getMessage(),
             ]);
         } finally {
             $this->isProcessing = false;
+            $this->revokeTargetDomainId = null;
         }
     }
 
@@ -256,7 +304,7 @@ class SSLManager extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Failed to check expiry: ' . $e->getMessage(),
+                'message' => 'Failed to check expiry: '.$e->getMessage(),
             ]);
         }
     }

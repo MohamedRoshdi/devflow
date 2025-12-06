@@ -2,16 +2,19 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Carbon\Carbon;
 
 class BackupSchedule extends Model
 {
+    /** @use HasFactory<\Database\Factories\BackupScheduleFactory> */
     use HasFactory;
 
+    /** @var array<int, string> */
     protected $fillable = [
         'project_id',
         'server_id',
@@ -53,22 +56,31 @@ class BackupSchedule extends Model
     protected static function booted(): void
     {
         static::creating(function (BackupSchedule $schedule) {
-            if (!$schedule->next_run_at) {
+            if (! $schedule->next_run_at) {
                 $schedule->next_run_at = $schedule->calculateNextRun();
             }
         });
     }
 
+    /**
+     * @return BelongsTo<Project, $this>
+     */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
+    /**
+     * @return BelongsTo<Server, $this>
+     */
     public function server(): BelongsTo
     {
         return $this->belongsTo(Server::class);
     }
 
+    /**
+     * @return HasMany<DatabaseBackup, $this>
+     */
     public function databaseBackups(): HasMany
     {
         return $this->hasMany(DatabaseBackup::class, 'project_id', 'project_id')
@@ -80,7 +92,7 @@ class BackupSchedule extends Model
         $now = now();
         $time = Carbon::parse($this->time);
 
-        return match($this->frequency) {
+        return match ($this->frequency) {
             'hourly' => $now->copy()->addHour()->startOfHour(),
             'daily' => $now->copy()->setTime($time->hour, $time->minute)->addDay(),
             'weekly' => $this->calculateWeeklyNextRun($now, $time),
@@ -122,28 +134,44 @@ class BackupSchedule extends Model
         ]);
     }
 
-    public function scopeActive($query)
+    /**
+     * @param  Builder<BackupSchedule>  $query
+     * @return Builder<BackupSchedule>
+     */
+    public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);
     }
 
-    public function scopeDue($query)
+    /**
+     * @param  Builder<BackupSchedule>  $query
+     * @return Builder<BackupSchedule>
+     */
+    public function scopeDue(Builder $query): Builder
     {
         return $query->where('next_run_at', '<=', now());
     }
 
-    public function scopeForProject($query, int $projectId)
+    /**
+     * @param  Builder<BackupSchedule>  $query
+     * @return Builder<BackupSchedule>
+     */
+    public function scopeForProject(Builder $query, int $projectId): Builder
     {
         return $query->where('project_id', $projectId);
     }
 
     public function getFrequencyLabelAttribute(): string
     {
-        return match($this->frequency) {
+        $timeStr = $this->time ?? '00:00';
+        $dayOfWeek = Carbon::now()->dayOfWeek($this->day_of_week);
+        $dayName = $dayOfWeek instanceof Carbon ? $dayOfWeek->format('l') : 'Monday';
+
+        return match ($this->frequency) {
             'hourly' => 'Every Hour',
-            'daily' => 'Daily at ' . Carbon::parse($this->time)->format('H:i'),
-            'weekly' => 'Weekly on ' . Carbon::create()->dayOfWeek($this->day_of_week)->format('l') . ' at ' . Carbon::parse($this->time)->format('H:i'),
-            'monthly' => 'Monthly on day ' . $this->day_of_month . ' at ' . Carbon::parse($this->time)->format('H:i'),
+            'daily' => "Daily at {$timeStr}",
+            'weekly' => "Weekly on {$dayName} at {$timeStr}",
+            'monthly' => "Monthly on day {$this->day_of_month} at {$timeStr}",
         };
     }
 }

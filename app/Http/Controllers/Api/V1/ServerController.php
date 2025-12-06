@@ -7,9 +7,9 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StoreServerRequest;
 use App\Http\Requests\Api\UpdateServerRequest;
-use App\Http\Resources\ServerResource;
 use App\Http\Resources\ServerCollection;
 use App\Http\Resources\ServerMetricResource;
+use App\Http\Resources\ServerResource;
 use App\Models\Server;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -36,8 +36,8 @@ class ServerController extends Controller
         if ($request->has('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', "%{$request->search}%")
-                  ->orWhere('hostname', 'like', "%{$request->search}%")
-                  ->orWhere('ip_address', 'like', "%{$request->search}%");
+                    ->orWhere('hostname', 'like', "%{$request->search}%")
+                    ->orWhere('ip_address', 'like', "%{$request->search}%");
             });
         }
 
@@ -133,7 +133,7 @@ class ServerController extends Controller
 
         // Get metrics based on time range
         $range = $request->get('range', '1h'); // 1h, 24h, 7d, 30d
-        $limit = match($range) {
+        $limit = match ($range) {
             '1h' => 60,
             '24h' => 288,
             '7d' => 168,

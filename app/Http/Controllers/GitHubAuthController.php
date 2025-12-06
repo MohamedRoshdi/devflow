@@ -54,7 +54,7 @@ class GitHubAuthController extends Controller
 
         // Exchange code for token
         $code = $request->get('code');
-        if (!$code) {
+        if (! $code) {
             return redirect()->route('settings.github')
                 ->with('error', 'No authorization code received from GitHub.');
         }
@@ -109,7 +109,7 @@ class GitHubAuthController extends Controller
             ]);
 
             return redirect()->route('settings.github')
-                ->with('error', 'Failed to connect to GitHub: ' . $e->getMessage());
+                ->with('error', 'Failed to connect to GitHub: '.$e->getMessage());
         }
     }
 
@@ -118,7 +118,12 @@ class GitHubAuthController extends Controller
      */
     public function disconnect(): RedirectResponse
     {
-        $connection = GitHubConnection::activeForUser(Auth::id());
+        $userId = Auth::id();
+        if (! is_int($userId)) {
+            return redirect()->route('settings.github')->with('error', 'User not authenticated');
+        }
+
+        $connection = GitHubConnection::activeForUser($userId);
 
         if ($connection) {
             // Delete associated repositories

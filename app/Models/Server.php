@@ -6,8 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property array<int, string>|null $installed_packages
+ */
 class Server extends Model
 {
+    /** @use HasFactory<\Database\Factories\ServerFactory> */
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
@@ -87,6 +91,9 @@ class Server extends Model
         return $this->hasMany(Project::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Deployment, $this>
+     */
     public function deployments()
     {
         return $this->hasMany(Deployment::class);
@@ -187,7 +194,7 @@ class Server extends Model
 
     public function getStatusColorAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'online' => 'green',
             'offline' => 'red',
             'maintenance' => 'yellow',
@@ -234,5 +241,3 @@ class Server extends Model
         return in_array($package, $this->installed_packages ?? []);
     }
 }
-
-

@@ -4,30 +4,42 @@ declare(strict_types=1);
 
 namespace App\Livewire\CICD;
 
-use App\Models\Pipeline;
 use App\Models\PipelineStage;
 use App\Models\Project;
-use Livewire\Component;
+use Illuminate\Contracts\View\View;
 use Livewire\Attributes\On;
+use Livewire\Component;
 
 class PipelineBuilder extends Component
 {
     public ?Project $project = null;
+
+    /** @var array<string, array<int, mixed>> */
     public array $stages = [];
 
     // Modal states
     public bool $showStageModal = false;
+
     public bool $showTemplateModal = false;
 
     // Stage form fields
     public ?int $editingStageId = null;
+
     public string $stageName = '';
+
     public string $stageType = 'pre_deploy';
+
     public string $commands = '';
+
     public int $timeoutSeconds = 300;
+
     public bool $continueOnFailure = false;
+
+    /** @var array<string, string> */
     public array $envVariables = [];
+
     public string $newEnvKey = '';
+
     public string $newEnvValue = '';
 
     protected function rules(): array
@@ -49,12 +61,13 @@ class PipelineBuilder extends Component
 
     public function loadStages(): void
     {
-        if (!$this->project) {
+        if (! $this->project) {
             $this->stages = [
                 'pre_deploy' => [],
                 'deploy' => [],
                 'post_deploy' => [],
             ];
+
             return;
         }
 
@@ -91,8 +104,9 @@ class PipelineBuilder extends Component
 
     public function saveStage(): void
     {
-        if (!$this->project) {
+        if (! $this->project) {
             $this->dispatch('notification', type: 'error', message: 'Please select a project first');
+
             return;
         }
 
@@ -100,7 +114,7 @@ class PipelineBuilder extends Component
 
         $commandsArray = array_filter(
             array_map('trim', explode("\n", $this->commands)),
-            fn($cmd) => !empty($cmd)
+            fn ($cmd) => ! empty($cmd)
         );
 
         $data = [
@@ -149,7 +163,7 @@ class PipelineBuilder extends Component
     public function toggleStage(int $stageId): void
     {
         $stage = PipelineStage::findOrFail($stageId);
-        $stage->update(['enabled' => !$stage->enabled]);
+        $stage->update(['enabled' => ! $stage->enabled]);
 
         $message = $stage->enabled ? 'Stage enabled' : 'Stage disabled';
         $this->dispatch('notification', type: 'success', message: $message);
@@ -181,8 +195,9 @@ class PipelineBuilder extends Component
 
     public function applyTemplate(string $template): void
     {
-        if (!$this->project) {
+        if (! $this->project) {
             $this->dispatch('notification', type: 'error', message: 'Please select a project first');
+
             return;
         }
 
@@ -206,7 +221,7 @@ class PipelineBuilder extends Component
 
     private function getTemplateStages(string $template): array
     {
-        return match($template) {
+        return match ($template) {
             'laravel' => [
                 [
                     'name' => 'Install Composer Dependencies',
@@ -295,6 +310,10 @@ class PipelineBuilder extends Component
 
     private function reorderStagesAfterDelete(string $type, int $deletedOrder): void
     {
+        if ($this->project === null) {
+            return;
+        }
+
         PipelineStage::where('project_id', $this->project->id)
             ->where('type', $type)
             ->where('order', '>', $deletedOrder)
@@ -314,7 +333,7 @@ class PipelineBuilder extends Component
         $this->newEnvValue = '';
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.cicd.pipeline-builder');
     }

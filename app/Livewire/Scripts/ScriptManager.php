@@ -12,31 +12,47 @@ class ScriptManager extends Component
 {
     use WithPagination;
 
-    public $showCreateModal = false;
-    public $showTestModal = false;
-    public $showTemplateModal = false;
-    public $editingScript = null;
+    public bool $showCreateModal = false;
+
+    public bool $showTestModal = false;
+
+    public bool $showTemplateModal = false;
+
+    public ?DeploymentScript $editingScript = null;
 
     // Script form fields
-    public $name = '';
-    public $description = '';
-    public $type = 'deployment';
-    public $language = 'bash';
-    public $content = '';
-    public $timeout = 600;
-    public $retryOnFailure = false;
-    public $maxRetries = 3;
-    public $enabled = true;
+    public string $name = '';
+
+    public string $description = '';
+
+    public string $type = 'deployment';
+
+    public string $language = 'bash';
+
+    public string $content = '';
+
+    public int $timeout = 600;
+
+    public bool $retryOnFailure = false;
+
+    public int $maxRetries = 3;
+
+    public bool $enabled = true;
 
     // Test execution
-    public $testProject = null;
-    public $testOutput = '';
-    public $testRunning = false;
+    public ?int $testProject = null;
+
+    public string $testOutput = '';
+
+    public bool $testRunning = false;
 
     // Templates
-    public $selectedTemplate = '';
+    public string $selectedTemplate = '';
 
-    protected $rules = [
+    /**
+     * @var array<string, string>
+     */
+    protected array $rules = [
         'name' => 'required|string|max:255',
         'description' => 'nullable|string',
         'type' => 'required|in:deployment,rollback,maintenance,backup,custom',
@@ -48,7 +64,7 @@ class ScriptManager extends Component
         'enabled' => 'boolean',
     ];
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View
     {
         $scriptService = app(DeploymentScriptService::class);
 
@@ -59,13 +75,13 @@ class ScriptManager extends Component
         ]);
     }
 
-    public function createScript()
+    public function createScript(): void
     {
         $this->resetForm();
         $this->showCreateModal = true;
     }
 
-    public function editScript(DeploymentScript $script)
+    public function editScript(DeploymentScript $script): void
     {
         $this->editingScript = $script;
         $this->name = $script->name;
@@ -81,7 +97,7 @@ class ScriptManager extends Component
         $this->showCreateModal = true;
     }
 
-    public function saveScript()
+    public function saveScript(): void
     {
         $this->validate();
 
@@ -111,30 +127,30 @@ class ScriptManager extends Component
             $this->showCreateModal = false;
             $this->resetForm();
         } catch (\Exception $e) {
-            $this->dispatch('notify', type: 'error', message: 'Failed to save script: ' . $e->getMessage());
+            $this->dispatch('notify', type: 'error', message: 'Failed to save script: '.$e->getMessage());
         }
     }
 
-    public function deleteScript(DeploymentScript $script)
+    public function deleteScript(DeploymentScript $script): void
     {
         $script->delete();
         $this->dispatch('notify', type: 'success', message: 'Script deleted successfully');
     }
 
-    public function toggleScript(DeploymentScript $script)
+    public function toggleScript(DeploymentScript $script): void
     {
-        $script->update(['enabled' => !$script->enabled]);
+        $script->update(['enabled' => ! $script->enabled]);
         $this->dispatch('notify', type: 'success', message: $script->enabled ? 'Script enabled' : 'Script disabled');
     }
 
-    public function testScript(DeploymentScript $script)
+    public function testScript(DeploymentScript $script): void
     {
         $this->editingScript = $script;
         $this->testOutput = '';
         $this->showTestModal = true;
     }
 
-    public function runTest()
+    public function runTest(): void
     {
         $this->validate(['testProject' => 'required|exists:projects,id']);
 
@@ -159,17 +175,17 @@ class ScriptManager extends Component
             );
 
             $this->testOutput = $result['success']
-                ? "✅ Script executed successfully\n\n" . $result['output']
-                : "❌ Script failed\n\n" . $result['error'];
+                ? "✅ Script executed successfully\n\n".$result['output']
+                : "❌ Script failed\n\n".$result['error'];
 
         } catch (\Exception $e) {
-            $this->testOutput = "❌ Error: " . $e->getMessage();
+            $this->testOutput = '❌ Error: '.$e->getMessage();
         }
 
         $this->testRunning = false;
     }
 
-    public function useTemplate($templateKey)
+    public function useTemplate(string $templateKey): void
     {
         $scriptService = app(DeploymentScriptService::class);
         $templates = $scriptService->getAvailableTemplates();
@@ -188,9 +204,9 @@ class ScriptManager extends Component
         }
     }
 
-    public function downloadScript(DeploymentScript $script)
+    public function downloadScript(DeploymentScript $script): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        $extension = match($script->language) {
+        $extension = match ($script->language) {
             'bash', 'sh' => 'sh',
             'python' => 'py',
             'php' => 'php',
@@ -199,14 +215,14 @@ class ScriptManager extends Component
             default => 'txt',
         };
 
-        $filename = str_replace(' ', '_', strtolower($script->name)) . '.' . $extension;
+        $filename = str_replace(' ', '_', strtolower($script->name)).'.'.$extension;
 
-        return response()->streamDownload(function() use ($script) {
+        return response()->streamDownload(function () use ($script) {
             echo $script->content;
         }, $filename);
     }
 
-    private function resetForm()
+    private function resetForm(): void
     {
         $this->name = '';
         $this->description = '';

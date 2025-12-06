@@ -1,27 +1,41 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Admin;
 
-use Livewire\Component;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Process;
-use Illuminate\Support\Facades\Storage;
+use Livewire\Component;
 
 class SystemAdmin extends Component
 {
-    public $activeTab = 'overview';
-    public $backupLogs = [];
-    public $monitoringLogs = [];
-    public $optimizationLogs = [];
-    public $backupStats = [];
-    public $systemMetrics = [];
-    public $recentAlerts = [];
+    public string $activeTab = 'overview';
 
-    public function mount()
+    /** @var array<int, string> */
+    public array $backupLogs = [];
+
+    /** @var array<int, string> */
+    public array $monitoringLogs = [];
+
+    /** @var array<int, string> */
+    public array $optimizationLogs = [];
+
+    /** @var array<string, mixed> */
+    public array $backupStats = [];
+
+    /** @var array<string, mixed> */
+    public array $systemMetrics = [];
+
+    /** @var array<int, array<string, string>> */
+    public array $recentAlerts = [];
+
+    public function mount(): void
     {
         $this->loadSystemData();
     }
 
-    public function loadSystemData()
+    public function loadSystemData(): void
     {
         // Load all system data
         $this->loadBackupStats();
@@ -29,14 +43,14 @@ class SystemAdmin extends Component
         $this->loadRecentAlerts();
     }
 
-    public function loadBackupStats()
+    public function loadBackupStats(): void
     {
         try {
             // Get backup statistics via SSH
             $result = Process::timeout(10)->run('ssh root@31.220.90.121 "tail -30 /opt/backups/databases/backup.log"');
 
             if ($result->successful()) {
-                $this->backupLogs = array_filter(explode("\n", $result->output()));
+                $this->backupLogs = array_values(array_filter(explode("\n", $result->output())));
             }
 
             // Get backup sizes
@@ -54,19 +68,19 @@ class SystemAdmin extends Component
         } catch (\Exception $e) {
             $this->backupStats = [
                 'status' => 'error',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ];
         }
     }
 
-    public function loadSystemMetrics()
+    public function loadSystemMetrics(): void
     {
         try {
             // Get monitoring logs
             $result = Process::timeout(10)->run('ssh root@31.220.90.121 "tail -50 /var/log/devflow-monitor.log"');
 
             if ($result->successful()) {
-                $this->monitoringLogs = array_filter(explode("\n", $result->output()));
+                $this->monitoringLogs = array_values(array_filter(explode("\n", $result->output())));
 
                 // Parse metrics
                 $this->systemMetrics = [
@@ -81,27 +95,27 @@ class SystemAdmin extends Component
         }
     }
 
-    public function loadRecentAlerts()
+    public function loadRecentAlerts(): void
     {
         try {
             $result = Process::timeout(10)->run('ssh root@31.220.90.121 "grep -i \"WARNING\\|ERROR\\|CRITICAL\" /var/log/devflow-monitor.log | tail -10"');
 
             if ($result->successful()) {
                 $lines = array_filter(explode("\n", $result->output()));
-                $this->recentAlerts = array_map(function($line) {
+                $this->recentAlerts = array_values(array_map(function (string $line): array {
                     return [
                         'timestamp' => $this->extractTimestamp($line),
                         'level' => $this->extractLevel($line),
                         'message' => $this->extractMessage($line),
                     ];
-                }, $lines);
+                }, $lines));
             }
         } catch (\Exception $e) {
             $this->recentAlerts = [];
         }
     }
 
-    public function runBackupNow()
+    public function runBackupNow(): void
     {
         try {
             $result = Process::timeout(120)->run('ssh root@31.220.90.121 "/opt/scripts/backup-databases.sh"');
@@ -110,14 +124,14 @@ class SystemAdmin extends Component
                 session()->flash('message', 'Backup started successfully! Check logs for progress.');
                 $this->loadBackupStats();
             } else {
-                session()->flash('error', 'Failed to start backup: ' . $result->errorOutput());
+                session()->flash('error', 'Failed to start backup: '.$result->errorOutput());
             }
         } catch (\Exception $e) {
-            session()->flash('error', 'Backup failed: ' . $e->getMessage());
+            session()->flash('error', 'Backup failed: '.$e->getMessage());
         }
     }
 
-    public function runOptimizationNow()
+    public function runOptimizationNow(): void
     {
         try {
             $result = Process::timeout(300)->run('ssh root@31.220.90.121 "/opt/scripts/optimize-databases.sh"');
@@ -125,20 +139,20 @@ class SystemAdmin extends Component
             if ($result->successful()) {
                 session()->flash('message', 'Database optimization started! This may take several minutes.');
             } else {
-                session()->flash('error', 'Failed to start optimization: ' . $result->errorOutput());
+                session()->flash('error', 'Failed to start optimization: '.$result->errorOutput());
             }
         } catch (\Exception $e) {
-            session()->flash('error', 'Optimization failed: ' . $e->getMessage());
+            session()->flash('error', 'Optimization failed: '.$e->getMessage());
         }
     }
 
-    public function viewBackupLogs()
+    public function viewBackupLogs(): void
     {
         $this->activeTab = 'backup-logs';
         $this->loadBackupStats();
     }
 
-    public function viewMonitoringLogs()
+    public function viewMonitoringLogs(): void
     {
         $this->activeTab = 'monitoring-logs';
 
@@ -146,14 +160,14 @@ class SystemAdmin extends Component
             $result = Process::timeout(10)->run('ssh root@31.220.90.121 "tail -100 /var/log/devflow-monitor.log"');
 
             if ($result->successful()) {
-                $this->monitoringLogs = array_filter(explode("\n", $result->output()));
+                $this->monitoringLogs = array_values(array_filter(explode("\n", $result->output())));
             }
         } catch (\Exception $e) {
-            $this->monitoringLogs = ['Error loading logs: ' . $e->getMessage()];
+            $this->monitoringLogs = ['Error loading logs: '.$e->getMessage()];
         }
     }
 
-    public function viewOptimizationLogs()
+    public function viewOptimizationLogs(): void
     {
         $this->activeTab = 'optimization-logs';
 
@@ -161,54 +175,60 @@ class SystemAdmin extends Component
             $result = Process::timeout(10)->run('ssh root@31.220.90.121 "cat /var/log/devflow-db-optimization.log"');
 
             if ($result->successful()) {
-                $this->optimizationLogs = array_filter(explode("\n", $result->output()));
+                $this->optimizationLogs = array_values(array_filter(explode("\n", $result->output())));
             }
         } catch (\Exception $e) {
-            $this->optimizationLogs = ['Error loading logs: ' . $e->getMessage()];
+            $this->optimizationLogs = ['Error loading logs: '.$e->getMessage()];
         }
     }
 
-    private function extractLastBackupTime()
+    private function extractLastBackupTime(): string
     {
         foreach (array_reverse($this->backupLogs) as $log) {
             if (preg_match('/\[([\d-]+ [\d:]+)\]/', $log, $matches)) {
                 return $matches[1];
             }
         }
+
         return 'Unknown';
     }
 
-    private function parseMetric($output, $metricName)
+    private function parseMetric(string $output, string $metricName): string
     {
         // Simple metric parsing - can be enhanced
-        if (preg_match('/' . preg_quote($metricName, '/') . '.*?(\d+)/', $output, $matches)) {
+        if (preg_match('/'.preg_quote($metricName, '/').'.*?(\d+)/', $output, $matches)) {
             return $matches[1];
         }
+
         return 'N/A';
     }
 
-    private function extractTimestamp($line)
+    private function extractTimestamp(string $line): string
     {
         if (preg_match('/\[([\d-]+ [\d:]+)\]/', $line, $matches)) {
             return $matches[1];
         }
+
         return '';
     }
 
-    private function extractLevel($line)
+    private function extractLevel(string $line): string
     {
         if (preg_match('/\[(WARNING|ERROR|CRITICAL)\]/', $line, $matches)) {
             return $matches[1];
         }
+
         return 'INFO';
     }
 
-    private function extractMessage($line)
+    private function extractMessage(string $line): string
     {
-        return preg_replace('/^\[[\d-]+ [\d:]+\]\s*(\[[A-Z]+\])?\s*/', '', $line);
+        $result = preg_replace('/^\[[\d-]+ [\d:]+\]\s*(\[[A-Z]+\])?\s*/', '', $line);
+
+        return $result ?? '';
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.admin.system-admin');
     }

@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Models\{Project, FileBackup};
+use App\Models\FileBackup;
+use App\Models\Project;
 use App\Services\FileBackupService;
 use Illuminate\Console\Command;
 
@@ -27,30 +28,33 @@ class BackupFiles extends Command
     public function handle(): int
     {
         $type = $this->option('type');
-        $storageDisk = $this->option('storage');
+        $storageDisk = $this->option('storage') ?? 'local';
         $backupAll = $this->option('all');
 
-        if (!in_array($type, ['full', 'incremental'])) {
+        if (! in_array($type, ['full', 'incremental'])) {
             $this->error('Invalid backup type. Use "full" or "incremental".');
+
             return self::FAILURE;
         }
 
         // Get projects to backup
         if ($backupAll) {
             $projects = Project::whereHas('server')->get();
-            $this->info("Backing up all " . $projects->count() . " projects...");
+            $this->info('Backing up all '.$projects->count().' projects...');
         } else {
             $projectSlug = $this->argument('project');
 
-            if (!$projectSlug) {
+            if (! $projectSlug) {
                 $this->error('Please provide a project slug or use --all flag.');
+
                 return self::FAILURE;
             }
 
             $project = Project::where('slug', $projectSlug)->first();
 
-            if (!$project) {
+            if (! $project) {
                 $this->error("Project '{$projectSlug}' not found.");
+
                 return self::FAILURE;
             }
 
@@ -71,7 +75,7 @@ class BackupFiles extends Command
                 }
 
                 if ($backup->isCompleted()) {
-                    $this->info("Backup completed successfully!");
+                    $this->info('Backup completed successfully!');
                     $this->table(
                         ['Property', 'Value'],
                         [
@@ -81,17 +85,17 @@ class BackupFiles extends Command
                             ['Files', number_format($backup->files_count)],
                             ['Duration', $backup->formatted_duration],
                             ['Storage', $backup->storage_disk],
-                            ['Checksum', substr($backup->checksum, 0, 16) . '...'],
+                            ['Checksum', substr($backup->checksum, 0, 16).'...'],
                         ]
                     );
                     $successCount++;
                 } else {
-                    $this->error("Backup failed: " . ($backup->error_message ?? 'Unknown error'));
+                    $this->error('Backup failed: '.($backup->error_message ?? 'Unknown error'));
                     $failedCount++;
                 }
 
             } catch (\Exception $e) {
-                $this->error("Failed to backup project {$project->name}: " . $e->getMessage());
+                $this->error("Failed to backup project {$project->name}: ".$e->getMessage());
                 $failedCount++;
             }
 
@@ -102,7 +106,7 @@ class BackupFiles extends Command
 
         // Summary
         $this->newLine();
-        $this->info("Backup Summary:");
+        $this->info('Backup Summary:');
         $this->info("  Successful: {$successCount}");
         if ($failedCount > 0) {
             $this->error("  Failed: {$failedCount}");
@@ -139,12 +143,12 @@ class BackupFiles extends Command
         if ($baseBackupId) {
             $baseBackup = FileBackup::find($baseBackupId);
 
-            if (!$baseBackup) {
+            if (! $baseBackup) {
                 throw new \RuntimeException("Base backup with ID {$baseBackupId} not found.");
             }
 
             if ($baseBackup->project_id !== $project->id) {
-                throw new \RuntimeException("Base backup does not belong to this project.");
+                throw new \RuntimeException('Base backup does not belong to this project.');
             }
         } else {
             // Find latest full backup for this project
@@ -154,11 +158,12 @@ class BackupFiles extends Command
                 ->latest()
                 ->first();
 
-            if (!$baseBackup) {
-                throw new \RuntimeException("No completed full backup found. Please create a full backup first.");
+            if (! $baseBackup) {
+                throw new \RuntimeException('No completed full backup found. Please create a full backup first.');
             }
 
-            $this->info("Using base backup: {$baseBackup->id} (created {$baseBackup->created_at->diffForHumans()})");
+            $createdAt = $baseBackup->created_at?->diffForHumans() ?? 'unknown time';
+            $this->info("Using base backup: {$baseBackup->id} (created {$createdAt})");
         }
 
         $bar = $this->output->createProgressBar(4);

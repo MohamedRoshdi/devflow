@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Livewire\Admin;
 
-use App\Models\{User, AuditLog};
+use App\Models\AuditLog;
+use App\Models\User;
 use App\Services\AuditService;
-use Livewire\Component;
-use Livewire\Attributes\{Computed, Url};
-use Livewire\WithPagination;
-use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Response;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Url;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class AuditLogViewer extends Component
 {
@@ -104,7 +106,7 @@ class AuditLogViewer extends Component
                 ->distinct()
                 ->orderBy('auditable_type')
                 ->pluck('auditable_type')
-                ->map(fn($type) => class_basename($type))
+                ->map(fn ($type) => class_basename($type))
                 ->unique();
         });
     }
@@ -140,7 +142,7 @@ class AuditLogViewer extends Component
         $this->resetPage();
     }
 
-    public function exportCsv(): Response
+    public function exportCsv(): \Illuminate\Http\Response
     {
         $filters = array_filter([
             'user_id' => $this->userId,
@@ -154,7 +156,7 @@ class AuditLogViewer extends Component
         ]);
 
         $csv = $this->auditService->exportToCsv($filters);
-        $filename = 'audit-logs-' . now()->format('Y-m-d-His') . '.csv';
+        $filename = 'audit-logs-'.now()->format('Y-m-d-His').'.csv';
 
         return Response::make($csv, 200, [
             'Content-Type' => 'text/csv',

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 class GitHubService
 {
     private const GITHUB_API_URL = 'https://api.github.com';
+
     private const GITHUB_OAUTH_URL = 'https://github.com/login/oauth';
 
     /**
@@ -26,7 +27,7 @@ class GitHubService
             'state' => $state,
         ]);
 
-        return self::GITHUB_OAUTH_URL . "/authorize?{$params}";
+        return self::GITHUB_OAUTH_URL."/authorize?{$params}";
     }
 
     /**
@@ -34,7 +35,7 @@ class GitHubService
      */
     public function handleCallback(string $code): array
     {
-        $response = Http::asForm()->post(self::GITHUB_OAUTH_URL . '/access_token', [
+        $response = Http::asForm()->post(self::GITHUB_OAUTH_URL.'/access_token', [
             'client_id' => config('services.github.client_id'),
             'client_secret' => config('services.github.client_secret'),
             'code' => $code,
@@ -43,7 +44,7 @@ class GitHubService
 
         parse_str($response->body(), $result);
 
-        if (!isset($result['access_token'])) {
+        if (! isset($result['access_token'])) {
             throw new \Exception('Failed to obtain access token from GitHub');
         }
 
@@ -63,7 +64,7 @@ class GitHubService
             throw new \Exception('No refresh token available');
         }
 
-        $response = Http::asForm()->post(self::GITHUB_OAUTH_URL . '/access_token', [
+        $response = Http::asForm()->post(self::GITHUB_OAUTH_URL.'/access_token', [
             'client_id' => config('services.github.client_id'),
             'client_secret' => config('services.github.client_secret'),
             'grant_type' => 'refresh_token',
@@ -208,7 +209,7 @@ class GitHubService
             $connection->refresh();
         }
 
-        $url = self::GITHUB_API_URL . $endpoint;
+        $url = self::GITHUB_API_URL.$endpoint;
 
         $request = Http::withToken($connection->access_token)
             ->withHeaders([
@@ -217,7 +218,7 @@ class GitHubService
             ]);
 
         try {
-            $response = match(strtoupper($method)) {
+            $response = match (strtoupper($method)) {
                 'GET' => $request->get($url, $params),
                 'POST' => $request->post($url, $params),
                 'PUT' => $request->put($url, $params),
@@ -226,7 +227,7 @@ class GitHubService
                 default => throw new \InvalidArgumentException("Unsupported HTTP method: {$method}"),
             };
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 Log::error('GitHub API request failed', [
                     'endpoint' => $endpoint,
                     'status' => $response->status(),

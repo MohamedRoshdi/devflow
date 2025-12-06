@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Notifications;
 
 use App\Models\DeploymentApproval;
@@ -16,42 +18,51 @@ class DeploymentApprovalRequested extends Notification implements ShouldQueue
         public DeploymentApproval $approval
     ) {}
 
-    public function via($notifiable): array
+    /**
+     * @return array<int, string>
+     */
+    public function via(mixed $notifiable): array
     {
         return ['mail', 'database'];
     }
 
-    public function toMail($notifiable): MailMessage
+    public function toMail(mixed $notifiable): MailMessage
     {
         $deployment = $this->approval->deployment;
         $project = $deployment->project;
+        $projectName = $project?->name ?? 'Unknown Project';
 
         return (new MailMessage)
-            ->subject("Deployment Approval Required: {$project->name}")
+            ->subject("Deployment Approval Required: {$projectName}")
             ->greeting("Hello {$notifiable->name}!")
-            ->line("A deployment approval has been requested for **{$project->name}**.")
+            ->line("A deployment approval has been requested for **{$projectName}**.")
             ->line("**Branch:** {$deployment->branch}")
             ->line("**Requested by:** {$this->approval->requester->name}")
-            ->line("**Commit:** " . substr($deployment->commit_hash ?? '', 0, 7))
+            ->line('**Commit:** '.substr($deployment->commit_hash ?? '', 0, 7))
             ->line("**Message:** {$deployment->commit_message}")
             ->action('Review Deployment', url("/deployments/{$deployment->id}/approvals"))
             ->line('Please review and approve or reject this deployment.');
     }
 
-    public function toArray($notifiable): array
+    /**
+     * @return array<string, mixed>
+     */
+    public function toArray(mixed $notifiable): array
     {
         $deployment = $this->approval->deployment;
         $project = $deployment->project;
+        $projectId = $project?->id ?? 0;
+        $projectName = $project?->name ?? 'Unknown Project';
 
         return [
             'type' => 'deployment_approval_requested',
             'approval_id' => $this->approval->id,
             'deployment_id' => $deployment->id,
-            'project_id' => $project->id,
-            'project_name' => $project->name,
+            'project_id' => $projectId,
+            'project_name' => $projectName,
             'branch' => $deployment->branch,
             'requester_name' => $this->approval->requester->name,
-            'message' => "Deployment approval requested for {$project->name}",
+            'message' => "Deployment approval requested for {$projectName}",
         ];
     }
 }

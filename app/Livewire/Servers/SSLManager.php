@@ -5,9 +5,10 @@ namespace App\Livewire\Servers;
 use App\Models\Server;
 use App\Models\SSLCertificate;
 use App\Services\SSLService;
-use Livewire\Component;
-use Livewire\Attributes\{Computed, Locked, On};
 use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Locked;
+use Livewire\Component;
 
 class SSLManager extends Component
 {
@@ -15,9 +16,13 @@ class SSLManager extends Component
     public Server $server;
 
     public bool $showIssueModal = false;
+
     public string $newDomain = '';
+
     public string $newEmail = '';
+
     public bool $issuingCertificate = false;
+
     public bool $installingCertbot = false;
 
     public function mount(Server $server): void
@@ -42,8 +47,8 @@ class SSLManager extends Component
         return [
             'total' => $certificates->count(),
             'active' => $certificates->where('status', 'issued')->count(),
-            'expiring_soon' => $certificates->filter(fn($cert) => $cert->isExpiringSoon(30))->count(),
-            'expired' => $certificates->filter(fn($cert) => $cert->isExpired())->count(),
+            'expiring_soon' => $certificates->filter(fn ($cert) => $cert->isExpiringSoon(30))->count(),
+            'expired' => $certificates->filter(fn ($cert) => $cert->isExpired())->count(),
         ];
     }
 
@@ -51,6 +56,7 @@ class SSLManager extends Component
     public function certbotInstalled()
     {
         $sslService = app(SSLService::class);
+
         return $sslService->checkCertbotInstalled($this->server);
     }
 
@@ -86,7 +92,7 @@ class SSLManager extends Component
                 'server_id' => $this->server->id,
                 'error' => $e->getMessage(),
             ]);
-            session()->flash('error', 'Failed to install certbot: ' . $e->getMessage());
+            session()->flash('error', 'Failed to install certbot: '.$e->getMessage());
         } finally {
             $this->installingCertbot = false;
         }
@@ -118,7 +124,7 @@ class SSLManager extends Component
                 'domain' => $this->newDomain,
                 'error' => $e->getMessage(),
             ]);
-            session()->flash('error', 'Failed to issue certificate: ' . $e->getMessage());
+            session()->flash('error', 'Failed to issue certificate: '.$e->getMessage());
         } finally {
             $this->issuingCertificate = false;
         }
@@ -131,6 +137,7 @@ class SSLManager extends Component
 
             if ($certificate->server_id !== $this->server->id) {
                 session()->flash('error', 'Certificate does not belong to this server');
+
                 return;
             }
 
@@ -148,7 +155,7 @@ class SSLManager extends Component
                 'certificate_id' => $certificateId,
                 'error' => $e->getMessage(),
             ]);
-            session()->flash('error', 'Failed to renew certificate: ' . $e->getMessage());
+            session()->flash('error', 'Failed to renew certificate: '.$e->getMessage());
         }
     }
 
@@ -159,6 +166,7 @@ class SSLManager extends Component
 
             if ($certificate->server_id !== $this->server->id) {
                 session()->flash('error', 'Certificate does not belong to this server');
+
                 return;
             }
 
@@ -176,7 +184,7 @@ class SSLManager extends Component
                 'certificate_id' => $certificateId,
                 'error' => $e->getMessage(),
             ]);
-            session()->flash('error', 'Failed to revoke certificate: ' . $e->getMessage());
+            session()->flash('error', 'Failed to revoke certificate: '.$e->getMessage());
         }
     }
 
@@ -187,6 +195,7 @@ class SSLManager extends Component
 
             if ($certificate->server_id !== $this->server->id) {
                 session()->flash('error', 'Certificate does not belong to this server');
+
                 return;
             }
 
@@ -199,7 +208,7 @@ class SSLManager extends Component
                 'certificate_id' => $certificateId,
                 'error' => $e->getMessage(),
             ]);
-            session()->flash('error', 'Failed to delete certificate: ' . $e->getMessage());
+            session()->flash('error', 'Failed to delete certificate: '.$e->getMessage());
         }
     }
 
@@ -210,11 +219,12 @@ class SSLManager extends Component
 
             if ($certificate->server_id !== $this->server->id) {
                 session()->flash('error', 'Certificate does not belong to this server');
+
                 return;
             }
 
             $certificate->update([
-                'auto_renew' => !$certificate->auto_renew,
+                'auto_renew' => ! $certificate->auto_renew,
             ]);
 
             $status = $certificate->auto_renew ? 'enabled' : 'disabled';
@@ -225,7 +235,7 @@ class SSLManager extends Component
                 'certificate_id' => $certificateId,
                 'error' => $e->getMessage(),
             ]);
-            session()->flash('error', 'Failed to toggle auto-renewal: ' . $e->getMessage());
+            session()->flash('error', 'Failed to toggle auto-renewal: '.$e->getMessage());
         }
     }
 
@@ -245,7 +255,7 @@ class SSLManager extends Component
                 'server_id' => $this->server->id,
                 'error' => $e->getMessage(),
             ]);
-            session()->flash('error', 'Failed to setup auto-renewal: ' . $e->getMessage());
+            session()->flash('error', 'Failed to setup auto-renewal: '.$e->getMessage());
         }
     }
 

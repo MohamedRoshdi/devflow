@@ -11,6 +11,7 @@ use Illuminate\Console\Command;
 class SyncLogsCommand extends Command
 {
     protected $signature = 'logs:sync {--server= : Specific server ID to sync}';
+
     protected $description = 'Sync logs from all active log sources';
 
     public function __construct(
@@ -29,6 +30,7 @@ class SyncLogsCommand extends Command
 
         if ($servers->isEmpty()) {
             $this->error('No servers found for synchronization');
+
             return self::FAILURE;
         }
 

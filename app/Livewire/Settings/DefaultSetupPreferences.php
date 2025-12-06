@@ -10,15 +10,23 @@ use Livewire\Component;
 class DefaultSetupPreferences extends Component
 {
     public bool $defaultEnableSsl = true;
+
     public bool $defaultEnableWebhooks = true;
+
     public bool $defaultEnableHealthChecks = true;
+
     public bool $defaultEnableBackups = true;
+
     public bool $defaultEnableNotifications = true;
+
     public bool $defaultEnableAutoDeploy = false;
+
     public string $theme = 'dark';
+
     public bool $showWizardTips = true;
 
     public bool $isSaving = false;
+
     public bool $saveSuccess = false;
 
     public function mount(): void
@@ -63,7 +71,7 @@ class DefaultSetupPreferences extends Component
             $this->js('setTimeout(() => { window.location.reload(); }, 1000);');
         } catch (\Exception $e) {
             $this->isSaving = false;
-            $this->dispatch('notification', type: 'error', message: 'Failed to save preferences: ' . $e->getMessage());
+            $this->dispatch('notification', type: 'error', message: 'Failed to save preferences: '.$e->getMessage());
         }
     }
 

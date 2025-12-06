@@ -15,6 +15,7 @@ class ServerMetricsUpdated implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public Server $server;
+
     public ServerMetric $metric;
 
     /**
@@ -34,7 +35,7 @@ class ServerMetricsUpdated implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('server-metrics.' . $this->server->id),
+            new Channel('server-metrics.'.$this->server->id),
         ];
     }
 

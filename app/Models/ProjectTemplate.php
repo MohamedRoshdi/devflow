@@ -2,11 +2,44 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $slug
+ * @property string|null $description
+ * @property string $framework
+ * @property string|null $icon
+ * @property string|null $color
+ * @property bool $is_system
+ * @property bool $is_active
+ * @property int|null $user_id
+ * @property string $default_branch
+ * @property string|null $php_version
+ * @property string|null $node_version
+ * @property array<int, string>|null $install_commands
+ * @property array<int, string>|null $build_commands
+ * @property array<int, string>|null $post_deploy_commands
+ * @property array<string, mixed>|null $env_template
+ * @property string|null $docker_compose_template
+ * @property string|null $dockerfile_template
+ * @property string|null $health_check_path
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read User|null $user
+ * @property-read array<string, array<int, string>> $formatted_commands
+ *
+ * @method static Builder<static> active()
+ * @method static Builder<static> system()
+ * @method static Builder<static> custom()
+ * @method static Builder<static> byFramework(string $framework)
+ */
 class ProjectTemplate extends Model
 {
+    /** @var array<int, string> */
     protected $fillable = [
         'name',
         'slug',
@@ -29,6 +62,9 @@ class ProjectTemplate extends Model
         'health_check_path',
     ];
 
+    /**
+     * @var array<string, string>
+     */
     protected $casts = [
         'is_system' => 'boolean',
         'is_active' => 'boolean',
@@ -38,36 +74,58 @@ class ProjectTemplate extends Model
         'env_template' => 'array',
     ];
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function scopeActive($query)
+    /**
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);
     }
 
-    public function scopeSystem($query)
+    /**
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeSystem(Builder $query): Builder
     {
         return $query->where('is_system', true);
     }
 
-    public function scopeCustom($query)
+    /**
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeCustom(Builder $query): Builder
     {
         return $query->where('is_system', false);
     }
 
-    public function scopeByFramework($query, string $framework)
+    /**
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeByFramework(Builder $query, string $framework): Builder
     {
         return $query->where('framework', $framework);
     }
 
     public function canDelete(): bool
     {
-        return !$this->is_system;
+        return ! $this->is_system;
     }
 
+    /**
+     * @return array<string, array<int, string>>
+     */
     public function getFormattedCommandsAttribute(): array
     {
         $commands = [];

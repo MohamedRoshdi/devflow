@@ -7,10 +7,45 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int $pipeline_id
+ * @property int $project_id
+ * @property int|null $deployment_id
+ * @property int $run_number
+ * @property string $status
+ * @property string $triggered_by
+ * @property array<string, mixed>|null $trigger_data
+ * @property string|null $branch
+ * @property string|null $commit_sha
+ * @property \Illuminate\Support\Carbon|null $started_at
+ * @property \Illuminate\Support\Carbon|null $finished_at
+ * @property array<string, mixed>|null $logs
+ * @property array<string, mixed>|null $artifacts
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Pipeline $pipeline
+ * @property-read Project $project
+ * @property-read Deployment|null $deployment
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, PipelineStageRun> $stageRuns
+ * @property-read int|null $stageRuns_count
+ * @property-read int|null $duration
+ * @property-read string $formatted_duration
+ * @property-read string $status_color
+ * @property-read string $status_icon
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|PipelineRun newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|PipelineRun newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|PipelineRun query()
+ *
+ * @mixin \Illuminate\Database\Eloquent\Builder<PipelineRun>
+ */
 class PipelineRun extends Model
 {
+    /** @use HasFactory<\Database\Factories\PipelineRunFactory> */
     use HasFactory;
 
+    /** @var array<int, string> */
     protected $fillable = [
         'pipeline_id',
         'project_id',
@@ -27,6 +62,7 @@ class PipelineRun extends Model
         'artifacts',
     ];
 
+    /** @var array<string, string> */
     protected $casts = [
         'logs' => 'array',
         'artifacts' => 'array',
@@ -35,21 +71,33 @@ class PipelineRun extends Model
         'finished_at' => 'datetime',
     ];
 
+    /**
+     * @return BelongsTo<Pipeline, PipelineRun>
+     */
     public function pipeline(): BelongsTo
     {
         return $this->belongsTo(Pipeline::class);
     }
 
+    /**
+     * @return BelongsTo<Project, PipelineRun>
+     */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
+    /**
+     * @return BelongsTo<Deployment, PipelineRun>
+     */
     public function deployment(): BelongsTo
     {
         return $this->belongsTo(Deployment::class);
     }
 
+    /**
+     * @return HasMany<PipelineStageRun, PipelineRun>
+     */
     public function stageRuns(): HasMany
     {
         return $this->hasMany(PipelineStageRun::class)->orderBy('created_at', 'asc');
@@ -104,7 +152,7 @@ class PipelineRun extends Model
      */
     public function duration(): ?int
     {
-        if (!$this->started_at || !$this->finished_at) {
+        if (! $this->started_at || ! $this->finished_at) {
             return null;
         }
 
@@ -114,7 +162,7 @@ class PipelineRun extends Model
     /**
      * Get duration attribute (for backwards compatibility)
      */
-    public function getDurationAttribute()
+    public function getDurationAttribute(): ?int
     {
         return $this->duration();
     }
@@ -126,7 +174,7 @@ class PipelineRun extends Model
     {
         $seconds = $this->duration();
 
-        if (!$seconds) {
+        if (! $seconds) {
             return '-';
         }
 
@@ -173,7 +221,7 @@ class PipelineRun extends Model
      */
     public function getStatusColorAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'success' => 'green',
             'failed' => 'red',
             'running' => 'yellow',
@@ -188,7 +236,7 @@ class PipelineRun extends Model
      */
     public function getStatusIconAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'success' => 'check-circle',
             'failed' => 'x-circle',
             'running' => 'arrow-path',

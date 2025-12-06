@@ -2,17 +2,18 @@
 
 namespace App\Livewire\Projects;
 
-use Livewire\Component;
 use App\Models\Project;
-use Livewire\WithPagination;
 use Livewire\Attributes\On;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class ProjectList extends Component
 {
     use WithPagination;
 
-    public $search = '';
-    public $statusFilter = '';
+    public string $search = '';
+
+    public string $statusFilter = '';
 
     #[On('project-created')]
     public function refreshProjects()
@@ -20,7 +21,7 @@ class ProjectList extends Component
         $this->resetPage();
     }
 
-    public function deleteProject($projectId)
+    public function deleteProject(int $projectId): void
     {
         $project = Project::find($projectId);
 
@@ -34,15 +35,15 @@ class ProjectList extends Component
     {
         // Optimized: Eager load relationships and select specific columns to reduce memory
         $projects = Project::with([
-                'server:id,name,status',
-                'domains:id,project_id,domain',
-                'user:id,name'
-            ])
+            'server:id,name,status',
+            'domains:id,project_id,domain',
+            'user:id,name',
+        ])
             ->select(['id', 'name', 'slug', 'status', 'server_id', 'user_id', 'framework', 'created_at', 'updated_at'])
             ->when($this->search, function ($query) {
-                $query->where(function($q) {
+                $query->where(function ($q) {
                     $q->where('name', 'like', '%'.$this->search.'%')
-                      ->orWhere('slug', 'like', '%'.$this->search.'%');
+                        ->orWhere('slug', 'like', '%'.$this->search.'%');
                 });
             })
             ->when($this->statusFilter, function ($query) {
@@ -56,4 +57,3 @@ class ProjectList extends Component
         ]);
     }
 }
-

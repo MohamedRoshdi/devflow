@@ -22,7 +22,7 @@ class ServerFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'name' => fake()->words(2, true) . ' Server',
+            'name' => fake()->words(2, true).' Server',
             'hostname' => fake()->optional()->domainName(),
             'ip_address' => fake()->ipv4(),
             'port' => 22,

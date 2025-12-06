@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Security;
 
-use App\Models\Server;
-use App\Models\SecurityScan;
 use App\Models\SecurityEvent;
+use App\Models\SecurityScan;
+use App\Models\Server;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Process\Process;
@@ -70,12 +70,18 @@ class SecurityScoreService
             ]);
         }
 
-        return $scan->fresh();
+        $freshScan = $scan->fresh();
+        if ($freshScan === null) {
+            throw new \RuntimeException('Failed to refresh scan');
+        }
+
+return $freshScan;
     }
 
     public function calculateScore(Server $server): int
     {
         $findings = $this->collectFindings($server);
+
         return $this->calculateScoreFromFindings($findings);
     }
 
@@ -103,12 +109,12 @@ class SecurityScoreService
             'root_login' => [
                 'score' => $findings['ssh']['root_login_score'] ?? 0,
                 'max' => 15,
-                'disabled' => !($findings['ssh']['root_login_enabled'] ?? true),
+                'disabled' => ! ($findings['ssh']['root_login_enabled'] ?? true),
             ],
             'password_auth' => [
                 'score' => $findings['ssh']['password_auth_score'] ?? 0,
                 'max' => 15,
-                'disabled' => !($findings['ssh']['password_auth_enabled'] ?? true),
+                'disabled' => ! ($findings['ssh']['password_auth_enabled'] ?? true),
             ],
             'open_ports' => [
                 'score' => $findings['open_ports']['score'] ?? 0,
@@ -150,8 +156,8 @@ class SecurityScoreService
         if ($sshConfig['success']) {
             $config = $sshConfig['config'];
             $portScore = ($config['port'] !== 22) ? 10 : 0;
-            $rootLoginScore = (!$config['root_login_enabled']) ? 15 : 0;
-            $passwordAuthScore = (!$config['password_auth_enabled']) ? 15 : 0;
+            $rootLoginScore = (! $config['root_login_enabled']) ? 15 : 0;
+            $passwordAuthScore = (! $config['password_auth_enabled']) ? 15 : 0;
 
             $findings['ssh'] = [
                 'port' => $config['port'],
@@ -218,7 +224,7 @@ class SecurityScoreService
         // Updates (15 points)
         $score += $findings['updates']['score'] ?? 0;
 
-        return min(100, max(0, $score));
+        return (int) min(100, max(0, $score));
     }
 
     protected function generateRecommendations(array $findings): array
@@ -226,7 +232,7 @@ class SecurityScoreService
         $recommendations = [];
 
         // Firewall recommendations
-        if (!($findings['firewall']['installed'] ?? false)) {
+        if (! ($findings['firewall']['installed'] ?? false)) {
             $recommendations[] = [
                 'priority' => 'high',
                 'category' => 'firewall',
@@ -234,7 +240,7 @@ class SecurityScoreService
                 'description' => 'UFW (Uncomplicated Firewall) is not installed. Install it to protect your server from unauthorized access.',
                 'command' => 'sudo apt-get install -y ufw',
             ];
-        } elseif (!($findings['firewall']['enabled'] ?? false)) {
+        } elseif (! ($findings['firewall']['enabled'] ?? false)) {
             $recommendations[] = [
                 'priority' => 'high',
                 'category' => 'firewall',
@@ -245,7 +251,7 @@ class SecurityScoreService
         }
 
         // Fail2ban recommendations
-        if (!($findings['fail2ban']['installed'] ?? false)) {
+        if (! ($findings['fail2ban']['installed'] ?? false)) {
             $recommendations[] = [
                 'priority' => 'medium',
                 'category' => 'fail2ban',
@@ -253,7 +259,7 @@ class SecurityScoreService
                 'description' => 'Fail2ban protects against brute-force attacks by banning IPs with too many failed login attempts.',
                 'command' => 'sudo apt-get install -y fail2ban',
             ];
-        } elseif (!($findings['fail2ban']['enabled'] ?? false)) {
+        } elseif (! ($findings['fail2ban']['enabled'] ?? false)) {
             $recommendations[] = [
                 'priority' => 'medium',
                 'category' => 'fail2ban',
@@ -311,13 +317,13 @@ class SecurityScoreService
             $command = "sudo ss -tulpn 2>/dev/null | grep LISTEN | awk '{print \$5}' | sed 's/.*://' | sort -nu";
             $result = $this->executeCommand($server, $command);
 
-            if (!$result['success']) {
+            if (! $result['success']) {
                 return [];
             }
 
             $ports = array_filter(
                 array_map('trim', explode("\n", $result['output'])),
-                fn($port) => is_numeric($port)
+                fn ($port) => is_numeric($port)
             );
 
             return array_values(array_map('intval', $ports));
@@ -329,6 +335,7 @@ class SecurityScoreService
     protected function countCommonPorts(array $ports): int
     {
         $commonPorts = [22, 80, 443, 3306, 5432, 6379, 27017];
+
         return count(array_intersect($ports, $commonPorts));
     }
 
@@ -357,11 +364,11 @@ class SecurityScoreService
             $this->executeCommand($server, "{$sudoPrefix}apt-get update -qq");
 
             // Count security updates
-            $result = $this->executeCommand($server, "apt list --upgradable 2>/dev/null | grep -i security | wc -l");
+            $result = $this->executeCommand($server, 'apt list --upgradable 2>/dev/null | grep -i security | wc -l');
             $securityCount = (int) trim($result['output']);
 
             // Count total updates
-            $result = $this->executeCommand($server, "apt list --upgradable 2>/dev/null | grep -v Listing | wc -l");
+            $result = $this->executeCommand($server, 'apt list --upgradable 2>/dev/null | grep -v Listing | wc -l');
             $totalCount = (int) trim($result['output']);
 
             return [
@@ -437,6 +444,7 @@ class SecurityScoreService
         }
 
         $serverIP = gethostbyname(gethostname());
+
         return $ip === $serverIP;
     }
 
@@ -449,7 +457,7 @@ class SecurityScoreService
             '-o UserKnownHostsFile=/dev/null',
             '-o ConnectTimeout=10',
             '-o LogLevel=ERROR',
-            '-p ' . $port,
+            '-p '.$port,
         ];
 
         // Escape double quotes and backslashes for the remote command
@@ -474,7 +482,7 @@ class SecurityScoreService
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
             file_put_contents($keyFile, $server->ssh_key);
             chmod($keyFile, 0600);
-            $sshOptions[] = '-i ' . $keyFile;
+            $sshOptions[] = '-i '.$keyFile;
         }
 
         return sprintf(
@@ -496,6 +504,7 @@ class SecurityScoreService
 
         if ($server->ssh_password) {
             $escapedPassword = str_replace("'", "'\\''", $server->ssh_password);
+
             return "echo '{$escapedPassword}' | sudo -S ";
         }
 

@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
+use App\Events\DeploymentStatusUpdated;
 use App\Models\Deployment;
 use App\Models\Project;
 use App\Models\Server;
-use App\Events\DeploymentStatusUpdated;
-use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Process;
 
 class RollbackService
 {
@@ -24,14 +24,14 @@ class RollbackService
         $sshOptions = [
             '-o StrictHostKeyChecking=no',
             '-o UserKnownHostsFile=/dev/null',
-            '-p ' . $server->port,
+            '-p '.$server->port,
         ];
 
         if ($server->ssh_key) {
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
             file_put_contents($keyFile, $server->ssh_key);
             chmod($keyFile, 0600);
-            $sshOptions[] = '-i ' . $keyFile;
+            $sshOptions[] = '-i '.$keyFile;
         }
 
         $escapedCommand = str_replace("'", "'\\''", $remoteCommand);
@@ -70,6 +70,10 @@ class RollbackService
         try {
             $project = $targetDeployment->project;
 
+            if ($project === null) {
+                throw new \RuntimeException('Project not found for deployment');
+            }
+
             // Create new deployment record for rollback
             $rollbackDeployment = Deployment::create([
                 'project_id' => $project->id,
@@ -77,7 +81,7 @@ class RollbackService
                 'server_id' => $project->server_id,
                 'branch' => $targetDeployment->branch,
                 'commit_hash' => $targetDeployment->commit_hash,
-                'commit_message' => "Rollback to: " . $targetDeployment->commit_message,
+                'commit_message' => 'Rollback to: '.$targetDeployment->commit_message,
                 'status' => 'running',
                 'triggered_by' => 'rollback',
                 'rollback_deployment_id' => $targetDeployment->id,
@@ -96,8 +100,8 @@ class RollbackService
 
             // Step 2: Checkout the target commit
             $checkoutResult = $this->checkoutCommit($project, $targetDeployment->commit_hash);
-            if (!$checkoutResult['success']) {
-                throw new \Exception("Failed to checkout commit: " . $checkoutResult['error']);
+            if (! $checkoutResult['success']) {
+                throw new \Exception('Failed to checkout commit: '.$checkoutResult['error']);
             }
 
             // Step 3: Restore environment if available
@@ -107,14 +111,14 @@ class RollbackService
 
             // Step 4: Rebuild and restart containers
             $dockerResult = $this->dockerService->deployWithCompose($project);
-            if (!$dockerResult['success']) {
-                throw new \Exception("Failed to rebuild Docker containers: " . ($dockerResult['error'] ?? 'Unknown error'));
+            if (! $dockerResult['success']) {
+                throw new \Exception('Failed to rebuild Docker containers: '.($dockerResult['error'] ?? 'Unknown error'));
             }
 
             // Step 5: Run post-rollback checks
             $healthCheck = $this->performHealthCheck($project);
-            if (!$healthCheck['healthy']) {
-                throw new \Exception("Health check failed after rollback");
+            if (! $healthCheck['healthy']) {
+                throw new \Exception('Health check failed after rollback');
             }
 
             // Update deployment status
@@ -134,11 +138,11 @@ class RollbackService
             return [
                 'success' => true,
                 'deployment' => $rollbackDeployment,
-                'message' => 'Rollback completed successfully'
+                'message' => 'Rollback completed successfully',
             ];
 
         } catch (\Exception $e) {
-            Log::error("Rollback failed: " . $e->getMessage());
+            Log::error('Rollback failed: '.$e->getMessage());
 
             if (isset($rollbackDeployment)) {
                 $rollbackDeployment->update([
@@ -149,14 +153,14 @@ class RollbackService
 
                 broadcast(new DeploymentStatusUpdated(
                     $rollbackDeployment,
-                    "Rollback failed: " . $e->getMessage(),
+                    'Rollback failed: '.$e->getMessage(),
                     'error'
                 ))->toOthers();
             }
 
             return [
                 'success' => false,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ];
         }
     }
@@ -195,20 +199,20 @@ class RollbackService
 
             // Fetch latest to ensure we have the commit
             $fetchResult = $this->executeOnServer($project, "cd {$projectPath} && git fetch origin {$project->branch} 2>&1");
-            if (!$fetchResult['success']) {
-                Log::warning("Git fetch warning: " . $fetchResult['error']);
+            if (! $fetchResult['success']) {
+                Log::warning('Git fetch warning: '.$fetchResult['error']);
             }
 
             // Ensure we're on the correct branch
             $result = $this->executeOnServer($project, "cd {$projectPath} && git checkout {$project->branch} 2>&1");
-            if (!$result['success']) {
-                throw new \Exception("Failed to checkout branch: " . $result['error']);
+            if (! $result['success']) {
+                throw new \Exception('Failed to checkout branch: '.$result['error']);
             }
 
             // Reset to the target commit
             $result = $this->executeOnServer($project, "cd {$projectPath} && git reset --hard {$commitHash} 2>&1");
-            if (!$result['success']) {
-                throw new \Exception("Failed to reset to commit: " . $result['error']);
+            if (! $result['success']) {
+                throw new \Exception('Failed to reset to commit: '.$result['error']);
             }
 
             Log::info("Checked out commit {$commitHash} for {$project->slug}");
@@ -226,7 +230,7 @@ class RollbackService
     {
         $projectPath = "/var/www/{$project->slug}";
 
-        $envContent = "";
+        $envContent = '';
         foreach ($environmentSnapshot as $key => $value) {
             // Escape special characters for shell
             $escapedValue = str_replace(["'", '"', '$', '`', '\\'], ["'\\''", '\\"', '\\$', '\\`', '\\\\'], $value);
@@ -303,7 +307,12 @@ class RollbackService
     private function canRollback(Deployment $deployment): bool
     {
         // Can't rollback to the current deployment
-        $latestDeployment = $deployment->project->deployments()
+        $project = $deployment->project;
+        if ($project === null) {
+            return false;
+        }
+
+        $latestDeployment = $project->deployments()
             ->where('status', 'success')
             ->latest()
             ->first();

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\{Deployment, DeploymentApproval, User};
+use App\Models\Deployment;
+use App\Models\DeploymentApproval;
+use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -22,24 +24,24 @@ class DeploymentApprovalService
     {
         $project = $deployment->project;
 
-        if (!$project || !$project->requires_approval) {
+        if (! $project || ! $project->requires_approval) {
             return false;
         }
 
         $settings = $project->approval_settings ?? [];
 
         // Check environment-specific requirements
-        if (isset($settings['environments'])) {
-            $requiresForEnv = in_array($deployment->project->environment, $settings['environments']);
-            if (!$requiresForEnv) {
+        if (isset($settings['environments']) && is_array($settings['environments'])) {
+            $requiresForEnv = in_array($deployment->project?->environment ?? 'production', $settings['environments']);
+            if (! $requiresForEnv) {
                 return false;
             }
         }
 
         // Check branch-specific requirements
-        if (isset($settings['branches'])) {
+        if (isset($settings['branches']) && is_array($settings['branches'])) {
             $requiresForBranch = in_array($deployment->branch, $settings['branches']);
-            if (!$requiresForBranch) {
+            if (! $requiresForBranch) {
                 return false;
             }
         }
@@ -85,11 +87,11 @@ class DeploymentApprovalService
      */
     public function approve(DeploymentApproval $approval, User $approver, ?string $notes = null): void
     {
-        if (!$this->canApprove($approver, $approval->deployment)) {
+        if (! $this->canApprove($approver, $approval->deployment)) {
             throw new \Exception('You do not have permission to approve this deployment');
         }
 
-        if (!$approval->isPending()) {
+        if (! $approval->isPending()) {
             throw new \Exception('This approval has already been processed');
         }
 
@@ -125,11 +127,11 @@ class DeploymentApprovalService
      */
     public function reject(DeploymentApproval $approval, User $rejector, string $reason): void
     {
-        if (!$this->canApprove($rejector, $approval->deployment)) {
+        if (! $this->canApprove($rejector, $approval->deployment)) {
             throw new \Exception('You do not have permission to reject this deployment');
         }
 
-        if (!$approval->isPending()) {
+        if (! $approval->isPending()) {
             throw new \Exception('This approval has already been processed');
         }
 
@@ -152,7 +154,7 @@ class DeploymentApprovalService
             // Update deployment status
             $approval->deployment->update([
                 'status' => 'failed',
-                'error_message' => 'Deployment rejected: ' . $reason,
+                'error_message' => 'Deployment rejected: '.$reason,
             ]);
         });
 
@@ -165,6 +167,8 @@ class DeploymentApprovalService
 
     /**
      * Get pending approvals for a user
+     *
+     * @return \Illuminate\Support\Collection<int, \App\Models\DeploymentApproval>
      */
     public function getPendingApprovals(User $user): Collection
     {
@@ -180,6 +184,7 @@ class DeploymentApprovalService
         // Otherwise, show only for projects user has access to
         if ($user->can('approve_deployments')) {
             $projectIds = $user->projects()->pluck('id');
+
             return $query->whereHas('deployment', function ($q) use ($projectIds) {
                 $q->whereIn('project_id', $projectIds);
             })->latest('requested_at')->get();
@@ -191,7 +196,7 @@ class DeploymentApprovalService
     /**
      * Get approval statistics
      */
-    public function getApprovalStats(User $user = null): array
+    public function getApprovalStats(?User $user = null): array
     {
         $query = DeploymentApproval::query();
 

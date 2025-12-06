@@ -29,7 +29,12 @@ class HealthCheckService
         $this->recordResult($check, $result['status'], $result['response_time'] ?? null, $result['error'] ?? null, $result['status_code'] ?? null);
         $this->updateHealthCheckStatus($check);
 
-        return $check->results()->latest('checked_at')->first();
+        $latestResult = $check->results()->latest('checked_at')->first();
+        if ($latestResult === null) {
+            throw new \RuntimeException('Failed to retrieve health check result after execution');
+        }
+
+        return $latestResult;
     }
 
     public function performHttpCheck(HealthCheck $check): array
@@ -71,7 +76,7 @@ class HealthCheckService
             return [
                 'status' => 'failure',
                 'response_time' => $responseTime,
-                'error' => 'Connection failed: ' . $e->getMessage(),
+                'error' => 'Connection failed: '.$e->getMessage(),
             ];
         } catch (\Exception $e) {
             $responseTime = (int) ((microtime(true) - $startTime) * 1000);
@@ -202,7 +207,7 @@ class HealthCheckService
 
             fclose($socket);
 
-            if (!isset($certInfo['validTo_time_t'])) {
+            if (! isset($certInfo['validTo_time_t'])) {
                 return [
                     'status' => 'failure',
                     'response_time' => $responseTime,
@@ -217,7 +222,7 @@ class HealthCheckService
                 return [
                     'status' => 'failure',
                     'response_time' => $responseTime,
-                    'error' => 'SSL certificate expired ' . abs($daysUntilExpiry) . ' days ago',
+                    'error' => 'SSL certificate expired '.abs($daysUntilExpiry).' days ago',
                 ];
             }
 
@@ -268,7 +273,7 @@ class HealthCheckService
     {
         $latestResult = $check->results()->latest('checked_at')->first();
 
-        if (!$latestResult) {
+        if (! $latestResult) {
             return;
         }
 
@@ -282,7 +287,7 @@ class HealthCheckService
                 'last_success_at' => now(),
             ]);
 
-            if (!$wasHealthy && $this->shouldNotify($check, 'recovery')) {
+            if (! $wasHealthy && $this->shouldNotify($check, 'recovery')) {
                 $this->notificationService->notifyHealthCheckRecovery($check);
             }
         } else {
@@ -305,12 +310,13 @@ class HealthCheckService
             }
         }
 
-        if ($previousStatus !== $check->fresh()->status) {
-            Log::info("Health check status changed", [
+        $freshCheck = $check->fresh();
+        if ($freshCheck !== null && $previousStatus !== $freshCheck->status) {
+            Log::info('Health check status changed', [
                 'check_id' => $check->id,
                 'check_name' => $check->display_name,
                 'previous_status' => $previousStatus,
-                'new_status' => $check->fresh()->status,
+                'new_status' => $freshCheck->status,
             ]);
         }
     }
@@ -347,7 +353,7 @@ class HealthCheckService
                     $this->runCheck($check);
                     $runCount++;
                 } catch (\Exception $e) {
-                    Log::error("Health check failed", [
+                    Log::error('Health check failed', [
                         'check_id' => $check->id,
                         'error' => $e->getMessage(),
                     ]);

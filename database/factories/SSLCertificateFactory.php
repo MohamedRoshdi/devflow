@@ -2,9 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\SSLCertificate;
-use App\Models\Domain;
 use App\Models\Server;
+use App\Models\SSLCertificate;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -33,9 +32,9 @@ class SSLCertificateFactory extends Factory
             'issued_at' => $issuedAt,
             'expires_at' => $expiresAt,
             'auto_renew' => fake()->boolean(80),
-            'certificate_path' => '/etc/ssl/certs/' . fake()->slug() . '.crt',
-            'private_key_path' => '/etc/ssl/private/' . fake()->slug() . '.key',
-            'certificate_content' => '-----BEGIN CERTIFICATE-----' . "\n" . fake()->sha256() . "\n" . '-----END CERTIFICATE-----',
+            'certificate_path' => '/etc/ssl/certs/'.fake()->slug().'.crt',
+            'private_key_path' => '/etc/ssl/private/'.fake()->slug().'.key',
+            'certificate_content' => '-----BEGIN CERTIFICATE-----'."\n".fake()->sha256()."\n".'-----END CERTIFICATE-----',
             'error_message' => null,
         ];
     }

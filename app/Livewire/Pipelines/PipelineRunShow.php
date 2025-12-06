@@ -7,13 +7,16 @@ namespace App\Livewire\Pipelines;
 use App\Models\PipelineRun;
 use App\Models\PipelineStageRun;
 use App\Services\CICD\PipelineExecutionService;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use Livewire\Component;
-use Livewire\Attributes\{Computed, On};
 
 class PipelineRunShow extends Component
 {
     public PipelineRun $pipelineRun;
+
     public ?int $expandedStageId = null;
+
     public bool $autoScroll = true;
 
     /**
@@ -109,7 +112,7 @@ class PipelineRunShow extends Component
      */
     public function toggleAutoScroll(): void
     {
-        $this->autoScroll = !$this->autoScroll;
+        $this->autoScroll = ! $this->autoScroll;
     }
 
     /**
@@ -117,11 +120,12 @@ class PipelineRunShow extends Component
      */
     public function cancelPipeline(): void
     {
-        if (!$this->pipelineRun->isRunning()) {
+        if (! $this->pipelineRun->isRunning()) {
             $this->dispatch('notification', [
                 'type' => 'error',
                 'message' => 'Pipeline is not running',
             ]);
+
             return;
         }
 
@@ -141,11 +145,12 @@ class PipelineRunShow extends Component
      */
     public function retryPipeline(): void
     {
-        if (!$this->pipelineRun->isComplete()) {
+        if (! $this->pipelineRun->isComplete()) {
             $this->dispatch('notification', [
                 'type' => 'error',
                 'message' => 'Cannot retry a running pipeline',
             ]);
+
             return;
         }
 

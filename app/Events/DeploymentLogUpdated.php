@@ -13,8 +13,11 @@ class DeploymentLogUpdated implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public int $deploymentId;
+
     public string $line;
+
     public string $level;
+
     public string $timestamp;
 
     /**
@@ -36,7 +39,7 @@ class DeploymentLogUpdated implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('deployment-logs.' . $this->deploymentId),
+            new Channel('deployment-logs.'.$this->deploymentId),
         ];
     }
 

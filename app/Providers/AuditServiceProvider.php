@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\Models\{Deployment, Project, Server, Domain, User};
+use App\Models\Deployment;
+use App\Models\Domain;
+use App\Models\Project;
+use App\Models\Server;
+use App\Models\User;
 use App\Observers\AuditObserver;
 use Illuminate\Support\ServiceProvider;
 

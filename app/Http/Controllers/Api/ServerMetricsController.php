@@ -60,4 +60,3 @@ class ServerMetricsController extends Controller
         ], 201);
     }
 }
-

@@ -2,40 +2,52 @@
 
 namespace App\Livewire\Servers;
 
-use App\Models\Server;
-use App\Models\ResourceAlert;
 use App\Models\AlertHistory;
+use App\Models\ResourceAlert;
+use App\Models\Server;
 use App\Services\ResourceAlertService;
 use App\Services\ServerMetricsService;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Livewire\Attributes\Computed;
-use Livewire\Attributes\On;
 
 class ResourceAlertManager extends Component
 {
     use WithPagination;
 
     public Server $server;
+
     public bool $showCreateModal = false;
+
     public bool $showEditModal = false;
+
     public ?ResourceAlert $editingAlert = null;
 
     // Form fields
     public string $resource_type = 'cpu';
+
     public string $threshold_type = 'above';
+
     public float $threshold_value = 80.00;
+
     public int $cooldown_minutes = 15;
+
     public bool $is_active = true;
 
     // Notification channels
     public bool $enable_email = false;
+
     public string $email_address = '';
+
     public bool $enable_slack = false;
+
     public string $slack_webhook = '';
+
     public bool $enable_discord = false;
+
     public string $discord_webhook = '';
 
+    /** @var array<string, string> */
     protected array $rules = [
         'resource_type' => 'required|in:cpu,memory,disk,load',
         'threshold_type' => 'required|in:above,below',
@@ -70,7 +82,7 @@ class ResourceAlertManager extends Component
         $metricsService = app(ServerMetricsService::class);
         $metrics = $metricsService->getLatestMetrics($this->server);
 
-        if (!$metrics) {
+        if (! $metrics) {
             return [
                 'cpu' => 0,
                 'memory' => 0,
@@ -172,6 +184,10 @@ class ResourceAlertManager extends Component
     {
         $this->validate();
 
+        if ($this->editingAlert === null) {
+            return;
+        }
+
         $this->editingAlert->update([
             'resource_type' => $this->resource_type,
             'threshold_type' => $this->threshold_type,
@@ -200,7 +216,7 @@ class ResourceAlertManager extends Component
     public function toggleAlert(int $alertId): void
     {
         $alert = ResourceAlert::findOrFail($alertId);
-        $alert->update(['is_active' => !$alert->is_active]);
+        $alert->update(['is_active' => ! $alert->is_active]);
 
         $status = $alert->is_active ? 'enabled' : 'disabled';
         $this->dispatch('notify', type: 'success', message: "Alert {$status} successfully!");
@@ -217,7 +233,7 @@ class ResourceAlertManager extends Component
         if ($result['success']) {
             $this->dispatch('notify', type: 'success', message: 'Test notification sent successfully!');
         } else {
-            $this->dispatch('notify', type: 'error', message: 'Failed to send test notification: ' . $result['message']);
+            $this->dispatch('notify', type: 'error', message: 'Failed to send test notification: '.$result['message']);
         }
     }
 

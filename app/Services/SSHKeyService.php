@@ -2,36 +2,35 @@
 
 namespace App\Services;
 
-use App\Models\SSHKey;
 use App\Models\Server;
+use App\Models\SSHKey;
 use Symfony\Component\Process\Process;
-use Illuminate\Support\Facades\Crypt;
 
 class SSHKeyService
 {
     /**
      * Generate a new SSH key pair
      *
-     * @param string $type Key type (rsa, ed25519, ecdsa)
-     * @param string $comment Optional comment for the key
+     * @param  string  $type  Key type (rsa, ed25519, ecdsa)
+     * @param  string  $comment  Optional comment for the key
      * @return array{success: bool, public_key?: string, private_key?: string, fingerprint?: string, error?: string}
      */
     public function generateKeyPair(string $type = 'ed25519', string $comment = ''): array
     {
         try {
             // Create temporary directory for key generation
-            $tempDir = sys_get_temp_dir() . '/ssh_keys_' . uniqid();
+            $tempDir = sys_get_temp_dir().'/ssh_keys_'.uniqid();
             mkdir($tempDir, 0700, true);
-            $keyPath = $tempDir . '/id_' . $type;
+            $keyPath = $tempDir.'/id_'.$type;
 
             // Prepare ssh-keygen command based on key type
-            $command = match($type) {
+            $command = match ($type) {
                 'ed25519' => [
                     'ssh-keygen',
                     '-t', 'ed25519',
                     '-f', $keyPath,
                     '-N', '', // No passphrase
-                    '-C', $comment ?: 'devflow-' . date('Y-m-d-H-i-s'),
+                    '-C', $comment ?: 'devflow-'.date('Y-m-d-H-i-s'),
                 ],
                 'rsa' => [
                     'ssh-keygen',
@@ -39,7 +38,7 @@ class SSHKeyService
                     '-b', '4096',
                     '-f', $keyPath,
                     '-N', '',
-                    '-C', $comment ?: 'devflow-' . date('Y-m-d-H-i-s'),
+                    '-C', $comment ?: 'devflow-'.date('Y-m-d-H-i-s'),
                 ],
                 'ecdsa' => [
                     'ssh-keygen',
@@ -47,7 +46,7 @@ class SSHKeyService
                     '-b', '521',
                     '-f', $keyPath,
                     '-N', '',
-                    '-C', $comment ?: 'devflow-' . date('Y-m-d-H-i-s'),
+                    '-C', $comment ?: 'devflow-'.date('Y-m-d-H-i-s'),
                 ],
                 default => throw new \InvalidArgumentException("Unsupported key type: {$type}"),
             };
@@ -56,15 +55,15 @@ class SSHKeyService
             $process = new Process($command);
             $process->run();
 
-            if (!$process->isSuccessful()) {
-                throw new \RuntimeException('Failed to generate SSH key: ' . $process->getErrorOutput());
+            if (! $process->isSuccessful()) {
+                throw new \RuntimeException('Failed to generate SSH key: '.$process->getErrorOutput());
             }
 
             // Read generated keys
             $privateKey = file_get_contents($keyPath);
-            $publicKey = file_get_contents($keyPath . '.pub');
+            $publicKey = file_get_contents($keyPath.'.pub');
 
-            if (!$privateKey || !$publicKey) {
+            if (! $privateKey || ! $publicKey) {
                 throw new \RuntimeException('Failed to read generated SSH keys');
             }
 
@@ -73,7 +72,7 @@ class SSHKeyService
 
             // Cleanup temp files
             @unlink($keyPath);
-            @unlink($keyPath . '.pub');
+            @unlink($keyPath.'.pub');
             @rmdir($tempDir);
 
             return [
@@ -87,7 +86,7 @@ class SSHKeyService
             // Cleanup on error
             if (isset($tempDir) && is_dir($tempDir)) {
                 @unlink($keyPath ?? '');
-                @unlink(($keyPath ?? '') . '.pub');
+                @unlink(($keyPath ?? '').'.pub');
                 @rmdir($tempDir);
             }
 
@@ -101,8 +100,8 @@ class SSHKeyService
     /**
      * Import an existing SSH key pair
      *
-     * @param string $publicKey The public key content
-     * @param string $privateKey The private key content
+     * @param  string  $publicKey  The public key content
+     * @param  string  $privateKey  The private key content
      * @return array{success: bool, fingerprint?: string, type?: string, error?: string}
      */
     public function importKey(string $publicKey, string $privateKey): array
@@ -110,13 +109,13 @@ class SSHKeyService
         try {
             // Validate public key format
             $publicKey = trim($publicKey);
-            if (!preg_match('/^(ssh-rsa|ssh-ed25519|ecdsa-sha2-nistp\d+)\s+/', $publicKey)) {
+            if (! preg_match('/^(ssh-rsa|ssh-ed25519|ecdsa-sha2-nistp\d+)\s+/', $publicKey)) {
                 throw new \InvalidArgumentException('Invalid public key format');
             }
 
             // Validate private key format
             $privateKey = trim($privateKey);
-            if (!str_contains($privateKey, '-----BEGIN') || !str_contains($privateKey, 'PRIVATE KEY-----')) {
+            if (! str_contains($privateKey, '-----BEGIN') || ! str_contains($privateKey, 'PRIVATE KEY-----')) {
                 throw new \InvalidArgumentException('Invalid private key format');
             }
 
@@ -148,7 +147,7 @@ class SSHKeyService
     /**
      * Calculate SSH key fingerprint
      *
-     * @param string $publicKey The public key content
+     * @param  string  $publicKey  The public key content
      * @return string The fingerprint in MD5 format
      */
     public function getFingerprint(string $publicKey): string
@@ -169,8 +168,8 @@ class SSHKeyService
 
             @unlink($tempFile);
 
-            if (!$process->isSuccessful()) {
-                throw new \RuntimeException('Failed to calculate fingerprint: ' . $process->getErrorOutput());
+            if (! $process->isSuccessful()) {
+                throw new \RuntimeException('Failed to calculate fingerprint: '.$process->getErrorOutput());
             }
 
             $output = $process->getOutput();
@@ -184,11 +183,11 @@ class SSHKeyService
             $parts = explode(' ', trim($publicKey), 3);
             if (count($parts) >= 2) {
                 $keyData = base64_decode($parts[1]);
+
                 return substr(hash('sha256', $keyData), 0, 32);
             }
 
             throw new \RuntimeException('Could not extract fingerprint from ssh-keygen output');
-
         } catch (\Exception $e) {
             // Fallback to simple hash
             return substr(hash('sha256', trim($publicKey)), 0, 32);
@@ -198,8 +197,8 @@ class SSHKeyService
     /**
      * Deploy SSH key to a server's authorized_keys
      *
-     * @param SSHKey $key The SSH key to deploy
-     * @param Server $server The target server
+     * @param  SSHKey  $key  The SSH key to deploy
+     * @param  Server  $server  The target server
      * @return array{success: bool, message?: string, error?: string}
      */
     public function deployKeyToServer(SSHKey $key, Server $server): array
@@ -226,8 +225,8 @@ class SSHKeyService
     /**
      * Remove SSH key from server's authorized_keys
      *
-     * @param SSHKey $key The SSH key to remove
-     * @param Server $server The target server
+     * @param  SSHKey  $key  The SSH key to remove
+     * @param  Server  $server  The target server
      * @return array{success: bool, message?: string, error?: string}
      */
     public function removeKeyFromServer(SSHKey $key, Server $server): array
@@ -253,6 +252,8 @@ class SSHKeyService
 
     /**
      * Deploy key to localhost
+     *
+     * @return array{success: bool, message?: string, error?: string}
      */
     private function deployToLocalhost(string $publicKey, Server $server): array
     {
@@ -262,7 +263,7 @@ class SSHKeyService
         $sshDir = "{$homeDir}/.ssh";
 
         // Create .ssh directory if it doesn't exist
-        if (!is_dir($sshDir)) {
+        if (! is_dir($sshDir)) {
             mkdir($sshDir, 0700, true);
             if ($username !== 'root') {
                 chown($sshDir, $username);
@@ -281,7 +282,7 @@ class SSHKeyService
         }
 
         // Append public key to authorized_keys
-        $result = file_put_contents($authorizedKeysPath, "\n" . $publicKey . "\n", FILE_APPEND);
+        $result = file_put_contents($authorizedKeysPath, "\n".$publicKey."\n", FILE_APPEND);
 
         if ($result === false) {
             throw new \RuntimeException('Failed to write to authorized_keys file');
@@ -301,6 +302,8 @@ class SSHKeyService
 
     /**
      * Deploy key to remote server
+     *
+     * @return array{success: bool, message?: string, error?: string}
      */
     private function deployToRemoteServer(string $publicKey, Server $server): array
     {
@@ -314,8 +317,8 @@ class SSHKeyService
         $process->setTimeout(30);
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            throw new \RuntimeException('Failed to deploy key to server: ' . $process->getErrorOutput());
+        if (! $process->isSuccessful()) {
+            throw new \RuntimeException('Failed to deploy key to server: '.$process->getErrorOutput());
         }
 
         return [
@@ -326,6 +329,8 @@ class SSHKeyService
 
     /**
      * Remove key from localhost
+     *
+     * @return array{success: bool, message?: string, error?: string}
      */
     private function removeFromLocalhost(string $publicKey, Server $server): array
     {
@@ -333,7 +338,7 @@ class SSHKeyService
         $homeDir = $username === 'root' ? '/root' : "/home/{$username}";
         $authorizedKeysPath = "{$homeDir}/.ssh/authorized_keys";
 
-        if (!file_exists($authorizedKeysPath)) {
+        if (! file_exists($authorizedKeysPath)) {
             return [
                 'success' => true,
                 'message' => 'Key not found in authorized_keys',
@@ -345,12 +350,12 @@ class SSHKeyService
         $publicKey = trim($publicKey);
 
         // Filter out the key to remove
-        $filtered = array_filter($lines, function($line) use ($publicKey) {
+        $filtered = array_filter($lines, function ($line) use ($publicKey) {
             return trim($line) !== $publicKey;
         });
 
         // Write back filtered keys
-        file_put_contents($authorizedKeysPath, implode("\n", $filtered) . "\n");
+        file_put_contents($authorizedKeysPath, implode("\n", $filtered)."\n");
 
         return [
             'success' => true,
@@ -360,6 +365,8 @@ class SSHKeyService
 
     /**
      * Remove key from remote server
+     *
+     * @return array{success: bool, message?: string, error?: string}
      */
     private function removeFromRemoteServer(string $publicKey, Server $server): array
     {
@@ -372,8 +379,8 @@ class SSHKeyService
         $process->setTimeout(30);
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            throw new \RuntimeException('Failed to remove key from server: ' . $process->getErrorOutput());
+        if (! $process->isSuccessful()) {
+            throw new \RuntimeException('Failed to remove key from server: '.$process->getErrorOutput());
         }
 
         return [
@@ -414,7 +421,7 @@ class SSHKeyService
         $sshOptions = [
             '-o StrictHostKeyChecking=no',
             '-o UserKnownHostsFile=/dev/null',
-            '-p ' . $server->port,
+            '-p '.$server->port,
         ];
 
         if ($server->ssh_key) {
@@ -422,7 +429,7 @@ class SSHKeyService
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
             file_put_contents($keyFile, $server->ssh_key);
             chmod($keyFile, 0600);
-            $sshOptions[] = '-i ' . $keyFile;
+            $sshOptions[] = '-i '.$keyFile;
         }
 
         return sprintf(

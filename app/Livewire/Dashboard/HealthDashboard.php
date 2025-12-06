@@ -4,17 +4,23 @@ namespace App\Livewire\Dashboard;
 
 use App\Models\Project;
 use App\Models\Server;
-use Livewire\Component;
-use Illuminate\Support\Facades\Process;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Process;
+use Livewire\Component;
 
 class HealthDashboard extends Component
 {
+    /** @var array<int, array<string, mixed>> */
     public array $projectsHealth = [];
+
+    /** @var array<int, array<string, mixed>> */
     public array $serversHealth = [];
+
     public bool $isLoading = true;
+
     public string $filterStatus = 'all';
+
     public ?string $lastCheckedAt = null;
 
     public function mount()
@@ -36,7 +42,14 @@ class HealthDashboard extends Component
     protected function loadProjectsHealth()
     {
         // All projects are shared across all users
-        $projects = Project::with('server', 'deployments')->get();
+        // Eager load only the latest deployment to avoid N+1 queries
+        $projects = Project::with([
+            'server',
+            'domains',
+            'deployments' => function ($query) {
+                $query->latest()->limit(1);
+            },
+        ])->get();
 
         $this->projectsHealth = $projects->map(function ($project) {
             $cacheKey = "project_health_{$project->id}";
@@ -50,7 +63,8 @@ class HealthDashboard extends Component
     protected function loadServersHealth()
     {
         // All servers are shared across all users
-        $servers = Server::all();
+        // Eager load projects count to avoid N+1 queries
+        $servers = Server::withCount('projects')->get();
 
         $this->serversHealth = $servers->map(function ($server) {
             $cacheKey = "server_health_{$server->id}";
@@ -77,8 +91,8 @@ class HealthDashboard extends Component
             'issues' => [],
         ];
 
-        // Check last deployment
-        $lastDeployment = $project->deployments()->latest()->first();
+        // Check last deployment (already eager loaded)
+        $lastDeployment = $project->deployments->first();
         if ($lastDeployment) {
             $health['last_deployment'] = $lastDeployment->created_at->diffForHumans();
             $health['last_deployment_status'] = $lastDeployment->status;
@@ -132,7 +146,7 @@ class HealthDashboard extends Component
             'name' => $server->name,
             'ip_address' => $server->ip_address,
             'status' => $server->status,
-            'projects_count' => $server->projects()->count(),
+            'projects_count' => $server->projects_count ?? 0,
             'cpu_usage' => null,
             'ram_usage' => null,
             'disk_usage' => null,
@@ -305,6 +319,7 @@ class HealthDashboard extends Component
             } elseif ($this->filterStatus === 'critical') {
                 return $project['health_score'] < 50;
             }
+
             return true;
         });
     }
@@ -312,9 +327,9 @@ class HealthDashboard extends Component
     public function getOverallStats(): array
     {
         $total = count($this->projectsHealth);
-        $healthy = count(array_filter($this->projectsHealth, fn($p) => $p['health_score'] >= 80));
-        $warning = count(array_filter($this->projectsHealth, fn($p) => $p['health_score'] >= 50 && $p['health_score'] < 80));
-        $critical = count(array_filter($this->projectsHealth, fn($p) => $p['health_score'] < 50));
+        $healthy = count(array_filter($this->projectsHealth, fn ($p) => $p['health_score'] >= 80));
+        $warning = count(array_filter($this->projectsHealth, fn ($p) => $p['health_score'] >= 50 && $p['health_score'] < 80));
+        $critical = count(array_filter($this->projectsHealth, fn ($p) => $p['health_score'] < 50));
 
         $avgScore = $total > 0
             ? round(array_sum(array_column($this->projectsHealth, 'health_score')) / $total)

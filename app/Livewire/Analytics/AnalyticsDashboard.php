@@ -1,19 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Analytics;
 
-use Livewire\Component;
-use App\Models\Project;
 use App\Models\Deployment;
+use App\Models\Project;
 use App\Models\ServerMetric;
 use Carbon\Carbon;
+use Illuminate\Contracts\View\View;
+use Livewire\Component;
 
 class AnalyticsDashboard extends Component
 {
-    public $selectedPeriod = '7days';
-    public $selectedProject = '';
+    public string $selectedPeriod = '7days';
 
-    public function render()
+    public string $selectedProject = '';
+
+    public function render(): View
     {
         // All projects are shared across all users
         $projects = Project::all();
@@ -37,9 +41,9 @@ class AnalyticsDashboard extends Component
         ]);
     }
 
-    protected function getDateFrom()
+    protected function getDateFrom(): Carbon
     {
-        return match($this->selectedPeriod) {
+        return match ($this->selectedPeriod) {
             '24hours' => now()->subDay(),
             '7days' => now()->subDays(7),
             '30days' => now()->subDays(30),
@@ -48,12 +52,15 @@ class AnalyticsDashboard extends Component
         };
     }
 
-    protected function getDeploymentStats($dateFrom)
+    /**
+     * @return array{total: int, successful: int, failed: int, avg_duration: float|int}
+     */
+    protected function getDeploymentStats(Carbon $dateFrom): array
     {
         // All deployments are shared
         $query = Deployment::where('created_at', '>=', $dateFrom);
 
-        if ($this->selectedProject) {
+        if ($this->selectedProject !== '') {
             $query->where('project_id', $this->selectedProject);
         }
 
@@ -61,11 +68,11 @@ class AnalyticsDashboard extends Component
             'total' => $query->count(),
             'successful' => $query->clone()->where('status', 'success')->count(),
             'failed' => $query->clone()->where('status', 'failed')->count(),
-            'avg_duration' => round($query->clone()->whereNotNull('duration_seconds')->avg('duration_seconds'), 2),
+            'avg_duration' => round($query->clone()->whereNotNull('duration_seconds')->avg('duration_seconds') ?? 0, 2),
         ];
     }
 
-    protected function getServerMetrics($dateFrom)
+    protected function getServerMetrics(Carbon $dateFrom): ?ServerMetric
     {
         // All server metrics are shared
         return ServerMetric::where('recorded_at', '>=', $dateFrom)
@@ -75,12 +82,15 @@ class AnalyticsDashboard extends Component
             ->first();
     }
 
-    protected function getProjectAnalytics($dateFrom)
+    /**
+     * @return array{total_projects: int, running: int, stopped: int, total_storage: int}
+     */
+    protected function getProjectAnalytics(Carbon $dateFrom): array
     {
         // All projects are shared
         $query = Project::query();
 
-        if ($this->selectedProject) {
+        if ($this->selectedProject !== '') {
             $query->where('id', $this->selectedProject);
         }
 
@@ -88,8 +98,7 @@ class AnalyticsDashboard extends Component
             'total_projects' => $query->count(),
             'running' => $query->clone()->where('status', 'running')->count(),
             'stopped' => $query->clone()->where('status', 'stopped')->count(),
-            'total_storage' => $query->sum('storage_used_mb'),
+            'total_storage' => (int) $query->sum('storage_used_mb'),
         ];
     }
 }
-

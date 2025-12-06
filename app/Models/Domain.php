@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Domain extends Model
 {
+    /** @use HasFactory<\Database\Factories\DomainFactory> */
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
@@ -40,6 +41,9 @@ class Domain extends Model
     }
 
     // Relationships
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Project, $this>
+     */
     public function project()
     {
         return $this->belongsTo(Project::class);
@@ -53,19 +57,19 @@ class Domain extends Model
 
     public function sslExpiresSoon(): bool
     {
-        if (!$this->ssl_expires_at) {
+        if (! $this->ssl_expires_at) {
             return false;
         }
-        
+
         return $this->ssl_expires_at->diffInDays(now()) <= 30;
     }
 
     public function sslIsExpired(): bool
     {
-        if (!$this->ssl_expires_at) {
+        if (! $this->ssl_expires_at) {
             return false;
         }
-        
+
         return $this->ssl_expires_at->isPast();
     }
 
@@ -74,12 +78,12 @@ class Domain extends Model
         if ($this->sslIsExpired()) {
             return 'red';
         }
-        
+
         if ($this->sslExpiresSoon()) {
             return 'yellow';
         }
-        
-        return match($this->status) {
+
+        return match ($this->status) {
             'active' => 'green',
             'inactive' => 'gray',
             'pending' => 'yellow',
@@ -87,4 +91,3 @@ class Domain extends Model
         };
     }
 }
-

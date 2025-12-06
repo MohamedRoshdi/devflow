@@ -2,10 +2,10 @@
 
 namespace App\Livewire\Projects;
 
-use Livewire\Component;
 use App\Models\Project;
 use App\Models\WebhookDelivery;
 use Livewire\Attributes\Computed;
+use Livewire\Component;
 use Livewire\WithPagination;
 
 class ProjectWebhookSettings extends Component
@@ -13,13 +13,20 @@ class ProjectWebhookSettings extends Component
     use WithPagination;
 
     public Project $project;
+
     public bool $webhookEnabled = false;
+
     public ?string $webhookSecret = null;
+
     public string $webhookUrl = '';
+
     public string $gitlabWebhookUrl = '';
+
     public bool $showSecret = false;
+
     public bool $showRegenerateConfirm = false;
-    protected $paginationTheme = 'tailwind';
+
+    protected string $paginationTheme = 'tailwind';
 
     public function mount(Project $project)
     {
@@ -37,10 +44,10 @@ class ProjectWebhookSettings extends Component
 
     public function toggleWebhook()
     {
-        $this->webhookEnabled = !$this->webhookEnabled;
+        $this->webhookEnabled = ! $this->webhookEnabled;
 
         // If enabling webhooks and no secret exists, generate one
-        if ($this->webhookEnabled && !$this->webhookSecret) {
+        if ($this->webhookEnabled && ! $this->webhookSecret) {
             $this->webhookSecret = $this->project->generateWebhookSecret();
             $this->webhookUrl = route('webhooks.github', ['secret' => $this->webhookSecret]);
             $this->gitlabWebhookUrl = route('webhooks.gitlab', ['secret' => $this->webhookSecret]);
@@ -53,7 +60,7 @@ class ProjectWebhookSettings extends Component
 
         $this->dispatch('notification', [
             'type' => 'success',
-            'message' => $this->webhookEnabled ? 'Webhooks enabled successfully!' : 'Webhooks disabled successfully!'
+            'message' => $this->webhookEnabled ? 'Webhooks enabled successfully!' : 'Webhooks disabled successfully!',
         ]);
     }
 
@@ -71,13 +78,13 @@ class ProjectWebhookSettings extends Component
 
         $this->dispatch('notification', [
             'type' => 'success',
-            'message' => 'Webhook secret regenerated successfully! Please update your Git provider settings.'
+            'message' => 'Webhook secret regenerated successfully! Please update your Git provider settings.',
         ]);
     }
 
     public function toggleSecretVisibility()
     {
-        $this->showSecret = !$this->showSecret;
+        $this->showSecret = ! $this->showSecret;
     }
 
     public function confirmRegenerate()
@@ -101,7 +108,7 @@ class ProjectWebhookSettings extends Component
 
     public function getDeliveryStatusBadgeColor(string $status): string
     {
-        return match($status) {
+        return match ($status) {
             'success' => 'green',
             'failed' => 'red',
             'ignored' => 'gray',

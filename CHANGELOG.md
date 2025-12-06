@@ -7,6 +7,1075 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.21.0] - 2025-12-06
+
+### Added
+
+- **GitServiceTest.php** - 39 unit tests for Git operations
+  - Repository cloning and initialization
+  - Git pull and fetch operations
+  - Branch checkout and switching
+  - Commit history retrieval
+  - SSH key authentication
+  - Safe directory configuration
+  - Error handling and rollback
+
+- **DockerServiceTest.php** - 69 unit tests for Docker operations
+  - Docker compose up/down/restart
+  - Container management (start, stop, remove)
+  - Container logs and inspection
+  - Volume and network operations
+  - Image pull and build
+  - Health check detection
+  - Docker daemon connectivity
+
+- **DeploymentApprovalServiceTest.php** - 39 unit tests for approval workflow
+  - Approval requirement detection
+  - Environment and branch-based rules
+  - Approval request creation
+  - Approval and rejection processing
+  - Permission validation
+  - Notification triggering
+  - Audit logging integration
+
+- **RollbackServiceTest.php** - 33 unit tests for rollback operations
+  - Rollback to previous deployment
+  - State backup before rollback
+  - Git checkout and reset
+  - Environment restoration
+  - Docker container rebuild
+  - Health check verification
+  - Rollback point management
+
+### Improved
+
+- Unit test coverage expanded with 180 new service tests
+- PHPStan Level 6 compliance maintained (0 errors in app/)
+- Laravel Pint code style compliance maintained (0 issues)
+- Comprehensive testing for core deployment and infrastructure services
+
+---
+
+## [5.20.0] - 2025-12-06
+
+### Added
+
+- **ProjectDetailTest.php** - 50 browser tests for public project detail page
+  - Public page access without authentication
+  - Project info display (name, description, status)
+  - Technology stack and framework badges
+  - Live demo links and domain display
+  - 404 handling and private project protection
+  - Responsive design (mobile, tablet, desktop)
+
+- **PipelineSettingsTest.php** - 48 browser tests for pipeline settings
+  - Pipeline enable/disable toggle
+  - Auto-deploy branch configuration
+  - Skip and deploy patterns management
+  - Webhook secret generation and display
+  - Settings persistence and validation
+
+- **DefaultSetupPreferencesTest.php** - 48 browser tests for default preferences
+  - Default SSL, webhooks, health checks settings
+  - Default backup and notification settings
+  - Theme and UI preferences
+  - Settings save and persistence
+  - Mobile and tablet responsiveness
+
+- **SecurityAuditLogTest.php** - 50 browser tests for security audit logs
+  - Audit log entries display and filtering
+  - Event type filtering (firewall, SSH, IP bans)
+  - Date range and search functionality
+  - Export to CSV, JSON, PDF
+  - Severity indicators and statistics
+
+### Improved
+
+- Browser test coverage expanded from 2461 to 2657 tests (63 test files)
+- PHPStan Level 8 compliance maintained (0 errors)
+- Laravel Pint code style compliance maintained (0 issues)
+- Complete coverage for all remaining Livewire components
+
+---
+
+## [5.19.0] - 2025-12-06
+
+### Added
+
+- **HomePublicTest.php** - 55 browser tests for public home page
+  - Public page accessibility (no auth required)
+  - Hero section and platform features display
+  - NileStack branding and DevFlow Pro attribution
+  - SEO meta tags and accessibility
+  - Responsive design (mobile, tablet, desktop)
+  - Dark mode and theme toggle
+
+- **ProjectLogsTest.php** - 48 browser tests for project logs viewer
+  - Laravel and Docker log viewing
+  - Log level filtering and search
+  - Real-time log tailing
+  - Log download and clear functionality
+  - Line count selector and refresh
+
+- **ProjectDockerManagementTest.php** - 50 browser tests for Docker management
+  - Container list and status indicators
+  - Container operations (start, stop, restart, rebuild)
+  - Container logs and resource monitoring
+  - Docker compose operations
+  - Networks, volumes, and port mappings
+
+- **PipelineRunShowTest.php** - 48 browser tests for pipeline run details
+  - Run status and progress display
+  - Stage breakdown and logs viewing
+  - Trigger and commit information
+  - Re-run, cancel, and retry operations
+  - Artifacts and test results display
+
+### Improved
+
+- Browser test coverage expanded from 2260 to 2461 tests (59 test files)
+- PHPStan Level 8 compliance maintained (0 errors)
+- Laravel Pint code style compliance maintained (0 issues)
+
+---
+
+## [5.18.0] - 2025-12-06
+
+### Added
+
+- **PipelineBuilderTest.php** - 51 browser tests for CI/CD pipeline builder
+  - Pipeline creation and configuration
+  - Stage management (add, edit, delete, reorder)
+  - Stage types (Pre-Deploy, Deploy, Post-Deploy)
+  - Environment variables per stage
+  - Pipeline templates (Laravel, Node.js, Static Site)
+  - Timeout and failure handling configuration
+
+- **SecurityScanDashboardTest.php** - 48 browser tests for security scanning
+  - Security scan initiation and progress tracking
+  - Vulnerability severity levels (critical, high, medium, low)
+  - Remediation suggestions and false positive management
+  - Scan scheduling and history
+  - Compliance checks (PCI, HIPAA)
+  - Export reports (PDF, CSV)
+
+- **ProjectConfigurationTest.php** - 50 browser tests for project configuration
+  - Basic project settings (name, repository, branch)
+  - Framework and version selection (PHP, Node.js)
+  - Deployment and build settings
+  - Environment and storage configuration
+  - Auto-deploy and health check settings
+
+- **SystemStatusTest.php** - 48 browser tests for system status monitoring
+  - Service status indicators (Database, Redis, Queue, Cache)
+  - System metrics (CPU, Memory, Disk, Uptime)
+  - Version information (PHP, Laravel, Application)
+  - Real-time status updates
+  - Responsive design testing
+
+### Improved
+
+- Browser test coverage expanded from 2063 to 2260 tests (55 test files)
+- PHPStan Level 8 compliance maintained (0 errors)
+- Laravel Pint code style compliance maintained (0 issues)
+
+---
+
+## [5.17.0] - 2025-12-06
+
+### Added
+
+- **MobileDesignTest.php** - 55 browser tests for mobile responsive design
+  - Mobile navigation (hamburger menu, sidebar toggle)
+  - Mobile layouts (stacked inputs, full-width containers)
+  - Touch-friendly controls (44x44px minimum targets)
+  - Mobile forms, tables, and modals
+  - Portrait and landscape orientation tests
+  - iPhone SE viewport (375x812)
+
+- **TabletDesignTest.php** - 55 browser tests for tablet responsive design
+  - Multi-device viewport testing (iPad, Surface Pro, Galaxy Tab)
+  - Two-column and three-column layouts
+  - Tablet navigation patterns
+  - Split-view compatibility
+  - Portrait and landscape orientations
+  - Touch-friendly tablet interactions
+
+- **LogSourceManagerTest.php** - 50 browser tests for log source management
+  - Log source creation and configuration
+  - Source types (file, Docker, journald)
+  - Predefined templates (Laravel, Nginx, MySQL)
+  - Source status management
+  - Connection testing and validation
+
+- **PipelineRunHistoryTest.php** - 48 browser tests for pipeline run history
+  - Run status indicators and tracking
+  - Stage breakdown and logs viewing
+  - Filtering by status and date range
+  - Re-run and cancel operations
+  - Artifacts, metrics, and analytics
+
+### Fixed
+
+- Code style issues in 4 new test files (Pint compliance)
+
+### Improved
+
+- Browser test coverage expanded from 1905 to 2063 tests (51 test files)
+- Added comprehensive mobile responsive design testing
+- Added comprehensive tablet responsive design testing
+- PHPStan Level 8 compliance maintained (0 errors)
+- Laravel Pint code style compliance maintained (0 issues)
+
+---
+
+## [5.16.0] - 2025-12-06
+
+### Added
+
+- **ScheduledDeploymentsTest.php** - 50 browser tests for scheduled deployments
+  - Schedule modal and form fields
+  - Branch, date, time, and timezone selection
+  - Pre-deployment notifications configuration
+  - Status management (pending, running, completed, cancelled)
+  - Cancel scheduled deployments
+
+- **DeploymentCommentsTest.php** - 48 browser tests for deployment comments
+  - Adding, editing, and deleting comments
+  - User mentions (@username) and highlighting
+  - Markdown formatting support
+  - Comment ordering and timestamps
+  - Permission checks (edit own comments only)
+
+- **FileBackupManagerTest.php** - 50 browser tests for file backup manager
+  - Full and incremental file backups
+  - Storage destination selection (local, S3, GCS, Azure)
+  - Exclude patterns management
+  - Backup restoration and download
+  - Verification and logs viewing
+
+- **DatabaseBackupManagerTest.php** - 50 browser tests for database backup manager
+  - Manual and scheduled database backups
+  - MySQL, PostgreSQL, SQLite support
+  - Backup frequency and retention configuration
+  - Restore and verify functionality
+  - Backup statistics and monitoring
+
+### Fixed
+
+- Code style issues in DeploymentCommentsTest.php and ScheduledDeploymentsTest.php
+- Code style issues in DeploymentApprovalsTest.php and DeploymentRollbackTest.php
+
+### Improved
+
+- Browser test coverage expanded from 1707 to 1905 tests (47 test files)
+- PHPStan Level 8 compliance maintained (0 errors)
+- Laravel Pint code style compliance maintained (0 issues)
+
+---
+
+## [5.15.0] - 2025-12-06
+
+### Added
+
+- **ServerBackupsTest.php** - 50 browser tests for server backups
+  - Backup creation (full, incremental)
+  - Backup scheduling and storage locations
+  - Backup restoration and download
+  - Encryption, retention, and verification
+  - Remote destinations (S3, GCS, Azure)
+
+- **DeploymentRollbackTest.php** - 48 browser tests for deployment rollback
+  - Rollback target selection and confirmation
+  - Progress tracking and history
+  - Automatic rollback on failure
+  - Database and file rollback options
+  - Dry-run preview and emergency rollback
+
+- **DeploymentApprovalsTest.php** - 48 browser tests for deployment approvals
+  - Approval request creation and workflow
+  - Approve/reject actions with comments
+  - Multi-level approval chains
+  - Approval expiration and bypass
+  - Email approval links and audit trail
+
+- **ServerTagsTest.php** - 50 browser tests for server tags
+  - Tag creation with color selection
+  - Tag assignment and removal
+  - Bulk tag operations
+  - Tag filtering and search
+  - Tag statistics and permissions
+
+### Fixed
+
+- Code style issues in AuditLogsTest.php and ServerMetricsTest.php
+
+### Improved
+
+- Browser test coverage expanded from 1505 to 1707 tests (43 test files)
+- PHPStan Level 8 compliance maintained (0 errors)
+- Laravel Pint code style compliance maintained (0 issues)
+
+---
+
+## [5.14.0] - 2025-12-06
+
+### Added
+
+- **ServerMetricsTest.php** - 50 browser tests for server metrics
+  - CPU, memory, and disk usage charts
+  - Network traffic monitoring
+  - Real-time and historical metrics viewing
+  - Metrics time range selection and export
+  - Server load averages and uptime statistics
+
+- **ResourceAlertsTest.php** - 46 browser tests for resource alerts
+  - Alert rule creation and threshold configuration
+  - CPU, memory, disk, and load alerts
+  - Notification channel configuration (Email, Slack, Discord)
+  - Alert history, acknowledgement, and resolution
+  - Cooldown periods and escalation rules
+
+- **AuditLogsTest.php** - 45 browser tests for audit logs
+  - Audit log listing and pagination
+  - Filtering by user, action, date range
+  - Search and export functionality (CSV, JSON)
+  - User, server, project, deployment activity logging
+  - Security event and API access logging
+
+- **ProjectWebhooksTest.php** - 45 browser tests for project webhooks
+  - Webhook creation and configuration
+  - Secret management and event selection
+  - Delivery history and retry functionality
+  - GitHub, GitLab, Bitbucket integration
+  - Payload inspection and testing
+
+### Fixed
+
+- Code style issue in SSHTerminalTest.php (unary_operator_spaces, unused imports)
+
+### Improved
+
+- Browser test coverage expanded from 1319 to 1505 tests (39 test files)
+- PHPStan Level 8 compliance maintained (0 errors)
+- Laravel Pint code style compliance maintained (0 issues)
+
+---
+
+## [5.13.0] - 2025-12-06
+
+### Added
+
+- **ServerProvisioningTest.php** - 48 browser tests for server provisioning
+  - Provisioning wizard and page access
+  - Software installation (PHP, MySQL, Nginx, Redis, Node.js)
+  - Provisioning progress tracking and logs
+  - Server configuration templates
+  - SSL and DNS configuration during provisioning
+
+- **SSHTerminalTest.php** - 43 browser tests for SSH terminal
+  - Terminal access and connection status
+  - Command input and output display
+  - Terminal history and quick commands
+  - Terminal customization and themes
+  - Session management
+
+- **KubernetesTest.php** - 51 browser tests for Kubernetes management
+  - Cluster creation and configuration
+  - Namespace, pod, and deployment management
+  - Service, ConfigMap, and Secret management
+  - Cluster monitoring and scaling
+  - Helm chart and kubectl integration
+
+- **UserSettingsTest.php** - 50 browser tests for user settings
+  - Profile information editing
+  - Password and two-factor authentication
+  - API token and SSH key management
+  - Notification and theme preferences
+  - Session and activity management
+
+### Fixed
+
+- Code style issue in TeamsTest.php (unary_operator_spaces)
+
+### Improved
+
+- Browser test coverage expanded from 1157 to 1319 tests (35 test files)
+- PHPStan Level 8 compliance maintained (0 errors)
+- Laravel Pint code style compliance maintained (0 issues)
+
+---
+
+## [5.12.0] - 2025-12-06
+
+### Added
+
+- **DockerTest.php** - 50 browser tests for Docker management
+  - Docker dashboard and overview
+  - Container operations (start, stop, restart, logs)
+  - Container resource monitoring (CPU, memory)
+  - Docker compose operations
+  - Volume and network management
+  - Image management and registry configuration
+
+- **NotificationsTest.php** - 50 browser tests for notifications
+  - Notification channel management (Slack, Discord, Email, Webhook)
+  - Notification events configuration
+  - Notification logs and history
+  - Real-time notification indicators
+  - User notification preferences
+
+- **TeamsTest.php** - 50 browser tests for teams management
+  - Team listing, creation, and settings
+  - Team member management and invitations
+  - Team role and permissions configuration
+  - Team switching functionality
+  - Team resource access control
+
+- **SecurityTest.php** - 50 browser tests for server security
+  - Security dashboard and metrics
+  - Firewall rule management
+  - Fail2ban configuration
+  - SSH security settings
+  - Security scanning and vulnerability management
+  - IP whitelist/blacklist management
+
+### Improved
+
+- Browser test coverage expanded from 1057 to 1157 tests (32 test files)
+- PHPStan Level 8 compliance maintained (0 errors)
+- Laravel Pint code style compliance maintained (0 issues)
+
+---
+
+## [5.11.0] - 2025-12-06
+
+### Added
+
+- **HealthChecksTest.php** - 50 browser tests for health checks
+  - Health check dashboard and manager pages
+  - Health check types (HTTP, TCP, DNS, SSL)
+  - Configuration (intervals, timeouts, response validation)
+  - Notifications and alerting rules
+  - History, results, and uptime statistics
+
+- **SSLTest.php** - 50 browser tests for SSL certificate management
+  - SSL certificate listing and details
+  - Certificate creation (Let's Encrypt, custom)
+  - Certificate renewal and auto-renewal
+  - Expiry monitoring and notifications
+  - Certificate chain validation and history
+
+- **AdminTest.php** - 50 browser tests for admin/system features
+  - User management (CRUD, roles, permissions)
+  - System status and health indicators
+  - Audit log viewing and filtering
+  - Cache and queue management
+  - Backup and optimization operations
+
+- **DomainsTest.php** - 50 browser tests for domain management
+  - Domain listing and CRUD operations
+  - DNS configuration and verification
+  - SSL association and management
+  - Subdomain and redirect support
+  - Bulk operations and filtering
+
+### Fixed
+
+- Code style issues fixed with Laravel Pint (18 files)
+  - unary_operator_spaces, single_quote, concat_space
+  - not_operator_with_successor_space, no_unused_imports
+
+### Improved
+
+- Browser test coverage expanded from 982 to 1057 tests (32 test files)
+- PHPStan Level 8 compliance maintained (0 errors)
+- Comprehensive test coverage for all major features
+
+---
+
+## [5.10.0] - 2025-12-06
+
+### Added
+
+- **LogsAndMonitoringTest.php** - 50 browser tests for logs & monitoring
+  - Log viewer page access and navigation
+  - Log filtering by level (error, warning, info, debug)
+  - Log search and export functionality
+  - Log source management
+  - Real-time log streaming
+  - Notification, webhook, and security audit logs
+
+- **AnalyticsTest.php** - 55 browser tests for analytics features
+  - Analytics dashboard access
+  - Deployment statistics and charts
+  - Server performance metrics
+  - Project activity graphs
+  - Resource usage analytics
+  - Trend analysis and date range filtering
+
+- **QueueMonitorTest.php** - 40 browser tests for queue monitoring
+  - Queue monitor dashboard access
+  - Failed jobs management and retry
+  - Queue statistics display
+  - Worker status monitoring
+  - Job payload viewing
+  - Batch job management
+
+### Fixed
+
+- **PHPStan Level 8 Compliance** - 109 errors fixed across 80+ files
+  - Null parameter type handling (21 errors)
+  - Null method calls on optional objects (45 errors)
+  - Null property access (32 errors)
+  - Return type mismatches (11 errors)
+  - Console commands, controllers, Livewire components, models, services, notifications
+
+- **PHPUnit Test Fixes** - Critical parse errors and factory issues resolved
+  - Fixed Dashboard.php syntax error (null-safe operator in string interpolation)
+  - Fixed ResourceAlertManager.php syntax error (if statement in array)
+  - Fixed ProjectFactory enum mismatches (project_type, status)
+  - Fixed BackupScheduleFactory column names
+  - Created missing DatabaseBackupFactory
+
+### Improved
+
+- Browser test coverage expanded from 897 to 982 tests (32 test files)
+- PHPStan compliance upgraded from Level 7 to Level 8
+- Stricter null handling throughout entire codebase
+
+---
+
+## [5.9.0] - 2025-12-06
+
+### Added
+
+- **ScriptsTest.php** - 50 browser tests for deployment scripts
+  - Script creation, editing, and cloning
+  - Script templates (deployment, backup, maintenance)
+  - Script execution on servers
+  - Script scheduling and automation
+  - Script logs and output viewing
+
+- **BackupsTest.php** - 52 browser tests for backup management
+  - Database backup creation and restoration
+  - File backup (full and incremental)
+  - Backup scheduling (hourly, daily, weekly, monthly)
+  - Multiple storage locations (local, S3, GCS, Azure)
+  - Backup encryption and retention policies
+
+- **ApiDocumentationTest.php** - 35 browser tests for API documentation
+  - API endpoint documentation display
+  - API token management
+  - Request/response examples
+  - Webhook documentation
+  - API versioning information
+
+### Fixed
+
+- **Database Schema Consistency** - Fixed `env_variables` vs `environment_variables` inconsistency
+  - ProjectFactory.php - Removed duplicate field
+  - KubernetesService.php - Fixed 2 references
+  - DeploymentScriptService.php - Fixed 1 reference
+  - ProjectManagementTest.php - Fixed test assertions
+  - Created migration for `pipeline_stages.environment_variables` column
+
+- **PHPStan Level 7 Compliance** - 42 errors fixed across 18 files
+  - Console commands: ProvisionServer, RenewSSL, RunQualityTests
+  - Controllers: GitHubAuthController
+  - Livewire: PipelineSettings, ServerMetricsDashboard, SSHKeyManager
+  - Models: BackupSchedule, PipelineConfig, Server, ServerBackupSchedule, UserSettings
+  - Services: DatabaseBackupService, SSHKeyService, FirewallService, SecurityScoreService, ServerProvisioningService
+  - Notifications: ServerProvisioningCompleted
+
+### Improved
+
+- Browser test coverage expanded from 769 to 897 tests (31 test files)
+- PHPStan compliance upgraded from Level 6 to Level 7
+- Union type handling and stricter type checks throughout codebase
+
+---
+
+## [5.8.0] - 2025-12-05
+
+### Added
+
+- **EnvironmentsTest.php** - 50 browser tests for environment management
+  - Environment variables CRUD operations
+  - Environment cloning and switching
+  - Secrets management
+  - Deployment settings per environment
+
+- **PipelinesTest.php** - 45 browser tests for CI/CD pipelines
+  - Pipeline creation and configuration
+  - Stage management and execution
+  - Approval workflows
+  - Notifications and rollback
+
+- **TenantsTest.php** - 43 browser tests for multi-tenant management
+  - Tenant CRUD operations
+  - Database management and migrations
+  - Deployment management
+  - Billing and subscription
+
+- **GitHubIntegrationTest.php** - 35 browser tests for GitHub integration
+  - OAuth flow and connection management
+  - Repository listing and import
+  - Webhook configuration
+  - Branch and commit history
+
+### Fixed
+
+- Code style compliance with Laravel Pint (308 files fixed)
+
+### Improved
+
+- Browser test coverage expanded from 596 to 769 tests (24 test files)
+- Test coverage now includes: Environments, Pipelines, Tenants, GitHub Integration
+
+---
+
+## [5.7.0] - 2025-12-05
+
+### Added
+
+- **DomainsTest.php** - 30 comprehensive browser tests for domain management
+  - Domain creation, editing, and deletion
+  - Domain verification and DNS configuration
+  - Domain SSL integration testing
+  - Primary domain management
+  - Domain bulk operations
+
+- **WebhooksTest.php** - 35 browser tests for webhook functionality
+  - Webhook creation and configuration
+  - Webhook event types and filtering
+  - Webhook secret management and security
+  - Webhook delivery monitoring
+  - Webhook retry functionality
+
+- **StorageTest.php** - 35 browser tests for storage configuration
+  - Storage driver configuration (local, S3, etc.)
+  - Storage connection testing
+  - Storage analytics and monitoring
+  - Storage cleanup operations
+  - Multi-storage management
+
+### Fixed
+
+- **PHPStan Level 6 Compliance** - Complete PHPStan Level 6 Compliance Achieved (0 errors!)
+  - Fixed 146+ type errors across the entire codebase
+  - All Eloquent models now have proper HasFactory generics
+  - All relationship methods have correct BelongsTo/HasMany/HasOne generics
+  - All Livewire components have proper property types and PHPDoc annotations
+  - All Service classes have proper return types and array annotations
+
+- **PHPStan Level 6 Compliance** - Eloquent Models Fixed (40+ models)
+  - `Team`, `ApiToken`, `BackupSchedule`, `Deployment`, `DeploymentScript`
+  - `Domain`, `PipelineConfig`, `FileBackup`, `FirewallRule`, `HealthCheckResult`
+  - `NotificationLog`, `NotificationChannel`, `Project`, `SSLCertificate`, `Server`
+  - `ServerMetric`, `User`, `WebhookDelivery`, `ProjectAnalytic`, `ProjectSetupTask`
+  - `ProvisioningLog`, `ResourceAlert`, `SSHKey`, `ServerBackupSchedule`
+  - `ServerTag`, `SshConfiguration`, `StorageConfiguration`, `Tenant`, `UserSettings`
+  - `AuditLog`, `DeploymentComment`, `GitHubConnection`, `PipelineStage`
+
+- **PHPStan Level 6 Compliance** - Livewire Components Fixed (50+ components)
+  - Dashboard and Health Dashboard components
+  - All Deployments components (DeploymentList, ScheduledDeployments)
+  - All Projects components (ProjectList, ProjectShow, ProjectConfiguration, etc.)
+  - All Servers components (ServerShow, SSHTerminal, ServerBackupManager, etc.)
+  - All Settings components (QueueMonitor, StorageSettings, SystemStatus, etc.)
+  - All Teams/Users components
+  - All Logs components (LogViewer, NotificationLogs, SecurityAuditLog, etc.)
+  - SSL Manager with confirmation modals
+
+- **PHPStan Level 6 Compliance** - Services Fixed (15+ services)
+  - `LogAggregationService`, `SSLManagementService`, `ServerSecurityService`
+  - `ServerMetricsService`, `MultiTenantService`, `AlertNotificationService`
+  - `PipelineExecutionService`, `PipelineService`, `DeploymentScriptService`
+  - `DeploymentApprovalService`, `FileBackupService`, `GPSService`
+  - `DatabaseBackupService`, `AuditService`, `BulkServerActionService`
+
+- **PHPStan Level 6 Compliance** - Console Commands Fixed
+  - `CleanupBackups` - Fixed Collection parameter type
+  - `RunQualityTests` - Fixed parameter types
+
+- **PHPStan Level 6 Compliance** - Notifications Fixed
+  - `UserMentionedInComment`, `DeploymentApprovalRequested`
+  - `SSLCertificateExpiring`, `SSLCertificateRenewed`, `ServerProvisioningCompleted`
+
+### Improved
+
+- **Code Quality** - PHPStan Level 6 Complete Compliance
+  - Total errors reduced from 146 to 0 (100% reduction!)
+  - All models have proper generic type annotations
+  - All relationships properly typed with `$this` parameter
+  - All array properties have value type specifications
+  - All Collection return types have proper generics
+
+- **Test Coverage** - Expanded browser test suite
+  - Total browser test coverage now at 596 tests (20 test files)
+  - Comprehensive domain management testing
+  - Full webhook functionality test coverage
+  - Storage configuration thoroughly tested
+
+---
+
+## [5.6.0] - 2025-12-05
+
+### Added
+
+- **SSLTest.php** - 30 comprehensive browser tests for SSL certificate management
+  - SSL certificate creation and renewal
+  - SSL certificate validation and verification
+  - SSL certificate monitoring and alerts
+  - SSL certificate auto-renewal configuration
+  - SSL certificate domain management
+
+- **HealthChecksTest.php** - 35 browser tests for health check functionality
+  - Health check dashboard and monitoring
+  - Health check configuration management
+  - Health check execution and reporting
+  - Health check alerting and notifications
+  - Health check history and analytics
+
+- **ScriptsTest.php** - 30 browser tests for scripts/automation
+  - Script creation and management
+  - Script execution and scheduling
+  - Script output and logging
+  - Script configuration and parameters
+  - Script error handling and recovery
+
+### Fixed
+
+- **PHPStan Level 6 Compliance** - Eloquent models now pass Level 6
+  - `TenantDeployment` - Enhanced multi-tenant deployment type safety
+  - `TeamInvitation` - Fixed team invitation type declarations
+  - `SecurityScan` - Added security scanning type hints
+  - `SecurityEvent` - Enhanced security event type safety
+  - `PipelineStageRun` - Fixed pipeline execution types
+  - `Pipeline` - Added CI/CD pipeline type declarations
+  - `KubernetesCluster` - Enhanced K8s cluster type safety
+  - `GitHubRepository` - Fixed repository integration types
+
+- **PHPStan Level 6 Compliance** - Services now pass Level 6
+  - `SlackDiscordNotificationService` - Fixed notification service type declarations
+
+### Improved
+
+- **Code Quality** - Further reduced PHPStan errors
+  - Total errors reduced from ~172 to ~140 (19% reduction)
+  - Level 6 compliance for security and deployment models
+  - Enhanced type safety across critical infrastructure components
+  - Better error detection for multi-tenant operations
+
+- **Test Coverage** - Expanded browser test suite significantly
+  - Total browser test coverage now at 496 tests (17 test files)
+  - Comprehensive SSL certificate management testing
+  - Full health check functionality test coverage
+  - Scripts and automation thoroughly tested
+
+---
+
+## [5.5.0] - 2025-12-05
+
+### Added
+
+- **ProjectsTest.php** - 35 comprehensive browser tests for project management
+  - Project CRUD operations and validation
+  - Project configuration management
+  - Project deployment workflows
+  - Project status monitoring
+  - Project environment management
+
+- **BackupsTest.php** - 29 browser tests for backup functionality
+  - Backup creation and scheduling
+  - Backup restoration operations
+  - Backup history and management
+  - Backup configuration testing
+  - Backup validation and verification
+
+- **NotificationsTest.php** - 35 browser tests for notification management
+  - Notification dashboard functionality
+  - Notification preferences configuration
+  - Notification delivery testing
+  - Notification filtering and search
+  - Notification channels management
+
+### Fixed
+
+- **PHPStan Level 6 Compliance** - Livewire components now pass Level 6
+  - `DeploymentShow` - Enhanced deployment display types and properties
+
+- **PHPStan Level 6 Compliance** - Eloquent models now pass Level 6
+  - `DeploymentApproval` - Added approval workflow type declarations
+  - `DeploymentScriptRun` - Fixed script execution type safety
+  - `ResourceAlert` - Enhanced resource monitoring types
+  - `ServerBackup` - Added backup metadata type hints
+  - `TeamMember` - Fixed team relationship types
+
+- **PHPStan Level 6 Compliance** - Services now pass Level 6
+  - `AuditService` - Added comprehensive audit logging types
+  - `BulkServerActionService` - Fixed bulk operation type safety
+  - `DatabaseBackupService` - Enhanced backup service type declarations
+
+### Improved
+
+- **Code Quality** - Reduced PHPStan errors significantly
+  - Total errors reduced from ~217 to ~180 (17% reduction)
+  - Level 6 compliance for deployment components
+  - Enhanced type safety across service layer
+  - Better error detection during development
+
+- **Test Coverage** - Expanded browser test suite
+  - Total browser test coverage now at 301 tests (14 test files)
+  - Comprehensive project management testing
+  - Full backup functionality test coverage
+  - Notification system thoroughly tested
+
+---
+
+## [5.4.0] - 2025-12-05
+
+### Added
+
+- **DeploymentsTest.php** - 30 comprehensive browser tests for deployment management
+  - Deployment dashboard navigation and functionality
+  - Deployment creation and execution
+  - Deployment rollback operations
+  - Deployment history and logs viewing
+  - Deployment status monitoring
+  - Deployment configuration management
+
+- **ServersTest.php** - 40 browser tests for server management
+  - Server CRUD operations
+  - Server connection testing
+  - Server metrics and monitoring
+  - Server configuration management
+  - SSH key management
+  - Server health checks
+
+- **AnalyticsTest.php** - 35 browser tests for analytics dashboard
+  - Analytics dashboard navigation
+  - Metrics visualization and charts
+  - Data filtering and date ranges
+  - Export functionality
+  - Performance analytics
+  - Resource usage tracking
+
+### Fixed
+
+- **PHPStan Level 6 Compliance** - Auth components now pass Level 6
+  - `Login` - Added strict types and proper form validation
+  - `Register` - Fixed property types and registration flow
+  - `ForgotPassword` - Enhanced type safety for password reset
+
+- **PHPStan Level 6 Compliance** - Livewire components now pass Level 6
+  - `ServerList` - Fixed collection type hints and return types
+  - `SSHKeyManager` - Added proper SSH key type declarations
+  - `ApiTokenManager` - Enhanced token management types
+  - `ServerMetricsDashboard` - Fixed metrics array shapes
+  - `AnalyticsDashboard` - Added proper analytics data types
+
+- **PHPStan Level 6 Compliance** - Eloquent models now pass Level 6
+  - `Tenant` - Added relationship return types and tenant data
+  - `ProjectTemplate` - Fixed template configuration types
+  - `PipelineRun` - Enhanced pipeline execution types
+  - `LogSource` - Added log data type declarations
+  - `AlertHistory` - Fixed alert tracking types
+
+### Improved
+
+- **Code Quality** - Reduced PHPStan errors significantly
+  - Total errors reduced from ~270 to ~220 (18% reduction)
+  - Level 6 compliance for authentication components
+  - Enhanced type safety across core Livewire components
+  - Better error detection during development
+
+- **Test Coverage** - Expanded browser test suite
+  - Total browser test coverage now at 197 tests (8 test files)
+  - Comprehensive deployment workflow testing
+  - Full server management test coverage
+  - Analytics dashboard thoroughly tested
+
+---
+
+## [5.3.0] - 2025-12-05
+
+### Added
+
+- **DockerTest.php** - 25 comprehensive browser tests for Docker management
+  - Docker dashboard navigation and functionality
+  - Container lifecycle operations (start, stop, restart)
+  - Container log viewing and refresh
+  - Image management (build, pull, delete)
+  - Volume and network operations
+  - Container stats and metrics
+  - Resource cleanup and pruning
+
+- **KubernetesTest.php** - 30 browser tests for Kubernetes cluster management
+  - Cluster management dashboard
+  - Pod lifecycle operations
+  - Service and deployment management
+  - ConfigMap and Secret operations
+  - Namespace management
+  - Cluster health monitoring
+  - Resource scaling operations
+
+- **AdminTest.php** - 30 browser tests for user/admin management
+  - User CRUD operations
+  - Role and permission management
+  - Team management functionality
+  - API token management
+  - System settings configuration
+  - Audit log viewing
+  - User activity monitoring
+
+### Fixed
+
+- **PHPStan Level 6 Compliance** - 15+ Livewire components now pass Level 6
+  - `ProjectDockerManagement` - Added strict types and PHPDoc annotations
+  - `UserList` - Fixed collection type hints and return types
+  - `SystemAdmin` - Added proper property declarations
+  - `DockerDashboard` - Fixed array shape annotations
+  - `ServerCreate` - Enhanced validation type hints
+  - `ServerEdit` - Fixed property types and nullability
+  - `DeploymentRollback` - Added proper type declarations
+  - `DeploymentNotifications` - Fixed notification types
+  - `ServerTagManager` - Added tag collection types
+  - `SystemStatus` - Fixed status check return types
+
+- **PHPStan Level 6 Compliance** - 8+ Eloquent models now pass Level 6
+  - `FileBackup` - Added relationship return types
+  - `PipelineStage` - Fixed property types and relationships
+  - `DatabaseBackup` - Enhanced type safety for backup methods
+  - `BackupSchedule` - Added proper datetime type hints
+  - `NotificationChannel` - Fixed channel type declarations
+  - `Team` - Added team member relationship types
+  - `StorageConfiguration` - Fixed config array types
+  - `HealthCheck` - Added check result types
+  - `ScheduledDeployment` - Fixed scheduling type hints
+
+### Improved
+
+- **Type Safety** - Comprehensive type coverage across the codebase
+  - Strict type declarations (`declare(strict_types=1);`) added throughout
+  - Generic type hints for collections (e.g., `Collection<int, Project>`)
+  - Array shape annotations for complex data structures
+  - Proper nullability declarations for optional values
+  - Better IDE autocomplete support
+
+- **Code Quality** - Reduced PHPStan errors significantly
+  - Total errors reduced from 416 to ~300 (28% reduction)
+  - Level 6 compliance for core components
+  - Improved maintainability and debugging
+  - Better error detection during development
+  - Enhanced code documentation
+
+---
+
+## [5.2.0] - 2025-12-05
+
+### Added
+
+- **Browser Tests** - New comprehensive test files for enhanced test coverage
+  - `TeamsTest.php` with 20 tests covering team management functionality
+    - Team creation, listing, and deletion
+    - Team member management
+    - Team invitations and acceptance
+    - Team switching and role management
+  - `SecurityTest.php` with 20 tests for security features
+    - SSH key management
+    - Security dashboard and scores
+    - Firewall configuration
+    - Security audit logs
+  - `SettingsTest.php` for testing settings pages functionality
+
+### Changed
+
+- **PHPStan Type Declarations** - Enhanced type safety across 8 Livewire components
+  - `ProjectCreate.php` - Added proper return types and property declarations
+  - `ProjectEdit.php` - Improved type hints for project editing operations
+  - `ProjectEnvironment.php` - Type-safe environment variable management
+  - `Dashboard.php` - Proper return types for dashboard methods
+  - `TenantManager.php` - Type hints for tenant operations
+  - `ClusterManager.php` - Enhanced cluster management type safety
+  - `ScriptManager.php` - Type-safe script execution
+  - `SSLManager.php` - Improved SSL certificate type declarations
+
+### Fixed
+
+- **N+1 Query Optimizations** - Significant performance improvements in 5 components
+  - `HealthDashboard.php` - 87% query reduction with eager loading
+    - Added `with('server', 'domains')` to project queries
+    - Implemented computed property caching for health data
+  - `ProjectShow.php` - Added domains eager loading to prevent N+1 queries
+  - `SecurityAuditLog.php` - Added computed property caching for log filtering
+  - `SSLManager.php` - Optimized certificate queries with proper eager loading
+  - `Dashboard.php` - Fixed activity feed N+1 with relationship preloading
+
+### Documentation
+
+- Updated `ROADMAP.md` with complete v5.x release history and progress tracking
+
+---
+
+## [5.1.0] - 2025-12-05
+
+### Added
+
+- **Browser Tests with Dusk** - Comprehensive Dusk browser tests for server management
+  - 20 tests covering server list, CRUD operations, and quick actions
+  - UI-based login trait for testing against production server
+  - Session driver configuration for Dusk environment
+
+### Security
+
+- **Public Page Security Hardening** - Removed infrastructure exposure from public pages
+  - Removed IP address fallback from project URLs
+  - HTTPS-only URL construction
+  - No server names or ports displayed publicly
+  - Projects without domains are filtered from public views
+
+### Changed
+
+- **NileStack Branding** - Updated branding across the platform
+  - NileStack logo in navigation header
+  - NileStack attribution in footer
+  - Updated meta tags (og:site_name, author)
+  - favicon.svg and apple-touch-icon.svg assets
+
+- **Dashboard Enhancements** - Extended dashboard with more metrics
+  - SSL Certificates card with expiring_soon warnings
+  - Health Checks card with healthy/down counts
+  - Queue Jobs card with pending/failed counts
+  - Security Score card aggregated from servers
+  - Deploy All quick action button
+  - Clear All Caches quick action button
+  - Activity feed with timeline layout
+  - Server health summary with progress bars
+  - Collapsible sections with user preferences
+
+- **Design Consistency** - Unified design language
+  - Team list page gradient hero header (indigo-purple-pink)
+  - Health dashboard gradient header (emerald-teal-cyan)
+  - Health check manager gradient header (blue-indigo)
+  - Consistent rounded-2xl and shadow-xl styling
+
+### Files Modified
+
+- `app/Livewire/Home/HomePublic.php` - Security: removed IP fallback
+- `resources/views/livewire/home/home-public.blade.php` - NileStack branding
+- `resources/views/layouts/marketing.blade.php` - Meta tags update
+- `app/Livewire/Dashboard.php` - Extended stats and quick actions
+- `resources/views/livewire/dashboard.blade.php` - Enhanced UI
+- `resources/views/livewire/teams/team-list.blade.php` - Gradient hero
+- `resources/views/livewire/dashboard/health-dashboard.blade.php` - Gradient header
+- `resources/views/livewire/settings/health-check-manager.blade.php` - Gradient header
+- `tests/Browser/ServerManagementTest.php` - 20 browser tests
+- `tests/Browser/Traits/LoginViaUI.php` - UI-based login trait
+
+---
+
 ## [5.0.2] - 2025-12-04
 
 ### Fixed

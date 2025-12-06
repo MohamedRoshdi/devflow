@@ -4,15 +4,21 @@ declare(strict_types=1);
 
 namespace App\Livewire\Deployments;
 
-use App\Models\{Deployment, DeploymentComment, User};
+use App\Models\Deployment;
+use App\Models\DeploymentComment;
+use App\Models\User;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use Livewire\Component;
-use Livewire\Attributes\{Computed, On};
 
 class DeploymentComments extends Component
 {
     public Deployment $deployment;
+
     public string $newComment = '';
+
     public ?int $editingCommentId = null;
+
     public string $editingContent = '';
 
     public function mount(Deployment $deployment): void
@@ -43,7 +49,7 @@ class DeploymentComments extends Component
 
         // Extract and save mentions
         $mentions = $comment->extractMentions();
-        if (!empty($mentions)) {
+        if (! empty($mentions)) {
             $comment->update(['mentions' => $mentions]);
 
             // Notify mentioned users
@@ -52,7 +58,7 @@ class DeploymentComments extends Component
 
         $this->dispatch('notification', [
             'type' => 'success',
-            'message' => 'Comment added successfully'
+            'message' => 'Comment added successfully',
         ]);
 
         $this->reset('newComment');
@@ -67,8 +73,9 @@ class DeploymentComments extends Component
         if ($comment->user_id !== auth()->id()) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'You can only edit your own comments'
+                'message' => 'You can only edit your own comments',
             ]);
+
             return;
         }
 
@@ -87,8 +94,9 @@ class DeploymentComments extends Component
         if ($comment->user_id !== auth()->id()) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'You can only edit your own comments'
+                'message' => 'You can only edit your own comments',
             ]);
+
             return;
         }
 
@@ -100,7 +108,7 @@ class DeploymentComments extends Component
 
         $this->dispatch('notification', [
             'type' => 'success',
-            'message' => 'Comment updated successfully'
+            'message' => 'Comment updated successfully',
         ]);
 
         $this->reset('editingCommentId', 'editingContent');
@@ -115,13 +123,15 @@ class DeploymentComments extends Component
     public function deleteComment(int $commentId): void
     {
         $comment = DeploymentComment::findOrFail($commentId);
+        $user = auth()->user();
 
         // Only allow deleting own comments or if user is admin
-        if ($comment->user_id !== auth()->id() && !auth()->user()->can('manage_all_comments')) {
+        if ($user === null || ($comment->user_id !== auth()->id() && ! $user->can('manage_all_comments'))) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'You can only delete your own comments'
+                'message' => 'You can only delete your own comments',
             ]);
+
             return;
         }
 
@@ -129,7 +139,7 @@ class DeploymentComments extends Component
 
         $this->dispatch('notification', [
             'type' => 'success',
-            'message' => 'Comment deleted successfully'
+            'message' => 'Comment deleted successfully',
         ]);
 
         unset($this->comments);

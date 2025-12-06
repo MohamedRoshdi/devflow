@@ -2,61 +2,90 @@
 
 namespace App\Livewire\Projects;
 
-use Livewire\Component;
-use App\Models\Project;
-use App\Models\Server;
-use App\Models\Domain;
-use App\Models\ProjectTemplate;
-use App\Models\UserSettings;
-use App\Services\ServerConnectivityService;
-use App\Services\ProjectSetupService;
 use App\Jobs\ProcessProjectSetupJob;
+use App\Models\Domain;
+use App\Models\Project;
+use App\Models\ProjectTemplate;
+use App\Models\Server;
+use App\Services\ProjectSetupService;
+use App\Services\ServerConnectivityService;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
+use Livewire\Component;
 
 class ProjectCreate extends Component
 {
     // Wizard state
     public int $currentStep = 1;
+
     public int $totalSteps = 4;
+
     public bool $showProgressModal = false;
+
     public ?int $createdProjectId = null;
 
     // Step 1: Basic Info
-    public $name = '';
-    public $slug = '';
-    public $server_id = '';
-    public $repository_url = '';
-    public $branch = 'main';
+    public string $name = '';
+
+    public string $slug = '';
+
+    public string $server_id = '';
+
+    public string $repository_url = '';
+
+    public string $branch = 'main';
 
     // Step 2: Framework & Build
-    public $framework = '';
-    public $php_version = '8.3';
-    public $node_version = '20';
-    public $root_directory = '/';
-    public $build_command = '';
-    public $start_command = '';
-    public $auto_deploy = false;
-    public $latitude = null;
-    public $longitude = null;
+    public string $framework = '';
+
+    public string $php_version = '8.3';
+
+    public string $node_version = '20';
+
+    public string $root_directory = '/';
+
+    public string $build_command = '';
+
+    public string $start_command = '';
+
+    public bool $auto_deploy = false;
+
+    public ?float $latitude = null;
+
+    public ?float $longitude = null;
 
     // Step 3: Setup Options (feature toggles)
     public bool $enableSsl = true;
+
     public bool $enableWebhooks = true;
+
     public bool $enableHealthChecks = true;
+
     public bool $enableBackups = true;
+
     public bool $enableNotifications = true;
+
     public bool $enableAutoDeploy = false;
 
     // Template fields
-    public $selectedTemplateId = null;
-    public $install_commands = [];
-    public $build_commands = [];
-    public $post_deploy_commands = [];
+    public ?int $selectedTemplateId = null;
 
-    public $servers = [];
-    public $templates = [];
+    /** @var array<int, string> */
+    public array $install_commands = [];
 
-    public function mount()
+    /** @var array<int, string> */
+    public array $build_commands = [];
+
+    /** @var array<int, string> */
+    public array $post_deploy_commands = [];
+
+    /** @var Collection<int, Server> */
+    public Collection $servers;
+
+    /** @var Collection<int, ProjectTemplate> */
+    public Collection $templates;
+
+    public function mount(): void
     {
         // All servers are shared
         $this->servers = Server::orderByRaw("FIELD(status, 'online', 'maintenance', 'offline', 'error')")
@@ -65,8 +94,9 @@ class ProjectCreate extends Component
         $this->templates = ProjectTemplate::active()->get();
 
         // Load user's default settings for setup options
-        if (auth()->check()) {
-            $settings = auth()->user()->getSettings();
+        $user = auth()->user();
+        if ($user !== null) {
+            $settings = $user->getSettings();
             $this->enableSsl = $settings->default_enable_ssl;
             $this->enableWebhooks = $settings->default_enable_webhooks;
             $this->enableHealthChecks = $settings->default_enable_health_checks;
@@ -133,7 +163,7 @@ class ProjectCreate extends Component
         ]);
     }
 
-    public function selectTemplate($templateId)
+    public function selectTemplate(?int $templateId): void
     {
         $this->selectedTemplateId = $templateId;
 
@@ -154,7 +184,7 @@ class ProjectCreate extends Component
         }
     }
 
-    public function clearTemplate()
+    public function clearTemplate(): void
     {
         $this->selectedTemplateId = null;
         $this->framework = '';
@@ -167,12 +197,12 @@ class ProjectCreate extends Component
         $this->build_command = '';
     }
 
-    public function updatedName()
+    public function updatedName(): void
     {
         $this->slug = Str::slug($this->name);
     }
 
-    public function refreshServerStatus($serverId)
+    public function refreshServerStatus(int $serverId): void
     {
         $server = Server::find($serverId);
 
@@ -187,7 +217,8 @@ class ProjectCreate extends Component
         }
     }
 
-    public function rules()
+    /** @return array<string, mixed> */
+    public function rules(): array
     {
         return [
             'name' => 'required|string|max:255',
@@ -209,7 +240,7 @@ class ProjectCreate extends Component
         ];
     }
 
-    public function createProject()
+    public function createProject(): void
     {
         $this->validate();
 
@@ -257,7 +288,7 @@ class ProjectCreate extends Component
 
         // Initialize and run project setup
         $hasAnySetup = array_filter($setupConfig);
-        if (!empty($hasAnySetup)) {
+        if (! empty($hasAnySetup)) {
             app(ProjectSetupService::class)->initializeSetup($project, $setupConfig);
             ProcessProjectSetupJob::dispatch($project);
         }
@@ -268,7 +299,7 @@ class ProjectCreate extends Component
         $this->dispatch('project-created');
 
         // Don't redirect immediately - show progress modal
-        session()->flash('message', 'Project created successfully on port ' . $port . '!');
+        session()->flash('message', 'Project created successfully on port '.$port.'!');
     }
 
     public function closeProgressAndRedirect(): void
@@ -277,14 +308,15 @@ class ProjectCreate extends Component
         $this->redirect(route('projects.show', $this->createdProjectId), navigate: true);
     }
 
+    /** @return array<string, mixed> */
     public function getSetupProgressProperty(): array
     {
-        if (!$this->createdProjectId) {
+        if (! $this->createdProjectId) {
             return [];
         }
 
         $project = Project::with('setupTasks')->find($this->createdProjectId);
-        if (!$project) {
+        if (! $project) {
             return [];
         }
 
@@ -308,7 +340,7 @@ class ProjectCreate extends Component
 
         // Find the first available port
         for ($port = $startPort; $port <= $maxPort; $port++) {
-            if (!in_array($port, $usedPorts)) {
+            if (! in_array($port, $usedPorts)) {
                 return $port;
             }
         }
@@ -326,10 +358,10 @@ class ProjectCreate extends Component
         $baseDomain = config('app.base_domain', 'nilestack.duckdns.org');
 
         // Create subdomain based on project slug
-        $subdomain = $project->slug . '.' . $baseDomain;
+        $subdomain = $project->slug.'.'.$baseDomain;
 
         // Create IP:port domain as well
-        $ipDomain = $server ? $server->ip_address . ':' . $port : null;
+        $ipDomain = $server ? $server->ip_address.':'.$port : null;
 
         // Create primary subdomain
         Domain::create([
@@ -355,7 +387,8 @@ class ProjectCreate extends Component
         }
     }
 
-    public function getFrameworksProperty()
+    /** @return array<string, string> */
+    public function getFrameworksProperty(): array
     {
         return [
             '' => '-- Select Framework --',
@@ -369,7 +402,8 @@ class ProjectCreate extends Component
         ];
     }
 
-    public function getPhpVersionsProperty()
+    /** @return array<string, string> */
+    public function getPhpVersionsProperty(): array
     {
         return [
             '8.4' => 'PHP 8.4 (Latest)',
@@ -386,4 +420,3 @@ class ProjectCreate extends Component
         return view('livewire.projects.project-create');
     }
 }
-

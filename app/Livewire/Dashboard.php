@@ -2,52 +2,80 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-use App\Models\Server;
-use App\Models\Project;
+use App\Jobs\DeployProjectJob;
 use App\Models\Deployment;
-use App\Models\SSLCertificate;
 use App\Models\HealthCheck;
-use App\Models\ServerMetric;
+use App\Models\Project;
+use App\Models\Server;
+use App\Models\SSLCertificate;
 use App\Models\UserSettings;
-use Livewire\Attributes\On;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use App\Jobs\DeployProjectJob;
+use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\On;
+use Livewire\Component;
 
 class Dashboard extends Component
 {
-    public $stats = [];
+    /** @var array<string, int> */
+    public array $stats = [];
+
+    /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\Deployment>|array<int, mixed> */
     public $recentDeployments = [];
-    public $serverMetrics = [];
+
+    /** @var array<int, mixed> */
+    public array $serverMetrics = [];
+
+    /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\Project>|array<int, mixed> */
     public $projects = [];
-    public $sslStats = [];
-    public $healthCheckStats = [];
-    public $recentActivity = [];
-    public $serverHealth = [];
-    public $deploymentsToday = 0;
+
+    /** @var array<string, mixed> */
+    public array $sslStats = [];
+
+    /** @var array<string, mixed> */
+    public array $healthCheckStats = [];
+
+    /** @var array<int, array<string, mixed>> */
+    public array $recentActivity = [];
+
+    /** @var array<int, array<string, mixed>> */
+    public array $serverHealth = [];
+
+    public int $deploymentsToday = 0;
 
     // New properties for enhanced dashboard
     public bool $showQuickActions = true;
+
     public bool $showActivityFeed = true;
+
     public bool $showServerHealth = true;
+
+    /** @var array<string, int> */
     public array $queueStats = [];
+
     public int $overallSecurityScore = 0;
+
+    /** @var array<int, string> */
     public array $collapsedSections = [];
+
     public int $activeDeployments = 0;
+
+    /** @var array<int, array<string, mixed>> */
     public array $deploymentTimeline = [];
 
     // Lazy loading properties for activity feed
     public int $activityPerPage = 5;
+
     public bool $loadingMoreActivity = false;
 
     // Widget order for drag-and-drop customization
+    /** @var array<int, string> */
     public array $widgetOrder = [];
+
     public bool $editMode = false;
 
     // Default widget order
+    /** @var array<int, string> */
     public const DEFAULT_WIDGET_ORDER = [
         'stats_cards',
         'quick_actions',
@@ -55,7 +83,7 @@ class Dashboard extends Component
         'deployment_timeline',
     ];
 
-    public function mount()
+    public function mount(): void
     {
         $this->loadUserPreferences();
         $this->loadStats();
@@ -73,7 +101,7 @@ class Dashboard extends Component
     }
 
     #[On('refresh-dashboard')]
-    public function loadStats()
+    public function loadStats(): void
     {
         // All resources are shared across all users
         // Cache for 60 seconds to improve performance
@@ -103,7 +131,7 @@ class Dashboard extends Component
         }
     }
 
-    public function loadRecentDeployments()
+    public function loadRecentDeployments(): void
     {
         // All deployments are shared
         $this->recentDeployments = Deployment::with(['project', 'server'])
@@ -112,7 +140,7 @@ class Dashboard extends Component
             ->get();
     }
 
-    public function loadProjects()
+    public function loadProjects(): void
     {
         // All projects are shared
         $this->projects = Project::with(['server', 'domains'])
@@ -121,7 +149,7 @@ class Dashboard extends Component
             ->get();
     }
 
-    public function loadSSLStats()
+    public function loadSSLStats(): void
     {
         // Cache for 5 minutes (300 seconds) - SSL data doesn't change frequently
         try {
@@ -174,7 +202,7 @@ class Dashboard extends Component
         }
     }
 
-    public function loadHealthCheckStats()
+    public function loadHealthCheckStats(): void
     {
         // Cache for 2 minutes (120 seconds) - health checks update frequently
         try {
@@ -209,13 +237,13 @@ class Dashboard extends Component
         }
     }
 
-    public function loadDeploymentsToday()
+    public function loadDeploymentsToday(): void
     {
         $today = now()->startOfDay();
         $this->deploymentsToday = Deployment::where('created_at', '>=', $today)->count();
     }
 
-    public function loadRecentActivity()
+    public function loadRecentActivity(): void
     {
         $deploymentsLimit = 4;
         $projectsLimit = 1;
@@ -229,7 +257,7 @@ class Dashboard extends Component
                 return [
                     'type' => 'deployment',
                     'id' => $deployment->id,
-                    'title' => "Deployment: {$deployment->project->name}",
+                    'title' => 'Deployment: '.($deployment->project?->name ?? 'Unknown'),
                     'description' => "Deployment on branch {$deployment->branch} - {$deployment->status}",
                     'status' => $deployment->status,
                     'user' => $deployment->user?->name ?? 'System',
@@ -266,7 +294,7 @@ class Dashboard extends Component
             ->all();
     }
 
-    public function loadMoreActivity()
+    public function loadMoreActivity(): void
     {
         $this->loadingMoreActivity = true;
 
@@ -276,6 +304,7 @@ class Dashboard extends Component
 
         if ($currentCount >= $maxItems) {
             $this->loadingMoreActivity = false;
+
             return;
         }
 
@@ -296,7 +325,7 @@ class Dashboard extends Component
                 return [
                     'type' => 'deployment',
                     'id' => $deployment->id,
-                    'title' => "Deployment: {$deployment->project->name}",
+                    'title' => 'Deployment: '.($deployment->project?->name ?? 'Unknown'),
                     'description' => "Deployment on branch {$deployment->branch} - {$deployment->status}",
                     'status' => $deployment->status,
                     'user' => $deployment->user?->name ?? 'System',
@@ -340,7 +369,7 @@ class Dashboard extends Component
         $this->loadingMoreActivity = false;
     }
 
-    public function loadServerHealth()
+    public function loadServerHealth(): void
     {
         // Cache for 1 minute (60 seconds) - server metrics change frequently
         try {
@@ -352,7 +381,7 @@ class Dashboard extends Component
                 return $servers->map(function ($server) {
                     $latestMetric = $server->latestMetric;
 
-                    if (!$latestMetric) {
+                    if (! $latestMetric) {
                         return [
                             'server_id' => $server->id,
                             'server_name' => $server->name,
@@ -399,7 +428,7 @@ class Dashboard extends Component
             $this->serverHealth = $servers->map(function ($server) {
                 $latestMetric = $server->latestMetric;
 
-                if (!$latestMetric) {
+                if (! $latestMetric) {
                     return [
                         'server_id' => $server->id,
                         'server_name' => $server->name,
@@ -645,12 +674,12 @@ class Dashboard extends Component
 
             $this->dispatch('notification', [
                 'type' => 'success',
-                'message' => 'All caches cleared successfully!'
+                'message' => 'All caches cleared successfully!',
             ]);
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Failed to clear caches: ' . $e->getMessage()
+                'message' => 'Failed to clear caches: '.$e->getMessage(),
             ]);
         }
     }
@@ -668,8 +697,9 @@ class Dashboard extends Component
             if ($projects->isEmpty()) {
                 $this->dispatch('notification', [
                     'type' => 'warning',
-                    'message' => 'No active projects found to deploy.'
+                    'message' => 'No active projects found to deploy.',
                 ]);
+
                 return;
             }
 
@@ -695,12 +725,12 @@ class Dashboard extends Component
 
             $this->dispatch('notification', [
                 'type' => 'success',
-                'message' => "Deploying {$deploymentCount} projects. Check deployments page for progress."
+                'message' => "Deploying {$deploymentCount} projects. Check deployments page for progress.",
             ]);
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Failed to deploy projects: ' . $e->getMessage()
+                'message' => 'Failed to deploy projects: '.$e->getMessage(),
             ]);
         }
     }
@@ -711,9 +741,10 @@ class Dashboard extends Component
     private function loadUserPreferences(): void
     {
         // Check if user is authenticated
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             $this->collapsedSections = [];
             $this->widgetOrder = self::DEFAULT_WIDGET_ORDER;
+
             return;
         }
 
@@ -724,7 +755,7 @@ class Dashboard extends Component
 
             // Ensure all default widgets are present (in case new widgets are added)
             foreach (self::DEFAULT_WIDGET_ORDER as $widget) {
-                if (!in_array($widget, $this->widgetOrder)) {
+                if (! in_array($widget, $this->widgetOrder)) {
                     $this->widgetOrder[] = $widget;
                 }
             }
@@ -741,7 +772,7 @@ class Dashboard extends Component
     private function saveCollapsedSections(): void
     {
         // Check if user is authenticated
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return;
         }
 
@@ -771,7 +802,7 @@ class Dashboard extends Component
 
         $this->dispatch('notification', [
             'type' => 'success',
-            'message' => 'Dashboard layout saved!'
+            'message' => 'Dashboard layout saved!',
         ]);
     }
 
@@ -781,7 +812,7 @@ class Dashboard extends Component
     private function saveWidgetOrder(): void
     {
         // Check if user is authenticated
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return;
         }
 
@@ -798,7 +829,7 @@ class Dashboard extends Component
      */
     public function toggleEditMode(): void
     {
-        $this->editMode = !$this->editMode;
+        $this->editMode = ! $this->editMode;
     }
 
     /**
@@ -811,10 +842,13 @@ class Dashboard extends Component
 
         $this->dispatch('notification', [
             'type' => 'success',
-            'message' => 'Dashboard layout reset to default!'
+            'message' => 'Dashboard layout reset to default!',
         ]);
     }
 
+    /**
+     * @return \Illuminate\Contracts\View\View
+     */
     public function render()
     {
         return view('livewire.dashboard');

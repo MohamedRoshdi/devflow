@@ -9,7 +9,8 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles;
+    /** @use HasFactory<\Database\Factories\UserFactory> */
+    use HasFactory, HasRoles, Notifiable;
 
     protected $fillable = [
         'name',
@@ -127,11 +128,9 @@ class User extends Authenticatable
     public function getAvatarUrlAttribute(): string
     {
         if ($this->avatar) {
-            return asset('storage/' . $this->avatar);
+            return asset('storage/'.$this->avatar);
         }
 
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=ffffff&background=6366f1&bold=true';
+        return 'https://ui-avatars.com/api/?name='.urlencode($this->name).'&color=ffffff&background=6366f1&bold=true';
     }
 }
-
-

@@ -10,46 +10,63 @@ use Symfony\Component\Process\Process;
 class ProjectEnvironment extends Component
 {
     #[Locked]
-    public $projectId;
+    public int $projectId;
 
-    public $environment;
-    public $envVariables = [];
-    public $showEnvModal = false;
-    public $newEnvKey = '';
-    public $newEnvValue = '';
-    public $editingEnvKey = null;
+    public string $environment;
+
+    /** @var array<string, string> */
+    public array $envVariables = [];
+
+    public bool $showEnvModal = false;
+
+    public string $newEnvKey = '';
+
+    public string $newEnvValue = '';
+
+    public ?string $editingEnvKey = null;
 
     // Server .env file properties
-    public $serverEnvVariables = [];
-    public $serverEnvLoading = false;
-    public $serverEnvError = null;
-    public $showServerEnvModal = false;
-    public $editingServerEnvKey = null;
-    public $serverEnvKey = '';
-    public $serverEnvValue = '';
+    /** @var array<string, string> */
+    public array $serverEnvVariables = [];
 
-    protected $rules = [
+    public bool $serverEnvLoading = false;
+
+    public ?string $serverEnvError = null;
+
+    public bool $showServerEnvModal = false;
+
+    public ?string $editingServerEnvKey = null;
+
+    public string $serverEnvKey = '';
+
+    public string $serverEnvValue = '';
+
+    /** @var array<string, string> */
+    protected array $rules = [
         'environment' => 'required|in:local,development,staging,production',
         'newEnvKey' => 'required|string|max:255',
         'newEnvValue' => 'string|max:1000',
     ];
 
-    public function mount(Project $project)
+    public function mount(Project $project): void
     {
         $this->projectId = $project->id;
         $this->environment = $project->environment ?? 'production';
-        $this->envVariables = $project->env_variables ? (array)$project->env_variables : [];
+
+        $envVars = $project->env_variables ? (array) $project->env_variables : [];
+        /** @var array<string, string> $envVars */
+        $this->envVariables = $envVars;
 
         // Load server .env on mount
         $this->loadServerEnv();
     }
 
-    protected function getProject()
+    protected function getProject(): Project
     {
         return Project::findOrFail($this->projectId);
     }
 
-    public function updateEnvironment($newEnvironment = null)
+    public function updateEnvironment(?string $newEnvironment = null): void
     {
         if ($newEnvironment) {
             $this->environment = $newEnvironment;
@@ -63,7 +80,7 @@ class ProjectEnvironment extends Component
         // Also update APP_ENV in the server's .env file
         $this->updateServerAppEnv($this->environment);
 
-        session()->flash('message', 'Environment updated to ' . ucfirst($this->environment));
+        session()->flash('message', 'Environment updated to '.ucfirst($this->environment));
         $this->dispatch('environmentUpdated');
     }
 
@@ -76,7 +93,7 @@ class ProjectEnvironment extends Component
             $project = $this->getProject();
             $server = $project->server;
 
-            if (!$server) {
+            if (! $server) {
                 return;
             }
 
@@ -85,10 +102,10 @@ class ProjectEnvironment extends Component
             // Update APP_ENV and APP_DEBUG based on environment
             $appDebug = in_array($environment, ['local', 'development']) ? 'true' : 'false';
 
-            $updateCommand = "cd {$projectPath} && " .
-                "if [ -f .env ]; then " .
-                "sed -i 's|^APP_ENV=.*|APP_ENV={$environment}|' .env && " .
-                "sed -i 's|^APP_DEBUG=.*|APP_DEBUG={$appDebug}|' .env && " .
+            $updateCommand = "cd {$projectPath} && ".
+                'if [ -f .env ]; then '.
+                "sed -i 's|^APP_ENV=.*|APP_ENV={$environment}|' .env && ".
+                "sed -i 's|^APP_DEBUG=.*|APP_DEBUG={$appDebug}|' .env && ".
                 "echo 'SUCCESS'; else echo 'NO_ENV'; fi";
 
             $sshCommand = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 {$server->username}@{$server->ip_address} \"{$updateCommand}\"";
@@ -103,11 +120,11 @@ class ProjectEnvironment extends Component
             }
         } catch (\Exception $e) {
             // Log error but don't fail the environment update
-            \Log::warning("Failed to update server APP_ENV: " . $e->getMessage());
+            \Log::warning('Failed to update server APP_ENV: '.$e->getMessage());
         }
     }
 
-    public function openEnvModal()
+    public function openEnvModal(): void
     {
         $this->showEnvModal = true;
         $this->newEnvKey = '';
@@ -115,13 +132,13 @@ class ProjectEnvironment extends Component
         $this->editingEnvKey = null;
     }
 
-    public function closeEnvModal()
+    public function closeEnvModal(): void
     {
         $this->showEnvModal = false;
         $this->resetValidation();
     }
 
-    public function addEnvVariable()
+    public function addEnvVariable(): void
     {
         $this->validate([
             'newEnvKey' => 'required|string|max:255',
@@ -136,7 +153,7 @@ class ProjectEnvironment extends Component
         session()->flash('message', 'Environment variable added successfully');
     }
 
-    public function editEnvVariable($key)
+    public function editEnvVariable(string $key): void
     {
         $this->editingEnvKey = $key;
         $this->newEnvKey = $key;
@@ -144,7 +161,7 @@ class ProjectEnvironment extends Component
         $this->showEnvModal = true;
     }
 
-    public function updateEnvVariable()
+    public function updateEnvVariable(): void
     {
         if ($this->editingEnvKey && $this->editingEnvKey !== $this->newEnvKey) {
             unset($this->envVariables[$this->editingEnvKey]);
@@ -157,14 +174,14 @@ class ProjectEnvironment extends Component
         session()->flash('message', 'Environment variable updated successfully');
     }
 
-    public function deleteEnvVariable($key)
+    public function deleteEnvVariable(string $key): void
     {
         unset($this->envVariables[$key]);
         $this->saveEnvVariables();
         session()->flash('message', 'Environment variable deleted successfully');
     }
 
-    protected function saveEnvVariables()
+    protected function saveEnvVariables(): void
     {
         $project = $this->getProject();
         $project->update(['env_variables' => $this->envVariables]);
@@ -173,7 +190,7 @@ class ProjectEnvironment extends Component
     /**
      * Load the .env file from the server
      */
-    public function loadServerEnv()
+    public function loadServerEnv(): void
     {
         $this->serverEnvLoading = true;
         $this->serverEnvError = null;
@@ -183,9 +200,10 @@ class ProjectEnvironment extends Component
             $project = $this->getProject();
             $server = $project->server;
 
-            if (!$server) {
+            if (! $server) {
                 $this->serverEnvError = 'No server configured for this project';
                 $this->serverEnvLoading = false;
+
                 return;
             }
 
@@ -199,17 +217,19 @@ class ProjectEnvironment extends Component
             $process->setTimeout(30);
             $process->run();
 
-            if (!$process->isSuccessful()) {
-                $this->serverEnvError = 'Failed to connect to server: ' . $process->getErrorOutput();
+            if (! $process->isSuccessful()) {
+                $this->serverEnvError = 'Failed to connect to server: '.$process->getErrorOutput();
                 $this->serverEnvLoading = false;
+
                 return;
             }
 
             $output = trim($process->getOutput());
 
             if ($output === '__ENV_NOT_FOUND__') {
-                $this->serverEnvError = 'No .env file found at ' . $envPath;
+                $this->serverEnvError = 'No .env file found at '.$envPath;
                 $this->serverEnvLoading = false;
+
                 return;
             }
 
@@ -217,7 +237,7 @@ class ProjectEnvironment extends Component
             $this->serverEnvVariables = $this->parseEnvFile($output);
 
         } catch (\Exception $e) {
-            $this->serverEnvError = 'Error: ' . $e->getMessage();
+            $this->serverEnvError = 'Error: '.$e->getMessage();
         }
 
         $this->serverEnvLoading = false;
@@ -225,6 +245,8 @@ class ProjectEnvironment extends Component
 
     /**
      * Parse .env file content into key-value array
+     *
+     * @return array<string, string>
      */
     protected function parseEnvFile(string $content): array
     {
@@ -251,7 +273,7 @@ class ProjectEnvironment extends Component
                     $value = substr($value, 1, -1);
                 }
 
-                if (!empty($key)) {
+                if (! empty($key)) {
                     $variables[$key] = $value;
                 }
             }
@@ -263,7 +285,7 @@ class ProjectEnvironment extends Component
     /**
      * Open modal to edit a server environment variable
      */
-    public function editServerEnvVariable($key)
+    public function editServerEnvVariable(string $key): void
     {
         $this->editingServerEnvKey = $key;
         $this->serverEnvKey = $key;
@@ -274,7 +296,7 @@ class ProjectEnvironment extends Component
     /**
      * Open modal to add a new server environment variable
      */
-    public function openServerEnvModal()
+    public function openServerEnvModal(): void
     {
         $this->editingServerEnvKey = null;
         $this->serverEnvKey = '';
@@ -285,7 +307,7 @@ class ProjectEnvironment extends Component
     /**
      * Close server env modal
      */
-    public function closeServerEnvModal()
+    public function closeServerEnvModal(): void
     {
         $this->showServerEnvModal = false;
         $this->serverEnvKey = '';
@@ -296,7 +318,7 @@ class ProjectEnvironment extends Component
     /**
      * Save a server environment variable
      */
-    public function saveServerEnvVariable()
+    public function saveServerEnvVariable(): void
     {
         $this->validate([
             'serverEnvKey' => 'required|string|max:255|regex:/^[A-Z][A-Z0-9_]*$/i',
@@ -318,9 +340,9 @@ class ProjectEnvironment extends Component
             $escapedValue = str_replace(['/', '&', '\\', '"', "'", "\n"], ['\\/', '\\&', '\\\\', '\\"', "\\'", '\\n'], $value);
 
             // Build SSH command to update or add the variable
-            $updateCommand = "cd {$projectPath} && " .
-                "if grep -q '^{$key}=' .env 2>/dev/null; then " .
-                "sed -i 's|^{$key}=.*|{$key}={$escapedValue}|' .env; " .
+            $updateCommand = "cd {$projectPath} && ".
+                "if grep -q '^{$key}=' .env 2>/dev/null; then ".
+                "sed -i 's|^{$key}=.*|{$key}={$escapedValue}|' .env; ".
                 "else echo '{$key}={$value}' >> .env; fi && echo 'SUCCESS'";
 
             $sshCommand = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 {$server->username}@{$server->ip_address} \"{$updateCommand}\"";
@@ -329,8 +351,9 @@ class ProjectEnvironment extends Component
             $process->setTimeout(30);
             $process->run();
 
-            if (!$process->isSuccessful() || !str_contains($process->getOutput(), 'SUCCESS')) {
-                session()->flash('error', 'Failed to save variable: ' . $process->getErrorOutput());
+            if (! $process->isSuccessful() || ! str_contains($process->getOutput(), 'SUCCESS')) {
+                session()->flash('error', 'Failed to save variable: '.$process->getErrorOutput());
+
                 return;
             }
 
@@ -341,14 +364,14 @@ class ProjectEnvironment extends Component
             session()->flash('message', "Environment variable '{$key}' saved successfully");
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Error saving variable: ' . $e->getMessage());
+            session()->flash('error', 'Error saving variable: '.$e->getMessage());
         }
     }
 
     /**
      * Delete a server environment variable
      */
-    public function deleteServerEnvVariable($key)
+    public function deleteServerEnvVariable(string $key): void
     {
         try {
             $project = $this->getProject();
@@ -364,8 +387,9 @@ class ProjectEnvironment extends Component
             $process->setTimeout(30);
             $process->run();
 
-            if (!$process->isSuccessful() || !str_contains($process->getOutput(), 'SUCCESS')) {
-                session()->flash('error', 'Failed to delete variable: ' . $process->getErrorOutput());
+            if (! $process->isSuccessful() || ! str_contains($process->getOutput(), 'SUCCESS')) {
+                session()->flash('error', 'Failed to delete variable: '.$process->getErrorOutput());
+
                 return;
             }
 
@@ -375,7 +399,7 @@ class ProjectEnvironment extends Component
             session()->flash('message', "Environment variable '{$key}' deleted successfully");
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Error deleting variable: ' . $e->getMessage());
+            session()->flash('error', 'Error deleting variable: '.$e->getMessage());
         }
     }
 

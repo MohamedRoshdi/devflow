@@ -2,14 +2,15 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\ServerBackupSchedule;
 use App\Services\ServerBackupService;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
 class RunServerBackupsCommand extends Command
 {
     protected $signature = 'server:backups';
+
     protected $description = 'Process all active server backup schedules';
 
     public function handle(ServerBackupService $backupService): int
@@ -20,6 +21,7 @@ class RunServerBackupsCommand extends Command
 
         if ($schedules->isEmpty()) {
             $this->info('No active backup schedules found.');
+
             return self::SUCCESS;
         }
 
@@ -27,14 +29,14 @@ class RunServerBackupsCommand extends Command
         $failedCount = 0;
 
         foreach ($schedules as $schedule) {
-            if (!$schedule->isDue()) {
+            if (! $schedule->isDue()) {
                 continue;
             }
 
             $this->info("Running {$schedule->type} backup for server #{$schedule->server_id}...");
 
             try {
-                $backup = match($schedule->type) {
+                $backup = match ($schedule->type) {
                     'full' => $backupService->createFullBackup($schedule->server),
                     'incremental' => $backupService->createIncrementalBackup($schedule->server),
                     'snapshot' => $backupService->createSnapshot($schedule->server),
@@ -45,7 +47,7 @@ class RunServerBackupsCommand extends Command
 
                 // Upload to S3 if configured
                 if ($schedule->storage_driver === 's3' && $backup->storage_driver === 'local') {
-                    $this->info("Uploading backup to S3...");
+                    $this->info('Uploading backup to S3...');
                     $backupService->uploadToS3($backup);
                 }
 

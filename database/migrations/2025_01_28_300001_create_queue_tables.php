@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         // Create jobs table if it doesn't exist
-        if (!Schema::hasTable('jobs')) {
+        if (! Schema::hasTable('jobs')) {
             Schema::create('jobs', function (Blueprint $table) {
                 $table->id();
                 $table->string('queue')->index();
@@ -25,7 +25,7 @@ return new class extends Migration
         }
 
         // Create job_batches table if it doesn't exist
-        if (!Schema::hasTable('job_batches')) {
+        if (! Schema::hasTable('job_batches')) {
             Schema::create('job_batches', function (Blueprint $table) {
                 $table->string('id')->primary();
                 $table->string('name');

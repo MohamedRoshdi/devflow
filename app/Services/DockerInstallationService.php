@@ -61,7 +61,7 @@ class DockerInstallationService
                 }
             }
 
-            $errorMessage = !empty($error) ? $error : (!empty($output) ? $output : 'Unknown error - no output from installation script');
+            $errorMessage = ! empty($error) ? $error : (! empty($output) ? $output : 'Unknown error - no output from installation script');
 
             Log::error('Docker installation failed', [
                 'server_id' => $server->id,
@@ -72,7 +72,7 @@ class DockerInstallationService
 
             return [
                 'success' => false,
-                'message' => 'Docker installation failed. ' . (strlen($errorMessage) > 200 ? substr($errorMessage, 0, 200) . '...' : $errorMessage),
+                'message' => 'Docker installation failed. '.(strlen($errorMessage) > 200 ? substr($errorMessage, 0, 200).'...' : $errorMessage),
                 'output' => $output,
                 'error' => $error,
             ];
@@ -85,7 +85,7 @@ class DockerInstallationService
 
             return [
                 'success' => false,
-                'message' => 'Installation failed: ' . $e->getMessage(),
+                'message' => 'Installation failed: '.$e->getMessage(),
                 'error' => $e->getMessage(),
             ];
         }
@@ -340,7 +340,7 @@ BASH;
             '-o UserKnownHostsFile=/dev/null',
             '-o ConnectTimeout=10',
             '-o LogLevel=ERROR',
-            '-p ' . $server->port,
+            '-p '.$server->port,
         ];
 
         $stderrRedirect = $suppressWarnings ? '2>/dev/null' : '2>&1';
@@ -353,7 +353,7 @@ BASH;
             $encodedScript = base64_encode($remoteCommand);
             $executeCommand = "echo {$encodedScript} | base64 -d | /bin/bash";
         } else {
-            $executeCommand = "/bin/bash -c " . escapeshellarg($remoteCommand);
+            $executeCommand = '/bin/bash -c '.escapeshellarg($remoteCommand);
         }
 
         // Check if password authentication should be used
@@ -379,7 +379,7 @@ BASH;
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
             file_put_contents($keyFile, $server->ssh_key);
             chmod($keyFile, 0600);
-            $sshOptions[] = '-i ' . $keyFile;
+            $sshOptions[] = '-i '.$keyFile;
         }
 
         return sprintf(
@@ -454,7 +454,7 @@ BASH;
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to check Docker Compose: ' . $e->getMessage(),
+                'message' => 'Failed to check Docker Compose: '.$e->getMessage(),
             ];
         }
     }

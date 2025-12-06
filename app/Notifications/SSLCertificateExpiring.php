@@ -6,9 +6,8 @@ namespace App\Notifications;
 
 use App\Models\SSLCertificate;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Messages\DatabaseMessage;
+use Illuminate\Notifications\Notification;
 
 class SSLCertificateExpiring extends Notification
 {
@@ -42,6 +41,9 @@ class SSLCertificateExpiring extends Notification
             ->line('Please ensure your certificate is renewed before expiry to avoid service disruption.');
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toDatabase(object $notifiable): array
     {
         $daysLeft = $this->certificate->daysUntilExpiry();

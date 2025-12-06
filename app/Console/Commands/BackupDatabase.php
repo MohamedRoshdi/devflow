@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Models\{Project, BackupSchedule};
+use App\Models\BackupSchedule;
+use App\Models\Project;
 use App\Services\DatabaseBackupService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -29,7 +30,7 @@ class BackupDatabase extends Command
     public function handle(DatabaseBackupService $backupService): int
     {
         $projectIdentifier = $this->argument('project');
-        $type = $this->option('type');
+        $type = $this->option('type') ?? 'full';
         $databaseName = $this->option('database');
 
         if ($projectIdentifier) {
@@ -53,8 +54,9 @@ class BackupDatabase extends Command
             ? Project::find($identifier)
             : Project::where('slug', $identifier)->first();
 
-        if (!$project) {
+        if (! $project) {
             $this->error("Project not found: {$identifier}");
+
             return self::FAILURE;
         }
 
@@ -70,7 +72,8 @@ class BackupDatabase extends Command
         $schedules = $query->get();
 
         if ($schedules->isEmpty()) {
-            $this->warn("No backup schedules configured for this project.");
+            $this->warn('No backup schedules configured for this project.');
+
             return self::SUCCESS;
         }
 
@@ -116,6 +119,7 @@ class BackupDatabase extends Command
 
         if ($projects->isEmpty()) {
             $this->warn('No projects with backup schedules found.');
+
             return self::SUCCESS;
         }
 

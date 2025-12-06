@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DeploymentScript extends Model
 {
+    /** @use HasFactory<\Database\Factories\DeploymentScriptFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -28,6 +29,9 @@ class DeploymentScript extends Model
         'timeout' => 'integer',
     ];
 
+    /**
+     * @return HasMany<DeploymentScriptRun, $this>
+     */
     public function runs(): HasMany
     {
         return $this->hasMany(DeploymentScriptRun::class);

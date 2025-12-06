@@ -2,13 +2,14 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Models\ServerMetric;
 use App\Models\ProjectAnalytic;
+use App\Models\ServerMetric;
+use Illuminate\Console\Command;
 
 class CleanupMetricsCommand extends Command
 {
     protected $signature = 'devflow:cleanup-metrics {--days=90}';
+
     protected $description = 'Clean up old metrics data';
 
     public function handle()
@@ -27,7 +28,7 @@ class CleanupMetricsCommand extends Command
         $this->info("Deleted {$deletedProjectAnalytics} project analytics");
 
         $this->info('Cleanup completed!');
+
         return 0;
     }
 }
-

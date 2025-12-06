@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ServerTag extends Model
 {
+    /** @use HasFactory<\Database\Factories\ServerTagFactory> */
     use HasFactory;
 
     protected $fillable = [

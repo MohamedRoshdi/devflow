@@ -2,14 +2,20 @@
 
 namespace App\Services\Notifications;
 
-use App\Models\Project;
 use App\Models\Deployment;
+use App\Models\Domain;
 use App\Models\NotificationChannel;
+use App\Models\Project;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class SlackDiscordNotificationService
 {
+    /**
+     * Slack color codes for different notification types
+     *
+     * @var array<string, string>
+     */
     protected array $colors = [
         'success' => '#36a64f',  // Green
         'warning' => '#ff9800',  // Orange
@@ -18,6 +24,11 @@ class SlackDiscordNotificationService
         'pending' => '#9e9e9e',  // Gray
     ];
 
+    /**
+     * Discord color codes (decimal) for different notification types
+     *
+     * @var array<string, int>
+     */
     protected array $discordColors = [
         'success' => 3066993,  // Green
         'warning' => 16753920, // Orange
@@ -189,7 +200,7 @@ class SlackDiscordNotificationService
                     'color' => $this->colors['error'],
                     'title' => "Deployment Failed: {$project->name}",
                     'title_link' => url("/projects/{$project->id}/deployments/{$deployment->id}"),
-                    'text' => "<!channel> Deployment failed and requires attention",
+                    'text' => '<!channel> Deployment failed and requires attention',
                     'fields' => [
                         [
                             'title' => 'Project',
@@ -276,7 +287,7 @@ class SlackDiscordNotificationService
                 ],
                 [
                     'name' => 'Commit',
-                    'value' => '`' . substr($deployment->commit_hash, 0, 7) . '`',
+                    'value' => '`'.substr($deployment->commit_hash, 0, 7).'`',
                     'inline' => true,
                 ],
                 [
@@ -320,7 +331,7 @@ class SlackDiscordNotificationService
                 ],
                 [
                     'name' => 'Version',
-                    'value' => '`' . substr($deployment->commit_hash, 0, 7) . '`',
+                    'value' => '`'.substr($deployment->commit_hash, 0, 7).'`',
                     'inline' => true,
                 ],
                 [
@@ -353,7 +364,7 @@ class SlackDiscordNotificationService
         return [
             'title' => "❌ Deployment Failed: {$project->name}",
             'url' => url("/projects/{$project->id}/deployments/{$deployment->id}"),
-            'description' => "@everyone Deployment failed and requires immediate attention",
+            'description' => '@everyone Deployment failed and requires immediate attention',
             'color' => $this->discordColors['error'],
             'fields' => [
                 [
@@ -368,13 +379,13 @@ class SlackDiscordNotificationService
                 ],
                 [
                     'name' => 'Error Message',
-                    'value' => '```' . substr($deployment->error_message, 0, 500) . '```',
+                    'value' => '```'.substr($deployment->error_message, 0, 500).'```',
                     'inline' => false,
                 ],
                 [
                     'name' => 'Actions',
-                    'value' => "[View Logs](" . url("/projects/{$project->id}/deployments/{$deployment->id}/logs") . ") | " .
-                               "[Rollback](" . url("/projects/{$project->id}/rollback") . ")",
+                    'value' => '[View Logs]('.url("/projects/{$project->id}/deployments/{$deployment->id}/logs").') | '.
+                               '[Rollback]('.url("/projects/{$project->id}/rollback").')',
                     'inline' => false,
                 ],
             ],
@@ -397,7 +408,7 @@ class SlackDiscordNotificationService
         return [
             'title' => "🏥 Health Check Failed: {$project->name}",
             'url' => url("/projects/{$project->id}/health"),
-            'description' => "Health check detected issues with the application",
+            'description' => 'Health check detected issues with the application',
             'color' => $this->discordColors['warning'],
             'fields' => [
                 [
@@ -412,12 +423,12 @@ class SlackDiscordNotificationService
                 ],
                 [
                     'name' => 'Response Time',
-                    'value' => ($healthData['response_time'] ?? 'N/A') . 'ms',
+                    'value' => ($healthData['response_time'] ?? 'N/A').'ms',
                     'inline' => true,
                 ],
                 [
                     'name' => 'Failed Checks',
-                    'value' => implode("\n", array_map(fn($check) => "• {$check}", $healthData['failed_checks'] ?? [])),
+                    'value' => implode("\n", array_map(fn ($check) => "• {$check}", $healthData['failed_checks'] ?? [])),
                     'inline' => false,
                 ],
             ],
@@ -445,7 +456,7 @@ class SlackDiscordNotificationService
         };
 
         return [
-            'title' => "🔒 SSL Certificate Expiring Soon",
+            'title' => '🔒 SSL Certificate Expiring Soon',
             'description' => "SSL certificate for {$domain->full_domain} expires in {$daysUntilExpiry} days",
             'color' => $daysUntilExpiry <= 7 ? $this->discordColors['error'] : $this->discordColors['warning'],
             'fields' => [
@@ -466,7 +477,7 @@ class SlackDiscordNotificationService
                 ],
                 [
                     'name' => 'Action Required',
-                    'value' => "[Renew Certificate](" . url("/domains/{$domain->id}/ssl/renew") . ")",
+                    'value' => '[Renew Certificate]('.url("/domains/{$domain->id}/ssl/renew").')',
                     'inline' => false,
                 ],
             ],
@@ -509,10 +520,10 @@ class SlackDiscordNotificationService
         };
 
         $title = match ($status) {
-            'started' => "🚀 Deployment Started",
-            'completed' => "✅ Deployment Successful",
-            'failed' => "❌ Deployment Failed",
-            default => "Deployment Update",
+            'started' => '🚀 Deployment Started',
+            'completed' => '✅ Deployment Successful',
+            'failed' => '❌ Deployment Failed',
+            default => 'Deployment Update',
         };
 
         return [
@@ -621,7 +632,7 @@ class SlackDiscordNotificationService
     /**
      * Send SSL expiry notification
      */
-    public function notifySSLExpiry($domain, int $daysUntilExpiry): void
+    public function notifySSLExpiry(Domain $domain, int $daysUntilExpiry): void
     {
         $this->sendNotification('ssl_expiring', [
             'domain' => $domain,
@@ -679,7 +690,7 @@ class SlackDiscordNotificationService
     {
         return [
             'title' => ucwords(str_replace('_', ' ', $type)),
-            'description' => '```json\n' . json_encode($data, JSON_PRETTY_PRINT) . '\n```',
+            'description' => '```json\n'.json_encode($data, JSON_PRETTY_PRINT).'\n```',
             'color' => $this->discordColors['info'],
             'footer' => [
                 'text' => 'DevFlow Pro',
@@ -737,6 +748,7 @@ class SlackDiscordNotificationService
             return true;
         } catch (\Exception $e) {
             Log::error("Failed to test notification channel: {$e->getMessage()}");
+
             return false;
         }
     }
@@ -757,7 +769,7 @@ class SlackDiscordNotificationService
                     'color' => $this->colors['warning'],
                     'title' => "Rollback Completed: {$project->name}",
                     'title_link' => url("/projects/{$project->id}/deployments/{$deployment->id}"),
-                    'text' => "Successfully rolled back to previous version",
+                    'text' => 'Successfully rolled back to previous version',
                     'fields' => [
                         [
                             'title' => 'Project',
@@ -788,7 +800,7 @@ class SlackDiscordNotificationService
         return [
             'title' => "↩️ Rollback Completed: {$project->name}",
             'url' => url("/projects/{$project->id}/deployments/{$deployment->id}"),
-            'description' => "Successfully rolled back to previous version",
+            'description' => 'Successfully rolled back to previous version',
             'color' => $this->discordColors['warning'],
             'fields' => [
                 [
@@ -798,7 +810,7 @@ class SlackDiscordNotificationService
                 ],
                 [
                     'name' => 'Rolled Back To',
-                    'value' => '`' . substr($deployment->commit_hash, 0, 7) . '`',
+                    'value' => '`'.substr($deployment->commit_hash, 0, 7).'`',
                     'inline' => true,
                 ],
             ],
@@ -834,12 +846,12 @@ class SlackDiscordNotificationService
                         ],
                         [
                             'title' => 'Response Time',
-                            'value' => ($healthData['response_time'] ?? 'N/A') . 'ms',
+                            'value' => ($healthData['response_time'] ?? 'N/A').'ms',
                             'short' => true,
                         ],
                         [
                             'title' => 'Failed Checks',
-                            'value' => implode(", ", $healthData['failed_checks'] ?? []),
+                            'value' => implode(', ', $healthData['failed_checks'] ?? []),
                             'short' => false,
                         ],
                     ],
@@ -864,7 +876,7 @@ class SlackDiscordNotificationService
             'attachments' => [
                 [
                     'color' => $daysUntilExpiry <= 7 ? $this->colors['error'] : $this->colors['warning'],
-                    'title' => "SSL Certificate Expiring Soon",
+                    'title' => 'SSL Certificate Expiring Soon',
                     'text' => "Certificate for {$domain->full_domain} expires in {$daysUntilExpiry} days",
                     'fields' => [
                         [
@@ -947,7 +959,7 @@ class SlackDiscordNotificationService
             'attachments' => [
                 [
                     'color' => $this->colors['error'],
-                    'title' => "Security Alert",
+                    'title' => 'Security Alert',
                     'text' => $data['message'],
                     'fields' => [
                         [
@@ -994,7 +1006,7 @@ class SlackDiscordNotificationService
                 ],
                 [
                     'name' => 'Action',
-                    'value' => "[Clean Up Storage](" . url("/projects/{$project->id}/storage/cleanup") . ")",
+                    'value' => '[Clean Up Storage]('.url("/projects/{$project->id}/storage/cleanup").')',
                     'inline' => false,
                 ],
             ],
@@ -1012,7 +1024,7 @@ class SlackDiscordNotificationService
     protected function buildDiscordSecurityAlert(array $data): array
     {
         return [
-            'title' => "⚠️ Security Alert",
+            'title' => '⚠️ Security Alert',
             'description' => $data['message'],
             'color' => $this->discordColors['error'],
             'fields' => [
@@ -1048,6 +1060,6 @@ class SlackDiscordNotificationService
             $i++;
         }
 
-        return round($bytes, 2) . ' ' . $units[$i];
+        return round($bytes, 2).' '.$units[$i];
     }
 }

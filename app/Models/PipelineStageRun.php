@@ -8,10 +8,34 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $pipeline_run_id
+ * @property int $pipeline_stage_id
+ * @property string $status
+ * @property string|null $output
+ * @property string|null $error_message
+ * @property \Illuminate\Support\Carbon|null $started_at
+ * @property \Illuminate\Support\Carbon|null $completed_at
+ * @property int|null $duration_seconds
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read PipelineRun $pipelineRun
+ * @property-read PipelineStage $pipelineStage
+ * @property-read string $statusColor
+ * @property-read string $statusIcon
+ * @property-read string $formattedDuration
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|PipelineStageRun newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|PipelineStageRun newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|PipelineStageRun query()
+ */
 class PipelineStageRun extends Model
 {
+    /** @use HasFactory<\Database\Factories\PipelineStageRunFactory> */
     use HasFactory;
 
+    /** @var array<int, string> */
     protected $fillable = [
         'pipeline_run_id',
         'pipeline_stage_id',
@@ -23,6 +47,9 @@ class PipelineStageRun extends Model
         'duration_seconds',
     ];
 
+    /**
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -34,6 +61,8 @@ class PipelineStageRun extends Model
 
     /**
      * Relationship: Stage run belongs to a pipeline run
+     *
+     * @return BelongsTo<PipelineRun, PipelineStageRun>
      */
     public function pipelineRun(): BelongsTo
     {
@@ -42,6 +71,8 @@ class PipelineStageRun extends Model
 
     /**
      * Relationship: Stage run belongs to a pipeline stage
+     *
+     * @return BelongsTo<PipelineStage, PipelineStageRun>
      */
     public function pipelineStage(): BelongsTo
     {
@@ -102,7 +133,7 @@ class PipelineStageRun extends Model
     {
         $currentOutput = $this->output ?? '';
         $this->update([
-            'output' => $currentOutput . $line . "\n",
+            'output' => $currentOutput.$line."\n",
         ]);
     }
 
@@ -143,7 +174,7 @@ class PipelineStageRun extends Model
      */
     public function getStatusColorAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'success' => 'green',
             'failed' => 'red',
             'running' => 'yellow',
@@ -158,7 +189,7 @@ class PipelineStageRun extends Model
      */
     public function getStatusIconAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'success' => 'check-circle',
             'failed' => 'x-circle',
             'running' => 'arrow-path',
@@ -173,7 +204,7 @@ class PipelineStageRun extends Model
      */
     public function getFormattedDurationAttribute(): string
     {
-        if (!$this->duration_seconds) {
+        if (! $this->duration_seconds) {
             return '-';
         }
 

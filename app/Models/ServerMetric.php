@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ServerMetric extends Model
 {
+    /** @use HasFactory<\Database\Factories\ServerMetricFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -50,4 +51,3 @@ class ServerMetric extends Model
         return $this->belongsTo(Server::class);
     }
 }
-

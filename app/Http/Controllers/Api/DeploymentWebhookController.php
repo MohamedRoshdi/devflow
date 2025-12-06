@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Project;
-use App\Models\Deployment;
 use App\Jobs\DeployProjectJob;
+use App\Models\Deployment;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -16,11 +16,11 @@ class DeploymentWebhookController extends Controller
         // Find project by webhook token
         $project = Project::where('slug', $token)->first();
 
-        if (!$project) {
+        if (! $project) {
             return response()->json(['error' => 'Invalid webhook token'], 404);
         }
 
-        if (!$project->auto_deploy) {
+        if (! $project->auto_deploy) {
             return response()->json(['error' => 'Auto-deploy is not enabled'], 403);
         }
 
@@ -78,6 +78,7 @@ class DeploymentWebhookController extends Controller
         // Bitbucket
         if (isset($payload['push']['changes'])) {
             $change = $payload['push']['changes'][0];
+
             return [
                 'branch' => $change['new']['name'] ?? null,
                 'commit_hash' => $change['new']['target']['hash'] ?? null,
@@ -88,4 +89,3 @@ class DeploymentWebhookController extends Controller
         return [];
     }
 }
-

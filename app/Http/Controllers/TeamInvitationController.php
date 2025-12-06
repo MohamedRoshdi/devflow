@@ -47,7 +47,7 @@ class TeamInvitationController extends Controller
      */
     public function accept(Request $request, string $token)
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login')
                 ->with('message', 'Please log in to accept the invitation.');
         }

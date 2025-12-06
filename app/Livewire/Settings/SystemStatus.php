@@ -1,20 +1,42 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Settings;
 
 use App\Services\QueueMonitorService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Livewire\Component;
 
 class SystemStatus extends Component
 {
+    /**
+     * @var array<int, array{name: string, status: string, details: string}>
+     */
     public array $services = [];
+
+    /**
+     * @var array<string, mixed>
+     */
     public array $reverbStatus = [];
+
+    /**
+     * @var array<string, mixed>
+     */
     public array $queueStats = [];
+
+    /**
+     * @var array<string, mixed>
+     */
     public array $cacheStats = [];
+
+    /**
+     * @var array<string, mixed>
+     */
     public array $databaseStats = [];
+
     public bool $isLoading = true;
 
     private QueueMonitorService $queueMonitor;
@@ -108,21 +130,35 @@ class SystemStatus extends Component
     private function testCacheConnection(): bool
     {
         try {
-            $key = 'system_status_test_' . time();
+            $key = 'system_status_test_'.time();
             Cache::put($key, 'test', 10);
             $result = Cache::get($key) === 'test';
             Cache::forget($key);
+
             return $result;
         } catch (\Exception) {
             return false;
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function getRedisInfo(): array
     {
         try {
-            $redis = Cache::getStore()->getRedis();
-            $info = $redis->info();
+            $store = Cache::getStore();
+
+            // Check if the cache store is a Redis store before calling getRedis()
+            if (! $store instanceof \Illuminate\Cache\RedisStore) {
+                return [];
+            }
+
+            $redis = $store->getRedis();
+            // Get the actual Redis client connection to call info()
+            $client = $redis->connection()->client();
+            $info = $client->info();
+
             return [
                 'version' => $info['redis_version'] ?? 'N/A',
                 'used_memory' => $info['used_memory_human'] ?? 'N/A',
@@ -141,7 +177,7 @@ class SystemStatus extends Component
             $this->databaseStats = [
                 'driver' => config('database.default'),
                 'connected' => true,
-                'database' => config('database.connections.' . config('database.default') . '.database'),
+                'database' => config('database.connections.'.config('database.default').'.database'),
                 'version' => $pdo->getAttribute(\PDO::ATTR_SERVER_VERSION),
             ];
         } catch (\Exception $e) {
@@ -159,7 +195,7 @@ class SystemStatus extends Component
             [
                 'name' => 'Laravel Application',
                 'status' => 'running',
-                'details' => 'Laravel ' . app()->version(),
+                'details' => 'Laravel '.app()->version(),
             ],
             [
                 'name' => 'WebSocket Server (Reverb)',
@@ -171,15 +207,15 @@ class SystemStatus extends Component
             [
                 'name' => 'Queue Workers',
                 'status' => ($this->queueStats['worker_status']['is_running'] ?? false) ? 'running' : 'stopped',
-                'details' => ($this->queueStats['worker_status']['worker_count'] ?? 0) . ' workers',
+                'details' => ($this->queueStats['worker_status']['worker_count'] ?? 0).' workers',
             ],
             [
-                'name' => 'Cache (' . ($this->cacheStats['driver'] ?? 'unknown') . ')',
+                'name' => 'Cache ('.($this->cacheStats['driver'] ?? 'unknown').')',
                 'status' => ($this->cacheStats['working'] ?? false) ? 'running' : 'error',
                 'details' => ($this->cacheStats['working'] ?? false) ? 'Connected' : 'Connection failed',
             ],
             [
-                'name' => 'Database (' . ($this->databaseStats['driver'] ?? 'unknown') . ')',
+                'name' => 'Database ('.($this->databaseStats['driver'] ?? 'unknown').')',
                 'status' => ($this->databaseStats['connected'] ?? false) ? 'running' : 'error',
                 'details' => ($this->databaseStats['connected'] ?? false)
                     ? ($this->databaseStats['version'] ?? 'Connected')
@@ -215,12 +251,12 @@ class SystemStatus extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Broadcast failed: ' . $e->getMessage(),
+                'message' => 'Broadcast failed: '.$e->getMessage(),
             ]);
         }
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.settings.system-status');
     }

@@ -7,10 +7,9 @@ namespace App\Services;
 use App\Models\LogEntry;
 use App\Models\LogSource;
 use App\Models\Server;
-use App\Services\ServerConnectivityService;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 class LogAggregationService
 {
@@ -87,11 +86,13 @@ class LogAggregationService
 
         try {
             $result = $this->connectivityService->executeCommand($server, $command);
+
             return $result['output'] ?? '';
         } catch (\Exception $e) {
             Log::warning("Failed to fetch log file from {$server->name}: {$path}", [
                 'error' => $e->getMessage(),
             ]);
+
             return '';
         }
     }
@@ -102,11 +103,13 @@ class LogAggregationService
 
         try {
             $result = $this->connectivityService->executeCommand($server, $command);
+
             return $result['output'] ?? '';
         } catch (\Exception $e) {
             Log::warning("Failed to fetch Docker logs from {$server->name}: {$containerName}", [
                 'error' => $e->getMessage(),
             ]);
+
             return '';
         }
     }
@@ -117,11 +120,13 @@ class LogAggregationService
 
         try {
             $result = $this->connectivityService->executeCommand($server, $command);
+
             return $result['output'] ?? '';
         } catch (\Exception $e) {
             Log::warning("Failed to fetch journald logs from {$server->name}: {$unit}", [
                 'error' => $e->getMessage(),
             ]);
+
             return '';
         }
     }
@@ -200,12 +205,12 @@ class LogAggregationService
             }
             // Stack trace or continuation
             elseif ($currentLog && (str_starts_with($line, '#') || str_starts_with($line, ' '))) {
-                $currentLog['message'] .= "\n" . trim($line);
+                $currentLog['message'] .= "\n".trim($line);
 
                 // Extract file path and line number from stack trace
                 if (preg_match('/^#\d+ (.+?)\((\d+)\)/', $line, $matches)) {
                     $currentLog['file_path'] = $matches[1];
-                    $currentLog['line_number'] = (int)$matches[2];
+                    $currentLog['line_number'] = (int) $matches[2];
                 }
             }
         }
@@ -229,11 +234,10 @@ class LogAggregationService
                     'level' => $this->normalizeLevel($matches[2]),
                     'message' => trim($matches[3]),
                     'file_path' => $matches[4],
-                    'line_number' => (int)$matches[5],
+                    'line_number' => (int) $matches[5],
                     'logged_at' => Carbon::parse($matches[1]),
                 ];
-            }
-            elseif (preg_match('/^\[(\d{2}-\w{3}-\d{4} \d{2}:\d{2}:\d{2}.*?)\] (.*)$/', $line, $matches)) {
+            } elseif (preg_match('/^\[(\d{2}-\w{3}-\d{4} \d{2}:\d{2}:\d{2}.*?)\] (.*)$/', $line, $matches)) {
                 $logs[] = [
                     'source' => 'php',
                     'level' => 'error',
@@ -281,7 +285,7 @@ class LogAggregationService
                     'source' => 'system',
                     'level' => 'info',
                     'message' => trim($matches[4]),
-                    'logged_at' => Carbon::parse($matches[1] . ' ' . now()->year),
+                    'logged_at' => Carbon::parse($matches[1].' '.now()->year),
                     'context' => [
                         'hostname' => $matches[2],
                         'service' => $matches[3],
@@ -344,31 +348,34 @@ class LogAggregationService
         return $logs;
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\LogEntry>
+     */
     public function searchLogs(array $filters): Collection
     {
         $query = LogEntry::query()->with(['server', 'project']);
 
-        if (!empty($filters['server_id'])) {
+        if (! empty($filters['server_id'])) {
             $query->byServer($filters['server_id']);
         }
 
-        if (!empty($filters['project_id'])) {
+        if (! empty($filters['project_id'])) {
             $query->byProject($filters['project_id']);
         }
 
-        if (!empty($filters['source'])) {
+        if (! empty($filters['source'])) {
             $query->bySource($filters['source']);
         }
 
-        if (!empty($filters['level'])) {
+        if (! empty($filters['level'])) {
             $query->byLevel($filters['level']);
         }
 
-        if (!empty($filters['search'])) {
+        if (! empty($filters['search'])) {
             $query->search($filters['search']);
         }
 
-        if (!empty($filters['date_from']) || !empty($filters['date_to'])) {
+        if (! empty($filters['date_from']) || ! empty($filters['date_to'])) {
             $query->dateRange($filters['date_from'] ?? null, $filters['date_to'] ?? null);
         }
 

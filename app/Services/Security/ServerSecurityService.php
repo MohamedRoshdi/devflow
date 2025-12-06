@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Security;
 
-use App\Models\Server;
 use App\Models\SecurityEvent;
+use App\Models\Server;
 use Illuminate\Support\Facades\Auth;
 
 class ServerSecurityService
@@ -59,13 +59,13 @@ class ServerSecurityService
             $command = "sudo ss -tulpn 2>/dev/null | grep LISTEN | awk '{print \$5}' | sed 's/.*://' | sort -u";
             $result = $this->executeCommand($server, $command);
 
-            if (!$result['success']) {
+            if (! $result['success']) {
                 return ['success' => false, 'ports' => []];
             }
 
             $ports = array_filter(
                 array_map('trim', explode("\n", $result['output'])),
-                fn($port) => is_numeric($port)
+                fn ($port) => is_numeric($port)
             );
 
             return [
@@ -95,6 +95,9 @@ class ServerSecurityService
         ]);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\SecurityEvent>
+     */
     public function getRecentEvents(Server $server, int $limit = 10): \Illuminate\Database\Eloquent\Collection
     {
         return $server->securityEvents()
@@ -165,7 +168,7 @@ class ServerSecurityService
             '-o UserKnownHostsFile=/dev/null',
             '-o ConnectTimeout=10',
             '-o LogLevel=ERROR',
-            '-p ' . $port,
+            '-p '.$port,
         ];
 
         // Escape double quotes and backslashes for the remote command
@@ -190,7 +193,7 @@ class ServerSecurityService
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
             file_put_contents($keyFile, $server->ssh_key);
             chmod($keyFile, 0600);
-            $sshOptions[] = '-i ' . $keyFile;
+            $sshOptions[] = '-i '.$keyFile;
         }
 
         return sprintf(
@@ -212,6 +215,7 @@ class ServerSecurityService
 
         if ($server->ssh_password) {
             $escapedPassword = str_replace("'", "'\\''", $server->ssh_password);
+
             return "echo '{$escapedPassword}' | sudo -S ";
         }
 

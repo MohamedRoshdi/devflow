@@ -10,16 +10,16 @@ class StorageService
 {
     public function calculateProjectStorage(Project $project): int
     {
-        if (!$project->server) {
+        if (! $project->server) {
             return 0;
         }
 
         try {
             $server = $project->server;
             $projectPath = "/var/www/{$project->slug}";
-            
+
             $command = $this->buildSSHCommand(
-                $server, 
+                $server,
                 "du -sm {$projectPath} | cut -f1"
             );
 
@@ -28,9 +28,9 @@ class StorageService
 
             if ($process->isSuccessful()) {
                 $sizeMB = (int) trim($process->getOutput());
-                
+
                 $project->update(['storage_used_mb' => $sizeMB]);
-                
+
                 return $sizeMB;
             }
 
@@ -40,6 +40,7 @@ class StorageService
                 'project_id' => $project->id,
                 'error' => $e->getMessage(),
             ]);
+
             return 0;
         }
     }
@@ -60,14 +61,14 @@ class StorageService
 
     public function cleanupProjectStorage(Project $project): bool
     {
-        if (!$project->server) {
+        if (! $project->server) {
             return false;
         }
 
         try {
             $server = $project->server;
             $projectPath = "/var/www/{$project->slug}";
-            
+
             // Clean logs, cache, temp files
             $cleanupCommands = [
                 "rm -rf {$projectPath}/storage/logs/*",
@@ -91,6 +92,7 @@ class StorageService
                 'project_id' => $project->id,
                 'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
@@ -100,14 +102,14 @@ class StorageService
         $sshOptions = [
             '-o StrictHostKeyChecking=no',
             '-o UserKnownHostsFile=/dev/null',
-            '-p ' . $server->port,
+            '-p '.$server->port,
         ];
 
         if ($server->ssh_key) {
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
             file_put_contents($keyFile, $server->ssh_key);
             chmod($keyFile, 0600);
-            $sshOptions[] = '-i ' . $keyFile;
+            $sshOptions[] = '-i '.$keyFile;
         }
 
         return sprintf(
@@ -119,4 +121,3 @@ class StorageService
         );
     }
 }
-

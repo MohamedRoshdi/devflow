@@ -20,8 +20,8 @@ class DashboardUpdated implements ShouldBroadcast
     /**
      * Create a new event instance.
      *
-     * @param string $updateType Type of update (stats, server_health, activity)
-     * @param array $data The updated data
+     * @param  string  $updateType  Type of update (stats, server_health, activity)
+     * @param  array  $data  The updated data
      */
     public function __construct(string $updateType, array $data = [])
     {

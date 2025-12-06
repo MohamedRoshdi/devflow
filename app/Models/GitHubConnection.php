@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class GitHubConnection extends Model
 {
+    /** @use HasFactory<\Database\Factories\GitHubConnectionFactory> */
     use HasFactory;
 
     /**
@@ -60,6 +61,8 @@ class GitHubConnection extends Model
 
     /**
      * Get the user that owns the GitHub connection.
+     *
+     * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo
     {
@@ -68,6 +71,8 @@ class GitHubConnection extends Model
 
     /**
      * Get the repositories for the GitHub connection.
+     *
+     * @return HasMany<GitHubRepository, $this>
      */
     public function repositories(): HasMany
     {

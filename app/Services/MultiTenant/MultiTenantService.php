@@ -4,10 +4,9 @@ namespace App\Services\MultiTenant;
 
 use App\Models\Project;
 use App\Models\Tenant;
-use App\Models\TenantDeployment;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Process;
-use Exception;
 
 class MultiTenantService
 {
@@ -44,13 +43,15 @@ class MultiTenantService
      */
     public function deleteTenant(Tenant $tenant): bool
     {
-        return DB::transaction(function () use ($tenant) {
+        $result = DB::transaction(function () use ($tenant) {
             // Drop tenant database
             $this->dropTenantDatabase($tenant);
 
             // Delete tenant record
             return $tenant->delete();
         });
+
+        return $result ?? false;
     }
 
     /**
@@ -62,8 +63,9 @@ class MultiTenantService
 
         foreach ($tenantIds as $tenantId) {
             $tenant = Tenant::find($tenantId);
-            if (!$tenant) {
+            if (! $tenant) {
                 $results[$tenantId] = ['status' => 'failed', 'error' => 'Tenant not found'];
+
                 continue;
             }
 
@@ -83,7 +85,7 @@ class MultiTenantService
      */
     protected function deployToTenant(Project $project, Tenant $tenant, array $options): array
     {
-        $projectPath = config('devflow.projects_path', '/opt/devflow/projects') . '/' . $project->slug;
+        $projectPath = config('devflow.projects_path', '/opt/devflow/projects').'/'.$project->slug;
 
         // Run migrations for the tenant
         if ($options['deployment_type'] === 'code_and_migrations' || $options['deployment_type'] === 'migrations_only') {
@@ -128,11 +130,11 @@ class MultiTenantService
     {
         $backupPath = storage_path("backups/tenants/{$tenant->subdomain}");
 
-        if (!file_exists($backupPath)) {
+        if (! file_exists($backupPath)) {
             mkdir($backupPath, 0755, true);
         }
 
-        $backupFile = $backupPath . '/' . date('Y-m-d-His') . '.sql';
+        $backupFile = $backupPath.'/'.date('Y-m-d-His').'.sql';
 
         // Create database backup
         $command = sprintf(
@@ -177,7 +179,7 @@ class MultiTenantService
      */
     protected function runTenantMigrations(Project $project, Tenant $tenant): void
     {
-        $projectPath = config('devflow.projects_path', '/opt/devflow/projects') . '/' . $project->slug;
+        $projectPath = config('devflow.projects_path', '/opt/devflow/projects').'/'.$project->slug;
 
         $command = sprintf(
             'cd %s && php artisan migrate --database=mysql --force --path=database/migrations/tenant',
@@ -198,7 +200,7 @@ class MultiTenantService
      */
     protected function clearTenantCache(Project $project, Tenant $tenant): void
     {
-        $projectPath = config('devflow.projects_path', '/opt/devflow/projects') . '/' . $project->slug;
+        $projectPath = config('devflow.projects_path', '/opt/devflow/projects').'/'.$project->slug;
 
         $command = sprintf(
             'cd %s && php artisan cache:clear --tenant=%s',

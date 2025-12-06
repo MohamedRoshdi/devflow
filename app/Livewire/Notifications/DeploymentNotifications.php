@@ -1,25 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Notifications;
 
-use Livewire\Component;
+use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
 use Livewire\Attributes\On;
+use Livewire\Component;
 
 class DeploymentNotifications extends Component
 {
-    public $notifications = [];
-    public $soundEnabled = true;
-    public $desktopNotificationsEnabled = false;
+    /**
+     * @var Collection<int, array<string, mixed>>
+     */
+    public Collection $notifications;
 
-    public function mount()
+    public bool $soundEnabled = true;
+
+    public bool $desktopNotificationsEnabled = false;
+
+    public function mount(): void
     {
         $this->notifications = collect();
         $this->soundEnabled = auth()->user()->notification_sound ?? true;
         $this->desktopNotificationsEnabled = auth()->user()->desktop_notifications ?? false;
     }
 
+    /**
+     * @param  array<string, mixed>  $event
+     */
     #[On('echo-private:user.{userId},deployment.status.updated')]
-    public function onDeploymentStatusUpdated($event)
+    public function onDeploymentStatusUpdated(array $event): void
     {
         $this->addNotification($event);
 
@@ -36,7 +48,10 @@ class DeploymentNotifications extends Component
         }
     }
 
-    public function addNotification($event)
+    /**
+     * @param  array<string, mixed>  $event
+     */
+    public function addNotification(array $event): void
     {
         $this->notifications->prepend([
             'id' => uniqid(),
@@ -55,45 +70,52 @@ class DeploymentNotifications extends Component
         }
     }
 
-    public function markAsRead($notificationId)
+    public function markAsRead(string $notificationId): void
     {
-        $this->notifications = $this->notifications->map(function ($notification) use ($notificationId) {
+        $this->notifications = $this->notifications->map(function (array $notification) use ($notificationId): array {
             if ($notification['id'] === $notificationId) {
                 $notification['read'] = true;
             }
+
             return $notification;
         });
     }
 
-    public function clearAll()
+    public function clearAll(): void
     {
         $this->notifications = collect();
     }
 
-    public function toggleSound()
+    public function toggleSound(): void
     {
-        $this->soundEnabled = !$this->soundEnabled;
-        auth()->user()->update(['notification_sound' => $this->soundEnabled]);
+        $this->soundEnabled = ! $this->soundEnabled;
+        $user = auth()->user();
+        if ($user !== null) {
+            $user->update(['notification_sound' => $this->soundEnabled]);
+        }
     }
 
-    public function toggleDesktopNotifications()
+    public function toggleDesktopNotifications(): void
     {
-        $this->desktopNotificationsEnabled = !$this->desktopNotificationsEnabled;
-        auth()->user()->update(['desktop_notifications' => $this->desktopNotificationsEnabled]);
+        $this->desktopNotificationsEnabled = ! $this->desktopNotificationsEnabled;
+        $user = auth()->user();
+        if ($user !== null) {
+            $user->update(['desktop_notifications' => $this->desktopNotificationsEnabled]);
+        }
 
         if ($this->desktopNotificationsEnabled) {
             $this->dispatch('request-notification-permission');
         }
     }
 
-    private function shouldShowDesktopNotification($type)
+    private function shouldShowDesktopNotification(string $type): bool
     {
-        return in_array($type, ['success', 'error']);
+        return in_array($type, ['success', 'error'], true);
     }
 
-    private function getIconForType($type)
+    private function getIconForType(string $type): string
     {
-        return match($type) {
+        return match ($type) {
             'success' => '/icons/success.png',
             'error' => '/icons/error.png',
             'warning' => '/icons/warning.png',
@@ -101,7 +123,7 @@ class DeploymentNotifications extends Component
         };
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.notifications.deployment-notifications');
     }

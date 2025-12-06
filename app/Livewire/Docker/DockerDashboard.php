@@ -4,38 +4,51 @@ namespace App\Livewire\Docker;
 
 use App\Models\Server;
 use App\Services\DockerService;
-use Livewire\Component;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Component;
 
 class DockerDashboard extends Component
 {
     use AuthorizesRequests;
 
     public Server $server;
-    public $dockerInfo = null;
-    public $diskUsage = null;
-    public $volumes = [];
-    public $networks = [];
-    public $images = [];
-    public $activeTab = 'overview';
-    public $loading = false;
-    public $error = null;
+
+    /** @var array<string, mixed>|null */
+    public ?array $dockerInfo = null;
+
+    /** @var array<string, mixed>|null */
+    public ?array $diskUsage = null;
+
+    /** @var array<int, array<string, mixed>> */
+    public array $volumes = [];
+
+    /** @var array<int, array<string, mixed>> */
+    public array $networks = [];
+
+    /** @var array<int, array<string, mixed>> */
+    public array $images = [];
+
+    public string $activeTab = 'overview';
+
+    public bool $loading = false;
+
+    public ?string $error = null;
 
     protected DockerService $dockerService;
 
-    public function boot(DockerService $dockerService)
+    public function boot(DockerService $dockerService): void
     {
         $this->dockerService = $dockerService;
     }
 
-    public function mount(Server $server)
+    public function mount(Server $server): void
     {
         // All servers are shared across all users
         $this->server = $server;
         $this->loadDockerInfo();
     }
 
-    public function loadDockerInfo()
+    public function loadDockerInfo(): void
     {
         $this->loading = true;
         $this->error = null;
@@ -72,52 +85,52 @@ class DockerDashboard extends Component
             }
 
         } catch (\Exception $e) {
-            $this->error = 'Failed to load Docker information: ' . $e->getMessage();
+            $this->error = 'Failed to load Docker information: '.$e->getMessage();
         }
 
         $this->loading = false;
     }
 
-    public function switchTab($tab)
+    public function switchTab(string $tab): void
     {
         $this->activeTab = $tab;
     }
 
-    public function pruneImages()
+    public function pruneImages(): void
     {
         $this->loading = true;
         try {
             $result = $this->dockerService->pruneImages($this->server, false);
             if ($result['success']) {
-                session()->flash('message', 'Images pruned successfully! ' . $result['output']);
+                session()->flash('message', 'Images pruned successfully! '.$result['output']);
                 $this->loadDockerInfo();
             } else {
-                $this->error = 'Failed to prune images: ' . ($result['error'] ?? 'Unknown error');
+                $this->error = 'Failed to prune images: '.($result['error'] ?? 'Unknown error');
             }
         } catch (\Exception $e) {
-            $this->error = 'Error: ' . $e->getMessage();
+            $this->error = 'Error: '.$e->getMessage();
         }
         $this->loading = false;
     }
 
-    public function systemPrune()
+    public function systemPrune(): void
     {
         $this->loading = true;
         try {
             $result = $this->dockerService->systemPrune($this->server, false);
             if ($result['success']) {
-                session()->flash('message', 'System cleaned up successfully! ' . $result['output']);
+                session()->flash('message', 'System cleaned up successfully! '.$result['output']);
                 $this->loadDockerInfo();
             } else {
-                $this->error = 'Failed to clean up system: ' . ($result['error'] ?? 'Unknown error');
+                $this->error = 'Failed to clean up system: '.($result['error'] ?? 'Unknown error');
             }
         } catch (\Exception $e) {
-            $this->error = 'Error: ' . $e->getMessage();
+            $this->error = 'Error: '.$e->getMessage();
         }
         $this->loading = false;
     }
 
-    public function deleteImage($imageId)
+    public function deleteImage(string $imageId): void
     {
         $this->loading = true;
         try {
@@ -126,15 +139,15 @@ class DockerDashboard extends Component
                 session()->flash('message', 'Image deleted successfully!');
                 $this->loadDockerInfo();
             } else {
-                $this->error = 'Failed to delete image: ' . ($result['error'] ?? 'Unknown error');
+                $this->error = 'Failed to delete image: '.($result['error'] ?? 'Unknown error');
             }
         } catch (\Exception $e) {
-            $this->error = 'Error: ' . $e->getMessage();
+            $this->error = 'Error: '.$e->getMessage();
         }
         $this->loading = false;
     }
 
-    public function deleteVolume($volumeName)
+    public function deleteVolume(string $volumeName): void
     {
         $this->loading = true;
         try {
@@ -143,15 +156,15 @@ class DockerDashboard extends Component
                 session()->flash('message', 'Volume deleted successfully!');
                 $this->loadDockerInfo();
             } else {
-                $this->error = 'Failed to delete volume: ' . ($result['error'] ?? 'Unknown error');
+                $this->error = 'Failed to delete volume: '.($result['error'] ?? 'Unknown error');
             }
         } catch (\Exception $e) {
-            $this->error = 'Error: ' . $e->getMessage();
+            $this->error = 'Error: '.$e->getMessage();
         }
         $this->loading = false;
     }
 
-    public function deleteNetwork($networkName)
+    public function deleteNetwork(string $networkName): void
     {
         $this->loading = true;
         try {
@@ -160,10 +173,10 @@ class DockerDashboard extends Component
                 session()->flash('message', 'Network deleted successfully!');
                 $this->loadDockerInfo();
             } else {
-                $this->error = 'Failed to delete network: ' . ($result['error'] ?? 'Unknown error');
+                $this->error = 'Failed to delete network: '.($result['error'] ?? 'Unknown error');
             }
         } catch (\Exception $e) {
-            $this->error = 'Error: ' . $e->getMessage();
+            $this->error = 'Error: '.$e->getMessage();
         }
         $this->loading = false;
     }
@@ -173,4 +186,3 @@ class DockerDashboard extends Component
         return view('livewire.docker.docker-dashboard');
     }
 }
-

@@ -4,9 +4,9 @@ namespace App\Services;
 
 use App\Models\Server;
 use App\Models\ServerMetric;
-use Symfony\Component\Process\Process;
-use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\Process\Process;
 
 class ServerMetricsService
 {
@@ -33,6 +33,8 @@ class ServerMetricsService
 
     /**
      * Get metrics history for a server
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\ServerMetric>
      */
     public function getMetricsHistory(Server $server, string $period = '24h'): \Illuminate\Database\Eloquent\Collection
     {
@@ -75,23 +77,23 @@ class ServerMetricsService
         $loadParts = explode(' ', trim($loadAvg));
 
         // Network Usage
-        $networkIn = $this->executeLocal("cat /sys/class/net/eth0/statistics/rx_bytes 2>/dev/null || echo 0");
-        $networkOut = $this->executeLocal("cat /sys/class/net/eth0/statistics/tx_bytes 2>/dev/null || echo 0");
+        $networkIn = $this->executeLocal('cat /sys/class/net/eth0/statistics/rx_bytes 2>/dev/null || echo 0');
+        $networkOut = $this->executeLocal('cat /sys/class/net/eth0/statistics/tx_bytes 2>/dev/null || echo 0');
 
         return ServerMetric::create([
             'server_id' => $server->id,
             'cpu_usage' => $this->sanitizeDecimal($cpuUsage),
             'memory_usage' => $this->sanitizeDecimal($memoryParts[0] ?? 0),
-            'memory_used_mb' => (int)($memoryParts[1] ?? 0),
-            'memory_total_mb' => (int)($memoryParts[2] ?? 0),
+            'memory_used_mb' => (int) ($memoryParts[1] ?? 0),
+            'memory_total_mb' => (int) ($memoryParts[2] ?? 0),
             'disk_usage' => $this->sanitizeDecimal($diskParts[0] ?? 0),
-            'disk_used_gb' => (int)($diskParts[1] ?? 0),
-            'disk_total_gb' => (int)($diskParts[2] ?? 0),
+            'disk_used_gb' => (int) ($diskParts[1] ?? 0),
+            'disk_total_gb' => (int) ($diskParts[2] ?? 0),
             'load_average_1' => $this->sanitizeDecimal($loadParts[0] ?? 0),
             'load_average_5' => $this->sanitizeDecimal($loadParts[1] ?? 0),
             'load_average_15' => $this->sanitizeDecimal($loadParts[2] ?? 0),
-            'network_in_bytes' => (int)trim($networkIn),
-            'network_out_bytes' => (int)trim($networkOut),
+            'network_in_bytes' => (int) trim($networkIn),
+            'network_out_bytes' => (int) trim($networkOut),
             'recorded_at' => now(),
         ]);
     }
@@ -121,8 +123,8 @@ class ServerMetricsService
         $loadParts = explode(' ', trim($loadAvg));
 
         // Network Usage - try multiple interface names
-        $networkInCmd = "cat /sys/class/net/eth0/statistics/rx_bytes 2>/dev/null || cat /sys/class/net/ens3/statistics/rx_bytes 2>/dev/null || cat /sys/class/net/enp0s3/statistics/rx_bytes 2>/dev/null || echo 0";
-        $networkOutCmd = "cat /sys/class/net/eth0/statistics/tx_bytes 2>/dev/null || cat /sys/class/net/ens3/statistics/tx_bytes 2>/dev/null || cat /sys/class/net/enp0s3/statistics/tx_bytes 2>/dev/null || echo 0";
+        $networkInCmd = 'cat /sys/class/net/eth0/statistics/rx_bytes 2>/dev/null || cat /sys/class/net/ens3/statistics/rx_bytes 2>/dev/null || cat /sys/class/net/enp0s3/statistics/rx_bytes 2>/dev/null || echo 0';
+        $networkOutCmd = 'cat /sys/class/net/eth0/statistics/tx_bytes 2>/dev/null || cat /sys/class/net/ens3/statistics/tx_bytes 2>/dev/null || cat /sys/class/net/enp0s3/statistics/tx_bytes 2>/dev/null || echo 0';
 
         $networkIn = $this->executeSSHCommand($server, $networkInCmd);
         $networkOut = $this->executeSSHCommand($server, $networkOutCmd);
@@ -131,16 +133,16 @@ class ServerMetricsService
             'server_id' => $server->id,
             'cpu_usage' => $this->sanitizeDecimal($cpuUsage),
             'memory_usage' => $this->sanitizeDecimal($memoryParts[0] ?? 0),
-            'memory_used_mb' => (int)($memoryParts[1] ?? 0),
-            'memory_total_mb' => (int)($memoryParts[2] ?? 0),
+            'memory_used_mb' => (int) ($memoryParts[1] ?? 0),
+            'memory_total_mb' => (int) ($memoryParts[2] ?? 0),
             'disk_usage' => $this->sanitizeDecimal($diskParts[0] ?? 0),
-            'disk_used_gb' => (int)($diskParts[1] ?? 0),
-            'disk_total_gb' => (int)($diskParts[2] ?? 0),
+            'disk_used_gb' => (int) ($diskParts[1] ?? 0),
+            'disk_total_gb' => (int) ($diskParts[2] ?? 0),
             'load_average_1' => $this->sanitizeDecimal($loadParts[0] ?? 0),
             'load_average_5' => $this->sanitizeDecimal($loadParts[1] ?? 0),
             'load_average_15' => $this->sanitizeDecimal($loadParts[2] ?? 0),
-            'network_in_bytes' => (int)trim($networkIn),
-            'network_out_bytes' => (int)trim($networkOut),
+            'network_in_bytes' => (int) trim($networkIn),
+            'network_out_bytes' => (int) trim($networkOut),
             'recorded_at' => now(),
         ]);
     }
@@ -184,7 +186,7 @@ class ServerMetricsService
             '-o UserKnownHostsFile=/dev/null',
             '-o ConnectTimeout=10',
             '-o LogLevel=ERROR',
-            '-p ' . $server->port,
+            '-p '.$server->port,
         ];
 
         // Check if password authentication should be used
@@ -208,7 +210,7 @@ class ServerMetricsService
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
             file_put_contents($keyFile, $server->ssh_key);
             chmod($keyFile, 0600);
-            $sshOptions[] = '-i ' . $keyFile;
+            $sshOptions[] = '-i '.$keyFile;
         }
 
         return sprintf(
@@ -255,7 +257,7 @@ class ServerMetricsService
      */
     protected function getPeriodStartDate(string $period): Carbon
     {
-        return match($period) {
+        return match ($period) {
             '1h' => now()->subHour(),
             '6h' => now()->subHours(6),
             '24h' => now()->subDay(),
@@ -270,7 +272,7 @@ class ServerMetricsService
      */
     protected function sanitizeDecimal(mixed $value): float
     {
-        $float = (float)$value;
+        $float = (float) $value;
 
         // Clamp between 0 and 100 for percentages
         if ($float < 0) {
@@ -290,7 +292,7 @@ class ServerMetricsService
     public function getTopProcessesByCPU(Server $server, int $limit = 10): array
     {
         try {
-            $command = "ps aux --sort=-%cpu | head -" . ($limit + 1);
+            $command = 'ps aux --sort=-%cpu | head -'.($limit + 1);
 
             if ($this->isLocalhost($server->ip_address)) {
                 $output = $this->executeLocal($command);
@@ -304,6 +306,7 @@ class ServerMetricsService
                 'server_id' => $server->id,
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -314,7 +317,7 @@ class ServerMetricsService
     public function getTopProcessesByMemory(Server $server, int $limit = 10): array
     {
         try {
-            $command = "ps aux --sort=-%mem | head -" . ($limit + 1);
+            $command = 'ps aux --sort=-%mem | head -'.($limit + 1);
 
             if ($this->isLocalhost($server->ip_address)) {
                 $output = $this->executeLocal($command);
@@ -328,6 +331,7 @@ class ServerMetricsService
                 'server_id' => $server->id,
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -354,9 +358,9 @@ class ServerMetricsService
             if (count($matches) === 6) {
                 $processes[] = [
                     'user' => $matches[1],
-                    'pid' => (int)$matches[2],
-                    'cpu' => (float)$matches[3],
-                    'mem' => (float)$matches[4],
+                    'pid' => (int) $matches[2],
+                    'cpu' => (float) $matches[3],
+                    'mem' => (float) $matches[4],
                     'command' => $this->truncateCommand($matches[5], 80),
                     'full_command' => $matches[5],
                 ];
@@ -375,6 +379,6 @@ class ServerMetricsService
             return $command;
         }
 
-        return substr($command, 0, $length - 3) . '...';
+        return substr($command, 0, $length - 3).'...';
     }
 }

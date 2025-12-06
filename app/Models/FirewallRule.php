@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class FirewallRule extends Model
 {
+    /** @use HasFactory<\Database\Factories\FirewallRuleFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -31,6 +32,9 @@ class FirewallRule extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<Server, $this>
+     */
     public function server(): BelongsTo
     {
         return $this->belongsTo(Server::class);
@@ -41,11 +45,11 @@ class FirewallRule extends Model
         $parts = [];
 
         if ($this->port) {
-            $parts[] = $this->port . '/' . $this->protocol;
+            $parts[] = $this->port.'/'.$this->protocol;
         }
 
         if ($this->from_ip) {
-            $parts[] = 'from ' . $this->from_ip;
+            $parts[] = 'from '.$this->from_ip;
         }
 
         return implode(' ', $parts) ?: 'Any';
@@ -53,22 +57,22 @@ class FirewallRule extends Model
 
     public function toUfwCommand(): string
     {
-        $cmd = 'ufw ' . $this->action;
+        $cmd = 'ufw '.$this->action;
 
         if ($this->direction === 'out') {
             $cmd .= ' out';
         }
 
         if ($this->from_ip) {
-            $cmd .= ' from ' . $this->from_ip;
+            $cmd .= ' from '.$this->from_ip;
         }
 
         if ($this->port) {
-            $cmd .= ' to any port ' . $this->port;
+            $cmd .= ' to any port '.$this->port;
         }
 
         if ($this->protocol !== 'any') {
-            $cmd .= ' proto ' . $this->protocol;
+            $cmd .= ' proto '.$this->protocol;
         }
 
         return $cmd;

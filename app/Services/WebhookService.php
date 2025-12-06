@@ -18,7 +18,7 @@ class WebhookService
         }
 
         // GitHub signature format: sha256=<hash>
-        if (!str_starts_with($signature, 'sha256=')) {
+        if (! str_starts_with($signature, 'sha256=')) {
             return false;
         }
 
@@ -98,7 +98,7 @@ class WebhookService
             $commit = $payload['checkout_sha'];
         }
 
-        if (isset($payload['commits']) && !empty($payload['commits'])) {
+        if (isset($payload['commits']) && ! empty($payload['commits'])) {
             $latestCommit = end($payload['commits']);
             $commit = $latestCommit['id'] ?? $commit;
             $commitMessage = $latestCommit['message'] ?? null;
@@ -135,8 +135,9 @@ class WebhookService
     public function shouldTriggerDeployment(Project $project, string $branch, ?string $commitMessage = null): bool
     {
         // Check if webhooks are enabled for this project
-        if (!$project->webhook_enabled) {
+        if (! $project->webhook_enabled) {
             Log::info("Webhook ignored: webhooks disabled for project {$project->slug}");
+
             return false;
         }
 
@@ -145,17 +146,19 @@ class WebhookService
 
         if ($pipelineConfig && $pipelineConfig->enabled) {
             // Use pipeline config for advanced filtering
-            if (!$pipelineConfig->shouldDeploy($branch, $commitMessage ?? '')) {
+            if (! $pipelineConfig->shouldDeploy($branch, $commitMessage ?? '')) {
                 Log::info("Webhook ignored: pipeline config conditions not met for project {$project->slug}", [
                     'branch' => $branch,
                     'commit_message' => $commitMessage,
                 ]);
+
                 return false;
             }
         } else {
             // Fallback to simple branch matching for backward compatibility
             if ($project->branch !== $branch) {
                 Log::info("Webhook ignored: branch mismatch for project {$project->slug}. Expected: {$project->branch}, Got: {$branch}");
+
                 return false;
             }
         }

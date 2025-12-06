@@ -2,15 +2,16 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\DeployProjectJob;
 use App\Models\Deployment;
 use App\Models\ScheduledDeployment;
-use App\Jobs\DeployProjectJob;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
 class ProcessScheduledDeployments extends Command
 {
     protected $signature = 'deployments:process-scheduled';
+
     protected $description = 'Process scheduled deployments that are due';
 
     public function handle(): int
@@ -21,6 +22,7 @@ class ProcessScheduledDeployments extends Command
 
         if ($dueDeployments->isEmpty()) {
             $this->info('No scheduled deployments due.');
+
             return Command::SUCCESS;
         }
 
@@ -63,7 +65,7 @@ class ProcessScheduledDeployments extends Command
             ]);
 
             $this->info("Deployment started successfully for {$scheduled->project->name}");
-            Log::info("Scheduled deployment executed", [
+            Log::info('Scheduled deployment executed', [
                 'scheduled_deployment_id' => $scheduled->id,
                 'deployment_id' => $deployment->id,
                 'project' => $scheduled->project->name,
@@ -76,7 +78,7 @@ class ProcessScheduledDeployments extends Command
             ]);
 
             $this->error("Failed to process deployment for {$scheduled->project->name}: {$e->getMessage()}");
-            Log::error("Scheduled deployment failed", [
+            Log::error('Scheduled deployment failed', [
                 'scheduled_deployment_id' => $scheduled->id,
                 'project' => $scheduled->project->name,
                 'error' => $e->getMessage(),

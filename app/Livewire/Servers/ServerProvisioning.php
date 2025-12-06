@@ -6,8 +6,9 @@ namespace App\Livewire\Servers;
 
 use App\Models\Server;
 use App\Services\ServerProvisioningService;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use Livewire\Component;
-use Livewire\Attributes\{On, Computed};
 
 class ServerProvisioning extends Component
 {
@@ -15,22 +16,35 @@ class ServerProvisioning extends Component
 
     // Package selection
     public bool $installNginx = true;
+
     public bool $installMySQL = false;
+
     public bool $installPHP = true;
+
     public bool $installComposer = true;
+
     public bool $installNodeJS = true;
+
     public bool $configureFirewall = true;
+
     public bool $setupSwap = true;
+
     public bool $secureSSH = true;
 
     // Configuration options
     public string $phpVersion = '8.4';
+
     public string $nodeVersion = '20';
+
     public string $mysqlPassword = '';
+
     public int $swapSizeGB = 2;
+
+    /** @var array<int, int> */
     public array $firewallPorts = [22, 80, 443];
 
     public bool $showProvisioningModal = false;
+
     public bool $isProvisioning = false;
 
     public function mount(Server $server): void
@@ -117,7 +131,7 @@ class ServerProvisioning extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Failed to start provisioning: ' . $e->getMessage(),
+                'message' => 'Failed to start provisioning: '.$e->getMessage(),
             ]);
         } finally {
             $this->isProvisioning = false;
@@ -146,16 +160,17 @@ class ServerProvisioning extends Component
             $script = $service->getProvisioningScript($options);
 
             return response()->streamDownload(
-                fn() => print($script),
-                'provision-server-' . $this->server->slug . '.sh',
+                fn () => print ($script),
+                'provision-server-'.$this->server->slug.'.sh',
                 ['Content-Type' => 'text/plain']
             );
 
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Failed to generate script: ' . $e->getMessage(),
+                'message' => 'Failed to generate script: '.$e->getMessage(),
             ]);
+
             return null;
         }
     }

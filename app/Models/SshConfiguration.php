@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SshConfiguration extends Model
 {
+    /** @use HasFactory<\Database\Factories\SshConfigurationFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -32,6 +33,9 @@ class SshConfiguration extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<Server, $this>
+     */
     public function server(): BelongsTo
     {
         return $this->belongsTo(Server::class);
@@ -39,8 +43,8 @@ class SshConfiguration extends Model
 
     public function isHardened(): bool
     {
-        return !$this->root_login_enabled
-            && !$this->password_auth_enabled
+        return ! $this->root_login_enabled
+            && ! $this->password_auth_enabled
             && $this->pubkey_auth_enabled
             && $this->port !== 22
             && $this->max_auth_tries <= 3;
@@ -50,11 +54,11 @@ class SshConfiguration extends Model
     {
         $score = 0;
 
-        if (!$this->root_login_enabled) {
+        if (! $this->root_login_enabled) {
             $score += 20;
         }
 
-        if (!$this->password_auth_enabled) {
+        if (! $this->password_auth_enabled) {
             $score += 20;
         }
 

@@ -8,6 +8,7 @@ use Livewire\Component;
 class ProjectDetail extends Component
 {
     public ?Project $project = null;
+
     public bool $notFound = false;
 
     public function mount(string $slug)
@@ -18,15 +19,15 @@ class ProjectDetail extends Component
             ->where('status', 'running')
             ->whereHas('domains', function ($query) {
                 $query->where('is_primary', true)
-                      ->whereNotNull('domain')
-                      ->where('domain', '!=', '');
+                    ->whereNotNull('domain')
+                    ->where('domain', '!=', '');
             })
             ->with(['domains' => function ($query) {
                 $query->where('is_primary', true);
             }])
             ->first();
 
-        if (!$this->project) {
+        if (! $this->project) {
             $this->notFound = true;
         }
     }

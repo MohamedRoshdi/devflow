@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Livewire\Projects;
 
-use App\Models\{Project, DatabaseBackup, BackupSchedule};
+use App\Models\BackupSchedule;
+use App\Models\DatabaseBackup;
+use App\Models\Project;
 use App\Services\DatabaseBackupService;
-use Livewire\Component;
-use Livewire\Attributes\{Computed, On};
-use Livewire\WithPagination;
 use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\Computed;
+use Livewire\Component;
+use Livewire\WithPagination;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class DatabaseBackupManager extends Component
@@ -20,31 +22,48 @@ class DatabaseBackupManager extends Component
 
     // Modal states
     public bool $showCreateBackupModal = false;
+
     public bool $showScheduleModal = false;
+
     public bool $showDeleteModal = false;
+
     public bool $showRestoreModal = false;
+
     public bool $showVerifyModal = false;
 
     // Form properties for creating backup
     public string $databaseType = 'mysql';
+
     public string $databaseName = '';
 
     // Form properties for creating schedule
     public string $scheduleDatabase = '';
+
     public string $scheduleDatabaseType = 'mysql';
+
     public string $frequency = 'daily';
+
     public string $time = '02:00';
+
     public int $dayOfWeek = 0;
+
     public int $dayOfMonth = 1;
+
     public int $retentionDays = 30;
+
     public string $storageDisk = 'local';
 
     // Action tracking
     public ?int $backupIdToDelete = null;
+
     public ?int $backupIdToRestore = null;
+
     public ?int $backupIdToVerify = null;
+
     public bool $isCreatingBackup = false;
+
     public bool $isCreatingSchedule = false;
+
     public bool $isVerifying = false;
 
     protected function rules(): array
@@ -164,7 +183,7 @@ class DatabaseBackupManager extends Component
 
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Failed to create backup: ' . $e->getMessage(),
+                'message' => 'Failed to create backup: '.$e->getMessage(),
             ]);
         } finally {
             $this->isCreatingBackup = false;
@@ -201,7 +220,7 @@ class DatabaseBackupManager extends Component
                 'database_type' => $this->scheduleDatabaseType,
                 'database_name' => $this->scheduleDatabase,
                 'frequency' => $this->frequency,
-                'time' => $this->time . ':00',
+                'time' => $this->time.':00',
                 'day_of_week' => $this->frequency === 'weekly' ? $this->dayOfWeek : null,
                 'day_of_month' => $this->frequency === 'monthly' ? $this->dayOfMonth : null,
                 'retention_days' => $this->retentionDays,
@@ -226,7 +245,7 @@ class DatabaseBackupManager extends Component
 
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Failed to create schedule: ' . $e->getMessage(),
+                'message' => 'Failed to create schedule: '.$e->getMessage(),
             ]);
         } finally {
             $this->isCreatingSchedule = false;
@@ -242,11 +261,11 @@ class DatabaseBackupManager extends Component
                 throw new \Exception('Unauthorized');
             }
 
-            $schedule->update(['is_active' => !$schedule->is_active]);
+            $schedule->update(['is_active' => ! $schedule->is_active]);
 
             $this->dispatch('notification', [
                 'type' => 'success',
-                'message' => 'Schedule ' . ($schedule->is_active ? 'activated' : 'deactivated') . ' successfully!',
+                'message' => 'Schedule '.($schedule->is_active ? 'activated' : 'deactivated').' successfully!',
             ]);
 
             unset($this->schedules);
@@ -254,7 +273,7 @@ class DatabaseBackupManager extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Failed to toggle schedule: ' . $e->getMessage(),
+                'message' => 'Failed to toggle schedule: '.$e->getMessage(),
             ]);
         }
     }
@@ -267,7 +286,7 @@ class DatabaseBackupManager extends Component
 
     public function deleteBackup(): void
     {
-        if (!$this->backupIdToDelete) {
+        if (! $this->backupIdToDelete) {
             return;
         }
 
@@ -293,7 +312,7 @@ class DatabaseBackupManager extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Failed to delete backup: ' . $e->getMessage(),
+                'message' => 'Failed to delete backup: '.$e->getMessage(),
             ]);
         }
     }
@@ -306,7 +325,7 @@ class DatabaseBackupManager extends Component
 
     public function restoreBackup(): void
     {
-        if (!$this->backupIdToRestore) {
+        if (! $this->backupIdToRestore) {
             return;
         }
 
@@ -336,7 +355,7 @@ class DatabaseBackupManager extends Component
 
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Failed to restore backup: ' . $e->getMessage(),
+                'message' => 'Failed to restore backup: '.$e->getMessage(),
             ]);
         }
     }
@@ -349,7 +368,7 @@ class DatabaseBackupManager extends Component
 
     public function verifyBackup(): void
     {
-        if (!$this->backupIdToVerify) {
+        if (! $this->backupIdToVerify) {
             return;
         }
 
@@ -389,7 +408,7 @@ class DatabaseBackupManager extends Component
 
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Failed to verify backup: ' . $e->getMessage(),
+                'message' => 'Failed to verify backup: '.$e->getMessage(),
             ]);
         } finally {
             $this->isVerifying = false;
@@ -408,7 +427,7 @@ class DatabaseBackupManager extends Component
             $backupService = app(DatabaseBackupService::class);
             $filePath = $backupService->downloadBackup($backup);
 
-            return response()->streamDownload(function() use ($filePath) {
+            return response()->streamDownload(function () use ($filePath) {
                 echo file_get_contents($filePath);
             }, $backup->file_name, [
                 'Content-Type' => 'application/gzip',
@@ -417,10 +436,10 @@ class DatabaseBackupManager extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Failed to download backup: ' . $e->getMessage(),
+                'message' => 'Failed to download backup: '.$e->getMessage(),
             ]);
 
-            return response()->streamDownload(function() {}, 'error.txt');
+            return response()->streamDownload(function () {}, 'error.txt');
         }
     }
 
@@ -445,7 +464,7 @@ class DatabaseBackupManager extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Failed to delete schedule: ' . $e->getMessage(),
+                'message' => 'Failed to delete schedule: '.$e->getMessage(),
             ]);
         }
     }
@@ -482,7 +501,7 @@ class DatabaseBackupManager extends Component
             $i++;
         }
 
-        return round($bytes, 2) . ' ' . $units[$i];
+        return round($bytes, 2).' '.$units[$i];
     }
 
     public function render()

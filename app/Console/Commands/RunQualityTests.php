@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
@@ -77,11 +79,12 @@ class RunQualityTests extends Command
         $this->info('📝 Running Unit & Feature Tests...');
 
         $output = shell_exec('php artisan test --parallel 2>&1');
+        $outputStr = $output !== null && $output !== false ? (string) $output : '';
 
         // Parse test results
-        preg_match('/Tests:\s+(\d+)\s+passed/', $output, $passed);
-        preg_match('/(\d+)\s+failed/', $output, $failed);
-        preg_match('/Time:\s+([\d.]+)s/', $output, $time);
+        preg_match('/Tests:\s+(\d+)\s+passed/', $outputStr, $passed);
+        preg_match('/(\d+)\s+failed/', $outputStr, $failed);
+        preg_match('/Time:\s+([\d.]+)s/', $outputStr, $time);
 
         $results = [
             'passed' => $passed[1] ?? 0,
@@ -95,8 +98,8 @@ class RunQualityTests extends Command
             [
                 ['Tests Passed', $results['passed']],
                 ['Tests Failed', $results['failed']],
-                ['Execution Time', $results['time'] . 's'],
-                ['Code Coverage', $results['coverage'] . '%'],
+                ['Execution Time', $results['time'].'s'],
+                ['Code Coverage', $results['coverage'].'%'],
             ]
         );
 
@@ -110,26 +113,26 @@ class RunQualityTests extends Command
     {
         $this->info('⚡ Running Performance Tests...');
 
-        $suite = new PerformanceTestSuite();
+        $suite = new PerformanceTestSuite;
         $results = $suite->runPerformanceTests();
 
         $this->table(
             ['Area', 'Metric', 'Value', 'Status'],
             [
-                ['Database', 'Query Time', $results['metrics']['database']['simple_select']['time'] ?? 'N/A' . 'ms', $this->getStatus($results['metrics']['database']['simple_select']['time'] ?? 0, 50)],
+                ['Database', 'Query Time', $results['metrics']['database']['simple_select']['time'] ?? 'N/A'.'ms', $this->getStatus($results['metrics']['database']['simple_select']['time'] ?? 0, 50)],
                 ['Cache', 'Read Ops/Sec', $results['metrics']['cache']['read_ops_per_second'] ?? 'N/A', $this->getStatus($results['metrics']['cache']['read_ops_per_second'] ?? 0, 1000, true)],
-                ['API', 'Avg Response', $results['metrics']['api']['dashboard']['time'] ?? 'N/A' . 'ms', $this->getStatus($results['metrics']['api']['dashboard']['time'] ?? 0, 200)],
-                ['Memory', 'Peak Usage', $results['metrics']['memory']['current']['peak'] ?? 'N/A' . 'MB', $this->getStatus($results['metrics']['memory']['current']['peak'] ?? 0, 128)],
+                ['API', 'Avg Response', $results['metrics']['api']['dashboard']['time'] ?? 'N/A'.'ms', $this->getStatus($results['metrics']['api']['dashboard']['time'] ?? 0, 200)],
+                ['Memory', 'Peak Usage', $results['metrics']['memory']['current']['peak'] ?? 'N/A'.'MB', $this->getStatus($results['metrics']['memory']['current']['peak'] ?? 0, 128)],
                 ['Load', 'Req/Sec', $results['metrics']['load']['requests_per_second'] ?? 'N/A', $this->getStatus($results['metrics']['load']['requests_per_second'] ?? 0, 10, true)],
             ]
         );
 
-        $this->info('Performance Score: ' . $results['score'] . '/100');
+        $this->info('Performance Score: '.$results['score'].'/100');
 
-        if (!empty($results['recommendations'])) {
+        if (! empty($results['recommendations'])) {
             $this->warn('⚠️  Recommendations:');
             foreach ($results['recommendations'] as $rec) {
-                $this->line('  • [' . strtoupper($rec['level']) . '] ' . $rec['issue'] . ': ' . $rec['solution']);
+                $this->line('  • ['.strtoupper($rec['level']).'] '.$rec['issue'].': '.$rec['solution']);
             }
         }
 
@@ -143,7 +146,7 @@ class RunQualityTests extends Command
     {
         $this->info('🔐 Running Security Audit...');
 
-        $audit = new SecurityAudit();
+        $audit = new SecurityAudit;
         $results = $audit->runSecurityAudit();
 
         $this->table(
@@ -156,20 +159,20 @@ class RunQualityTests extends Command
             ]
         );
 
-        $this->info('Security Score: ' . $results['security_score'] . '/100');
+        $this->info('Security Score: '.$results['security_score'].'/100');
 
-        if (!empty($results['vulnerabilities'])) {
+        if (! empty($results['vulnerabilities'])) {
             $this->error('🚨 Vulnerabilities Found:');
             foreach ($results['vulnerabilities'] as $vuln) {
-                $icon = match($vuln['severity']) {
+                $icon = match ($vuln['severity']) {
                     'critical' => '🔴',
                     'high' => '🟠',
                     'medium' => '🟡',
                     'low' => '🔵',
                     default => '⚪',
                 };
-                $this->line($icon . ' [' . strtoupper($vuln['severity']) . '] ' . $vuln['issue']);
-                $this->line('   Fix: ' . $vuln['fix']);
+                $this->line($icon.' ['.strtoupper($vuln['severity']).'] '.$vuln['issue']);
+                $this->line('   Fix: '.$vuln['fix']);
             }
         }
 
@@ -185,11 +188,12 @@ class RunQualityTests extends Command
 
         // Run Dusk tests for mobile
         $output = shell_exec('php artisan dusk --group=mobile 2>&1');
+        $outputStr = $output !== null && $output !== false ? (string) $output : '';
 
         $results = [
             'devices_tested' => ['iPhone SE', 'iPad', 'Desktop'],
             'viewports' => ['375x667', '768x1024', '1920x1080'],
-            'passed' => strpos($output, 'OK') !== false,
+            'passed' => strpos($outputStr, 'OK') !== false,
             'issues' => [],
         ];
 
@@ -212,8 +216,17 @@ class RunQualityTests extends Command
     {
         if (file_exists(base_path('coverage/clover.xml'))) {
             $xml = simplexml_load_file(base_path('coverage/clover.xml'));
-            $metrics = $xml->xpath('//metrics')[0];
 
+            if ($xml === false) {
+                return 0;
+            }
+
+            $metricsArray = $xml->xpath('//metrics');
+            if (empty($metricsArray)) {
+                return 0;
+            }
+
+            $metrics = $metricsArray[0];
             $statements = (int) $metrics['statements'];
             $coveredStatements = (int) $metrics['coveredstatements'];
 
@@ -240,13 +253,13 @@ class RunQualityTests extends Command
         ];
 
         // Save to file
-        $filename = 'quality-report-' . now()->format('Y-m-d-H-i-s') . '.json';
-        $path = storage_path('app/quality-reports/' . $filename);
+        $filename = 'quality-report-'.now()->format('Y-m-d-H-i-s').'.json';
+        $path = storage_path('app/quality-reports/'.$filename);
 
         @mkdir(dirname($path), 0755, true);
         file_put_contents($path, json_encode($report, JSON_PRETTY_PRINT));
 
-        $this->info('📄 Report saved to: ' . $path);
+        $this->info('📄 Report saved to: '.$path);
 
         return $report;
     }
@@ -264,29 +277,29 @@ class RunQualityTests extends Command
 
         // Overall Health Score
         $health = $report['overall_health'];
-        $healthEmoji = match(true) {
+        $healthEmoji = match (true) {
             $health >= 90 => '🟢',
             $health >= 70 => '🟡',
             $health >= 50 => '🟠',
             default => '🔴',
         };
 
-        $this->line('Overall Health Score: ' . $healthEmoji . ' ' . $health . '/100');
+        $this->line('Overall Health Score: '.$healthEmoji.' '.$health.'/100');
         $this->newLine();
 
         // Summary Table
         $summaryData = [];
 
         if (isset($report['results']['unit'])) {
-            $summaryData[] = ['Unit Tests', $report['results']['unit']['passed'] . ' passed, ' . $report['results']['unit']['failed'] . ' failed'];
+            $summaryData[] = ['Unit Tests', $report['results']['unit']['passed'].' passed, '.$report['results']['unit']['failed'].' failed'];
         }
 
         if (isset($report['results']['performance'])) {
-            $summaryData[] = ['Performance', 'Score: ' . $report['results']['performance']['score'] . '/100'];
+            $summaryData[] = ['Performance', 'Score: '.$report['results']['performance']['score'].'/100'];
         }
 
         if (isset($report['results']['security'])) {
-            $summaryData[] = ['Security', 'Score: ' . $report['results']['security']['security_score'] . '/100'];
+            $summaryData[] = ['Security', 'Score: '.$report['results']['security']['security_score'].'/100'];
         }
 
         if (isset($report['results']['mobile'])) {
@@ -297,13 +310,13 @@ class RunQualityTests extends Command
         $this->table(['Category', 'Result'], $summaryData);
 
         // Action Items
-        if (!empty($report['action_items'])) {
+        if (! empty($report['action_items'])) {
             $this->newLine();
             $this->warn('📋 Action Items:');
             foreach ($report['action_items'] as $priority => $items) {
-                $this->info(strtoupper($priority) . ' Priority:');
+                $this->info(strtoupper($priority).' Priority:');
                 foreach ($items as $item) {
-                    $this->line('  • ' . $item);
+                    $this->line('  • '.$item);
                 }
             }
         }
@@ -333,7 +346,7 @@ class RunQualityTests extends Command
             $scores[] = $results['mobile']['passed'] ? 100 : 50;
         }
 
-        return !empty($scores) ? round(array_sum($scores) / count($scores)) : 0;
+        return ! empty($scores) ? (int) round(array_sum($scores) / count($scores)) : 0;
     }
 
     /**
@@ -351,36 +364,36 @@ class RunQualityTests extends Command
         // Security vulnerabilities
         if (isset($results['security']['vulnerabilities'])) {
             foreach ($results['security']['vulnerabilities'] as $vuln) {
-                $priority = match($vuln['severity']) {
+                $priority = match ($vuln['severity']) {
                     'critical' => 'critical',
                     'high' => 'high',
                     'medium' => 'medium',
                     default => 'low',
                 };
-                $items[$priority][] = 'Fix ' . $vuln['issue'] . ': ' . $vuln['fix'];
+                $items[$priority][] = 'Fix '.$vuln['issue'].': '.$vuln['fix'];
             }
         }
 
         // Performance issues
         if (isset($results['performance']['recommendations'])) {
             foreach ($results['performance']['recommendations'] as $rec) {
-                $priority = match($rec['level']) {
+                $priority = match ($rec['level']) {
                     'critical' => 'critical',
                     'warning' => 'high',
                     default => 'medium',
                 };
-                $items[$priority][] = $rec['issue'] . ': ' . $rec['solution'];
+                $items[$priority][] = $rec['issue'].': '.$rec['solution'];
             }
         }
 
         // Failed tests
         if (isset($results['unit']['failed']) && $results['unit']['failed'] > 0) {
-            $items['high'][] = 'Fix ' . $results['unit']['failed'] . ' failing unit tests';
+            $items['high'][] = 'Fix '.$results['unit']['failed'].' failing unit tests';
         }
 
         // Code coverage
         if (isset($results['unit']['coverage']) && $results['unit']['coverage'] < 80) {
-            $items['medium'][] = 'Increase code coverage from ' . $results['unit']['coverage'] . '% to at least 80%';
+            $items['medium'][] = 'Increase code coverage from '.$results['unit']['coverage'].'% to at least 80%';
         }
 
         return array_filter($items);
@@ -392,17 +405,18 @@ class RunQualityTests extends Command
     protected function emailReport(array $report, string $email): void
     {
         // Implementation would send email with report
-        $this->info('📧 Report emailed to: ' . $email);
+        $this->info('📧 Report emailed to: '.$email);
     }
 
     /**
      * Get status emoji based on value and threshold
      */
-    protected function getStatus($value, $threshold, $higherIsBetter = false): string
+    protected function getStatus(float|int $value, float|int $threshold, bool $higherIsBetter = false): string
     {
         if ($higherIsBetter) {
             return $value >= $threshold ? '✅' : '❌';
         }
+
         return $value <= $threshold ? '✅' : '❌';
     }
 }

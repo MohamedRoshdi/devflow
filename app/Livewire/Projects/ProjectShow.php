@@ -2,12 +2,12 @@
 
 namespace App\Livewire\Projects;
 
-use Livewire\Component;
-use App\Models\Project;
 use App\Models\Deployment;
+use App\Models\Project;
 use App\Services\DockerService;
 use App\Services\GitService;
 use Livewire\Attributes\On;
+use Livewire\Component;
 use Livewire\WithPagination;
 
 class ProjectShow extends Component
@@ -15,32 +15,54 @@ class ProjectShow extends Component
     use WithPagination;
 
     public Project $project;
+
     public bool $showDeployModal = false;
+
+    /** @var array<int, array<string, mixed>> */
     public array $commits = [];
+
+    /** @var array<string, mixed>|null */
     public ?array $updateStatus = null;
+
     public bool $checkingForUpdates = false;
+
     public bool $autoCheckEnabled = true;
+
     public bool $autoRefreshEnabled = true;
+
     public int $autoRefreshInterval = 30; // seconds
+
     public int $commitPage = 1;
+
     public int $commitPerPage = 8;
+
     public int $commitTotal = 0;
+
     public int $deploymentsPerPage = 5;
-    protected $paginationTheme = 'tailwind';
+
+    protected string $paginationTheme = 'tailwind';
 
     public bool $gitLoaded = false;
+
     public bool $commitsLoading = false;
+
     public bool $commitsRequested = false;
+
     public bool $updateStatusLoaded = false;
+
     public bool $updateStatusRequested = false;
+
     public ?string $firstTab = null;
+
     public ?string $lastGitRefreshAt = null;
+
     public string $activeTab = 'overview';
 
     public function mount(Project $project)
     {
         // All projects are shared - any authenticated user can view
-        $this->project = $project;
+        // Eager load domains to prevent N+1 queries
+        $this->project = $project->load('domains');
         $this->firstTab = request()->query('tab', 'overview');
         $this->activeTab = $this->firstTab;
     }
@@ -49,7 +71,7 @@ class ProjectShow extends Component
     {
         $this->activeTab = $tab;
 
-        if ($tab === 'git' && !$this->gitLoaded) {
+        if ($tab === 'git' && ! $this->gitLoaded) {
             $this->prepareGitTab();
         }
     }
@@ -85,7 +107,7 @@ class ProjectShow extends Component
                 $this->commitTotal = 0;
             }
 
-            if (!$this->updateStatusLoaded) {
+            if (! $this->updateStatusLoaded) {
                 $updateResult = $gitService->checkForUpdates($this->project);
                 if ($updateResult['success']) {
                     $this->updateStatus = $updateResult;
@@ -97,7 +119,7 @@ class ProjectShow extends Component
             $this->lastGitRefreshAt = now()->toISOString();
 
         } catch (\Exception $e) {
-            \Log::error('prepareGitTab failed: ' . $e->getMessage());
+            \Log::error('prepareGitTab failed: '.$e->getMessage());
             $this->commits = [];
             $this->commitTotal = 0;
             $this->gitLoaded = true;
@@ -139,6 +161,7 @@ class ProjectShow extends Component
     {
         $start = ($this->commitPage - 1) * $this->commitPerPage + 1;
         $end = min($this->commitPage * $this->commitPerPage, $this->commitTotal);
+
         return [
             'start' => $this->commitTotal > 0 ? $start : 0,
             'end' => $end,
@@ -206,7 +229,7 @@ class ProjectShow extends Component
     public function autoRefreshGit(): void
     {
         // Only refresh if auto-refresh is enabled and we're on the git tab
-        if (!$this->autoRefreshEnabled || $this->activeTab !== 'git') {
+        if (! $this->autoRefreshEnabled || $this->activeTab !== 'git') {
             return;
         }
 
@@ -215,7 +238,7 @@ class ProjectShow extends Component
 
     public function toggleAutoRefresh(): void
     {
-        $this->autoRefreshEnabled = !$this->autoRefreshEnabled;
+        $this->autoRefreshEnabled = ! $this->autoRefreshEnabled;
     }
 
     public function setAutoRefreshInterval(int $seconds): void
@@ -243,7 +266,7 @@ class ProjectShow extends Component
             return redirect()->route('deployments.show', $deployment);
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to start deployment: ' . $e->getMessage());
+            session()->flash('error', 'Failed to start deployment: '.$e->getMessage());
         }
     }
 
@@ -258,10 +281,10 @@ class ProjectShow extends Component
                 $this->project->refresh();
                 session()->flash('message', 'Project started successfully');
             } else {
-                session()->flash('error', 'Failed to start project: ' . $result['error']);
+                session()->flash('error', 'Failed to start project: '.$result['error']);
             }
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to start project: ' . $e->getMessage());
+            session()->flash('error', 'Failed to start project: '.$e->getMessage());
         }
     }
 
@@ -276,10 +299,10 @@ class ProjectShow extends Component
                 $this->project->refresh();
                 session()->flash('message', 'Project stopped successfully');
             } else {
-                session()->flash('error', 'Failed to stop project: ' . $result['error']);
+                session()->flash('error', 'Failed to stop project: '.$result['error']);
             }
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to stop project: ' . $e->getMessage());
+            session()->flash('error', 'Failed to stop project: '.$e->getMessage());
         }
     }
 

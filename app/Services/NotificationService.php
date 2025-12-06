@@ -4,8 +4,15 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\{HealthCheck, HealthCheckResult, NotificationChannel, Deployment, NotificationLog};
-use Illuminate\Support\Facades\{Http, Log, Mail, Queue};
+use App\Models\Deployment;
+use App\Models\HealthCheck;
+use App\Models\HealthCheckResult;
+use App\Models\NotificationChannel;
+use App\Models\NotificationLog;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Queue;
 
 class NotificationService
 {
@@ -19,7 +26,7 @@ class NotificationService
 
             return true;
         } catch (\Exception $e) {
-            Log::error("Email notification failed", [
+            Log::error('Email notification failed', [
                 'email' => $email,
                 'error' => $e->getMessage(),
             ]);
@@ -38,8 +45,8 @@ class NotificationService
 
             return $response->successful();
         } catch (\Exception $e) {
-            Log::error("Slack notification failed", [
-                'webhook_url' => substr($webhookUrl, 0, 30) . '...',
+            Log::error('Slack notification failed', [
+                'webhook_url' => substr($webhookUrl, 0, 30).'...',
                 'error' => $e->getMessage(),
             ]);
 
@@ -71,7 +78,8 @@ class NotificationService
             return $response->successful();
         } catch (\Exception $e) {
             $this->logNotification($channel, $data['event'] ?? 'unknown', false, $e->getMessage());
-            Log::error("Slack notification failed: " . $e->getMessage());
+            Log::error('Slack notification failed: '.$e->getMessage());
+
             return false;
         }
     }
@@ -85,8 +93,8 @@ class NotificationService
 
             return $response->successful();
         } catch (\Exception $e) {
-            Log::error("Discord notification failed", [
-                'webhook_url' => substr($webhookUrl, 0, 30) . '...',
+            Log::error('Discord notification failed', [
+                'webhook_url' => substr($webhookUrl, 0, 30).'...',
                 'error' => $e->getMessage(),
             ]);
 
@@ -126,8 +134,8 @@ class NotificationService
 
     public function sendTestNotification(NotificationChannel $channel): bool
     {
-        $subject = "DevFlow Pro - Test Notification";
-        $message = "This is a test notification from DevFlow Pro. Your notification channel is working correctly!";
+        $subject = 'DevFlow Pro - Test Notification';
+        $message = 'This is a test notification from DevFlow Pro. Your notification channel is working correctly!';
 
         return $this->sendNotification($channel, $subject, $message);
     }
@@ -155,7 +163,7 @@ class NotificationService
             };
 
             if ($success) {
-                Log::info("Notification sent successfully", [
+                Log::info('Notification sent successfully', [
                     'channel_id' => $channel->id,
                     'channel_name' => $channel->name,
                     'type' => $type,
@@ -164,7 +172,7 @@ class NotificationService
 
             return $success;
         } catch (\Exception $e) {
-            Log::error("Notification failed", [
+            Log::error('Notification failed', [
                 'channel_id' => $channel->id,
                 'error' => $e->getMessage(),
             ]);
@@ -177,12 +185,12 @@ class NotificationService
     {
         $message = "Health Check Alert: FAILURE\n\n";
         $message .= "Check: {$check->display_name}\n";
-        $message .= "Type: " . strtoupper($check->check_type) . "\n";
+        $message .= 'Type: '.strtoupper($check->check_type)."\n";
         $message .= "Target: {$check->target_url}\n";
         $message .= "Status: {$check->status}\n";
         $message .= "Consecutive Failures: {$check->consecutive_failures}\n\n";
         $message .= "Result Details:\n";
-        $message .= "Status: " . strtoupper($result->status) . "\n";
+        $message .= 'Status: '.strtoupper($result->status)."\n";
 
         if ($result->response_time_ms) {
             $message .= "Response Time: {$result->response_time_ms}ms\n";
@@ -196,7 +204,7 @@ class NotificationService
             $message .= "Error: {$result->error_message}\n";
         }
 
-        $message .= "\nTimestamp: " . $result->checked_at->format('Y-m-d H:i:s') . "\n";
+        $message .= "\nTimestamp: ".$result->checked_at->format('Y-m-d H:i:s')."\n";
 
         return $message;
     }
@@ -205,11 +213,11 @@ class NotificationService
     {
         $message = "Health Check Alert: RECOVERY\n\n";
         $message .= "Check: {$check->display_name}\n";
-        $message .= "Type: " . strtoupper($check->check_type) . "\n";
+        $message .= 'Type: '.strtoupper($check->check_type)."\n";
         $message .= "Target: {$check->target_url}\n";
         $message .= "Status: HEALTHY\n\n";
         $message .= "The health check has recovered and is now functioning normally.\n";
-        $message .= "\nTimestamp: " . now()->format('Y-m-d H:i:s') . "\n";
+        $message .= "\nTimestamp: ".now()->format('Y-m-d H:i:s')."\n";
 
         return $message;
     }
@@ -253,7 +261,8 @@ class NotificationService
             return $response->successful();
         } catch (\Exception $e) {
             $this->logNotification($channel, $data['event'] ?? 'unknown', false, $e->getMessage());
-            Log::error("Discord notification failed: " . $e->getMessage());
+            Log::error('Discord notification failed: '.$e->getMessage());
+
             return false;
         }
     }
@@ -287,7 +296,8 @@ class NotificationService
             return $response->successful();
         } catch (\Exception $e) {
             $this->logNotification($channel, $payload['event'] ?? 'unknown', false, $e->getMessage());
-            Log::error("Webhook notification failed: " . $e->getMessage());
+            Log::error('Webhook notification failed: '.$e->getMessage());
+
             return false;
         }
     }
@@ -301,14 +311,14 @@ class NotificationService
         $query = NotificationChannel::where('enabled', true)
             ->where(function ($q) use ($event) {
                 $q->whereJsonContains('events', $event)
-                  ->orWhereJsonContains('events', 'deployment.*');
+                    ->orWhereJsonContains('events', 'deployment.*');
             });
 
         // Filter by project if channels are project-specific
         if ($deployment->project_id) {
             $query->where(function ($q) use ($deployment) {
                 $q->whereNull('project_id')
-                  ->orWhere('project_id', $deployment->project_id);
+                    ->orWhere('project_id', $deployment->project_id);
             });
         }
 
@@ -361,17 +371,19 @@ class NotificationService
             default => 'ℹ️',
         };
 
+        $projectName = $project?->name ?? 'Unknown Project';
+
         $message = "{$statusEmoji} **{$eventName}**\n\n";
-        $message .= "**Project:** {$project->name}\n";
+        $message .= "**Project:** {$projectName}\n";
         $message .= "**Branch:** {$deployment->branch}\n";
-        $message .= "**Status:** " . ucfirst($deployment->status) . "\n";
+        $message .= '**Status:** '.ucfirst($deployment->status)."\n";
 
         if ($user) {
             $message .= "**Deployed by:** {$user->name}\n";
         }
 
         if ($deployment->commit_hash) {
-            $message .= "**Commit:** " . substr($deployment->commit_hash, 0, 7) . "\n";
+            $message .= '**Commit:** '.substr($deployment->commit_hash, 0, 7)."\n";
         }
 
         if ($deployment->commit_message) {
@@ -384,12 +396,12 @@ class NotificationService
 
         return [
             'event' => $event,
-            'subject' => "{$eventName}: {$project->name}",
+            'subject' => "{$eventName}: {$projectName}",
             'message' => $message,
             'deployment' => [
                 'id' => $deployment->id,
                 'project_id' => $deployment->project_id,
-                'project_name' => $project->name,
+                'project_name' => $projectName,
                 'status' => $deployment->status,
                 'branch' => $deployment->branch,
                 'commit_hash' => $deployment->commit_hash,
@@ -432,11 +444,11 @@ class NotificationService
             if (isset($deployment['status'])) {
                 $fields[] = [
                     'type' => 'mrkdwn',
-                    'text' => "*Status:*\n" . ucfirst($deployment['status']),
+                    'text' => "*Status:*\n".ucfirst($deployment['status']),
                 ];
             }
 
-            if (!empty($fields)) {
+            if (! empty($fields)) {
                 $blocks[] = [
                     'type' => 'section',
                     'fields' => $fields,
@@ -488,7 +500,7 @@ class NotificationService
                 ];
             }
 
-            if (!empty($fields)) {
+            if (! empty($fields)) {
                 $embed['fields'] = $fields;
             }
         }

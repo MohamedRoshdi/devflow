@@ -33,7 +33,7 @@ class VerifyBackup extends Command
         $projectSlug = $this->option('project');
 
         if ($backupId) {
-            return $this->verifySingleBackup((int)$backupId, $backupService);
+            return $this->verifySingleBackup((int) $backupId, $backupService);
         }
 
         if ($verifyAll || $projectSlug) {
@@ -41,6 +41,7 @@ class VerifyBackup extends Command
         }
 
         $this->error('Please specify a backup ID, --all flag, or --project option');
+
         return self::FAILURE;
     }
 
@@ -51,13 +52,15 @@ class VerifyBackup extends Command
     {
         $backup = DatabaseBackup::find($backupId);
 
-        if (!$backup) {
+        if (! $backup) {
             $this->error("Backup not found: {$backupId}");
+
             return self::FAILURE;
         }
 
         if ($backup->status !== 'completed') {
             $this->error("Backup is not completed (status: {$backup->status})");
+
             return self::FAILURE;
         }
 
@@ -71,11 +74,14 @@ class VerifyBackup extends Command
             if ($isValid) {
                 $this->info("\n✓ Backup verification PASSED");
                 $this->info("Checksum: {$backup->checksum}");
-                $this->info("Verified at: {$backup->verified_at->format('Y-m-d H:i:s')}");
+                $verifiedAt = $backup->verified_at?->format('Y-m-d H:i:s') ?? 'unknown';
+                $this->info("Verified at: {$verifiedAt}");
+
                 return self::SUCCESS;
             } else {
                 $this->error("\n✗ Backup verification FAILED");
-                $this->error("Checksum mismatch detected!");
+                $this->error('Checksum mismatch detected!');
+
                 return self::FAILURE;
             }
 
@@ -112,6 +118,7 @@ class VerifyBackup extends Command
 
         if ($backups->isEmpty()) {
             $this->warn('No backups found to verify.');
+
             return self::SUCCESS;
         }
 

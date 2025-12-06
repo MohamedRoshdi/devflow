@@ -19,6 +19,7 @@ class TeamSettings extends Component
     use WithFileUploads;
 
     public Team $team;
+
     public string $activeTab = 'general';
 
     // General settings
@@ -29,7 +30,7 @@ class TeamSettings extends Component
     public string $description = '';
 
     #[Validate('nullable|image|max:2048')]
-    public $avatar = null;
+    public mixed $avatar = null;
 
     // Invitation
     public bool $showInviteModal = false;
@@ -42,10 +43,12 @@ class TeamSettings extends Component
 
     // Transfer ownership
     public bool $showTransferModal = false;
+
     public ?int $newOwnerId = null;
 
     // Delete team
     public bool $showDeleteModal = false;
+
     public string $deleteConfirmation = '';
 
     public function __construct(
@@ -55,7 +58,7 @@ class TeamSettings extends Component
     public function mount(Team $team): void
     {
         // Check access
-        if (!$team->hasMember(Auth::user())) {
+        if (! $team->hasMember(Auth::user())) {
             abort(403, 'You do not have access to this team.');
         }
 
@@ -76,7 +79,7 @@ class TeamSettings extends Component
                     'user_id' => $member->user->id,
                     'name' => $member->user->name,
                     'email' => $member->user->email,
-                    'avatar' => $member->user->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($member->user->name),
+                    'avatar' => $member->user->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($member->user->name),
                     'role' => $member->role,
                     'joined_at' => $member->joined_at?->format('M d, Y'),
                     'is_owner' => $member->role === 'owner',
@@ -121,11 +124,12 @@ class TeamSettings extends Component
 
     public function updateTeam(): void
     {
-        if (!$this->canManageTeam()) {
+        if (! $this->canManageTeam()) {
             $this->dispatch('notification', [
                 'type' => 'error',
                 'message' => 'You do not have permission to update team settings.',
             ]);
+
             return;
         }
 
@@ -156,18 +160,19 @@ class TeamSettings extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Failed to update team: ' . $e->getMessage(),
+                'message' => 'Failed to update team: '.$e->getMessage(),
             ]);
         }
     }
 
     public function openInviteModal(): void
     {
-        if (!$this->canManageMembers()) {
+        if (! $this->canManageMembers()) {
             $this->dispatch('notification', [
                 'type' => 'error',
                 'message' => 'You do not have permission to invite members.',
             ]);
+
             return;
         }
 
@@ -213,11 +218,12 @@ class TeamSettings extends Component
 
     public function cancelInvitation(int $invitationId): void
     {
-        if (!$this->canManageMembers()) {
+        if (! $this->canManageMembers()) {
             $this->dispatch('notification', [
                 'type' => 'error',
                 'message' => 'You do not have permission to cancel invitations.',
             ]);
+
             return;
         }
 
@@ -246,7 +252,7 @@ class TeamSettings extends Component
 
     public function resendInvitation(int $invitationId): void
     {
-        if (!$this->canManageMembers()) {
+        if (! $this->canManageMembers()) {
             return;
         }
 
@@ -275,11 +281,12 @@ class TeamSettings extends Component
 
     public function removeMember(int $userId): void
     {
-        if (!$this->canManageMembers()) {
+        if (! $this->canManageMembers()) {
             $this->dispatch('notification', [
                 'type' => 'error',
                 'message' => 'You do not have permission to remove members.',
             ]);
+
             return;
         }
 
@@ -304,11 +311,12 @@ class TeamSettings extends Component
 
     public function updateRole(int $userId, string $role): void
     {
-        if (!$this->canManageMembers()) {
+        if (! $this->canManageMembers()) {
             $this->dispatch('notification', [
                 'type' => 'error',
                 'message' => 'You do not have permission to update roles.',
             ]);
+
             return;
         }
 
@@ -333,11 +341,12 @@ class TeamSettings extends Component
 
     public function openTransferModal(): void
     {
-        if (!$this->team->isOwner(Auth::user())) {
+        if (! $this->team->isOwner(Auth::user())) {
             $this->dispatch('notification', [
                 'type' => 'error',
                 'message' => 'Only the team owner can transfer ownership.',
             ]);
+
             return;
         }
 
@@ -352,15 +361,16 @@ class TeamSettings extends Component
 
     public function transferOwnership(): void
     {
-        if (!$this->team->isOwner(Auth::user())) {
+        if (! $this->team->isOwner(Auth::user())) {
             return;
         }
 
-        if (!$this->newOwnerId) {
+        if (! $this->newOwnerId) {
             $this->dispatch('notification', [
                 'type' => 'error',
                 'message' => 'Please select a new owner.',
             ]);
+
             return;
         }
 
@@ -387,11 +397,12 @@ class TeamSettings extends Component
 
     public function openDeleteModal(): void
     {
-        if (!$this->team->isOwner(Auth::user())) {
+        if (! $this->team->isOwner(Auth::user())) {
             $this->dispatch('notification', [
                 'type' => 'error',
                 'message' => 'Only the team owner can delete the team.',
             ]);
+
             return;
         }
 
@@ -406,7 +417,7 @@ class TeamSettings extends Component
 
     public function deleteTeam()
     {
-        if (!$this->team->isOwner(Auth::user())) {
+        if (! $this->team->isOwner(Auth::user())) {
             return;
         }
 
@@ -415,6 +426,7 @@ class TeamSettings extends Component
                 'type' => 'error',
                 'message' => 'Please type the team name to confirm deletion.',
             ]);
+
             return;
         }
 
@@ -438,12 +450,14 @@ class TeamSettings extends Component
     private function canManageTeam(): bool
     {
         $role = $this->team->getMemberRole(Auth::user());
+
         return in_array($role, ['owner', 'admin']);
     }
 
     private function canManageMembers(): bool
     {
         $role = $this->team->getMemberRole(Auth::user());
+
         return in_array($role, ['owner', 'admin']);
     }
 

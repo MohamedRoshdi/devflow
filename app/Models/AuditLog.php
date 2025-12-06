@@ -8,8 +8,9 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class AuditLog extends Model
 {
-    const UPDATED_AT = null; // Audit logs don't need updated_at
+    public const UPDATED_AT = null; // Audit logs don't need updated_at
 
+    /** @var array<int, string> */
     protected $fillable = [
         'user_id',
         'action',
@@ -21,6 +22,9 @@ class AuditLog extends Model
         'user_agent',
     ];
 
+    /**
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -31,11 +35,17 @@ class AuditLog extends Model
     }
 
     // Relationships
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return MorphTo<Model, $this>
+     */
     public function auditable(): MorphTo
     {
         return $this->morphTo();
@@ -63,6 +73,7 @@ class AuditLog extends Model
     public function getActionTypeAttribute(): string
     {
         $parts = explode('.', $this->action);
+
         return $parts[1] ?? 'unknown';
     }
 
@@ -76,18 +87,25 @@ class AuditLog extends Model
 
     /**
      * Get changes summary
+     *
+     * @return array<string, array<string, mixed>>
      */
     public function getChangesSummaryAttribute(): array
     {
-        if (empty($this->old_values) || empty($this->new_values)) {
+        /** @var array<string, mixed>|null $oldValues */
+        $oldValues = $this->old_values;
+        /** @var array<string, mixed>|null $newValues */
+        $newValues = $this->new_values;
+
+        if (! is_array($oldValues) || ! is_array($newValues) || empty($oldValues) || empty($newValues)) {
             return [];
         }
 
         $changes = [];
-        foreach ($this->new_values as $key => $newValue) {
-            $oldValue = $this->old_values[$key] ?? null;
+        foreach ($newValues as $key => $newValue) {
+            $oldValue = $oldValues[$key] ?? null;
 
-            if ($oldValue !== $newValue) {
+            if ($oldValue != $newValue) {
                 $changes[$key] = [
                     'old' => $oldValue,
                     'new' => $newValue,

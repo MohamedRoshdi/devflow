@@ -27,4 +27,3 @@ Broadcast::channel('server-metrics.{serverId}', function () {
 Broadcast::channel('deployment-logs.{deploymentId}', function () {
     return true; // Allow all authenticated users to listen to deployment logs
 });
-

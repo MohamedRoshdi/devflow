@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Logs;
 
-use App\Models\WebhookDelivery;
 use App\Models\Project;
+use App\Models\WebhookDelivery;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -12,14 +12,21 @@ class WebhookLogs extends Component
     use WithPagination;
 
     public string $search = '';
+
     public string $statusFilter = '';
+
     public string $providerFilter = '';
+
     public string $projectFilter = '';
+
     public string $eventTypeFilter = '';
 
+    /** @var array<string, mixed> */
     public array $selectedDelivery = [];
+
     public bool $showDetails = false;
 
+    /** @var array<string, array{except: string}> */
     protected $queryString = [
         'search' => ['except' => ''],
         'statusFilter' => ['except' => ''],
@@ -53,7 +60,7 @@ class WebhookLogs extends Component
                 'payload' => $delivery->payload,
                 'response' => $delivery->response,
                 'deployment_id' => $delivery->deployment_id,
-                'created_at' => $delivery->created_at?->format('Y-m-d H:i:s'),
+                'created_at' => $delivery->created_at->format('Y-m-d H:i:s'),
             ];
             $this->showDetails = true;
         }
@@ -89,14 +96,14 @@ class WebhookLogs extends Component
     {
         $deliveries = WebhookDelivery::query()
             ->with(['project', 'deployment'])
-            ->when($this->search, fn($q) => $q->where(function ($query) {
+            ->when($this->search, fn ($q) => $q->where(function ($query) {
                 $query->where('event_type', 'like', "%{$this->search}%")
                     ->orWhere('response', 'like', "%{$this->search}%");
             }))
-            ->when($this->statusFilter, fn($q) => $q->where('status', $this->statusFilter))
-            ->when($this->providerFilter, fn($q) => $q->where('provider', $this->providerFilter))
-            ->when($this->projectFilter, fn($q) => $q->where('project_id', $this->projectFilter))
-            ->when($this->eventTypeFilter, fn($q) => $q->where('event_type', $this->eventTypeFilter))
+            ->when($this->statusFilter, fn ($q) => $q->where('status', $this->statusFilter))
+            ->when($this->providerFilter, fn ($q) => $q->where('provider', $this->providerFilter))
+            ->when($this->projectFilter, fn ($q) => $q->where('project_id', $this->projectFilter))
+            ->when($this->eventTypeFilter, fn ($q) => $q->where('event_type', $this->eventTypeFilter))
             ->orderByDesc('created_at')
             ->paginate(20);
 

@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Livewire\Pipelines;
 
-use App\Models\Project;
 use App\Models\PipelineRun;
+use App\Models\Project;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use Livewire\Component;
-use Livewire\Attributes\{Computed, On};
 use Livewire\WithPagination;
 
 class PipelineRunHistory extends Component
@@ -15,7 +16,9 @@ class PipelineRunHistory extends Component
     use WithPagination;
 
     public Project $project;
+
     public string $statusFilter = 'all';
+
     public int $perPage = 10;
 
     /**
@@ -25,7 +28,7 @@ class PipelineRunHistory extends Component
     public function pipelineRuns()
     {
         return PipelineRun::where('project_id', $this->project->id)
-            ->when($this->statusFilter !== 'all', fn($q) => $q->where('status', $this->statusFilter))
+            ->when($this->statusFilter !== 'all', fn ($q) => $q->where('status', $this->statusFilter))
             ->with(['stageRuns.pipelineStage', 'deployment'])
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);
@@ -96,6 +99,7 @@ class PipelineRunHistory extends Component
                 'type' => 'error',
                 'message' => 'Unauthorized action',
             ]);
+
             return;
         }
 

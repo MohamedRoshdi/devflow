@@ -2,28 +2,51 @@
 
 namespace App\Livewire\Servers;
 
-use Livewire\Component;
 use App\Models\Server;
-use App\Services\ServerConnectivityService;
 use App\Services\BulkServerActionService;
-use Livewire\WithPagination;
-use Livewire\Attributes\On;
+use App\Services\ServerConnectivityService;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class ServerList extends Component
 {
     use WithPagination;
 
-    public $search = '';
-    public $statusFilter = '';
-    public $tagFilter = [];
+    public string $search = '';
+
+    public string $statusFilter = '';
+
+    /** @var array<int> */
+    public array $tagFilter = [];
+
     public bool $isPingingAll = false;
 
+    /**
+     * Clear cached queries when search/filter changes
+     */
+    public function updated(string $property): void
+    {
+        if (in_array($property, ['search', 'statusFilter', 'tagFilter'])) {
+            unset($this->serversQuery);
+            $this->resetPage();
+        }
+    }
+
     // Bulk action properties
+    /** @var array<int> */
     public array $selectedServers = [];
+
     public bool $selectAll = false;
+
     public bool $bulkActionInProgress = false;
+
+    /** @var array<int, mixed> */
     public array $bulkActionResults = [];
+
     public bool $showResultsModal = false;
 
     public function mount(): void
@@ -33,17 +56,27 @@ class ServerList extends Component
     }
 
     #[On('server-created')]
-    public function refreshServers()
+    public function refreshServers(): void
     {
+        unset($this->accessibleServers);
         $this->resetPage();
     }
 
     /**
-     * Get all servers (shared across all accounts)
+     * Get all servers (shared across all accounts) with eager loading
+     * Cached using #[Computed] attribute to prevent multiple queries
+     *
+     * @return Collection<int, Server>
      */
-    protected function getAccessibleServers()
+    #[Computed]
+    public function accessibleServers(): Collection
     {
-        return Server::all();
+        return Server::with(['tags:id,name,color', 'projects:id,name,server_id', 'user:id,name'])
+            ->select([
+                'id', 'name', 'hostname', 'ip_address', 'port', 'status',
+                'user_id', 'docker_installed', 'last_ping_at', 'created_at', 'updated_at',
+            ])
+            ->get();
     }
 
     /**
@@ -51,15 +84,13 @@ class ServerList extends Component
      */
     public function pingAllServersInBackground(): void
     {
-        $servers = $this->getAccessibleServers();
-
-        if ($servers->isEmpty()) {
+        if ($this->accessibleServers->isEmpty()) {
             return;
         }
 
         $connectivityService = app(ServerConnectivityService::class);
 
-        foreach ($servers as $server) {
+        foreach ($this->accessibleServers as $server) {
             // Quick ping to update status (async-like behavior with timeout)
             $connectivityService->pingAndUpdateStatus($server);
         }
@@ -72,13 +103,12 @@ class ServerList extends Component
     {
         $this->isPingingAll = true;
 
-        $servers = $this->getAccessibleServers();
         $connectivityService = app(ServerConnectivityService::class);
 
         $online = 0;
         $offline = 0;
 
-        foreach ($servers as $server) {
+        foreach ($this->accessibleServers as $server) {
             $result = $connectivityService->pingAndUpdateStatus($server);
             if ($result) {
                 $online++;
@@ -88,6 +118,7 @@ class ServerList extends Component
         }
 
         $this->isPingingAll = false;
+        unset($this->accessibleServers); // Clear cache to get updated status
         session()->flash('message', "Status updated: {$online} online, {$offline} offline");
     }
 
@@ -98,7 +129,7 @@ class ServerList extends Component
     {
         $server = Server::find($serverId);
 
-        if (!$server) {
+        if (! $server) {
             return;
         }
 
@@ -110,10 +141,13 @@ class ServerList extends Component
             'last_ping_at' => now(),
         ]);
 
+        // Clear caches after status update
+        unset($this->accessibleServers, $this->serversQuery);
+
         if ($result['reachable']) {
             session()->flash('message', "{$server->name} is online");
         } else {
-            session()->flash('error', "{$server->name} is offline: " . ($result['message'] ?? 'Connection failed'));
+            session()->flash('error', "{$server->name} is offline: ".($result['message'] ?? 'Connection failed'));
         }
     }
 
@@ -124,12 +158,15 @@ class ServerList extends Component
     {
         $server = Server::find($serverId);
 
-        if (!$server) {
+        if (! $server) {
             return;
         }
 
         $connectivityService = app(ServerConnectivityService::class);
         $result = $connectivityService->rebootServer($server);
+
+        // Clear caches after reboot
+        unset($this->accessibleServers, $this->serversQuery);
 
         if ($result['success']) {
             session()->flash('message', $result['message']);
@@ -138,7 +175,7 @@ class ServerList extends Component
         }
     }
 
-    public function addCurrentServer()
+    public function addCurrentServer(): void
     {
         try {
             // Get current server IP
@@ -149,9 +186,10 @@ class ServerList extends Component
 
             if ($exists) {
                 session()->flash('error', 'This server is already added!');
+
                 return;
             }
-            
+
             // Create server for current VPS
             $server = Server::create([
                 'user_id' => auth()->id(),
@@ -167,8 +205,8 @@ class ServerList extends Component
             // Get server info
             $connectivityService = app(ServerConnectivityService::class);
             $serverInfo = $connectivityService->getServerInfo($server);
-            
-            if (!empty($serverInfo)) {
+
+            if (! empty($serverInfo)) {
                 $server->update([
                     'os' => $serverInfo['os'] ?? null,
                     'cpu_cores' => $serverInfo['cpu_cores'] ?? null,
@@ -179,30 +217,36 @@ class ServerList extends Component
 
             session()->flash('message', 'Current server added successfully!');
             $this->dispatch('server-created');
-            
+
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to add current server: ' . $e->getMessage());
+            session()->flash('error', 'Failed to add current server: '.$e->getMessage());
         }
     }
 
-    public function deleteServer($serverId)
+    public function deleteServer(int $serverId): void
     {
         $server = Server::find($serverId);
 
-        if (!$server) {
+        if (! $server) {
             return;
         }
 
         $server->delete();
+
+        // Clear caches after deletion
+        unset($this->accessibleServers, $this->serversQuery);
+        Cache::forget('server_tags_list');
+        unset($this->allTags);
+
         session()->flash('message', 'Server deleted successfully');
     }
 
     protected function getCurrentServerIP(): string
     {
         // Try multiple methods to get the server's IP
-        
+
         // Method 1: Check SERVER_ADDR
-        if (!empty($_SERVER['SERVER_ADDR']) && $_SERVER['SERVER_ADDR'] !== '127.0.0.1') {
+        if (! empty($_SERVER['SERVER_ADDR']) && $_SERVER['SERVER_ADDR'] !== '127.0.0.1') {
             return $_SERVER['SERVER_ADDR'];
         }
 
@@ -239,7 +283,7 @@ class ServerList extends Component
         }
 
         // Update selectAll state based on current selection
-        $totalServersOnPage = $this->getServersQuery()->pluck('id')->toArray();
+        $totalServersOnPage = $this->serversQuery->pluck('id')->toArray();
         $this->selectAll = count($this->selectedServers) > 0 &&
                           count(array_intersect($totalServersOnPage, $this->selectedServers)) === count($totalServersOnPage);
     }
@@ -249,11 +293,11 @@ class ServerList extends Component
      */
     public function toggleSelectAll(): void
     {
-        $this->selectAll = !$this->selectAll;
+        $this->selectAll = ! $this->selectAll;
 
         if ($this->selectAll) {
             // Select all servers on current page
-            $serverIds = $this->getServersQuery()->pluck('id')->toArray();
+            $serverIds = $this->serversQuery->pluck('id')->toArray();
             $this->selectedServers = array_unique(array_merge($this->selectedServers, $serverIds));
         } else {
             // Deselect all servers
@@ -279,6 +323,7 @@ class ServerList extends Component
     {
         if (empty($this->selectedServers)) {
             session()->flash('error', 'No servers selected');
+
             return;
         }
 
@@ -295,6 +340,9 @@ class ServerList extends Component
         $this->bulkActionInProgress = false;
         $this->showResultsModal = true;
 
+        // Clear caches after bulk ping
+        unset($this->accessibleServers, $this->serversQuery);
+
         session()->flash('message', "Bulk ping completed: {$stats['successful']} successful, {$stats['failed']} failed");
     }
 
@@ -305,6 +353,7 @@ class ServerList extends Component
     {
         if (empty($this->selectedServers)) {
             session()->flash('error', 'No servers selected');
+
             return;
         }
 
@@ -321,6 +370,9 @@ class ServerList extends Component
         $this->bulkActionInProgress = false;
         $this->showResultsModal = true;
 
+        // Clear caches after bulk reboot
+        unset($this->accessibleServers, $this->serversQuery);
+
         session()->flash('message', "Bulk reboot initiated: {$stats['successful']} successful, {$stats['failed']} failed");
     }
 
@@ -331,6 +383,7 @@ class ServerList extends Component
     {
         if (empty($this->selectedServers)) {
             session()->flash('error', 'No servers selected');
+
             return;
         }
 
@@ -347,6 +400,9 @@ class ServerList extends Component
         $this->bulkActionInProgress = false;
         $this->showResultsModal = true;
 
+        // Clear caches after bulk Docker installation
+        unset($this->accessibleServers, $this->serversQuery);
+
         session()->flash('message', "Bulk Docker installation completed: {$stats['successful']} successful, {$stats['failed']} failed");
     }
 
@@ -357,6 +413,7 @@ class ServerList extends Component
     {
         if (empty($this->selectedServers)) {
             session()->flash('error', 'No servers selected');
+
             return;
         }
 
@@ -372,6 +429,9 @@ class ServerList extends Component
         $this->bulkActionResults = $results;
         $this->bulkActionInProgress = false;
         $this->showResultsModal = true;
+
+        // Clear caches after bulk service restart
+        unset($this->accessibleServers, $this->serversQuery);
 
         session()->flash('message', "Bulk {$service} restart completed: {$stats['successful']} successful, {$stats['failed']} failed");
     }
@@ -394,27 +454,40 @@ class ServerList extends Component
         } else {
             $this->tagFilter[] = $tagId;
         }
+        unset($this->serversQuery);
         $this->resetPage();
     }
 
     /**
-     * Get the base servers query
+     * Get the base servers query with eager loading
      * All servers are shared and visible to all authenticated users
+     * Cached using #[Computed] attribute to prevent multiple queries
+     *
+     * @return \Illuminate\Database\Eloquent\Builder<Server>
      */
-    protected function getServersQuery()
+    #[Computed]
+    public function serversQuery(): \Illuminate\Database\Eloquent\Builder
     {
         return Server::query()
+            ->with([
+                'tags:id,name,color',
+                'user:id,name',
+            ])
+            ->select([
+                'id', 'name', 'hostname', 'ip_address', 'port', 'status',
+                'user_id', 'docker_installed', 'last_ping_at', 'created_at', 'updated_at',
+            ])
             ->when($this->search, function ($query) {
-                $query->where(function($q) {
+                $query->where(function ($q) {
                     $q->where('name', 'like', '%'.$this->search.'%')
-                      ->orWhere('hostname', 'like', '%'.$this->search.'%')
-                      ->orWhere('ip_address', 'like', '%'.$this->search.'%');
+                        ->orWhere('hostname', 'like', '%'.$this->search.'%')
+                        ->orWhere('ip_address', 'like', '%'.$this->search.'%');
                 });
             })
             ->when($this->statusFilter, function ($query) {
                 $query->where('status', $this->statusFilter);
             })
-            ->when(!empty($this->tagFilter), function ($query) {
+            ->when(! empty($this->tagFilter), function ($query) {
                 $query->whereHas('tags', function ($q) {
                     $q->whereIn('server_tags.id', $this->tagFilter);
                 });
@@ -422,31 +495,30 @@ class ServerList extends Component
             ->latest();
     }
 
-    public function render()
+    /**
+     * Get all tags with caching
+     * Cached using #[Computed] attribute to prevent multiple queries
+     *
+     * @return \Illuminate\Support\Collection<int, \App\Models\ServerTag>
+     */
+    #[Computed]
+    public function allTags(): \Illuminate\Support\Collection
     {
-        // Optimized: Eager load relationships and select specific columns
-        $servers = $this->getServersQuery()
-            ->with([
-                'tags:id,name,color',
-                'user:id,name'
-            ])
-            ->select([
-                'id', 'name', 'hostname', 'ip_address', 'port', 'status',
-                'user_id', 'docker_installed', 'last_ping_at', 'created_at', 'updated_at'
-            ])
-            ->paginate(10);
-
-        // Get all tags for filtering (shared across all users) with caching
-        $allTags = Cache::remember('server_tags_list', 600, function () {
+        return Cache::remember('server_tags_list', 600, function () {
             return \App\Models\ServerTag::withCount('servers')
                 ->orderBy('name')
                 ->get();
         });
+    }
+
+    public function render(): \Illuminate\Contracts\View\View
+    {
+        // Use cached serversQuery with pagination
+        $servers = $this->serversQuery->paginate(10);
 
         return view('livewire.servers.server-list', [
             'servers' => $servers,
-            'allTags' => $allTags,
+            'allTags' => $this->allTags,
         ]);
     }
 }
-

@@ -2,7 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\{PipelineRun, Project, Deployment};
+use App\Models\PipelineRun;
+use App\Models\Project;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PipelineRunFactory extends Factory

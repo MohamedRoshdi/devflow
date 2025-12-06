@@ -1,28 +1,28 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GitHubAuthController;
+use App\Http\Controllers\TeamInvitationController;
+use App\Livewire\Admin\SystemAdmin;
+use App\Livewire\Analytics\AnalyticsDashboard;
 use App\Livewire\Dashboard;
-use App\Livewire\Home\HomePublic;
-use App\Livewire\Servers\ServerList;
-use App\Livewire\Servers\ServerCreate;
-use App\Livewire\Servers\ServerShow;
-use App\Livewire\Servers\ServerEdit;
-use App\Livewire\Servers\ServerMetricsDashboard;
-use App\Livewire\Servers\ServerTagManager;
-use App\Livewire\Projects\ProjectList;
-use App\Livewire\Projects\ProjectCreate;
-use App\Livewire\Projects\ProjectShow;
+use App\Livewire\Dashboard\HealthDashboard;
 use App\Livewire\Deployments\DeploymentList;
 use App\Livewire\Deployments\DeploymentShow;
-use App\Livewire\Analytics\AnalyticsDashboard;
 use App\Livewire\Docker\DockerDashboard;
-use App\Livewire\Admin\SystemAdmin;
-use App\Livewire\Dashboard\HealthDashboard;
+use App\Livewire\Home\HomePublic;
+use App\Livewire\Projects\ProjectCreate;
+use App\Livewire\Projects\ProjectList;
+use App\Livewire\Projects\ProjectShow;
+use App\Livewire\Servers\ServerCreate;
+use App\Livewire\Servers\ServerEdit;
+use App\Livewire\Servers\ServerList;
+use App\Livewire\Servers\ServerMetricsDashboard;
+use App\Livewire\Servers\ServerShow;
+use App\Livewire\Servers\ServerTagManager;
 use App\Livewire\Settings\GitHubSettings;
-use App\Http\Controllers\GitHubAuthController;
 use App\Livewire\Teams\TeamList;
 use App\Livewire\Teams\TeamSettings;
-use App\Http\Controllers\TeamInvitationController;
+use Illuminate\Support\Facades\Route;
 
 // Public Home Page - Shows all projects
 Route::get('/', HomePublic::class)->name('home');
@@ -87,6 +87,7 @@ Route::middleware('auth')->group(function () {
 
     // System Administration
     Route::get('/admin/system', SystemAdmin::class)->name('admin.system');
+    Route::get('/admin/audit-logs', \App\Livewire\Admin\AuditLogViewer::class)->name('admin.audit-logs');
 
     // ============ ADVANCED FEATURES ============
 
@@ -140,4 +141,3 @@ Route::post('/webhooks/github/{secret}', [App\Http\Controllers\WebhookController
 Route::post('/webhooks/gitlab/{secret}', [App\Http\Controllers\WebhookController::class, 'handleGitLab'])->name('webhooks.gitlab');
 
 require __DIR__.'/auth.php';
-

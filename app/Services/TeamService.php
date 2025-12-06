@@ -38,11 +38,16 @@ class TeamService
             ]);
 
             // Set as current team if user has no current team
-            if (!$user->current_team_id) {
+            if (! $user->current_team_id) {
                 $user->update(['current_team_id' => $team->id]);
             }
 
-            return $team->fresh();
+            $freshTeam = $team->fresh();
+            if ($freshTeam === null) {
+                throw new \RuntimeException('Failed to refresh team after creation');
+            }
+
+            return $freshTeam;
         });
     }
 
@@ -111,7 +116,7 @@ class TeamService
             $invitation->update(['accepted_at' => now()]);
 
             // Set as current team if user has no current team
-            if (!$user->current_team_id) {
+            if (! $user->current_team_id) {
                 $user->update(['current_team_id' => $invitation->team_id]);
             }
 
@@ -150,7 +155,7 @@ class TeamService
             throw new \InvalidArgumentException('Cannot change the role of the team owner.');
         }
 
-        if (!in_array($role, ['admin', 'member', 'viewer'])) {
+        if (! in_array($role, ['admin', 'member', 'viewer'])) {
             throw new \InvalidArgumentException('Invalid role.');
         }
 
@@ -164,7 +169,7 @@ class TeamService
      */
     public function transferOwnership(Team $team, User $newOwner): void
     {
-        if (!$team->hasMember($newOwner)) {
+        if (! $team->hasMember($newOwner)) {
             throw new \InvalidArgumentException('New owner must be a team member.');
         }
 
@@ -175,9 +180,11 @@ class TeamService
             $team->update(['owner_id' => $newOwner->id]);
 
             // Update old owner to admin
-            TeamMember::where('team_id', $team->id)
-                ->where('user_id', $oldOwner->id)
-                ->update(['role' => 'admin']);
+            if ($oldOwner?->id !== null) {
+                TeamMember::where('team_id', $team->id)
+                    ->where('user_id', $oldOwner->id)
+                    ->update(['role' => 'admin']);
+            }
 
             // Update new owner role
             TeamMember::where('team_id', $team->id)
@@ -195,7 +202,7 @@ class TeamService
             ->where('user_id', $user->id)
             ->first();
 
-        if (!$member) {
+        if (! $member) {
             return false;
         }
 

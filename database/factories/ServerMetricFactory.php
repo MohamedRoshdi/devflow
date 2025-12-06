@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\ServerMetric;
 use App\Models\Server;
+use App\Models\ServerMetric;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

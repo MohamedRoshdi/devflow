@@ -6,7 +6,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Carbon\Carbon;
 
 class ProvisioningLog extends Model
 {
@@ -31,6 +30,9 @@ class ProvisioningLog extends Model
     }
 
     // Relationships
+    /**
+     * @return BelongsTo<Server, $this>
+     */
     public function server(): BelongsTo
     {
         return $this->belongsTo(Server::class);
@@ -88,7 +90,7 @@ class ProvisioningLog extends Model
 
     public function getStatusBadgeClass(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'pending' => 'bg-gray-500/20 text-gray-400 border-gray-500/30',
             'running' => 'bg-blue-500/20 text-blue-400 border-blue-500/30',
             'completed' => 'bg-green-500/20 text-green-400 border-green-500/30',

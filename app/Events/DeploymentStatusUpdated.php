@@ -3,9 +3,7 @@
 namespace App\Events;
 
 use App\Models\Deployment;
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -16,7 +14,9 @@ class DeploymentStatusUpdated implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public Deployment $deployment;
+
     public string $message;
+
     public string $type;
 
     /**
@@ -35,8 +35,8 @@ class DeploymentStatusUpdated implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('user.' . $this->deployment->user_id),
-            new PrivateChannel('deployment.' . $this->deployment->id),
+            new PrivateChannel('user.'.$this->deployment->user_id),
+            new PrivateChannel('deployment.'.$this->deployment->id),
         ];
     }
 
@@ -56,7 +56,7 @@ class DeploymentStatusUpdated implements ShouldBroadcast
         return [
             'deployment_id' => $this->deployment->id,
             'project_id' => $this->deployment->project_id,
-            'project_name' => $this->deployment->project->name,
+            'project_name' => $this->deployment->project?->name ?? 'Unknown Project',
             'status' => $this->deployment->status,
             'message' => $this->message,
             'type' => $this->type,

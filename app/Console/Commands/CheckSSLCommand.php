@@ -2,13 +2,13 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Models\Domain;
 use App\Services\SSLService;
+use Illuminate\Console\Command;
 
 class CheckSSLCommand extends Command
 {
     protected $signature = 'devflow:check-ssl';
+
     protected $description = 'Check SSL certificates and renew if needed';
 
     public function __construct(
@@ -44,4 +44,3 @@ class CheckSSLCommand extends Command
         return 0;
     }
 }
-

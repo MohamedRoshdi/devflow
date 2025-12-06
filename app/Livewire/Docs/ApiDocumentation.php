@@ -9,9 +9,10 @@ use Livewire\Component;
 class ApiDocumentation extends Component
 {
     public string $activeSection = 'authentication';
+
     public string $activeEndpoint = 'auth-overview';
 
-    public function setSection(string $section, string $endpoint = null)
+    public function setSection(string $section, ?string $endpoint = null)
     {
         $this->activeSection = $section;
         $this->activeEndpoint = $endpoint ?? $this->getDefaultEndpoint($section);
@@ -19,7 +20,7 @@ class ApiDocumentation extends Component
 
     private function getDefaultEndpoint(string $section): string
     {
-        return match($section) {
+        return match ($section) {
             'authentication' => 'auth-overview',
             'projects' => 'projects-list',
             'servers' => 'servers-list',

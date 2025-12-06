@@ -25,7 +25,7 @@ return new class extends Migration
         });
 
         // Update pipeline_runs table
-        if (!Schema::hasColumn('pipeline_runs', 'deployment_id')) {
+        if (! Schema::hasColumn('pipeline_runs', 'deployment_id')) {
             Schema::table('pipeline_runs', function (Blueprint $table) {
                 $table->foreignId('deployment_id')->nullable()->after('pipeline_id')->constrained()->onDelete('set null');
                 $table->foreignId('project_id')->nullable()->after('pipeline_id')->constrained()->onDelete('cascade');
@@ -56,10 +56,13 @@ return new class extends Migration
         Schema::dropIfExists('pipeline_stage_runs');
 
         if (Schema::hasColumn('pipeline_runs', 'deployment_id')) {
-            Schema::table('pipeline_runs', function (Blueprint $table) {
-                $table->dropForeign(['deployment_id']);
-                $table->dropColumn(['deployment_id', 'project_id', 'trigger_data']);
-            });
+            // SQLite doesn't support dropping columns with foreign keys, so skip for SQLite
+            if (config('database.default') !== 'sqlite') {
+                Schema::table('pipeline_runs', function (Blueprint $table) {
+                    $table->dropForeign(['deployment_id']);
+                    $table->dropColumn(['deployment_id', 'project_id', 'trigger_data']);
+                });
+            }
         }
 
         Schema::dropIfExists('pipeline_stages');

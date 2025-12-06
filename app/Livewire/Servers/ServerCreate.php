@@ -1,27 +1,44 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Servers;
 
-use Livewire\Component;
 use App\Models\Server;
 use App\Services\DockerService;
 use App\Services\ServerConnectivityService;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Livewire\Component;
 
 class ServerCreate extends Component
 {
-    public $name = '';
-    public $hostname = '';
-    public $ip_address = '';
-    public $port = 22;
-    public $username = 'root';
-    public $ssh_password = '';
-    public $ssh_key = '';
-    public $auth_method = 'password'; // 'password' or 'key'
-    public $latitude = null;
-    public $longitude = null;
-    public $location_name = '';
+    public string $name = '';
 
-    public function rules()
+    public string $hostname = '';
+
+    public string $ip_address = '';
+
+    public int $port = 22;
+
+    public string $username = 'root';
+
+    public string $ssh_password = '';
+
+    public string $ssh_key = '';
+
+    public string $auth_method = 'password'; // 'password' or 'key'
+
+    public ?float $latitude = null;
+
+    public ?float $longitude = null;
+
+    public string $location_name = '';
+
+    /**
+     * @return array<string, string>
+     */
+    public function rules(): array
     {
         return [
             'name' => 'required|string|max:255',
@@ -38,14 +55,14 @@ class ServerCreate extends Component
         ];
     }
 
-    public function getLocation()
+    public function getLocation(): void
     {
         // This would be called from JavaScript to get GPS coordinates
         // For now, we'll just set a placeholder
         $this->location_name = 'Auto-detected location';
     }
 
-    public function testConnection()
+    public function testConnection(): void
     {
         $this->validate();
 
@@ -63,16 +80,16 @@ class ServerCreate extends Component
             $result = $connectivityService->testConnection($tempServer);
 
             if ($result['reachable']) {
-                session()->flash('connection_test', $result['message'] . ' (Latency: ' . $result['latency_ms'] . 'ms)');
+                session()->flash('connection_test', $result['message'].' (Latency: '.$result['latency_ms'].'ms)');
             } else {
                 session()->flash('connection_error', $result['message']);
             }
         } catch (\Exception $e) {
-            session()->flash('connection_error', 'Connection failed: ' . $e->getMessage());
+            session()->flash('connection_error', 'Connection failed: '.$e->getMessage());
         }
     }
 
-    public function createServer()
+    public function createServer(): RedirectResponse
     {
         $this->validate();
 
@@ -98,8 +115,8 @@ class ServerCreate extends Component
         // Get server information
         if ($isReachable) {
             $serverInfo = $connectivityService->getServerInfo($server);
-            
-            if (!empty($serverInfo)) {
+
+            if (! empty($serverInfo)) {
                 $server->update([
                     'os' => $serverInfo['os'] ?? null,
                     'cpu_cores' => $serverInfo['cpu_cores'] ?? null,
@@ -113,7 +130,7 @@ class ServerCreate extends Component
         try {
             $dockerService = app(DockerService::class);
             $dockerInfo = $dockerService->checkDockerInstallation($server);
-            
+
             $server->update([
                 'docker_installed' => $dockerInfo['installed'],
                 'docker_version' => $dockerInfo['version'] ?? null,
@@ -123,18 +140,17 @@ class ServerCreate extends Component
         }
 
         $this->dispatch('server-created');
-        
-        $message = $isReachable 
-            ? 'Server added successfully and is online!' 
+
+        $message = $isReachable
+            ? 'Server added successfully and is online!'
             : 'Server added but appears offline. Check SSH credentials.';
-        
+
         return redirect()->route('servers.show', $server)
             ->with('message', $message);
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.servers.server-create');
     }
 }
-

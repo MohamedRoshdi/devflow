@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Livewire\Deployments;
 
-use App\Models\{DeploymentApproval, Project};
+use App\Models\DeploymentApproval;
+use App\Models\Project;
 use App\Services\DeploymentApprovalService;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use Livewire\Component;
-use Livewire\Attributes\{Computed, On};
 use Livewire\WithPagination;
 
 class DeploymentApprovals extends Component
@@ -15,13 +17,19 @@ class DeploymentApprovals extends Component
     use WithPagination;
 
     public string $search = '';
+
     public string $statusFilter = 'pending';
+
     public ?int $projectFilter = null;
 
     public ?int $selectedApprovalId = null;
+
     public string $approvalNotes = '';
+
     public string $rejectionReason = '';
+
     public bool $showApproveModal = false;
+
     public bool $showRejectModal = false;
 
     public function __construct(
@@ -41,7 +49,7 @@ class DeploymentApprovals extends Component
             'deployment.project',
             'deployment.user',
             'requester',
-            'approver'
+            'approver',
         ])->latest('requested_at');
 
         // Filter by status
@@ -62,12 +70,12 @@ class DeploymentApprovals extends Component
                 $q->whereHas('deployment.project', function ($sq) {
                     $sq->where('name', 'like', "%{$this->search}%");
                 })
-                ->orWhereHas('requester', function ($sq) {
-                    $sq->where('name', 'like', "%{$this->search}%");
-                })
-                ->orWhereHas('deployment', function ($sq) {
-                    $sq->where('branch', 'like', "%{$this->search}%");
-                });
+                    ->orWhereHas('requester', function ($sq) {
+                        $sq->where('name', 'like', "%{$this->search}%");
+                    })
+                    ->orWhereHas('deployment', function ($sq) {
+                        $sq->where('branch', 'like', "%{$this->search}%");
+                    });
             });
         }
 
@@ -77,12 +85,17 @@ class DeploymentApprovals extends Component
     #[Computed]
     public function projects()
     {
+        $user = auth()->user();
+        if ($user === null) {
+            return collect();
+        }
+
         // Get projects user has access to
-        if (auth()->user()->can('approve_all_deployments')) {
+        if ($user->can('approve_all_deployments')) {
             return Project::orderBy('name')->get(['id', 'name']);
         }
 
-        return auth()->user()->projects()->orderBy('name')->get(['id', 'name']);
+        return $user->projects()->orderBy('name')->get(['id', 'name']);
     }
 
     #[Computed]
@@ -121,7 +134,7 @@ class DeploymentApprovals extends Component
 
             $this->dispatch('notification', [
                 'type' => 'success',
-                'message' => 'Deployment approved successfully'
+                'message' => 'Deployment approved successfully',
             ]);
 
             $this->showApproveModal = false;
@@ -130,7 +143,7 @@ class DeploymentApprovals extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ]);
         }
     }
@@ -151,7 +164,7 @@ class DeploymentApprovals extends Component
 
             $this->dispatch('notification', [
                 'type' => 'success',
-                'message' => 'Deployment rejected'
+                'message' => 'Deployment rejected',
             ]);
 
             $this->showRejectModal = false;
@@ -160,7 +173,7 @@ class DeploymentApprovals extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ]);
         }
     }

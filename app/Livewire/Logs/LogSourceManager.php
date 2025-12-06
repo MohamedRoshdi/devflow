@@ -8,13 +8,16 @@ use App\Models\LogSource;
 use App\Models\Project;
 use App\Models\Server;
 use App\Services\LogAggregationService;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
-use Livewire\Attributes\{Computed, Validate};
 
 class LogSourceManager extends Component
 {
     public Server $server;
+
     public bool $showAddModal = false;
+
     public ?int $editingSourceId = null;
 
     #[Validate('required|string|max:255')]
@@ -30,6 +33,7 @@ class LogSourceManager extends Component
     public ?int $project_id = null;
 
     public string $selectedTemplate = '';
+
     public ?string $testResult = null;
 
     public function __construct(
@@ -147,7 +151,7 @@ class LogSourceManager extends Component
     {
         try {
             $source = LogSource::findOrFail($sourceId);
-            $source->update(['is_active' => !$source->is_active]);
+            $source->update(['is_active' => ! $source->is_active]);
 
             $status = $source->is_active ? 'enabled' : 'disabled';
             $this->dispatch('notification', type: 'success', message: "Log source {$status}");
@@ -203,7 +207,7 @@ class LogSourceManager extends Component
 
             $results = $this->logService->syncLogs($this->server);
 
-            if (!$originalActive) {
+            if (! $originalActive) {
                 $source->update(['is_active' => false]);
             }
 

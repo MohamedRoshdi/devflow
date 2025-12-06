@@ -18,23 +18,23 @@ class EnsureTeamAccess
     {
         $user = $request->user();
 
-        if (!$user) {
+        if (! $user) {
             return redirect()->route('login');
         }
 
         // Get team from route or user's current team
         $team = $request->route('team');
 
-        if (!$team) {
+        if (! $team) {
             $team = $user->currentTeam;
         }
 
-        if (!$team instanceof Team) {
+        if (! $team instanceof Team) {
             abort(404, 'Team not found');
         }
 
         // Check if user is a member
-        if (!$team->hasMember($user)) {
+        if (! $team->hasMember($user)) {
             abort(403, 'You do not have access to this team.');
         }
 
@@ -42,7 +42,7 @@ class EnsureTeamAccess
         if ($permission) {
             $member = $team->members()->where('user_id', $user->id)->first();
 
-            if (!$member || !$member->pivot->hasPermission($permission)) {
+            if (! $member || ! $member->pivot->hasPermission($permission)) {
                 abort(403, 'You do not have permission to perform this action.');
             }
         }

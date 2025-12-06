@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\Server;
-use App\Models\ResourceAlert;
 use App\Models\AlertHistory;
+use App\Models\ResourceAlert;
+use App\Models\Server;
 use Illuminate\Support\Facades\Log;
 
 class ResourceAlertService
@@ -22,12 +22,12 @@ class ResourceAlertService
         try {
             $metrics = $this->metricsService->getLatestMetrics($server);
 
-            if (!$metrics) {
+            if (! $metrics) {
                 // Try to collect fresh metrics
                 $metrics = $this->metricsService->collectMetrics($server);
             }
 
-            if (!$metrics) {
+            if (! $metrics) {
                 return [
                     'success' => false,
                     'message' => 'Failed to collect server metrics',
@@ -63,7 +63,7 @@ class ResourceAlertService
     {
         $resources = $this->checkServerResources($server);
 
-        if (!$resources['success']) {
+        if (! $resources['success']) {
             return [
                 'checked' => 0,
                 'triggered' => 0,
@@ -93,7 +93,7 @@ class ResourceAlertService
                 // Alert condition met - trigger it
                 $this->triggerAlert($alert, $currentValue);
                 $triggeredCount++;
-            } elseif (!$shouldTrigger && $wasTriggered) {
+            } elseif (! $shouldTrigger && $wasTriggered) {
                 // Alert condition resolved
                 $this->resolveAlert($alert, $currentValue);
                 $resolvedCount++;
@@ -205,7 +205,7 @@ class ResourceAlertService
      */
     public function canTrigger(ResourceAlert $alert): bool
     {
-        return !$alert->isInCooldown();
+        return ! $alert->isInCooldown();
     }
 
     /**
@@ -262,10 +262,10 @@ class ResourceAlertService
         try {
             $resources = $this->checkServerResources($alert->server);
 
-            if (!$resources['success']) {
+            if (! $resources['success']) {
                 return [
                     'success' => false,
-                    'message' => 'Failed to get server metrics: ' . ($resources['message'] ?? 'Unknown error'),
+                    'message' => 'Failed to get server metrics: '.($resources['message'] ?? 'Unknown error'),
                 ];
             }
 
@@ -278,7 +278,7 @@ class ResourceAlertService
                 'current_value' => $currentValue,
                 'threshold_value' => $alert->threshold_value,
                 'status' => 'triggered',
-                'message' => '[TEST] ' . $this->buildAlertMessage($alert, $currentValue, 'triggered'),
+                'message' => '[TEST] '.$this->buildAlertMessage($alert, $currentValue, 'triggered'),
                 'notified_at' => now(),
             ]);
 
@@ -298,7 +298,7 @@ class ResourceAlertService
 
             return [
                 'success' => false,
-                'message' => 'Failed to send test notification: ' . $e->getMessage(),
+                'message' => 'Failed to send test notification: '.$e->getMessage(),
             ];
         }
     }

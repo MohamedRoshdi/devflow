@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Users;
 
 use App\Models\User;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Spatie\Permission\Models\Role;
@@ -11,38 +14,48 @@ class UserList extends Component
 {
     use WithPagination;
 
-    public $search = '';
-    public $roleFilter = '';
-    public $showCreateModal = false;
-    public $showEditModal = false;
-    public $editingUserId = null;
-    
-    // Form fields
-    public $name = '';
-    public $email = '';
-    public $password = '';
-    public $password_confirmation = '';
-    public $selectedRoles = [];
+    public string $search = '';
 
+    public string $roleFilter = '';
+
+    public bool $showCreateModal = false;
+
+    public bool $showEditModal = false;
+
+    public ?int $editingUserId = null;
+
+    // Form fields
+    public string $name = '';
+
+    public string $email = '';
+
+    public string $password = '';
+
+    public string $password_confirmation = '';
+
+    /** @var array<int, string> */
+    public array $selectedRoles = [];
+
+    /** @var array<int, string> */
     protected $queryString = ['search', 'roleFilter'];
 
-    public function updatingSearch()
+    public function updatingSearch(): void
     {
         $this->resetPage();
     }
 
-    public function updatingRoleFilter()
+    public function updatingRoleFilter(): void
     {
         $this->resetPage();
     }
 
-    public function createUser()
+    public function createUser(): void
     {
         $this->resetForm();
         $this->showCreateModal = true;
     }
 
-    public function saveUser()
+    public function saveUser(): void
     {
         $this->validate([
             'name' => 'required|string|max:255',
@@ -57,7 +70,7 @@ class UserList extends Component
             'password' => bcrypt($this->password),
         ]);
 
-        if (!empty($this->selectedRoles)) {
+        if (! empty($this->selectedRoles)) {
             $user->assignRole($this->selectedRoles);
         }
 
@@ -66,35 +79,35 @@ class UserList extends Component
         $this->resetForm();
     }
 
-    public function editUser($userId)
+    public function editUser(int $userId): void
     {
         $user = User::findOrFail($userId);
-        
+
         $this->editingUserId = $userId;
         $this->name = $user->name;
         $this->email = $user->email;
         $this->selectedRoles = $user->roles->pluck('name')->toArray();
-        
+
         $this->showEditModal = true;
     }
 
-    public function updateUser()
+    public function updateUser(): void
     {
         $this->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $this->editingUserId,
+            'email' => 'required|email|unique:users,email,'.$this->editingUserId,
             'password' => 'nullable|min:8|confirmed',
             'selectedRoles' => 'array',
         ]);
 
         $user = User::findOrFail($this->editingUserId);
-        
+
         $user->update([
             'name' => $this->name,
             'email' => $this->email,
         ]);
 
-        if ($this->password) {
+        if ($this->password !== '') {
             $user->update(['password' => bcrypt($this->password)]);
         }
 
@@ -105,10 +118,11 @@ class UserList extends Component
         $this->resetForm();
     }
 
-    public function deleteUser($userId)
+    public function deleteUser(int $userId): void
     {
-        if ($userId == auth()->id()) {
+        if ($userId === auth()->id()) {
             session()->flash('error', 'You cannot delete your own account!');
+
             return;
         }
 
@@ -118,26 +132,26 @@ class UserList extends Component
         session()->flash('message', 'User deleted successfully!');
     }
 
-    public function clearFilters()
+    public function clearFilters(): void
     {
         $this->search = '';
         $this->roleFilter = '';
         $this->resetPage();
     }
 
-    public function closeCreateModal()
+    public function closeCreateModal(): void
     {
         $this->showCreateModal = false;
         $this->resetForm();
     }
 
-    public function closeEditModal()
+    public function closeEditModal(): void
     {
         $this->showEditModal = false;
         $this->resetForm();
     }
 
-    public function resetForm()
+    public function resetForm(): void
     {
         $this->name = '';
         $this->email = '';
@@ -147,18 +161,18 @@ class UserList extends Component
         $this->editingUserId = null;
     }
 
-    public function render()
+    public function render(): View
     {
         $query = User::query();
 
-        if ($this->search) {
-            $query->where(function($q) {
-                $q->where('name', 'like', '%' . $this->search . '%')
-                  ->orWhere('email', 'like', '%' . $this->search . '%');
+        if ($this->search !== '') {
+            $query->where(function ($q): void {
+                $q->where('name', 'like', '%'.$this->search.'%')
+                    ->orWhere('email', 'like', '%'.$this->search.'%');
             });
         }
 
-        if ($this->roleFilter) {
+        if ($this->roleFilter !== '') {
             $query->role($this->roleFilter);
         }
 

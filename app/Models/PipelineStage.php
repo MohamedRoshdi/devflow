@@ -4,16 +4,27 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * @property array<int, string> $commands
+ * @property array<string, mixed> $environment_variables
+ *
+ * @use HasFactory<\Database\Factories\PipelineStageFactory, static>
+ */
 class PipelineStage extends Model
 {
+    /** @use HasFactory<\Database\Factories\PipelineStageFactory> */
     use HasFactory;
 
+    /**
+     * @var array<int, string>
+     */
     protected $fillable = [
         'project_id',
         'name',
@@ -26,6 +37,9 @@ class PipelineStage extends Model
         'environment_variables',
     ];
 
+    /**
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -40,6 +54,8 @@ class PipelineStage extends Model
 
     /**
      * Relationship: Stage belongs to a project
+     *
+     * @return BelongsTo<Project, $this>
      */
     public function project(): BelongsTo
     {
@@ -48,6 +64,8 @@ class PipelineStage extends Model
 
     /**
      * Relationship: Stage has many stage runs
+     *
+     * @return HasMany<PipelineStageRun, $this>
      */
     public function stageRuns(): HasMany
     {
@@ -56,14 +74,19 @@ class PipelineStage extends Model
 
     /**
      * Relationship: Get the latest stage run
+     *
+     * @return HasOne<PipelineStageRun, $this>
      */
-    public function latestRun()
+    public function latestRun(): HasOne
     {
         return $this->hasOne(PipelineStageRun::class)->latestOfMany();
     }
 
     /**
      * Scope: Get only enabled stages
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     public function scopeEnabled(Builder $query): Builder
     {
@@ -72,6 +95,9 @@ class PipelineStage extends Model
 
     /**
      * Scope: Get stages ordered by their order field
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     public function scopeOrdered(Builder $query): Builder
     {
@@ -80,6 +106,9 @@ class PipelineStage extends Model
 
     /**
      * Scope: Get stages by type
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     public function scopeByType(Builder $query, string $type): Builder
     {
@@ -115,7 +144,7 @@ class PipelineStage extends Model
      */
     public function getColorAttribute(): string
     {
-        return match($this->type) {
+        return match ($this->type) {
             'pre_deploy' => 'blue',
             'deploy' => 'green',
             'post_deploy' => 'purple',

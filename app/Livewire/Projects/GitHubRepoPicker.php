@@ -8,8 +8,9 @@ use App\Models\GitHubConnection;
 use App\Models\GitHubRepository;
 use App\Services\GitHubService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Modelable;
 use Livewire\Component;
-use Livewire\Attributes\{Computed, Modelable};
 
 class GitHubRepoPicker extends Component
 {
@@ -20,14 +21,20 @@ class GitHubRepoPicker extends Component
     public string $branch = '';
 
     public string $search = '';
+
     public string $visibilityFilter = 'all';
 
     public int $selectedRepoId = 0;
+
+    /** @var array<int, array{name: string, protected: bool}> */
     public array $branches = [];
+
     public bool $loadingBranches = false;
+
     public string $selectedBranch = '';
 
     public bool $isOpen = false;
+
     public string $step = 'select-repo'; // select-repo, select-branch
 
     public function __construct(
@@ -43,20 +50,17 @@ class GitHubRepoPicker extends Component
     #[Computed]
     public function repositories()
     {
-        if (!$this->connection) {
+        if (! $this->connection) {
             return collect();
         }
 
         return GitHubRepository::where('github_connection_id', $this->connection->id)
-            ->when($this->search, fn($q) =>
-                $q->where(fn($query) =>
-                    $query->where('name', 'like', "%{$this->search}%")
-                        ->orWhere('description', 'like', "%{$this->search}%")
-                        ->orWhere('full_name', 'like', "%{$this->search}%")
-                )
+            ->when($this->search, fn ($q) => $q->where(fn ($query) => $query->where('name', 'like', "%{$this->search}%")
+                ->orWhere('description', 'like', "%{$this->search}%")
+                ->orWhere('full_name', 'like', "%{$this->search}%")
             )
-            ->when($this->visibilityFilter !== 'all', fn($q) =>
-                $q->where('private', $this->visibilityFilter === 'private')
+            )
+            ->when($this->visibilityFilter !== 'all', fn ($q) => $q->where('private', $this->visibilityFilter === 'private')
             )
             ->orderBy('stars_count', 'desc')
             ->limit(50)
@@ -65,8 +69,9 @@ class GitHubRepoPicker extends Component
 
     public function open(): void
     {
-        if (!$this->connection) {
+        if (! $this->connection) {
             $this->dispatch('notification', type: 'error', message: 'Please connect to GitHub first');
+
             return;
         }
 
@@ -92,7 +97,7 @@ class GitHubRepoPicker extends Component
             // Load branches from GitHub
             $branches = $this->gitHubService->listBranches($this->connection, $repository->full_name);
 
-            $this->branches = collect($branches)->map(fn($branch) => [
+            $this->branches = collect($branches)->map(fn ($branch) => [
                 'name' => $branch['name'],
                 'protected' => $branch['protected'] ?? false,
             ])->toArray();
@@ -105,7 +110,7 @@ class GitHubRepoPicker extends Component
 
         } catch (\Exception $e) {
             $this->loadingBranches = false;
-            $this->dispatch('notification', type: 'error', message: 'Failed to load branches: ' . $e->getMessage());
+            $this->dispatch('notification', type: 'error', message: 'Failed to load branches: '.$e->getMessage());
         }
     }
 
@@ -119,6 +124,7 @@ class GitHubRepoPicker extends Component
     {
         if ($this->selectedRepoId === 0 || empty($this->selectedBranch)) {
             $this->dispatch('notification', type: 'error', message: 'Please select a repository and branch');
+
             return;
         }
 
@@ -139,7 +145,7 @@ class GitHubRepoPicker extends Component
             $this->close();
 
         } catch (\Exception $e) {
-            $this->dispatch('notification', type: 'error', message: 'Failed to select repository: ' . $e->getMessage());
+            $this->dispatch('notification', type: 'error', message: 'Failed to select repository: '.$e->getMessage());
         }
     }
 

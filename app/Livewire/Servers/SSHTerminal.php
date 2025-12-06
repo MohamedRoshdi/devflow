@@ -2,19 +2,25 @@
 
 namespace App\Livewire\Servers;
 
-use Livewire\Component;
 use App\Models\Server;
-use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\Log;
+use Livewire\Component;
+use Symfony\Component\Process\Process;
 
 class SSHTerminal extends Component
 {
     public Server $server;
+
     public string $command = '';
+
+    /** @var array<int, array<string, mixed>> */
     public array $history = [];
+
     public int $historyIndex = -1;
+
     public bool $isExecuting = false;
 
+    /** @var array<int, string> */
     protected $listeners = ['executeCommand'];
 
     public function mount(Server $server)
@@ -22,7 +28,7 @@ class SSHTerminal extends Component
         $this->server = $server;
 
         // Load command history from session
-        $this->history = session('ssh_history_' . $server->id, []);
+        $this->history = session('ssh_history_'.$server->id, []);
     }
 
     public function executeCommand()
@@ -50,11 +56,11 @@ class SSHTerminal extends Component
 
             // Combine output and error
             $fullOutput = '';
-            if (!empty($output)) {
+            if (! empty($output)) {
                 $fullOutput .= $output;
             }
-            if (!empty($error)) {
-                $fullOutput .= "\n" . $error;
+            if (! empty($error)) {
+                $fullOutput .= "\n".$error;
             }
 
             // Add to history
@@ -72,7 +78,7 @@ class SSHTerminal extends Component
             $this->history = array_slice($this->history, 0, 50);
 
             // Save to session
-            session(['ssh_history_' . $this->server->id => $this->history]);
+            session(['ssh_history_'.$this->server->id => $this->history]);
 
             // Log command execution
             Log::info('SSH command executed', [
@@ -89,14 +95,14 @@ class SSHTerminal extends Component
             // Add error to history
             $historyItem = [
                 'command' => $this->command,
-                'output' => 'Error: ' . $e->getMessage(),
+                'output' => 'Error: '.$e->getMessage(),
                 'exit_code' => 1,
                 'success' => false,
                 'timestamp' => now()->toDateTimeString(),
             ];
 
             array_unshift($this->history, $historyItem);
-            session(['ssh_history_' . $this->server->id => $this->history]);
+            session(['ssh_history_'.$this->server->id => $this->history]);
 
             Log::error('SSH command failed', [
                 'server_id' => $this->server->id,
@@ -111,10 +117,10 @@ class SSHTerminal extends Component
     public function clearHistory()
     {
         $this->history = [];
-        session()->forget('ssh_history_' . $this->server->id);
+        session()->forget('ssh_history_'.$this->server->id);
     }
 
-    public function rerunCommand($index)
+    public function rerunCommand(int $index): void
     {
         if (isset($this->history[$index])) {
             $this->command = $this->history[$index]['command'];
@@ -128,7 +134,7 @@ class SSHTerminal extends Component
             '-o UserKnownHostsFile=/dev/null',
             '-o ConnectTimeout=10',
             '-o LogLevel=ERROR',
-            '-p ' . $this->server->port,
+            '-p '.$this->server->port,
         ];
 
         // Check if password authentication should be used
@@ -153,7 +159,7 @@ class SSHTerminal extends Component
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
             file_put_contents($keyFile, $this->server->ssh_key);
             chmod($keyFile, 0600);
-            $sshOptions[] = '-i ' . $keyFile;
+            $sshOptions[] = '-i '.$keyFile;
         }
 
         return sprintf(

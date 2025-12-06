@@ -57,7 +57,7 @@ return new class extends Migration
                 'retention_weekly',
                 'retention_monthly',
                 'encrypt',
-                'notify_on_failure'
+                'notify_on_failure',
             ]);
         });
     }

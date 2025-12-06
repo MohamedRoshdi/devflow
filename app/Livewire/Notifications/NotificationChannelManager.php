@@ -4,59 +4,72 @@ declare(strict_types=1);
 
 namespace App\Livewire\Notifications;
 
-use App\Models\{NotificationChannel, Project};
+use App\Models\NotificationChannel;
+use App\Models\Project;
 use App\Services\NotificationService;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
-use Livewire\Attributes\{Computed, Validate};
 use Livewire\WithPagination;
 
 class NotificationChannelManager extends Component
 {
     use WithPagination;
 
-    public $showAddChannelModal = false;
-    public $editingChannel = null;
+    public bool $showAddChannelModal = false;
+
+    public ?NotificationChannel $editingChannel = null;
 
     // Channel form fields
     #[Validate('required|string|max:255')]
-    public $name = '';
+    public string $name = '';
 
     #[Validate('required|in:slack,discord,email,webhook,teams')]
-    public $provider = 'slack';
+    public string $provider = 'slack';
 
     #[Validate('nullable|exists:projects,id')]
-    public $projectId = null;
+    public ?int $projectId = null;
 
     #[Validate('required_unless:provider,email|url')]
-    public $webhookUrl = '';
+    public string $webhookUrl = '';
 
     #[Validate('nullable|string')]
-    public $webhookSecret = '';
+    public string $webhookSecret = '';
 
     #[Validate('required_if:provider,email|email')]
-    public $email = '';
+    public string $email = '';
 
-    public $enabled = true;
+    public bool $enabled = true;
 
+    /**
+     * @var array<int, string>
+     */
     #[Validate('required|array|min:1')]
-    public $events = [];
+    public array $events = [];
 
     // Test notification
-    public $testMessage = '';
-    public $testingChannel = null;
+    public string $testMessage = '';
+
+    public ?NotificationChannel $testingChannel = null;
 
     public function __construct(
         private readonly NotificationService $notificationService
     ) {}
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection<int, Project>
+     */
     #[Computed]
-    public function projects()
+    public function projects(): \Illuminate\Database\Eloquent\Collection
     {
         return Project::orderBy('name')->get(['id', 'name']);
     }
 
+    /**
+     * @return array<string, string>
+     */
     #[Computed]
-    public function availableEvents()
+    public function availableEvents(): array
     {
         return [
             'deployment.started' => 'Deployment Started',
@@ -77,31 +90,34 @@ class NotificationChannelManager extends Component
         ];
     }
 
-    public function mount()
+    public function mount(): void
     {
         $this->resetForm();
     }
 
+    /**
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, NotificationChannel>
+     */
     #[Computed]
-    public function channels()
+    public function channels(): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
         return NotificationChannel::with('project')
             ->latest()
             ->paginate(15);
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.notifications.channel-manager');
     }
 
-    public function addChannel()
+    public function addChannel(): void
     {
         $this->resetForm();
         $this->showAddChannelModal = true;
     }
 
-    public function editChannel(NotificationChannel $channel)
+    public function editChannel(NotificationChannel $channel): void
     {
         $this->editingChannel = $channel;
         $this->name = $channel->name;
@@ -122,7 +138,7 @@ class NotificationChannelManager extends Component
         $this->showAddChannelModal = true;
     }
 
-    public function saveChannel()
+    public function saveChannel(): void
     {
         $this->validate();
 
@@ -158,21 +174,21 @@ class NotificationChannelManager extends Component
         unset($this->channels);
     }
 
-    public function deleteChannel(NotificationChannel $channel)
+    public function deleteChannel(NotificationChannel $channel): void
     {
         $channel->delete();
         $this->dispatch('notify', type: 'success', message: 'Notification channel deleted successfully');
         unset($this->channels);
     }
 
-    public function toggleChannel(NotificationChannel $channel)
+    public function toggleChannel(NotificationChannel $channel): void
     {
-        $channel->update(['enabled' => !$channel->enabled]);
+        $channel->update(['enabled' => ! $channel->enabled]);
         $this->dispatch('notify', type: 'success', message: $channel->enabled ? 'Channel enabled' : 'Channel disabled');
         unset($this->channels);
     }
 
-    public function testChannel(NotificationChannel $channel)
+    public function testChannel(NotificationChannel $channel): void
     {
         try {
             $success = $this->notificationService->sendTestNotification($channel);
@@ -183,11 +199,11 @@ class NotificationChannelManager extends Component
                 $this->dispatch('notify', type: 'error', message: 'Failed to send test notification. Check the logs for details.');
             }
         } catch (\Exception $e) {
-            $this->dispatch('notify', type: 'error', message: 'Test failed: ' . $e->getMessage());
+            $this->dispatch('notify', type: 'error', message: 'Test failed: '.$e->getMessage());
         }
     }
 
-    public function toggleEvent($event)
+    public function toggleEvent(string $event): void
     {
         if (in_array($event, $this->events)) {
             $this->events = array_values(array_diff($this->events, [$event]));
@@ -196,7 +212,7 @@ class NotificationChannelManager extends Component
         }
     }
 
-    private function resetForm()
+    private function resetForm(): void
     {
         $this->name = '';
         $this->provider = 'slack';

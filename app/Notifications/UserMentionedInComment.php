@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Notifications;
 
 use App\Models\DeploymentComment;
@@ -16,40 +18,51 @@ class UserMentionedInComment extends Notification implements ShouldQueue
         public DeploymentComment $comment
     ) {}
 
-    public function via($notifiable): array
+    /**
+     * @return array<int, string>
+     */
+    public function via(mixed $notifiable): array
     {
         return ['mail', 'database'];
     }
 
-    public function toMail($notifiable): MailMessage
+    public function toMail(mixed $notifiable): MailMessage
     {
         $deployment = $this->comment->deployment;
-        $project = $deployment->project;
+        $project = $deployment?->project;
         $author = $this->comment->user;
 
+        $authorName = $author?->name ?? 'Someone';
+        $projectName = $project?->name ?? 'Unknown Project';
+        $deploymentId = $deployment?->id ?? 0;
+
         return (new MailMessage)
-            ->subject("{$author->name} mentioned you in a comment")
+            ->subject("{$authorName} mentioned you in a comment")
             ->greeting("Hello {$notifiable->name}!")
-            ->line("{$author->name} mentioned you in a comment on deployment for **{$project->name}**.")
-            ->line("**Comment:**")
+            ->line("{$authorName} mentioned you in a comment on deployment for **{$projectName}**.")
+            ->line('**Comment:**')
             ->line($this->comment->content)
-            ->action('View Comment', url("/deployments/{$deployment->id}#comment-{$this->comment->id}"))
+            ->action('View Comment', url("/deployments/{$deploymentId}#comment-{$this->comment->id}"))
             ->line('Click the button above to view the full conversation.');
     }
 
-    public function toArray($notifiable): array
+    /**
+     * @return array<string, mixed>
+     */
+    public function toArray(mixed $notifiable): array
     {
         $deployment = $this->comment->deployment;
-        $project = $deployment->project;
+        $project = $deployment?->project;
+        $author = $this->comment->user;
 
         return [
             'type' => 'user_mentioned_in_comment',
             'comment_id' => $this->comment->id,
-            'deployment_id' => $deployment->id,
-            'project_id' => $project->id,
-            'project_name' => $project->name,
-            'author_name' => $this->comment->user->name,
-            'message' => "{$this->comment->user->name} mentioned you in a comment",
+            'deployment_id' => $deployment?->id ?? 0,
+            'project_id' => $project?->id ?? 0,
+            'project_name' => $project?->name ?? 'Unknown',
+            'author_name' => $author?->name ?? 'Unknown',
+            'message' => ($author?->name ?? 'Someone').' mentioned you in a comment',
         ];
     }
 }

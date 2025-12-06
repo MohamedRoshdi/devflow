@@ -41,4 +41,3 @@ class ServerPolicy
         return true;
     }
 }
-

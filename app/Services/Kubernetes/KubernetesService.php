@@ -2,15 +2,14 @@
 
 namespace App\Services\Kubernetes;
 
-use App\Models\Project;
 use App\Models\KubernetesCluster;
-use Illuminate\Support\Facades\Http;
+use App\Models\Project;
 use Illuminate\Support\Facades\Process;
-use Illuminate\Support\Facades\Storage;
 
 class KubernetesService
 {
     protected string $kubectlPath = '/usr/local/bin/kubectl';
+
     protected string $helmPath = '/usr/local/bin/helm';
 
     /**
@@ -20,7 +19,7 @@ class KubernetesService
     {
         $cluster = $project->kubernetesCluster;
 
-        if (!$cluster) {
+        if (! $cluster) {
             throw new \Exception('No Kubernetes cluster configured for this project');
         }
 
@@ -76,7 +75,7 @@ class KubernetesService
                 'name' => "{$project->slug}-config",
                 'namespace' => $project->slug,
             ],
-            'data' => $project->environment_variables ?? [],
+            'data' => $project->env_variables ?? [],
         ];
 
         // Secret for sensitive data
@@ -373,8 +372,8 @@ class KubernetesService
         // Test connection
         $result = Process::run("{$this->kubectlPath} cluster-info");
 
-        if (!$result->successful()) {
-            throw new \Exception("Failed to connect to Kubernetes cluster: " . $result->errorOutput());
+        if (! $result->successful()) {
+            throw new \Exception('Failed to connect to Kubernetes cluster: '.$result->errorOutput());
         }
     }
 
@@ -384,7 +383,7 @@ class KubernetesService
     protected function waitForRollout(Project $project): array
     {
         $command = sprintf(
-            "%s rollout status deployment/%s-deployment -n %s --timeout=300s",
+            '%s rollout status deployment/%s-deployment -n %s --timeout=300s',
             $this->kubectlPath,
             $project->slug,
             $project->slug
@@ -405,7 +404,7 @@ class KubernetesService
     public function getPodStatus(Project $project): array
     {
         $command = sprintf(
-            "%s get pods -n %s -l app=%s -o json",
+            '%s get pods -n %s -l app=%s -o json',
             $this->kubectlPath,
             $project->slug,
             $project->slug
@@ -413,7 +412,7 @@ class KubernetesService
 
         $result = Process::run($command);
 
-        if (!$result->successful()) {
+        if (! $result->successful()) {
             return [];
         }
 
@@ -437,7 +436,7 @@ class KubernetesService
     public function getServiceEndpoints(Project $project): array
     {
         $command = sprintf(
-            "%s get service %s-service -n %s -o json",
+            '%s get service %s-service -n %s -o json',
             $this->kubectlPath,
             $project->slug,
             $project->slug
@@ -445,7 +444,7 @@ class KubernetesService
 
         $result = Process::run($command);
 
-        if (!$result->successful()) {
+        if (! $result->successful()) {
             return [];
         }
 
@@ -462,7 +461,7 @@ class KubernetesService
 
         // Get ingress endpoints
         $ingressCommand = sprintf(
-            "%s get ingress %s-ingress -n %s -o json",
+            '%s get ingress %s-ingress -n %s -o json',
             $this->kubectlPath,
             $project->slug,
             $project->slug
@@ -474,7 +473,7 @@ class KubernetesService
             $ingress = json_decode($ingressResult->output(), true);
 
             foreach ($ingress['spec']['rules'] ?? [] as $rule) {
-                $endpoints[] = 'https://' . $rule['host'];
+                $endpoints[] = 'https://'.$rule['host'];
             }
         }
 
@@ -487,7 +486,7 @@ class KubernetesService
     public function scaleDeployment(Project $project, int $replicas): array
     {
         $command = sprintf(
-            "%s scale deployment/%s-deployment --replicas=%d -n %s",
+            '%s scale deployment/%s-deployment --replicas=%d -n %s',
             $this->kubectlPath,
             $project->slug,
             $replicas,
@@ -507,12 +506,12 @@ class KubernetesService
     /**
      * Execute command in pod
      */
-    public function executeInPod(Project $project, string $command, string $podName = null): array
+    public function executeInPod(Project $project, string $command, ?string $podName = null): array
     {
-        if (!$podName) {
+        if (! $podName) {
             // Get first running pod
             $pods = $this->getPodStatus($project);
-            $runningPods = array_filter($pods, fn($pod) => $pod['status'] === 'Running');
+            $runningPods = array_filter($pods, fn ($pod) => $pod['status'] === 'Running');
 
             if (empty($runningPods)) {
                 throw new \Exception('No running pods found');
@@ -522,7 +521,7 @@ class KubernetesService
         }
 
         $execCommand = sprintf(
-            "%s exec -n %s %s -- %s",
+            '%s exec -n %s %s -- %s',
             $this->kubectlPath,
             $project->slug,
             $podName,
@@ -545,7 +544,7 @@ class KubernetesService
     public function getDeploymentLogs(Project $project, int $lines = 100): array
     {
         $command = sprintf(
-            "%s logs deployment/%s-deployment -n %s --tail=%d",
+            '%s logs deployment/%s-deployment -n %s --tail=%d',
             $this->kubectlPath,
             $project->slug,
             $project->slug,
@@ -567,7 +566,7 @@ class KubernetesService
     public function deleteResources(Project $project): array
     {
         $command = sprintf(
-            "%s delete namespace %s --timeout=60s",
+            '%s delete namespace %s --timeout=60s',
             $this->kubectlPath,
             $project->slug
         );
@@ -596,7 +595,7 @@ class KubernetesService
 
         // Install or upgrade helm release
         $command = sprintf(
-            "%s upgrade --install %s %s -n %s --create-namespace -f %s --wait --timeout 10m",
+            '%s upgrade --install %s %s -n %s --create-namespace -f %s --wait --timeout 10m',
             $this->helmPath,
             $releaseName,
             $chartPath,
@@ -667,7 +666,7 @@ class KubernetesService
                 'maxReplicas' => $options['max_replicas'] ?? 10,
                 'targetCPUUtilizationPercentage' => $options['target_cpu_utilization'] ?? 70,
             ],
-            'env' => $project->environment_variables ?? [],
+            'env' => $project->env_variables ?? [],
             'secrets' => $this->getSecretData($project),
         ];
     }
@@ -682,6 +681,7 @@ class KubernetesService
                 return true;
             }
         }
+
         return false;
     }
 
@@ -691,15 +691,15 @@ class KubernetesService
     protected function calculateAge(string $timestamp): string
     {
         $created = new \DateTime($timestamp);
-        $now = new \DateTime();
+        $now = new \DateTime;
         $interval = $created->diff($now);
 
         if ($interval->days > 0) {
-            return $interval->days . 'd';
+            return $interval->days.'d';
         } elseif ($interval->h > 0) {
-            return $interval->h . 'h';
+            return $interval->h.'h';
         } else {
-            return $interval->i . 'm';
+            return $interval->i.'m';
         }
     }
 
@@ -715,7 +715,7 @@ class KubernetesService
 
         // Build and push image
         $buildCommand = sprintf(
-            "docker build -t %s %s && docker push %s",
+            'docker build -t %s %s && docker push %s',
             $imageName,
             $project->getProjectPath(),
             $imageName
@@ -732,6 +732,7 @@ class KubernetesService
     protected function getImageRepository(Project $project): string
     {
         $registry = config('kubernetes.docker_registry');
+
         return "{$registry}/{$project->slug}";
     }
 

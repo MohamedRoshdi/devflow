@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\Server;
 use App\Models\ProvisioningLog;
-use Symfony\Component\Process\Process;
+use App\Models\Server;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\Process\Process;
 
 class ServerProvisioningService
 {
@@ -53,7 +53,7 @@ class ServerProvisioningService
             if ($tasks['install_php']) {
                 $phpVersion = $options['php_version'] ?? '8.4';
                 $this->installPHP($server, $phpVersion);
-                $installedPackages[] = 'php-' . $phpVersion;
+                $installedPackages[] = 'php-'.$phpVersion;
             }
 
             if ($tasks['install_composer']) {
@@ -64,7 +64,7 @@ class ServerProvisioningService
             if ($tasks['install_nodejs']) {
                 $nodeVersion = $options['node_version'] ?? '20';
                 $this->installNodeJS($server, $nodeVersion);
-                $installedPackages[] = 'nodejs-' . $nodeVersion;
+                $installedPackages[] = 'nodejs-'.$nodeVersion;
             }
 
             if ($tasks['configure_firewall']) {
@@ -137,10 +137,11 @@ class ServerProvisioningService
 
             $output = '';
             foreach ($commands as $command) {
-                $output .= $this->executeSSHCommand($server, $command) . "\n";
+                $output .= $this->executeSSHCommand($server, $command)."\n";
             }
 
             $log->markAsCompleted($output);
+
             return true;
 
         } catch (\Exception $e) {
@@ -170,10 +171,11 @@ class ServerProvisioningService
 
             $output = '';
             foreach ($commands as $command) {
-                $output .= $this->executeSSHCommand($server, $command) . "\n";
+                $output .= $this->executeSSHCommand($server, $command)."\n";
             }
 
             $log->markAsCompleted($output);
+
             return true;
 
         } catch (\Exception $e) {
@@ -204,10 +206,11 @@ class ServerProvisioningService
 
             $output = '';
             foreach ($commands as $command) {
-                $output .= $this->executeSSHCommand($server, $command) . "\n";
+                $output .= $this->executeSSHCommand($server, $command)."\n";
             }
 
             $log->markAsCompleted($output);
+
             return true;
 
         } catch (\Exception $e) {
@@ -223,7 +226,7 @@ class ServerProvisioningService
     {
         $log = ProvisioningLog::create([
             'server_id' => $server->id,
-            'task' => 'install_php_' . $version,
+            'task' => 'install_php_'.$version,
             'status' => 'running',
             'started_at' => now(),
         ]);
@@ -231,26 +234,27 @@ class ServerProvisioningService
         try {
             $extensions = [
                 'cli', 'fpm', 'common', 'curl', 'zip', 'gd', 'mysql', 'mbstring',
-                'xml', 'redis', 'intl', 'bcmath', 'soap', 'imagick', 'opcache'
+                'xml', 'redis', 'intl', 'bcmath', 'soap', 'imagick', 'opcache',
             ];
 
-            $packages = array_map(fn($ext) => "php{$version}-{$ext}", $extensions);
+            $packages = array_map(fn ($ext) => "php{$version}-{$ext}", $extensions);
 
             $commands = [
                 'DEBIAN_FRONTEND=noninteractive apt-get install -y software-properties-common',
                 'DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:ondrej/php',
                 'DEBIAN_FRONTEND=noninteractive apt-get update',
-                'DEBIAN_FRONTEND=noninteractive apt-get install -y ' . implode(' ', $packages),
+                'DEBIAN_FRONTEND=noninteractive apt-get install -y '.implode(' ', $packages),
                 "systemctl enable php{$version}-fpm",
                 "systemctl start php{$version}-fpm",
             ];
 
             $output = '';
             foreach ($commands as $command) {
-                $output .= $this->executeSSHCommand($server, $command) . "\n";
+                $output .= $this->executeSSHCommand($server, $command)."\n";
             }
 
             $log->markAsCompleted($output);
+
             return true;
 
         } catch (\Exception $e) {
@@ -281,10 +285,11 @@ class ServerProvisioningService
 
             $output = '';
             foreach ($commands as $command) {
-                $output .= $this->executeSSHCommand($server, $command) . "\n";
+                $output .= $this->executeSSHCommand($server, $command)."\n";
             }
 
             $log->markAsCompleted($output);
+
             return true;
 
         } catch (\Exception $e) {
@@ -300,7 +305,7 @@ class ServerProvisioningService
     {
         $log = ProvisioningLog::create([
             'server_id' => $server->id,
-            'task' => 'install_nodejs_' . $version,
+            'task' => 'install_nodejs_'.$version,
             'status' => 'running',
             'started_at' => now(),
         ]);
@@ -314,10 +319,11 @@ class ServerProvisioningService
 
             $output = '';
             foreach ($commands as $command) {
-                $output .= $this->executeSSHCommand($server, $command) . "\n";
+                $output .= $this->executeSSHCommand($server, $command)."\n";
             }
 
             $log->markAsCompleted($output);
+
             return true;
 
         } catch (\Exception $e) {
@@ -353,7 +359,7 @@ class ServerProvisioningService
 
             $output = '';
             foreach ($commands as $command) {
-                $output .= $this->executeSSHCommand($server, $command) . "\n";
+                $output .= $this->executeSSHCommand($server, $command)."\n";
             }
 
             $server->update([
@@ -362,6 +368,7 @@ class ServerProvisioningService
             ]);
 
             $log->markAsCompleted($output);
+
             return true;
 
         } catch (\Exception $e) {
@@ -395,10 +402,11 @@ class ServerProvisioningService
 
             $output = '';
             foreach ($commands as $command) {
-                $output .= $this->executeSSHCommand($server, $command) . "\n";
+                $output .= $this->executeSSHCommand($server, $command)."\n";
             }
 
             $log->markAsCompleted($output);
+
             return true;
 
         } catch (\Exception $e) {
@@ -429,10 +437,11 @@ class ServerProvisioningService
 
             $output = '';
             foreach ($commands as $command) {
-                $output .= $this->executeSSHCommand($server, $command) . "\n";
+                $output .= $this->executeSSHCommand($server, $command)."\n";
             }
 
             $log->markAsCompleted($output);
+
             return true;
 
         } catch (\Exception $e) {
@@ -448,7 +457,7 @@ class ServerProvisioningService
     {
         $script = "#!/bin/bash\n";
         $script .= "# DevFlow Pro - Server Provisioning Script\n";
-        $script .= "# Generated at: " . now()->toDateTimeString() . "\n\n";
+        $script .= '# Generated at: '.now()->toDateTimeString()."\n\n";
         $script .= "set -e\n\n";
         $script .= "echo '🚀 Starting server provisioning...'\n\n";
 
@@ -549,7 +558,7 @@ class ServerProvisioningService
             '-o UserKnownHostsFile=/dev/null',
             '-o ConnectTimeout=30',
             '-o LogLevel=ERROR',
-            '-p ' . $server->port,
+            '-p '.$server->port,
         ];
 
         if ($server->ssh_password) {
@@ -569,7 +578,7 @@ class ServerProvisioningService
                 $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
                 file_put_contents($keyFile, $server->ssh_key);
                 chmod($keyFile, 0600);
-                $sshOptions[] = '-i ' . $keyFile;
+                $sshOptions[] = '-i '.$keyFile;
             }
 
             $command = sprintf(
@@ -585,7 +594,7 @@ class ServerProvisioningService
         $process->setTimeout(600); // 10 minutes for long-running installs
         $process->run();
 
-        if (!$process->isSuccessful()) {
+        if (! $process->isSuccessful()) {
             throw new \RuntimeException("SSH command failed: {$remoteCommand}\nError: {$process->getErrorOutput()}");
         }
 

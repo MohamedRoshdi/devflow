@@ -17,6 +17,7 @@ class InstallDockerJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $timeout = 600; // 10 minutes
+
     public int $tries = 1;
 
     public function __construct(
@@ -72,7 +73,7 @@ class InstallDockerJob implements ShouldQueue
         } catch (\Exception $e) {
             Cache::put($cacheKey, [
                 'status' => 'failed',
-                'message' => 'Installation failed: ' . $e->getMessage(),
+                'message' => 'Installation failed: '.$e->getMessage(),
                 'error' => $e->getMessage(),
                 'progress' => 0,
                 'completed_at' => now()->toISOString(),
@@ -93,7 +94,7 @@ class InstallDockerJob implements ShouldQueue
 
         Cache::put($cacheKey, [
             'status' => 'failed',
-            'message' => 'Installation failed: ' . $exception->getMessage(),
+            'message' => 'Installation failed: '.$exception->getMessage(),
             'error' => $exception->getMessage(),
             'progress' => 0,
             'completed_at' => now()->toISOString(),

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Crypt;
 
 class SSHKey extends Model
 {
+    /** @use HasFactory<\Database\Factories\SSHKeyFactory> */
     use HasFactory;
 
     protected $table = 'ssh_keys';
@@ -49,7 +50,7 @@ class SSHKey extends Model
     // Accessors
     public function getMaskedPrivateKeyAttribute(): string
     {
-        if (!$this->private_key_encrypted) {
+        if (! $this->private_key_encrypted) {
             return '';
         }
 
@@ -65,7 +66,7 @@ class SSHKey extends Model
             $end = substr($decrypted, -20);
             $middle = str_repeat('*', min($length - 40, 50));
 
-            return $start . $middle . $end;
+            return $start.$middle.$end;
         } catch (\Exception $e) {
             return '[Encrypted]';
         }
@@ -73,7 +74,7 @@ class SSHKey extends Model
 
     public function getDecryptedPrivateKeyAttribute(): ?string
     {
-        if (!$this->private_key_encrypted) {
+        if (! $this->private_key_encrypted) {
             return null;
         }
 

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Security;
 
-use App\Models\Server;
 use App\Models\FirewallRule;
 use App\Models\SecurityEvent;
+use App\Models\Server;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Process\Process;
@@ -19,7 +19,7 @@ class FirewallService
             $sudoPrefix = $this->getSudoPrefix($server);
             $result = $this->executeCommand($server, "{$sudoPrefix}ufw status verbose");
 
-            $combinedOutput = $result['output'] . ' ' . $result['error'];
+            $combinedOutput = $result['output'].' '.$result['error'];
 
             // Check if UFW command not found
             if (str_contains(strtolower($combinedOutput), 'command not found') ||
@@ -52,13 +52,13 @@ class FirewallService
                            str_contains($output, 'active');
 
             // If the command ran but didn't return expected output, try which ufw
-            if (!$isInstalled && $result['success']) {
+            if (! $isInstalled && $result['success']) {
                 $whichResult = $this->executeCommand($server, 'which ufw 2>&1');
-                $isInstalled = !empty(trim($whichResult['output'])) && str_contains($whichResult['output'], '/ufw');
+                $isInstalled = ! empty(trim($whichResult['output'])) && str_contains($whichResult['output'], '/ufw');
             }
 
             // Also check if we got inactive status
-            if (!$isInstalled && (str_contains($combinedOutput, 'inactive') || str_contains($combinedOutput, 'Status'))) {
+            if (! $isInstalled && (str_contains($combinedOutput, 'inactive') || str_contains($combinedOutput, 'Status'))) {
                 $isInstalled = true;
             }
 
@@ -90,7 +90,7 @@ class FirewallService
                 'enabled' => false,
                 'rules' => [],
                 'error' => $e->getMessage(),
-                'raw_output' => 'Exception: ' . $e->getMessage(),
+                'raw_output' => 'Exception: '.$e->getMessage(),
             ];
         }
     }
@@ -115,12 +115,12 @@ class FirewallService
 
             return [
                 'success' => false,
-                'message' => 'Failed to enable firewall: ' . ($result['error'] ?: $result['output']),
+                'message' => 'Failed to enable firewall: '.($result['error'] ?: $result['output']),
             ];
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to enable firewall: ' . $e->getMessage(),
+                'message' => 'Failed to enable firewall: '.$e->getMessage(),
             ];
         }
     }
@@ -145,12 +145,12 @@ class FirewallService
 
             return [
                 'success' => false,
-                'message' => 'Failed to disable firewall: ' . ($result['error'] ?: $result['output']),
+                'message' => 'Failed to disable firewall: '.($result['error'] ?: $result['output']),
             ];
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to disable firewall: ' . $e->getMessage(),
+                'message' => 'Failed to disable firewall: '.$e->getMessage(),
             ];
         }
     }
@@ -160,7 +160,7 @@ class FirewallService
         try {
             $result = $this->executeCommand($server, 'sudo ufw status numbered 2>&1');
 
-            if (!$result['success']) {
+            if (! $result['success']) {
                 return ['success' => false, 'rules' => [], 'error' => $result['error']];
             }
 
@@ -195,9 +195,9 @@ class FirewallService
             $sudoPrefix = $this->getSudoPrefix($server);
 
             if ($fromIp) {
-                $command = "{$sudoPrefix}ufw {$action} from " . escapeshellarg($fromIp) . " to any port " . escapeshellarg($port);
+                $command = "{$sudoPrefix}ufw {$action} from ".escapeshellarg($fromIp).' to any port '.escapeshellarg($port);
             } else {
-                $command = "{$sudoPrefix}ufw {$action} " . escapeshellarg($port) . "/" . escapeshellarg($protocol);
+                $command = "{$sudoPrefix}ufw {$action} ".escapeshellarg($port).'/'.escapeshellarg($protocol);
             }
 
             $result = $this->executeCommand($server, $command);
@@ -218,7 +218,7 @@ class FirewallService
                 $this->logEvent(
                     $server,
                     SecurityEvent::TYPE_RULE_ADDED,
-                    "Added firewall rule: {$action} {$port}/{$protocol}" . ($fromIp ? " from {$fromIp}" : ''),
+                    "Added firewall rule: {$action} {$port}/{$protocol}".($fromIp ? " from {$fromIp}" : ''),
                     $fromIp
                 );
 
@@ -230,7 +230,7 @@ class FirewallService
 
             return [
                 'success' => false,
-                'message' => 'Failed to add rule: ' . ($result['error'] ?: $result['output']),
+                'message' => 'Failed to add rule: '.($result['error'] ?: $result['output']),
             ];
         } catch (\InvalidArgumentException $e) {
             return [
@@ -240,7 +240,7 @@ class FirewallService
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to add rule: ' . $e->getMessage(),
+                'message' => 'Failed to add rule: '.$e->getMessage(),
             ];
         }
     }
@@ -271,12 +271,12 @@ class FirewallService
 
             return [
                 'success' => false,
-                'message' => 'Failed to delete rule: ' . ($result['error'] ?: $result['output']),
+                'message' => 'Failed to delete rule: '.($result['error'] ?: $result['output']),
             ];
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to delete rule: ' . $e->getMessage(),
+                'message' => 'Failed to delete rule: '.$e->getMessage(),
             ];
         }
     }
@@ -299,12 +299,12 @@ class FirewallService
 
             return [
                 'success' => false,
-                'message' => 'Failed to install UFW: ' . ($result['error'] ?: $result['output']),
+                'message' => 'Failed to install UFW: '.($result['error'] ?: $result['output']),
             ];
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to install UFW: ' . $e->getMessage(),
+                'message' => 'Failed to install UFW: '.$e->getMessage(),
             ];
         }
     }
@@ -339,7 +339,7 @@ class FirewallService
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to reset firewall: ' . $e->getMessage(),
+                'message' => 'Failed to reset firewall: '.$e->getMessage(),
             ];
         }
     }
@@ -355,10 +355,11 @@ class FirewallService
 
             if (str_contains($line, '---')) {
                 $inRulesSection = true;
+
                 continue;
             }
 
-            if ($inRulesSection && !empty($line)) {
+            if ($inRulesSection && ! empty($line)) {
                 $rules[] = $this->parseRuleLine($line);
             }
         }
@@ -389,6 +390,10 @@ class FirewallService
     protected function parseRuleLine(string $line): array
     {
         $parts = preg_split('/\s+/', $line);
+        if ($parts === false) {
+            $parts = [];
+        }
+
         $rule = [
             'to' => '',
             'action' => '',
@@ -418,24 +423,24 @@ class FirewallService
         } elseif (preg_match('/^\d+:\d+$/', $port)) {
             // Port range
             [$start, $end] = explode(':', $port);
-            if ((int)$start < 1 || (int)$end > 65535 || (int)$start >= (int)$end) {
+            if ((int) $start < 1 || (int) $end > 65535 || (int) $start >= (int) $end) {
                 throw new \InvalidArgumentException('Invalid port range');
             }
-        } elseif (!preg_match('/^[a-zA-Z][a-zA-Z0-9-]*$/', $port)) {
+        } elseif (! preg_match('/^[a-zA-Z][a-zA-Z0-9-]*$/', $port)) {
             throw new \InvalidArgumentException('Invalid port or service name');
         }
     }
 
     protected function validateProtocol(string $protocol): void
     {
-        if (!in_array($protocol, ['tcp', 'udp', 'any'])) {
+        if (! in_array($protocol, ['tcp', 'udp', 'any'])) {
             throw new \InvalidArgumentException('Protocol must be tcp, udp, or any');
         }
     }
 
     protected function validateAction(string $action): void
     {
-        if (!in_array($action, ['allow', 'deny', 'reject', 'limit'])) {
+        if (! in_array($action, ['allow', 'deny', 'reject', 'limit'])) {
             throw new \InvalidArgumentException('Action must be allow, deny, reject, or limit');
         }
     }
@@ -444,7 +449,7 @@ class FirewallService
     {
         // Support CIDR notation
         $ipPart = explode('/', $ip)[0];
-        if (!filter_var($ipPart, FILTER_VALIDATE_IP)) {
+        if (! filter_var($ipPart, FILTER_VALIDATE_IP)) {
             throw new \InvalidArgumentException('Invalid IP address');
         }
     }
@@ -494,6 +499,7 @@ class FirewallService
         }
 
         $serverIP = gethostbyname(gethostname());
+
         return $ip === $serverIP;
     }
 
@@ -506,7 +512,7 @@ class FirewallService
             '-o UserKnownHostsFile=/dev/null',
             '-o ConnectTimeout=10',
             '-o LogLevel=ERROR',
-            '-p ' . $port,
+            '-p '.$port,
         ];
 
         // Escape double quotes and backslashes for the remote command
@@ -531,7 +537,7 @@ class FirewallService
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
             file_put_contents($keyFile, $server->ssh_key);
             chmod($keyFile, 0600);
-            $sshOptions[] = '-i ' . $keyFile;
+            $sshOptions[] = '-i '.$keyFile;
         }
 
         return sprintf(
@@ -553,6 +559,7 @@ class FirewallService
 
         if ($server->ssh_password) {
             $escapedPassword = str_replace("'", "'\\''", $server->ssh_password);
+
             return "echo '{$escapedPassword}' | sudo -S ";
         }
 

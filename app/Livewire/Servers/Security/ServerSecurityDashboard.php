@@ -4,21 +4,27 @@ declare(strict_types=1);
 
 namespace App\Livewire\Servers\Security;
 
-use Livewire\Component;
 use App\Models\Server;
-use App\Services\Security\ServerSecurityService;
 use App\Services\Security\SecurityScoreService;
+use App\Services\Security\ServerSecurityService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Component;
 
 class ServerSecurityDashboard extends Component
 {
     use AuthorizesRequests;
 
     public Server $server;
+
+    /** @var array<string, mixed>|null */
     public ?array $securityOverview = null;
+
     public bool $isLoading = false;
+
     public bool $isScanning = false;
+
     public ?string $flashMessage = null;
+
     public ?string $flashType = null;
 
     public function mount(Server $server): void
@@ -37,7 +43,7 @@ class ServerSecurityDashboard extends Component
             $this->securityOverview = $service->getSecurityOverview($this->server);
             $this->server->refresh();
         } catch (\Exception $e) {
-            $this->flashMessage = 'Failed to load security status: ' . $e->getMessage();
+            $this->flashMessage = 'Failed to load security status: '.$e->getMessage();
             $this->flashType = 'error';
         }
 
@@ -58,7 +64,7 @@ class ServerSecurityDashboard extends Component
             $this->flashMessage = "Security scan completed. Score: {$scan->score}/100";
             $this->flashType = 'success';
         } catch (\Exception $e) {
-            $this->flashMessage = 'Security scan failed: ' . $e->getMessage();
+            $this->flashMessage = 'Security scan failed: '.$e->getMessage();
             $this->flashType = 'error';
         }
 

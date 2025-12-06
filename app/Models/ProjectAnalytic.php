@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProjectAnalytic extends Model
 {
+    /** @use HasFactory<\Database\Factories\ProjectAnalyticFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -31,4 +32,3 @@ class ProjectAnalytic extends Model
         return $this->belongsTo(Project::class);
     }
 }
-

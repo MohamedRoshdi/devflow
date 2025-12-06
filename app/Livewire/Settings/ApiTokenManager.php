@@ -5,20 +5,40 @@ declare(strict_types=1);
 namespace App\Livewire\Settings;
 
 use App\Models\ApiToken;
-use Livewire\Component;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Illuminate\View\View;
+use Livewire\Component;
 
 class ApiTokenManager extends Component
 {
-    public $tokens;
+    /**
+     * Collection of API tokens
+     *
+     * @var Collection<int, ApiToken>
+     */
+    public Collection $tokens;
+
     public bool $showCreateModal = false;
+
     public bool $showTokenModal = false;
+
     public string $newTokenName = '';
+
+    /**
+     * @var array<int, string>
+     */
     public array $newTokenAbilities = [];
+
     public string $newTokenExpiration = 'never';
+
     public ?string $createdToken = null;
+
     public ?string $createdTokenPlain = null;
 
+    /**
+     * @var array<string, string>
+     */
     public array $availableAbilities = [
         'projects:read' => 'View projects',
         'projects:write' => 'Create and update projects',
@@ -32,20 +52,27 @@ class ApiTokenManager extends Component
         'deployments:rollback' => 'Rollback deployments',
     ];
 
-    public function mount()
+    public function mount(): void
     {
         $this->loadTokens();
     }
 
-    public function loadTokens()
+    public function loadTokens(): void
     {
-        $this->tokens = auth()->user()
+        $user = auth()->user();
+        if ($user === null) {
+            $this->tokens = collect();
+
+            return;
+        }
+
+        $this->tokens = $user
             ->apiTokens()
             ->orderBy('created_at', 'desc')
             ->get();
     }
 
-    public function openCreateModal()
+    public function openCreateModal(): void
     {
         $this->showCreateModal = true;
         $this->newTokenName = '';
@@ -53,13 +80,13 @@ class ApiTokenManager extends Component
         $this->newTokenExpiration = 'never';
     }
 
-    public function closeCreateModal()
+    public function closeCreateModal(): void
     {
         $this->showCreateModal = false;
         $this->reset(['newTokenName', 'newTokenAbilities', 'newTokenExpiration']);
     }
 
-    public function createToken()
+    public function createToken(): void
     {
         $this->validate([
             'newTokenName' => 'required|string|max:255',
@@ -99,13 +126,13 @@ class ApiTokenManager extends Component
         $this->dispatch('notification', type: 'success', message: 'API token created successfully');
     }
 
-    public function closeTokenModal()
+    public function closeTokenModal(): void
     {
         $this->showTokenModal = false;
         $this->createdTokenPlain = null;
     }
 
-    public function revokeToken($tokenId)
+    public function revokeToken(int $tokenId): void
     {
         $token = ApiToken::where('id', $tokenId)
             ->where('user_id', auth()->id())
@@ -117,7 +144,7 @@ class ApiTokenManager extends Component
         $this->dispatch('notification', type: 'success', message: 'API token revoked successfully');
     }
 
-    public function regenerateToken($tokenId)
+    public function regenerateToken(int $tokenId): void
     {
         $token = ApiToken::where('id', $tokenId)
             ->where('user_id', auth()->id())
@@ -139,7 +166,7 @@ class ApiTokenManager extends Component
         $this->dispatch('notification', type: 'success', message: 'API token regenerated successfully');
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.settings.api-token-manager');
     }

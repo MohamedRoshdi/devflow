@@ -2,15 +2,15 @@
 
 namespace App\Services\CustomScripts;
 
-use App\Models\Project;
-use App\Models\DeploymentScript;
 use App\Models\Deployment;
+use App\Models\DeploymentScript;
+use App\Models\Project;
 use Illuminate\Support\Facades\Process;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class DeploymentScriptService
 {
+    /** @var array<string, string> */
     protected array $availableVariables = [
         '{{PROJECT_NAME}}' => 'Project name',
         '{{PROJECT_SLUG}}' => 'Project slug',
@@ -73,7 +73,7 @@ class DeploymentScriptService
 
         try {
             // Execute pre-hooks
-            if (!empty($script->hooks['pre'])) {
+            if (! empty($script->hooks['pre'])) {
                 $this->executeHooks($script->hooks['pre'], $project, 'pre');
             }
 
@@ -81,17 +81,17 @@ class DeploymentScriptService
             $result = $this->runScript($tempScriptPath, $project, $script);
 
             // Execute post-hooks on success
-            if ($result['success'] && !empty($script->hooks['post'])) {
+            if ($result['success'] && ! empty($script->hooks['post'])) {
                 $this->executeHooks($script->hooks['post'], $project, 'post');
             }
 
             // Execute error-hooks on failure
-            if (!$result['success'] && !empty($script->hooks['error'])) {
+            if (! $result['success'] && ! empty($script->hooks['error'])) {
                 $this->executeHooks($script->hooks['error'], $project, 'error');
             }
 
             // Handle retry logic
-            if (!$result['success'] && $script->retry_on_failure) {
+            if (! $result['success'] && $script->retry_on_failure) {
                 $result = $this->retryScript($tempScriptPath, $project, $script);
             }
 
@@ -136,7 +136,7 @@ class DeploymentScriptService
         ];
 
         // Merge with custom variables from script configuration
-        if (!empty($script->variables)) {
+        if (! empty($script->variables)) {
             $variables = array_merge($variables, $script->variables);
         }
 
@@ -150,8 +150,8 @@ class DeploymentScriptService
 
         // Add script header based on language
         $header = $this->getScriptHeader($script->language);
-        if ($header && !str_starts_with($content, $header)) {
-            $content = $header . "\n" . $content;
+        if ($header && ! str_starts_with($content, $header)) {
+            $content = $header."\n".$content;
         }
 
         return $content;
@@ -163,7 +163,7 @@ class DeploymentScriptService
     protected function createTempScriptFile(string $content, string $language): string
     {
         $extension = $this->getScriptExtension($language);
-        $tempPath = sys_get_temp_dir() . '/devflow_script_' . uniqid() . '.' . $extension;
+        $tempPath = sys_get_temp_dir().'/devflow_script_'.uniqid().'.'.$extension;
 
         file_put_contents($tempPath, $content);
         chmod($tempPath, 0755);
@@ -213,6 +213,7 @@ class DeploymentScriptService
 
             if ($lastResult['success']) {
                 $lastResult['retries'] = $attempt;
+
                 return $lastResult;
             }
 
@@ -239,7 +240,7 @@ class DeploymentScriptService
                 // Reference to another script
                 $hookScript = DeploymentScript::find($hook['script_id']);
                 if ($hookScript) {
-                    $this->executeScript($project, $hookScript, new Deployment());
+                    $this->executeScript($project, $hookScript, new Deployment);
                 }
             }
         }
@@ -297,8 +298,8 @@ class DeploymentScriptService
                     return true; // Skip validation for unsupported languages
             }
 
-            if (!$result->successful()) {
-                throw new \Exception("Script syntax error: " . $result->errorOutput());
+            if (! $result->successful()) {
+                throw new \Exception('Script syntax error: '.$result->errorOutput());
             }
 
             return true;
@@ -371,8 +372,8 @@ class DeploymentScriptService
         ];
 
         // Add project-specific environment variables
-        if ($project->environment_variables) {
-            $env = array_merge($env, $project->environment_variables);
+        if ($project->env_variables) {
+            $env = array_merge($env, $project->env_variables);
         }
 
         return $env;
@@ -385,7 +386,7 @@ class DeploymentScriptService
     {
         $templates = $this->getAvailableTemplates();
 
-        if (!isset($templates[$template])) {
+        if (! isset($templates[$template])) {
             throw new \Exception("Template '{$template}' not found");
         }
 
@@ -796,11 +797,14 @@ PYTHON;
 
         if ($project->uses_docker) {
             // Wrap commands in docker-compose exec
-            $template = preg_replace(
+            $result = preg_replace(
                 '/^(composer|php|npm|node)/m',
                 'docker-compose exec -T app $1',
                 $template
             );
+            if ($result !== null) {
+                $template = $result;
+            }
         }
 
         return $template;

@@ -5,39 +5,58 @@ namespace App\Livewire\Kubernetes;
 use App\Models\KubernetesCluster;
 use App\Models\Project;
 use App\Services\Kubernetes\KubernetesService;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Livewire\Attributes\On;
 
 class ClusterManager extends Component
 {
     use WithPagination;
 
-    public $showAddClusterModal = false;
-    public $showDeployModal = false;
-    public $editingCluster = null;
-    public $selectedProject = null;
+    public bool $showAddClusterModal = false;
+
+    public bool $showDeployModal = false;
+
+    public ?KubernetesCluster $editingCluster = null;
+
+    public ?KubernetesCluster $selectedCluster = null;
+
+    public ?Project $selectedProject = null;
 
     // Cluster form fields
-    public $name = '';
-    public $endpoint = '';
-    public $kubeconfig = '';
-    public $namespace = '';
-    public $isDefault = false;
+    public string $name = '';
+
+    public string $endpoint = '';
+
+    public string $kubeconfig = '';
+
+    public string $namespace = '';
+
+    public bool $isDefault = false;
 
     // Deployment settings
-    public $deploymentProject = null;
-    public $replicas = 3;
-    public $enableAutoscaling = false;
-    public $minReplicas = 2;
-    public $maxReplicas = 10;
-    public $cpuRequest = '100m';
-    public $cpuLimit = '500m';
-    public $memoryRequest = '256Mi';
-    public $memoryLimit = '512Mi';
-    public $serviceType = 'ClusterIP';
+    public ?int $deploymentProject = null;
 
-    protected $rules = [
+    public int $replicas = 3;
+
+    public bool $enableAutoscaling = false;
+
+    public int $minReplicas = 2;
+
+    public int $maxReplicas = 10;
+
+    public string $cpuRequest = '100m';
+
+    public string $cpuLimit = '500m';
+
+    public string $memoryRequest = '256Mi';
+
+    public string $memoryLimit = '512Mi';
+
+    public string $serviceType = 'ClusterIP';
+
+    /** @var array<string, string> */
+    protected array $rules = [
         'name' => 'required|string|max:255',
         'endpoint' => 'required|url',
         'kubeconfig' => 'required|string',
@@ -45,12 +64,12 @@ class ClusterManager extends Component
         'isDefault' => 'boolean',
     ];
 
-    public function mount()
+    public function mount(): void
     {
         $this->resetForm();
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.kubernetes.cluster-manager', [
             'clusters' => KubernetesCluster::paginate(10),
@@ -58,24 +77,24 @@ class ClusterManager extends Component
         ]);
     }
 
-    public function addCluster()
+    public function addCluster(): void
     {
         $this->resetForm();
         $this->showAddClusterModal = true;
     }
 
-    public function editCluster(KubernetesCluster $cluster)
+    public function editCluster(KubernetesCluster $cluster): void
     {
         $this->editingCluster = $cluster;
         $this->name = $cluster->name;
         $this->endpoint = $cluster->endpoint;
-        $this->kubeconfig = $cluster->kubeconfig;
-        $this->namespace = $cluster->namespace;
+        $this->kubeconfig = $cluster->kubeconfig ?? '';
+        $this->namespace = $cluster->namespace ?? 'default';
         $this->isDefault = $cluster->is_default;
         $this->showAddClusterModal = true;
     }
 
-    public function saveCluster()
+    public function saveCluster(): void
     {
         $this->validate();
 
@@ -101,6 +120,7 @@ class ClusterManager extends Component
                 $this->dispatch('notify', type: 'success', message: 'Cluster added successfully');
             } else {
                 $this->addError('kubeconfig', 'Failed to connect to cluster. Please check your configuration.');
+
                 return;
             }
         }
@@ -109,11 +129,12 @@ class ClusterManager extends Component
         $this->resetForm();
     }
 
-    public function deleteCluster(KubernetesCluster $cluster)
+    public function deleteCluster(KubernetesCluster $cluster): void
     {
         // Check if cluster is in use
         if ($cluster->projects()->exists()) {
             $this->dispatch('notify', type: 'error', message: 'Cannot delete cluster that is in use by projects');
+
             return;
         }
 
@@ -121,7 +142,7 @@ class ClusterManager extends Component
         $this->dispatch('notify', type: 'success', message: 'Cluster deleted successfully');
     }
 
-    public function testClusterConnection(KubernetesCluster $cluster)
+    public function testClusterConnection(KubernetesCluster $cluster): void
     {
         try {
             $service = app(KubernetesService::class);
@@ -142,17 +163,17 @@ class ClusterManager extends Component
                 $this->dispatch('notify', type: 'error', message: 'Connection failed');
             }
         } catch (\Exception $e) {
-            $this->dispatch('notify', type: 'error', message: 'Connection test failed: ' . $e->getMessage());
+            $this->dispatch('notify', type: 'error', message: 'Connection test failed: '.$e->getMessage());
         }
     }
 
-    public function showDeployToCluster(KubernetesCluster $cluster)
+    public function showDeployToCluster(KubernetesCluster $cluster): void
     {
         $this->selectedCluster = $cluster;
         $this->showDeployModal = true;
     }
 
-    public function deployToKubernetes()
+    public function deployToKubernetes(): void
     {
         $this->validate([
             'deploymentProject' => 'required|exists:projects,id',
@@ -164,7 +185,7 @@ class ClusterManager extends Component
         ]);
 
         try {
-            $project = Project::find($this->deploymentProject);
+            $project = Project::findOrFail($this->deploymentProject);
             $service = app(KubernetesService::class);
 
             $result = $service->deployToKubernetes($project, [
@@ -187,17 +208,17 @@ class ClusterManager extends Component
                 $this->dispatch('notify', type: 'error', message: 'Deployment failed. Check logs for details.');
             }
         } catch (\Exception $e) {
-            $this->dispatch('notify', type: 'error', message: 'Deployment failed: ' . $e->getMessage());
+            $this->dispatch('notify', type: 'error', message: 'Deployment failed: '.$e->getMessage());
         }
     }
 
     #[On('refresh-clusters')]
-    public function refreshClusters()
+    public function refreshClusters(): void
     {
         $this->resetPage();
     }
 
-    private function resetForm()
+    private function resetForm(): void
     {
         $this->name = '';
         $this->endpoint = '';
@@ -207,7 +228,7 @@ class ClusterManager extends Component
         $this->editingCluster = null;
     }
 
-    private function resetDeploymentForm()
+    private function resetDeploymentForm(): void
     {
         $this->deploymentProject = null;
         $this->replicas = 3;
@@ -221,7 +242,7 @@ class ClusterManager extends Component
         $this->serviceType = 'ClusterIP';
     }
 
-    private function testConnection($data)
+    private function testConnection(array $data): bool
     {
         try {
             $tempFile = tempnam(sys_get_temp_dir(), 'kubeconfig_test');

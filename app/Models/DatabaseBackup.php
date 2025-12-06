@@ -2,16 +2,45 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $project_id
+ * @property int|null $server_id
+ * @property string $database_type
+ * @property string $database_name
+ * @property string $type
+ * @property string $file_name
+ * @property string $file_path
+ * @property int|null $file_size
+ * @property string|null $checksum
+ * @property string $storage_disk
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $started_at
+ * @property \Illuminate\Support\Carbon|null $completed_at
+ * @property \Illuminate\Support\Carbon|null $verified_at
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property string|null $error_message
+ * @property array<string, mixed>|null $metadata
+ * @property-read Project $project
+ * @property-read Server|null $server
+ * @property-read string $file_size_human
+ * @property-read string|null $duration
+ * @property-read string $status_color
+ * @property-read string $status_icon
+ */
 class DatabaseBackup extends Model
 {
+    /** @use HasFactory<\Database\Factories\DatabaseBackupFactory> */
     use HasFactory;
 
     public $timestamps = false;
 
+    /** @var array<int, string> */
     protected $fillable = [
         'project_id',
         'server_id',
@@ -43,11 +72,17 @@ class DatabaseBackup extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<Project, $this>
+     */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
+    /**
+     * @return BelongsTo<Server, $this>
+     */
     public function server(): BelongsTo
     {
         return $this->belongsTo(Server::class);
@@ -55,7 +90,7 @@ class DatabaseBackup extends Model
 
     public function getFileSizeHumanAttribute(): string
     {
-        if (!$this->file_size) {
+        if (! $this->file_size) {
             return 'N/A';
         }
 
@@ -68,47 +103,67 @@ class DatabaseBackup extends Model
             $i++;
         }
 
-        return round($bytes, 2) . ' ' . $units[$i];
+        return round($bytes, 2).' '.$units[$i];
     }
 
     public function getDurationAttribute(): ?string
     {
-        if (!$this->started_at || !$this->completed_at) {
+        if (! $this->started_at || ! $this->completed_at) {
             return null;
         }
 
         $seconds = $this->completed_at->diffInSeconds($this->started_at);
 
         if ($seconds < 60) {
-            return $seconds . 's';
+            return $seconds.'s';
         } elseif ($seconds < 3600) {
-            return round($seconds / 60, 1) . 'm';
+            return round($seconds / 60, 1).'m';
         } else {
-            return round($seconds / 3600, 1) . 'h';
+            return round($seconds / 3600, 1).'h';
         }
     }
 
-    public function scopeCompleted($query)
+    /**
+     * @param  Builder<DatabaseBackup>  $query
+     * @return Builder<DatabaseBackup>
+     */
+    public function scopeCompleted(Builder $query): Builder
     {
         return $query->where('status', 'completed');
     }
 
-    public function scopeFailed($query)
+    /**
+     * @param  Builder<DatabaseBackup>  $query
+     * @return Builder<DatabaseBackup>
+     */
+    public function scopeFailed(Builder $query): Builder
     {
         return $query->where('status', 'failed');
     }
 
-    public function scopeForProject($query, int $projectId)
+    /**
+     * @param  Builder<DatabaseBackup>  $query
+     * @return Builder<DatabaseBackup>
+     */
+    public function scopeForProject(Builder $query, int $projectId): Builder
     {
         return $query->where('project_id', $projectId);
     }
 
-    public function scopeVerified($query)
+    /**
+     * @param  Builder<DatabaseBackup>  $query
+     * @return Builder<DatabaseBackup>
+     */
+    public function scopeVerified(Builder $query): Builder
     {
         return $query->whereNotNull('verified_at');
     }
 
-    public function scopeUnverified($query)
+    /**
+     * @param  Builder<DatabaseBackup>  $query
+     * @return Builder<DatabaseBackup>
+     */
+    public function scopeUnverified(Builder $query): Builder
     {
         return $query->whereNull('verified_at');
     }
@@ -140,7 +195,7 @@ class DatabaseBackup extends Model
 
     public function getStatusColorAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'completed' => 'green',
             'running' => 'blue',
             'failed' => 'red',
@@ -151,7 +206,7 @@ class DatabaseBackup extends Model
 
     public function getStatusIconAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'completed' => 'fa-check-circle',
             'running' => 'fa-spinner fa-spin',
             'failed' => 'fa-exclamation-circle',

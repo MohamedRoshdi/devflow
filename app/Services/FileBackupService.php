@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\{Project, FileBackup, Server};
-use Illuminate\Support\Facades\{Storage, Log};
+use App\Models\FileBackup;
+use App\Models\Project;
+use App\Models\Server;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Process;
-use Carbon\Carbon;
 
 class FileBackupService
 {
+    /** @var array<int, string> */
     private array $defaultExcludes = [
         'storage/logs/*',
         'storage/framework/cache/*',
@@ -110,7 +113,12 @@ class FileBackupService
             throw $e;
         }
 
-        return $backup->fresh();
+        $freshBackup = $backup->fresh();
+        if ($freshBackup === null) {
+            throw new \RuntimeException('Failed to refresh full backup after creation');
+        }
+
+        return $freshBackup;
     }
 
     /**
@@ -122,7 +130,7 @@ class FileBackupService
             throw new \InvalidArgumentException('Base backup must be a full backup');
         }
 
-        if (!$baseBackup->isCompleted()) {
+        if (! $baseBackup->isCompleted()) {
             throw new \InvalidArgumentException('Base backup must be completed');
         }
 
@@ -150,7 +158,7 @@ class FileBackupService
             $tempPath = $this->getTempPath($backup);
 
             // Get files modified since base backup
-            $baseBackupTime = $baseBackup->created_at->timestamp;
+            $baseBackupTime = $baseBackup->created_at?->timestamp ?? time();
 
             // Create tar.gz with only files newer than base backup
             $this->createIncrementalTarArchive($server, $sourcePath, $tempPath, $excludePatterns, $baseBackupTime);
@@ -212,7 +220,12 @@ class FileBackupService
             throw $e;
         }
 
-        return $backup->fresh();
+        $freshBackup = $backup->fresh();
+        if ($freshBackup === null) {
+            throw new \RuntimeException('Failed to refresh incremental backup after creation');
+        }
+
+        return $freshBackup;
     }
 
     /**
@@ -220,7 +233,7 @@ class FileBackupService
      */
     public function restoreBackup(FileBackup $backup, bool $overwrite = false, ?string $targetPath = null): bool
     {
-        if (!$backup->isCompleted()) {
+        if (! $backup->isCompleted()) {
             throw new \InvalidArgumentException('Cannot restore incomplete backup');
         }
 
@@ -320,7 +333,7 @@ class FileBackupService
         }
 
         // Add additional excludes
-        if (!empty($additionalExcludes)) {
+        if (! empty($additionalExcludes)) {
             $excludes = array_merge($excludes, $additionalExcludes);
         }
 
@@ -339,7 +352,7 @@ class FileBackupService
         }
 
         $tarCommand = sprintf(
-            "cd %s && tar -czf %s%s .",
+            'cd %s && tar -czf %s%s .',
             escapeshellarg($sourcePath),
             escapeshellarg($targetPath),
             $excludeFlags
@@ -382,6 +395,7 @@ class FileBackupService
             $pattern = str_replace('*', '', $pattern);
             $excludes .= " ! -path '*{$pattern}*'";
         }
+
         return $excludes;
     }
 
@@ -391,13 +405,13 @@ class FileBackupService
     private function extractTarArchive(Server $server, string $archivePath, string $targetPath, bool $overwrite): void
     {
         // Create target directory if it doesn't exist
-        $mkdirCommand = "mkdir -p " . escapeshellarg($targetPath);
+        $mkdirCommand = 'mkdir -p '.escapeshellarg($targetPath);
         $this->executeSSHCommand($server, $mkdirCommand);
 
         // Extract command
         $extractFlags = $overwrite ? '--overwrite' : '--skip-old-files';
         $tarCommand = sprintf(
-            "tar -xzf %s -C %s %s",
+            'tar -xzf %s -C %s %s',
             escapeshellarg($archivePath),
             escapeshellarg($targetPath),
             $extractFlags
@@ -412,18 +426,20 @@ class FileBackupService
     private function generateManifest(string $archivePath): array
     {
         try {
-            $process = Process::fromShellCommandline("tar -tzf " . escapeshellarg($archivePath) . " | head -1000");
+            $process = Process::fromShellCommandline('tar -tzf '.escapeshellarg($archivePath).' | head -1000');
             $process->setTimeout(60);
             $process->run();
 
             if ($process->isSuccessful()) {
                 $files = array_filter(explode("\n", $process->getOutput()));
+
                 return array_values($files);
             }
 
             return [];
         } catch (\Exception $e) {
             Log::warning('Failed to generate manifest', ['error' => $e->getMessage()]);
+
             return [];
         }
     }
@@ -437,10 +453,10 @@ class FileBackupService
             return $remotePath;
         }
 
-        $localPath = storage_path('app/temp/' . $backup->filename);
+        $localPath = storage_path('app/temp/'.$backup->filename);
         $directory = dirname($localPath);
 
-        if (!is_dir($directory)) {
+        if (! is_dir($directory)) {
             mkdir($directory, 0755, true);
         }
 
@@ -454,15 +470,15 @@ class FileBackupService
      */
     private function downloadBackupToLocal(FileBackup $backup): string
     {
-        $localPath = storage_path('app/temp/' . $backup->filename);
+        $localPath = storage_path('app/temp/'.$backup->filename);
         $directory = dirname($localPath);
 
-        if (!is_dir($directory)) {
+        if (! is_dir($directory)) {
             mkdir($directory, 0755, true);
         }
 
         if ($backup->storage_disk === 'local') {
-            $storagePath = storage_path('app/' . $backup->storage_path);
+            $storagePath = storage_path('app/'.$backup->storage_path);
             copy($storagePath, $localPath);
         } else {
             Storage::disk($backup->storage_disk)->download($backup->storage_path, $localPath);
@@ -476,7 +492,7 @@ class FileBackupService
      */
     private function uploadToStorage(string $localPath, string $filename, string $disk): string
     {
-        $storagePath = 'file-backups/' . date('Y/m/d') . '/' . $filename;
+        $storagePath = 'file-backups/'.date('Y/m/d').'/'.$filename;
 
         Storage::disk($disk)->put($storagePath, file_get_contents($localPath));
 
@@ -488,11 +504,11 @@ class FileBackupService
      */
     private function moveToLocalStorage(string $localPath, string $filename): string
     {
-        $storagePath = 'file-backups/' . date('Y/m/d') . '/' . $filename;
-        $targetPath = storage_path('app/' . $storagePath);
+        $storagePath = 'file-backups/'.date('Y/m/d').'/'.$filename;
+        $targetPath = storage_path('app/'.$storagePath);
         $directory = dirname($targetPath);
 
-        if (!is_dir($directory)) {
+        if (! is_dir($directory)) {
             mkdir($directory, 0755, true);
         }
 
@@ -509,7 +525,7 @@ class FileBackupService
         $scpOptions = [
             '-o StrictHostKeyChecking=no',
             '-o UserKnownHostsFile=/dev/null',
-            '-P ' . $server->port,
+            '-P '.$server->port,
         ];
 
         if ($server->ssh_password) {
@@ -527,7 +543,7 @@ class FileBackupService
                 $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
                 file_put_contents($keyFile, $server->ssh_key);
                 chmod($keyFile, 0600);
-                $scpOptions[] = '-i ' . $keyFile;
+                $scpOptions[] = '-i '.$keyFile;
             }
 
             $command = sprintf(
@@ -544,8 +560,8 @@ class FileBackupService
         $process->setTimeout(3600); // 1 hour for large files
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            throw new \RuntimeException("File download failed: " . $process->getErrorOutput());
+        if (! $process->isSuccessful()) {
+            throw new \RuntimeException('File download failed: '.$process->getErrorOutput());
         }
     }
 
@@ -557,7 +573,7 @@ class FileBackupService
         $scpOptions = [
             '-o StrictHostKeyChecking=no',
             '-o UserKnownHostsFile=/dev/null',
-            '-P ' . $server->port,
+            '-P '.$server->port,
         ];
 
         if ($server->ssh_password) {
@@ -575,7 +591,7 @@ class FileBackupService
                 $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
                 file_put_contents($keyFile, $server->ssh_key);
                 chmod($keyFile, 0600);
-                $scpOptions[] = '-i ' . $keyFile;
+                $scpOptions[] = '-i '.$keyFile;
             }
 
             $command = sprintf(
@@ -592,8 +608,8 @@ class FileBackupService
         $process->setTimeout(3600);
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            throw new \RuntimeException("File upload failed: " . $process->getErrorOutput());
+        if (! $process->isSuccessful()) {
+            throw new \RuntimeException('File upload failed: '.$process->getErrorOutput());
         }
     }
 
@@ -607,8 +623,8 @@ class FileBackupService
         $process->setTimeout($timeout);
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            throw new \RuntimeException("SSH command failed: " . $process->getErrorOutput());
+        if (! $process->isSuccessful()) {
+            throw new \RuntimeException('SSH command failed: '.$process->getErrorOutput());
         }
 
         return $process->getOutput();
@@ -624,7 +640,7 @@ class FileBackupService
             '-o UserKnownHostsFile=/dev/null',
             '-o ConnectTimeout=10',
             '-o LogLevel=ERROR',
-            '-p ' . $server->port,
+            '-p '.$server->port,
         ];
 
         if ($server->ssh_password) {
@@ -644,7 +660,7 @@ class FileBackupService
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
             file_put_contents($keyFile, $server->ssh_key);
             chmod($keyFile, 0600);
-            $sshOptions[] = '-i ' . $keyFile;
+            $sshOptions[] = '-i '.$keyFile;
         }
 
         return sprintf(
@@ -662,7 +678,7 @@ class FileBackupService
     private function cleanupRemoteTempFile(Server $server, string $remotePath): void
     {
         try {
-            $this->executeSSHCommand($server, "rm -f " . escapeshellarg($remotePath));
+            $this->executeSSHCommand($server, 'rm -f '.escapeshellarg($remotePath));
         } catch (\Exception $e) {
             Log::warning('Failed to cleanup remote temp file', [
                 'path' => $remotePath,

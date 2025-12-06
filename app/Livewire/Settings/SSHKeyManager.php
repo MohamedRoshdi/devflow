@@ -1,40 +1,54 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Settings;
 
-use App\Models\SSHKey;
 use App\Models\Server;
+use App\Models\SSHKey;
 use App\Services\SSHKeyService;
-use Livewire\Component;
-use Livewire\Attributes\On;
+use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Crypt;
+use Livewire\Component;
 
 class SSHKeyManager extends Component
 {
-    public $keys;
+    /** @var Collection<int, SSHKey> */
+    public Collection $keys;
+
     public bool $showCreateModal = false;
+
     public bool $showImportModal = false;
+
     public bool $showDeployModal = false;
+
     public bool $showViewKeyModal = false;
 
     // Generate Key Form
     public string $newKeyName = '';
+
     public string $newKeyType = 'ed25519';
 
     // Import Key Form
     public string $importKeyName = '';
+
     public string $importPublicKey = '';
+
     public string $importPrivateKey = '';
 
     // Deploy Key Form
-    public $selectedKeyId = null;
-    public $selectedServerId = null;
+    public ?int $selectedKeyId = null;
+
+    public ?int $selectedServerId = null;
 
     // View Key Data
-    public $viewingKey = null;
+    /** @var array<string, mixed>|null */
+    public ?array $viewingKey = null;
 
     // Generated Key (for display after generation)
-    public $generatedKey = null;
+    /** @var array<string, mixed>|null */
+    public ?array $generatedKey = null;
 
     public function mount(): void
     {
@@ -81,7 +95,7 @@ class SSHKeyManager extends Component
                 'type' => $key->type,
                 'public_key' => $key->public_key,
                 'fingerprint' => $key->fingerprint,
-                'created_at' => $key->created_at->format('Y-m-d H:i:s'),
+                'created_at' => $key->created_at?->format('Y-m-d H:i:s'),
             ];
             $this->showViewKeyModal = true;
         }
@@ -103,8 +117,9 @@ class SSHKeyManager extends Component
                 "devflow-{$this->newKeyName}"
             );
 
-            if (!$result['success']) {
+            if (! $result['success']) {
                 session()->flash('error', $result['error'] ?? 'Failed to generate SSH key');
+
                 return;
             }
 
@@ -113,25 +128,25 @@ class SSHKeyManager extends Component
                 'user_id' => auth()->id(),
                 'name' => $this->newKeyName,
                 'type' => $this->newKeyType,
-                'public_key' => $result['public_key'],
-                'private_key_encrypted' => Crypt::encryptString($result['private_key']),
-                'fingerprint' => $result['fingerprint'],
+                'public_key' => $result['public_key'] ?? '',
+                'private_key_encrypted' => Crypt::encryptString($result['private_key'] ?? ''),
+                'fingerprint' => $result['fingerprint'] ?? '',
             ]);
 
             // Store generated key for display
             $this->generatedKey = [
                 'id' => $key->id,
                 'name' => $key->name,
-                'public_key' => $result['public_key'],
-                'private_key' => $result['private_key'],
-                'fingerprint' => $result['fingerprint'],
+                'public_key' => $result['public_key'] ?? '',
+                'private_key' => $result['private_key'] ?? '',
+                'fingerprint' => $result['fingerprint'] ?? '',
             ];
 
             $this->loadKeys();
             session()->flash('message', "SSH key '{$this->newKeyName}' generated successfully!");
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to generate SSH key: ' . $e->getMessage());
+            session()->flash('error', 'Failed to generate SSH key: '.$e->getMessage());
         }
     }
 
@@ -152,18 +167,21 @@ class SSHKeyManager extends Component
                 $this->importPrivateKey
             );
 
-            if (!$result['success']) {
+            if (! $result['success']) {
                 session()->flash('error', $result['error'] ?? 'Failed to import SSH key');
+
                 return;
             }
 
             // Check for duplicate fingerprint
+            $fingerprint = $result['fingerprint'] ?? '';
             $exists = SSHKey::where('user_id', auth()->id())
-                ->where('fingerprint', $result['fingerprint'])
+                ->where('fingerprint', $fingerprint)
                 ->exists();
 
             if ($exists) {
                 session()->flash('error', 'An SSH key with this fingerprint already exists');
+
                 return;
             }
 
@@ -171,10 +189,10 @@ class SSHKeyManager extends Component
             SSHKey::create([
                 'user_id' => auth()->id(),
                 'name' => $this->importKeyName,
-                'type' => $result['type'],
+                'type' => $result['type'] ?? 'rsa',
                 'public_key' => trim($this->importPublicKey),
                 'private_key_encrypted' => Crypt::encryptString(trim($this->importPrivateKey)),
-                'fingerprint' => $result['fingerprint'],
+                'fingerprint' => $fingerprint,
             ]);
 
             $this->loadKeys();
@@ -182,7 +200,7 @@ class SSHKeyManager extends Component
             session()->flash('message', "SSH key '{$this->importKeyName}' imported successfully!");
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to import SSH key: ' . $e->getMessage());
+            session()->flash('error', 'Failed to import SSH key: '.$e->getMessage());
         }
     }
 
@@ -205,14 +223,15 @@ class SSHKeyManager extends Component
             $sshKeyService = app(SSHKeyService::class);
             $result = $sshKeyService->deployKeyToServer($key, $server);
 
-            if (!$result['success']) {
+            if (! $result['success']) {
                 session()->flash('error', $result['error'] ?? 'Failed to deploy SSH key');
+
                 return;
             }
 
             // Update pivot table
             $key->servers()->syncWithoutDetaching([
-                $server->id => ['deployed_at' => now()]
+                $server->id => ['deployed_at' => now()],
             ]);
 
             $this->loadKeys();
@@ -220,7 +239,7 @@ class SSHKeyManager extends Component
             session()->flash('message', $result['message'] ?? 'SSH key deployed successfully!');
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to deploy SSH key: ' . $e->getMessage());
+            session()->flash('error', 'Failed to deploy SSH key: '.$e->getMessage());
         }
     }
 
@@ -238,8 +257,9 @@ class SSHKeyManager extends Component
             $sshKeyService = app(SSHKeyService::class);
             $result = $sshKeyService->removeKeyFromServer($key, $server);
 
-            if (!$result['success']) {
+            if (! $result['success']) {
                 session()->flash('error', $result['error'] ?? 'Failed to remove SSH key');
+
                 return;
             }
 
@@ -250,7 +270,7 @@ class SSHKeyManager extends Component
             session()->flash('message', $result['message'] ?? 'SSH key removed from server successfully!');
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to remove SSH key: ' . $e->getMessage());
+            session()->flash('error', 'Failed to remove SSH key: '.$e->getMessage());
         }
     }
 
@@ -268,7 +288,7 @@ class SSHKeyManager extends Component
                     $sshKeyService->removeKeyFromServer($key, $server);
                 } catch (\Exception $e) {
                     // Continue even if removal fails
-                    \Log::warning("Failed to remove SSH key from server {$server->id}: " . $e->getMessage());
+                    \Log::warning("Failed to remove SSH key from server {$server->id}: ".$e->getMessage());
                 }
             }
 
@@ -279,7 +299,7 @@ class SSHKeyManager extends Component
             session()->flash('message', "SSH key '{$keyName}' deleted successfully!");
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to delete SSH key: ' . $e->getMessage());
+            session()->flash('error', 'Failed to delete SSH key: '.$e->getMessage());
         }
     }
 
@@ -292,8 +312,9 @@ class SSHKeyManager extends Component
 
             $privateKey = $key->decrypted_private_key;
 
-            if (!$privateKey) {
+            if (! $privateKey) {
                 session()->flash('error', 'Could not decrypt private key');
+
                 return;
             }
 
@@ -304,7 +325,7 @@ class SSHKeyManager extends Component
             ]);
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to download private key: ' . $e->getMessage());
+            session()->flash('error', 'Failed to download private key: '.$e->getMessage());
         }
     }
 
@@ -322,7 +343,7 @@ class SSHKeyManager extends Component
             session()->flash('message', 'Public key copied to clipboard!');
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to copy public key: ' . $e->getMessage());
+            session()->flash('error', 'Failed to copy public key: '.$e->getMessage());
         }
     }
 
@@ -336,7 +357,7 @@ class SSHKeyManager extends Component
         $this->viewingKey = null;
     }
 
-    public function render()
+    public function render(): View
     {
         $servers = Server::where('user_id', auth()->id())
             ->where('status', 'online')

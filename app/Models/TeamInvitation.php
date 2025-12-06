@@ -9,10 +9,30 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
+/**
+ * @property int $id
+ * @property int $team_id
+ * @property string $email
+ * @property string $role
+ * @property string $token
+ * @property int $invited_by
+ * @property \Illuminate\Support\Carbon $expires_at
+ * @property \Illuminate\Support\Carbon|null $accepted_at
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * @property-read Team $team
+ * @property-read User $inviter
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|TeamInvitation newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|TeamInvitation newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|TeamInvitation query()
+ */
 class TeamInvitation extends Model
 {
+    /** @use HasFactory<\Database\Factories\TeamInvitationFactory> */
     use HasFactory;
 
+    /** @var array<int, string> */
     protected $fillable = [
         'team_id',
         'email',
@@ -23,6 +43,7 @@ class TeamInvitation extends Model
         'accepted_at',
     ];
 
+    /** @var array<string, string> */
     protected $casts = [
         'expires_at' => 'datetime',
         'accepted_at' => 'datetime',
@@ -43,11 +64,17 @@ class TeamInvitation extends Model
         });
     }
 
+    /**
+     * @return BelongsTo<Team, TeamInvitation>
+     */
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
     }
 
+    /**
+     * @return BelongsTo<User, TeamInvitation>
+     */
     public function inviter(): BelongsTo
     {
         return $this->belongsTo(User::class, 'invited_by');
@@ -65,6 +92,6 @@ class TeamInvitation extends Model
 
     public function isPending(): bool
     {
-        return !$this->isExpired() && !$this->isAccepted();
+        return ! $this->isExpired() && ! $this->isAccepted();
     }
 }

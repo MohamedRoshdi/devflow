@@ -4,24 +4,33 @@ declare(strict_types=1);
 
 namespace App\Livewire\Servers\Security;
 
-use Livewire\Component;
 use App\Models\Server;
 use App\Services\Security\Fail2banService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Component;
 
 class Fail2banManager extends Component
 {
     use AuthorizesRequests;
 
     public Server $server;
+
     public bool $fail2banInstalled = false;
+
     public bool $fail2banEnabled = false;
+
+    /** @var array<int, string> */
     public array $jails = [];
+
+    /** @var array<int, array<string, mixed>> */
     public array $bannedIPs = [];
+
     public string $selectedJail = 'sshd';
+
     public bool $isLoading = false;
 
     public ?string $flashMessage = null;
+
     public ?string $flashType = null;
 
     public function mount(Server $server): void
@@ -43,8 +52,8 @@ class Fail2banManager extends Component
             $this->fail2banEnabled = $status['enabled'] ?? false;
             $this->jails = $status['jails'] ?? [];
 
-            if ($this->fail2banEnabled && !empty($this->jails)) {
-                if (!in_array($this->selectedJail, $this->jails)) {
+            if ($this->fail2banEnabled && ! empty($this->jails)) {
+                if (! in_array($this->selectedJail, $this->jails)) {
                     $this->selectedJail = $this->jails[0];
                 }
                 $this->loadBannedIPs();
@@ -52,7 +61,7 @@ class Fail2banManager extends Component
 
             $this->server->refresh();
         } catch (\Exception $e) {
-            $this->flashMessage = 'Failed to load Fail2ban status: ' . $e->getMessage();
+            $this->flashMessage = 'Failed to load Fail2ban status: '.$e->getMessage();
             $this->flashType = 'error';
         }
 
@@ -69,7 +78,7 @@ class Fail2banManager extends Component
                 $this->bannedIPs = $result['banned_ips'][$this->selectedJail] ?? [];
             }
         } catch (\Exception $e) {
-            $this->flashMessage = 'Failed to load banned IPs: ' . $e->getMessage();
+            $this->flashMessage = 'Failed to load banned IPs: '.$e->getMessage();
             $this->flashType = 'error';
         }
     }
@@ -95,7 +104,7 @@ class Fail2banManager extends Component
                 $this->flashType = 'error';
             }
         } catch (\Exception $e) {
-            $this->flashMessage = 'Failed to unban IP: ' . $e->getMessage();
+            $this->flashMessage = 'Failed to unban IP: '.$e->getMessage();
             $this->flashType = 'error';
         }
     }
@@ -115,7 +124,7 @@ class Fail2banManager extends Component
                 $this->flashType = 'error';
             }
         } catch (\Exception $e) {
-            $this->flashMessage = 'Failed to start Fail2ban: ' . $e->getMessage();
+            $this->flashMessage = 'Failed to start Fail2ban: '.$e->getMessage();
             $this->flashType = 'error';
         }
     }
@@ -135,7 +144,7 @@ class Fail2banManager extends Component
                 $this->flashType = 'error';
             }
         } catch (\Exception $e) {
-            $this->flashMessage = 'Failed to stop Fail2ban: ' . $e->getMessage();
+            $this->flashMessage = 'Failed to stop Fail2ban: '.$e->getMessage();
             $this->flashType = 'error';
         }
     }
@@ -155,7 +164,7 @@ class Fail2banManager extends Component
                 $this->flashType = 'error';
             }
         } catch (\Exception $e) {
-            $this->flashMessage = 'Failed to install Fail2ban: ' . $e->getMessage();
+            $this->flashMessage = 'Failed to install Fail2ban: '.$e->getMessage();
             $this->flashType = 'error';
         }
     }

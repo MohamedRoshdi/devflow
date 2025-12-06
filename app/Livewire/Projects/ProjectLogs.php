@@ -4,7 +4,6 @@ namespace App\Livewire\Projects;
 
 use App\Models\Project;
 use App\Services\DockerService;
-use Illuminate\Support\Str;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -15,11 +14,17 @@ class ProjectLogs extends Component
     public int $projectId;
 
     public string $logType = 'laravel';
+
     public int $lines = 200;
+
     public string $logs = '';
+
     public bool $loading = false;
+
     public ?string $error = null;
+
     public ?string $source = null;
+
     public bool $downloading = false;
 
     public function mount(Project $project): void
@@ -39,7 +44,7 @@ class ProjectLogs extends Component
         $this->loadLogs();
     }
 
-    public function updatedLines($value): void
+    public function updatedLines(int|string $value): void
     {
         $value = (int) $value;
         if ($value < 50 || $value > 1000) {
@@ -69,7 +74,7 @@ class ProjectLogs extends Component
                 $this->error = $result['error'] ?? 'Failed to clear logs';
             }
         } catch (\Throwable $e) {
-            $this->error = 'Failed to clear logs: ' . $e->getMessage();
+            $this->error = 'Failed to clear logs: '.$e->getMessage();
         }
     }
 
@@ -101,7 +106,7 @@ class ProjectLogs extends Component
                 echo '';
             }, 'error.txt');
         } catch (\Throwable $e) {
-            $this->error = 'Failed to download logs: ' . $e->getMessage();
+            $this->error = 'Failed to download logs: '.$e->getMessage();
             $this->downloading = false;
 
             return response()->streamDownload(function () {

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PipelineConfig extends Model
 {
+    /** @use HasFactory<\Database\Factories\PipelineConfigFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -29,6 +30,9 @@ class PipelineConfig extends Model
     }
 
     // Relationships
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Project, $this>
+     */
     public function project()
     {
         return $this->belongsTo(Project::class);
@@ -37,36 +41,40 @@ class PipelineConfig extends Model
     /**
      * Determine if a deployment should be triggered based on branch and commit message
      *
-     * @param string $branch The branch that was pushed to
-     * @param string $commitMessage The commit message
+     * @param  string  $branch  The branch that was pushed to
+     * @param  string  $commitMessage  The commit message
      * @return bool Whether deployment should proceed
      */
     public function shouldDeploy(string $branch, string $commitMessage): bool
     {
         // If pipeline config is disabled, don't deploy
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return false;
         }
 
         // Check if branch is in auto_deploy_branches list
         $autoBranches = $this->auto_deploy_branches ?? [];
-        if (!empty($autoBranches) && !in_array($branch, $autoBranches)) {
+        if (! empty($autoBranches) && ! in_array($branch, $autoBranches)) {
             return false;
         }
 
         // Check skip patterns first (highest priority)
         $skipPatterns = $this->skip_patterns ?? [];
-        foreach ($skipPatterns as $pattern) {
-            if ($this->matchesPattern($commitMessage, $pattern)) {
-                return false; // Skip deployment
+        if (is_array($skipPatterns)) {
+            foreach ($skipPatterns as $pattern) {
+                if ($this->matchesPattern($commitMessage, $pattern)) {
+                    return false; // Skip deployment
+                }
             }
         }
 
         // Check deploy patterns (force deploy even if other conditions might fail)
         $deployPatterns = $this->deploy_patterns ?? [];
-        foreach ($deployPatterns as $pattern) {
-            if ($this->matchesPattern($commitMessage, $pattern)) {
-                return true; // Force deployment
+        if (is_array($deployPatterns)) {
+            foreach ($deployPatterns as $pattern) {
+                if ($this->matchesPattern($commitMessage, $pattern)) {
+                    return true; // Force deployment
+                }
             }
         }
 
@@ -77,10 +85,6 @@ class PipelineConfig extends Model
 
     /**
      * Check if a commit message matches a pattern
-     *
-     * @param string $commitMessage
-     * @param string $pattern
-     * @return bool
      */
     private function matchesPattern(string $commitMessage, string $pattern): bool
     {
@@ -90,8 +94,6 @@ class PipelineConfig extends Model
 
     /**
      * Generate a unique webhook secret for this pipeline
-     *
-     * @return string
      */
     public function generateWebhookSecret(): string
     {

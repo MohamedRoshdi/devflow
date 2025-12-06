@@ -41,4 +41,3 @@ class DeploymentPolicy
         return true;
     }
 }
-

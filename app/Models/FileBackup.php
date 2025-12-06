@@ -4,14 +4,49 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @use HasFactory<\Database\Factories\FileBackupFactory>
+ *
+ * @property int $id
+ * @property int $project_id
+ * @property string $filename
+ * @property string $type
+ * @property string $source_path
+ * @property string $storage_disk
+ * @property string $storage_path
+ * @property int $size_bytes
+ * @property int $files_count
+ * @property string $checksum
+ * @property string $status
+ * @property \Illuminate\Support\Carbon $started_at
+ * @property \Illuminate\Support\Carbon|null $completed_at
+ * @property string|null $error_message
+ * @property array<string, mixed>|null $manifest
+ * @property array<int, string>|null $exclude_patterns
+ * @property int|null $parent_backup_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Project $project
+ * @property-read FileBackup|null $parentBackup
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, FileBackup> $childBackups
+ * @property-read string $formatted_size
+ * @property-read int|null $duration
+ * @property-read string|null $formatted_duration
+ * @property-read string $status_color
+ * @property-read string $type_color
+ */
 class FileBackup extends Model
 {
+    /** @use HasFactory<\Database\Factories\FileBackupFactory> */
     use HasFactory;
 
+    /** @var array<int, string> */
     protected $fillable = [
         'project_id',
         'filename',
@@ -44,43 +79,72 @@ class FileBackup extends Model
     }
 
     // Relationships
+    /**
+     * @return BelongsTo<Project, $this>
+     */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
+    /**
+     * @return BelongsTo<FileBackup, $this>
+     */
     public function parentBackup(): BelongsTo
     {
         return $this->belongsTo(FileBackup::class, 'parent_backup_id');
     }
 
+    /**
+     * @return HasMany<FileBackup, $this>
+     */
     public function childBackups(): HasMany
     {
         return $this->hasMany(FileBackup::class, 'parent_backup_id');
     }
 
     // Scopes
-    public function scopeFull($query)
+    /**
+     * @param  Builder<FileBackup>  $query
+     * @return Builder<FileBackup>
+     */
+    public function scopeFull(Builder $query): Builder
     {
         return $query->where('type', 'full');
     }
 
-    public function scopeIncremental($query)
+    /**
+     * @param  Builder<FileBackup>  $query
+     * @return Builder<FileBackup>
+     */
+    public function scopeIncremental(Builder $query): Builder
     {
         return $query->where('type', 'incremental');
     }
 
-    public function scopeCompleted($query)
+    /**
+     * @param  Builder<FileBackup>  $query
+     * @return Builder<FileBackup>
+     */
+    public function scopeCompleted(Builder $query): Builder
     {
         return $query->where('status', 'completed');
     }
 
-    public function scopeFailed($query)
+    /**
+     * @param  Builder<FileBackup>  $query
+     * @return Builder<FileBackup>
+     */
+    public function scopeFailed(Builder $query): Builder
     {
         return $query->where('status', 'failed');
     }
 
-    public function scopeForProject($query, int $projectId)
+    /**
+     * @param  Builder<FileBackup>  $query
+     * @return Builder<FileBackup>
+     */
+    public function scopeForProject(Builder $query, int $projectId): Builder
     {
         return $query->where('project_id', $projectId);
     }
@@ -123,7 +187,7 @@ class FileBackup extends Model
 
     public function getDurationAttribute(): ?int
     {
-        if (!$this->started_at || !$this->completed_at) {
+        if (! $this->started_at || ! $this->completed_at) {
             return null;
         }
 
@@ -157,7 +221,7 @@ class FileBackup extends Model
 
     public function getStatusColorAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'completed' => 'green',
             'running' => 'blue',
             'pending' => 'yellow',
@@ -168,7 +232,7 @@ class FileBackup extends Model
 
     public function getTypeColorAttribute(): string
     {
-        return match($this->type) {
+        return match ($this->type) {
             'full' => 'purple',
             'incremental' => 'blue',
             default => 'gray',
@@ -183,11 +247,13 @@ class FileBackup extends Model
             $bytes /= 1024;
         }
 
-        return round($bytes, $precision) . ' ' . $units[$i];
+        return round($bytes, $precision).' '.$units[$i];
     }
 
     /**
      * Get all backups in the chain (for incremental backups)
+     *
+     * @return array<int, FileBackup>
      */
     public function getBackupChain(): array
     {
@@ -195,7 +261,7 @@ class FileBackup extends Model
 
         // If this is an incremental backup, traverse up to the full backup
         $current = $this;
-        while ($current->parent_backup_id) {
+        while ($current->parent_backup_id && $current->parentBackup !== null) {
             $current = $current->parentBackup;
             array_unshift($chain, $current);
         }
@@ -209,9 +275,10 @@ class FileBackup extends Model
     public function getRootBackup(): FileBackup
     {
         $current = $this;
-        while ($current->parent_backup_id) {
+        while ($current->parent_backup_id && $current->parentBackup !== null) {
             $current = $current->parentBackup;
         }
+
         return $current;
     }
 
@@ -223,7 +290,7 @@ class FileBackup extends Model
         $depth = 0;
         $current = $this;
 
-        while ($current->parent_backup_id) {
+        while ($current->parent_backup_id && $current->parentBackup !== null) {
             $depth++;
             $current = $current->parentBackup;
         }

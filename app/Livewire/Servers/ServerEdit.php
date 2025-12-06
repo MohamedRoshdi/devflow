@@ -2,11 +2,11 @@
 
 namespace App\Livewire\Servers;
 
-use Livewire\Component;
 use App\Models\Server;
 use App\Services\DockerService;
 use App\Services\ServerConnectivityService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Component;
 
 class ServerEdit extends Component
 {
@@ -14,17 +14,27 @@ class ServerEdit extends Component
 
     public Server $server;
 
-    public $name = '';
-    public $hostname = '';
-    public $ip_address = '';
-    public $port = 22;
-    public $username = 'root';
-    public $ssh_password = '';
-    public $ssh_key = '';
-    public $auth_method = 'password';
-    public $latitude = null;
-    public $longitude = null;
-    public $location_name = '';
+    public string $name = '';
+
+    public string $hostname = '';
+
+    public string $ip_address = '';
+
+    public int $port = 22;
+
+    public string $username = 'root';
+
+    public string $ssh_password = '';
+
+    public string $ssh_key = '';
+
+    public string $auth_method = 'password';
+
+    public ?float $latitude = null;
+
+    public ?float $longitude = null;
+
+    public string $location_name = '';
 
     public function mount(Server $server): void
     {
@@ -44,7 +54,10 @@ class ServerEdit extends Component
         $this->auth_method = $server->ssh_key ? 'key' : 'password';
     }
 
-    public function rules()
+    /**
+     * @return array<string, string>
+     */
+    public function rules(): array
     {
         return [
             'name' => 'required|string|max:255',
@@ -61,7 +74,7 @@ class ServerEdit extends Component
         ];
     }
 
-    public function testConnection()
+    public function testConnection(): void
     {
         $this->validate();
 
@@ -82,19 +95,20 @@ class ServerEdit extends Component
             $result = $connectivityService->testConnection($tempServer);
 
             if ($result['reachable']) {
-                session()->flash('connection_test', $result['message'] . ' (Latency: ' . $result['latency_ms'] . 'ms)');
+                session()->flash('connection_test', $result['message'].' (Latency: '.$result['latency_ms'].'ms)');
             } else {
                 session()->flash('connection_error', $result['message']);
             }
         } catch (\Exception $e) {
-            session()->flash('connection_error', 'Connection failed: ' . $e->getMessage());
+            session()->flash('connection_error', 'Connection failed: '.$e->getMessage());
         }
     }
 
-    public function updateServer()
+    public function updateServer(): \Illuminate\Http\RedirectResponse
     {
         $this->validate();
 
+        /** @var array<string, mixed> */
         $updateData = [
             'name' => $this->name,
             'hostname' => $this->hostname ?: null,
@@ -125,7 +139,7 @@ class ServerEdit extends Component
         if ($isReachable) {
             $serverInfo = $connectivityService->getServerInfo($this->server);
 
-            if (!empty($serverInfo)) {
+            if (! empty($serverInfo)) {
                 $this->server->update([
                     'os' => $serverInfo['os'] ?? $this->server->os,
                     'cpu_cores' => $serverInfo['cpu_cores'] ?? $this->server->cpu_cores,
@@ -156,7 +170,7 @@ class ServerEdit extends Component
             ->with('message', $message);
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.servers.server-edit');
     }

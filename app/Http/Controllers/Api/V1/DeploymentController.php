@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\DeploymentResource;
 use App\Http\Resources\DeploymentCollection;
+use App\Http\Resources\DeploymentResource;
 use App\Models\Deployment;
 use App\Models\Project;
 use Illuminate\Http\JsonResponse;
@@ -82,7 +82,7 @@ class DeploymentController extends Controller
         if ($runningDeployment) {
             return response()->json([
                 'message' => 'A deployment is already in progress for this project',
-                'error' => 'deployment_in_progress'
+                'error' => 'deployment_in_progress',
             ], 409);
         }
 
@@ -139,20 +139,28 @@ class DeploymentController extends Controller
         }
 
         // Check if there's already a running deployment
-        $runningDeployment = $deployment->project->deployments()
+        $project = $deployment->project;
+        if ($project === null) {
+            return response()->json([
+                'message' => 'Project not found for this deployment',
+                'error' => 'project_not_found',
+            ], 404);
+        }
+
+        $runningDeployment = $project->deployments()
             ->where('status', 'running')
             ->exists();
 
         if ($runningDeployment) {
             return response()->json([
                 'message' => 'A deployment is already in progress for this project',
-                'error' => 'deployment_in_progress'
+                'error' => 'deployment_in_progress',
             ], 409);
         }
 
         try {
-            $rollbackDeployment = DB::transaction(function () use ($deployment) {
-                return $deployment->project->deployments()->create([
+            $rollbackDeployment = DB::transaction(function () use ($deployment, $project) {
+                return $project->deployments()->create([
                     'user_id' => auth()->id(),
                     'server_id' => $deployment->server_id,
                     'branch' => $deployment->branch,

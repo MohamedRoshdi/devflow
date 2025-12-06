@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services\CICD;
 
-use App\Models\Project;
+use App\Events\DeploymentLogUpdated;
+use App\Events\PipelineStageUpdated;
+use App\Models\Deployment;
 use App\Models\PipelineRun;
 use App\Models\PipelineStage;
 use App\Models\PipelineStageRun;
-use App\Models\Deployment;
-use App\Events\PipelineStageUpdated;
-use App\Events\DeploymentLogUpdated;
+use App\Models\Project;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Process;
 use Symfony\Component\Process\Process as SymfonyProcess;
 
 class PipelineExecutionService
@@ -48,7 +47,7 @@ class PipelineExecutionService
             $stageTypes = ['pre_deploy', 'deploy', 'post_deploy'];
 
             foreach ($stageTypes as $type) {
-                if (!isset($stages[$type])) {
+                if (! isset($stages[$type])) {
                     continue;
                 }
 
@@ -56,9 +55,10 @@ class PipelineExecutionService
                     $success = $this->executeStage($pipelineRun, $stage);
 
                     // If stage failed and continue_on_failure is false, stop pipeline
-                    if (!$success && !$stage->continue_on_failure) {
+                    if (! $success && ! $stage->continue_on_failure) {
                         $pipelineRun->markFailed();
                         $this->logToPipeline($pipelineRun, "Pipeline stopped due to stage failure: {$stage->name}");
+
                         return $pipelineRun;
                     }
                 }
@@ -66,7 +66,7 @@ class PipelineExecutionService
 
             // All stages completed successfully
             $pipelineRun->markSuccess();
-            $this->logToPipeline($pipelineRun, "Pipeline completed successfully");
+            $this->logToPipeline($pipelineRun, 'Pipeline completed successfully');
 
         } catch (\Exception $e) {
             $pipelineRun->markFailed();
@@ -106,7 +106,8 @@ class PipelineExecutionService
 
             if (empty($commands)) {
                 $stageRun->markSkipped();
-                $this->broadcastStageUpdate($pipelineRun, $stageRun, "Stage skipped: No commands defined");
+                $this->broadcastStageUpdate($pipelineRun, $stageRun, 'Stage skipped: No commands defined');
+
                 return true;
             }
 
@@ -116,15 +117,16 @@ class PipelineExecutionService
                     continue;
                 }
 
-                $this->broadcastStageUpdate($pipelineRun, $stageRun, "Executing command " . ($index + 1) . "/" . count($commands));
+                $this->broadcastStageUpdate($pipelineRun, $stageRun, 'Executing command '.($index + 1).'/'.count($commands));
                 $this->broadcastStageUpdate($pipelineRun, $stageRun, "$ {$command}");
 
                 $success = $this->executeCommand($server, $project, $command, $stageRun, $stage->timeout_seconds);
 
-                if (!$success) {
+                if (! $success) {
                     $errorMsg = "Command failed: {$command}";
                     $stageRun->markFailed($errorMsg);
                     $this->broadcastStageUpdate($pipelineRun, $stageRun, $errorMsg);
+
                     return false;
                 }
             }
@@ -132,6 +134,7 @@ class PipelineExecutionService
             // Stage completed successfully
             $stageRun->markSuccess();
             $this->broadcastStageUpdate($pipelineRun, $stageRun, "Stage completed: {$stage->name}");
+
             return true;
 
         } catch (\Exception $e) {
@@ -153,7 +156,7 @@ class PipelineExecutionService
      * Execute a command via SSH
      */
     private function executeCommand(
-        $server,
+        \App\Models\Server $server,
         Project $project,
         string $command,
         PipelineStageRun $stageRun,
@@ -177,7 +180,7 @@ class PipelineExecutionService
                 // Append output to stage run and broadcast
                 $lines = explode("\n", $buffer);
                 foreach ($lines as $line) {
-                    if (!empty(trim($line))) {
+                    if (! empty(trim($line))) {
                         $stageRun->appendOutput($line);
                         $this->broadcastLogLine($stageRun, $line);
                     }
@@ -190,12 +193,14 @@ class PipelineExecutionService
             $errorMsg = "Command timed out after {$timeout} seconds";
             $stageRun->appendOutput($errorMsg);
             $this->broadcastLogLine($stageRun, $errorMsg);
+
             return false;
 
         } catch (\Exception $e) {
             $errorMsg = "Command execution failed: {$e->getMessage()}";
             $stageRun->appendOutput($errorMsg);
             $this->broadcastLogLine($stageRun, $errorMsg);
+
             return false;
         }
     }
@@ -318,11 +323,12 @@ class PipelineExecutionService
             ->orderBy('id', 'desc')
             ->first();
 
-        if (!$lastSuccessfulDeployment) {
+        if (! $lastSuccessfulDeployment) {
             Log::warning('No previous successful deployment found for rollback', [
                 'project_id' => $project->id,
                 'failed_run_id' => $failedRun->id,
             ]);
+
             return null;
         }
 
@@ -353,7 +359,7 @@ class PipelineExecutionService
      */
     public function cancelPipeline(PipelineRun $pipelineRun): void
     {
-        if (!$pipelineRun->isRunning()) {
+        if (! $pipelineRun->isRunning()) {
             return;
         }
 

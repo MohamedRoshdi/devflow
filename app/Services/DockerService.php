@@ -2,27 +2,26 @@
 
 namespace App\Services;
 
-use App\Models\Server;
 use App\Models\Project;
+use App\Models\Server;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class DockerService
 {
     public function checkDockerInstallation(Server $server): array
     {
         try {
-            $command = $this->isLocalhost($server) 
+            $command = $this->isLocalhost($server)
                 ? 'docker --version'
                 : $this->buildSSHCommand($server, 'docker --version');
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
             if ($process->isSuccessful()) {
                 $output = $process->getOutput();
                 preg_match('/Docker version (.+?),/', $output, $matches);
-                
+
                 return [
                     'installed' => true,
                     'version' => $matches[1] ?? 'unknown',
@@ -38,7 +37,7 @@ class DockerService
     protected function isLocalhost(Server $server): bool
     {
         $localIPs = ['127.0.0.1', '::1', 'localhost'];
-        
+
         if (in_array($server->ip_address, $localIPs)) {
             return true;
         }
@@ -147,14 +146,14 @@ class DockerService
             if ($dockerfileType === 'Dockerfile') {
                 // Use project's Dockerfile
                 $buildCommand = sprintf(
-                    "cd %s && docker build -t %s .",
+                    'cd %s && docker build -t %s .',
                     $projectPath,
                     $project->slug
                 );
             } elseif ($dockerfileType === 'Dockerfile.production') {
                 // Use project's Dockerfile.production
                 $buildCommand = sprintf(
-                    "cd %s && docker build -f Dockerfile.production -t %s .",
+                    'cd %s && docker build -f Dockerfile.production -t %s .',
                     $projectPath,
                     $project->slug
                 );
@@ -249,8 +248,8 @@ class DockerService
             // Standalone container mode
             // First, clean up any existing container with the same name
             $cleanupResult = $this->cleanupExistingContainer($project);
-            if (!$cleanupResult['success']) {
-                \Log::warning("Failed to cleanup existing container for {$project->slug}: " . ($cleanupResult['error'] ?? 'Unknown error'));
+            if (! $cleanupResult['success']) {
+                \Log::warning("Failed to cleanup existing container for {$project->slug}: ".($cleanupResult['error'] ?? 'Unknown error'));
             }
 
             // Use project's assigned port, or default based on project ID
@@ -265,7 +264,7 @@ class DockerService
             $envVars = $this->buildEnvironmentVariables($project);
 
             $startCommand = sprintf(
-                "docker run -d --name %s -p %d:%d%s %s",
+                'docker run -d --name %s -p %d:%d%s %s',
                 $project->slug,
                 $port,
                 $containerPort,
@@ -282,7 +281,7 @@ class DockerService
 
             if ($process->isSuccessful()) {
                 // Update project with the port if not set
-                if (!$project->port) {
+                if (! $project->port) {
                     $project->update(['port' => $port]);
                 }
 
@@ -304,22 +303,22 @@ class DockerService
             ];
         }
     }
-    
+
     /**
      * Build environment variables string for docker run command
      */
     protected function buildEnvironmentVariables(Project $project): string
     {
         $envFlags = '';
-        
+
         // Add APP_ENV from project environment
         $appEnv = $project->environment ?? 'production';
         $envFlags .= " -e APP_ENV={$appEnv}";
-        
+
         // Add APP_DEBUG based on environment
         $appDebug = in_array($appEnv, ['local', 'development']) ? 'true' : 'false';
         $envFlags .= " -e APP_DEBUG={$appDebug}";
-        
+
         // Add custom environment variables
         if ($project->env_variables && is_array($project->env_variables)) {
             foreach ($project->env_variables as $key => $value) {
@@ -328,7 +327,7 @@ class DockerService
                 $envFlags .= " -e {$key}=\"{$escapedValue}\"";
             }
         }
-        
+
         return $envFlags;
     }
 
@@ -336,18 +335,18 @@ class DockerService
     {
         try {
             $server = $project->server;
-            
+
             // Stop and remove any existing container with this name
             $cleanupCommand = sprintf(
-                "docker stop %s 2>/dev/null || true && docker rm -f %s 2>/dev/null || true",
+                'docker stop %s 2>/dev/null || true && docker rm -f %s 2>/dev/null || true',
                 $project->slug,
                 $project->slug
             );
-            
+
             $command = $this->isLocalhost($server)
                 ? $cleanupCommand
                 : $this->buildSSHCommand($server, $cleanupCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
@@ -362,7 +361,7 @@ class DockerService
             ];
         }
     }
-    
+
     /**
      * Detect the internal port used by the container
      */
@@ -371,15 +370,15 @@ class DockerService
         // For Laravel/PHP projects with Dockerfile.production, use port 80 (nginx + PHP-FPM)
         // For Node.js projects, typically use port 3000
         // For static sites with nginx, use port 80
-        
+
         if (in_array($project->framework, ['Laravel', 'Symfony', 'CodeIgniter'])) {
             return 80; // nginx serving PHP-FPM
         }
-        
+
         if (in_array($project->framework, ['Next.js', 'React', 'Vue', 'Nuxt.js', 'Node.js'])) {
             return 3000; // Node.js default
         }
-        
+
         // Default to 80 for nginx-based containers
         return 80;
     }
@@ -423,7 +422,7 @@ class DockerService
             // Stop and force remove the container to avoid "name already in use" errors
             // Using -f flag to force removal even if container is running
             $stopAndRemoveCommand = sprintf(
-                "docker stop %s 2>/dev/null || true && docker rm -f %s 2>/dev/null || true",
+                'docker stop %s 2>/dev/null || true && docker rm -f %s 2>/dev/null || true',
                 $project->slug,
                 $project->slug
             );
@@ -483,7 +482,7 @@ class DockerService
             }
 
             // Standalone container mode
-            $logsCommand = "docker logs --tail {$lines} " . $project->slug;
+            $logsCommand = "docker logs --tail {$lines} ".$project->slug;
             $command = $this->isLocalhost($server)
                 ? $logsCommand
                 : $this->buildSSHCommand($server, $logsCommand);
@@ -587,7 +586,7 @@ class DockerService
 
             return [
                 'success' => false,
-                'error' => 'Could not clear logs: ' . ($process->getErrorOutput() ?: $process->getOutput() ?: 'Unknown error'),
+                'error' => 'Could not clear logs: '.($process->getErrorOutput() ?: $process->getOutput() ?: 'Unknown error'),
             ];
         } catch (\Exception $e) {
             return [
@@ -632,13 +631,13 @@ class DockerService
                 return [
                     'success' => true,
                     'content' => $output,
-                    'filename' => $project->slug . '-laravel-' . now()->format('Y-m-d-His') . '.log',
+                    'filename' => $project->slug.'-laravel-'.now()->format('Y-m-d-His').'.log',
                 ];
             }
 
             return [
                 'success' => false,
-                'error' => 'Could not download logs: ' . ($process->getErrorOutput() ?: 'Unknown error'),
+                'error' => 'Could not download logs: '.($process->getErrorOutput() ?: 'Unknown error'),
             ];
         } catch (\Exception $e) {
             return [
@@ -679,7 +678,7 @@ class DockerService
         $patterns = [
             "{$project->slug}-app",    // docker-compose v2 naming
             "{$project->slug}_app_1",  // docker-compose v1 naming
-            "app",                     // generic app service
+            'app',                     // generic app service
         ];
 
         foreach ($patterns as $pattern) {
@@ -692,7 +691,7 @@ class DockerService
             $process->run();
             $containerName = trim($process->getOutput());
 
-            if (!empty($containerName)) {
+            if (! empty($containerName)) {
                 return $containerName;
             }
         }
@@ -706,7 +705,7 @@ class DockerService
         $sshOptions = [
             '-o StrictHostKeyChecking=no',
             '-o UserKnownHostsFile=/dev/null',
-            '-p ' . $server->port,
+            '-p '.$server->port,
         ];
 
         if ($server->ssh_key) {
@@ -714,7 +713,7 @@ class DockerService
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
             file_put_contents($keyFile, $server->ssh_key);
             chmod($keyFile, 0600);
-            $sshOptions[] = '-i ' . $keyFile;
+            $sshOptions[] = '-i '.$keyFile;
         }
 
         return sprintf(
@@ -729,7 +728,7 @@ class DockerService
     protected function generateDockerfile(Project $project): string
     {
         // Generate appropriate Dockerfile based on framework
-        return match($project->framework) {
+        return match ($project->framework) {
             'Laravel', 'laravel' => $this->getLaravelDockerfile($project),
             'Node.js', 'nodejs' => $this->getNodeDockerfile($project),
             'React', 'react' => $this->getReactDockerfile($project),
@@ -741,7 +740,7 @@ class DockerService
     protected function getLaravelDockerfile(Project $project): string
     {
         $phpVersion = $project->php_version ?? '8.2';
-        
+
         return <<<DOCKERFILE
 FROM php:{$phpVersion}-fpm-alpine
 
@@ -779,7 +778,7 @@ DOCKERFILE;
     protected function getNodeDockerfile(Project $project): string
     {
         $nodeVersion = $project->node_version ?? '20';
-        
+
         return <<<DOCKERFILE
 FROM node:{$nodeVersion}-alpine
 
@@ -798,7 +797,7 @@ DOCKERFILE;
 
     protected function getReactDockerfile(Project $project): string
     {
-        return <<<DOCKERFILE
+        return <<<'DOCKERFILE'
 FROM node:20-alpine as build
 
 WORKDIR /app
@@ -818,7 +817,7 @@ DOCKERFILE;
 
     protected function getVueDockerfile(Project $project): string
     {
-        return <<<DOCKERFILE
+        return <<<'DOCKERFILE'
 FROM node:20-alpine as build
 
 WORKDIR /app
@@ -838,7 +837,7 @@ DOCKERFILE;
 
     protected function getGenericDockerfile(Project $project): string
     {
-        return <<<DOCKERFILE
+        return <<<'DOCKERFILE'
 FROM alpine:latest
 
 WORKDIR /app
@@ -861,21 +860,22 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            
+
             $statsCommand = sprintf(
                 "docker stats --no-stream --format '{{json .}}' %s",
                 $project->slug
             );
-            
+
             $command = $this->isLocalhost($server)
                 ? $statsCommand
                 : $this->buildSSHCommand($server, $statsCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
             if ($process->isSuccessful()) {
                 $stats = json_decode($process->getOutput(), true);
+
                 return [
                     'success' => true,
                     'stats' => $stats,
@@ -895,21 +895,22 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            
+
             $inspectCommand = sprintf(
                 "docker inspect --format='{{json .HostConfig}}' %s",
                 $project->slug
             );
-            
+
             $command = $this->isLocalhost($server)
                 ? $inspectCommand
                 : $this->buildSSHCommand($server, $inspectCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
             if ($process->isSuccessful()) {
                 $config = json_decode($process->getOutput(), true);
+
                 return [
                     'success' => true,
                     'memory_limit' => $config['Memory'] ?? 0,
@@ -931,20 +932,20 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            
-            $updateCommand = "docker update";
+
+            $updateCommand = 'docker update';
             if ($memoryMB !== null) {
                 $updateCommand .= " --memory={$memoryMB}m";
             }
             if ($cpuShares !== null) {
                 $updateCommand .= " --cpu-shares={$cpuShares}";
             }
-            $updateCommand .= " " . $project->slug;
-            
+            $updateCommand .= ' '.$project->slug;
+
             $command = $this->isLocalhost($server)
                 ? $updateCommand
                 : $this->buildSSHCommand($server, $updateCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
@@ -968,19 +969,19 @@ DOCKERFILE;
     {
         try {
             $volumesCommand = "docker volume ls --format '{{json .}}'";
-            
+
             $command = $this->isLocalhost($server)
                 ? $volumesCommand
                 : $this->buildSSHCommand($server, $volumesCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
             if ($process->isSuccessful()) {
                 $output = $process->getOutput();
                 $lines = array_filter(explode("\n", $output));
-                $volumes = array_map(fn($line) => json_decode($line, true), $lines);
-                
+                $volumes = array_map(fn ($line) => json_decode($line, true), $lines);
+
                 return [
                     'success' => true,
                     'volumes' => $volumes,
@@ -999,22 +1000,22 @@ DOCKERFILE;
     public function createVolume(Server $server, string $name, array $options = []): array
     {
         try {
-            $createCommand = "docker volume create";
-            
+            $createCommand = 'docker volume create';
+
             if (isset($options['driver'])) {
                 $createCommand .= " --driver={$options['driver']}";
             }
-            
+
             foreach ($options['labels'] ?? [] as $key => $value) {
                 $createCommand .= " --label={$key}={$value}";
             }
-            
+
             $createCommand .= " {$name}";
-            
+
             $command = $this->isLocalhost($server)
                 ? $createCommand
                 : $this->buildSSHCommand($server, $createCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
@@ -1034,11 +1035,11 @@ DOCKERFILE;
     {
         try {
             $deleteCommand = "docker volume rm {$name}";
-            
+
             $command = $this->isLocalhost($server)
                 ? $deleteCommand
                 : $this->buildSSHCommand($server, $deleteCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
@@ -1058,16 +1059,17 @@ DOCKERFILE;
     {
         try {
             $inspectCommand = "docker volume inspect {$name}";
-            
+
             $command = $this->isLocalhost($server)
                 ? $inspectCommand
                 : $this->buildSSHCommand($server, $inspectCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
             if ($process->isSuccessful()) {
                 $info = json_decode($process->getOutput(), true);
+
                 return [
                     'success' => true,
                     'volume' => $info[0] ?? null,
@@ -1091,19 +1093,19 @@ DOCKERFILE;
     {
         try {
             $networksCommand = "docker network ls --format '{{json .}}'";
-            
+
             $command = $this->isLocalhost($server)
                 ? $networksCommand
                 : $this->buildSSHCommand($server, $networksCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
             if ($process->isSuccessful()) {
                 $output = $process->getOutput();
                 $lines = array_filter(explode("\n", $output));
-                $networks = array_map(fn($line) => json_decode($line, true), $lines);
-                
+                $networks = array_map(fn ($line) => json_decode($line, true), $lines);
+
                 return [
                     'success' => true,
                     'networks' => $networks,
@@ -1123,11 +1125,11 @@ DOCKERFILE;
     {
         try {
             $createCommand = "docker network create --driver={$driver} {$name}";
-            
+
             $command = $this->isLocalhost($server)
                 ? $createCommand
                 : $this->buildSSHCommand($server, $createCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
@@ -1147,11 +1149,11 @@ DOCKERFILE;
     {
         try {
             $deleteCommand = "docker network rm {$name}";
-            
+
             $command = $this->isLocalhost($server)
                 ? $deleteCommand
                 : $this->buildSSHCommand($server, $deleteCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
@@ -1172,11 +1174,11 @@ DOCKERFILE;
         try {
             $server = $project->server;
             $connectCommand = "docker network connect {$networkName} {$project->slug}";
-            
+
             $command = $this->isLocalhost($server)
                 ? $connectCommand
                 : $this->buildSSHCommand($server, $connectCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
@@ -1197,11 +1199,11 @@ DOCKERFILE;
         try {
             $server = $project->server;
             $disconnectCommand = "docker network disconnect {$networkName} {$project->slug}";
-            
+
             $command = $this->isLocalhost($server)
                 ? $disconnectCommand
                 : $this->buildSSHCommand($server, $disconnectCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
@@ -1225,19 +1227,19 @@ DOCKERFILE;
     {
         try {
             $imagesCommand = "docker images --format '{{json .}}'";
-            
+
             $command = $this->isLocalhost($server)
                 ? $imagesCommand
                 : $this->buildSSHCommand($server, $imagesCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
             if ($process->isSuccessful()) {
                 $output = $process->getOutput();
                 $lines = array_filter(explode("\n", $output));
-                $images = array_map(fn($line) => json_decode($line, true), $lines);
-                
+                $images = array_map(fn ($line) => json_decode($line, true), $lines);
+
                 return [
                     'success' => true,
                     'images' => $images,
@@ -1258,30 +1260,30 @@ DOCKERFILE;
         try {
             $server = $project->server;
             $imagesCommand = "docker images --format '{{json .}}'";
-            
+
             $command = $this->isLocalhost($server)
                 ? $imagesCommand
                 : $this->buildSSHCommand($server, $imagesCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
             if ($process->isSuccessful()) {
                 $output = $process->getOutput();
                 $lines = array_filter(explode("\n", $output));
-                $allImages = array_map(fn($line) => json_decode($line, true), $lines);
-                
+                $allImages = array_map(fn ($line) => json_decode($line, true), $lines);
+
                 // Filter images related to this project (by slug or tag)
-                $projectImages = array_filter($allImages, function($image) use ($project) {
+                $projectImages = array_filter($allImages, function ($image) use ($project) {
                     $repository = $image['Repository'] ?? '';
                     $tag = $image['Tag'] ?? '';
-                    
+
                     // Match images that contain the project slug in the repository name or tag
-                    return stripos($repository, $project->slug) !== false || 
+                    return stripos($repository, $project->slug) !== false ||
                            stripos($tag, $project->slug) !== false ||
                            $repository === $project->slug;
                 });
-                
+
                 return [
                     'success' => true,
                     'images' => array_values($projectImages), // Re-index array
@@ -1301,30 +1303,31 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            
+
             $statusCommand = sprintf(
                 "docker ps -a --filter name=%s --format '{{json .}}'",
                 $project->slug
             );
-            
+
             $command = $this->isLocalhost($server)
                 ? $statusCommand
                 : $this->buildSSHCommand($server, $statusCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
             if ($process->isSuccessful()) {
                 $output = trim($process->getOutput());
-                if (!empty($output)) {
+                if (! empty($output)) {
                     $container = json_decode($output, true);
+
                     return [
                         'success' => true,
                         'container' => $container,
                         'exists' => true,
                     ];
                 }
-                
+
                 return [
                     'success' => true,
                     'container' => null,
@@ -1345,11 +1348,11 @@ DOCKERFILE;
     {
         try {
             $deleteCommand = "docker rmi {$imageId}";
-            
+
             $command = $this->isLocalhost($server)
                 ? $deleteCommand
                 : $this->buildSSHCommand($server, $deleteCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
@@ -1368,15 +1371,15 @@ DOCKERFILE;
     public function pruneImages(Server $server, bool $all = false): array
     {
         try {
-            $pruneCommand = "docker image prune -f";
+            $pruneCommand = 'docker image prune -f';
             if ($all) {
-                $pruneCommand .= " -a";
+                $pruneCommand .= ' -a';
             }
-            
+
             $command = $this->isLocalhost($server)
                 ? $pruneCommand
                 : $this->buildSSHCommand($server, $pruneCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
@@ -1396,11 +1399,11 @@ DOCKERFILE;
     {
         try {
             $pullCommand = "docker pull {$imageName}";
-            
+
             $command = $this->isLocalhost($server)
                 ? $pullCommand
                 : $this->buildSSHCommand($server, $pullCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->setTimeout(600); // 10 minutes for large images
             $process->run();
@@ -1426,13 +1429,13 @@ DOCKERFILE;
         try {
             $server = $project->server;
             $projectPath = "/var/www/{$project->slug}";
-            
+
             $composeCommand = "cd {$projectPath} && docker-compose up -d --build";
-            
+
             $command = $this->isLocalhost($server)
                 ? $composeCommand
                 : $this->buildSSHCommand($server, $composeCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->setTimeout(1200); // 20 minutes
             $process->run();
@@ -1454,13 +1457,13 @@ DOCKERFILE;
         try {
             $server = $project->server;
             $projectPath = "/var/www/{$project->slug}";
-            
+
             $composeCommand = "cd {$projectPath} && docker-compose down";
-            
+
             $command = $this->isLocalhost($server)
                 ? $composeCommand
                 : $this->buildSSHCommand($server, $composeCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
@@ -1481,20 +1484,20 @@ DOCKERFILE;
         try {
             $server = $project->server;
             $projectPath = "/var/www/{$project->slug}";
-            
+
             $composeCommand = "cd {$projectPath} && docker-compose ps --format json";
-            
+
             $command = $this->isLocalhost($server)
                 ? $composeCommand
                 : $this->buildSSHCommand($server, $composeCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
             if ($process->isSuccessful()) {
                 $output = $process->getOutput();
                 $services = json_decode($output, true);
-                
+
                 return [
                     'success' => true,
                     'services' => $services ?? [],
@@ -1518,18 +1521,18 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            
+
             $execCommand = sprintf(
-                "docker exec %s %s %s",
+                'docker exec %s %s %s',
                 $interactive ? '-it' : '',
                 $project->slug,
                 $command
             );
-            
+
             $cmd = $this->isLocalhost($server)
                 ? $execCommand
                 : $this->buildSSHCommand($server, $execCommand);
-            
+
             $process = Process::fromShellCommandline($cmd);
             $process->setTimeout(300); // 5 minutes
             $process->run();
@@ -1551,13 +1554,13 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            
+
             $psCommand = "docker top {$project->slug}";
-            
+
             $command = $this->isLocalhost($server)
                 ? $psCommand
                 : $this->buildSSHCommand($server, $psCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
@@ -1577,18 +1580,18 @@ DOCKERFILE;
     /**
      * Export container as image (backup)
      */
-    public function exportContainer(Project $project, string $backupName = null): array
+    public function exportContainer(Project $project, ?string $backupName = null): array
     {
         try {
             $server = $project->server;
-            $backupName = $backupName ?? "{$project->slug}-backup-" . date('Y-m-d-H-i-s');
-            
+            $backupName = $backupName ?? "{$project->slug}-backup-".date('Y-m-d-H-i-s');
+
             $commitCommand = "docker commit {$project->slug} {$backupName}";
-            
+
             $command = $this->isLocalhost($server)
                 ? $commitCommand
                 : $this->buildSSHCommand($server, $commitCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
@@ -1613,11 +1616,11 @@ DOCKERFILE;
     {
         try {
             $saveCommand = "docker save -o {$filePath} {$imageName}";
-            
+
             $command = $this->isLocalhost($server)
                 ? $saveCommand
                 : $this->buildSSHCommand($server, $saveCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->setTimeout(600); // 10 minutes
             $process->run();
@@ -1638,11 +1641,11 @@ DOCKERFILE;
     {
         try {
             $loadCommand = "docker load -i {$filePath}";
-            
+
             $command = $this->isLocalhost($server)
                 ? $loadCommand
                 : $this->buildSSHCommand($server, $loadCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->setTimeout(600); // 10 minutes
             $process->run();
@@ -1672,11 +1675,11 @@ DOCKERFILE;
                 $registry,
                 $username
             );
-            
+
             $command = $this->isLocalhost($server)
                 ? $loginCommand
                 : $this->buildSSHCommand($server, $loginCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
@@ -1696,11 +1699,11 @@ DOCKERFILE;
     {
         try {
             $pushCommand = "docker push {$imageName}";
-            
+
             $command = $this->isLocalhost($server)
                 ? $pushCommand
                 : $this->buildSSHCommand($server, $pushCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->setTimeout(600); // 10 minutes
             $process->run();
@@ -1721,11 +1724,11 @@ DOCKERFILE;
     {
         try {
             $tagCommand = "docker tag {$sourceImage} {$targetImage}";
-            
+
             $command = $this->isLocalhost($server)
                 ? $tagCommand
                 : $this->buildSSHCommand($server, $tagCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
@@ -1749,16 +1752,17 @@ DOCKERFILE;
     {
         try {
             $infoCommand = "docker info --format '{{json .}}'";
-            
+
             $command = $this->isLocalhost($server)
                 ? $infoCommand
                 : $this->buildSSHCommand($server, $infoCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
             if ($process->isSuccessful()) {
                 $info = json_decode($process->getOutput(), true);
+
                 return [
                     'success' => true,
                     'info' => $info,
@@ -1777,15 +1781,15 @@ DOCKERFILE;
     public function systemPrune(Server $server, bool $volumes = false): array
     {
         try {
-            $pruneCommand = "docker system prune -f";
+            $pruneCommand = 'docker system prune -f';
             if ($volumes) {
-                $pruneCommand .= " --volumes";
+                $pruneCommand .= ' --volumes';
             }
-            
+
             $command = $this->isLocalhost($server)
                 ? $pruneCommand
                 : $this->buildSSHCommand($server, $pruneCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->setTimeout(300); // 5 minutes
             $process->run();
@@ -1806,19 +1810,19 @@ DOCKERFILE;
     {
         try {
             $dfCommand = "docker system df --format '{{json .}}'";
-            
+
             $command = $this->isLocalhost($server)
                 ? $dfCommand
                 : $this->buildSSHCommand($server, $dfCommand);
-            
+
             $process = Process::fromShellCommandline($command);
             $process->run();
 
             if ($process->isSuccessful()) {
                 $output = $process->getOutput();
                 $lines = array_filter(explode("\n", $output));
-                $usage = array_map(fn($line) => json_decode($line, true), $lines);
-                
+                $usage = array_map(fn ($line) => json_decode($line, true), $lines);
+
                 return [
                     'success' => true,
                     'usage' => $usage,
@@ -1831,4 +1835,3 @@ DOCKERFILE;
         }
     }
 }
-

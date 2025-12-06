@@ -29,8 +29,8 @@ class RenewSSL extends Command
         $renewAll = $this->option('all');
         $force = $this->option('force');
 
-        if ($domainName) {
-            return $this->renewSingleDomain($domainName, $force);
+        if ($domainName && is_string($domainName)) {
+            return $this->renewSingleDomain($domainName, is_bool($force) ? $force : false);
         }
 
         if ($renewAll) {
@@ -46,21 +46,23 @@ class RenewSSL extends Command
 
         $domain = Domain::where('domain', $domainName)->first();
 
-        if (!$domain) {
+        if (! $domain) {
             $this->error("Domain not found: {$domainName}");
+
             return self::FAILURE;
         }
 
-        if (!$domain->ssl_enabled && !$force) {
+        if (! $domain->ssl_enabled && ! $force) {
             $this->error("SSL is not enabled for domain: {$domainName}");
             $this->comment('Use --force to attempt renewal anyway');
+
             return self::FAILURE;
         }
 
         try {
             $this->info('Starting renewal...');
             $this->sslService->renewCertificate($domain);
-            $this->info("✓ Certificate renewed successfully!");
+            $this->info('✓ Certificate renewed successfully!');
 
             // Display new expiry date
             $domain->refresh();
@@ -94,14 +96,16 @@ class RenewSSL extends Command
 
         if ($domains->isEmpty()) {
             $this->info('No SSL certificates found to renew.');
+
             return self::SUCCESS;
         }
 
         $this->info("Found {$domains->count()} certificate(s) to renew.");
         $this->newLine();
 
-        if (!$this->confirm('Do you want to proceed?', true)) {
+        if (! $this->confirm('Do you want to proceed?', true)) {
             $this->warn('Renewal cancelled.');
+
             return self::SUCCESS;
         }
 
@@ -155,6 +159,7 @@ class RenewSSL extends Command
 
         if ($successCount === 0 && $failedCount === 0) {
             $this->info('No expiring certificates found to renew.');
+
             return self::SUCCESS;
         }
 

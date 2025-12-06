@@ -28,7 +28,7 @@ class GitService
         $sshOptions = [
             '-o StrictHostKeyChecking=no',
             '-o UserKnownHostsFile=/dev/null',
-            '-p ' . $server->port,
+            '-p '.$server->port,
         ];
 
         if ($server->ssh_key) {
@@ -36,7 +36,7 @@ class GitService
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
             file_put_contents($keyFile, $server->ssh_key);
             chmod($keyFile, 0600);
-            $sshOptions[] = '-i ' . $keyFile;
+            $sshOptions[] = '-i '.$keyFile;
         }
 
         // Escape the command for safe SSH execution
@@ -51,7 +51,7 @@ class GitService
             $escapedCommand
         );
     }
-    
+
     /**
      * Get the latest commits from a project repository
      */
@@ -61,9 +61,9 @@ class GitService
             $server = $project->server;
             $projectPath = "/var/www/{$project->slug}";
             $skip = max(0, ($page - 1) * $perPage);
-            
+
             // Check if repository exists
-            if (!$this->isRepositoryCloned($projectPath, $server)) {
+            if (! $this->isRepositoryCloned($projectPath, $server)) {
                 return [
                     'success' => true,
                     'commits' => [],
@@ -72,10 +72,10 @@ class GitService
                     'per_page' => $perPage,
                 ];
             }
-            
+
             // Configure safe directory first
             $safeConfigCommand = "git config --global --add safe.directory {$projectPath} 2>&1 || true";
-            $command = $this->isLocalhost($server) 
+            $command = $this->isLocalhost($server)
                 ? $safeConfigCommand
                 : $this->buildSSHCommand($server, $safeConfigCommand);
             Process::run($command);
@@ -89,8 +89,8 @@ class GitService
             $fetchResult = Process::timeout(35)->run($command);
 
             // Check if fetch failed
-            if (str_contains($fetchResult->output(), 'fetch-failed') || !$fetchResult->successful()) {
-                \Log::warning("Git fetch failed for {$project->slug}: " . $fetchResult->errorOutput());
+            if (str_contains($fetchResult->output(), 'fetch-failed') || ! $fetchResult->successful()) {
+                \Log::warning("Git fetch failed for {$project->slug}: ".$fetchResult->errorOutput());
             }
 
             // Determine total commits for pagination (falls back to local HEAD if remote not available)
@@ -99,14 +99,14 @@ class GitService
                 ? $countCommand
                 : $this->buildSSHCommand($server, $countCommand);
             $countResult = Process::timeout(15)->run($command);
-            if (!$countResult->successful()) {
+            if (! $countResult->successful()) {
                 $countCommand = "cd {$projectPath} && timeout 10 git rev-list --count HEAD 2>&1";
                 $command = $this->isLocalhost($server)
                     ? $countCommand
                     : $this->buildSSHCommand($server, $countCommand);
                 $countResult = Process::timeout(15)->run($command);
             }
-            $totalCommits = $countResult->successful() ? (int)trim($countResult->output()) : 0;
+            $totalCommits = $countResult->successful() ? (int) trim($countResult->output()) : 0;
 
             // Get commit history (even if fetch failed, show what we have)
             $logCommand = "cd {$projectPath} && timeout 15 git log origin/{$project->branch} --pretty=format:'%H|%an|%ae|%at|%s' --skip={$skip} -n {$perPage} 2>&1 || timeout 15 git log HEAD --pretty=format:'%H|%an|%ae|%at|%s' --skip={$skip} -n {$perPage}";
@@ -116,27 +116,29 @@ class GitService
 
             $logResult = Process::timeout(20)->run($command);
 
-            if (!$logResult->successful()) {
+            if (! $logResult->successful()) {
                 return [
                     'success' => false,
-                    'error' => 'Failed to get commit history: ' . $logResult->errorOutput(),
+                    'error' => 'Failed to get commit history: '.$logResult->errorOutput(),
                 ];
             }
 
             $commits = [];
             $lines = explode("\n", trim($logResult->output()));
-            
+
             foreach ($lines as $line) {
-                if (empty($line)) continue;
-                
+                if (empty($line)) {
+                    continue;
+                }
+
                 [$hash, $author, $email, $timestamp, $message] = explode('|', $line, 5);
-                
+
                 $commits[] = [
                     'hash' => $hash,
                     'short_hash' => substr($hash, 0, 7),
                     'author' => $author,
                     'email' => $email,
-                    'timestamp' => (int)$timestamp,
+                    'timestamp' => (int) $timestamp,
                     'date' => date('Y-m-d H:i:s', $timestamp),
                     'message' => $message,
                 ];
@@ -166,7 +168,7 @@ class GitService
             $server = $project->server;
             $projectPath = "/var/www/{$project->slug}";
 
-            if (!$this->isRepositoryCloned($projectPath, $server)) {
+            if (! $this->isRepositoryCloned($projectPath, $server)) {
                 return null;
             }
 
@@ -177,7 +179,7 @@ class GitService
 
             $result = Process::timeout(15)->run($command);
 
-            if (!$result->successful()) {
+            if (! $result->successful()) {
                 return null;
             }
 
@@ -187,7 +189,7 @@ class GitService
                 'hash' => $hash,
                 'short_hash' => substr($hash, 0, 7),
                 'author' => $author,
-                'timestamp' => (int)$timestamp,
+                'timestamp' => (int) $timestamp,
                 'date' => date('Y-m-d H:i:s', $timestamp),
                 'message' => $message,
             ];
@@ -204,9 +206,9 @@ class GitService
         try {
             $server = $project->server;
             $projectPath = "/var/www/{$project->slug}";
-            
+
             // Check if repository exists
-            if (!$this->isRepositoryCloned($projectPath, $server)) {
+            if (! $this->isRepositoryCloned($projectPath, $server)) {
                 return [
                     'success' => true,
                     'up_to_date' => true, // Assume up to date if not deployed (nothing to update)
@@ -217,10 +219,10 @@ class GitService
                     'remote_meta' => null,
                 ];
             }
-            
+
             // Configure safe directory first
             $safeConfigCommand = "git config --global --add safe.directory {$projectPath} 2>&1 || true";
-            $command = $this->isLocalhost($server) 
+            $command = $this->isLocalhost($server)
                 ? $safeConfigCommand
                 : $this->buildSSHCommand($server, $safeConfigCommand);
             Process::run($command);
@@ -234,8 +236,8 @@ class GitService
             $fetchResult = Process::timeout(35)->run($command);
 
             // Log if fetch failed but continue to show current status
-            if (str_contains($fetchResult->output(), 'fetch-failed') || !$fetchResult->successful()) {
-                \Log::warning("Git fetch failed for {$project->slug}: " . $fetchResult->errorOutput());
+            if (str_contains($fetchResult->output(), 'fetch-failed') || ! $fetchResult->successful()) {
+                \Log::warning("Git fetch failed for {$project->slug}: ".$fetchResult->errorOutput());
             }
 
             // Get current local commit
@@ -246,10 +248,10 @@ class GitService
 
             $localResult = Process::timeout(15)->run($command);
 
-            if (!$localResult->successful()) {
+            if (! $localResult->successful()) {
                 return [
                     'success' => false,
-                    'error' => 'Failed to get local commit: ' . $localResult->errorOutput(),
+                    'error' => 'Failed to get local commit: '.$localResult->errorOutput(),
                 ];
             }
 
@@ -263,10 +265,10 @@ class GitService
 
             $remoteResult = Process::timeout(15)->run($command);
 
-            if (!$remoteResult->successful()) {
+            if (! $remoteResult->successful()) {
                 return [
                     'success' => false,
-                    'error' => 'Failed to get remote commit: ' . $remoteResult->errorOutput(),
+                    'error' => 'Failed to get remote commit: '.$remoteResult->errorOutput(),
                 ];
             }
 
@@ -279,7 +281,7 @@ class GitService
                 : $this->buildSSHCommand($server, $behindGitCommand);
 
             $behindResult = Process::timeout(15)->run($command);
-            $commitsBehind = $behindResult->successful() ? (int)trim($behindResult->output()) : 0;
+            $commitsBehind = $behindResult->successful() ? (int) trim($behindResult->output()) : 0;
 
             // Gather additional metadata for richer UI
             $localMetaCommand = "cd {$projectPath} && timeout 10 git show -s --format='%H|%an|%at|%s' {$localCommit}";
@@ -301,8 +303,8 @@ class GitService
                     'hash' => $hash,
                     'short_hash' => substr($hash, 0, 7),
                     'author' => $author,
-                    'timestamp' => (int)$timestamp,
-                    'date' => date('Y-m-d H:i:s', (int)$timestamp),
+                    'timestamp' => (int) $timestamp,
+                    'date' => date('Y-m-d H:i:s', (int) $timestamp),
                     'message' => $message,
                 ];
             }
@@ -314,8 +316,8 @@ class GitService
                     'hash' => $hash,
                     'short_hash' => substr($hash, 0, 7),
                     'author' => $author,
-                    'timestamp' => (int)$timestamp,
-                    'date' => date('Y-m-d H:i:s', (int)$timestamp),
+                    'timestamp' => (int) $timestamp,
+                    'date' => date('Y-m-d H:i:s', (int) $timestamp),
                     'message' => $message,
                 ];
             }
@@ -345,8 +347,8 @@ class GitService
     public function updateProjectCommitInfo(Project $project): bool
     {
         $commitInfo = $this->getCurrentCommit($project);
-        
-        if (!$commitInfo) {
+
+        if (! $commitInfo) {
             return false;
         }
 
@@ -368,7 +370,7 @@ class GitService
             $server = $project->server;
             $projectPath = "/var/www/{$project->slug}";
 
-            if (!$this->isRepositoryCloned($projectPath, $server)) {
+            if (! $this->isRepositoryCloned($projectPath, $server)) {
                 return [
                     'success' => false,
                     'error' => 'Repository not cloned yet.',
@@ -382,10 +384,10 @@ class GitService
 
             $result = Process::timeout(15)->run($command);
 
-            if (!$result->successful()) {
+            if (! $result->successful()) {
                 return [
                     'success' => false,
-                    'error' => 'Failed to get commit diff: ' . $result->errorOutput(),
+                    'error' => 'Failed to get commit diff: '.$result->errorOutput(),
                 ];
             }
 
@@ -393,7 +395,9 @@ class GitService
             $lines = explode("\n", trim($result->output()));
 
             foreach ($lines as $line) {
-                if (empty($line)) continue;
+                if (empty($line)) {
+                    continue;
+                }
 
                 [$hash, $author, $timestamp, $message] = explode('|', $line, 4);
 
@@ -401,7 +405,7 @@ class GitService
                     'hash' => $hash,
                     'short_hash' => substr($hash, 0, 7),
                     'author' => $author,
-                    'timestamp' => (int)$timestamp,
+                    'timestamp' => (int) $timestamp,
                     'date' => date('Y-m-d H:i:s', $timestamp),
                     'message' => $message,
                 ];
@@ -423,23 +427,23 @@ class GitService
     /**
      * Check if repository is cloned at given path
      */
-    protected function isRepositoryCloned(string $projectPath, Server $server = null): bool
+    protected function isRepositoryCloned(string $projectPath, ?Server $server = null): bool
     {
-        if (!$server) {
+        if (! $server) {
             // Fallback to local check
             return is_dir("{$projectPath}/.git");
         }
-        
+
         // Check via SSH if remote
-        if (!$this->isLocalhost($server)) {
+        if (! $this->isLocalhost($server)) {
             $checkCommand = "test -d {$projectPath}/.git && echo 'exists' || echo 'not-exists'";
             $command = $this->buildSSHCommand($server, $checkCommand);
             $result = Process::run($command);
+
             return str_contains($result->output(), 'exists');
         }
-        
+
         // Local check
         return is_dir("{$projectPath}/.git");
     }
 }
-

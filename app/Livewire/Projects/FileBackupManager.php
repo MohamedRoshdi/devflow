@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Livewire\Projects;
 
-use App\Models\{Project, FileBackup};
+use App\Models\FileBackup;
+use App\Models\Project;
 use App\Services\FileBackupService;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
-use Livewire\Attributes\{On, Computed};
-use Illuminate\Support\Facades\{Storage, Log};
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FileBackupManager extends Component
@@ -16,21 +18,35 @@ class FileBackupManager extends Component
     public Project $project;
 
     public bool $showCreateModal = false;
+
     public bool $showRestoreModal = false;
+
     public bool $showManifestModal = false;
+
     public bool $showExcludePatternsModal = false;
 
     public string $backupType = 'full';
+
     public ?int $baseBackupId = null;
+
     public string $storageDisk = 'local';
+
     public ?int $selectedBackupId = null;
+
     public bool $overwriteOnRestore = false;
+
+    /** @var array<string, mixed> */
     public array $manifest = [];
+
+    /** @var array<int, string> */
     public array $excludePatterns = [];
+
     public string $newExcludePattern = '';
 
     public string $searchTerm = '';
+
     public string $filterType = 'all';
+
     public string $filterStatus = 'all';
 
     public function mount(Project $project): void
@@ -43,9 +59,9 @@ class FileBackupManager extends Component
     public function backups()
     {
         return FileBackup::forProject($this->project->id)
-            ->when($this->searchTerm, fn($q) => $q->where('filename', 'like', "%{$this->searchTerm}%"))
-            ->when($this->filterType !== 'all', fn($q) => $q->where('type', $this->filterType))
-            ->when($this->filterStatus !== 'all', fn($q) => $q->where('status', $this->filterStatus))
+            ->when($this->searchTerm, fn ($q) => $q->where('filename', 'like', "%{$this->searchTerm}%"))
+            ->when($this->filterType !== 'all', fn ($q) => $q->where('type', $this->filterType))
+            ->when($this->filterStatus !== 'all', fn ($q) => $q->where('status', $this->filterStatus))
             ->with(['parentBackup', 'childBackups'])
             ->latest()
             ->get()
@@ -60,9 +76,9 @@ class FileBackupManager extends Component
                     'size' => $backup->formatted_size,
                     'files_count' => number_format($backup->files_count),
                     'duration' => $backup->formatted_duration ?? '-',
-                    'checksum' => $backup->checksum ? substr($backup->checksum, 0, 8) . '...' : '-',
-                    'created_at' => $backup->created_at->format('Y-m-d H:i:s'),
-                    'created_at_human' => $backup->created_at->diffForHumans(),
+                    'checksum' => $backup->checksum ? substr($backup->checksum, 0, 8).'...' : '-',
+                    'created_at' => $backup->created_at?->format('Y-m-d H:i:s') ?? '-',
+                    'created_at_human' => $backup->created_at?->diffForHumans() ?? '-',
                     'parent_backup_id' => $backup->parent_backup_id,
                     'has_children' => $backup->childBackups->isNotEmpty(),
                     'incremental_depth' => $backup->getIncrementalDepth(),
@@ -80,9 +96,9 @@ class FileBackupManager extends Component
             ->completed()
             ->latest()
             ->get()
-            ->map(fn($backup) => [
+            ->map(fn ($backup) => [
                 'id' => $backup->id,
-                'label' => $backup->filename . ' (' . $backup->created_at->format('Y-m-d H:i') . ')',
+                'label' => $backup->filename.' ('.($backup->created_at?->format('Y-m-d H:i') ?? 'Unknown').')',
             ]);
     }
 
@@ -132,7 +148,7 @@ class FileBackupManager extends Component
             unset($this->backups);
 
         } catch (\Exception $e) {
-            $this->dispatch('notification', type: 'error', message: 'Failed to create backup: ' . $e->getMessage());
+            $this->dispatch('notification', type: 'error', message: 'Failed to create backup: '.$e->getMessage());
             Log::error('File backup creation failed', [
                 'project_id' => $this->project->id,
                 'error' => $e->getMessage(),
@@ -158,7 +174,7 @@ class FileBackupManager extends Component
             $this->dispatch('notification', type: 'success', message: 'Files restored successfully!');
 
         } catch (\Exception $e) {
-            $this->dispatch('notification', type: 'error', message: 'Failed to restore backup: ' . $e->getMessage());
+            $this->dispatch('notification', type: 'error', message: 'Failed to restore backup: '.$e->getMessage());
             Log::error('File backup restore failed', [
                 'backup_id' => $this->selectedBackupId,
                 'error' => $e->getMessage(),
@@ -171,8 +187,9 @@ class FileBackupManager extends Component
         try {
             $backup = FileBackup::findOrFail($backupId);
 
-            if (!$backup->isCompleted()) {
+            if (! $backup->isCompleted()) {
                 $this->dispatch('notification', type: 'error', message: 'Cannot download incomplete backup');
+
                 return response()->streamDownload(function () {}, '');
             }
 
@@ -182,7 +199,8 @@ class FileBackupManager extends Component
             );
 
         } catch (\Exception $e) {
-            $this->dispatch('notification', type: 'error', message: 'Failed to download backup: ' . $e->getMessage());
+            $this->dispatch('notification', type: 'error', message: 'Failed to download backup: '.$e->getMessage());
+
             return response()->streamDownload(function () {}, '');
         }
     }
@@ -202,7 +220,7 @@ class FileBackupManager extends Component
             if ($backup->childBackups->isNotEmpty()) {
                 $this->dispatch('notification',
                     type: 'warning',
-                    message: 'This backup has ' . $backup->childBackups->count() . ' incremental backup(s). They will also be deleted.'
+                    message: 'This backup has '.$backup->childBackups->count().' incremental backup(s). They will also be deleted.'
                 );
             }
 
@@ -212,7 +230,7 @@ class FileBackupManager extends Component
             unset($this->backups);
 
         } catch (\Exception $e) {
-            $this->dispatch('notification', type: 'error', message: 'Failed to delete backup: ' . $e->getMessage());
+            $this->dispatch('notification', type: 'error', message: 'Failed to delete backup: '.$e->getMessage());
         }
     }
 
@@ -228,7 +246,7 @@ class FileBackupManager extends Component
             return;
         }
 
-        if (!in_array($this->newExcludePattern, $this->excludePatterns)) {
+        if (! in_array($this->newExcludePattern, $this->excludePatterns)) {
             $this->excludePatterns[] = $this->newExcludePattern;
             $this->saveExcludePatterns();
         }

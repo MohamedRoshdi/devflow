@@ -10,10 +10,30 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int|null $user_id
+ * @property int|null $project_id
+ * @property string $type
+ * @property string $name
+ * @property array<string, mixed> $config
+ * @property bool $is_active
+ * @property string $provider
+ * @property string|null $webhook_url
+ * @property string|null $webhook_secret
+ * @property bool $enabled
+ * @property array<int, string> $events
+ * @property array<string, mixed> $metadata
+ * @property string $type_icon
+ * @property string $type_label
+ * @property string $config_summary
+ */
 class NotificationChannel extends Model
 {
+    /** @use HasFactory<\Database\Factories\NotificationChannelFactory> */
     use HasFactory;
 
+    /** @var array<int, string> */
     protected $fillable = [
         'user_id',
         'project_id',
@@ -29,6 +49,7 @@ class NotificationChannel extends Model
         'metadata',
     ];
 
+    /** @var array<string, string> */
     protected $casts = [
         'config' => 'array',
         'is_active' => 'boolean',
@@ -37,36 +58,55 @@ class NotificationChannel extends Model
         'metadata' => 'array',
     ];
 
+    /** @var array<int, string> */
     protected $hidden = [
         'webhook_secret',
     ];
 
-    public function setWebhookSecretAttribute($value)
+    /**
+     * @param  string|null  $value
+     */
+    public function setWebhookSecretAttribute($value): void
     {
         $this->attributes['webhook_secret'] = $value ? encrypt($value) : null;
     }
 
-    public function getWebhookSecretAttribute($value)
+    /**
+     * @param  string|null  $value
+     */
+    public function getWebhookSecretAttribute($value): ?string
     {
         return $value ? decrypt($value) : null;
     }
 
+    /**
+     * @return BelongsTo<User, NotificationChannel>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return BelongsTo<Project, NotificationChannel>
+     */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
+    /**
+     * @return BelongsToMany<HealthCheck, $this>
+     */
     public function healthChecks(): BelongsToMany
     {
         return $this->belongsToMany(HealthCheck::class, 'health_check_notifications')
             ->withPivot('notify_on_failure', 'notify_on_recovery');
     }
 
+    /**
+     * @return HasMany<NotificationLog, $this>
+     */
     public function logs(): HasMany
     {
         return $this->hasMany(NotificationLog::class);
@@ -100,10 +140,11 @@ class NotificationChannel extends Model
     public function getConfigSummaryAttribute(): string
     {
         $type = $this->type ?? $this->provider;
+
         return match ($type) {
             'email' => $this->config['email'] ?? 'No email set',
-            'slack' => 'Webhook: ' . substr($this->config['webhook_url'] ?? $this->webhook_url ?? '', 0, 30) . '...',
-            'discord' => 'Webhook: ' . substr($this->config['webhook_url'] ?? $this->webhook_url ?? '', 0, 30) . '...',
+            'slack' => 'Webhook: '.substr($this->config['webhook_url'] ?? $this->webhook_url ?? '', 0, 30).'...',
+            'discord' => 'Webhook: '.substr($this->config['webhook_url'] ?? $this->webhook_url ?? '', 0, 30).'...',
             default => 'No configuration',
         };
     }

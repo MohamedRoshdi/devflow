@@ -26,7 +26,7 @@ class HealthCheckFactory extends Factory
         return [
             'project_id' => Project::factory(),
             'server_id' => Server::factory(),
-            'name' => fake()->words(3, true) . ' Health Check',
+            'name' => fake()->words(3, true).' Health Check',
             'url' => fake()->url(),
             'method' => fake()->randomElement(['GET', 'POST', 'HEAD']),
             'expected_status_code' => 200,

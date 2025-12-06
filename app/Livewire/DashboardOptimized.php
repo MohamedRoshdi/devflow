@@ -2,19 +2,18 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-use App\Models\Server;
-use App\Models\Project;
 use App\Models\Deployment;
-use App\Models\SSLCertificate;
 use App\Models\HealthCheck;
+use App\Models\Project;
+use App\Models\Server;
 use App\Models\ServerMetric;
+use App\Models\SSLCertificate;
 use App\Models\UserSettings;
-use Livewire\Attributes\On;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\On;
+use Livewire\Component;
 
 /**
  * Optimized Dashboard Component with Cache Tags and Eager Loading
@@ -27,32 +26,61 @@ use Illuminate\Support\Facades\Cache;
  */
 class DashboardOptimized extends Component
 {
-    public $stats = [];
-    public $recentDeployments = [];
-    public $serverMetrics = [];
-    public $projects = [];
-    public $sslStats = [];
-    public $healthCheckStats = [];
-    public $recentActivity = [];
-    public $serverHealth = [];
-    public $deploymentsToday = 0;
+    /** @var array<string, mixed> */
+    public array $stats = [];
+
+    /** @var array<int, mixed> */
+    public array $recentDeployments = [];
+
+    /** @var array<int, mixed> */
+    public array $serverMetrics = [];
+
+    /** @var array<int, mixed> */
+    public array $projects = [];
+
+    /** @var array<string, mixed> */
+    public array $sslStats = [];
+
+    /** @var array<string, mixed> */
+    public array $healthCheckStats = [];
+
+    /** @var array<int, mixed> */
+    public array $recentActivity = [];
+
+    /** @var array<int, mixed> */
+    public array $serverHealth = [];
+
+    public int $deploymentsToday = 0;
 
     // New properties for enhanced dashboard
     public bool $showQuickActions = true;
+
     public bool $showActivityFeed = true;
+
     public bool $showServerHealth = true;
+
+    /** @var array<string, int> */
     public array $queueStats = [];
+
     public int $overallSecurityScore = 0;
+
+    /** @var array<int, string> */
     public array $collapsedSections = [];
+
     public int $activeDeployments = 0;
+
+    /** @var array<int, array<string, mixed>> */
     public array $deploymentTimeline = [];
 
     // Lazy loading properties for activity feed
     public int $activityPerPage = 5;
+
     public bool $loadingMoreActivity = false;
 
     // Widget order for drag-and-drop customization
+    /** @var array<int, string> */
     public array $widgetOrder = [];
+
     public bool $editMode = false;
 
     // Default widget order
@@ -63,7 +91,7 @@ class DashboardOptimized extends Component
         'deployment_timeline',
     ];
 
-    public function mount()
+    public function mount(): void
     {
         $this->loadUserPreferences();
         $this->loadStats();
@@ -81,7 +109,7 @@ class DashboardOptimized extends Component
     }
 
     #[On('refresh-dashboard')]
-    public function loadStats()
+    public function loadStats(): void
     {
         // Cache for 5 minutes (300 seconds) - works with all cache drivers
         $this->stats = Cache::remember('dashboard_stats_v2', 300, function () {
@@ -97,27 +125,29 @@ class DashboardOptimized extends Component
         });
     }
 
-    public function loadRecentDeployments()
+    public function loadRecentDeployments(): void
     {
         // Optimized with eager loading to prevent N+1 queries
         $this->recentDeployments = Deployment::with(['project:id,name,slug', 'server:id,name'])
             ->select(['id', 'project_id', 'server_id', 'status', 'branch', 'commit_message', 'created_at'])
             ->latest()
             ->take(10)
-            ->get();
+            ->get()
+            ->toArray();
     }
 
-    public function loadProjects()
+    public function loadProjects(): void
     {
         // Optimized with eager loading and select specific columns
         $this->projects = Project::with(['server:id,name', 'domains:id,project_id,domain'])
             ->select(['id', 'name', 'slug', 'status', 'server_id', 'framework', 'created_at'])
             ->latest()
             ->take(6)
-            ->get();
+            ->get()
+            ->toArray();
     }
 
-    public function loadSSLStats()
+    public function loadSSLStats(): void
     {
         // Cache for 5 minutes - works with all cache drivers
         $this->sslStats = Cache::remember('dashboard_ssl_stats_v2', 300, function () {
@@ -146,7 +176,7 @@ class DashboardOptimized extends Component
         });
     }
 
-    public function loadHealthCheckStats()
+    public function loadHealthCheckStats(): void
     {
         // Cache for 2 minutes - works with all cache drivers
         $this->healthCheckStats = Cache::remember('dashboard_health_stats_v2', 120, function () {
@@ -166,14 +196,14 @@ class DashboardOptimized extends Component
         });
     }
 
-    public function loadDeploymentsToday()
+    public function loadDeploymentsToday(): void
     {
         $today = now()->startOfDay();
         // Use index on created_at for faster query
         $this->deploymentsToday = Deployment::where('created_at', '>=', $today)->count();
     }
 
-    public function loadRecentActivity()
+    public function loadRecentActivity(): void
     {
         $deploymentsLimit = 4;
         $projectsLimit = 1;
@@ -185,10 +215,12 @@ class DashboardOptimized extends Component
             ->take($deploymentsLimit)
             ->get()
             ->map(function ($deployment) {
+                $projectName = $deployment->project?->name ?? 'Unknown';
+
                 return [
                     'type' => 'deployment',
                     'id' => $deployment->id,
-                    'title' => "Deployment: {$deployment->project->name}",
+                    'title' => "Deployment: {$projectName}",
                     'description' => "Deployment on branch {$deployment->branch} - {$deployment->status}",
                     'status' => $deployment->status,
                     'user' => $deployment->user?->name ?? 'System',
@@ -224,7 +256,7 @@ class DashboardOptimized extends Component
             ->all();
     }
 
-    public function loadServerHealth()
+    public function loadServerHealth(): void
     {
         // Cache for 2 minutes - works with all cache drivers
         // Note: We can't cache closures that reference $this, so we fetch directly
@@ -240,12 +272,12 @@ class DashboardOptimized extends Component
                     'memory_used_mb', 'memory_total_mb',
                     'disk_used_gb', 'disk_total_gb',
                     'load_average_1', 'load_average_5', 'load_average_15',
-                    'network_in_bytes', 'network_out_bytes', 'recorded_at'
+                    'network_in_bytes', 'network_out_bytes', 'recorded_at',
                 ])
                 ->orderBy('recorded_at', 'desc')
                 ->first();
 
-            if (!$latestMetric) {
+            if (! $latestMetric) {
                 return [
                     'server_id' => $server->id,
                     'server_name' => $server->name,
@@ -428,9 +460,10 @@ class DashboardOptimized extends Component
 
     private function loadUserPreferences(): void
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             $this->collapsedSections = [];
             $this->widgetOrder = self::DEFAULT_WIDGET_ORDER;
+
             return;
         }
 
@@ -440,7 +473,7 @@ class DashboardOptimized extends Component
             $this->widgetOrder = $userSettings->getAdditionalSetting('dashboard_widget_order', self::DEFAULT_WIDGET_ORDER);
 
             foreach (self::DEFAULT_WIDGET_ORDER as $widget) {
-                if (!in_array($widget, $this->widgetOrder)) {
+                if (! in_array($widget, $this->widgetOrder)) {
                     $this->widgetOrder[] = $widget;
                 }
             }
@@ -450,7 +483,7 @@ class DashboardOptimized extends Component
         }
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.dashboard');
     }

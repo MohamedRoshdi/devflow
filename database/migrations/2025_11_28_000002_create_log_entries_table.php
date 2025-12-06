@@ -35,7 +35,11 @@ return new class extends Migration
             $table->index(['server_id', 'logged_at']);
             $table->index(['project_id', 'logged_at']);
             $table->index(['source', 'level', 'logged_at']);
-            $table->fullText(['message']);
+
+            // Only create fulltext index on MySQL (not supported by SQLite)
+            if (config('database.default') === 'mysql') {
+                $table->fullText(['message']);
+            }
         });
     }
 

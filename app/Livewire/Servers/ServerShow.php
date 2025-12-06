@@ -2,23 +2,27 @@
 
 namespace App\Livewire\Servers;
 
-use Livewire\Component;
-use App\Models\Server;
-use App\Services\ServerConnectivityService;
-use App\Services\DockerService;
-use App\Services\DockerInstallationService;
 use App\Jobs\InstallDockerJob;
-use Illuminate\Support\Facades\Cache;
+use App\Models\Server;
+use App\Services\DockerService;
+use App\Services\ServerConnectivityService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\On;
+use Livewire\Component;
 
 class ServerShow extends Component
 {
     use AuthorizesRequests;
 
     public Server $server;
-    public $recentMetrics = [];
+
+    /** @var \Illuminate\Support\Collection<int, \App\Models\ServerMetric> */
+    public $recentMetrics;
+
     public bool $dockerInstalling = false;
+
+    /** @var array<string, mixed>|null */
     public ?array $dockerInstallStatus = null;
 
     public function mount(Server $server)
@@ -26,6 +30,7 @@ class ServerShow extends Component
         $this->authorize('view', $server);
 
         $this->server = $server;
+        $this->recentMetrics = collect();
         $this->loadMetrics();
         $this->checkDockerInstallProgress();
     }
@@ -45,7 +50,7 @@ class ServerShow extends Component
             // If completed or failed, show message and clear after viewing
             if ($status['status'] === 'completed') {
                 $this->server->refresh();
-                session()->flash('message', $status['message'] . (isset($status['version']) ? ' Version: ' . $status['version'] : ''));
+                session()->flash('message', $status['message'].(isset($status['version']) ? ' Version: '.$status['version'] : ''));
                 // Keep in cache briefly so user sees it
             } elseif ($status['status'] === 'failed') {
                 session()->flash('error', $status['message']);
@@ -89,7 +94,7 @@ class ServerShow extends Component
 
             // Try to update server info
             $serverInfo = $connectivityService->getServerInfo($this->server);
-            if (!empty($serverInfo)) {
+            if (! empty($serverInfo)) {
                 $this->server->update([
                     'os' => $serverInfo['os'] ?? $this->server->os,
                     'cpu_cores' => $serverInfo['cpu_cores'] ?? $this->server->cpu_cores,
@@ -101,14 +106,14 @@ class ServerShow extends Component
             // Check Docker status
             $this->checkDockerStatus();
 
-            session()->flash('message', 'Server is online! ' . $result['message']);
+            session()->flash('message', 'Server is online! '.$result['message']);
         } else {
             $this->server->update([
                 'last_ping_at' => now(),
                 'status' => 'offline',
             ]);
 
-            session()->flash('error', 'Server appears offline: ' . $result['message']);
+            session()->flash('error', 'Server appears offline: '.$result['message']);
         }
 
         // Refresh server data
@@ -126,7 +131,7 @@ class ServerShow extends Component
                     'docker_installed' => true,
                     'docker_version' => $dockerCheck['version'] ?? 'unknown',
                 ]);
-                session()->flash('message', 'Docker detected! Version: ' . ($dockerCheck['version'] ?? 'unknown'));
+                session()->flash('message', 'Docker detected! Version: '.($dockerCheck['version'] ?? 'unknown'));
             } else {
                 $this->server->update([
                     'docker_installed' => false,
@@ -137,7 +142,7 @@ class ServerShow extends Component
 
             $this->server->refresh();
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to check Docker: ' . $e->getMessage());
+            session()->flash('error', 'Failed to check Docker: '.$e->getMessage());
         }
     }
 
@@ -150,6 +155,7 @@ class ServerShow extends Component
 
             if ($existingStatus && $existingStatus['status'] === 'installing') {
                 session()->flash('info', 'Docker installation is already in progress...');
+
                 return;
             }
 
@@ -179,7 +185,7 @@ class ServerShow extends Component
         } catch (\Exception $e) {
             Cache::forget($cacheKey);
             $this->dockerInstalling = false;
-            session()->flash('error', 'Failed to start Docker installation: ' . $e->getMessage());
+            session()->flash('error', 'Failed to start Docker installation: '.$e->getMessage());
         }
     }
 
@@ -196,7 +202,7 @@ class ServerShow extends Component
                 session()->flash('error', $result['message']);
             }
         } catch (\Exception $e) {
-            session()->flash('error', 'Reboot failed: ' . $e->getMessage());
+            session()->flash('error', 'Reboot failed: '.$e->getMessage());
         }
     }
 
@@ -212,7 +218,7 @@ class ServerShow extends Component
                 session()->flash('error', $result['message']);
             }
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to restart service: ' . $e->getMessage());
+            session()->flash('error', 'Failed to restart service: '.$e->getMessage());
         }
     }
 
@@ -228,7 +234,7 @@ class ServerShow extends Component
                 session()->flash('error', $result['message']);
             }
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to clear cache: ' . $e->getMessage());
+            session()->flash('error', 'Failed to clear cache: '.$e->getMessage());
         }
     }
 
@@ -254,4 +260,3 @@ class ServerShow extends Component
         ]);
     }
 }
-

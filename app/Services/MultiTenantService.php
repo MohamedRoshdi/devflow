@@ -4,13 +4,15 @@ namespace App\Services;
 
 use App\Models\Project;
 use App\Models\Tenant;
-use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Process;
 
 class MultiTenantService
 {
     private DockerService $dockerService;
+
+    /** @var array<string, mixed> */
     private array $tenantCache = [];
 
     public function __construct(DockerService $dockerService)
@@ -35,7 +37,7 @@ class MultiTenantService
             'total' => count($tenants),
             'successful' => 0,
             'failed' => 0,
-            'deployments' => []
+            'deployments' => [],
         ];
 
         foreach ($tenants as $tenant) {
@@ -65,7 +67,7 @@ class MultiTenantService
                     'message' => $e->getMessage(),
                 ];
 
-                Log::error("Failed to deploy to tenant {$tenant['id']}: " . $e->getMessage());
+                Log::error("Failed to deploy to tenant {$tenant['id']}: ".$e->getMessage());
             }
         }
 
@@ -78,7 +80,7 @@ class MultiTenantService
     private function deployToSingleTenant(Project $project, array $tenant, array $options = []): array
     {
         $startTime = microtime(true);
-        $projectPath = config('devflow.projects_path') . '/' . $project->slug;
+        $projectPath = config('devflow.projects_path').'/'.$project->slug;
 
         try {
             // Step 1: Set tenant context
@@ -107,8 +109,8 @@ class MultiTenantService
             // Step 6: Run health check
             if ($options['health_check'] ?? true) {
                 $healthCheck = $this->checkTenantHealth($project, $tenant);
-                if (!$healthCheck['healthy']) {
-                    throw new \Exception("Health check failed: " . $healthCheck['error']);
+                if (! $healthCheck['healthy']) {
+                    throw new \Exception('Health check failed: '.$healthCheck['error']);
                 }
             }
 
@@ -134,14 +136,14 @@ class MultiTenantService
      */
     private function setTenantContext(Project $project, array $tenant): void
     {
-        $projectPath = config('devflow.projects_path') . '/' . $project->slug;
+        $projectPath = config('devflow.projects_path').'/'.$project->slug;
 
         // Set tenant environment variable
         $envCommand = "cd {$projectPath} && docker-compose exec -T app php artisan tenant:switch {$tenant['id']}";
         $result = Process::run($envCommand);
 
-        if (!$result->successful()) {
-            throw new \Exception("Failed to switch tenant context: " . $result->errorOutput());
+        if (! $result->successful()) {
+            throw new \Exception('Failed to switch tenant context: '.$result->errorOutput());
         }
     }
 
@@ -150,14 +152,14 @@ class MultiTenantService
      */
     private function runTenantMigrations(Project $project, array $tenant): void
     {
-        $projectPath = config('devflow.projects_path') . '/' . $project->slug;
+        $projectPath = config('devflow.projects_path').'/'.$project->slug;
 
         // Run tenant-specific migrations
         $migrationCommand = "cd {$projectPath} && docker-compose exec -T app php artisan migrate --force --database=tenant_{$tenant['id']}";
         $result = Process::timeout(120)->run($migrationCommand);
 
-        if (!$result->successful()) {
-            throw new \Exception("Migration failed for tenant {$tenant['id']}: " . $result->errorOutput());
+        if (! $result->successful()) {
+            throw new \Exception("Migration failed for tenant {$tenant['id']}: ".$result->errorOutput());
         }
     }
 
@@ -166,7 +168,7 @@ class MultiTenantService
      */
     private function clearTenantCache(Project $project, array $tenant): void
     {
-        $projectPath = config('devflow.projects_path') . '/' . $project->slug;
+        $projectPath = config('devflow.projects_path').'/'.$project->slug;
 
         $commands = [
             "cd {$projectPath} && docker-compose exec -T app php artisan cache:clear --tenant={$tenant['id']}",
@@ -207,7 +209,7 @@ class MultiTenantService
      */
     private function restartTenantServices(Project $project, array $tenant): void
     {
-        $projectPath = config('devflow.projects_path') . '/' . $project->slug;
+        $projectPath = config('devflow.projects_path').'/'.$project->slug;
 
         // If tenant has dedicated queue workers
         if ($tenant['has_dedicated_queue'] ?? false) {
@@ -232,7 +234,7 @@ class MultiTenantService
         try {
             // Check database connection
             $dbCheck = $this->checkTenantDatabase($project, $tenant);
-            if (!$dbCheck['success']) {
+            if (! $dbCheck['success']) {
                 return ['healthy' => false, 'error' => 'Database connection failed'];
             }
 
@@ -242,7 +244,7 @@ class MultiTenantService
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_TIMEOUT, 10);
                 curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                    'X-Tenant-Id: ' . $tenant['id'],
+                    'X-Tenant-Id: '.$tenant['id'],
                 ]);
 
                 $response = curl_exec($ch);
@@ -267,7 +269,7 @@ class MultiTenantService
     private function checkTenantDatabase(Project $project, array $tenant): array
     {
         try {
-            $projectPath = config('devflow.projects_path') . '/' . $project->slug;
+            $projectPath = config('devflow.projects_path').'/'.$project->slug;
             $command = "cd {$projectPath} && docker-compose exec -T app php artisan tenant:db:check {$tenant['id']}";
             $result = Process::timeout(10)->run($command);
 
@@ -288,13 +290,14 @@ class MultiTenantService
             return $this->tenantCache[$cacheKey];
         }
 
-        $projectPath = config('devflow.projects_path') . '/' . $project->slug;
+        $projectPath = config('devflow.projects_path').'/'.$project->slug;
         $command = "cd {$projectPath} && docker-compose exec -T app php artisan tenant:list --json";
         $result = Process::run($command);
 
         if ($result->successful()) {
             $tenants = json_decode($result->output(), true) ?? [];
             $this->tenantCache[$cacheKey] = $tenants;
+
             return $tenants;
         }
 
@@ -352,7 +355,7 @@ class MultiTenantService
     public function createTenant(Project $project, array $tenantData): array
     {
         try {
-            $projectPath = config('devflow.projects_path') . '/' . $project->slug;
+            $projectPath = config('devflow.projects_path').'/'.$project->slug;
 
             // Create tenant via artisan command
             $createCommand = sprintf(
@@ -365,16 +368,16 @@ class MultiTenantService
 
             $result = Process::timeout(60)->run($createCommand);
 
-            if (!$result->successful()) {
-                throw new \Exception("Failed to create tenant: " . $result->errorOutput());
+            if (! $result->successful()) {
+                throw new \Exception('Failed to create tenant: '.$result->errorOutput());
             }
 
             // Parse the tenant ID from output
             preg_match('/Tenant created with ID: (\d+)/', $result->output(), $matches);
             $tenantId = $matches[1] ?? null;
 
-            if (!$tenantId) {
-                throw new \Exception("Failed to retrieve tenant ID");
+            if (! $tenantId) {
+                throw new \Exception('Failed to retrieve tenant ID');
             }
 
             // Run initial setup for the tenant
@@ -383,7 +386,7 @@ class MultiTenantService
             return [
                 'success' => true,
                 'tenant_id' => $tenantId,
-                'message' => "Tenant created successfully",
+                'message' => 'Tenant created successfully',
             ];
 
         } catch (\Exception $e) {
@@ -399,7 +402,7 @@ class MultiTenantService
      */
     private function initializeTenant(Project $project, string $tenantId, array $tenantData): void
     {
-        $projectPath = config('devflow.projects_path') . '/' . $project->slug;
+        $projectPath = config('devflow.projects_path').'/'.$project->slug;
 
         // Run tenant migrations
         Process::run("cd {$projectPath} && docker-compose exec -T app php artisan tenant:migrate {$tenantId}");
@@ -421,7 +424,7 @@ class MultiTenantService
     public function updateTenantStatus(Project $project, string $tenantId, string $status): array
     {
         try {
-            $projectPath = config('devflow.projects_path') . '/' . $project->slug;
+            $projectPath = config('devflow.projects_path').'/'.$project->slug;
             $command = "cd {$projectPath} && docker-compose exec -T app php artisan tenant:status {$tenantId} {$status}";
 
             $result = Process::run($command);

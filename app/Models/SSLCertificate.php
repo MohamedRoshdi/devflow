@@ -4,10 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
 class SSLCertificate extends Model
 {
+    /** @use HasFactory<\Database\Factories\SSLCertificateFactory> */
     use HasFactory;
 
     protected $table = 'ssl_certificates';
@@ -52,7 +52,7 @@ class SSLCertificate extends Model
     // Helper Methods
     public function isExpired(): bool
     {
-        if (!$this->expires_at) {
+        if (! $this->expires_at) {
             return false;
         }
 
@@ -61,7 +61,7 @@ class SSLCertificate extends Model
 
     public function isExpiringSoon(int $days = 7): bool
     {
-        if (!$this->expires_at) {
+        if (! $this->expires_at) {
             return false;
         }
 
@@ -74,7 +74,7 @@ class SSLCertificate extends Model
 
     public function needsRenewal(int $days = 30): bool
     {
-        if (!$this->auto_renew) {
+        if (! $this->auto_renew) {
             return false;
         }
 
@@ -87,7 +87,7 @@ class SSLCertificate extends Model
 
     public function daysUntilExpiry(): ?int
     {
-        if (!$this->expires_at) {
+        if (! $this->expires_at) {
             return null;
         }
 
@@ -108,7 +108,7 @@ class SSLCertificate extends Model
             return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
         }
 
-        return match($this->status) {
+        return match ($this->status) {
             'issued' => 'bg-green-500/20 text-green-400 border-green-500/30',
             'pending' => 'bg-blue-500/20 text-blue-400 border-blue-500/30',
             'failed' => 'bg-red-500/20 text-red-400 border-red-500/30',
@@ -125,10 +125,11 @@ class SSLCertificate extends Model
 
         if ($this->isExpiringSoon(30)) {
             $days = $this->daysUntilExpiry();
+
             return "Expiring ({$days}d)";
         }
 
-        return match($this->status) {
+        return match ($this->status) {
             'issued' => 'Active',
             'pending' => 'Pending',
             'failed' => 'Failed',

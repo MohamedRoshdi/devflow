@@ -21,7 +21,7 @@ class ProjectFactory extends Factory
      */
     public function definition(): array
     {
-        $name = fake()->words(2, true) . ' Project';
+        $name = fake()->words(2, true).' Project';
 
         return [
             'user_id' => User::factory(),
@@ -30,10 +30,10 @@ class ProjectFactory extends Factory
             'template_id' => null,
             'name' => $name,
             'slug' => str($name)->slug()->toString(),
-            'repository_url' => 'https://github.com/' . fake()->userName() . '/' . fake()->slug(2) . '.git',
+            'repository_url' => 'https://github.com/'.fake()->userName().'/'.fake()->slug(2).'.git',
             'branch' => 'main',
             'framework' => fake()->randomElement(['laravel', 'symfony', 'wordpress', 'shopware', 'custom']),
-            'project_type' => fake()->randomElement(['web', 'api', 'static', 'docker']),
+            'project_type' => fake()->randomElement(['single_tenant', 'multi_tenant', 'saas', 'microservice']),
             'environment' => fake()->randomElement(['development', 'staging', 'production']),
             'php_version' => fake()->randomElement(['8.1', '8.2', '8.3', '8.4']),
             'node_version' => fake()->optional()->randomElement(['18', '20', '22']),
@@ -45,10 +45,11 @@ class ProjectFactory extends Factory
             'build_commands' => json_encode(['npm run build']),
             'post_deploy_commands' => json_encode(['php artisan migrate --force']),
             'env_variables' => json_encode([
+                'APP_NAME' => $name,
                 'APP_ENV' => 'production',
                 'APP_DEBUG' => 'false',
             ]),
-            'status' => fake()->randomElement(['running', 'stopped', 'pending', 'failed']),
+            'status' => fake()->randomElement(['running', 'stopped', 'building', 'error', 'deploying']),
             'setup_status' => 'completed',
             'setup_config' => null,
             'setup_completed_at' => now(),
@@ -64,10 +65,6 @@ class ProjectFactory extends Factory
             'current_commit_hash' => fake()->sha1(),
             'current_commit_message' => fake()->sentence(),
             'last_commit_at' => fake()->optional()->dateTimeBetween('-7 days', 'now'),
-            'environment_variables' => json_encode([
-                'APP_NAME' => $name,
-                'APP_ENV' => 'production',
-            ]),
         ];
     }
 

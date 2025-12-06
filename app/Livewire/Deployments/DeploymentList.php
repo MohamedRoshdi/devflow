@@ -2,12 +2,12 @@
 
 namespace App\Livewire\Deployments;
 
-use Livewire\Component;
-use Livewire\Attributes\Url;
 use App\Models\Deployment;
 use App\Models\Project;
-use Livewire\WithPagination;
 use Illuminate\Support\Facades\Cache;
+use Livewire\Attributes\Url;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class DeploymentList extends Component
 {
@@ -25,7 +25,7 @@ class DeploymentList extends Component
     #[Url(except: 15)]
     public int $perPage = 15;
 
-    protected $paginationTheme = 'tailwind';
+    protected string $paginationTheme = 'tailwind';
 
     public function updatedStatusFilter(): void
     {
@@ -42,7 +42,7 @@ class DeploymentList extends Component
         $this->resetPage();
     }
 
-    public function updatedPerPage($value): void
+    public function updatedPerPage(mixed $value): void
     {
         $value = (int) $value;
 
@@ -69,22 +69,22 @@ class DeploymentList extends Component
 
         // Optimized: Eager load with specific columns
         $deployments = Deployment::with([
-                'project:id,name,slug',
-                'server:id,name',
-                'user:id,name'
-            ])
+            'project:id,name,slug',
+            'server:id,name',
+            'user:id,name',
+        ])
             ->select([
                 'id', 'project_id', 'server_id', 'user_id', 'status', 'branch',
                 'commit_message', 'commit_hash', 'started_at', 'completed_at',
-                'triggered_by', 'created_at', 'updated_at'
+                'triggered_by', 'created_at', 'updated_at',
             ])
             ->when($this->statusFilter, fn ($query) => $query->where('status', $this->statusFilter))
             ->when($this->projectFilter, fn ($query) => $query->where('project_id', $this->projectFilter))
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
-                    $q->where('commit_message', 'like', '%' . $this->search . '%')
-                      ->orWhere('branch', 'like', '%' . $this->search . '%')
-                      ->orWhereHas('project', fn ($project) => $project->where('name', 'like', '%' . $this->search . '%'));
+                    $q->where('commit_message', 'like', '%'.$this->search.'%')
+                        ->orWhere('branch', 'like', '%'.$this->search.'%')
+                        ->orWhereHas('project', fn ($project) => $project->where('name', 'like', '%'.$this->search.'%'));
                 });
             })
             ->latest()
@@ -102,4 +102,3 @@ class DeploymentList extends Component
         ]);
     }
 }
-

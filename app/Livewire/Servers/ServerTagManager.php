@@ -1,20 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Servers;
 
-use Livewire\Component;
 use App\Models\ServerTag;
+use Illuminate\Contracts\View\View;
 use Livewire\Attributes\On;
+use Livewire\Component;
 
 class ServerTagManager extends Component
 {
-    public $tags = [];
-    public $newTagName = '';
-    public $newTagColor = '#6366f1';
-    public $editingTag = null;
-    public $editTagName = '';
-    public $editTagColor = '';
-    public $showEditModal = false;
+    /**
+     * @var array<int, array<string, mixed>>
+     */
+    public array $tags = [];
+
+    public string $newTagName = '';
+
+    public string $newTagColor = '#6366f1';
+
+    public ?int $editingTag = null;
+
+    public string $editTagName = '';
+
+    public string $editTagColor = '';
+
+    public bool $showEditModal = false;
 
     public function mount(): void
     {
@@ -58,7 +70,7 @@ class ServerTagManager extends Component
     {
         $tag = ServerTag::find($tagId);
 
-        if (!$tag) {
+        if (! $tag) {
             return;
         }
 
@@ -70,12 +82,12 @@ class ServerTagManager extends Component
 
     public function updateTag(): void
     {
-        if (!$this->editingTag) {
+        if (! $this->editingTag) {
             return;
         }
 
         $this->validate([
-            'editTagName' => 'required|string|max:50|unique:server_tags,name,' . $this->editingTag,
+            'editTagName' => 'required|string|max:50|unique:server_tags,name,'.$this->editingTag,
             'editTagColor' => 'required|string|regex:/^#[a-fA-F0-9]{6}$/',
         ], [
             'editTagName.required' => 'Tag name is required',
@@ -122,7 +134,7 @@ class ServerTagManager extends Component
         $this->loadTags();
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.servers.server-tag-manager');
     }

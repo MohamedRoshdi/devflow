@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Http;
 
 class GPSService
 {
-    protected $apiKey;
+    protected ?string $apiKey;
 
     public function __construct()
     {
@@ -16,7 +16,7 @@ class GPSService
     public function discoverProjects(float $latitude, float $longitude, float $radiusKm = 10): array
     {
         // Search for projects within radius
-        $projects = \App\Models\Project::selectRaw("
+        $projects = \App\Models\Project::selectRaw('
                 *,
                 (6371 * acos(
                     cos(radians(?)) *
@@ -25,14 +25,14 @@ class GPSService
                     sin(radians(?)) *
                     sin(radians(latitude))
                 )) AS distance
-            ", [$latitude, $longitude, $latitude])
+            ', [$latitude, $longitude, $latitude])
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
             ->having('distance', '<=', $radiusKm)
             ->orderBy('distance')
             ->get();
 
-        return $projects->map(function($project) {
+        return $projects->map(function ($project) {
             return [
                 'id' => $project->id,
                 'name' => $project->name,
@@ -47,7 +47,7 @@ class GPSService
     public function discoverServers(float $latitude, float $longitude, float $radiusKm = 10): array
     {
         // Search for servers within radius
-        $servers = \App\Models\Server::selectRaw("
+        $servers = \App\Models\Server::selectRaw('
                 *,
                 (6371 * acos(
                     cos(radians(?)) *
@@ -56,14 +56,14 @@ class GPSService
                     sin(radians(?)) *
                     sin(radians(latitude))
                 )) AS distance
-            ", [$latitude, $longitude, $latitude])
+            ', [$latitude, $longitude, $latitude])
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
             ->having('distance', '<=', $radiusKm)
             ->orderBy('distance')
             ->get();
 
-        return $servers->map(function($server) {
+        return $servers->map(function ($server) {
             return [
                 'id' => $server->id,
                 'name' => $server->name,
@@ -77,7 +77,7 @@ class GPSService
 
     public function getLocationName(float $latitude, float $longitude): ?string
     {
-        if (!$this->apiKey) {
+        if (! $this->apiKey) {
             return null;
         }
 
@@ -92,12 +92,18 @@ class GPSService
             if ($response->successful()) {
                 $data = $response->json();
                 $address = $data['address'] ?? [];
-                
+
                 $parts = [];
-                if (isset($address['city'])) $parts[] = $address['city'];
-                if (isset($address['state'])) $parts[] = $address['state'];
-                if (isset($address['country'])) $parts[] = $address['country'];
-                
+                if (isset($address['city'])) {
+                    $parts[] = $address['city'];
+                }
+                if (isset($address['state'])) {
+                    $parts[] = $address['state'];
+                }
+                if (isset($address['country'])) {
+                    $parts[] = $address['country'];
+                }
+
                 return implode(', ', $parts);
             }
         } catch (\Exception $e) {
@@ -108,9 +114,9 @@ class GPSService
     }
 
     public function calculateDistance(
-        float $lat1, 
-        float $lon1, 
-        float $lat2, 
+        float $lat1,
+        float $lon1,
+        float $lat2,
         float $lon2
     ): float {
         // Haversine formula
@@ -119,14 +125,13 @@ class GPSService
         $dLat = deg2rad($lat2 - $lat1);
         $dLon = deg2rad($lon2 - $lon1);
 
-        $a = sin($dLat/2) * sin($dLat/2) +
+        $a = sin($dLat / 2) * sin($dLat / 2) +
              cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
-             sin($dLon/2) * sin($dLon/2);
+             sin($dLon / 2) * sin($dLon / 2);
 
-        $c = 2 * atan2(sqrt($a), sqrt(1-$a));
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
         $distance = $earthRadius * $c;
 
         return round($distance, 2);
     }
 }
-

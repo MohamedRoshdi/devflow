@@ -3,8 +3,8 @@
 namespace App\Livewire\Home;
 
 use App\Models\Project;
-use Livewire\Component;
 use Livewire\Attributes\Url;
+use Livewire\Component;
 
 class HomePublic extends Component
 {
@@ -27,16 +27,16 @@ class HomePublic extends Component
             ->where('status', 'running')
             ->whereHas('domains', function ($query) {
                 $query->where('is_primary', true)
-                      ->whereNotNull('domain')
-                      ->where('domain', '!=', '');
+                    ->whereNotNull('domain')
+                    ->where('domain', '!=', '');
             })
             ->with(['domains' => function ($query) {
                 $query->where('is_primary', true);
             }])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
-                    $q->where('name', 'like', '%' . $this->search . '%')
-                      ->orWhere('framework', 'like', '%' . $this->search . '%');
+                    $q->where('name', 'like', '%'.$this->search.'%')
+                        ->orWhere('framework', 'like', '%'.$this->search.'%');
                 });
             })
             ->when($this->framework, function ($query) {
@@ -53,8 +53,8 @@ class HomePublic extends Component
             ->where('status', 'running')
             ->whereHas('domains', function ($query) {
                 $query->where('is_primary', true)
-                      ->whereNotNull('domain')
-                      ->where('domain', '!=', '');
+                    ->whereNotNull('domain')
+                    ->where('domain', '!=', '');
             })
             ->distinct()
             ->pluck('framework')

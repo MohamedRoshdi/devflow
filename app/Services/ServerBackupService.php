@@ -4,9 +4,9 @@ namespace App\Services;
 
 use App\Models\Server;
 use App\Models\ServerBackup;
-use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Process\Process;
 
 class ServerBackupService
 {
@@ -29,7 +29,7 @@ class ServerBackupService
 
         try {
             $backupDir = storage_path('backups/servers');
-            if (!is_dir($backupDir)) {
+            if (! is_dir($backupDir)) {
                 mkdir($backupDir, 0755, true);
             }
 
@@ -54,8 +54,8 @@ class ServerBackupService
             $process->setTimeout(3600); // 1 hour timeout
             $process->run();
 
-            if (!$process->isSuccessful()) {
-                throw new \RuntimeException("Backup failed: " . $process->getErrorOutput());
+            if (! $process->isSuccessful()) {
+                throw new \RuntimeException('Backup failed: '.$process->getErrorOutput());
             }
 
             // Download backup file from remote server
@@ -101,7 +101,12 @@ class ServerBackupService
             throw $e;
         }
 
-        return $backup->fresh();
+        $freshBackup = $backup->fresh();
+        if ($freshBackup === null) {
+            throw new \RuntimeException('Failed to refresh backup');
+        }
+
+return $freshBackup;
     }
 
     /**
@@ -119,7 +124,7 @@ class ServerBackupService
 
         try {
             $backupDir = storage_path("backups/servers/incremental/{$server->id}");
-            if (!is_dir($backupDir)) {
+            if (! is_dir($backupDir)) {
                 mkdir($backupDir, 0755, true);
             }
 
@@ -136,8 +141,8 @@ class ServerBackupService
             $process->setTimeout(3600);
             $process->run();
 
-            if (!$process->isSuccessful()) {
-                throw new \RuntimeException("Incremental backup failed: " . $process->getErrorOutput());
+            if (! $process->isSuccessful()) {
+                throw new \RuntimeException('Incremental backup failed: '.$process->getErrorOutput());
             }
 
             // Calculate backup size
@@ -174,7 +179,12 @@ class ServerBackupService
             throw $e;
         }
 
-        return $backup->fresh();
+        $freshBackup = $backup->fresh();
+        if ($freshBackup === null) {
+            throw new \RuntimeException('Failed to refresh backup');
+        }
+
+return $freshBackup;
     }
 
     /**
@@ -195,7 +205,7 @@ class ServerBackupService
             $lvmCheck = $this->executeRemoteCommand($server, 'which lvcreate');
 
             if (empty($lvmCheck)) {
-                throw new \RuntimeException("LVM not available on this server. Snapshot backups require LVM or cloud provider support.");
+                throw new \RuntimeException('LVM not available on this server. Snapshot backups require LVM or cloud provider support.');
             }
 
             // Create LVM snapshot
@@ -206,7 +216,7 @@ class ServerBackupService
             $volumeInfo = $this->executeRemoteCommand($server, 'lvdisplay | grep "LV Path" | head -1');
 
             if (empty($volumeInfo)) {
-                throw new \RuntimeException("Could not find LVM volume");
+                throw new \RuntimeException('Could not find LVM volume');
             }
 
             // Create snapshot (allocate 10% of volume size)
@@ -243,7 +253,12 @@ class ServerBackupService
             throw $e;
         }
 
-        return $backup->fresh();
+        $freshBackup = $backup->fresh();
+        if ($freshBackup === null) {
+            throw new \RuntimeException('Failed to refresh backup');
+        }
+
+return $freshBackup;
     }
 
     /**
@@ -251,8 +266,8 @@ class ServerBackupService
      */
     public function restoreBackup(ServerBackup $backup): bool
     {
-        if (!$backup->isCompleted()) {
-            throw new \RuntimeException("Cannot restore incomplete backup");
+        if (! $backup->isCompleted()) {
+            throw new \RuntimeException('Cannot restore incomplete backup');
         }
 
         try {
@@ -266,8 +281,7 @@ class ServerBackupService
                 return $this->restoreSnapshot($backup, $server);
             }
 
-            throw new \RuntimeException("Unknown backup type");
-
+            throw new \RuntimeException('Unknown backup type');
         } catch (\Exception $e) {
             Log::error('Backup restoration failed', [
                 'backup_id' => $backup->id,
@@ -322,17 +336,17 @@ class ServerBackupService
     public function uploadToS3(ServerBackup $backup): bool
     {
         if ($backup->storage_driver !== 'local') {
-            throw new \RuntimeException("Backup is not stored locally");
+            throw new \RuntimeException('Backup is not stored locally');
         }
 
         try {
             $localPath = storage_path($backup->storage_path);
 
-            if (!file_exists($localPath)) {
-                throw new \RuntimeException("Backup file not found");
+            if (! file_exists($localPath)) {
+                throw new \RuntimeException('Backup file not found');
             }
 
-            $s3Path = "server-backups/{$backup->server_id}/" . basename($backup->storage_path);
+            $s3Path = "server-backups/{$backup->server_id}/".basename($backup->storage_path);
 
             Storage::disk('s3')->put($s3Path, file_get_contents($localPath));
 
@@ -376,7 +390,7 @@ class ServerBackupService
 
             foreach ($directories as $key => $dir) {
                 $output = $this->executeRemoteCommand($server, "sudo du -sb {$dir} 2>/dev/null | cut -f1", true);
-                $sizes[$key] = $output ? (int)trim($output) : 0;
+                $sizes[$key] = $output ? (int) trim($output) : 0;
             }
 
             $sizes['total'] = array_sum($sizes);
@@ -413,11 +427,12 @@ BASH;
             '-o UserKnownHostsFile=/dev/null',
             '-o ConnectTimeout=10',
             '-o LogLevel=ERROR',
-            '-p ' . $server->port,
+            '-p '.$server->port,
         ];
 
         if ($server->ssh_password) {
             $escapedPassword = escapeshellarg($server->ssh_password);
+
             return sprintf(
                 'sshpass -p %s ssh %s %s@%s "%s"',
                 $escapedPassword,
@@ -434,7 +449,7 @@ BASH;
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
             file_put_contents($keyFile, $server->ssh_key);
             chmod($keyFile, 0600);
-            $sshOptions[] = '-i ' . $keyFile;
+            $sshOptions[] = '-i '.$keyFile;
         }
 
         return sprintf(
@@ -451,7 +466,7 @@ BASH;
         $sshCommand = "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p {$server->port}";
 
         if ($server->ssh_password) {
-            $sshCommand = "sshpass -p " . escapeshellarg($server->ssh_password) . " " . $sshCommand;
+            $sshCommand = 'sshpass -p '.escapeshellarg($server->ssh_password).' '.$sshCommand;
         } elseif ($server->ssh_key) {
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
             file_put_contents($keyFile, $server->ssh_key);
@@ -481,15 +496,15 @@ BASH;
         );
 
         if ($server->ssh_password) {
-            $scpCommand = "sshpass -p " . escapeshellarg($server->ssh_password) . " " . $scpCommand;
+            $scpCommand = 'sshpass -p '.escapeshellarg($server->ssh_password).' '.$scpCommand;
         }
 
         $process = Process::fromShellCommandline($scpCommand);
         $process->setTimeout(3600);
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            throw new \RuntimeException("Failed to download backup file: " . $process->getErrorOutput());
+        if (! $process->isSuccessful()) {
+            throw new \RuntimeException('Failed to download backup file: '.$process->getErrorOutput());
         }
     }
 
@@ -519,26 +534,26 @@ BASH;
 
     private function getDirectorySize(string $path): int
     {
-        if (!is_dir($path)) {
+        if (! is_dir($path)) {
             return 0;
         }
 
-        $process = Process::fromShellCommandline("du -sb " . escapeshellarg($path) . " | cut -f1");
+        $process = Process::fromShellCommandline('du -sb '.escapeshellarg($path).' | cut -f1');
         $process->run();
 
-        return (int)trim($process->getOutput());
+        return (int) trim($process->getOutput());
     }
 
     private function deleteDirectory(string $path): void
     {
-        if (!is_dir($path)) {
+        if (! is_dir($path)) {
             return;
         }
 
         $files = array_diff(scandir($path), ['.', '..']);
 
         foreach ($files as $file) {
-            $filePath = $path . DIRECTORY_SEPARATOR . $file;
+            $filePath = $path.DIRECTORY_SEPARATOR.$file;
 
             if (is_dir($filePath)) {
                 $this->deleteDirectory($filePath);
@@ -554,12 +569,12 @@ BASH;
     {
         $localPath = storage_path($backup->storage_path);
 
-        if (!file_exists($localPath)) {
-            throw new \RuntimeException("Backup file not found");
+        if (! file_exists($localPath)) {
+            throw new \RuntimeException('Backup file not found');
         }
 
         // Upload backup to server
-        $remoteBackupPath = "/tmp/restore_" . basename($backup->storage_path);
+        $remoteBackupPath = '/tmp/restore_'.basename($backup->storage_path);
         $this->uploadBackupFile($server, $localPath, $remoteBackupPath);
 
         // Extract backup
@@ -577,19 +592,19 @@ BASH;
     {
         $localPath = storage_path($backup->storage_path);
 
-        if (!is_dir($localPath)) {
-            throw new \RuntimeException("Backup directory not found");
+        if (! is_dir($localPath)) {
+            throw new \RuntimeException('Backup directory not found');
         }
 
         // Use rsync to restore
-        $rsyncCommand = $this->buildRsyncCommand($server, $localPath . '/', $server->username . '@' . $server->ip_address . ':/');
+        $rsyncCommand = $this->buildRsyncCommand($server, $localPath.'/', $server->username.'@'.$server->ip_address.':/');
 
         $process = Process::fromShellCommandline($rsyncCommand);
         $process->setTimeout(3600);
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            throw new \RuntimeException("Failed to restore incremental backup");
+        if (! $process->isSuccessful()) {
+            throw new \RuntimeException('Failed to restore incremental backup');
         }
 
         Log::info('Incremental backup restored', ['backup_id' => $backup->id]);
@@ -600,7 +615,7 @@ BASH;
     private function restoreSnapshot(ServerBackup $backup, Server $server): bool
     {
         // This is a placeholder - snapshot restoration depends on the infrastructure
-        throw new \RuntimeException("Snapshot restoration must be performed manually through your cloud provider or LVM tools");
+        throw new \RuntimeException('Snapshot restoration must be performed manually through your cloud provider or LVM tools');
     }
 
     private function uploadBackupFile(Server $server, string $localPath, string $remotePath): void
@@ -615,15 +630,15 @@ BASH;
         );
 
         if ($server->ssh_password) {
-            $scpCommand = "sshpass -p " . escapeshellarg($server->ssh_password) . " " . $scpCommand;
+            $scpCommand = 'sshpass -p '.escapeshellarg($server->ssh_password).' '.$scpCommand;
         }
 
         $process = Process::fromShellCommandline($scpCommand);
         $process->setTimeout(3600);
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            throw new \RuntimeException("Failed to upload backup file");
+        if (! $process->isSuccessful()) {
+            throw new \RuntimeException('Failed to upload backup file');
         }
     }
 }

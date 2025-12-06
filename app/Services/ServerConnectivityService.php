@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Models\Server;
-use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\Process\Process;
 
 class ServerConnectivityService
 {
@@ -27,7 +27,7 @@ class ServerConnectivityService
             $command = $this->buildSSHCommand($server, 'echo "CONNECTION_TEST"');
             $process = Process::fromShellCommandline($command);
             $process->setTimeout(10);
-            
+
             $startTime = microtime(true);
             $process->run();
             $latency = (microtime(true) - $startTime) * 1000;
@@ -42,7 +42,7 @@ class ServerConnectivityService
 
             return [
                 'reachable' => false,
-                'message' => 'SSH connection failed: ' . $process->getErrorOutput(),
+                'message' => 'SSH connection failed: '.$process->getErrorOutput(),
                 'error' => $process->getErrorOutput(),
             ];
 
@@ -54,7 +54,7 @@ class ServerConnectivityService
 
             return [
                 'reachable' => false,
-                'message' => 'Connection test failed: ' . $e->getMessage(),
+                'message' => 'Connection test failed: '.$e->getMessage(),
                 'error' => $e->getMessage(),
             ];
         }
@@ -68,7 +68,7 @@ class ServerConnectivityService
         $result = $this->testConnection($server);
 
         $status = $result['reachable'] ? 'online' : 'offline';
-        
+
         $server->update([
             'status' => $status,
             'last_ping_at' => now(),
@@ -141,6 +141,7 @@ class ServerConnectivityService
         // Try to extract any number (including decimals) from the output
         if (preg_match('/(\d+\.?\d*)/', $output, $matches)) {
             $value = $matches[1];
+
             return str_contains($value, '.') ? (float) $value : (int) $value;
         }
 
@@ -153,7 +154,7 @@ class ServerConnectivityService
     protected function isLocalhost(string $ip): bool
     {
         $localIPs = ['127.0.0.1', '::1', 'localhost'];
-        
+
         if (in_array($ip, $localIPs)) {
             return true;
         }
@@ -201,6 +202,7 @@ class ServerConnectivityService
     {
         $process = Process::fromShellCommandline($command);
         $process->run();
+
         return trim($process->getOutput());
     }
 
@@ -249,7 +251,7 @@ class ServerConnectivityService
 
             return [
                 'success' => false,
-                'message' => 'Failed to reboot server: ' . $e->getMessage(),
+                'message' => 'Failed to reboot server: '.$e->getMessage(),
             ];
         }
     }
@@ -263,10 +265,10 @@ class ServerConnectivityService
             $allowedServices = ['nginx', 'apache2', 'mysql', 'mariadb', 'redis', 'php-fpm', 'docker', 'supervisor'];
 
             // Also allow php8.x-fpm variants
-            if (!in_array($service, $allowedServices) && !preg_match('/^php\d+\.\d+-fpm$/', $service)) {
+            if (! in_array($service, $allowedServices) && ! preg_match('/^php\d+\.\d+-fpm$/', $service)) {
                 return [
                     'success' => false,
-                    'message' => 'Service not allowed: ' . $service,
+                    'message' => 'Service not allowed: '.$service,
                 ];
             }
 
@@ -288,6 +290,7 @@ class ServerConnectivityService
 
             if ($process->isSuccessful()) {
                 Log::info('Service restarted', ['server_id' => $server->id, 'service' => $service]);
+
                 return [
                     'success' => true,
                     'message' => "Service '{$service}' restarted successfully.",
@@ -296,13 +299,13 @@ class ServerConnectivityService
 
             return [
                 'success' => false,
-                'message' => 'Failed to restart service: ' . $process->getErrorOutput(),
+                'message' => 'Failed to restart service: '.$process->getErrorOutput(),
             ];
 
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to restart service: ' . $e->getMessage(),
+                'message' => 'Failed to restart service: '.$e->getMessage(),
             ];
         }
     }
@@ -371,7 +374,7 @@ class ServerConnectivityService
             if ($process->isSuccessful()) {
                 return [
                     'success' => true,
-                    'usage' => trim($process->getOutput()) . '%',
+                    'usage' => trim($process->getOutput()).'%',
                 ];
             }
 
@@ -414,13 +417,13 @@ class ServerConnectivityService
 
             return [
                 'success' => false,
-                'message' => 'Failed to clear cache: ' . $process->getErrorOutput(),
+                'message' => 'Failed to clear cache: '.$process->getErrorOutput(),
             ];
 
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to clear cache: ' . $e->getMessage(),
+                'message' => 'Failed to clear cache: '.$e->getMessage(),
             ];
         }
     }
@@ -428,9 +431,7 @@ class ServerConnectivityService
     /**
      * Build SSH command
      *
-     * @param Server $server
-     * @param string $remoteCommand
-     * @param bool $suppressWarnings - If true, redirects stderr to /dev/null
+     * @param  bool  $suppressWarnings  - If true, redirects stderr to /dev/null
      */
     protected function buildSSHCommand(Server $server, string $remoteCommand, bool $suppressWarnings = false): string
     {
@@ -439,7 +440,7 @@ class ServerConnectivityService
             '-o UserKnownHostsFile=/dev/null',
             '-o ConnectTimeout=10',
             '-o LogLevel=ERROR',
-            '-p ' . $server->port,
+            '-p '.$server->port,
         ];
 
         $stderrRedirect = $suppressWarnings ? '2>/dev/null' : '2>&1';
@@ -467,7 +468,7 @@ class ServerConnectivityService
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
             file_put_contents($keyFile, $server->ssh_key);
             chmod($keyFile, 0600);
-            $sshOptions[] = '-i ' . $keyFile;
+            $sshOptions[] = '-i '.$keyFile;
         }
 
         return sprintf(
@@ -480,4 +481,3 @@ class ServerConnectivityService
         );
     }
 }
-

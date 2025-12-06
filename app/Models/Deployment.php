@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Deployment extends Model
 {
+    /** @use HasFactory<\Database\Factories\DeploymentFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -41,27 +42,42 @@ class Deployment extends Model
     }
 
     // Rollback relationship
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Deployment, $this>
+     */
     public function rollbackOf()
     {
         return $this->belongsTo(Deployment::class, 'rollback_deployment_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Deployment, $this>
+     */
     public function rollbacks()
     {
         return $this->hasMany(Deployment::class, 'rollback_deployment_id');
     }
 
     // Relationships
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, $this>
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Project, $this>
+     */
     public function project()
     {
         return $this->belongsTo(Project::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Server, $this>
+     */
     public function server()
     {
         return $this->belongsTo(Server::class);
@@ -85,7 +101,7 @@ class Deployment extends Model
 
     public function getStatusColorAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'success' => 'green',
             'failed' => 'red',
             'running' => 'yellow',
@@ -96,7 +112,7 @@ class Deployment extends Model
 
     public function getStatusIconAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'success' => 'check-circle',
             'failed' => 'x-circle',
             'running' => 'arrow-path',
@@ -106,21 +122,33 @@ class Deployment extends Model
     }
 
     // New collaboration relationships
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<DeploymentApproval, $this>
+     */
     public function approvals()
     {
         return $this->hasMany(DeploymentApproval::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<DeploymentApproval, $this>
+     */
     public function pendingApproval()
     {
         return $this->hasOne(DeploymentApproval::class)->where('status', 'pending');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<DeploymentComment, $this>
+     */
     public function comments()
     {
         return $this->hasMany(DeploymentComment::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<AuditLog, $this>
+     */
     public function auditLogs()
     {
         return $this->morphMany(AuditLog::class, 'auditable');
@@ -142,4 +170,3 @@ class Deployment extends Model
         return $this->approvals()->where('status', 'pending')->exists();
     }
 }
-

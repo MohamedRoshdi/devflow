@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Project;
 use App\Models\Deployment;
+use App\Models\Project;
 use App\Services\WebhookService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -25,18 +25,19 @@ class WebhookController extends Controller
                 ->where('webhook_enabled', true)
                 ->first();
 
-            if (!$project) {
+            if (! $project) {
                 Log::warning("GitHub webhook received with invalid secret: {$secret}");
+
                 return response()->json(['error' => 'Invalid webhook secret'], 401);
             }
 
             // Get the raw payload for signature verification
             $payload = $request->getContent();
-            $signature = $request->header('X-Hub-Signature-256');
-            $eventType = $request->header('X-GitHub-Event');
+            $signature = $request->header('X-Hub-Signature-256') ?? '';
+            $eventType = $request->header('X-GitHub-Event') ?? 'unknown';
 
             // Verify signature
-            if (!$this->webhookService->verifyGitHubSignature($payload, $signature, $project->webhook_secret)) {
+            if (! $this->webhookService->verifyGitHubSignature($payload, $signature, $project->webhook_secret ?? '')) {
                 Log::warning("GitHub webhook signature verification failed for project: {$project->slug}");
 
                 // Create delivery record with failed status
@@ -65,7 +66,7 @@ class WebhookController extends Controller
             );
 
             // Check if this is a push event
-            if (!$this->webhookService->shouldProcessEvent('github', $eventType)) {
+            if (! $this->webhookService->shouldProcessEvent('github', $eventType)) {
                 $this->webhookService->updateDeliveryStatus(
                     $delivery,
                     'ignored',
@@ -73,6 +74,7 @@ class WebhookController extends Controller
                 );
 
                 Log::info("GitHub webhook ignored for project {$project->slug}: event type '{$eventType}' not processed");
+
                 return response()->json(['message' => 'Event acknowledged but not processed'], 200);
             }
 
@@ -80,11 +82,11 @@ class WebhookController extends Controller
             $parsed = $this->webhookService->parseGitHubPayload($payloadData);
 
             // Check if deployment should be triggered
-            if (!$this->webhookService->shouldTriggerDeployment($project, $parsed['branch'], $parsed['commit_message'])) {
+            if (! $this->webhookService->shouldTriggerDeployment($project, $parsed['branch'], $parsed['commit_message'])) {
                 $this->webhookService->updateDeliveryStatus(
                     $delivery,
                     'ignored',
-                    "Deployment conditions not met (branch or commit message patterns)"
+                    'Deployment conditions not met (branch or commit message patterns)'
                 );
 
                 return response()->json(['message' => 'Deployment conditions not met', 'reason' => 'Branch or commit message pattern check failed'], 200);
@@ -128,7 +130,7 @@ class WebhookController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
-            Log::error("GitHub webhook processing error: " . $e->getMessage(), [
+            Log::error('GitHub webhook processing error: '.$e->getMessage(), [
                 'exception' => $e,
                 'secret' => $secret,
             ]);
@@ -152,16 +154,17 @@ class WebhookController extends Controller
                 ->where('webhook_enabled', true)
                 ->first();
 
-            if (!$project) {
+            if (! $project) {
                 Log::warning("GitLab webhook received with invalid secret: {$secret}");
+
                 return response()->json(['error' => 'Invalid webhook secret'], 401);
             }
 
             // Get the token from header
-            $token = $request->header('X-Gitlab-Token');
+            $token = $request->header('X-Gitlab-Token') ?? '';
 
             // Verify token
-            if (!$this->webhookService->verifyGitLabToken($token, $project->webhook_secret)) {
+            if (! $this->webhookService->verifyGitLabToken($token, $project->webhook_secret ?? '')) {
                 Log::warning("GitLab webhook token verification failed for project: {$project->slug}");
 
                 $payloadData = $request->json()->all();
@@ -194,7 +197,7 @@ class WebhookController extends Controller
             );
 
             // Check if this is a push event
-            if (!$this->webhookService->shouldProcessEvent('gitlab', $eventType)) {
+            if (! $this->webhookService->shouldProcessEvent('gitlab', $eventType)) {
                 $this->webhookService->updateDeliveryStatus(
                     $delivery,
                     'ignored',
@@ -202,6 +205,7 @@ class WebhookController extends Controller
                 );
 
                 Log::info("GitLab webhook ignored for project {$project->slug}: event type '{$eventType}' not processed");
+
                 return response()->json(['message' => 'Event acknowledged but not processed'], 200);
             }
 
@@ -209,11 +213,11 @@ class WebhookController extends Controller
             $parsed = $this->webhookService->parseGitLabPayload($payloadData);
 
             // Check if deployment should be triggered
-            if (!$this->webhookService->shouldTriggerDeployment($project, $parsed['branch'], $parsed['commit_message'])) {
+            if (! $this->webhookService->shouldTriggerDeployment($project, $parsed['branch'], $parsed['commit_message'])) {
                 $this->webhookService->updateDeliveryStatus(
                     $delivery,
                     'ignored',
-                    "Deployment conditions not met (branch or commit message patterns)"
+                    'Deployment conditions not met (branch or commit message patterns)'
                 );
 
                 return response()->json(['message' => 'Deployment conditions not met', 'reason' => 'Branch or commit message pattern check failed'], 200);
@@ -257,7 +261,7 @@ class WebhookController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
-            Log::error("GitLab webhook processing error: " . $e->getMessage(), [
+            Log::error('GitLab webhook processing error: '.$e->getMessage(), [
                 'exception' => $e,
                 'secret' => $secret,
             ]);

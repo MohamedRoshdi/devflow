@@ -2,7 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\{PipelineStageRun, PipelineRun, PipelineStage};
+use App\Models\PipelineRun;
+use App\Models\PipelineStage;
+use App\Models\PipelineStageRun;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PipelineStageRunFactory extends Factory

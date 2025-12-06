@@ -15,11 +15,17 @@ class PipelineStageUpdated implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public int $pipelineRunId;
+
     public int $stageRunId;
+
     public string $stageName;
+
     public string $status;
+
     public string $output;
+
     public int $progressPercent;
+
     public string $timestamp;
 
     /**
@@ -50,7 +56,7 @@ class PipelineStageUpdated implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('pipeline.' . $this->pipelineRunId),
+            new Channel('pipeline.'.$this->pipelineRunId),
         ];
     }
 
@@ -77,7 +83,7 @@ class PipelineStageUpdated implements ShouldBroadcast
      */
     private function getStatusColor(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'success' => 'green',
             'failed' => 'red',
             'running' => 'yellow',
@@ -92,7 +98,7 @@ class PipelineStageUpdated implements ShouldBroadcast
      */
     private function getStatusIcon(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'success' => 'check-circle',
             'failed' => 'x-circle',
             'running' => 'arrow-path',

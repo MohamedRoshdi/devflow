@@ -6,20 +6,28 @@ use App\Models\Deployment;
 use App\Models\Project;
 use App\Models\Server;
 use App\Services\RollbackService;
-use Livewire\Component;
-use Livewire\Attributes\On;
 use Illuminate\Support\Facades\Process;
+use Livewire\Attributes\On;
+use Livewire\Component;
 
 class DeploymentRollback extends Component
 {
     public Project $project;
-    public $rollbackPoints = [];
-    public $selectedDeployment = null;
-    public $showRollbackModal = false;
-    public $rollbackInProgress = false;
-    public $comparisonData = null;
 
-    public function mount(Project $project)
+    /** @var array<int, array<string, mixed>> */
+    public array $rollbackPoints = [];
+
+    /** @var array<string, mixed>|null */
+    public ?array $selectedDeployment = null;
+
+    public bool $showRollbackModal = false;
+
+    public bool $rollbackInProgress = false;
+
+    /** @var array<string, mixed>|null */
+    public ?array $comparisonData = null;
+
+    public function mount(Project $project): void
     {
         $this->project = $project;
         $this->loadRollbackPoints();
@@ -33,7 +41,7 @@ class DeploymentRollback extends Component
         $sshOptions = [
             '-o StrictHostKeyChecking=no',
             '-o UserKnownHostsFile=/dev/null',
-            '-p ' . $server->port,
+            '-p '.$server->port,
         ];
 
         $escapedCommand = str_replace("'", "'\\''", $remoteCommand);
@@ -55,19 +63,23 @@ class DeploymentRollback extends Component
         $server = $this->project->server;
         $sshCommand = $this->buildSSHCommand($server, $command);
         $result = Process::timeout(30)->run($sshCommand);
+
         return $result->output();
     }
 
-    public function loadRollbackPoints()
+    public function loadRollbackPoints(): void
     {
         $rollbackService = app(RollbackService::class);
         $this->rollbackPoints = $rollbackService->getRollbackPoints($this->project, 20);
     }
 
-    public function selectForRollback($deploymentId)
+    public function selectForRollback(int $deploymentId): void
     {
-        $this->selectedDeployment = collect($this->rollbackPoints)
+        /** @var array<string, mixed>|null $selected */
+        $selected = collect($this->rollbackPoints)
             ->firstWhere('id', $deploymentId);
+
+        $this->selectedDeployment = is_array($selected) ? $selected : null;
 
         if ($this->selectedDeployment) {
             $this->loadComparison();
@@ -75,9 +87,11 @@ class DeploymentRollback extends Component
         }
     }
 
-    public function loadComparison()
+    public function loadComparison(): void
     {
-        if (!$this->selectedDeployment) return;
+        if (! $this->selectedDeployment) {
+            return;
+        }
 
         $currentDeployment = $this->project->deployments()
             ->where('status', 'success')
@@ -102,7 +116,7 @@ class DeploymentRollback extends Component
                 'target' => [
                     'commit' => $targetDeployment->commit_hash ? substr($targetDeployment->commit_hash, 0, 7) : 'N/A',
                     'message' => $targetDeployment->commit_message ?? 'No message',
-                    'date' => $targetDeployment->created_at->format('M d, Y H:i'),
+                    'date' => $targetDeployment->created_at?->format('M d, Y H:i') ?? 'Unknown',
                 ],
                 'commits_to_remove' => array_filter(explode("\n", trim($diffOutput))),
                 'files_changed' => $this->getFilesChanged($targetDeployment->commit_hash, $currentDeployment->commit_hash),
@@ -110,9 +124,12 @@ class DeploymentRollback extends Component
         }
     }
 
-    private function getFilesChanged($fromCommit, $toCommit)
+    /**
+     * @return array<int, array<string, string>>
+     */
+    private function getFilesChanged(?string $fromCommit, ?string $toCommit): array
     {
-        if (!$fromCommit || !$toCommit) {
+        if (! $fromCommit || ! $toCommit) {
             return [];
         }
 
@@ -120,6 +137,7 @@ class DeploymentRollback extends Component
         $command = "cd {$projectPath} && git diff --name-status {$fromCommit}..{$toCommit} 2>/dev/null | head -20";
         $output = $this->executeOnServer($command);
 
+        /** @var array<int, array<string, string>> $files */
         $files = [];
         foreach (explode("\n", trim($output)) as $line) {
             if (preg_match('/^([AMD])\s+(.+)$/', $line, $matches)) {
@@ -133,9 +151,12 @@ class DeploymentRollback extends Component
         return array_slice($files, 0, 10);
     }
 
+    /**
+     * @return \Illuminate\Http\RedirectResponse|void
+     */
     public function confirmRollback()
     {
-        if (!$this->selectedDeployment || !$this->selectedDeployment['can_rollback']) {
+        if (! $this->selectedDeployment || ! isset($this->selectedDeployment['can_rollback']) || ! $this->selectedDeployment['can_rollback']) {
             return;
         }
 
@@ -143,6 +164,16 @@ class DeploymentRollback extends Component
 
         try {
             $deployment = Deployment::find($this->selectedDeployment['id']);
+
+            if (! $deployment) {
+                $this->dispatch('notification',
+                    type: 'error',
+                    message: 'Deployment not found.'
+                );
+
+                return;
+            }
+
             $rollbackService = app(RollbackService::class);
             $result = $rollbackService->rollbackToDeployment($deployment);
 
@@ -157,13 +188,13 @@ class DeploymentRollback extends Component
             } else {
                 $this->dispatch('notification',
                     type: 'error',
-                    message: 'Rollback failed: ' . $result['error']
+                    message: 'Rollback failed: '.($result['error'] ?? 'Unknown error')
                 );
             }
         } catch (\Exception $e) {
             $this->dispatch('notification',
                 type: 'error',
-                message: 'Rollback failed: ' . $e->getMessage()
+                message: 'Rollback failed: '.$e->getMessage()
             );
         } finally {
             $this->rollbackInProgress = false;
@@ -171,7 +202,7 @@ class DeploymentRollback extends Component
         }
     }
 
-    public function cancelRollback()
+    public function cancelRollback(): void
     {
         $this->showRollbackModal = false;
         $this->selectedDeployment = null;
@@ -179,11 +210,14 @@ class DeploymentRollback extends Component
     }
 
     #[On('deployment-completed')]
-    public function onDeploymentCompleted()
+    public function onDeploymentCompleted(): void
     {
         $this->loadRollbackPoints();
     }
 
+    /**
+     * @return \Illuminate\Contracts\View\View
+     */
     public function render()
     {
         return view('livewire.deployments.deployment-rollback');

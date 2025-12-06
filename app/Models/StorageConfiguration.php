@@ -4,15 +4,24 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\StorageConfigurationFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Crypt;
 
+/**
+ * @use HasFactory<StorageConfigurationFactory>
+ */
 class StorageConfiguration extends Model
 {
+    /** @use HasFactory<\Database\Factories\StorageConfigurationFactory> */
     use HasFactory;
 
+    /**
+     * @var array<int, string>
+     */
     protected $fillable = [
         'project_id',
         'name',
@@ -40,6 +49,9 @@ class StorageConfiguration extends Model
 
     /**
      * Get encrypted credentials as array
+     *
+     * @param  string|null  $value
+     * @return array<string, mixed>
      */
     public function getCredentialsAttribute($value): array
     {
@@ -49,6 +61,7 @@ class StorageConfiguration extends Model
 
         try {
             $decrypted = Crypt::decryptString($value);
+
             return json_decode($decrypted, true) ?? [];
         } catch (\Exception $e) {
             return [];
@@ -57,6 +70,8 @@ class StorageConfiguration extends Model
 
     /**
      * Set credentials with encryption
+     *
+     * @param  array<string, mixed>|string|null  $value
      */
     public function setCredentialsAttribute($value): void
     {
@@ -73,6 +88,8 @@ class StorageConfiguration extends Model
 
     /**
      * Project relationship
+     *
+     * @return BelongsTo<Project, StorageConfiguration>
      */
     public function project(): BelongsTo
     {
@@ -81,36 +98,47 @@ class StorageConfiguration extends Model
 
     /**
      * Scope for active configurations
+     *
+     * @param  Builder<StorageConfiguration>  $query
+     * @return Builder<StorageConfiguration>
      */
-    public function scopeActive($query)
+    public function scopeActive(Builder $query): Builder
     {
         return $query->where('status', 'active');
     }
 
     /**
      * Scope for default configuration
+     *
+     * @param  Builder<StorageConfiguration>  $query
+     * @return Builder<StorageConfiguration>
      */
-    public function scopeDefault($query)
+    public function scopeDefault(Builder $query): Builder
     {
         return $query->where('is_default', true);
     }
 
     /**
      * Scope for specific driver
+     *
+     * @param  Builder<StorageConfiguration>  $query
+     * @return Builder<StorageConfiguration>
      */
-    public function scopeDriver($query, string $driver)
+    public function scopeDriver(Builder $query, string $driver): Builder
     {
         return $query->where('driver', $driver);
     }
 
     /**
      * Get Laravel filesystem disk configuration array
+     *
+     * @return array<string, mixed>
      */
     public function getDiskConfig(): array
     {
         $credentials = $this->credentials;
 
-        return match($this->driver) {
+        return match ($this->driver) {
             's3' => [
                 'driver' => 's3',
                 'key' => $credentials['access_key_id'] ?? '',
@@ -118,7 +146,7 @@ class StorageConfiguration extends Model
                 'region' => $this->region ?? 'us-east-1',
                 'bucket' => $this->bucket ?? '',
                 'endpoint' => $this->endpoint,
-                'use_path_style_endpoint' => !empty($this->endpoint),
+                'use_path_style_endpoint' => ! empty($this->endpoint),
                 'throw' => true,
             ],
             'gcs' => [
@@ -165,7 +193,7 @@ class StorageConfiguration extends Model
      */
     public function getDriverNameAttribute(): string
     {
-        return match($this->driver) {
+        return match ($this->driver) {
             's3' => 'Amazon S3',
             'gcs' => 'Google Cloud Storage',
             'ftp' => 'FTP',
@@ -179,7 +207,7 @@ class StorageConfiguration extends Model
      */
     public function getDriverIconAttribute(): string
     {
-        return match($this->driver) {
+        return match ($this->driver) {
             's3' => 'aws',
             'gcs' => 'google-cloud',
             'ftp' => 'ftp',
@@ -195,14 +223,14 @@ class StorageConfiguration extends Model
     {
         $credentials = $this->credentials;
 
-        return match($this->driver) {
-            's3' => !empty($credentials['access_key_id'])
-                && !empty($credentials['secret_access_key'])
-                && !empty($this->bucket),
-            'gcs' => !empty($credentials['service_account_json'])
-                && !empty($this->bucket),
-            'ftp', 'sftp' => !empty($credentials['host'])
-                && !empty($credentials['username']),
+        return match ($this->driver) {
+            's3' => ! empty($credentials['access_key_id'])
+                && ! empty($credentials['secret_access_key'])
+                && ! empty($this->bucket),
+            'gcs' => ! empty($credentials['service_account_json'])
+                && ! empty($this->bucket),
+            'ftp', 'sftp' => ! empty($credentials['host'])
+                && ! empty($credentials['username']),
             default => true,
         };
     }

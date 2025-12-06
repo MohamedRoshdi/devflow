@@ -2,35 +2,45 @@
 
 namespace App\Livewire\Servers;
 
-use Livewire\Component;
-use Livewire\WithPagination;
 use App\Models\Server;
 use App\Models\ServerBackup;
 use App\Models\ServerBackupSchedule;
 use App\Services\ServerBackupService;
 use Illuminate\Support\Facades\Log;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class ServerBackupManager extends Component
 {
     use WithPagination;
 
     public Server $server;
+
     public bool $showCreateModal = false;
+
     public bool $showScheduleModal = false;
 
     // Create Backup Form
     public string $backupType = 'full';
+
     public string $storageDriver = 'local';
 
     // Schedule Form
     public string $scheduleType = 'full';
+
     public string $scheduleFrequency = 'daily';
+
     public string $scheduleTime = '02:00';
+
     public ?int $scheduleDayOfWeek = null;
+
     public ?int $scheduleDayOfMonth = null;
+
     public int $retentionDays = 30;
+
     public string $scheduleStorageDriver = 'local';
 
+    /** @var array<string, string> */
     protected $listeners = ['backupCreated' => '$refresh'];
 
     public function mount(Server $server)
@@ -51,7 +61,7 @@ class ServerBackupManager extends Component
             // Run backup in background
             dispatch(function () use ($backupService) {
                 try {
-                    match($this->backupType) {
+                    match ($this->backupType) {
                         'full' => $backupService->createFullBackup($this->server),
                         'incremental' => $backupService->createIncrementalBackup($this->server),
                         'snapshot' => $backupService->createSnapshot($this->server),
@@ -70,7 +80,7 @@ class ServerBackupManager extends Component
             $this->reset(['backupType', 'storageDriver']);
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to start backup: ' . $e->getMessage());
+            session()->flash('error', 'Failed to start backup: '.$e->getMessage());
             Log::error('Failed to create backup', [
                 'server_id' => $this->server->id,
                 'error' => $e->getMessage(),
@@ -93,7 +103,7 @@ class ServerBackupManager extends Component
             session()->flash('message', 'Backup deleted successfully.');
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to delete backup: ' . $e->getMessage());
+            session()->flash('error', 'Failed to delete backup: '.$e->getMessage());
             Log::error('Failed to delete backup', [
                 'backup_id' => $backupId,
                 'error' => $e->getMessage(),
@@ -110,7 +120,7 @@ class ServerBackupManager extends Component
                 throw new \Exception('Backup does not belong to this server');
             }
 
-            if (!$backup->isCompleted()) {
+            if (! $backup->isCompleted()) {
                 throw new \Exception('Cannot restore incomplete backup');
             }
 
@@ -131,7 +141,7 @@ class ServerBackupManager extends Component
             session()->flash('info', 'Backup restoration started. This may take several minutes and will require a server reboot.');
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to restore backup: ' . $e->getMessage());
+            session()->flash('error', 'Failed to restore backup: '.$e->getMessage());
             Log::error('Failed to restore backup', [
                 'backup_id' => $backupId,
                 'error' => $e->getMessage(),
@@ -177,7 +187,7 @@ class ServerBackupManager extends Component
             $this->resetScheduleForm();
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to create schedule: ' . $e->getMessage());
+            session()->flash('error', 'Failed to create schedule: '.$e->getMessage());
             Log::error('Failed to create backup schedule', [
                 'server_id' => $this->server->id,
                 'error' => $e->getMessage(),
@@ -194,12 +204,12 @@ class ServerBackupManager extends Component
                 throw new \Exception('Schedule does not belong to this server');
             }
 
-            $schedule->update(['is_active' => !$schedule->is_active]);
+            $schedule->update(['is_active' => ! $schedule->is_active]);
 
-            session()->flash('message', 'Schedule ' . ($schedule->is_active ? 'activated' : 'deactivated') . ' successfully.');
+            session()->flash('message', 'Schedule '.($schedule->is_active ? 'activated' : 'deactivated').' successfully.');
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to toggle schedule: ' . $e->getMessage());
+            session()->flash('error', 'Failed to toggle schedule: '.$e->getMessage());
         }
     }
 
@@ -217,7 +227,7 @@ class ServerBackupManager extends Component
             session()->flash('message', 'Schedule deleted successfully.');
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to delete schedule: ' . $e->getMessage());
+            session()->flash('error', 'Failed to delete schedule: '.$e->getMessage());
         }
     }
 
@@ -236,7 +246,7 @@ class ServerBackupManager extends Component
             session()->flash('message', 'Backup uploaded to S3 successfully.');
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to upload backup: ' . $e->getMessage());
+            session()->flash('error', 'Failed to upload backup: '.$e->getMessage());
         }
     }
 

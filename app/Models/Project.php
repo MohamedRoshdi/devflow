@@ -6,8 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property array<string, mixed> $metadata
+ * @property array<string, mixed> $approval_settings
+ */
 class Project extends Model
 {
+    /** @use HasFactory<\Database\Factories\ProjectFactory> */
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
@@ -195,6 +200,7 @@ class Project extends Model
         if ($tasks->isEmpty()) {
             return 0;
         }
+
         return (int) round($tasks->avg('progress'));
     }
 
@@ -217,7 +223,7 @@ class Project extends Model
 
     public function getStatusColorAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'running' => 'green',
             'stopped' => 'red',
             'building' => 'yellow',
@@ -241,5 +247,3 @@ class Project extends Model
         return $this->morphMany(AuditLog::class, 'auditable');
     }
 }
-
-

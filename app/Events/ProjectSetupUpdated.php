@@ -3,7 +3,6 @@
 namespace App\Events;
 
 use App\Models\Project;
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -27,7 +26,7 @@ class ProjectSetupUpdated implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('project.' . $this->project->id),
+            new PrivateChannel('project.'.$this->project->id),
         ];
     }
 
@@ -43,7 +42,7 @@ class ProjectSetupUpdated implements ShouldBroadcast
             'setup_status' => $this->project->setup_status,
             'setup_progress' => $this->project->setup_progress,
             'setup_completed_at' => $this->project->setup_completed_at?->toIso8601String(),
-            'tasks' => $this->project->setupTasks->map(fn($task) => [
+            'tasks' => $this->project->setupTasks->map(fn ($task) => [
                 'id' => $task->id,
                 'type' => $task->task_type,
                 'label' => \App\Models\ProjectSetupTask::getTypeLabel($task->task_type),

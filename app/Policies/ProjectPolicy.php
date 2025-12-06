@@ -47,4 +47,3 @@ class ProjectPolicy
         return true;
     }
 }
-

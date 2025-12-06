@@ -2,10 +2,10 @@
 
 namespace App\Livewire\Projects;
 
-use Livewire\Component;
 use App\Models\Project;
-use Livewire\Attributes\Locked;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Locked;
+use Livewire\Component;
 
 class ProjectConfiguration extends Component
 {
@@ -15,16 +15,26 @@ class ProjectConfiguration extends Component
     public Project $project;
 
     public string $name = '';
+
     public string $slug = '';
+
     public string $repository_url = '';
+
     public string $branch = 'main';
+
     public string $framework = '';
+
     public string $php_version = '8.3';
+
     public string $node_version = '20';
+
     public string $root_directory = '/';
+
     public string $health_check_url = '';
+
     public bool $auto_deploy = false;
 
+    /** @var array<string, string> */
     public array $frameworks = [
         '' => '-- Select Framework --',
         'laravel' => 'Laravel',
@@ -36,6 +46,7 @@ class ProjectConfiguration extends Component
         'static' => 'Static Site (HTML/CSS/JS)',
     ];
 
+    /** @var array<string, string> */
     public array $phpVersions = [
         '8.4' => 'PHP 8.4 (Latest)',
         '8.3' => 'PHP 8.3',
@@ -45,6 +56,7 @@ class ProjectConfiguration extends Component
         '7.4' => 'PHP 7.4 (Legacy)',
     ];
 
+    /** @var array<int|string, string> */
     public array $nodeVersions = [
         '22' => 'Node.js 22 (Latest)',
         '20' => 'Node.js 20 (LTS)',
@@ -79,7 +91,7 @@ class ProjectConfiguration extends Component
     {
         return [
             'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|regex:/^[a-z0-9-]+$/|unique:projects,slug,' . $this->projectId . ',id,deleted_at,NULL',
+            'slug' => 'required|string|max:255|regex:/^[a-z0-9-]+$/|unique:projects,slug,'.$this->projectId.',id,deleted_at,NULL',
             'repository_url' => ['nullable', 'regex:/^(https?:\/\/|git@)[\w\-\.]+[\/:][\w\-\.]+\/[\w\-\.]+\.git$/'],
             'branch' => 'required|string|max:255',
             'framework' => 'nullable|string|max:255',
@@ -114,7 +126,7 @@ class ProjectConfiguration extends Component
             return redirect()->route('projects.show', $this->project);
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to update configuration: ' . $e->getMessage());
+            session()->flash('error', 'Failed to update configuration: '.$e->getMessage());
         }
     }
 

@@ -37,4 +37,3 @@ Schedule::command('ssl:check-expiry --days=14 --renew')->daily()->at('03:00');
 
 // Renew SSL certificates (daily at 2 AM)
 Schedule::command('ssl:renew')->daily()->at('02:00');
-

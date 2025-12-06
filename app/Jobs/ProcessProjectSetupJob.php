@@ -59,6 +59,6 @@ class ProcessProjectSetupJob implements ShouldQueue
      */
     public function tags(): array
     {
-        return ['project-setup', 'project:' . $this->project->id];
+        return ['project-setup', 'project:'.$this->project->id];
     }
 }

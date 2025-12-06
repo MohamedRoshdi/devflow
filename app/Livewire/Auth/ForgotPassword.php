@@ -2,26 +2,30 @@
 
 namespace App\Livewire\Auth;
 
-use Livewire\Component;
 use Illuminate\Support\Facades\Password;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
+use Livewire\Component;
 
 #[Layout('layouts.guest')]
 #[Title('Forgot Password')]
 class ForgotPassword extends Component
 {
-    public $email = '';
-    public $emailSent = false;
+    public string $email = '';
 
-    public function rules()
+    public bool $emailSent = false;
+
+    /**
+     * @return array<string, string>
+     */
+    public function rules(): array
     {
         return [
             'email' => 'required|email',
         ];
     }
 
-    public function sendResetLink()
+    public function sendResetLink(): void
     {
         $this->validate();
 
@@ -34,9 +38,8 @@ class ForgotPassword extends Component
         }
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.auth.forgot-password');
     }
 }
-

@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::table('projects', function (Blueprint $table) {
             // Only add environment field (other fields already exist)
-            if (!Schema::hasColumn('projects', 'environment')) {
+            if (! Schema::hasColumn('projects', 'environment')) {
                 $table->string('environment')->default('production')->after('framework');
             }
         });

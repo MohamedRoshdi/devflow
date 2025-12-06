@@ -2,14 +2,15 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
+use App\Events\ServerMetricsUpdated;
 use App\Models\Server;
 use App\Services\ServerMetricsService;
-use App\Events\ServerMetricsUpdated;
+use Illuminate\Console\Command;
 
 class CollectServerMetrics extends Command
 {
     protected $signature = 'servers:collect-metrics {server_id?} {--broadcast : Broadcast metrics via WebSocket}';
+
     protected $description = 'Collect metrics from servers';
 
     public function handle(ServerMetricsService $metricsService): int
@@ -20,8 +21,9 @@ class CollectServerMetrics extends Command
         if ($serverId) {
             $server = Server::find($serverId);
 
-            if (!$server) {
+            if (! $server) {
                 $this->error("Server with ID {$serverId} not found.");
+
                 return self::FAILURE;
             }
 
@@ -33,6 +35,7 @@ class CollectServerMetrics extends Command
 
         if ($servers->isEmpty()) {
             $this->info('No online servers found.');
+
             return self::SUCCESS;
         }
 
@@ -71,16 +74,18 @@ class CollectServerMetrics extends Command
                 // Broadcast the metrics update via WebSocket
                 if ($broadcast) {
                     event(new ServerMetricsUpdated($server, $metric));
-                    $this->line("  ✓ Broadcast sent");
+                    $this->line('  ✓ Broadcast sent');
                 }
 
                 return self::SUCCESS;
             } else {
-                $this->error("  ✗ Failed to collect metrics");
+                $this->error('  ✗ Failed to collect metrics');
+
                 return self::FAILURE;
             }
         } catch (\Exception $e) {
-            $this->error("  ✗ Error: " . $e->getMessage());
+            $this->error('  ✗ Error: '.$e->getMessage());
+
             return self::FAILURE;
         }
     }

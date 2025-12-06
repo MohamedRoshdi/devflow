@@ -12,28 +12,45 @@ class TenantManager extends Component
 {
     use WithPagination;
 
-    public $selectedProject = null;
-    public $showCreateModal = false;
-    public $showDeployModal = false;
-    public $showDetailsModal = false;
-    public $editingTenant = null;
+    public ?int $selectedProject = null;
+
+    public bool $showCreateModal = false;
+
+    public bool $showDeployModal = false;
+
+    public bool $showDetailsModal = false;
+
+    public ?Tenant $editingTenant = null;
 
     // Tenant form fields
-    public $tenantName = '';
-    public $subdomain = '';
-    public $database = '';
-    public $adminEmail = '';
-    public $adminPassword = '';
-    public $plan = 'basic';
-    public $status = 'active';
-    public $customConfig = [];
+    public string $tenantName = '';
+
+    public string $subdomain = '';
+
+    public string $database = '';
+
+    public string $adminEmail = '';
+
+    public string $adminPassword = '';
+
+    public string $plan = 'basic';
+
+    public string $status = 'active';
+
+    /** @var array<string, mixed> */
+    public array $customConfig = [];
 
     // Deployment settings
-    public $selectedTenants = [];
-    public $deploymentType = 'code_and_migrations';
-    public $clearCache = true;
-    public $maintenanceMode = false;
+    /** @var array<int, int> */
+    public array $selectedTenants = [];
 
+    public string $deploymentType = 'code_and_migrations';
+
+    public bool $clearCache = true;
+
+    public bool $maintenanceMode = false;
+
+    /** @var array<string, string|array<int, string>> */
     protected $rules = [
         'selectedProject' => 'required|exists:projects,id',
         'tenantName' => 'required|string|max:255',
@@ -43,15 +60,15 @@ class TenantManager extends Component
         'plan' => 'required|in:basic,pro,enterprise',
     ];
 
-    public function mount($project = null)
+    public function mount(mixed $project = null): void
     {
         // Handle both route parameter name 'project' and direct ID
         if ($project) {
-            $this->selectedProject = is_numeric($project) ? $project : $project;
+            $this->selectedProject = is_numeric($project) ? (int) $project : (int) $project;
         }
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View
     {
         $projects = Project::where('project_type', 'multi_tenant')->get();
 
@@ -66,19 +83,19 @@ class TenantManager extends Component
         ]);
     }
 
-    public function selectProject($projectId)
+    public function selectProject(int $projectId): void
     {
         $this->selectedProject = $projectId;
         $this->resetPage();
     }
 
-    public function createTenant()
+    public function createTenant(): void
     {
         $this->resetForm();
         $this->showCreateModal = true;
     }
 
-    public function saveTenant()
+    public function saveTenant(): void
     {
         $this->validate();
 
@@ -101,11 +118,11 @@ class TenantManager extends Component
             $this->showCreateModal = false;
             $this->resetForm();
         } catch (\Exception $e) {
-            $this->dispatch('notify', type: 'error', message: 'Failed to create tenant: ' . $e->getMessage());
+            $this->dispatch('notify', type: 'error', message: 'Failed to create tenant: '.$e->getMessage());
         }
     }
 
-    public function editTenant(Tenant $tenant)
+    public function editTenant(Tenant $tenant): void
     {
         $this->editingTenant = $tenant;
         $this->tenantName = $tenant->name;
@@ -118,7 +135,7 @@ class TenantManager extends Component
         $this->showCreateModal = true;
     }
 
-    public function deleteTenant(Tenant $tenant)
+    public function deleteTenant(Tenant $tenant): void
     {
         try {
             $service = app(MultiTenantService::class);
@@ -126,11 +143,11 @@ class TenantManager extends Component
 
             $this->dispatch('notify', type: 'success', message: 'Tenant deleted successfully');
         } catch (\Exception $e) {
-            $this->dispatch('notify', type: 'error', message: 'Failed to delete tenant: ' . $e->getMessage());
+            $this->dispatch('notify', type: 'error', message: 'Failed to delete tenant: '.$e->getMessage());
         }
     }
 
-    public function toggleTenantStatus(Tenant $tenant)
+    public function toggleTenantStatus(Tenant $tenant): void
     {
         $newStatus = $tenant->status === 'active' ? 'suspended' : 'active';
         $tenant->update(['status' => $newStatus]);
@@ -138,13 +155,13 @@ class TenantManager extends Component
         $this->dispatch('notify', type: 'success', message: "Tenant {$newStatus}");
     }
 
-    public function showDeployToTenants()
+    public function showDeployToTenants(): void
     {
         $this->selectedTenants = [];
         $this->showDeployModal = true;
     }
 
-    public function deployToSelectedTenants()
+    public function deployToSelectedTenants(): void
     {
         $this->validate([
             'selectedTenants' => 'required|array|min:1',
@@ -161,45 +178,47 @@ class TenantManager extends Component
                 'maintenance_mode' => $this->maintenanceMode,
             ]);
 
-            $successful = collect($results)->filter(fn($r) => $r['status'] === 'success')->count();
-            $failed = collect($results)->filter(fn($r) => $r['status'] === 'failed')->count();
+            $successful = collect($results)->filter(fn ($r) => $r['status'] === 'success')->count();
+            $failed = collect($results)->filter(fn ($r) => $r['status'] === 'failed')->count();
 
             $message = "Deployment completed: {$successful} successful, {$failed} failed";
             $this->dispatch('notify', type: 'success', message: $message);
 
             $this->showDeployModal = false;
         } catch (\Exception $e) {
-            $this->dispatch('notify', type: 'error', message: 'Deployment failed: ' . $e->getMessage());
+            $this->dispatch('notify', type: 'error', message: 'Deployment failed: '.$e->getMessage());
         }
     }
 
-    public function toggleTenantSelection($tenantId)
+    public function toggleTenantSelection(int $tenantId): void
     {
         if (in_array($tenantId, $this->selectedTenants)) {
-            $this->selectedTenants = array_diff($this->selectedTenants, [$tenantId]);
+            $this->selectedTenants = array_values(array_diff($this->selectedTenants, [$tenantId]));
         } else {
             $this->selectedTenants[] = $tenantId;
         }
     }
 
-    public function selectAllTenants()
+    public function selectAllTenants(): void
     {
         $project = Project::find($this->selectedProject);
-        $this->selectedTenants = $project->tenants->pluck('id')->toArray();
+        if ($project) {
+            $this->selectedTenants = $project->tenants->pluck('id')->toArray();
+        }
     }
 
-    public function clearSelection()
+    public function clearSelection(): void
     {
         $this->selectedTenants = [];
     }
 
-    public function showTenantDetails(Tenant $tenant)
+    public function showTenantDetails(Tenant $tenant): void
     {
         $this->editingTenant = $tenant;
         $this->showDetailsModal = true;
     }
 
-    public function resetTenantData(Tenant $tenant)
+    public function resetTenantData(Tenant $tenant): void
     {
         try {
             $service = app(MultiTenantService::class);
@@ -207,11 +226,11 @@ class TenantManager extends Component
 
             $this->dispatch('notify', type: 'success', message: 'Tenant data reset successfully');
         } catch (\Exception $e) {
-            $this->dispatch('notify', type: 'error', message: 'Failed to reset tenant: ' . $e->getMessage());
+            $this->dispatch('notify', type: 'error', message: 'Failed to reset tenant: '.$e->getMessage());
         }
     }
 
-    public function backupTenant(Tenant $tenant)
+    public function backupTenant(Tenant $tenant): void
     {
         try {
             $service = app(MultiTenantService::class);
@@ -219,11 +238,11 @@ class TenantManager extends Component
 
             $this->dispatch('notify', type: 'success', message: 'Tenant backed up successfully');
         } catch (\Exception $e) {
-            $this->dispatch('notify', type: 'error', message: 'Failed to backup tenant: ' . $e->getMessage());
+            $this->dispatch('notify', type: 'error', message: 'Failed to backup tenant: '.$e->getMessage());
         }
     }
 
-    private function resetForm()
+    private function resetForm(): void
     {
         $this->tenantName = '';
         $this->subdomain = '';

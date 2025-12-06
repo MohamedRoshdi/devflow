@@ -47,6 +47,7 @@ class CheckResourceAlertsCommand extends Command
 
         if ($servers->isEmpty()) {
             $this->warn('No servers with active alerts found.');
+
             return Command::SUCCESS;
         }
 
@@ -66,6 +67,7 @@ class CheckResourceAlertsCommand extends Command
                 if (isset($result['error'])) {
                     $this->error("  Error: {$result['error']}");
                     $errors++;
+
                     continue;
                 }
 
@@ -105,6 +107,7 @@ class CheckResourceAlertsCommand extends Command
 
         if ($errors > 0) {
             $this->warn("Completed with {$errors} error(s). Check logs for details.");
+
             return Command::FAILURE;
         }
 

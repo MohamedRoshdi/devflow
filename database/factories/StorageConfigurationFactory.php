@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\StorageConfiguration;
 use App\Models\Project;
+use App\Models\StorageConfiguration;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Crypt;
 
@@ -19,14 +19,14 @@ class StorageConfigurationFactory extends Factory
 
         return [
             'project_id' => null,
-            'name' => $this->faker->words(2, true) . ' Storage',
+            'name' => $this->faker->words(2, true).' Storage',
             'driver' => $driver,
             'is_default' => false,
             'credentials' => $this->getCredentialsForDriver($driver),
             'bucket' => in_array($driver, ['s3', 'gcs']) ? $this->faker->slug : null,
             'region' => $driver === 's3' ? $this->faker->randomElement(['us-east-1', 'us-west-2', 'eu-west-1']) : null,
             'endpoint' => null,
-            'path_prefix' => 'backups/' . $this->faker->slug,
+            'path_prefix' => 'backups/'.$this->faker->slug,
             'encryption_key' => null,
             'status' => 'active',
             'last_tested_at' => $this->faker->dateTimeBetween('-1 week', 'now'),
@@ -35,9 +35,9 @@ class StorageConfigurationFactory extends Factory
 
     private function getCredentialsForDriver(string $driver): string
     {
-        $credentials = match($driver) {
+        $credentials = match ($driver) {
             's3' => [
-                'access_key_id' => 'AKIA' . strtoupper($this->faker->bothify('???????????????')),
+                'access_key_id' => 'AKIA'.strtoupper($this->faker->bothify('???????????????')),
                 'secret_access_key' => $this->faker->bothify('****************************************'),
             ],
             'gcs' => [
@@ -93,7 +93,7 @@ class StorageConfigurationFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'driver' => 's3',
             'credentials' => $this->getCredentialsForDriver('s3'),
-            'bucket' => 'devflow-backups-' . $this->faker->slug,
+            'bucket' => 'devflow-backups-'.$this->faker->slug,
             'region' => 'us-east-1',
         ]);
     }
@@ -103,7 +103,7 @@ class StorageConfigurationFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'driver' => 'gcs',
             'credentials' => $this->getCredentialsForDriver('gcs'),
-            'bucket' => 'devflow-backups-' . $this->faker->slug,
+            'bucket' => 'devflow-backups-'.$this->faker->slug,
             'region' => null,
         ]);
     }

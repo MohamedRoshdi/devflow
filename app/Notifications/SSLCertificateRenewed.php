@@ -6,8 +6,8 @@ namespace App\Notifications;
 
 use App\Models\SSLCertificate;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class SSLCertificateRenewed extends Notification
 {
@@ -35,6 +35,9 @@ class SSLCertificateRenewed extends Notification
             ->line('Your website will continue to be secure with the renewed certificate.');
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toDatabase(object $notifiable): array
     {
         return [

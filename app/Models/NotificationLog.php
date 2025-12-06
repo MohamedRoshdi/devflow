@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class NotificationLog extends Model
 {
+    /** @use HasFactory<\Database\Factories\NotificationLogFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -22,6 +23,9 @@ class NotificationLog extends Model
         'payload' => 'array',
     ];
 
+    /**
+     * @return BelongsTo<NotificationChannel, $this>
+     */
     public function channel(): BelongsTo
     {
         return $this->belongsTo(NotificationChannel::class, 'notification_channel_id');

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Security;
 
+use App\Models\SecurityEvent;
 use App\Models\Server;
 use App\Models\SshConfiguration;
-use App\Models\SecurityEvent;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Process\Process;
@@ -16,10 +16,10 @@ class SSHSecurityService
     public function getCurrentConfig(Server $server): array
     {
         try {
-            $command = "sudo cat /etc/ssh/sshd_config 2>/dev/null";
+            $command = 'sudo cat /etc/ssh/sshd_config 2>/dev/null';
             $result = $this->executeCommand($server, $command);
 
-            if (!$result['success']) {
+            if (! $result['success']) {
                 return [
                     'success' => false,
                     'error' => 'Unable to read SSH configuration',
@@ -91,10 +91,10 @@ class SSHSecurityService
 
             // Validate configuration
             $validateResult = $this->executeCommand($server, "{$sudoPrefix}sshd -t");
-            if (!$validateResult['success'] && !empty(trim($validateResult['error']))) {
+            if (! $validateResult['success'] && ! empty(trim($validateResult['error']))) {
                 return [
                     'success' => false,
-                    'message' => 'SSH configuration validation failed: ' . $validateResult['error'],
+                    'message' => 'SSH configuration validation failed: '.$validateResult['error'],
                 ];
             }
 
@@ -102,7 +102,7 @@ class SSHSecurityService
             $this->logEvent(
                 $server,
                 SecurityEvent::TYPE_SSH_CONFIG_CHANGED,
-                'SSH configuration updated: ' . implode(', ', array_filter($changes))
+                'SSH configuration updated: '.implode(', ', array_filter($changes))
             );
 
             return [
@@ -118,7 +118,7 @@ class SSHSecurityService
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to update SSH configuration: ' . $e->getMessage(),
+                'message' => 'Failed to update SSH configuration: '.$e->getMessage(),
             ];
         }
     }
@@ -130,7 +130,7 @@ class SSHSecurityService
 
             $result = $this->updateConfigValue($server, 'Port', (string) $newPort);
 
-            if (!$result) {
+            if (! $result) {
                 return [
                     'success' => false,
                     'message' => 'Failed to update SSH port',
@@ -156,7 +156,7 @@ class SSHSecurityService
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to change SSH port: ' . $e->getMessage(),
+                'message' => 'Failed to change SSH port: '.$e->getMessage(),
             ];
         }
     }
@@ -167,7 +167,7 @@ class SSHSecurityService
             $value = $enable ? 'yes' : 'no';
             $result = $this->updateConfigValue($server, 'PermitRootLogin', $value);
 
-            if (!$result) {
+            if (! $result) {
                 return [
                     'success' => false,
                     'message' => 'Failed to update root login setting',
@@ -177,17 +177,17 @@ class SSHSecurityService
             $this->logEvent(
                 $server,
                 SecurityEvent::TYPE_SSH_CONFIG_CHANGED,
-                'Root login ' . ($enable ? 'enabled' : 'disabled')
+                'Root login '.($enable ? 'enabled' : 'disabled')
             );
 
             return [
                 'success' => true,
-                'message' => 'Root login ' . ($enable ? 'enabled' : 'disabled') . '. Restart SSH to apply.',
+                'message' => 'Root login '.($enable ? 'enabled' : 'disabled').'. Restart SSH to apply.',
             ];
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to toggle root login: ' . $e->getMessage(),
+                'message' => 'Failed to toggle root login: '.$e->getMessage(),
             ];
         }
     }
@@ -198,7 +198,7 @@ class SSHSecurityService
             $value = $enable ? 'yes' : 'no';
             $result = $this->updateConfigValue($server, 'PasswordAuthentication', $value);
 
-            if (!$result) {
+            if (! $result) {
                 return [
                     'success' => false,
                     'message' => 'Failed to update password authentication setting',
@@ -208,17 +208,17 @@ class SSHSecurityService
             $this->logEvent(
                 $server,
                 SecurityEvent::TYPE_SSH_CONFIG_CHANGED,
-                'Password authentication ' . ($enable ? 'enabled' : 'disabled')
+                'Password authentication '.($enable ? 'enabled' : 'disabled')
             );
 
             return [
                 'success' => true,
-                'message' => 'Password authentication ' . ($enable ? 'enabled' : 'disabled') . '. Restart SSH to apply.',
+                'message' => 'Password authentication '.($enable ? 'enabled' : 'disabled').'. Restart SSH to apply.',
             ];
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to toggle password auth: ' . $e->getMessage(),
+                'message' => 'Failed to toggle password auth: '.$e->getMessage(),
             ];
         }
     }
@@ -264,7 +264,7 @@ class SSHSecurityService
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to harden SSH: ' . $e->getMessage(),
+                'message' => 'Failed to harden SSH: '.$e->getMessage(),
             ];
         }
     }
@@ -276,10 +276,10 @@ class SSHSecurityService
 
             // First validate the configuration
             $validateResult = $this->executeCommand($server, "{$sudoPrefix}sshd -t");
-            if (!$validateResult['success'] && !empty(trim($validateResult['error']))) {
+            if (! $validateResult['success'] && ! empty(trim($validateResult['error']))) {
                 return [
                     'success' => false,
-                    'message' => 'SSH configuration is invalid: ' . $validateResult['error'],
+                    'message' => 'SSH configuration is invalid: '.$validateResult['error'],
                 ];
             }
 
@@ -296,12 +296,12 @@ class SSHSecurityService
 
             return [
                 'success' => false,
-                'message' => 'Failed to restart SSH: ' . ($result['error'] ?: $result['output']),
+                'message' => 'Failed to restart SSH: '.($result['error'] ?: $result['output']),
             ];
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to restart SSH: ' . $e->getMessage(),
+                'message' => 'Failed to restart SSH: '.$e->getMessage(),
             ];
         }
     }
@@ -323,13 +323,13 @@ class SSHSecurityService
             return [
                 'success' => true,
                 'valid' => false,
-                'message' => 'SSH configuration has errors: ' . $result['error'],
+                'message' => 'SSH configuration has errors: '.$result['error'],
             ];
         } catch (\Exception $e) {
             return [
                 'success' => false,
                 'valid' => false,
-                'message' => 'Failed to validate SSH config: ' . $e->getMessage(),
+                'message' => 'Failed to validate SSH config: '.$e->getMessage(),
             ];
         }
     }
@@ -400,7 +400,7 @@ class SSHSecurityService
         $checkCommand = "grep -E '^#?{$key}' /etc/ssh/sshd_config";
         $checkResult = $this->executeCommand($server, $checkCommand);
 
-        if ($checkResult['success'] && !empty(trim($checkResult['output']))) {
+        if ($checkResult['success'] && ! empty(trim($checkResult['output']))) {
             // Key exists, update it
             $command = "{$sudoPrefix}sed -i 's/^#*{$key}.*/{$key} {$value}/' /etc/ssh/sshd_config";
         } else {
@@ -481,6 +481,7 @@ class SSHSecurityService
         }
 
         $serverIP = gethostbyname(gethostname());
+
         return $ip === $serverIP;
     }
 
@@ -493,7 +494,7 @@ class SSHSecurityService
             '-o UserKnownHostsFile=/dev/null',
             '-o ConnectTimeout=10',
             '-o LogLevel=ERROR',
-            '-p ' . $port,
+            '-p '.$port,
         ];
 
         // Escape double quotes and backslashes for the remote command
@@ -518,7 +519,7 @@ class SSHSecurityService
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
             file_put_contents($keyFile, $server->ssh_key);
             chmod($keyFile, 0600);
-            $sshOptions[] = '-i ' . $keyFile;
+            $sshOptions[] = '-i '.$keyFile;
         }
 
         return sprintf(
@@ -540,6 +541,7 @@ class SSHSecurityService
 
         if ($server->ssh_password) {
             $escapedPassword = str_replace("'", "'\\''", $server->ssh_password);
+
             return "echo '{$escapedPassword}' | sudo -S ";
         }
 

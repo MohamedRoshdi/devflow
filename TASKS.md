@@ -1,13 +1,910 @@
 # DevFlow Pro - Task Management
 
-**Last updated:** December 4, 2025
-**Current Version:** v5.0.2
-**Next Target:** v5.1.0
-**Status:** v5.0 Complete ✅ | v5.0.2 Hotfix ✅
+**Last updated:** December 6, 2025
+**Current Version:** v5.21.0
+**Next Target:** v5.22.0
+**Status:** v5.21 Complete ✅ - Core Service Unit Tests Added! 🎉
 
 ---
 
-## 🚀 Roadmap v4.0
+## 🚀 Roadmap v5.21.0 - Complete ✅
+
+### Phase 1: Core Service Unit Tests - Complete ✅
+> *Goal: Comprehensive unit tests for core deployment and infrastructure services*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| GitServiceTest.php | [x] | 39 tests - clone, pull, checkout, SSH auth |
+| DockerServiceTest.php | [x] | 69 tests - compose, containers, volumes, networks |
+| DeploymentApprovalServiceTest.php | [x] | 39 tests - approval workflow, permissions |
+| RollbackServiceTest.php | [x] | 33 tests - rollback, state backup, recovery |
+
+### Phase 2: Code Quality - Complete ✅
+> *Goal: Maintain code quality standards*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| Laravel Pint | [x] | 0 issues - all service test files compliant |
+| PHPStan Level 6 | [x] | 0 errors - 239 app files analyzed |
+
+### Phase 3: Documentation - Complete ✅
+> *Goal: Update all documentation*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| CHANGELOG.md | [x] | v5.21.0 release notes added |
+| TASKS.md | [x] | v5.21.0 tasks documented |
+
+### 🎯 Test Coverage Summary
+> Browser + Unit test coverage for DevFlow Pro
+
+| Metric | Value |
+|--------|-------|
+| Browser Tests | 2657 (63 files) |
+| Unit Tests | 180+ (service tests) |
+| PHPStan Level | 6 (0 errors) |
+| Laravel Pint | 0 issues |
+
+---
+
+## 🚀 Roadmap v5.20.0 - Complete ✅
+
+### Phase 1: Public & Settings Tests - Complete ✅
+> *Goal: Comprehensive browser tests for remaining public pages and settings*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| ProjectDetailTest.php | [x] | 50 tests - public project page, info, responsive |
+| DefaultSetupPreferencesTest.php | [x] | 48 tests - default settings, toggles, persistence |
+
+### Phase 2: Pipeline & Security Tests - Complete ✅
+> *Goal: Final Livewire component browser tests*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| PipelineSettingsTest.php | [x] | 48 tests - pipeline config, branches, webhooks |
+| SecurityAuditLogTest.php | [x] | 50 tests - audit logs, filtering, export |
+
+### Phase 3: Code Quality - Complete ✅
+> *Goal: Maintain code quality standards*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| Laravel Pint | [x] | 0 issues - all 66 browser test files compliant |
+| PHPStan Level 8 | [x] | 0 errors - 239 files analyzed |
+
+### Phase 4: Documentation - Complete ✅
+> *Goal: Update all documentation*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| CHANGELOG.md | [x] | v5.20.0 release notes added |
+| TASKS.md | [x] | v5.20.0 tasks documented |
+
+### 🎯 Browser Test Coverage Complete!
+> All 75 Livewire components now have comprehensive browser test coverage
+
+| Metric | Value |
+|--------|-------|
+| Total Browser Tests | 2657 |
+| Total Test Files | 63 |
+| PHPStan Level | 8 (0 errors) |
+| Laravel Pint | 0 issues |
+
+---
+
+## 🚀 Roadmap v5.19.0 - Complete ✅
+
+### Phase 1: Public & Project Features - Complete ✅
+> *Goal: Comprehensive browser tests for public pages and project features*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| HomePublicTest.php | [x] | 55 tests - public page, hero, features, SEO, responsive |
+| ProjectLogsTest.php | [x] | 48 tests - log viewing, filtering, download, real-time |
+
+### Phase 2: Docker & Pipeline Tests - Complete ✅
+> *Goal: Additional Docker and Pipeline browser tests*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| ProjectDockerManagementTest.php | [x] | 50 tests - containers, operations, compose, monitoring |
+| PipelineRunShowTest.php | [x] | 48 tests - run details, stages, logs, actions |
+
+### Phase 3: Code Quality - Complete ✅
+> *Goal: Maintain code quality standards*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| Laravel Pint | [x] | 0 issues - all 62 browser test files compliant |
+| PHPStan Level 8 | [x] | 0 errors - 239 files analyzed |
+
+### Phase 4: Documentation - Complete ✅
+> *Goal: Update all documentation*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| CHANGELOG.md | [x] | v5.19.0 release notes added |
+| TASKS.md | [x] | v5.19.0 tasks documented |
+
+---
+
+## 🚀 Roadmap v5.18.0 - Complete ✅
+
+### Phase 1: CI/CD & Security Tests - Complete ✅
+> *Goal: Comprehensive browser tests for Pipeline Builder and Security Scanning*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| PipelineBuilderTest.php | [x] | 51 tests - pipeline creation, stages, templates, config |
+| SecurityScanDashboardTest.php | [x] | 48 tests - scans, vulnerabilities, compliance, reports |
+
+### Phase 2: Configuration & Status Tests - Complete ✅
+> *Goal: Additional Livewire component browser tests*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| ProjectConfigurationTest.php | [x] | 50 tests - project settings, frameworks, deployment |
+| SystemStatusTest.php | [x] | 48 tests - services, metrics, versions, real-time |
+
+### Phase 3: Code Quality - Complete ✅
+> *Goal: Maintain code quality standards*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| Laravel Pint | [x] | 0 issues - all 58 browser test files compliant |
+| PHPStan Level 8 | [x] | 0 errors - 239 files analyzed |
+
+### Phase 4: Documentation - Complete ✅
+> *Goal: Update all documentation*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| CHANGELOG.md | [x] | v5.18.0 release notes added |
+| TASKS.md | [x] | v5.18.0 tasks documented |
+
+---
+
+## 🚀 Roadmap v5.17.0 - Complete ✅
+
+### Phase 1: Responsive Design Tests - Complete ✅
+> *Goal: Comprehensive Mobile & Tablet responsive design browser tests*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| MobileDesignTest.php | [x] | 55 tests - mobile navigation, layouts, touch controls |
+| TabletDesignTest.php | [x] | 55 tests - tablet viewports, two-column layouts, orientations |
+
+### Phase 2: Feature Tests - Complete ✅
+> *Goal: Additional Livewire component browser tests*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| LogSourceManagerTest.php | [x] | 50 tests - log sources, templates, connection testing |
+| PipelineRunHistoryTest.php | [x] | 48 tests - run history, stages, filtering, actions |
+
+### Phase 3: Code Quality - Complete ✅
+> *Goal: Maintain code quality standards*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| Laravel Pint | [x] | 4 files fixed - Mobile, Tablet, LogSource, PipelineRun |
+| PHPStan Level 8 | [x] | 0 errors - 239 files analyzed |
+
+### Phase 4: Documentation - Complete ✅
+> *Goal: Update all documentation*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| CHANGELOG.md | [x] | v5.17.0 release notes added |
+| TASKS.md | [x] | v5.17.0 tasks documented |
+
+---
+
+## 🚀 Roadmap v5.16.0 - Complete ✅
+
+### Phase 1: Browser Test Expansion - Complete ✅
+> *Goal: Comprehensive Dusk tests for Scheduled Deployments, Comments, and Backup Managers*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| ScheduledDeploymentsTest.php | [x] | 50 tests - scheduling, timezones, notifications, status |
+| DeploymentCommentsTest.php | [x] | 48 tests - add, edit, delete, mentions, formatting |
+| FileBackupManagerTest.php | [x] | 50 tests - full/incremental, storage, restore, verify |
+| DatabaseBackupManagerTest.php | [x] | 50 tests - databases, scheduling, retention, statistics |
+
+### Phase 2: Code Quality - Complete ✅
+> *Goal: Maintain code quality standards*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| Laravel Pint | [x] | 4 files fixed - Comments, Scheduled, Approvals, Rollback |
+| PHPStan Level 8 | [x] | 0 errors - 239 files analyzed |
+
+### Phase 3: Documentation - Complete ✅
+> *Goal: Update all documentation*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| CHANGELOG.md | [x] | v5.16.0 release notes added |
+| TASKS.md | [x] | v5.16.0 tasks documented |
+
+---
+
+## 🚀 Roadmap v5.15.0 - Complete ✅
+
+### Phase 1: Browser Test Expansion - Complete ✅
+> *Goal: Comprehensive Dusk tests for Backups, Rollback, Approvals, and Tags*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| ServerBackupsTest.php | [x] | 50 tests - creation, scheduling, restoration, encryption |
+| DeploymentRollbackTest.php | [x] | 48 tests - target selection, progress, dry-run |
+| DeploymentApprovalsTest.php | [x] | 48 tests - workflow, approve/reject, multi-level |
+| ServerTagsTest.php | [x] | 50 tests - creation, assignment, filtering, bulk ops |
+
+### Phase 2: Code Quality - Complete ✅
+> *Goal: Maintain code quality standards*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| Laravel Pint | [x] | 2 files fixed - AuditLogsTest, ServerMetricsTest |
+| PHPStan Level 8 | [x] | 0 errors - 239 files analyzed |
+
+### Phase 3: Documentation - Complete ✅
+> *Goal: Update all documentation*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| CHANGELOG.md | [x] | v5.15.0 release notes added |
+| TASKS.md | [x] | v5.15.0 tasks documented |
+
+---
+
+## 🚀 Roadmap v5.14.0 - Complete ✅
+
+### Phase 1: Browser Test Expansion - Complete ✅
+> *Goal: Comprehensive Dusk tests for Metrics, Alerts, Audit Logs, and Webhooks*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| ServerMetricsTest.php | [x] | 50 tests - CPU, memory, disk, network, real-time |
+| ResourceAlertsTest.php | [x] | 46 tests - alerts, thresholds, notifications, history |
+| AuditLogsTest.php | [x] | 45 tests - filtering, search, export, activity |
+| ProjectWebhooksTest.php | [x] | 45 tests - webhooks, delivery, Git integration |
+
+### Phase 2: Code Quality - Complete ✅
+> *Goal: Maintain code quality standards*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| Laravel Pint | [x] | 1 file fixed - SSHTerminalTest.php |
+| PHPStan Level 8 | [x] | 0 errors - 239 files analyzed |
+
+### Phase 3: Documentation - Complete ✅
+> *Goal: Update all documentation*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| CHANGELOG.md | [x] | v5.14.0 release notes added |
+| TASKS.md | [x] | v5.14.0 tasks documented |
+
+---
+
+## 🚀 Roadmap v5.13.0 - Complete ✅
+
+### Phase 1: Browser Test Expansion - Complete ✅
+> *Goal: Comprehensive Dusk tests for Provisioning, SSH, Kubernetes, and User Settings*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| ServerProvisioningTest.php | [x] | 48 tests - provisioning wizard, software install, logs |
+| SSHTerminalTest.php | [x] | 43 tests - terminal, commands, history, themes |
+| KubernetesTest.php | [x] | 51 tests - clusters, pods, deployments, services |
+| UserSettingsTest.php | [x] | 50 tests - profile, security, preferences |
+
+### Phase 2: Code Quality - Complete ✅
+> *Goal: Maintain code quality standards*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| Laravel Pint | [x] | 1 file fixed - TeamsTest.php spacing |
+| PHPStan Level 8 | [x] | 0 errors - 239 files analyzed |
+
+### Phase 3: Documentation - Complete ✅
+> *Goal: Update all documentation*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| CHANGELOG.md | [x] | v5.13.0 release notes added |
+| TASKS.md | [x] | v5.13.0 tasks documented |
+
+---
+
+## 🚀 Roadmap v5.12.0 - Complete ✅
+
+### Phase 1: Browser Test Expansion - Complete ✅
+> *Goal: Comprehensive Dusk tests for Docker, Notifications, Teams, and Security*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| DockerTest.php | [x] | 50 tests - container ops, compose, volumes, networks |
+| NotificationsTest.php | [x] | 50 tests - channels, events, logs, preferences |
+| TeamsTest.php | [x] | 50 tests - members, roles, permissions, invitations |
+| SecurityTest.php | [x] | 50 tests - firewall, fail2ban, SSH, scanning |
+
+### Phase 2: Code Quality - Complete ✅
+> *Goal: Maintain code quality standards*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| Laravel Pint | [x] | 0 issues - 402 files compliant |
+| PHPStan Level 8 | [x] | 0 errors - 239 files analyzed |
+
+### Phase 3: Documentation - Complete ✅
+> *Goal: Update all documentation*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| CHANGELOG.md | [x] | v5.12.0 release notes added |
+| TASKS.md | [x] | v5.12.0 tasks documented |
+
+---
+
+## 🚀 Roadmap v5.11.0 - Complete ✅
+
+### Phase 1: Browser Test Expansion - Complete ✅
+> *Goal: Comprehensive Dusk tests for Health Checks, SSL, Admin, and Domains*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| HealthChecksTest.php | [x] | 50 tests - health check dashboard, types, notifications |
+| SSLTest.php | [x] | 50 tests - certificate management, renewal, expiry |
+| AdminTest.php | [x] | 50 tests - user management, audit logs, system admin |
+| DomainsTest.php | [x] | 50 tests - domain CRUD, DNS, SSL association |
+
+### Phase 2: Code Quality - Complete ✅
+> *Goal: Laravel Pint code style fixes*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| Laravel Pint Fixes | [x] | 18 files fixed - PSR-12 compliance |
+| PHPStan Level 8 | [x] | 0 errors - maintained compliance |
+
+### Phase 3: Documentation - Complete ✅
+> *Goal: Update all documentation*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| CHANGELOG.md | [x] | v5.11.0 release notes added |
+| TASKS.md | [x] | v5.11.0 tasks documented |
+
+---
+
+## 🚀 Roadmap v5.10.0 - Complete ✅
+
+### Phase 1: PHPStan Level 8 Compliance - Complete ✅
+> *Goal: Achieve ZERO PHPStan errors at Level 8*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| Null parameter handling | [x] | 21 errors fixed - proper null coalescing |
+| Null method calls | [x] | 45 errors fixed - null-safe operators |
+| Null property access | [x] | 32 errors fixed - guard clauses added |
+| Return type mismatches | [x] | 11 errors fixed - explicit type casts |
+| Total: 109 errors | [x] | 80+ files modified across codebase |
+
+### Phase 2: Browser Test Expansion - Complete ✅
+> *Goal: Comprehensive Dusk tests for Logs, Analytics, and Queue Monitor*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| LogsAndMonitoringTest.php | [x] | 50 tests - log viewer, filtering, sources, audit logs |
+| AnalyticsTest.php | [x] | 55 tests - dashboard, charts, metrics, trends |
+| QueueMonitorTest.php | [x] | 40 tests - jobs, workers, batches, statistics |
+
+### Phase 3: PHPUnit Test Fixes - Complete ✅
+> *Goal: Fix critical test failures*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| Dashboard.php syntax error | [x] | Fixed null-safe operator in string interpolation |
+| ResourceAlertManager.php | [x] | Fixed if statement placement |
+| ProjectFactory enums | [x] | Fixed project_type and status values |
+| BackupScheduleFactory | [x] | Fixed column name mismatches |
+| DatabaseBackupFactory | [x] | Created missing factory class |
+
+### Phase 4: Documentation - Complete ✅
+> *Goal: Update all documentation*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| CHANGELOG.md | [x] | v5.10.0 release notes added |
+| TASKS.md | [x] | v5.10.0 tasks documented |
+
+---
+
+## 🚀 Roadmap v5.9.0 - Complete ✅
+
+### Phase 1: Database Schema Fixes - Complete ✅
+> *Goal: Fix env_variables vs environment_variables inconsistency*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| ProjectFactory.php | [x] | Removed duplicate environment_variables field |
+| KubernetesService.php | [x] | Fixed 2 references to use env_variables |
+| DeploymentScriptService.php | [x] | Fixed 1 reference to use env_variables |
+| ProjectManagementTest.php | [x] | Fixed test assertions |
+| Pipeline Stages Migration | [x] | Created migration for environment_variables column |
+
+### Phase 2: Browser Test Expansion - Complete ✅
+> *Goal: Comprehensive Dusk tests for Scripts, Backups, and API Documentation*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| ScriptsTest.php | [x] | 50 tests - script management, templates, execution |
+| BackupsTest.php | [x] | 52 tests - database/file backups, scheduling, storage |
+| ApiDocumentationTest.php | [x] | 35 tests - API docs, tokens, webhooks |
+
+### Phase 3: PHPStan Level 7 Compliance - Complete ✅
+> *Goal: Achieve ZERO PHPStan errors at Level 7*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| Console Commands (3 files) | [x] | ProvisionServer, RenewSSL, RunQualityTests |
+| Controllers (1 file) | [x] | GitHubAuthController |
+| Livewire Components (3 files) | [x] | PipelineSettings, ServerMetricsDashboard, SSHKeyManager |
+| Models (5 files) | [x] | BackupSchedule, PipelineConfig, Server, ServerBackupSchedule, UserSettings |
+| Services (5 files) | [x] | DatabaseBackupService, SSHKeyService, FirewallService, SecurityScoreService, ServerProvisioningService |
+| Notifications (1 file) | [x] | ServerProvisioningCompleted |
+
+### Phase 4: Documentation - Complete ✅
+> *Goal: Update all documentation*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| CHANGELOG.md | [x] | v5.9.0 release notes added |
+| TASKS.md | [x] | v5.9.0 tasks documented |
+
+---
+
+## 🚀 Roadmap v5.8.0 - Complete ✅
+
+### Phase 1: Browser Test Expansion - Complete ✅
+> *Goal: Comprehensive Dusk tests for Environments, Pipelines, Tenants, and GitHub Integration*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| EnvironmentsTest.php | [x] | 50 tests - environment management, variables, encryption |
+| PipelinesTest.php | [x] | 45 tests - CI/CD pipeline creation, stages, execution |
+| TenantsTest.php | [x] | 43 tests - multi-tenant management, database, domains |
+| GitHubIntegrationTest.php | [x] | 35 tests - GitHub webhooks, commits, branch protection |
+
+### Phase 2: Code Quality - Complete ✅
+> *Goal: Laravel Pint code style standardization*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| Laravel Pint Fixes | [x] | 308 files fixed - PSR-12 compliance, formatting |
+
+### Phase 3: Documentation - Complete ✅
+> *Goal: Update all documentation*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| CHANGELOG.md | [x] | v5.8.0 release notes added |
+| TASKS.md | [x] | v5.8.0 tasks documented |
+
+---
+
+## 🚀 Roadmap v5.7.0 - Complete ✅
+
+### Phase 1: Browser Test Expansion - Complete ✅
+> *Goal: Comprehensive Dusk tests for Domains, Webhooks, and Storage*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| DomainsTest.php | [x] | 30 tests - domain management |
+| WebhooksTest.php | [x] | 35 tests - webhook functionality |
+| StorageTest.php | [x] | 35 tests - storage configuration |
+
+### Phase 2: PHPStan Level 6 Complete Compliance - Complete ✅
+> *Goal: Achieve ZERO PHPStan errors at Level 6*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| Eloquent Models (40+) | [x] | HasFactory generics, relationship generics |
+| Livewire Components (50+) | [x] | Property types, PHPDoc annotations |
+| Service Classes (15+) | [x] | Return types, array annotations |
+| Console Commands | [x] | Parameter types |
+| Notifications | [x] | Return type annotations |
+
+### Phase 3: Model Type Safety - Complete ✅
+> *Goal: All models PHPStan Level 6 compliant*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| Team.php | [x] | 7 errors fixed - relationship generics |
+| ApiToken.php | [x] | HasFactory generic added |
+| BackupSchedule.php | [x] | HasFactory generic added |
+| Deployment.php | [x] | HasFactory generic, relationship generics |
+| Domain.php | [x] | HasFactory generic, BelongsTo generic |
+| All remaining models | [x] | 30+ models fully typed |
+
+### Phase 4: Livewire Type Safety - Complete ✅
+> *Goal: All Livewire components PHPStan Level 6 compliant*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| Dashboard components | [x] | Property types, array annotations |
+| Deployments components | [x] | Parameter types, pagination |
+| Projects components | [x] | All 7 files typed properly |
+| Servers components | [x] | All 10+ files typed properly |
+| Settings components | [x] | All 4 files typed properly |
+| Teams/Users components | [x] | Avatar and queryString types |
+| Logs components | [x] | All 4 files typed properly |
+| SSL Manager | [x] | Confirmation modal pattern |
+
+### Phase 5: Service Layer Type Safety - Complete ✅
+> *Goal: All services PHPStan Level 6 compliant*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| LogAggregationService | [x] | Collection return types |
+| SSLManagementService | [x] | Collection return types |
+| ServerSecurityService | [x] | Collection return types |
+| ServerMetricsService | [x] | Collection return types |
+| MultiTenantService | [x] | Array property types |
+| AlertNotificationService | [x] | Removed redundant checks |
+| PipelineExecutionService | [x] | Fixed array handling |
+| DeploymentApprovalService | [x] | Fixed isset checks |
+| FileBackupService | [x] | Array property types |
+
+### Phase 6: Documentation - Complete ✅
+> *Goal: Update all documentation*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| CHANGELOG.md | [x] | v5.7.0 release notes added |
+| TASKS.md | [x] | v5.7.0 tasks documented |
+
+---
+
+## 🚀 Roadmap v5.6.0 - Complete ✅
+
+### Phase 1: Browser Test Expansion - Complete ✅
+> *Goal: Comprehensive Dusk tests for SSL, Health Checks, and Scripts*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| SSLTest.php | [x] | 30 tests - SSL certificate management |
+| HealthChecksTest.php | [x] | 35 tests - health check functionality |
+| ScriptsTest.php | [x] | 30 tests - scripts/automation |
+
+### Phase 2: Model Type Safety - Complete ✅
+> *Goal: Fix type errors in remaining Eloquent models*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| TenantDeployment.php | [x] | 3 errors fixed - relationship generics |
+| TeamInvitation.php | [x] | 3 errors fixed - relationship generics |
+| SecurityScan.php | [x] | 3 errors fixed - relationship generics |
+| SecurityEvent.php | [x] | 3 errors fixed - relationship generics |
+| PipelineStageRun.php | [x] | 3 errors fixed - relationship generics |
+| Pipeline.php | [x] | 3 errors fixed - relationship generics |
+| KubernetesCluster.php | [x] | 3 errors fixed - array types |
+| GitHubRepository.php | [x] | 3 errors fixed - relationship generics |
+
+### Phase 3: Service Layer Type Safety - Complete ✅
+> *Goal: Fix type errors in notification services*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| SlackDiscordNotificationService.php | [x] | 3 errors fixed - array/parameter types |
+
+### Phase 4: Documentation - Complete ✅
+> *Goal: Update all documentation*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| CHANGELOG.md | [x] | v5.6.0 release notes added |
+| TASKS.md | [x] | v5.6.0 tasks documented |
+
+---
+
+## 🚀 Roadmap v5.5.0 - Complete ✅
+
+### Phase 1: Browser Test Expansion - Complete ✅
+> *Goal: Comprehensive Dusk tests for Projects, Backups, and Notifications*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| ProjectsTest.php | [x] | 35 tests - project management |
+| BackupsTest.php | [x] | 29 tests - backup functionality |
+| NotificationsTest.php | [x] | 35 tests - notification management |
+
+### Phase 2: Livewire Component Type Safety - Complete ✅
+> *Goal: Fix type errors in deployment components*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| DeploymentShow.php | [x] | 4 errors fixed - property types |
+
+### Phase 3: Model Type Safety - Complete ✅
+> *Goal: Fix type errors in remaining Eloquent models*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| DeploymentApproval.php | [x] | 4 errors fixed - relationship generics |
+| DeploymentScriptRun.php | [x] | 4 errors fixed - relationship generics |
+| ResourceAlert.php | [x] | 4 errors fixed - scope generics |
+| ServerBackup.php | [x] | 4 errors fixed - scope generics |
+| TeamMember.php | [x] | 4 errors fixed - relationship generics |
+
+### Phase 4: Service Layer Type Safety - Complete ✅
+> *Goal: Fix type errors in service classes*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| AuditService.php | [x] | 4 errors fixed - Collection generics |
+| BulkServerActionService.php | [x] | 4 errors fixed - array shapes |
+| DatabaseBackupService.php | [x] | 4 errors fixed - Collection types |
+
+### Phase 5: Documentation - Complete ✅
+> *Goal: Update all documentation*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| CHANGELOG.md | [x] | v5.5.0 release notes added |
+| TASKS.md | [x] | v5.5.0 tasks documented |
+
+---
+
+## 🚀 Roadmap v5.4.0 - Complete ✅
+
+### Phase 1: Browser Test Expansion - Complete ✅
+> *Goal: Comprehensive Dusk tests for Deployments, Servers, and Analytics*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| DeploymentsTest.php | [x] | 30 tests - deployment management |
+| ServersTest.php | [x] | 40 tests - server management |
+| AnalyticsTest.php | [x] | 35 tests - analytics dashboard |
+
+### Phase 2: Auth Component Type Safety - Complete ✅
+> *Goal: Fix type errors in authentication components*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| Login.php | [x] | 3 errors fixed - property types |
+| Register.php | [x] | 4 errors fixed - property types |
+| ForgotPassword.php | [x] | 2 errors fixed - property types |
+
+### Phase 3: Livewire Component Type Safety - Complete ✅
+> *Goal: Fix type errors in management Livewire components*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| ServerList.php | [x] | 8 errors fixed - full property types |
+| SSHKeyManager.php | [x] | 5 errors fixed - Collection types |
+| ApiTokenManager.php | [x] | 5 errors fixed - array types |
+| ServerMetricsDashboard.php | [x] | 5 errors fixed - metric types |
+| AnalyticsDashboard.php | [x] | 5 errors fixed - stats types |
+
+### Phase 4: Model Type Safety - Complete ✅
+> *Goal: Fix type errors in remaining Eloquent models*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| Tenant.php | [x] | 5 errors fixed - relationship generics |
+| ProjectTemplate.php | [x] | 5 errors fixed - scope generics |
+| PipelineRun.php | [x] | 5 errors fixed - relationship generics |
+| LogSource.php | [x] | 5 errors fixed - scope generics |
+| AlertHistory.php | [x] | 5 errors fixed - scope generics |
+
+### Phase 5: Documentation - Complete ✅
+> *Goal: Update all documentation*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| CHANGELOG.md | [x] | v5.4.0 release notes added |
+| TASKS.md | [x] | v5.4.0 tasks documented |
+
+---
+
+## 🚀 Roadmap v5.3.0 - Complete ✅
+
+### Phase 1: Browser Test Expansion - Complete ✅
+> *Goal: Comprehensive Dusk tests for Docker, Kubernetes, and Admin*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| DockerTest.php | [x] | 25 tests - Docker container management |
+| KubernetesTest.php | [x] | 30 tests - Kubernetes cluster management |
+| AdminTest.php | [x] | 30 tests - User/admin management |
+
+### Phase 2: PHPStan Type Safety (Livewire) - Complete ✅
+> *Goal: Fix type errors in remaining Livewire components*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| ProjectDockerManagement.php | [x] | 13 errors fixed - full property types |
+| UserList.php | [x] | 13 errors fixed - strict types |
+| SystemAdmin.php | [x] | 12 errors fixed - array PHPDoc types |
+| DockerDashboard.php | [x] | 12 errors fixed - full property types |
+| ServerCreate.php | [x] | 11 errors fixed - full property types |
+| ServerEdit.php | [x] | 11 errors fixed - full property types |
+| DeploymentRollback.php | [x] | 10 errors fixed - method types |
+| DeploymentNotifications.php | [x] | 8 errors fixed - Collection types |
+| ServerTagManager.php | [x] | 7 errors fixed - property types |
+| SystemStatus.php | [x] | 6 errors fixed - array PHPDoc |
+
+### Phase 3: PHPStan Type Safety (Models) - Complete ✅
+> *Goal: Fix type errors in Eloquent models*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| FileBackup.php | [x] | 9 errors fixed - relationship generics |
+| PipelineStage.php | [x] | 9 errors fixed - relationship generics |
+| DatabaseBackup.php | [x] | 8 errors fixed - scope generics |
+| BackupSchedule.php | [x] | 7 errors fixed - relationship generics |
+| NotificationChannel.php | [x] | 7 errors fixed - relationship generics |
+| Team.php | [x] | 7 errors fixed - relationship generics |
+| StorageConfiguration.php | [x] | 7 errors fixed - scope generics |
+| HealthCheck.php | [x] | 6 errors fixed - relationship generics |
+| ScheduledDeployment.php | [x] | 6 errors fixed - scope generics |
+
+### Phase 4: Documentation - Complete ✅
+> *Goal: Update all documentation*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| CHANGELOG.md | [x] | v5.3.0 release notes added |
+| TASKS.md | [x] | v5.3.0 tasks documented |
+
+---
+
+## 🚀 Roadmap v5.2.0 - Complete ✅
+
+### Phase 1: PHPStan Type Safety - Complete ✅
+> *Goal: Add type declarations to high-error Livewire components*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| ProjectCreate.php | [x] | 22 errors fixed - full property types |
+| ProjectEdit.php | [x] | 18 errors fixed - full property types |
+| ProjectEnvironment.php | [x] | 20 errors fixed - full property types |
+| Dashboard.php | [x] | 17 errors fixed - array PHPDoc types |
+| DashboardOptimized.php | [x] | 13 errors fixed - array PHPDoc types |
+| TenantManager.php | [x] | 21 errors fixed - full property types |
+| ClusterManager.php | [x] | 20 errors fixed - full property types |
+| ScriptManager.php | [x] | 19 errors fixed - full property types |
+| SSLManager.php | [x] | Column selection optimization |
+| NotificationChannelManager.php | [x] | 13 errors fixed - method return types |
+| LogEntry.php (Model) | [x] | 18 errors fixed - relationship PHPDoc |
+| PipelineBuilder.php | [x] | Array PHPDoc types added |
+
+### Phase 2: N+1 Query Optimization - Complete ✅
+> *Goal: Fix performance issues in critical components*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| HealthDashboard.php | [x] | 87% query reduction with eager loading |
+| ProjectShow.php | [x] | Added domains eager loading |
+| SecurityAuditLog.php | [x] | Added #[Computed] caching |
+| SSLManager.php | [x] | Optimized certificate queries |
+| Dashboard.php | [x] | Fixed activity feed N+1 |
+| ServerList.php | [x] | Added computed properties + eager loading |
+
+### Phase 3: Browser Test Coverage - Complete ✅
+> *Goal: Comprehensive Dusk tests for all major features*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| TeamsTest.php | [x] | 20 tests - team management |
+| SecurityTest.php | [x] | 20 tests - security features |
+| SettingsTest.php | [x] | 27 tests - settings pages |
+| LogsAndMonitoringTest.php | [x] | 25 tests - logs and monitoring |
+| PipelinesTest.php | [x] | 20 tests - CI/CD pipelines |
+
+### Phase 4: Documentation - Complete ✅
+> *Goal: Update all documentation*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| CHANGELOG.md | [x] | v5.2.0 release notes added |
+| ROADMAP.md | [x] | v5.x release history updated |
+| TASKS.md | [x] | v5.2.0 tasks documented |
+
+---
+
+## 🚀 Roadmap v5.1.0 - Complete ✅
+
+### Phase 1: Security Fixes (CRITICAL) - Complete ✅
+> *Goal: Remove infrastructure exposure from public pages*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| **Home Page Security** | | |
+| Remove IP address exposure | [x] | HomePublic.php only uses domains, no fallback IPs |
+| Remove server names from display | [x] | No server names shown in public views |
+| Remove port numbers from URLs | [x] | Only domain-based HTTPS URLs used |
+| Force HTTPS-only URLs | [x] | All URLs converted to HTTPS in project-detail.blade.php |
+| Add `sanitizeForPublic()` method | [x] | Built into view logic with domain-only access |
+
+### Phase 2: NileStack Branding - Complete ✅
+> *Goal: Consistent NileStack branding across the platform*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| **Header & Footer** | | |
+| Update navigation header | [x] | NileStack logo + "DevFlow Pro Platform" in home-public.blade.php |
+| Update footer branding | [x] | NileStack attribution + copyright in all public pages |
+| Update meta tags | [x] | OG tags, title, author in marketing.blade.php |
+| **Assets** | | |
+| Create favicon.svg | [x] | public/favicon.svg exists |
+| Create apple-touch-icon | [x] | public/apple-touch-icon.svg exists |
+| Create OG image | [x] | public/images/nilestack-og.svg exists |
+
+### Phase 3: Dashboard Enhancements - Complete ✅
+> *Goal: Expanded dashboard with more stats and features*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| **Extended Stats Cards** | | |
+| SSL Certificates card | [x] | $sslStats with expiring_soon count |
+| Health Checks card | [x] | $healthCheckStats with healthy/down counts |
+| Queue Jobs card | [x] | $queueStats with pending/failed counts |
+| Security Score card | [x] | $overallSecurityScore from servers |
+| **Quick Actions Panel** | | |
+| Deploy All button | [x] | deployAll() method implemented |
+| Clear Caches button | [x] | clearAllCaches() method implemented |
+| **Activity Feed Improvements** | | |
+| Timeline layout | [x] | $recentActivity with type-based events |
+| Combined events | [x] | Deployments + projects merged & sorted |
+| Auto-refresh | [x] | loadMoreActivity() with lazy loading |
+| **Server Health Summary** | | |
+| Visual cards per server | [x] | $serverHealth with full metrics |
+| Color coding | [x] | getServerHealthStatus() with critical/warning/healthy |
+| **UI Enhancements** | | |
+| Collapsible sections | [x] | $collapsedSections with DB persistence |
+
+### Phase 4: Design Consistency - Complete ✅
+> *Goal: Unified design language across all pages*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| **Page Headers** | | |
+| Team list gradient hero | [x] | indigo-purple-pink gradient in team-list.blade.php |
+| Health dashboard header | [x] | emerald-teal-cyan gradient in health-dashboard.blade.php |
+| Health check manager header | [x] | blue-indigo gradient in health-check-manager.blade.php |
+| **Styling Consistency** | | |
+| Use rounded-2xl everywhere | [x] | Applied across all hero sections |
+| Backdrop-blur buttons | [x] | Glass-morphism style on action buttons |
+
+### Phase 5: Browser Tests - Complete ✅
+> *Goal: Comprehensive Dusk browser tests*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| **Server Management Tests** | | |
+| Configure Dusk for production | [x] | UI-based login, session handling |
+| Server list tests | [x] | 20 tests passing |
+| Server CRUD tests | [x] | Create, read, update flows tested |
+| Server detail tests | [x] | Quick actions, metrics, SSH terminal |
+
+### Phase 6: Documentation - Complete ✅
+> *Goal: Update documentation for v5.1.0*
+
+| Task | Status | Description |
+|------|--------|-------------|
+| Update CHANGELOG.md | [x] | Added v5.1.0 release notes with all changes |
+| Update README version | [x] | Version badge updated to 5.1.0 |
+| NileStack attribution | [x] | Already present in README footer |
+
+---
+
+## 🚀 Roadmap v4.0 (Completed)
 
 ### Phase 1: Real-time Server Metrics (High Priority) - 100% Complete ✅
 > *Goal: Live monitoring dashboard with WebSocket-powered charts*

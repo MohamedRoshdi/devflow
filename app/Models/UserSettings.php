@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserSettings extends Model
 {
+    /** @use HasFactory<\Database\Factories\UserSettingsFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -85,6 +86,9 @@ class UserSettings extends Model
             $this->update([$key => $value]);
         } else {
             $settings = $this->additional_settings ?? [];
+            if (! is_array($settings)) {
+                $settings = [];
+            }
             $settings[$key] = $value;
             $this->update(['additional_settings' => $settings]);
         }

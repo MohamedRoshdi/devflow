@@ -4,6 +4,7 @@ namespace App\Livewire\Logs;
 
 use App\Models\SecurityEvent;
 use App\Models\Server;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -12,14 +13,21 @@ class SecurityAuditLog extends Component
     use WithPagination;
 
     public string $search = '';
+
     public string $serverFilter = '';
+
     public string $eventTypeFilter = '';
+
     public string $dateFrom = '';
+
     public string $dateTo = '';
 
+    /** @var array<string, mixed> */
     public array $selectedEvent = [];
+
     public bool $showDetails = false;
 
+    /** @var array<string, array{except: string}> */
     protected $queryString = [
         'search' => ['except' => ''],
         'serverFilter' => ['except' => ''],
@@ -44,14 +52,14 @@ class SecurityAuditLog extends Component
         if ($event) {
             $this->selectedEvent = [
                 'id' => $event->id,
-                'server' => $event->server?->name ?? 'N/A',
+                'server' => $event->server->name ?? 'N/A',
                 'event_type' => $event->event_type,
                 'event_type_label' => $event->getEventTypeLabel(),
                 'source_ip' => $event->source_ip,
                 'details' => $event->details,
                 'metadata' => $event->metadata,
                 'user' => $event->user?->name ?? 'System',
-                'created_at' => $event->created_at->format('Y-m-d H:i:s'),
+                'created_at' => $event->created_at?->format('Y-m-d H:i:s') ?? 'Unknown',
             ];
             $this->showDetails = true;
         }
@@ -63,7 +71,8 @@ class SecurityAuditLog extends Component
         $this->selectedEvent = [];
     }
 
-    public function getServersProperty()
+    #[Computed]
+    public function servers()
     {
         return Server::orderBy('name')->get();
     }
@@ -103,14 +112,14 @@ class SecurityAuditLog extends Component
     {
         $events = SecurityEvent::query()
             ->with(['server', 'user'])
-            ->when($this->search, fn($q) => $q->where(function ($query) {
+            ->when($this->search, fn ($q) => $q->where(function ($query) {
                 $query->where('details', 'like', "%{$this->search}%")
                     ->orWhere('source_ip', 'like', "%{$this->search}%");
             }))
-            ->when($this->serverFilter, fn($q) => $q->where('server_id', $this->serverFilter))
-            ->when($this->eventTypeFilter, fn($q) => $q->where('event_type', $this->eventTypeFilter))
-            ->when($this->dateFrom, fn($q) => $q->whereDate('created_at', '>=', $this->dateFrom))
-            ->when($this->dateTo, fn($q) => $q->whereDate('created_at', '<=', $this->dateTo))
+            ->when($this->serverFilter, fn ($q) => $q->where('server_id', $this->serverFilter))
+            ->when($this->eventTypeFilter, fn ($q) => $q->where('event_type', $this->eventTypeFilter))
+            ->when($this->dateFrom, fn ($q) => $q->whereDate('created_at', '>=', $this->dateFrom))
+            ->when($this->dateTo, fn ($q) => $q->whereDate('created_at', '<=', $this->dateTo))
             ->orderByDesc('created_at')
             ->paginate(20);
 

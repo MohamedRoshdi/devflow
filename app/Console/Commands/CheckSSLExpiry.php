@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Services\SSLManagementService;
 use App\Notifications\SSLCertificateExpiring;
+use App\Services\SSLManagementService;
 use Illuminate\Console\Command;
 
 class CheckSSLExpiry extends Command
@@ -34,6 +34,7 @@ class CheckSSLExpiry extends Command
 
         if ($expiringCertificates->isEmpty()) {
             $this->info('✓ No expiring certificates found.');
+
             return self::SUCCESS;
         }
 
@@ -69,6 +70,7 @@ class CheckSSLExpiry extends Command
         // Send notifications for critical certificates (< 7 days)
         $criticalCertificates = $expiringCertificates->filter(function ($cert) {
             $daysLeft = $cert->daysUntilExpiry();
+
             return $daysLeft !== null && $daysLeft <= 7;
         });
 
@@ -95,14 +97,14 @@ class CheckSSLExpiry extends Command
 
             $results = $this->sslService->renewExpiringCertificates($daysThreshold);
 
-            if (!empty($results['success'])) {
+            if (! empty($results['success'])) {
                 $this->info("✓ Successfully renewed {$results['success']->count()} certificate(s):");
                 foreach ($results['success'] as $result) {
                     $this->line("  - {$result['domain']}");
                 }
             }
 
-            if (!empty($results['failed'])) {
+            if (! empty($results['failed'])) {
                 $this->newLine();
                 $this->error("✗ Failed to renew {$results['failed']->count()} certificate(s):");
                 foreach ($results['failed'] as $result) {

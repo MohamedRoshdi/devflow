@@ -4,9 +4,9 @@ namespace App\Services;
 
 use App\Models\Server;
 use App\Models\SSLCertificate;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Process\Process;
-use Carbon\Carbon;
 
 class SSLService
 {
@@ -27,6 +27,7 @@ class SSLService
                 'server_id' => $server->id,
                 'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
@@ -73,7 +74,7 @@ class SSLService
 
             return [
                 'success' => false,
-                'message' => 'Failed to install certbot: ' . substr($errorMessage, 0, 200),
+                'message' => 'Failed to install certbot: '.substr($errorMessage, 0, 200),
                 'error' => $errorMessage,
             ];
 
@@ -85,7 +86,7 @@ class SSLService
 
             return [
                 'success' => false,
-                'message' => 'Installation failed: ' . $e->getMessage(),
+                'message' => 'Installation failed: '.$e->getMessage(),
             ];
         }
     }
@@ -102,9 +103,9 @@ class SSLService
             ]);
 
             // Check if certbot is installed
-            if (!$this->checkCertbotInstalled($server)) {
+            if (! $this->checkCertbotInstalled($server)) {
                 $installResult = $this->installCertbot($server);
-                if (!$installResult['success']) {
+                if (! $installResult['success']) {
                     return $installResult;
                 }
             }
@@ -161,7 +162,7 @@ class SSLService
             }
 
             // Certificate issuance failed
-            $errorMessage = !empty($errorOutput) ? $errorOutput : $output;
+            $errorMessage = ! empty($errorOutput) ? $errorOutput : $output;
 
             // Try to create a failed certificate record
             try {
@@ -190,7 +191,7 @@ class SSLService
 
             return [
                 'success' => false,
-                'message' => 'Failed to issue certificate: ' . substr($errorMessage, 0, 300),
+                'message' => 'Failed to issue certificate: '.substr($errorMessage, 0, 300),
                 'error' => $errorMessage,
             ];
 
@@ -203,7 +204,7 @@ class SSLService
 
             return [
                 'success' => false,
-                'message' => 'Certificate issuance failed: ' . $e->getMessage(),
+                'message' => 'Certificate issuance failed: '.$e->getMessage(),
             ];
         }
     }
@@ -261,7 +262,7 @@ class SSLService
             }
 
             // Renewal failed
-            $errorMessage = !empty($errorOutput) ? $errorOutput : $output;
+            $errorMessage = ! empty($errorOutput) ? $errorOutput : $output;
 
             $certificate->update([
                 'status' => 'failed',
@@ -276,7 +277,7 @@ class SSLService
 
             return [
                 'success' => false,
-                'message' => 'Failed to renew certificate: ' . substr($errorMessage, 0, 300),
+                'message' => 'Failed to renew certificate: '.substr($errorMessage, 0, 300),
                 'error' => $errorMessage,
             ];
 
@@ -293,7 +294,7 @@ class SSLService
 
             return [
                 'success' => false,
-                'message' => 'Renewal failed: ' . $e->getMessage(),
+                'message' => 'Renewal failed: '.$e->getMessage(),
             ];
         }
     }
@@ -343,7 +344,7 @@ class SSLService
 
             return [
                 'success' => false,
-                'message' => 'Failed to revoke certificate: ' . substr($errorMessage, 0, 300),
+                'message' => 'Failed to revoke certificate: '.substr($errorMessage, 0, 300),
                 'error' => $errorMessage,
             ];
 
@@ -355,7 +356,7 @@ class SSLService
 
             return [
                 'success' => false,
-                'message' => 'Revocation failed: ' . $e->getMessage(),
+                'message' => 'Revocation failed: '.$e->getMessage(),
             ];
         }
     }
@@ -376,7 +377,7 @@ class SSLService
 
                 return [
                     'success' => true,
-                    'valid' => !$certInfo['expires_at']->isPast(),
+                    'valid' => ! $certInfo['expires_at']->isPast(),
                     'expires_at' => $certInfo['expires_at'],
                 ];
             }
@@ -394,7 +395,7 @@ class SSLService
 
             return [
                 'success' => false,
-                'message' => 'Failed to check certificate status: ' . $e->getMessage(),
+                'message' => 'Failed to check certificate status: '.$e->getMessage(),
             ];
         }
     }
@@ -417,7 +418,7 @@ class SSLService
 
             $output = trim($process->getOutput());
 
-            if (str_contains($output, 'NOT_FOUND') || !$process->isSuccessful()) {
+            if (str_contains($output, 'NOT_FOUND') || ! $process->isSuccessful()) {
                 return [
                     'found' => false,
                 ];
@@ -481,7 +482,7 @@ class SSLService
             }
 
             // Setup cron job if not configured
-            $cronCommand = "0 2 * * * certbot renew --quiet";
+            $cronCommand = '0 2 * * * certbot renew --quiet';
             $setupCronCommand = "(crontab -l 2>/dev/null | grep -v certbot; echo '{$cronCommand}') | crontab -";
 
             $command = $this->buildSSHCommand($server, $setupCronCommand);
@@ -512,7 +513,7 @@ class SSLService
 
             return [
                 'success' => false,
-                'message' => 'Failed to setup auto-renewal: ' . $e->getMessage(),
+                'message' => 'Failed to setup auto-renewal: '.$e->getMessage(),
             ];
         }
     }
@@ -565,6 +566,7 @@ BASH;
             return '';
         } elseif ($server->ssh_password) {
             $escapedPassword = str_replace("'", "'\\''", $server->ssh_password);
+
             return "echo '{$escapedPassword}' | sudo -S ";
         } else {
             return 'sudo ';
@@ -581,7 +583,7 @@ BASH;
             '-o UserKnownHostsFile=/dev/null',
             '-o ConnectTimeout=10',
             '-o LogLevel=ERROR',
-            '-p ' . $server->port,
+            '-p '.$server->port,
         ];
 
         $stderrRedirect = $suppressWarnings ? '2>/dev/null' : '2>&1';
@@ -593,7 +595,7 @@ BASH;
             $encodedScript = base64_encode($remoteCommand);
             $executeCommand = "echo {$encodedScript} | base64 -d | /bin/bash";
         } else {
-            $executeCommand = "/bin/bash -c " . escapeshellarg($remoteCommand);
+            $executeCommand = '/bin/bash -c '.escapeshellarg($remoteCommand);
         }
 
         // Check if password authentication should be used
@@ -618,7 +620,7 @@ BASH;
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
             file_put_contents($keyFile, $server->ssh_key);
             chmod($keyFile, 0600);
-            $sshOptions[] = '-i ' . $keyFile;
+            $sshOptions[] = '-i '.$keyFile;
         }
 
         return sprintf(
@@ -631,4 +633,3 @@ BASH;
         );
     }
 }
-

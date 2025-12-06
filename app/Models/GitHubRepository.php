@@ -8,8 +8,36 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $github_connection_id
+ * @property int|null $project_id
+ * @property int $repo_id
+ * @property string $name
+ * @property string $full_name
+ * @property string|null $description
+ * @property bool $private
+ * @property string $default_branch
+ * @property string $clone_url
+ * @property string $ssh_url
+ * @property string $html_url
+ * @property string|null $language
+ * @property int $stars_count
+ * @property int $forks_count
+ * @property \Illuminate\Support\Carbon|null $synced_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read GitHubConnection $connection
+ * @property-read Project|null $project
+ * @property-read string $language_color
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|GitHubRepository newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|GitHubRepository newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|GitHubRepository query()
+ */
 class GitHubRepository extends Model
 {
+    /** @use HasFactory<\Database\Factories\GitHubRepositoryFactory> */
     use HasFactory;
 
     /**
@@ -54,6 +82,8 @@ class GitHubRepository extends Model
 
     /**
      * Get the GitHub connection that owns the repository.
+     *
+     * @return BelongsTo<GitHubConnection, $this>
      */
     public function connection(): BelongsTo
     {
@@ -62,6 +92,8 @@ class GitHubRepository extends Model
 
     /**
      * Get the project linked to this repository.
+     *
+     * @return BelongsTo<Project, $this>
      */
     public function project(): BelongsTo
     {
@@ -81,7 +113,7 @@ class GitHubRepository extends Model
      */
     public function getLanguageColorAttribute(): string
     {
-        return match($this->language) {
+        return match ($this->language) {
             'PHP' => 'bg-purple-500',
             'JavaScript' => 'bg-yellow-500',
             'TypeScript' => 'bg-blue-500',

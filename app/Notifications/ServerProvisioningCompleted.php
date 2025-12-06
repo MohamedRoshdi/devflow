@@ -6,8 +6,8 @@ namespace App\Notifications;
 
 use App\Models\Server;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class ServerProvisioningCompleted extends Notification
 {
@@ -27,12 +27,15 @@ class ServerProvisioningCompleted extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         if ($this->success) {
+            $packages = $this->server->installed_packages;
+            $packagesList = is_array($packages) ? implode(', ', $packages) : '';
+
             return (new MailMessage)
                 ->subject("Server Provisioned Successfully: {$this->server->name}")
                 ->line("Your server {$this->server->name} has been successfully provisioned.")
                 ->line("**Server:** {$this->server->name}")
                 ->line("**IP Address:** {$this->server->ip_address}")
-                ->line("**Installed Packages:** " . implode(', ', $this->server->installed_packages ?? []))
+                ->line('**Installed Packages:** '.$packagesList)
                 ->action('View Server', route('servers.show', $this->server->id))
                 ->line('Your server is now ready for deployments!');
         }
@@ -48,6 +51,9 @@ class ServerProvisioningCompleted extends Notification
             ->line('Please check the provisioning logs for more details.');
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toDatabase(object $notifiable): array
     {
         return [

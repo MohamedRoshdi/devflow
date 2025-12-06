@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\{AuditLog, User};
+use App\Models\AuditLog;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Request;
@@ -13,6 +14,9 @@ class AuditService
 {
     /**
      * Log an action on a model
+     *
+     * @param  array<string, mixed>|null  $oldValues
+     * @param  array<string, mixed>|null  $newValues
      */
     public function log(
         string $action,
@@ -35,6 +39,8 @@ class AuditService
 
     /**
      * Get audit logs for a specific model
+     *
+     * @return Collection<int, AuditLog>
      */
     public function getLogsForModel(Model $model, int $limit = 50): Collection
     {
@@ -48,6 +54,8 @@ class AuditService
 
     /**
      * Get audit logs by user
+     *
+     * @return Collection<int, AuditLog>
      */
     public function getLogsByUser(User $user, int $limit = 100): Collection
     {
@@ -60,6 +68,8 @@ class AuditService
 
     /**
      * Get audit logs by action
+     *
+     * @return Collection<int, AuditLog>
      */
     public function getLogsByAction(string $action, int $limit = 100): Collection
     {
@@ -72,6 +82,9 @@ class AuditService
 
     /**
      * Get audit logs with filters
+     *
+     * @param  array<string, mixed>  $filters
+     * @return Collection<int, AuditLog>
      */
     public function getLogsFiltered(array $filters = []): Collection
     {
@@ -112,6 +125,9 @@ class AuditService
 
     /**
      * Get activity statistics
+     *
+     * @param  array<string, mixed>  $filters
+     * @return array{total: int, by_action: array<string, int>, by_user: array<int, int>, by_model_type: array<string, int>}
      */
     public function getActivityStats(array $filters = []): array
     {
@@ -158,6 +174,8 @@ class AuditService
 
     /**
      * Export audit logs to CSV
+     *
+     * @param  array<string, mixed>  $filters
      */
     public function exportToCsv(array $filters = []): string
     {
@@ -184,10 +202,13 @@ class AuditService
 
     /**
      * Sanitize sensitive data from values
+     *
+     * @param  array<string, mixed>|null  $values
+     * @return array<string, mixed>|null
      */
     private function sanitizeValues(?array $values): ?array
     {
-        if (!$values) {
+        if (! $values) {
             return null;
         }
 

@@ -8,8 +8,9 @@ use App\Models\LogEntry;
 use App\Models\Project;
 use App\Models\Server;
 use App\Services\LogAggregationService;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use Livewire\Component;
-use Livewire\Attributes\{Computed, On};
 use Livewire\WithPagination;
 
 class LogViewer extends Component
@@ -17,15 +18,24 @@ class LogViewer extends Component
     use WithPagination;
 
     public ?int $server_id = null;
+
     public ?int $project_id = null;
+
     public string $source = 'all';
+
     public string $level = 'all';
+
     public string $search = '';
+
     public string $dateFrom = '';
+
     public string $dateTo = '';
+
     public ?int $expandedLogId = null;
+
     public bool $autoRefresh = false;
 
+    /** @var array<string, array{except: string}|array{except: int|null}> */
     protected $queryString = [
         'server_id' => ['except' => null],
         'project_id' => ['except' => null],
@@ -128,8 +138,9 @@ class LogViewer extends Component
 
     public function syncNow(): void
     {
-        if (!$this->server_id) {
+        if (! $this->server_id) {
             $this->dispatch('notification', type: 'error', message: 'Please select a server first');
+
             return;
         }
 
@@ -173,7 +184,7 @@ class LogViewer extends Component
             'date_to' => $this->dateTo,
         ]);
 
-        $filename = 'logs_' . now()->format('Y-m-d_His') . '.csv';
+        $filename = 'logs_'.now()->format('Y-m-d_His').'.csv';
         $handle = fopen('php://temp', 'r+');
 
         // CSV headers
@@ -182,7 +193,7 @@ class LogViewer extends Component
         foreach ($logs as $log) {
             fputcsv($handle, [
                 $log->logged_at->format('Y-m-d H:i:s'),
-                $log->server->name,
+                $log->server?->name ?? 'Unknown',
                 $log->project?->name ?? 'N/A',
                 $log->source,
                 $log->level,

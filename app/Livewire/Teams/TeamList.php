@@ -25,7 +25,7 @@ class TeamList extends Component
     public string $description = '';
 
     #[Validate('nullable|image|max:2048')]
-    public $avatar = null;
+    public mixed $avatar = null;
 
     public function __construct(
         private readonly TeamService $teamService
@@ -34,21 +34,26 @@ class TeamList extends Component
     #[Computed]
     public function teams()
     {
-        return Auth::user()->teams()
+        $user = Auth::user();
+        if ($user === null) {
+            return collect();
+        }
+
+        return $user->teams()
             ->withCount('members')
             ->with(['owner'])
             ->latest()
             ->get()
-            ->map(function (Team $team) {
+            ->map(function (Team $team) use ($user) {
                 return [
                     'id' => $team->id,
                     'name' => $team->name,
                     'description' => $team->description,
                     'avatar_url' => $team->avatar_url,
                     'members_count' => $team->members_count,
-                    'role' => $team->getMemberRole(Auth::user()),
-                    'is_owner' => $team->isOwner(Auth::user()),
-                    'is_current' => Auth::user()->current_team_id === $team->id,
+                    'role' => $team->getMemberRole($user),
+                    'is_owner' => $team->isOwner($user),
+                    'is_current' => $user->current_team_id === $team->id,
                 ];
             });
     }
@@ -95,7 +100,7 @@ class TeamList extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Failed to create team: ' . $e->getMessage(),
+                'message' => 'Failed to create team: '.$e->getMessage(),
             ]);
         }
     }
@@ -104,15 +109,17 @@ class TeamList extends Component
     {
         $team = Team::findOrFail($teamId);
 
-        if (!$team->hasMember(Auth::user())) {
+        $user = Auth::user();
+        if ($user === null || ! $team->hasMember($user)) {
             $this->dispatch('notification', [
                 'type' => 'error',
                 'message' => 'You do not have access to this team.',
             ]);
+
             return;
         }
 
-        Auth::user()->update(['current_team_id' => $teamId]);
+        $user->update(['current_team_id' => $teamId]);
 
         $this->dispatch('notification', [
             'type' => 'success',
@@ -129,11 +136,12 @@ class TeamList extends Component
     {
         $team = Team::findOrFail($teamId);
 
-        if (!$team->isOwner(Auth::user())) {
+        if (! $team->isOwner(Auth::user())) {
             $this->dispatch('notification', [
                 'type' => 'error',
                 'message' => 'Only the team owner can delete the team.',
             ]);
+
             return;
         }
 
@@ -149,7 +157,7 @@ class TeamList extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Failed to delete team: ' . $e->getMessage(),
+                'message' => 'Failed to delete team: '.$e->getMessage(),
             ]);
         }
     }

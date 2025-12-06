@@ -8,10 +8,26 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $team_id
+ * @property int $user_id
+ * @property string $role
+ * @property array<int, string>|null $permissions
+ * @property int|null $invited_by
+ * @property \Illuminate\Support\Carbon|null $joined_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Team $team
+ * @property-read User $user
+ * @property-read User $inviter
+ */
 class TeamMember extends Model
 {
+    /** @use HasFactory<\Database\Factories\TeamMemberFactory> */
     use HasFactory;
 
+    /** @var array<int, string> */
     protected $fillable = [
         'team_id',
         'user_id',
@@ -21,21 +37,31 @@ class TeamMember extends Model
         'joined_at',
     ];
 
+    /** @var array<string, string> */
     protected $casts = [
         'permissions' => 'array',
         'joined_at' => 'datetime',
     ];
 
+    /**
+     * @return BelongsTo<Team, TeamMember>
+     */
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
     }
 
+    /**
+     * @return BelongsTo<User, TeamMember>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return BelongsTo<User, TeamMember>
+     */
     public function inviter(): BelongsTo
     {
         return $this->belongsTo(User::class, 'invited_by');
@@ -54,7 +80,7 @@ class TeamMember extends Model
         }
 
         // Default role permissions
-        return match($this->role) {
+        return match ($this->role) {
             'member' => in_array($permission, [
                 'view_projects',
                 'view_deployments',

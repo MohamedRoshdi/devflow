@@ -4,28 +4,36 @@ declare(strict_types=1);
 
 namespace App\Livewire\Servers\Security;
 
-use Livewire\Component;
 use App\Models\Server;
 use App\Services\Security\SSHSecurityService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Component;
 
 class SSHSecurityManager extends Component
 {
     use AuthorizesRequests;
 
     public Server $server;
+
     public bool $isLoading = false;
+
     public bool $showConfigModal = false;
+
     public bool $showHardenConfirm = false;
 
     // SSH Configuration
     public int $port = 22;
+
     public bool $rootLoginEnabled = true;
+
     public bool $passwordAuthEnabled = true;
+
     public bool $pubkeyAuthEnabled = true;
+
     public int $maxAuthTries = 6;
 
     public ?string $flashMessage = null;
+
     public ?string $flashType = null;
 
     public function mount(Server $server): void
@@ -55,7 +63,7 @@ class SSHSecurityManager extends Component
                 $this->flashType = 'error';
             }
         } catch (\Exception $e) {
-            $this->flashMessage = 'Failed to load SSH config: ' . $e->getMessage();
+            $this->flashMessage = 'Failed to load SSH config: '.$e->getMessage();
             $this->flashType = 'error';
         }
 
@@ -66,10 +74,10 @@ class SSHSecurityManager extends Component
     {
         try {
             $service = app(SSHSecurityService::class);
-            $result = $service->toggleRootLogin($this->server, !$this->rootLoginEnabled);
+            $result = $service->toggleRootLogin($this->server, ! $this->rootLoginEnabled);
 
             if ($result['success']) {
-                $this->rootLoginEnabled = !$this->rootLoginEnabled;
+                $this->rootLoginEnabled = ! $this->rootLoginEnabled;
                 $this->flashMessage = $result['message'];
                 $this->flashType = 'success';
             } else {
@@ -77,7 +85,7 @@ class SSHSecurityManager extends Component
                 $this->flashType = 'error';
             }
         } catch (\Exception $e) {
-            $this->flashMessage = 'Failed: ' . $e->getMessage();
+            $this->flashMessage = 'Failed: '.$e->getMessage();
             $this->flashType = 'error';
         }
     }
@@ -86,10 +94,10 @@ class SSHSecurityManager extends Component
     {
         try {
             $service = app(SSHSecurityService::class);
-            $result = $service->togglePasswordAuth($this->server, !$this->passwordAuthEnabled);
+            $result = $service->togglePasswordAuth($this->server, ! $this->passwordAuthEnabled);
 
             if ($result['success']) {
-                $this->passwordAuthEnabled = !$this->passwordAuthEnabled;
+                $this->passwordAuthEnabled = ! $this->passwordAuthEnabled;
                 $this->flashMessage = $result['message'];
                 $this->flashType = 'success';
             } else {
@@ -97,7 +105,7 @@ class SSHSecurityManager extends Component
                 $this->flashType = 'error';
             }
         } catch (\Exception $e) {
-            $this->flashMessage = 'Failed: ' . $e->getMessage();
+            $this->flashMessage = 'Failed: '.$e->getMessage();
             $this->flashType = 'error';
         }
     }
@@ -116,7 +124,7 @@ class SSHSecurityManager extends Component
                 $this->flashType = 'error';
             }
         } catch (\Exception $e) {
-            $this->flashMessage = 'Failed: ' . $e->getMessage();
+            $this->flashMessage = 'Failed: '.$e->getMessage();
             $this->flashType = 'error';
         }
     }
@@ -130,7 +138,7 @@ class SSHSecurityManager extends Component
             $result = $service->hardenSSH($this->server);
 
             if ($result['success']) {
-                $this->flashMessage = $result['message'] . ' ' . ($result['warning'] ?? '');
+                $this->flashMessage = $result['message'].' '.($result['warning'] ?? '');
                 $this->flashType = 'success';
                 $this->loadSSHConfig();
             } else {
@@ -138,7 +146,7 @@ class SSHSecurityManager extends Component
                 $this->flashType = 'error';
             }
         } catch (\Exception $e) {
-            $this->flashMessage = 'Failed: ' . $e->getMessage();
+            $this->flashMessage = 'Failed: '.$e->getMessage();
             $this->flashType = 'error';
         }
     }
@@ -157,7 +165,7 @@ class SSHSecurityManager extends Component
                 $this->flashType = 'error';
             }
         } catch (\Exception $e) {
-            $this->flashMessage = 'Failed: ' . $e->getMessage();
+            $this->flashMessage = 'Failed: '.$e->getMessage();
             $this->flashType = 'error';
         }
     }

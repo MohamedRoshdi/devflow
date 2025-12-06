@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\{Server, DatabaseBackup, BackupSchedule};
-use Illuminate\Support\Facades\{Storage, Log};
-use Symfony\Component\Process\Process;
+use App\Models\BackupSchedule;
+use App\Models\DatabaseBackup;
+use App\Models\Project;
+use App\Models\Server;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Process\Process;
 
 class DatabaseBackupService
 {
@@ -35,7 +40,7 @@ class DatabaseBackupService
             $localPath = $this->getLocalBackupPath($backup);
 
             // Create backup based on database type
-            $metadata = match($schedule->database_type) {
+            $metadata = match ($schedule->database_type) {
                 'mysql' => $this->backupMySQL($schedule->server, $schedule->database_name, $localPath),
                 'postgresql' => $this->backupPostgreSQL($schedule->server, $schedule->database_name, $localPath),
                 'sqlite' => $this->backupSQLite($schedule->server, $schedule->database_name, $localPath),
@@ -94,23 +99,30 @@ class DatabaseBackupService
             throw $e;
         }
 
-        return $backup->fresh();
+        $freshBackup = $backup->fresh();
+        if ($freshBackup === null) {
+            throw new \RuntimeException('Failed to refresh backup after creation');
+        }
+
+        return $freshBackup;
     }
 
     /**
      * Backup MySQL database via SSH
+     *
+     * @return array<string, mixed>
      */
     public function backupMySQL(Server $server, string $database, string $outputPath): array
     {
         // Create directory if it doesn't exist
         $directory = dirname($outputPath);
-        if (!is_dir($directory)) {
+        if (! is_dir($directory)) {
             mkdir($directory, 0755, true);
         }
 
         // Get database metadata before backup
         $metadataCommand = sprintf(
-            "mysql -e \"SELECT COUNT(*) as table_count FROM information_schema.tables WHERE table_schema = %s; SELECT SUM(data_length + index_length) as size FROM information_schema.tables WHERE table_schema = %s;\" %s",
+            'mysql -e "SELECT COUNT(*) as table_count FROM information_schema.tables WHERE table_schema = %s; SELECT SUM(data_length + index_length) as size FROM information_schema.tables WHERE table_schema = %s;" %s',
             escapeshellarg($database),
             escapeshellarg($database),
             escapeshellarg($database)
@@ -131,12 +143,12 @@ class DatabaseBackupService
         $process->setTimeout(3600); // 1 hour timeout for large databases
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            throw new \RuntimeException("MySQL backup failed: " . $process->getErrorOutput());
+        if (! $process->isSuccessful()) {
+            throw new \RuntimeException('MySQL backup failed: '.$process->getErrorOutput());
         }
 
         // Download the file from remote server if not localhost
-        if (!$this->isLocalhost($server->ip_address)) {
+        if (! $this->isLocalhost($server->ip_address)) {
             $this->downloadFile($server, $outputPath, $outputPath);
         }
 
@@ -151,12 +163,14 @@ class DatabaseBackupService
 
     /**
      * Backup PostgreSQL database via SSH
+     *
+     * @return array<string, mixed>
      */
     public function backupPostgreSQL(Server $server, string $database, string $outputPath): array
     {
         // Create directory if it doesn't exist
         $directory = dirname($outputPath);
-        if (!is_dir($directory)) {
+        if (! is_dir($directory)) {
             mkdir($directory, 0755, true);
         }
 
@@ -173,12 +187,12 @@ class DatabaseBackupService
         $process->setTimeout(3600); // 1 hour timeout
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            throw new \RuntimeException("PostgreSQL backup failed: " . $process->getErrorOutput());
+        if (! $process->isSuccessful()) {
+            throw new \RuntimeException('PostgreSQL backup failed: '.$process->getErrorOutput());
         }
 
         // Download the file from remote server if not localhost
-        if (!$this->isLocalhost($server->ip_address)) {
+        if (! $this->isLocalhost($server->ip_address)) {
             $this->downloadFile($server, $outputPath, $outputPath);
         }
 
@@ -192,12 +206,14 @@ class DatabaseBackupService
 
     /**
      * Backup SQLite database via SSH
+     *
+     * @return array<string, mixed>
      */
     public function backupSQLite(Server $server, string $database, string $outputPath): array
     {
         // Create directory if it doesn't exist
         $directory = dirname($outputPath);
-        if (!is_dir($directory)) {
+        if (! is_dir($directory)) {
             mkdir($directory, 0755, true);
         }
 
@@ -214,12 +230,12 @@ class DatabaseBackupService
         $process->setTimeout(600);
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            throw new \RuntimeException("SQLite backup failed: " . $process->getErrorOutput());
+        if (! $process->isSuccessful()) {
+            throw new \RuntimeException('SQLite backup failed: '.$process->getErrorOutput());
         }
 
         // Download the file from remote server if not localhost
-        if (!$this->isLocalhost($server->ip_address)) {
+        if (! $this->isLocalhost($server->ip_address)) {
             $this->downloadFile($server, $outputPath, $outputPath);
         }
 
@@ -238,13 +254,14 @@ class DatabaseBackupService
     {
         if ($backup->storage_disk === 's3') {
             // Download from S3
-            $tempPath = storage_path('app/temp/' . $backup->file_name);
+            $tempPath = storage_path('app/temp/'.$backup->file_name);
             $directory = dirname($tempPath);
-            if (!is_dir($directory)) {
+            if (! is_dir($directory)) {
                 mkdir($directory, 0755, true);
             }
 
             Storage::disk('s3')->download($backup->file_path, $tempPath);
+
             return $tempPath;
         }
 
@@ -290,23 +307,23 @@ class DatabaseBackupService
 
         try {
             // Upload to server if remote
-            $remotePath = '/tmp/' . $backup->file_name;
+            $remotePath = '/tmp/'.($backup->file_name ?? 'backup.sql');
 
-            if (!$this->isLocalhost($server->ip_address)) {
+            if (! $this->isLocalhost($server->ip_address ?? '127.0.0.1')) {
                 $this->uploadFile($server, $localPath, $remotePath);
             } else {
                 $remotePath = $localPath;
             }
 
             // Restore based on database type
-            match($backup->database_type) {
-                'mysql' => $this->restoreMySQL($server, $backup->database_name, $remotePath),
-                'postgresql' => $this->restorePostgreSQL($server, $backup->database_name, $remotePath),
-                'sqlite' => $this->restoreSQLite($server, $backup->database_name, $remotePath),
+            match ($backup->database_type) {
+                'mysql' => $this->restoreMySQL($server, $backup->database_name ?? 'default', $remotePath),
+                'postgresql' => $this->restorePostgreSQL($server, $backup->database_name ?? 'default', $remotePath),
+                'sqlite' => $this->restoreSQLite($server, $backup->database_name ?? 'default', $remotePath),
             };
 
             // Cleanup remote temp file
-            if (!$this->isLocalhost($server->ip_address)) {
+            if (! $this->isLocalhost($server->ip_address ?? '127.0.0.1')) {
                 $this->executeSSHCommand($server, "rm -f {$remotePath}");
             }
 
@@ -455,7 +472,7 @@ class DatabaseBackupService
 
         $count = 0;
         foreach ($backups as $backup) {
-            if (!in_array($backup->id, $toKeep)) {
+            if (! in_array($backup->id, $toKeep)) {
                 try {
                     $this->deleteBackup($backup);
                     $count++;
@@ -479,9 +496,12 @@ class DatabaseBackupService
 
     /**
      * Select backups to keep based on retention policy
+     *
+     * @param  Collection<int, DatabaseBackup>  $backups
+     * @return array<int>
      */
     protected function selectBackupsToKeep(
-        \Illuminate\Database\Eloquent\Collection $backups,
+        Collection $backups,
         int $dailyCount,
         int $weeklyCount,
         int $monthlyCount
@@ -508,7 +528,9 @@ class DatabaseBackupService
         })->sortByDesc('created_at')->take($weeklyCount);
 
         foreach ($weeklyBackups as $backup) {
-            $keep[] = $backup->id;
+            if ($backup !== null) {
+                $keep[] = $backup->id;
+            }
         }
 
         // Keep monthly backups (one per month)
@@ -519,7 +541,9 @@ class DatabaseBackupService
         })->sortByDesc('created_at')->take($monthlyCount);
 
         foreach ($monthlyBackups as $backup) {
-            $keep[] = $backup->id;
+            if ($backup !== null) {
+                $keep[] = $backup->id;
+            }
         }
 
         return array_unique($keep);
@@ -530,7 +554,7 @@ class DatabaseBackupService
      */
     public function uploadToS3(string $localPath, string $s3FileName): string
     {
-        $s3Path = 'backups/' . date('Y/m/d') . '/' . $s3FileName;
+        $s3Path = 'backups/'.date('Y/m/d').'/'.$s3FileName;
 
         Storage::disk('s3')->put($s3Path, file_get_contents($localPath));
 
@@ -554,12 +578,12 @@ class DatabaseBackupService
      */
     protected function getLocalBackupPath(DatabaseBackup $backup): string
     {
-        $directory = storage_path('app/backups/' . date('Y/m/d'));
-        if (!is_dir($directory)) {
+        $directory = storage_path('app/backups/'.date('Y/m/d'));
+        if (! is_dir($directory)) {
             mkdir($directory, 0755, true);
         }
 
-        return $directory . '/' . $backup->file_name;
+        return $directory.'/'.$backup->file_name;
     }
 
     /**
@@ -570,7 +594,7 @@ class DatabaseBackupService
         $scpOptions = [
             '-o StrictHostKeyChecking=no',
             '-o UserKnownHostsFile=/dev/null',
-            '-P ' . $server->port,
+            '-P '.$server->port,
         ];
 
         if ($server->ssh_password) {
@@ -590,7 +614,7 @@ class DatabaseBackupService
                 $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
                 file_put_contents($keyFile, $server->ssh_key);
                 chmod($keyFile, 0600);
-                $sshOptions[] = '-i ' . $keyFile;
+                $sshOptions[] = '-i '.$keyFile;
             }
 
             $command = sprintf(
@@ -607,8 +631,8 @@ class DatabaseBackupService
         $process->setTimeout(3600);
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            throw new \RuntimeException("File download failed: " . $process->getErrorOutput());
+        if (! $process->isSuccessful()) {
+            throw new \RuntimeException('File download failed: '.$process->getErrorOutput());
         }
     }
 
@@ -620,7 +644,7 @@ class DatabaseBackupService
         $scpOptions = [
             '-o StrictHostKeyChecking=no',
             '-o UserKnownHostsFile=/dev/null',
-            '-P ' . $server->port,
+            '-P '.$server->port,
         ];
 
         if ($server->ssh_password) {
@@ -640,7 +664,7 @@ class DatabaseBackupService
                 $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
                 file_put_contents($keyFile, $server->ssh_key);
                 chmod($keyFile, 0600);
-                $sshOptions[] = '-i ' . $keyFile;
+                $sshOptions[] = '-i '.$keyFile;
             }
 
             $command = sprintf(
@@ -657,8 +681,8 @@ class DatabaseBackupService
         $process->setTimeout(3600);
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            throw new \RuntimeException("File upload failed: " . $process->getErrorOutput());
+        if (! $process->isSuccessful()) {
+            throw new \RuntimeException('File upload failed: '.$process->getErrorOutput());
         }
     }
 
@@ -672,8 +696,8 @@ class DatabaseBackupService
         $process->setTimeout($timeout);
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            throw new \RuntimeException("SSH command failed: " . $process->getErrorOutput());
+        if (! $process->isSuccessful()) {
+            throw new \RuntimeException('SSH command failed: '.$process->getErrorOutput());
         }
     }
 
@@ -687,7 +711,7 @@ class DatabaseBackupService
             '-o UserKnownHostsFile=/dev/null',
             '-o ConnectTimeout=10',
             '-o LogLevel=ERROR',
-            '-p ' . $server->port,
+            '-p '.$server->port,
         ];
 
         if ($server->ssh_password) {
@@ -709,7 +733,7 @@ class DatabaseBackupService
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
             file_put_contents($keyFile, $server->ssh_key);
             chmod($keyFile, 0600);
-            $sshOptions[] = '-i ' . $keyFile;
+            $sshOptions[] = '-i '.$keyFile;
         }
 
         return sprintf(
@@ -754,11 +778,16 @@ class DatabaseBackupService
      */
     protected function calculateChecksum(string $filePath): string
     {
-        if (!file_exists($filePath)) {
+        if (! file_exists($filePath)) {
             throw new \RuntimeException("File not found: {$filePath}");
         }
 
-        return hash_file('sha256', $filePath);
+        $hash = hash_file('sha256', $filePath);
+        if ($hash === false) {
+            throw new \RuntimeException("Failed to calculate checksum for: {$filePath}");
+        }
+
+        return $hash;
     }
 
     /**
@@ -767,7 +796,7 @@ class DatabaseBackupService
     protected function encryptBackup(string $filePath): string
     {
         $key = config('app.key');
-        $encryptedPath = $filePath . '.enc';
+        $encryptedPath = $filePath.'.enc';
 
         $inputFile = fopen($filePath, 'rb');
         $outputFile = fopen($encryptedPath, 'wb');
@@ -775,7 +804,7 @@ class DatabaseBackupService
         $iv = random_bytes(16);
         fwrite($outputFile, $iv);
 
-        while (!feof($inputFile)) {
+        while (! feof($inputFile)) {
             $chunk = fread($inputFile, 8192);
             $encrypted = openssl_encrypt($chunk, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
             fwrite($outputFile, $encrypted);
@@ -796,7 +825,8 @@ class DatabaseBackupService
     protected function parseTableCount(string $output): int
     {
         preg_match('/table_count\s+(\d+)/i', $output, $matches);
-        return isset($matches[1]) ? (int)$matches[1] : 0;
+
+        return isset($matches[1]) ? (int) $matches[1] : 0;
     }
 
     /**

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Security;
 
-use App\Models\Server;
 use App\Models\SecurityEvent;
+use App\Models\Server;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Process\Process;
@@ -17,7 +17,7 @@ class Fail2banService
         try {
             $result = $this->executeCommand($server, 'sudo fail2ban-client status 2>&1');
 
-            if (!$result['success'] && str_contains($result['output'] . $result['error'], 'command not found')) {
+            if (! $result['success'] && str_contains($result['output'].$result['error'], 'command not found')) {
                 return [
                     'installed' => false,
                     'enabled' => false,
@@ -26,8 +26,8 @@ class Fail2banService
                 ];
             }
 
-            if (str_contains($result['output'] . $result['error'], 'not running') ||
-                str_contains($result['output'] . $result['error'], 'failed to access socket')) {
+            if (str_contains($result['output'].$result['error'], 'not running') ||
+                str_contains($result['output'].$result['error'], 'failed to access socket')) {
                 return [
                     'installed' => true,
                     'enabled' => false,
@@ -63,7 +63,7 @@ class Fail2banService
     {
         $status = $this->getFail2banStatus($server);
 
-        if (!$status['enabled']) {
+        if (! $status['enabled']) {
             return $status;
         }
 
@@ -84,7 +84,7 @@ class Fail2banService
             $jailName = escapeshellarg($jailName);
             $result = $this->executeCommand($server, "sudo fail2ban-client status {$jailName} 2>&1");
 
-            if (!$result['success']) {
+            if (! $result['success']) {
                 return [
                     'success' => false,
                     'error' => $result['error'] ?: $result['output'],
@@ -109,7 +109,7 @@ class Fail2banService
             if ($jailName) {
                 $jailStatus = $this->getJailStatus($server, $jailName);
 
-                if (!$jailStatus['success']) {
+                if (! $jailStatus['success']) {
                     return ['success' => false, 'banned_ips' => [], 'error' => $jailStatus['error']];
                 }
 
@@ -124,7 +124,7 @@ class Fail2banService
 
             // Get banned IPs from all jails
             $status = $this->getFail2banStatus($server);
-            if (!$status['enabled']) {
+            if (! $status['enabled']) {
                 return ['success' => false, 'banned_ips' => [], 'error' => 'Fail2ban is not running'];
             }
 
@@ -181,7 +181,7 @@ class Fail2banService
 
             return [
                 'success' => false,
-                'message' => 'Failed to unban IP: ' . ($result['error'] ?: $result['output']),
+                'message' => 'Failed to unban IP: '.($result['error'] ?: $result['output']),
             ];
         } catch (\InvalidArgumentException $e) {
             return [
@@ -191,7 +191,7 @@ class Fail2banService
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to unban IP: ' . $e->getMessage(),
+                'message' => 'Failed to unban IP: '.$e->getMessage(),
             ];
         }
     }
@@ -224,7 +224,7 @@ class Fail2banService
 
             return [
                 'success' => false,
-                'message' => 'Failed to ban IP: ' . ($result['error'] ?: $result['output']),
+                'message' => 'Failed to ban IP: '.($result['error'] ?: $result['output']),
             ];
         } catch (\InvalidArgumentException $e) {
             return [
@@ -234,7 +234,7 @@ class Fail2banService
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to ban IP: ' . $e->getMessage(),
+                'message' => 'Failed to ban IP: '.$e->getMessage(),
             ];
         }
     }
@@ -257,12 +257,12 @@ class Fail2banService
 
             return [
                 'success' => false,
-                'message' => 'Failed to start Fail2ban: ' . ($result['error'] ?: $result['output']),
+                'message' => 'Failed to start Fail2ban: '.($result['error'] ?: $result['output']),
             ];
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to start Fail2ban: ' . $e->getMessage(),
+                'message' => 'Failed to start Fail2ban: '.$e->getMessage(),
             ];
         }
     }
@@ -285,12 +285,12 @@ class Fail2banService
 
             return [
                 'success' => false,
-                'message' => 'Failed to stop Fail2ban: ' . ($result['error'] ?: $result['output']),
+                'message' => 'Failed to stop Fail2ban: '.($result['error'] ?: $result['output']),
             ];
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to stop Fail2ban: ' . $e->getMessage(),
+                'message' => 'Failed to stop Fail2ban: '.$e->getMessage(),
             ];
         }
     }
@@ -320,12 +320,12 @@ class Fail2banService
 
             return [
                 'success' => false,
-                'message' => 'Failed to install Fail2ban: ' . ($result['error'] ?: $result['output']),
+                'message' => 'Failed to install Fail2ban: '.($result['error'] ?: $result['output']),
             ];
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to install Fail2ban: ' . $e->getMessage(),
+                'message' => 'Failed to install Fail2ban: '.$e->getMessage(),
             ];
         }
     }
@@ -372,7 +372,7 @@ class Fail2banService
             }
             if (preg_match('/Banned IP list:\s*(.*)/', $line, $matches)) {
                 $ipList = trim($matches[1]);
-                if (!empty($ipList)) {
+                if (! empty($ipList)) {
                     $data['banned_ips'] = array_map('trim', preg_split('/\s+/', $ipList));
                 }
             }
@@ -383,7 +383,7 @@ class Fail2banService
 
     protected function validateIp(string $ip): void
     {
-        if (!filter_var($ip, FILTER_VALIDATE_IP)) {
+        if (! filter_var($ip, FILTER_VALIDATE_IP)) {
             throw new \InvalidArgumentException('Invalid IP address');
         }
     }
@@ -433,6 +433,7 @@ class Fail2banService
         }
 
         $serverIP = gethostbyname(gethostname());
+
         return $ip === $serverIP;
     }
 
@@ -445,7 +446,7 @@ class Fail2banService
             '-o UserKnownHostsFile=/dev/null',
             '-o ConnectTimeout=10',
             '-o LogLevel=ERROR',
-            '-p ' . $port,
+            '-p '.$port,
         ];
 
         // Escape double quotes and backslashes for the remote command
@@ -470,7 +471,7 @@ class Fail2banService
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
             file_put_contents($keyFile, $server->ssh_key);
             chmod($keyFile, 0600);
-            $sshOptions[] = '-i ' . $keyFile;
+            $sshOptions[] = '-i '.$keyFile;
         }
 
         return sprintf(
@@ -492,6 +493,7 @@ class Fail2banService
 
         if ($server->ssh_password) {
             $escapedPassword = str_replace("'", "'\\''", $server->ssh_password);
+
             return "echo '{$escapedPassword}' | sudo -S ";
         }
 

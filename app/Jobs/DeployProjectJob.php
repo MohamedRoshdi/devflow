@@ -6,9 +6,9 @@ use App\Events\DeploymentLogUpdated;
 use App\Models\Deployment;
 use App\Models\PipelineStage;
 use App\Models\Project;
+use App\Services\CICD\PipelineExecutionService;
 use App\Services\DockerService;
 use App\Services\GitService;
-use App\Services\CICD\PipelineExecutionService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -77,6 +77,10 @@ class DeployProjectJob implements ShouldQueue
 
             $project = $this->deployment->project;
 
+            if ($project === null) {
+                throw new \RuntimeException('Project not found for deployment');
+            }
+
             // Check if project has pipeline stages configured
             $hasPipelineStages = PipelineStage::where('project_id', $project->id)
                 ->enabled()
@@ -111,14 +115,14 @@ class DeployProjectJob implements ShouldQueue
     /**
      * Handle deployment using pipeline stages
      */
-    private function handlePipelineDeployment(Project $project, $startTime): void
+    private function handlePipelineDeployment(Project $project, \Illuminate\Support\Carbon $startTime): void
     {
         $pipelineService = app(PipelineExecutionService::class);
 
-        $this->broadcastLog("=== Using Pipeline Execution ===");
+        $this->broadcastLog('=== Using Pipeline Execution ===');
         $this->broadcastLog("Project: {$project->name}");
         $this->broadcastLog("Branch: {$project->branch}");
-        $this->broadcastLog("");
+        $this->broadcastLog('');
 
         // Execute pipeline
         $pipelineRun = $pipelineService->executePipeline($project, [
@@ -160,322 +164,321 @@ class DeployProjectJob implements ShouldQueue
     /**
      * Handle traditional direct deployment (existing logic)
      */
-    private function handleDirectDeployment(Project $project, $startTime): void
+    private function handleDirectDeployment(Project $project, \Illuminate\Support\Carbon $startTime): void
     {
         $dockerService = app(DockerService::class);
-            
-            $logs = [];
-            $projectPath = "/var/www/{$project->slug}";
 
-            // Helper function to add log and broadcast
-            $addLog = function(string $line) use (&$logs) {
-                $logs[] = $line;
-                $this->broadcastLog($line);
-            };
+        $logs = [];
+        $projectPath = "/var/www/{$project->slug}";
 
-            // Step 1: Setup Git repository
-            $addLog("=== Setting Up Repository ===");
-            $addLog("Repository: {$project->repository_url}");
-            $addLog("Branch: {$project->branch}");
-            $addLog("Path: {$projectPath}");
+        // Helper function to add log and broadcast
+        $addLog = function (string $line) use (&$logs) {
+            $logs[] = $line;
+            $this->broadcastLog($line);
+        };
 
-            // Build SSH command helper for running commands as root on the server
-            $server = $project->server;
-            $sshPrefix = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 {$server->username}@{$server->ip_address}";
+        // Step 1: Setup Git repository
+        $addLog('=== Setting Up Repository ===');
+        $addLog("Repository: {$project->repository_url}");
+        $addLog("Branch: {$project->branch}");
+        $addLog("Path: {$projectPath}");
 
-            // Check if repository already exists (via SSH to ensure we check server state)
-            $checkResult = \Illuminate\Support\Facades\Process::run("{$sshPrefix} \"test -d {$projectPath}/.git && echo 'exists' || echo 'not_exists'\"");
-            $repoExists = trim($checkResult->output()) === 'exists';
+        // Build SSH command helper for running commands as root on the server
+        $server = $project->server;
+        $sshPrefix = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 {$server->username}@{$server->ip_address}";
 
-            if ($repoExists) {
-                $addLog("Repository already exists, pulling latest changes...");
+        // Check if repository already exists (via SSH to ensure we check server state)
+        $checkResult = \Illuminate\Support\Facades\Process::run("{$sshPrefix} \"test -d {$projectPath}/.git && echo 'exists' || echo 'not_exists'\"");
+        $repoExists = trim($checkResult->output()) === 'exists';
 
-                // Run git operations via SSH as root (fixes permission issues)
-                $gitCommand = "cd {$projectPath} && " .
-                    "git config --global safe.directory '*' && " .
-                    "chown -R root:root {$projectPath}/.git {$projectPath}/storage {$projectPath}/bootstrap 2>/dev/null || true && " .
-                    "git fetch origin {$project->branch} && " .
-                    "git reset --hard origin/{$project->branch} && " .
-                    "chown -R 1000:1000 {$projectPath}/storage {$projectPath}/bootstrap/cache && " .
-                    "chmod -R 775 {$projectPath}/storage {$projectPath}/bootstrap/cache";
+        if ($repoExists) {
+            $addLog('Repository already exists, pulling latest changes...');
 
-                $pullResult = \Illuminate\Support\Facades\Process::timeout(120)->run("{$sshPrefix} \"{$gitCommand}\"");
+            // Run git operations via SSH as root (fixes permission issues)
+            $gitCommand = "cd {$projectPath} && ".
+                "git config --global safe.directory '*' && ".
+                "chown -R root:root {$projectPath}/.git {$projectPath}/storage {$projectPath}/bootstrap 2>/dev/null || true && ".
+                "git fetch origin {$project->branch} && ".
+                "git reset --hard origin/{$project->branch} && ".
+                "chown -R 1000:1000 {$projectPath}/storage {$projectPath}/bootstrap/cache && ".
+                "chmod -R 775 {$projectPath}/storage {$projectPath}/bootstrap/cache";
 
-                if (!$pullResult->successful()) {
-                    throw new \Exception('Git pull failed: ' . $pullResult->errorOutput());
-                }
+            $pullResult = \Illuminate\Support\Facades\Process::timeout(120)->run("{$sshPrefix} \"{$gitCommand}\"");
 
-                $addLog("✓ Repository updated successfully");
-            } else {
-                // Repository doesn't exist, clone it
-                $addLog("Cloning repository...");
-
-                // Run clone via SSH as root
-                $cloneCommand = "git config --global safe.directory '*' && " .
-                    "rm -rf {$projectPath} 2>/dev/null || true && " .
-                    "git clone --branch {$project->branch} {$project->repository_url} {$projectPath} && " .
-                    "chown -R 1000:1000 {$projectPath}/storage {$projectPath}/bootstrap/cache && " .
-                    "chmod -R 775 {$projectPath}/storage {$projectPath}/bootstrap/cache";
-
-                $cloneResult = \Illuminate\Support\Facades\Process::timeout(300)->run("{$sshPrefix} \"{$cloneCommand}\"");
-
-                if (!$cloneResult->successful()) {
-                    throw new \Exception('Git clone failed: ' . $cloneResult->errorOutput());
-                }
-
-                $addLog("✓ Repository cloned successfully");
+            if (! $pullResult->successful()) {
+                throw new \Exception('Git pull failed: '.$pullResult->errorOutput());
             }
-            $addLog("");
 
-            // Get current commit information
-            $addLog("=== Recording Commit Information ===");
-            $gitService = app(GitService::class);
-            $commitInfo = $gitService->getCurrentCommit($project);
+            $addLog('✓ Repository updated successfully');
+        } else {
+            // Repository doesn't exist, clone it
+            $addLog('Cloning repository...');
 
-            if ($commitInfo) {
-                $addLog("Commit: {$commitInfo['short_hash']}");
-                $addLog("Author: {$commitInfo['author']}");
-                $addLog("Message: {$commitInfo['message']}");
-                
-                // Update project with commit info
-                $project->update([
-                    'current_commit_hash' => $commitInfo['hash'],
-                    'current_commit_message' => $commitInfo['message'],
-                    'last_commit_at' => now()->setTimestamp($commitInfo['timestamp']),
-                ]);
-                
-                // Update deployment with commit info
-                $this->deployment->update([
-                    'commit_hash' => $commitInfo['hash'],
-                    'commit_message' => $commitInfo['message'],
-                ]);
-                
-                $addLog("✓ Commit information recorded");
-            } else {
-                $addLog("⚠ Could not retrieve commit information");
+            // Run clone via SSH as root
+            $cloneCommand = "git config --global safe.directory '*' && ".
+                "rm -rf {$projectPath} 2>/dev/null || true && ".
+                "git clone --branch {$project->branch} {$project->repository_url} {$projectPath} && ".
+                "chown -R 1000:1000 {$projectPath}/storage {$projectPath}/bootstrap/cache && ".
+                "chmod -R 775 {$projectPath}/storage {$projectPath}/bootstrap/cache";
+
+            $cloneResult = \Illuminate\Support\Facades\Process::timeout(300)->run("{$sshPrefix} \"{$cloneCommand}\"");
+
+            if (! $cloneResult->successful()) {
+                throw new \Exception('Git clone failed: '.$cloneResult->errorOutput());
             }
-            $addLog("");
 
-            // Step 2: Build container
-            $addLog("=== Building Docker Container ===");
-            $addLog("Environment: " . ($project->environment ?? 'production'));
-            $addLog("This may take 10-20 minutes for large projects with npm builds...");
-            $addLog("Please be patient!");
-            $addLog("");
-            
-            // Save initial logs so user can see progress started
-            $this->deployment->update([
-                'output_log' => implode("\n", $logs),
-            ]);
-            
-            $buildResult = $dockerService->buildContainer($project);
-            
-            if (!$buildResult['success']) {
-                throw new \Exception('Build failed: ' . ($buildResult['error'] ?? 'Unknown error'));
-            }
-            
-            // Broadcast build output line by line if available
-            if (!empty($buildResult['output'])) {
-                foreach (explode("\n", $buildResult['output']) as $buildLine) {
-                    if (trim($buildLine)) {
-                        $addLog($buildLine);
-                    }
-                }
-            }
-            $addLog("✓ Build successful");
+            $addLog('✓ Repository cloned successfully');
+        }
+        $addLog('');
 
-            // Step 3: Stop old container if running
-            $addLog("");
-            $addLog("=== Stopping Old Container ===");
-            $dockerService->stopContainer($project);
-            $addLog("✓ Old container stopped (if any)");
-            $addLog("");
-            
-            // Save logs before starting
-            $this->deployment->update([
-                'output_log' => implode("\n", $logs),
+        // Get current commit information
+        $addLog('=== Recording Commit Information ===');
+        $gitService = app(GitService::class);
+        $commitInfo = $gitService->getCurrentCommit($project);
+
+        if ($commitInfo) {
+            $addLog("Commit: {$commitInfo['short_hash']}");
+            $addLog("Author: {$commitInfo['author']}");
+            $addLog("Message: {$commitInfo['message']}");
+
+            // Update project with commit info
+            $project->update([
+                'current_commit_hash' => $commitInfo['hash'],
+                'current_commit_message' => $commitInfo['message'],
+                'last_commit_at' => now()->setTimestamp($commitInfo['timestamp']),
             ]);
 
-            // Step 4: Start new container
-            $addLog("=== Starting Container ===");
-            $addLog("Environment: " . ($project->environment ?? 'production'));
-            if ($project->env_variables && count((array)$project->env_variables) > 0) {
-                $addLog("Custom Variables: " . count((array)$project->env_variables) . " variable(s)");
+            // Update deployment with commit info
+            $this->deployment->update([
+                'commit_hash' => $commitInfo['hash'],
+                'commit_message' => $commitInfo['message'],
+            ]);
+
+            $addLog('✓ Commit information recorded');
+        } else {
+            $addLog('⚠ Could not retrieve commit information');
+        }
+        $addLog('');
+
+        // Step 2: Build container
+        $addLog('=== Building Docker Container ===');
+        $addLog('Environment: '.($project->environment ?? 'production'));
+        $addLog('This may take 10-20 minutes for large projects with npm builds...');
+        $addLog('Please be patient!');
+        $addLog('');
+
+        // Save initial logs so user can see progress started
+        $this->deployment->update([
+            'output_log' => implode("\n", $logs),
+        ]);
+
+        $buildResult = $dockerService->buildContainer($project);
+
+        if (! $buildResult['success']) {
+            throw new \Exception('Build failed: '.($buildResult['error'] ?? 'Unknown error'));
+        }
+
+        // Broadcast build output line by line if available
+        if (! empty($buildResult['output'])) {
+            foreach (explode("\n", $buildResult['output']) as $buildLine) {
+                if (trim($buildLine)) {
+                    $addLog($buildLine);
+                }
             }
-            $addLog("Starting new container...");
-            $startResult = $dockerService->startContainer($project);
+        }
+        $addLog('✓ Build successful');
 
-            if (!$startResult['success']) {
-                throw new \Exception('Start failed: ' . ($startResult['error'] ?? 'Unknown error'));
+        // Step 3: Stop old container if running
+        $addLog('');
+        $addLog('=== Stopping Old Container ===');
+        $dockerService->stopContainer($project);
+        $addLog('✓ Old container stopped (if any)');
+        $addLog('');
+
+        // Save logs before starting
+        $this->deployment->update([
+            'output_log' => implode("\n", $logs),
+        ]);
+
+        // Step 4: Start new container
+        $addLog('=== Starting Container ===');
+        $addLog('Environment: '.($project->environment ?? 'production'));
+        if ($project->env_variables && count((array) $project->env_variables) > 0) {
+            $addLog('Custom Variables: '.count((array) $project->env_variables).' variable(s)');
+        }
+        $addLog('Starting new container...');
+        $startResult = $dockerService->startContainer($project);
+
+        if (! $startResult['success']) {
+            throw new \Exception('Start failed: '.($startResult['error'] ?? 'Unknown error'));
+        }
+
+        $addLog('Container started successfully');
+        if (isset($startResult['message'])) {
+            $addLog($startResult['message']);
+        }
+        $addLog('');
+
+        // Step 5: Laravel Optimization (inside container)
+        $addLog('=== Laravel Optimization ===');
+        $addLog('Running Laravel optimization commands inside container...');
+
+        // Determine the correct container name
+        $usesCompose = $dockerService->usesDockerCompose($project);
+        $containerName = $usesCompose
+            ? $dockerService->getAppContainerName($project)
+            : $project->slug;
+
+        $addLog("Target container: {$containerName}");
+        $addLog('');
+
+        $optimizationCommands = [
+            'composer install --optimize-autoloader --no-dev' => 'Installing/updating dependencies',
+            'php artisan config:cache' => 'Caching configuration',
+            'php artisan route:cache' => 'Caching routes',
+            'php artisan view:cache' => 'Caching views',
+            'php artisan event:cache' => 'Caching events',
+            'php artisan migrate --force' => 'Running migrations',
+            'php artisan storage:link' => 'Linking storage',
+            'php artisan optimize' => 'Optimizing application',
+        ];
+
+        foreach ($optimizationCommands as $cmd => $description) {
+            $addLog("→ {$description}...");
+            $dockerCmd = "docker exec {$containerName} {$cmd} 2>&1 || echo 'Command may have already run or not applicable'";
+            $result = \Illuminate\Support\Facades\Process::run($dockerCmd);
+
+            // Log output but don't fail deployment if optimization fails
+            if ($result->successful() || str_contains($result->output(), 'already')) {
+                $addLog("  ✓ {$description} completed");
+            } else {
+                $addLog("  ⚠ {$description} skipped or failed (not critical)");
+            }
+        }
+
+        $addLog('✓ Laravel optimization completed');
+        $addLog('');
+
+        // Update logs with optimization progress
+        $this->deployment->update([
+            'output_log' => implode("\n", $logs),
+        ]);
+
+        // Step 6: Fix Permissions & Environment Configuration
+        $addLog('=== Fixing Permissions & Environment ===');
+
+        try {
+            // Determine container UID (Docker containers typically run as UID 1000)
+            $containerUid = '1000';
+            $uidCheckCmd = "docker exec {$containerName} id -u 2>/dev/null || echo '1000'";
+            $uidResult = \Illuminate\Support\Facades\Process::run($uidCheckCmd);
+            if ($uidResult->successful() && is_numeric(trim($uidResult->output()))) {
+                $containerUid = trim($uidResult->output());
+            }
+            $addLog("Container UID: {$containerUid}");
+
+            // Fix permissions via SSH on the server with correct UID
+            $addLog('Setting proper ownership and permissions...');
+            $permissionCommand = "cd {$projectPath} && ".
+                "chown -R {$containerUid}:{$containerUid} storage bootstrap/cache 2>/dev/null && ".
+                'chmod -R 777 storage bootstrap/cache';
+
+            $permResult = \Illuminate\Support\Facades\Process::timeout(60)->run("{$sshPrefix} \"{$permissionCommand}\"");
+
+            if ($permResult->successful()) {
+                $addLog("  ✓ Permissions fixed (UID:{$containerUid}, 777)");
+            } else {
+                $addLog('  ⚠ Permission fix partially completed: '.$permResult->errorOutput());
             }
 
-            $addLog("Container started successfully");
-            if (isset($startResult['message'])) {
-                $addLog($startResult['message']);
+            // Fix .env file for Docker (DB_HOST, REDIS_HOST should use service names)
+            $addLog('Checking .env configuration for Docker...');
+            $envFixCommand = "cd {$projectPath} && ".
+                "sed -i 's/^DB_HOST=127.0.0.1\$/DB_HOST=mysql/' .env 2>/dev/null; ".
+                "sed -i 's/^DB_HOST=localhost\$/DB_HOST=mysql/' .env 2>/dev/null; ".
+                "sed -i 's/^REDIS_HOST=127.0.0.1\$/REDIS_HOST=redis/' .env 2>/dev/null; ".
+                "sed -i 's/^REDIS_HOST=localhost\$/REDIS_HOST=redis/' .env 2>/dev/null; ".
+                "echo 'env checked'";
+
+            $envResult = \Illuminate\Support\Facades\Process::timeout(30)->run("{$sshPrefix} \"{$envFixCommand}\"");
+            if ($envResult->successful()) {
+                $addLog('  ✓ Environment configuration validated');
             }
-            $addLog("");
 
-            // Step 5: Laravel Optimization (inside container)
-            $addLog("=== Laravel Optimization ===");
-            $addLog("Running Laravel optimization commands inside container...");
-
-            // Determine the correct container name
-            $usesCompose = $dockerService->usesDockerCompose($project);
-            $containerName = $usesCompose
-                ? $dockerService->getAppContainerName($project)
-                : $project->slug;
-
-            $addLog("Target container: {$containerName}");
-            $addLog("");
-
-            $optimizationCommands = [
-                'composer install --optimize-autoloader --no-dev' => 'Installing/updating dependencies',
-                'php artisan config:cache' => 'Caching configuration',
-                'php artisan route:cache' => 'Caching routes',
-                'php artisan view:cache' => 'Caching views',
-                'php artisan event:cache' => 'Caching events',
-                'php artisan migrate --force' => 'Running migrations',
-                'php artisan storage:link' => 'Linking storage',
-                'php artisan optimize' => 'Optimizing application',
+            // Clear Laravel caches inside container
+            $addLog('Clearing Laravel caches...');
+            $cacheCommands = [
+                'php artisan config:clear' => 'Configuration cache',
+                'php artisan cache:clear' => 'Application cache',
+                'php artisan view:clear' => 'View cache',
+                'php artisan route:clear' => 'Route cache',
             ];
 
-            foreach ($optimizationCommands as $cmd => $description) {
-                $addLog("→ {$description}...");
-                $dockerCmd = "docker exec {$containerName} {$cmd} 2>&1 || echo 'Command may have already run or not applicable'";
+            foreach ($cacheCommands as $cmd => $description) {
+                $dockerCmd = "docker exec {$containerName} {$cmd} 2>&1 || echo 'skipped'";
                 $result = \Illuminate\Support\Facades\Process::run($dockerCmd);
 
-                // Log output but don't fail deployment if optimization fails
-                if ($result->successful() || str_contains($result->output(), 'already')) {
-                    $addLog("  ✓ {$description} completed");
+                if ($result->successful() && ! str_contains($result->output(), 'skipped')) {
+                    $addLog("  ✓ {$description} cleared");
                 } else {
-                    $addLog("  ⚠ {$description} skipped or failed (not critical)");
+                    $addLog("  ⚠ {$description} clear skipped");
                 }
             }
 
-            $addLog("✓ Laravel optimization completed");
-            $addLog("");
+            // Rebuild config cache with corrected .env values
+            $addLog('Rebuilding configuration cache...');
+            $rebuildCommands = [
+                'php artisan config:cache' => 'Configuration',
+                'php artisan route:cache' => 'Routes',
+                'php artisan view:cache' => 'Views',
+            ];
 
-            // Update logs with optimization progress
-            $this->deployment->update([
-                'output_log' => implode("\n", $logs),
-            ]);
+            foreach ($rebuildCommands as $cmd => $description) {
+                $dockerCmd = "docker exec {$containerName} {$cmd} 2>&1 || echo 'skipped'";
+                $result = \Illuminate\Support\Facades\Process::run($dockerCmd);
 
-            // Step 6: Fix Permissions & Environment Configuration
-            $addLog("=== Fixing Permissions & Environment ===");
-
-            try {
-                // Determine container UID (Docker containers typically run as UID 1000)
-                $containerUid = '1000';
-                $uidCheckCmd = "docker exec {$containerName} id -u 2>/dev/null || echo '1000'";
-                $uidResult = \Illuminate\Support\Facades\Process::run($uidCheckCmd);
-                if ($uidResult->successful() && is_numeric(trim($uidResult->output()))) {
-                    $containerUid = trim($uidResult->output());
+                if ($result->successful() && ! str_contains($result->output(), 'skipped')) {
+                    $addLog("  ✓ {$description} cached");
                 }
-                $addLog("Container UID: {$containerUid}");
-
-                // Fix permissions via SSH on the server with correct UID
-                $addLog("Setting proper ownership and permissions...");
-                $permissionCommand = "cd {$projectPath} && " .
-                    "chown -R {$containerUid}:{$containerUid} storage bootstrap/cache 2>/dev/null && " .
-                    "chmod -R 777 storage bootstrap/cache";
-
-                $permResult = \Illuminate\Support\Facades\Process::timeout(60)->run("{$sshPrefix} \"{$permissionCommand}\"");
-
-                if ($permResult->successful()) {
-                    $addLog("  ✓ Permissions fixed (UID:{$containerUid}, 777)");
-                } else {
-                    $addLog("  ⚠ Permission fix partially completed: " . $permResult->errorOutput());
-                }
-
-                // Fix .env file for Docker (DB_HOST, REDIS_HOST should use service names)
-                $addLog("Checking .env configuration for Docker...");
-                $envFixCommand = "cd {$projectPath} && " .
-                    "sed -i 's/^DB_HOST=127.0.0.1\$/DB_HOST=mysql/' .env 2>/dev/null; " .
-                    "sed -i 's/^DB_HOST=localhost\$/DB_HOST=mysql/' .env 2>/dev/null; " .
-                    "sed -i 's/^REDIS_HOST=127.0.0.1\$/REDIS_HOST=redis/' .env 2>/dev/null; " .
-                    "sed -i 's/^REDIS_HOST=localhost\$/REDIS_HOST=redis/' .env 2>/dev/null; " .
-                    "echo 'env checked'";
-
-                $envResult = \Illuminate\Support\Facades\Process::timeout(30)->run("{$sshPrefix} \"{$envFixCommand}\"");
-                if ($envResult->successful()) {
-                    $addLog("  ✓ Environment configuration validated");
-                }
-
-                // Clear Laravel caches inside container
-                $addLog("Clearing Laravel caches...");
-                $cacheCommands = [
-                    'php artisan config:clear' => 'Configuration cache',
-                    'php artisan cache:clear' => 'Application cache',
-                    'php artisan view:clear' => 'View cache',
-                    'php artisan route:clear' => 'Route cache',
-                ];
-
-                foreach ($cacheCommands as $cmd => $description) {
-                    $dockerCmd = "docker exec {$containerName} {$cmd} 2>&1 || echo 'skipped'";
-                    $result = \Illuminate\Support\Facades\Process::run($dockerCmd);
-
-                    if ($result->successful() && !str_contains($result->output(), 'skipped')) {
-                        $addLog("  ✓ {$description} cleared");
-                    } else {
-                        $addLog("  ⚠ {$description} clear skipped");
-                    }
-                }
-
-                // Rebuild config cache with corrected .env values
-                $addLog("Rebuilding configuration cache...");
-                $rebuildCommands = [
-                    'php artisan config:cache' => 'Configuration',
-                    'php artisan route:cache' => 'Routes',
-                    'php artisan view:cache' => 'Views',
-                ];
-
-                foreach ($rebuildCommands as $cmd => $description) {
-                    $dockerCmd = "docker exec {$containerName} {$cmd} 2>&1 || echo 'skipped'";
-                    $result = \Illuminate\Support\Facades\Process::run($dockerCmd);
-
-                    if ($result->successful() && !str_contains($result->output(), 'skipped')) {
-                        $addLog("  ✓ {$description} cached");
-                    }
-                }
-
-                $addLog("✓ Permissions, environment, and caches handled");
-
-            } catch (\Exception $permError) {
-                // Don't fail deployment if permission fix fails
-                $addLog("  ⚠ Permission fix encountered an error (non-critical): " . $permError->getMessage());
-                Log::warning('Permission fix failed but deployment continues', [
-                    'deployment_id' => $this->deployment->id,
-                    'error' => $permError->getMessage(),
-                ]);
             }
 
-            $addLog("");
+            $addLog('✓ Permissions, environment, and caches handled');
 
-            // Update logs with permission fix progress
-            $this->deployment->update([
-                'output_log' => implode("\n", $logs),
-            ]);
-
-            // Update deployment and project
-            $endTime = now();
-            $duration = $endTime->diffInSeconds($startTime);
-
-            $this->deployment->update([
-                'status' => 'success',
-                'completed_at' => $endTime,
-                'duration_seconds' => $duration,
-                'output_log' => implode("\n", $logs),
-            ]);
-
-            $project->update([
-                'status' => 'running',
-                'last_deployed_at' => now(),
-            ]);
-
-            Log::info('Deployment successful', [
+        } catch (\Exception $permError) {
+            // Don't fail deployment if permission fix fails
+            $addLog('  ⚠ Permission fix encountered an error (non-critical): '.$permError->getMessage());
+            Log::warning('Permission fix failed but deployment continues', [
                 'deployment_id' => $this->deployment->id,
-                'project_id' => $project->id,
+                'error' => $permError->getMessage(),
             ]);
+        }
+
+        $addLog('');
+
+        // Update logs with permission fix progress
+        $this->deployment->update([
+            'output_log' => implode("\n", $logs),
+        ]);
+
+        // Update deployment and project
+        $endTime = now();
+        $duration = $endTime->diffInSeconds($startTime);
+
+        $this->deployment->update([
+            'status' => 'success',
+            'completed_at' => $endTime,
+            'duration_seconds' => $duration,
+            'output_log' => implode("\n", $logs),
+        ]);
+
+        $project->update([
+            'status' => 'running',
+            'last_deployed_at' => now(),
+        ]);
+
+        Log::info('Deployment successful', [
+            'deployment_id' => $this->deployment->id,
+            'project_id' => $project->id,
+        ]);
     }
 }
-

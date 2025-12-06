@@ -2,16 +2,20 @@
 
 namespace App\Livewire\Servers;
 
-use Livewire\Component;
 use App\Models\Server;
 use App\Models\ServerTag;
 use Livewire\Attributes\On;
+use Livewire\Component;
 
 class ServerTagAssignment extends Component
 {
-    public $server;
-    public $availableTags = [];
-    public $selectedTags = [];
+    public Server $server;
+
+    /** @var array<int, array<string, mixed>> */
+    public array $availableTags = [];
+
+    /** @var array<int, int> */
+    public array $selectedTags = [];
 
     public function mount(Server $server): void
     {

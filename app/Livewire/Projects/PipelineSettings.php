@@ -2,32 +2,44 @@
 
 namespace App\Livewire\Projects;
 
-use Livewire\Component;
-use App\Models\Project;
 use App\Models\PipelineConfig;
-use Livewire\Attributes\Computed;
+use App\Models\Project;
+use Livewire\Component;
 
 class PipelineSettings extends Component
 {
     public Project $project;
+
     public ?PipelineConfig $pipelineConfig = null;
 
     // Configuration fields
     public bool $enabled = true;
+
+    /** @var array<int, string> */
     public array $auto_deploy_branches = [];
+
+    /** @var array<int, string> */
     public array $skip_patterns = [];
+
+    /** @var array<int, string> */
     public array $deploy_patterns = [];
+
     public ?string $webhook_secret = null;
 
     // UI state
     public string $newBranch = '';
+
     public string $newSkipPattern = '';
+
     public string $newDeployPattern = '';
+
     public bool $showSecret = false;
+
     public bool $showRegenerateConfirm = false;
 
     // Webhook URLs
     public string $githubWebhookUrl = '';
+
     public string $gitlabWebhookUrl = '';
 
     public function mount(Project $project)
@@ -38,9 +50,12 @@ class PipelineSettings extends Component
         // Load existing config or set defaults
         if ($this->pipelineConfig) {
             $this->enabled = $this->pipelineConfig->enabled;
-            $this->auto_deploy_branches = $this->pipelineConfig->auto_deploy_branches ?? [];
-            $this->skip_patterns = $this->pipelineConfig->skip_patterns ?? [];
-            $this->deploy_patterns = $this->pipelineConfig->deploy_patterns ?? [];
+            $branches = $this->pipelineConfig->auto_deploy_branches ?? [];
+            $this->auto_deploy_branches = is_array($branches) ? $branches : [];
+            $skip = $this->pipelineConfig->skip_patterns ?? [];
+            $this->skip_patterns = is_array($skip) ? $skip : [];
+            $deploy = $this->pipelineConfig->deploy_patterns ?? [];
+            $this->deploy_patterns = is_array($deploy) ? $deploy : [];
             $this->webhook_secret = $this->pipelineConfig->webhook_secret;
         } else {
             // Default: deploy from the project's main branch
@@ -55,12 +70,12 @@ class PipelineSettings extends Component
 
     public function toggleEnabled()
     {
-        $this->enabled = !$this->enabled;
+        $this->enabled = ! $this->enabled;
         $this->saveConfig();
 
         $this->dispatch('notification', [
             'type' => 'success',
-            'message' => $this->enabled ? 'Pipeline CI/CD enabled successfully!' : 'Pipeline CI/CD disabled successfully!'
+            'message' => $this->enabled ? 'Pipeline CI/CD enabled successfully!' : 'Pipeline CI/CD disabled successfully!',
         ]);
     }
 
@@ -71,16 +86,18 @@ class PipelineSettings extends Component
         if (empty($branch)) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Branch name cannot be empty'
+                'message' => 'Branch name cannot be empty',
             ]);
+
             return;
         }
 
         if (in_array($branch, $this->auto_deploy_branches)) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Branch already exists in the list'
+                'message' => 'Branch already exists in the list',
             ]);
+
             return;
         }
 
@@ -90,7 +107,7 @@ class PipelineSettings extends Component
 
         $this->dispatch('notification', [
             'type' => 'success',
-            'message' => "Branch '{$branch}' added successfully"
+            'message' => "Branch '{$branch}' added successfully",
         ]);
     }
 
@@ -104,7 +121,7 @@ class PipelineSettings extends Component
 
             $this->dispatch('notification', [
                 'type' => 'success',
-                'message' => "Branch '{$branch}' removed successfully"
+                'message' => "Branch '{$branch}' removed successfully",
             ]);
         }
     }
@@ -116,16 +133,18 @@ class PipelineSettings extends Component
         if (empty($pattern)) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Skip pattern cannot be empty'
+                'message' => 'Skip pattern cannot be empty',
             ]);
+
             return;
         }
 
         if (in_array($pattern, $this->skip_patterns)) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Pattern already exists'
+                'message' => 'Pattern already exists',
             ]);
+
             return;
         }
 
@@ -135,7 +154,7 @@ class PipelineSettings extends Component
 
         $this->dispatch('notification', [
             'type' => 'success',
-            'message' => "Skip pattern '{$pattern}' added successfully"
+            'message' => "Skip pattern '{$pattern}' added successfully",
         ]);
     }
 
@@ -149,7 +168,7 @@ class PipelineSettings extends Component
 
             $this->dispatch('notification', [
                 'type' => 'success',
-                'message' => "Skip pattern '{$pattern}' removed successfully"
+                'message' => "Skip pattern '{$pattern}' removed successfully",
             ]);
         }
     }
@@ -161,16 +180,18 @@ class PipelineSettings extends Component
         if (empty($pattern)) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Deploy pattern cannot be empty'
+                'message' => 'Deploy pattern cannot be empty',
             ]);
+
             return;
         }
 
         if (in_array($pattern, $this->deploy_patterns)) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Pattern already exists'
+                'message' => 'Pattern already exists',
             ]);
+
             return;
         }
 
@@ -180,7 +201,7 @@ class PipelineSettings extends Component
 
         $this->dispatch('notification', [
             'type' => 'success',
-            'message' => "Deploy pattern '{$pattern}' added successfully"
+            'message' => "Deploy pattern '{$pattern}' added successfully",
         ]);
     }
 
@@ -194,14 +215,14 @@ class PipelineSettings extends Component
 
             $this->dispatch('notification', [
                 'type' => 'success',
-                'message' => "Deploy pattern '{$pattern}' removed successfully"
+                'message' => "Deploy pattern '{$pattern}' removed successfully",
             ]);
         }
     }
 
     public function generateWebhookSecret()
     {
-        if (!$this->pipelineConfig) {
+        if (! $this->pipelineConfig) {
             $this->pipelineConfig = new PipelineConfig(['project_id' => $this->project->id]);
         }
 
@@ -213,7 +234,7 @@ class PipelineSettings extends Component
 
         $this->dispatch('notification', [
             'type' => 'success',
-            'message' => 'Webhook secret generated successfully! Please update your Git provider settings.'
+            'message' => 'Webhook secret generated successfully! Please update your Git provider settings.',
         ]);
     }
 
@@ -229,7 +250,7 @@ class PipelineSettings extends Component
 
     public function toggleSecretVisibility()
     {
-        $this->showSecret = !$this->showSecret;
+        $this->showSecret = ! $this->showSecret;
     }
 
     private function updateWebhookUrls()

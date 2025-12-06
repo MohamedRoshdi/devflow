@@ -2,13 +2,43 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $server_id
+ * @property string $type
+ * @property string $status
+ * @property int|null $size_bytes
+ * @property string $storage_path
+ * @property string $storage_driver
+ * @property \Illuminate\Support\Carbon|null $started_at
+ * @property \Illuminate\Support\Carbon|null $completed_at
+ * @property string|null $error_message
+ * @property array<string, mixed>|null $metadata
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Server $server
+ * @property-read string $formatted_size
+ * @property-read int|null $duration
+ * @property-read string $formatted_duration
+ * @property-read string $status_color
+ *
+ * @method static Builder<ServerBackup> completed()
+ * @method static Builder<ServerBackup> failed()
+ * @method static Builder<ServerBackup> byType(string $type)
+ */
 class ServerBackup extends Model
 {
+    /** @use HasFactory<\Database\Factories\ServerBackupFactory> */
     use HasFactory;
 
+    /**
+     * @var array<int, string>
+     */
     protected $fillable = [
         'server_id',
         'type',
@@ -22,6 +52,9 @@ class ServerBackup extends Model
         'metadata',
     ];
 
+    /**
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -33,23 +66,38 @@ class ServerBackup extends Model
     }
 
     // Relationships
-    public function server()
+    /**
+     * @return BelongsTo<Server, ServerBackup>
+     */
+    public function server(): BelongsTo
     {
         return $this->belongsTo(Server::class);
     }
 
     // Scopes
-    public function scopeCompleted($query)
+    /**
+     * @param  Builder<ServerBackup>  $query
+     * @return Builder<ServerBackup>
+     */
+    public function scopeCompleted(Builder $query): Builder
     {
         return $query->where('status', 'completed');
     }
 
-    public function scopeFailed($query)
+    /**
+     * @param  Builder<ServerBackup>  $query
+     * @return Builder<ServerBackup>
+     */
+    public function scopeFailed(Builder $query): Builder
     {
         return $query->where('status', 'failed');
     }
 
-    public function scopeByType($query, string $type)
+    /**
+     * @param  Builder<ServerBackup>  $query
+     * @return Builder<ServerBackup>
+     */
+    public function scopeByType(Builder $query, string $type): Builder
     {
         return $query->where('type', $type);
     }
@@ -57,7 +105,7 @@ class ServerBackup extends Model
     // Accessors
     public function getFormattedSizeAttribute(): string
     {
-        if (!$this->size_bytes) {
+        if (! $this->size_bytes) {
             return 'Unknown';
         }
 
@@ -68,12 +116,12 @@ class ServerBackup extends Model
             $bytes /= 1024;
         }
 
-        return round($bytes, 2) . ' ' . $units[$i];
+        return round($bytes, 2).' '.$units[$i];
     }
 
     public function getDurationAttribute(): ?int
     {
-        if (!$this->started_at || !$this->completed_at) {
+        if (! $this->started_at || ! $this->completed_at) {
             return null;
         }
 
@@ -84,7 +132,7 @@ class ServerBackup extends Model
     {
         $duration = $this->duration;
 
-        if (!$duration) {
+        if (! $duration) {
             return 'N/A';
         }
 
@@ -124,7 +172,7 @@ class ServerBackup extends Model
 
     public function getStatusColorAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'completed' => 'green',
             'running' => 'blue',
             'failed' => 'red',

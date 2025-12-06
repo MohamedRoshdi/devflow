@@ -4,25 +4,35 @@ namespace App\Livewire\Deployments;
 
 use App\Models\Project;
 use App\Models\ScheduledDeployment;
-use Livewire\Component;
-use Livewire\Attributes\On;
 use Carbon\Carbon;
+use Livewire\Attributes\On;
+use Livewire\Component;
 
 class ScheduledDeployments extends Component
 {
     public Project $project;
+
+    /** @var array<int, string> */
     public array $branches = [];
+
     public bool $showScheduleModal = false;
 
     // Form fields
     public string $selectedBranch = 'main';
+
     public string $scheduledDate = '';
+
     public string $scheduledTime = '';
+
     public string $timezone = 'UTC';
+
     public string $notes = '';
+
     public bool $notifyBefore = true;
+
     public int $notifyMinutes = 15;
 
+    /** @var array<string, string> */
     protected array $timezones = [
         'UTC' => 'UTC',
         'America/New_York' => 'Eastern Time (ET)',
@@ -53,7 +63,7 @@ class ScheduledDeployments extends Component
     {
         // Use existing branches from project or default
         $this->branches = $this->project->available_branches ?? [
-            $this->project->branch ?? 'main'
+            $this->project->branch ?? 'main',
         ];
     }
 
@@ -90,15 +100,24 @@ class ScheduledDeployments extends Component
         ]);
 
         // Combine date and time in the selected timezone
-        $scheduledAt = Carbon::createFromFormat(
+        $parsedDate = Carbon::createFromFormat(
             'Y-m-d H:i',
             "{$this->scheduledDate} {$this->scheduledTime}",
             $this->timezone
-        )->utc();
+        );
+
+        if (! $parsedDate instanceof \Carbon\Carbon) {
+            $this->addError('scheduledTime', 'Invalid date/time format.');
+
+            return;
+        }
+
+        $scheduledAt = $parsedDate->utc();
 
         // Ensure the scheduled time is in the future
         if ($scheduledAt->isPast()) {
             $this->addError('scheduledTime', 'Scheduled time must be in the future.');
+
             return;
         }
 
@@ -116,7 +135,7 @@ class ScheduledDeployments extends Component
 
         $this->dispatch('notification',
             type: 'success',
-            message: 'Deployment scheduled successfully for ' . $scheduledAt->timezone($this->timezone)->format('M d, Y H:i') . ' ' . $this->timezone
+            message: 'Deployment scheduled successfully for '.$scheduledAt->timezone($this->timezone)->format('M d, Y H:i').' '.$this->timezone
         );
 
         $this->closeScheduleModal();

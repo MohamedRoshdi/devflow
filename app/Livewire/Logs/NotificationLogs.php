@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Logs;
 
-use App\Models\NotificationLog;
 use App\Models\NotificationChannel;
+use App\Models\NotificationLog;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -12,15 +12,23 @@ class NotificationLogs extends Component
     use WithPagination;
 
     public string $search = '';
+
     public string $statusFilter = '';
+
     public string $channelFilter = '';
+
     public string $eventTypeFilter = '';
+
     public string $dateFrom = '';
+
     public string $dateTo = '';
 
+    /** @var array<string, mixed> */
     public array $selectedLog = [];
+
     public bool $showDetails = false;
 
+    /** @var array<string, array{except: string}> */
     protected $queryString = [
         'search' => ['except' => ''],
         'statusFilter' => ['except' => ''],
@@ -62,7 +70,7 @@ class NotificationLogs extends Component
                 'status' => $log->status,
                 'payload' => $log->payload,
                 'error_message' => $log->error_message,
-                'created_at' => $log->created_at->format('Y-m-d H:i:s'),
+                'created_at' => $log->created_at?->format('Y-m-d H:i:s') ?? 'Unknown',
             ];
             $this->showDetails = true;
         }
@@ -98,15 +106,15 @@ class NotificationLogs extends Component
     {
         $logs = NotificationLog::query()
             ->with('channel')
-            ->when($this->search, fn($q) => $q->where(function ($query) {
+            ->when($this->search, fn ($q) => $q->where(function ($query) {
                 $query->where('event_type', 'like', "%{$this->search}%")
                     ->orWhere('error_message', 'like', "%{$this->search}%");
             }))
-            ->when($this->statusFilter, fn($q) => $q->where('status', $this->statusFilter))
-            ->when($this->channelFilter, fn($q) => $q->where('notification_channel_id', $this->channelFilter))
-            ->when($this->eventTypeFilter, fn($q) => $q->where('event_type', $this->eventTypeFilter))
-            ->when($this->dateFrom, fn($q) => $q->whereDate('created_at', '>=', $this->dateFrom))
-            ->when($this->dateTo, fn($q) => $q->whereDate('created_at', '<=', $this->dateTo))
+            ->when($this->statusFilter, fn ($q) => $q->where('status', $this->statusFilter))
+            ->when($this->channelFilter, fn ($q) => $q->where('notification_channel_id', $this->channelFilter))
+            ->when($this->eventTypeFilter, fn ($q) => $q->where('event_type', $this->eventTypeFilter))
+            ->when($this->dateFrom, fn ($q) => $q->whereDate('created_at', '>=', $this->dateFrom))
+            ->when($this->dateTo, fn ($q) => $q->whereDate('created_at', '<=', $this->dateTo))
             ->orderByDesc('created_at')
             ->paginate(20);
 

@@ -2,33 +2,52 @@
 
 namespace App\Livewire\Projects;
 
-use Livewire\Component;
 use App\Models\Project;
 use App\Models\Server;
 use App\Services\ServerConnectivityService;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Livewire\Component;
 
 class ProjectEdit extends Component
 {
     public Project $project;
-    
-    public $name = '';
-    public $slug = '';
-    public $server_id = '';
-    public $repository_url = '';
-    public $branch = 'main';
-    public $framework = '';
-    public $php_version = '8.3';
-    public $node_version = '20';
-    public $root_directory = '/';
-    public $build_command = '';
-    public $start_command = '';
-    public $auto_deploy = false;
-    public $latitude = null;
-    public $longitude = null;
 
-    public $servers = [];
-    public $frameworks = [
+    public string $name = '';
+
+    public string $slug = '';
+
+    public string|int|null $server_id = '';
+
+    public ?string $repository_url = '';
+
+    public string $branch = 'main';
+
+    public ?string $framework = '';
+
+    public ?string $php_version = '8.3';
+
+    public ?string $node_version = '20';
+
+    public string $root_directory = '/';
+
+    public ?string $build_command = '';
+
+    public ?string $start_command = '';
+
+    public bool $auto_deploy = false;
+
+    public float|string|null $latitude = null;
+
+    public float|string|null $longitude = null;
+
+    /** @var Collection<int, Server> */
+    public Collection $servers;
+
+    /** @var array<string, string> */
+    public array $frameworks = [
         '' => '-- Select Framework --',
         'static' => 'Static Site (HTML/CSS/JS)',
         'laravel' => 'Laravel',
@@ -38,7 +57,9 @@ class ProjectEdit extends Component
         'nextjs' => 'Next.js',
         'nuxt' => 'Nuxt.js',
     ];
-    public $php_versions = [
+
+    /** @var array<string, string> */
+    public array $php_versions = [
         '8.4' => 'PHP 8.4 (Latest)',
         '8.3' => 'PHP 8.3',
         '8.2' => 'PHP 8.2',
@@ -47,7 +68,7 @@ class ProjectEdit extends Component
         '7.4' => 'PHP 7.4 (Legacy)',
     ];
 
-    public function mount(Project $project)
+    public function mount(Project $project): void
     {
         // All projects are shared - any authenticated user can edit
         $this->project = $project;
@@ -73,12 +94,12 @@ class ProjectEdit extends Component
             ->get();
     }
 
-    public function updatedName()
+    public function updatedName(): void
     {
         $this->slug = Str::slug($this->name);
     }
 
-    public function refreshServerStatus($serverId)
+    public function refreshServerStatus(int|string $serverId): void
     {
         $server = Server::find($serverId);
 
@@ -94,12 +115,15 @@ class ProjectEdit extends Component
         }
     }
 
-    public function rules()
+    /**
+     * @return array<string, string|array<int, string>>
+     */
+    public function rules(): array
     {
         return [
             'name' => 'required|string|max:255',
             // Ignore current project and soft-deleted projects
-            'slug' => 'required|string|max:255|unique:projects,slug,' . $this->project->id . ',id,deleted_at,NULL',
+            'slug' => 'required|string|max:255|unique:projects,slug,'.$this->project->id.',id,deleted_at,NULL',
             'server_id' => 'required|exists:servers,id',
             // Support both HTTPS and SSH URLs
             'repository_url' => ['required', 'regex:/^(https?:\/\/|git@)[\w\-\.]+[\/:][\w\-\.]+\/[\w\-\.]+\.git$/'],
@@ -116,7 +140,7 @@ class ProjectEdit extends Component
         ];
     }
 
-    public function updateProject()
+    public function updateProject(): RedirectResponse
     {
         $this->validate();
 
@@ -138,11 +162,14 @@ class ProjectEdit extends Component
         ]);
 
         session()->flash('message', 'Project updated successfully!');
-        
+
         return redirect()->route('projects.show', $this->project);
     }
 
-    public function getFrameworksProperty()
+    /**
+     * @return array<string, string>
+     */
+    public function getFrameworksProperty(): array
     {
         return [
             '' => '-- Select Framework --',
@@ -156,7 +183,10 @@ class ProjectEdit extends Component
         ];
     }
 
-    public function getPhpVersionsProperty()
+    /**
+     * @return array<string, string>
+     */
+    public function getPhpVersionsProperty(): array
     {
         return [
             '8.4' => 'PHP 8.4 (Latest)',
@@ -168,9 +198,8 @@ class ProjectEdit extends Component
         ];
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.projects.project-edit');
     }
 }
-

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class WebhookDelivery extends Model
 {
+    /** @use HasFactory<\Database\Factories\WebhookDeliveryFactory> */
     use HasFactory;
 
     public $timestamps = false;
@@ -64,7 +65,7 @@ class WebhookDelivery extends Model
 
     public function getStatusColorAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'success' => 'green',
             'failed' => 'red',
             'ignored' => 'gray',
@@ -75,7 +76,7 @@ class WebhookDelivery extends Model
 
     public function getStatusIconAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'success' => 'check-circle',
             'failed' => 'x-circle',
             'ignored' => 'minus-circle',

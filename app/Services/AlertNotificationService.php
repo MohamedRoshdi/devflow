@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use App\Models\ResourceAlert;
 use App\Models\AlertHistory;
+use App\Models\ResourceAlert;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Http;
 
 class AlertNotificationService
 {
@@ -19,12 +19,12 @@ class AlertNotificationService
         $channels = $alert->notification_channels ?? [];
 
         foreach ($channels as $channel => $config) {
-            if (!is_array($config) || empty($config)) {
+            if (empty($config)) {
                 continue;
             }
 
             try {
-                $result = match($channel) {
+                $result = match ($channel) {
                     'email' => $this->sendEmail($config, $alert, $history),
                     'slack' => $this->sendSlack($config, $alert, $history),
                     'discord' => $this->sendDiscord($config, $alert, $history),
@@ -57,7 +57,7 @@ class AlertNotificationService
     {
         $email = $config['email'] ?? null;
 
-        if (!$email) {
+        if (! $email) {
             return ['success' => false, 'message' => 'No email address configured'];
         }
 
@@ -84,7 +84,7 @@ class AlertNotificationService
     {
         $webhookUrl = $config['webhook_url'] ?? null;
 
-        if (!$webhookUrl) {
+        if (! $webhookUrl) {
             return ['success' => false, 'message' => 'No Slack webhook URL configured'];
         }
 
@@ -96,7 +96,7 @@ class AlertNotificationService
                         'type' => 'header',
                         'text' => [
                             'type' => 'plain_text',
-                            'text' => $this->getAlertEmoji($history) . ' ' . $this->getNotificationTitle($alert, $history),
+                            'text' => $this->getAlertEmoji($history).' '.$this->getNotificationTitle($alert, $history),
                         ],
                     ],
                     [
@@ -125,7 +125,7 @@ class AlertNotificationService
                         'elements' => [
                             [
                                 'type' => 'mrkdwn',
-                                'text' => "Time: {$history->created_at->format('Y-m-d H:i:s')}",
+                                'text' => 'Time: '.($history->created_at?->format('Y-m-d H:i:s') ?? 'Never'),
                             ],
                         ],
                     ],
@@ -136,7 +136,7 @@ class AlertNotificationService
                 return ['success' => true, 'message' => 'Slack notification sent'];
             }
 
-            return ['success' => false, 'message' => 'Slack API error: ' . $response->body()];
+            return ['success' => false, 'message' => 'Slack API error: '.$response->body()];
 
         } catch (\Exception $e) {
             return ['success' => false, 'message' => $e->getMessage()];
@@ -150,7 +150,7 @@ class AlertNotificationService
     {
         $webhookUrl = $config['webhook_url'] ?? null;
 
-        if (!$webhookUrl) {
+        if (! $webhookUrl) {
             return ['success' => false, 'message' => 'No Discord webhook URL configured'];
         }
 
@@ -160,7 +160,7 @@ class AlertNotificationService
             $response = Http::post($webhookUrl, [
                 'embeds' => [
                     [
-                        'title' => $this->getAlertEmoji($history) . ' ' . $this->getNotificationTitle($alert, $history),
+                        'title' => $this->getAlertEmoji($history).' '.$this->getNotificationTitle($alert, $history),
                         'description' => $history->message,
                         'color' => $color,
                         'fields' => [
@@ -185,7 +185,7 @@ class AlertNotificationService
                                 'inline' => true,
                             ],
                         ],
-                        'timestamp' => $history->created_at->toIso8601String(),
+                        'timestamp' => $history->created_at?->toIso8601String() ?? now()->toIso8601String(),
                         'footer' => [
                             'text' => 'DevFlow Pro - Resource Alert',
                         ],
@@ -197,7 +197,7 @@ class AlertNotificationService
                 return ['success' => true, 'message' => 'Discord notification sent'];
             }
 
-            return ['success' => false, 'message' => 'Discord API error: ' . $response->body()];
+            return ['success' => false, 'message' => 'Discord API error: '.$response->body()];
 
         } catch (\Exception $e) {
             return ['success' => false, 'message' => $e->getMessage()];
@@ -220,7 +220,7 @@ class AlertNotificationService
             "- Resource: {$alert->resource_type_label}",
             "- Current Value: {$this->formatValue($history->current_value, $alert->resource_type)}",
             "- Threshold: {$alert->threshold_display}",
-            "- Time: {$history->created_at->format('Y-m-d H:i:s')}",
+            '- Time: '.($history->created_at?->format('Y-m-d H:i:s') ?? 'Never'),
             '',
             '--',
             'DevFlow Pro - Automated Server Monitoring',
@@ -245,10 +245,10 @@ class AlertNotificationService
     protected function getNotificationTitle(ResourceAlert $alert, AlertHistory $history): string
     {
         if ($history->status === 'triggered') {
-            return "Resource Alert Triggered";
+            return 'Resource Alert Triggered';
         }
 
-        return "Resource Alert Resolved";
+        return 'Resource Alert Resolved';
     }
 
     /**
@@ -266,6 +266,6 @@ class AlertNotificationService
     {
         $unit = in_array($resourceType, ['cpu', 'memory', 'disk']) ? '%' : '';
 
-        return number_format($value, 2) . $unit;
+        return number_format($value, 2).$unit;
     }
 }

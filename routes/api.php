@@ -1,12 +1,12 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\ServerMetricsController;
 use App\Http\Controllers\Api\DeploymentWebhookController;
+use App\Http\Controllers\Api\ServerMetricsController;
+use App\Http\Controllers\Api\V1\DeploymentController;
 use App\Http\Controllers\Api\V1\ProjectController;
 use App\Http\Controllers\Api\V1\ServerController;
-use App\Http\Controllers\Api\V1\DeploymentController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 // API Version 1
 Route::prefix('v1')->name('api.v1.')->middleware('api.auth')->group(function () {
@@ -38,4 +38,3 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Public Webhook Endpoints
 Route::post('/webhooks/deploy/{token}', [DeploymentWebhookController::class, 'handle']);
-

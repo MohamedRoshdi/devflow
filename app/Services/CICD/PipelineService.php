@@ -2,16 +2,15 @@
 
 namespace App\Services\CICD;
 
-use App\Models\Project;
 use App\Models\Pipeline;
 use App\Models\PipelineRun;
-use App\Events\PipelineStatusUpdated;
+use App\Models\Project;
 use Illuminate\Support\Facades\Process;
-use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Yaml\Yaml;
 
 class PipelineService
 {
+    /** @var array<int, string> */
     protected array $supportedProviders = ['github', 'gitlab', 'bitbucket', 'jenkins', 'custom'];
 
     /**
@@ -255,8 +254,8 @@ class PipelineService
                         'context' => '.',
                         'push' => true,
                         'tags' => implode(',', [
-                            '${{ secrets.DOCKER_REGISTRY }}/' . $project->slug . ':latest',
-                            '${{ secrets.DOCKER_REGISTRY }}/' . $project->slug . ':${{ github.sha }}',
+                            '${{ secrets.DOCKER_REGISTRY }}/'.$project->slug.':latest',
+                            '${{ secrets.DOCKER_REGISTRY }}/'.$project->slug.':${{ github.sha }}',
                         ]),
                         'cache-from' => 'type=gha',
                         'cache-to' => 'type=gha,mode=max',
@@ -297,7 +296,7 @@ class PipelineService
             'if' => "github.ref == 'refs/heads/main' && github.event_name == 'push'",
             'environment' => [
                 'name' => 'production',
-                'url' => 'https://' . ($project->domains->first()->full_domain ?? 'example.com'),
+                'url' => 'https://'.($project->domains->first()->full_domain ?? 'example.com'),
             ],
             'steps' => [
                 [
@@ -363,10 +362,10 @@ class PipelineService
             [
                 'name' => 'Deploy to Kubernetes',
                 'run' => implode("\n", [
-                    'kubectl set image deployment/' . $project->slug . '-deployment \\',
-                    '  app=${{ secrets.DOCKER_REGISTRY }}/' . $project->slug . ':${{ github.sha }} \\',
-                    '  -n ' . $project->slug,
-                    'kubectl rollout status deployment/' . $project->slug . '-deployment -n ' . $project->slug,
+                    'kubectl set image deployment/'.$project->slug.'-deployment \\',
+                    '  app=${{ secrets.DOCKER_REGISTRY }}/'.$project->slug.':${{ github.sha }} \\',
+                    '  -n '.$project->slug,
+                    'kubectl rollout status deployment/'.$project->slug.'-deployment -n '.$project->slug,
                 ]),
             ],
         ];
@@ -386,7 +385,7 @@ class PipelineService
                     'username' => '${{ secrets.DEPLOY_USER }}',
                     'key' => '${{ secrets.DEPLOY_SSH_KEY }}',
                     'script' => implode("\n", [
-                        'cd /opt/devflow/projects/' . $project->slug,
+                        'cd /opt/devflow/projects/'.$project->slug,
                         'docker-compose pull',
                         'docker-compose down',
                         'docker-compose up -d',
@@ -411,7 +410,7 @@ class PipelineService
                     'username' => '${{ secrets.DEPLOY_USER }}',
                     'key' => '${{ secrets.DEPLOY_SSH_KEY }}',
                     'script' => implode("\n", [
-                        'cd /var/www/' . $project->slug,
+                        'cd /var/www/'.$project->slug,
                         'git pull origin main',
                         'composer install --no-dev --optimize-autoloader',
                         'npm install && npm run build',
@@ -439,7 +438,7 @@ class PipelineService
                     '  -H "Authorization: Bearer ${{ secrets.DEVFLOW_API_TOKEN }}" \\',
                     '  -H "Content-Type: application/json" \\',
                     '  -d \'{"commit_hash": "${{ github.sha }}", "branch": "main"}\' \\',
-                    '  https://devflow.yourdomain.com/api/v1/projects/' . $project->id . '/deploy',
+                    '  https://devflow.yourdomain.com/api/v1/projects/'.$project->id.'/deploy',
                 ]),
             ],
         ];
@@ -567,7 +566,7 @@ class PipelineService
             ],
             'test' => [
                 'stage' => 'test',
-                'image' => 'php:' . $project->php_version,
+                'image' => 'php:'.$project->php_version,
                 'services' => $this->getGitLabServices($project),
                 'before_script' => [
                     'apt-get update && apt-get install -y git unzip',
@@ -727,7 +726,7 @@ class PipelineService
                 ->timeout(600)
                 ->run($command);
 
-            if (!$result->successful()) {
+            if (! $result->successful()) {
                 throw new \Exception("Step failed: {$step['name']} - {$result->errorOutput()}");
             }
 
@@ -781,7 +780,7 @@ class PipelineService
 
         // Create directory if it doesn't exist
         $directory = dirname($filePath);
-        if (!is_dir($directory)) {
+        if (! is_dir($directory)) {
             mkdir($directory, 0755, true);
         }
 
@@ -791,7 +790,7 @@ class PipelineService
         // Commit and push the file
         Process::path($projectPath)->run('git add .');
         Process::path($projectPath)->run('git commit -m "Add DevFlow CI/CD pipeline"');
-        Process::path($projectPath)->run('git push origin ' . $project->branch);
+        Process::path($projectPath)->run('git push origin '.$project->branch);
     }
 
     /**
@@ -801,6 +800,7 @@ class PipelineService
     {
         $projectPath = "/opt/devflow/projects/{$project->slug}";
         $result = Process::path($projectPath)->run('git rev-parse HEAD');
+
         return trim($result->output());
     }
 
@@ -812,6 +812,7 @@ class PipelineService
         if (preg_match('/github\.com[\/:]([^\/]+)\//', $url, $matches)) {
             return $matches[1];
         }
+
         return '';
     }
 
@@ -823,6 +824,7 @@ class PipelineService
         if (preg_match('/github\.com[\/:]([^\/]+)\/([^\.]+)/', $url, $matches)) {
             return $matches[2];
         }
+
         return '';
     }
 }

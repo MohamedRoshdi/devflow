@@ -2,7 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\{BackupSchedule, Project, Server};
+use App\Models\BackupSchedule;
+use App\Models\Project;
+use App\Models\Server;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class BackupScheduleFactory extends Factory
@@ -15,14 +17,18 @@ class BackupScheduleFactory extends Factory
             'project_id' => Project::factory(),
             'server_id' => Server::factory(),
             'database_type' => fake()->randomElement(['mysql', 'postgresql', 'sqlite']),
-            'database_name' => fake()->word() . '_db',
-            'schedule' => 'daily',
-            'schedule_time' => '02:00',
-            'storage_disk' => 'local',
-            'encrypt' => false,
+            'database_name' => fake()->word().'_db',
+            'frequency' => 'daily',
+            'time' => '02:00:00',
+            'day_of_week' => null,
+            'day_of_month' => null,
+            'retention_days' => 30,
             'retention_daily' => 7,
             'retention_weekly' => 4,
             'retention_monthly' => 3,
+            'storage_disk' => 'local',
+            'encrypt' => false,
+            'notify_on_failure' => true,
             'is_active' => true,
             'last_run_at' => null,
             'next_run_at' => now()->addDay(),

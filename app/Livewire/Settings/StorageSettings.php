@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace App\Livewire\Settings;
 
-use App\Models\StorageConfiguration;
 use App\Models\Project;
+use App\Models\StorageConfiguration;
 use App\Services\Backup\RemoteStorageService;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
-use Livewire\Attributes\{Validate, Computed};
-use Illuminate\Support\Str;
 
 class StorageSettings extends Component
 {
     public bool $showModal = false;
+
     public ?int $editingId = null;
+
     public string $activeTab = 's3';
 
     // Common fields
@@ -40,10 +42,12 @@ class StorageSettings extends Component
     public string $path_prefix = '';
 
     public bool $enable_encryption = false;
+
     public string $encryption_key = '';
 
     // S3 Credentials
     public string $s3_access_key = '';
+
     public string $s3_secret_key = '';
 
     // GCS Credentials
@@ -51,24 +55,39 @@ class StorageSettings extends Component
 
     // FTP Credentials
     public string $ftp_host = '';
+
     public string $ftp_port = '21';
+
     public string $ftp_username = '';
+
     public string $ftp_password = '';
+
     public string $ftp_path = '/';
+
     public bool $ftp_passive = true;
+
     public bool $ftp_ssl = false;
 
     // SFTP Credentials
     public string $sftp_host = '';
+
     public string $sftp_port = '22';
+
     public string $sftp_username = '';
+
     public string $sftp_password = '';
+
     public string $sftp_private_key = '';
+
     public string $sftp_passphrase = '';
+
     public string $sftp_path = '/';
 
-    // Test results
+    /**
+     * @var array<string, mixed>
+     */
     public array $testResults = [];
+
     public bool $isTesting = false;
 
     private RemoteStorageService $storageService;
@@ -102,7 +121,7 @@ class StorageSettings extends Component
             'ftp_host', 'ftp_port', 'ftp_username', 'ftp_password', 'ftp_path',
             'ftp_passive', 'ftp_ssl', 'sftp_host', 'sftp_port', 'sftp_username',
             'sftp_password', 'sftp_private_key', 'sftp_passphrase', 'sftp_path',
-            'testResults'
+            'testResults',
         ]);
         $this->activeTab = 's3';
         $this->showModal = true;
@@ -121,13 +140,13 @@ class StorageSettings extends Component
         $this->region = $config->region ?? '';
         $this->endpoint = $config->endpoint ?? '';
         $this->path_prefix = $config->path_prefix ?? '';
-        $this->enable_encryption = !empty($config->encryption_key);
+        $this->enable_encryption = ! empty($config->encryption_key);
         $this->encryption_key = $config->encryption_key ?? '';
 
         $credentials = $config->credentials;
 
         // Load driver-specific credentials
-        match($config->driver) {
+        match ($config->driver) {
             's3' => $this->loadS3Credentials($credentials),
             'gcs' => $this->loadGcsCredentials($credentials),
             'ftp' => $this->loadFtpCredentials($credentials),
@@ -224,14 +243,14 @@ class StorageSettings extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Failed to save configuration: ' . $e->getMessage(),
+                'message' => 'Failed to save configuration: '.$e->getMessage(),
             ]);
         }
     }
 
     private function getCredentialsForDriver(): array
     {
-        return match($this->driver) {
+        return match ($this->driver) {
             's3' => [
                 'access_key_id' => $this->s3_access_key,
                 'secret_access_key' => $this->s3_secret_key,
@@ -280,13 +299,13 @@ class StorageSettings extends Component
             } else {
                 $this->dispatch('notification', [
                     'type' => 'error',
-                    'message' => 'Connection test failed: ' . ($results['error'] ?? 'Unknown error'),
+                    'message' => 'Connection test failed: '.($results['error'] ?? 'Unknown error'),
                 ]);
             }
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Test failed: ' . $e->getMessage(),
+                'message' => 'Test failed: '.$e->getMessage(),
             ]);
         } finally {
             $this->isTesting = false;
@@ -312,7 +331,7 @@ class StorageSettings extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Failed to set default: ' . $e->getMessage(),
+                'message' => 'Failed to set default: '.$e->getMessage(),
             ]);
         }
     }
@@ -333,7 +352,7 @@ class StorageSettings extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',
-                'message' => 'Failed to delete: ' . $e->getMessage(),
+                'message' => 'Failed to delete: '.$e->getMessage(),
             ]);
         }
     }

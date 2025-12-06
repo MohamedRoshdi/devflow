@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
+use App\Events\ProjectSetupUpdated;
+use App\Models\BackupSchedule;
+use App\Models\HealthCheck;
 use App\Models\Project;
 use App\Models\ProjectSetupTask;
-use App\Models\HealthCheck;
-use App\Models\BackupSchedule;
-use App\Events\ProjectSetupUpdated;
 use Illuminate\Support\Facades\Log;
 
 class ProjectSetupService
@@ -84,7 +84,7 @@ class ProjectSetupService
             try {
                 $this->executeTask($project, $task);
             } catch (\Exception $e) {
-                Log::error("Project setup task failed", [
+                Log::error('Project setup task failed', [
                     'project_id' => $project->id,
                     'task_type' => $task->task_type,
                     'error' => $e->getMessage(),
@@ -129,8 +129,9 @@ class ProjectSetupService
 
         $domain = $project->domains()->where('is_primary', true)->first();
 
-        if (!$domain) {
+        if (! $domain) {
             $task->markAsFailed('No primary domain found');
+
             return;
         }
 
@@ -151,7 +152,7 @@ class ProjectSetupService
         $task->updateProgress(20, 'Generating webhook secret...');
 
         // Generate webhook secret if not exists
-        if (!$project->webhook_secret) {
+        if (! $project->webhook_secret) {
             $project->update([
                 'webhook_secret' => $project->generateWebhookSecret(),
                 'webhook_enabled' => true,
@@ -268,8 +269,8 @@ class ProjectSetupService
         $project->refresh();
         $tasks = $project->setupTasks;
 
-        $allDone = $tasks->every(fn($task) => $task->isDone());
-        $anyFailed = $tasks->contains(fn($task) => $task->isFailed());
+        $allDone = $tasks->every(fn ($task) => $task->isDone());
+        $anyFailed = $tasks->contains(fn ($task) => $task->isFailed());
 
         if ($allDone) {
             $project->update([
@@ -292,7 +293,7 @@ class ProjectSetupService
             'status' => $project->setup_status,
             'progress' => $project->setup_progress,
             'completed_at' => $project->setup_completed_at,
-            'tasks' => $tasks->map(fn($task) => [
+            'tasks' => $tasks->map(fn ($task) => [
                 'type' => $task->task_type,
                 'label' => ProjectSetupTask::getTypeLabel($task->task_type),
                 'status' => $task->status,

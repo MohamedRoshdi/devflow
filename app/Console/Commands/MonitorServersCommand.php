@@ -2,14 +2,15 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\Server;
 use App\Models\ServerMetric;
+use Illuminate\Console\Command;
 use Symfony\Component\Process\Process;
 
 class MonitorServersCommand extends Command
 {
     protected $signature = 'devflow:monitor-servers';
+
     protected $description = 'Monitor all servers and collect metrics';
 
     public function handle()
@@ -20,10 +21,10 @@ class MonitorServersCommand extends Command
 
         foreach ($servers as $server) {
             $this->info("Checking server: {$server->name}");
-            
+
             try {
                 $metrics = $this->collectServerMetrics($server);
-                
+
                 ServerMetric::create([
                     'server_id' => $server->id,
                     'cpu_usage' => $metrics['cpu_usage'] ?? 0,
@@ -42,10 +43,10 @@ class MonitorServersCommand extends Command
                 ]);
 
                 $this->info("✓ Metrics collected for {$server->name}");
-                
+
             } catch (\Exception $e) {
                 $this->error("✗ Failed to collect metrics for {$server->name}: {$e->getMessage()}");
-                
+
                 $server->update([
                     'status' => 'offline',
                 ]);
@@ -53,6 +54,7 @@ class MonitorServersCommand extends Command
         }
 
         $this->info('Server monitoring completed!');
+
         return 0;
     }
 
@@ -70,7 +72,7 @@ class MonitorServersCommand extends Command
         $process->setTimeout(30);
         $process->run();
 
-        if (!$process->isSuccessful()) {
+        if (! $process->isSuccessful()) {
             throw new \Exception('Failed to connect to server');
         }
 
@@ -86,4 +88,3 @@ class MonitorServersCommand extends Command
         ];
     }
 }
-

@@ -18,10 +18,15 @@ use Livewire\Component;
 class HealthCheckManager extends Component
 {
     public bool $showCreateModal = false;
+
     public bool $showChannelModal = false;
+
     public bool $showResultsModal = false;
+
     public ?int $editingCheckId = null;
+
     public ?int $editingChannelId = null;
+
     public ?int $viewingResultsCheckId = null;
 
     // Health Check Form
@@ -49,6 +54,9 @@ class HealthCheckManager extends Component
     #[Validate('required|boolean')]
     public bool $is_active = true;
 
+    /**
+     * @var array<int, int>
+     */
     public array $selectedChannels = [];
 
     // Notification Channel Form
@@ -162,7 +170,7 @@ class HealthCheckManager extends Component
         $this->project_id = $check->project_id;
         $this->server_id = $check->server_id;
         $this->check_type = $check->check_type;
-        $this->target_url = $check->target_url;
+        $this->target_url = $check->target_url ?? '';
         $this->expected_status = $check->expected_status;
         $this->interval_minutes = $check->interval_minutes;
         $this->timeout_seconds = $check->timeout_seconds;
@@ -209,7 +217,7 @@ class HealthCheckManager extends Component
             $this->closeCreateModal();
             $this->reset(['healthChecks']);
         } catch (\Exception $e) {
-            $this->dispatch('notification', type: 'error', message: 'Failed to save health check: ' . $e->getMessage());
+            $this->dispatch('notification', type: 'error', message: 'Failed to save health check: '.$e->getMessage());
         }
     }
 
@@ -220,7 +228,7 @@ class HealthCheckManager extends Component
             $this->dispatch('notification', type: 'success', message: 'Health check deleted successfully');
             $this->reset(['healthChecks']);
         } catch (\Exception $e) {
-            $this->dispatch('notification', type: 'error', message: 'Failed to delete health check: ' . $e->getMessage());
+            $this->dispatch('notification', type: 'error', message: 'Failed to delete health check: '.$e->getMessage());
         }
     }
 
@@ -232,7 +240,7 @@ class HealthCheckManager extends Component
             $this->dispatch('notification', type: 'success', message: 'Health check executed successfully');
             $this->reset(['healthChecks']);
         } catch (\Exception $e) {
-            $this->dispatch('notification', type: 'error', message: 'Health check failed: ' . $e->getMessage());
+            $this->dispatch('notification', type: 'error', message: 'Health check failed: '.$e->getMessage());
         }
     }
 
@@ -240,11 +248,11 @@ class HealthCheckManager extends Component
     {
         try {
             $check = HealthCheck::findOrFail($checkId);
-            $check->update(['is_active' => !$check->is_active]);
+            $check->update(['is_active' => ! $check->is_active]);
             $this->dispatch('notification', type: 'success', message: 'Health check status updated');
             $this->reset(['healthChecks']);
         } catch (\Exception $e) {
-            $this->dispatch('notification', type: 'error', message: 'Failed to update health check: ' . $e->getMessage());
+            $this->dispatch('notification', type: 'error', message: 'Failed to update health check: '.$e->getMessage());
         }
     }
 
@@ -278,7 +286,7 @@ class HealthCheckManager extends Component
             $this->closeChannelModal();
             $this->reset(['notificationChannels']);
         } catch (\Exception $e) {
-            $this->dispatch('notification', type: 'error', message: 'Failed to save notification channel: ' . $e->getMessage());
+            $this->dispatch('notification', type: 'error', message: 'Failed to save notification channel: '.$e->getMessage());
         }
     }
 
@@ -307,7 +315,7 @@ class HealthCheckManager extends Component
             $this->dispatch('notification', type: 'success', message: 'Notification channel deleted successfully');
             $this->reset(['notificationChannels']);
         } catch (\Exception $e) {
-            $this->dispatch('notification', type: 'error', message: 'Failed to delete notification channel: ' . $e->getMessage());
+            $this->dispatch('notification', type: 'error', message: 'Failed to delete notification channel: '.$e->getMessage());
         }
     }
 
@@ -323,7 +331,7 @@ class HealthCheckManager extends Component
                 $this->dispatch('notification', type: 'error', message: 'Failed to send test notification');
             }
         } catch (\Exception $e) {
-            $this->dispatch('notification', type: 'error', message: 'Test notification failed: ' . $e->getMessage());
+            $this->dispatch('notification', type: 'error', message: 'Test notification failed: '.$e->getMessage());
         }
     }
 

@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ApiToken extends Model
 {
+    /** @use HasFactory<\Database\Factories\ApiTokenFactory> */
     use HasFactory;
 
     /**
@@ -40,11 +42,17 @@ class ApiToken extends Model
     ];
 
     // Relationships
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, $this>
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Team, $this>
+     */
     public function team()
     {
         return $this->belongsTo(Team::class);
@@ -66,7 +74,7 @@ class ApiToken extends Model
         // Check for wildcard permissions (e.g., 'projects:*' grants all project abilities)
         $abilityParts = explode(':', $ability);
         if (count($abilityParts) === 2) {
-            $wildcardAbility = $abilityParts[0] . ':*';
+            $wildcardAbility = $abilityParts[0].':*';
             if (in_array($wildcardAbility, $this->abilities)) {
                 return true;
             }
@@ -95,11 +103,15 @@ class ApiToken extends Model
     }
 
     // Scopes
-    public function scopeActive($query)
+    /**
+     * @param  Builder<ApiToken>  $query
+     * @return Builder<ApiToken>
+     */
+    public function scopeActive(Builder $query): Builder
     {
         return $query->where(function ($q) {
             $q->whereNull('expires_at')
-              ->orWhere('expires_at', '>', now());
+                ->orWhere('expires_at', '>', now());
         });
     }
 }

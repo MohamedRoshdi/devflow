@@ -6,8 +6,8 @@ namespace App\Services\Backup;
 
 use App\Models\StorageConfiguration;
 use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class RemoteStorageService
 {
@@ -17,13 +17,13 @@ class RemoteStorageService
     public function store(string $localPath, StorageConfiguration $config, string $remotePath): bool
     {
         try {
-            if (!file_exists($localPath)) {
+            if (! file_exists($localPath)) {
                 throw new \RuntimeException("Local file not found: {$localPath}");
             }
 
             // Optionally encrypt file before upload
             $uploadPath = $localPath;
-            if (!empty($config->encryption_key)) {
+            if (! empty($config->encryption_key)) {
                 $uploadPath = $this->encryptFile($localPath, $config->encryption_key);
             }
 
@@ -31,8 +31,8 @@ class RemoteStorageService
             $disk = $this->getDiskFromConfig($config);
 
             // Add path prefix if configured
-            if (!empty($config->path_prefix)) {
-                $remotePath = trim($config->path_prefix, '/') . '/' . ltrim($remotePath, '/');
+            if (! empty($config->path_prefix)) {
+                $remotePath = trim($config->path_prefix, '/').'/'.ltrim($remotePath, '/');
             }
 
             // Stream upload to remote
@@ -58,10 +58,10 @@ class RemoteStorageService
                 $localSize = filesize($localPath);
 
                 if ($remoteSize !== $localSize && empty($config->encryption_key)) {
-                    throw new \RuntimeException("File size mismatch after upload");
+                    throw new \RuntimeException('File size mismatch after upload');
                 }
 
-                Log::info("File stored successfully", [
+                Log::info('File stored successfully', [
                     'config' => $config->name,
                     'remote_path' => $remotePath,
                     'size' => $remoteSize,
@@ -72,7 +72,7 @@ class RemoteStorageService
 
             return false;
         } catch (\Exception $e) {
-            Log::error("Failed to store file to remote storage", [
+            Log::error('Failed to store file to remote storage', [
                 'config' => $config->name,
                 'error' => $e->getMessage(),
                 'local_path' => $localPath,
@@ -93,11 +93,11 @@ class RemoteStorageService
             $disk = $this->getDiskFromConfig($config);
 
             // Add path prefix if configured
-            if (!empty($config->path_prefix)) {
-                $remotePath = trim($config->path_prefix, '/') . '/' . ltrim($remotePath, '/');
+            if (! empty($config->path_prefix)) {
+                $remotePath = trim($config->path_prefix, '/').'/'.ltrim($remotePath, '/');
             }
 
-            if (!$disk->exists($remotePath)) {
+            if (! $disk->exists($remotePath)) {
                 throw new \RuntimeException("Remote file not found: {$remotePath}");
             }
 
@@ -109,14 +109,14 @@ class RemoteStorageService
 
             // Ensure local directory exists
             $localDir = dirname($localPath);
-            if (!is_dir($localDir)) {
+            if (! is_dir($localDir)) {
                 mkdir($localDir, 0755, true);
             }
 
             // Write to local file
             $downloadPath = $localPath;
-            if (!empty($config->encryption_key)) {
-                $downloadPath = $localPath . '.encrypted';
+            if (! empty($config->encryption_key)) {
+                $downloadPath = $localPath.'.encrypted';
             }
 
             $localStream = fopen($downloadPath, 'w');
@@ -132,7 +132,7 @@ class RemoteStorageService
             }
 
             // Decrypt if encrypted
-            if (!empty($config->encryption_key)) {
+            if (! empty($config->encryption_key)) {
                 $decryptedPath = $this->decryptFile($downloadPath, $config->encryption_key);
                 rename($decryptedPath, $localPath);
                 if (file_exists($downloadPath)) {
@@ -142,7 +142,7 @@ class RemoteStorageService
 
             // Verify download
             if (file_exists($localPath)) {
-                Log::info("File retrieved successfully", [
+                Log::info('File retrieved successfully', [
                     'config' => $config->name,
                     'remote_path' => $remotePath,
                     'local_path' => $localPath,
@@ -154,7 +154,7 @@ class RemoteStorageService
 
             return false;
         } catch (\Exception $e) {
-            Log::error("Failed to retrieve file from remote storage", [
+            Log::error('Failed to retrieve file from remote storage', [
                 'config' => $config->name,
                 'error' => $e->getMessage(),
                 'remote_path' => $remotePath,
@@ -175,24 +175,24 @@ class RemoteStorageService
             $disk = $this->getDiskFromConfig($config);
 
             // Add path prefix if configured
-            if (!empty($config->path_prefix)) {
-                $remotePath = trim($config->path_prefix, '/') . '/' . ltrim($remotePath, '/');
+            if (! empty($config->path_prefix)) {
+                $remotePath = trim($config->path_prefix, '/').'/'.ltrim($remotePath, '/');
             }
 
-            if (!$disk->exists($remotePath)) {
+            if (! $disk->exists($remotePath)) {
                 return true; // Already deleted
             }
 
             $result = $disk->delete($remotePath);
 
-            Log::info("File deleted from remote storage", [
+            Log::info('File deleted from remote storage', [
                 'config' => $config->name,
                 'remote_path' => $remotePath,
             ]);
 
             return $result;
         } catch (\Exception $e) {
-            Log::error("Failed to delete file from remote storage", [
+            Log::error('Failed to delete file from remote storage', [
                 'config' => $config->name,
                 'error' => $e->getMessage(),
                 'remote_path' => $remotePath,
@@ -214,22 +214,23 @@ class RemoteStorageService
             'error' => null,
         ];
 
-        $testFileName = 'devflow_test_' . time() . '.txt';
-        $testContent = 'DevFlow Pro Storage Test - ' . now()->toIso8601String();
+        $testFileName = 'devflow_test_'.time().'.txt';
+        $testContent = 'DevFlow Pro Storage Test - '.now()->toIso8601String();
 
         try {
             $disk = $this->getDiskFromConfig($config);
-            $testPath = ($config->path_prefix ? trim($config->path_prefix, '/') . '/' : '') . $testFileName;
+            $testPath = ($config->path_prefix ? trim($config->path_prefix, '/').'/' : '').$testFileName;
 
             // Test 1: List files
             $start = microtime(true);
             try {
                 $files = $disk->files($config->path_prefix ?: '/');
                 $results['tests']['list'] = true;
-                $results['timing']['list'] = round((microtime(true) - $start) * 1000, 2) . 'ms';
+                $results['timing']['list'] = round((microtime(true) - $start) * 1000, 2).'ms';
             } catch (\Exception $e) {
                 $results['tests']['list'] = false;
-                $results['error'] = "List files failed: " . $e->getMessage();
+                $results['error'] = 'List files failed: '.$e->getMessage();
+
                 return $results;
             }
 
@@ -238,10 +239,11 @@ class RemoteStorageService
             try {
                 $disk->put($testPath, $testContent);
                 $results['tests']['write'] = true;
-                $results['timing']['write'] = round((microtime(true) - $start) * 1000, 2) . 'ms';
+                $results['timing']['write'] = round((microtime(true) - $start) * 1000, 2).'ms';
             } catch (\Exception $e) {
                 $results['tests']['write'] = false;
-                $results['error'] = "Write test failed: " . $e->getMessage();
+                $results['error'] = 'Write test failed: '.$e->getMessage();
+
                 return $results;
             }
 
@@ -250,15 +252,17 @@ class RemoteStorageService
             try {
                 $content = $disk->get($testPath);
                 $results['tests']['read'] = ($content === $testContent);
-                $results['timing']['read'] = round((microtime(true) - $start) * 1000, 2) . 'ms';
+                $results['timing']['read'] = round((microtime(true) - $start) * 1000, 2).'ms';
 
                 if ($content !== $testContent) {
-                    $results['error'] = "Read test failed: Content mismatch";
+                    $results['error'] = 'Read test failed: Content mismatch';
+
                     return $results;
                 }
             } catch (\Exception $e) {
                 $results['tests']['read'] = false;
-                $results['error'] = "Read test failed: " . $e->getMessage();
+                $results['error'] = 'Read test failed: '.$e->getMessage();
+
                 return $results;
             }
 
@@ -266,16 +270,18 @@ class RemoteStorageService
             $start = microtime(true);
             try {
                 $disk->delete($testPath);
-                $results['tests']['delete'] = !$disk->exists($testPath);
-                $results['timing']['delete'] = round((microtime(true) - $start) * 1000, 2) . 'ms';
+                $results['tests']['delete'] = ! $disk->exists($testPath);
+                $results['timing']['delete'] = round((microtime(true) - $start) * 1000, 2).'ms';
 
                 if ($disk->exists($testPath)) {
-                    $results['error'] = "Delete test failed: File still exists";
+                    $results['error'] = 'Delete test failed: File still exists';
+
                     return $results;
                 }
             } catch (\Exception $e) {
                 $results['tests']['delete'] = false;
-                $results['error'] = "Delete test failed: " . $e->getMessage();
+                $results['error'] = 'Delete test failed: '.$e->getMessage();
+
                 return $results;
             }
 
@@ -285,7 +291,7 @@ class RemoteStorageService
             $config->update(['last_tested_at' => now()]);
         } catch (\Exception $e) {
             $results['error'] = $e->getMessage();
-            Log::error("Storage connection test failed", [
+            Log::error('Storage connection test failed', [
                 'config' => $config->name,
                 'error' => $e->getMessage(),
             ]);
@@ -302,8 +308,8 @@ class RemoteStorageService
         try {
             $disk = $this->getDiskFromConfig($config);
 
-            $searchPath = $config->path_prefix ? trim($config->path_prefix, '/') . '/' : '';
-            if (!empty($prefix)) {
+            $searchPath = $config->path_prefix ? trim($config->path_prefix, '/').'/' : '';
+            if (! empty($prefix)) {
                 $searchPath .= ltrim($prefix, '/');
             }
 
@@ -318,7 +324,7 @@ class RemoteStorageService
                 ];
             })->sortByDesc('last_modified')->values()->toArray();
         } catch (\Exception $e) {
-            Log::error("Failed to list backups", [
+            Log::error('Failed to list backups', [
                 'config' => $config->name,
                 'error' => $e->getMessage(),
             ]);
@@ -335,9 +341,9 @@ class RemoteStorageService
         $diskConfig = $config->getDiskConfig();
 
         // Register temporary disk
-        config(['filesystems.disks.temp_' . $config->id => $diskConfig]);
+        config(['filesystems.disks.temp_'.$config->id => $diskConfig]);
 
-        return Storage::disk('temp_' . $config->id);
+        return Storage::disk('temp_'.$config->id);
     }
 
     /**
@@ -345,7 +351,7 @@ class RemoteStorageService
      */
     public function encryptFile(string $path, string $key): string
     {
-        if (!file_exists($path)) {
+        if (! file_exists($path)) {
             throw new \RuntimeException("File not found: {$path}");
         }
 
@@ -360,16 +366,16 @@ class RemoteStorageService
         // Encrypt data
         $encrypted = openssl_encrypt($data, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
         if ($encrypted === false) {
-            throw new \RuntimeException("Encryption failed");
+            throw new \RuntimeException('Encryption failed');
         }
 
         // Combine IV + tag + encrypted data
-        $encryptedData = $iv . $tag . $encrypted;
+        $encryptedData = $iv.$tag.$encrypted;
 
         // Write to temporary encrypted file
-        $encryptedPath = $path . '.encrypted';
+        $encryptedPath = $path.'.encrypted';
         if (file_put_contents($encryptedPath, $encryptedData) === false) {
-            throw new \RuntimeException("Failed to write encrypted file");
+            throw new \RuntimeException('Failed to write encrypted file');
         }
 
         return $encryptedPath;
@@ -380,7 +386,7 @@ class RemoteStorageService
      */
     public function decryptFile(string $path, string $key): string
     {
-        if (!file_exists($path)) {
+        if (! file_exists($path)) {
             throw new \RuntimeException("Encrypted file not found: {$path}");
         }
 
@@ -397,13 +403,13 @@ class RemoteStorageService
         // Decrypt data
         $decrypted = openssl_decrypt($encrypted, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
         if ($decrypted === false) {
-            throw new \RuntimeException("Decryption failed");
+            throw new \RuntimeException('Decryption failed');
         }
 
         // Write to temporary decrypted file
         $decryptedPath = str_replace('.encrypted', '.decrypted', $path);
         if (file_put_contents($decryptedPath, $decrypted) === false) {
-            throw new \RuntimeException("Failed to write decrypted file");
+            throw new \RuntimeException('Failed to write decrypted file');
         }
 
         return $decryptedPath;

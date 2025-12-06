@@ -37,6 +37,7 @@ class RunBackupsCommand extends Command
 
         if ($dueSchedules->isEmpty()) {
             $this->info('No backups are due at this time.');
+
             return self::SUCCESS;
         }
 

@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
 class ServerBackupSchedule extends Model
 {
+    /** @use HasFactory<\Database\Factories\ServerBackupScheduleFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -43,7 +44,7 @@ class ServerBackupSchedule extends Model
     // Helpers
     public function isDue(): bool
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return false;
         }
 
@@ -58,7 +59,7 @@ class ServerBackupSchedule extends Model
         }
 
         // Check if it's time to run based on frequency
-        $shouldRun = match($this->frequency) {
+        $shouldRun = match ($this->frequency) {
             'daily' => true,
             'weekly' => $now->dayOfWeek === $this->day_of_week,
             'monthly' => $now->day === $this->day_of_month,
@@ -66,21 +67,21 @@ class ServerBackupSchedule extends Model
         };
 
         // Check if the time has passed
-        $scheduledTime = Carbon::today()->setTime((int)$hour, (int)$minute);
+        $scheduledTime = Carbon::today()->setTime((int) $hour, (int) $minute);
 
         return $shouldRun && $now->gte($scheduledTime);
     }
 
     public function getNextRunAttribute(): ?Carbon
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return null;
         }
 
         [$hour, $minute] = explode(':', $this->time);
-        $baseTime = Carbon::today()->setTime((int)$hour, (int)$minute);
+        $baseTime = Carbon::today()->setTime((int) $hour, (int) $minute);
 
-        return match($this->frequency) {
+        return match ($this->frequency) {
             'daily' => $baseTime->isFuture() ? $baseTime : $baseTime->addDay(),
             'weekly' => $baseTime->copy()->next($this->day_of_week),
             'monthly' => $this->getNextMonthlyRun($baseTime),
@@ -101,10 +102,14 @@ class ServerBackupSchedule extends Model
 
     public function getFrequencyDescriptionAttribute(): string
     {
-        return match($this->frequency) {
-            'daily' => "Daily at {$this->time}",
-            'weekly' => "Weekly on " . Carbon::create()->dayOfWeek($this->day_of_week)->format('l') . " at {$this->time}",
-            'monthly' => "Monthly on day {$this->day_of_month} at {$this->time}",
+        $time = $this->time ?? '00:00';
+        $dayOfWeek = Carbon::now()->dayOfWeek($this->day_of_week);
+        $dayName = $dayOfWeek instanceof Carbon ? $dayOfWeek->format('l') : 'Monday';
+
+        return match ($this->frequency) {
+            'daily' => "Daily at {$time}",
+            'weekly' => "Weekly on {$dayName} at {$time}",
+            'monthly' => "Monthly on day {$this->day_of_month} at {$time}",
             default => 'Unknown',
         };
     }

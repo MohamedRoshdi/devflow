@@ -46,7 +46,7 @@ class FailedJob extends Model
     {
         $payload = $this->decoded_payload;
 
-        if (!$payload) {
+        if (! $payload) {
             return null;
         }
 
@@ -65,6 +65,7 @@ class FailedJob extends Model
     public function getShortExceptionAttribute(): string
     {
         $lines = explode("\n", $this->exception);
+
         return $lines[0] ?? 'No error message';
     }
 
@@ -76,9 +77,11 @@ class FailedJob extends Model
         try {
             Artisan::call('queue:retry', ['id' => [$this->id]]);
             $this->delete();
+
             return true;
         } catch (\Exception $e) {
-            \Log::error("Failed to retry job {$this->id}: " . $e->getMessage());
+            \Log::error("Failed to retry job {$this->id}: ".$e->getMessage());
+
             return false;
         }
     }
@@ -90,9 +93,11 @@ class FailedJob extends Model
     {
         try {
             Artisan::call('queue:forget', ['id' => $this->id]);
+
             return true;
         } catch (\Exception $e) {
-            \Log::error("Failed to forget job {$this->id}: " . $e->getMessage());
+            \Log::error("Failed to forget job {$this->id}: ".$e->getMessage());
+
             return false;
         }
     }
@@ -104,9 +109,11 @@ class FailedJob extends Model
     {
         try {
             Artisan::call('queue:retry', ['id' => ['all']]);
+
             return true;
         } catch (\Exception $e) {
-            \Log::error("Failed to retry all jobs: " . $e->getMessage());
+            \Log::error('Failed to retry all jobs: '.$e->getMessage());
+
             return false;
         }
     }
@@ -118,9 +125,11 @@ class FailedJob extends Model
     {
         try {
             Artisan::call('queue:flush');
+
             return true;
         } catch (\Exception $e) {
-            \Log::error("Failed to flush failed jobs: " . $e->getMessage());
+            \Log::error('Failed to flush failed jobs: '.$e->getMessage());
+
             return false;
         }
     }

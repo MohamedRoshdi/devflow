@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class HealthCheckResult extends Model
 {
+    /** @use HasFactory<\Database\Factories\HealthCheckResultFactory> */
     use HasFactory;
 
     public $timestamps = false;
@@ -29,6 +30,9 @@ class HealthCheckResult extends Model
         'status_code' => 'integer',
     ];
 
+    /**
+     * @return BelongsTo<HealthCheck, $this>
+     */
     public function healthCheck(): BelongsTo
     {
         return $this->belongsTo(HealthCheck::class);
@@ -56,14 +60,14 @@ class HealthCheckResult extends Model
 
     public function getFormattedResponseTimeAttribute(): string
     {
-        if (!$this->response_time_ms) {
+        if (! $this->response_time_ms) {
             return 'N/A';
         }
 
         if ($this->response_time_ms < 1000) {
-            return $this->response_time_ms . 'ms';
+            return $this->response_time_ms.'ms';
         }
 
-        return round($this->response_time_ms / 1000, 2) . 's';
+        return round($this->response_time_ms / 1000, 2).'s';
     }
 }
