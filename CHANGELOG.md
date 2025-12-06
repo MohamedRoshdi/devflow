@@ -7,6 +7,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.30.0] - 2025-12-06
+
+### Added
+
+- **CommandsTest.php** - 76 Console Command unit tests
+  - BackupDatabase/BackupFiles: database and file backup commands
+  - CheckResourceAlertsCommand: resource monitoring alerts
+  - CheckSSLCommand/CheckSSLExpiry: SSL certificate checks
+  - CleanupBackups/CleanupMetricsCommand: cleanup operations
+  - CollectServerMetrics: server metrics collection
+  - FixPermissionsCommand: permission fixing utility
+  - MonitorServersCommand: server monitoring
+  - ProcessScheduledDeployments: scheduled deployment processing
+  - ProvisionServer: server provisioning workflow
+  - RenewSSL/SSLRenewCommand: SSL certificate renewal
+  - RunBackupsCommand/RunServerBackupsCommand: backup execution
+  - RunHealthChecksCommand: health check execution
+  - RunQualityTests: quality test runner
+  - SyncLogsCommand: log synchronization
+  - VerifyBackup: backup verification
+
+- **ControllersTest.php** - 68 Controller unit tests
+  - DeploymentWebhookController: webhook handling for deployments
+  - ServerMetricsController: server metrics API
+  - V1/DeploymentController: deployment CRUD API
+  - V1/ProjectController: project CRUD API
+  - V1/ServerController: server CRUD API
+  - GitHubAuthController: GitHub OAuth flow
+  - TeamInvitationController: team invitation handling
+  - WebhookController: general webhook processing
+
+- **JobsTest.php** - 41 Job unit tests
+  - DeployProjectJob: project deployment queue job
+  - InstallDockerJob: Docker installation job
+  - ProcessProjectSetupJob: project setup processing
+
+### Improved
+
+- Console/Controller/Job test coverage: 185 new tests across 3 test files
+- Total unit tests now at 2,143 (complete application coverage)
+- PHPStan Level 6 compliance maintained (0 errors)
+- Laravel Pint code style compliance maintained (0 issues)
+- 100% coverage achieved for Commands, Controllers, and Jobs
+
+---
+
 ## [5.29.0] - 2025-12-06
 
 ### Added
