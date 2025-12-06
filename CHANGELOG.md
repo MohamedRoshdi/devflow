@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.27.0] - 2025-12-06
+
+### Added
+
+- **DockerInstallationServiceTest.php** - 45 unit tests for Docker installation
+  - Docker and Docker Compose installation
+  - Installation verification and version checking
+  - Docker service management (start, stop, restart)
+  - Container and image management
+  - Error handling for installation failures
+
+- **GPSServiceTest.php** - 35 unit tests for GPS and location services
+  - Project and server discovery within radius
+  - Haversine distance calculation
+  - Reverse geocoding via OpenStreetMap Nominatim
+  - Geofencing with custom radius support
+  - Coordinate validation and edge cases
+
+- **ServerBackupServiceTest.php** - 38 unit tests for server backup operations
+  - Full and incremental server backups
+  - Backup restoration and verification
+  - Retention policy enforcement
+  - Remote storage integration
+  - Backup scheduling and automation
+
+- **SSLServiceTest.php** - 45 unit tests for SSL certificate operations
+  - Let's Encrypt certificate issuance
+  - Certificate renewal and revocation
+  - SSL verification and expiry checking
+  - Nginx configuration updates
+  - Error handling and logging
+
+### Improved
+
+- Unit test coverage expanded with 163 new service tests
+- Total unit tests now at 1,209 (31 service test files)
+- PHPStan Level 6 compliance maintained (0 errors)
+- Laravel Pint code style compliance maintained (0 issues)
+- Complete 100% service test coverage achieved
+
+---
+
 ## [5.26.0] - 2025-12-06
 
 ### Added
