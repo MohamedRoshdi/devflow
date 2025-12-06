@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class TelescopeServiceProvider extends ServiceProvider
@@ -42,4 +41,3 @@ class TelescopeServiceProvider extends ServiceProvider
         }
     }
 }
-

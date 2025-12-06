@@ -25,6 +25,57 @@
         </div>
     </div>
 
+    <!-- Dashboard Customization Controls -->
+    <div class="mb-6 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <!--[if BLOCK]><![endif]--><?php if($editMode): ?>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                    <svg class="w-4 h-4 mr-1.5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                    </svg>
+                    Edit Mode - Drag widgets to reorder
+                </span>
+            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+        </div>
+        <div class="flex items-center space-x-2">
+            <!--[if BLOCK]><![endif]--><?php if($editMode): ?>
+                <button wire:click="resetWidgetOrder" class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Reset Layout
+                </button>
+            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+            <button wire:click="toggleEditMode" class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 <?php echo e($editMode ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'); ?>">
+                <!--[if BLOCK]><![endif]--><?php if($editMode): ?>
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Done
+                <?php else: ?>
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
+                    </svg>
+                    Customize Layout
+                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+            </button>
+        </div>
+    </div>
+
+    <!-- Draggable Widgets Container -->
+    <div id="dashboard-widgets" class="space-y-8">
+        <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $widgetOrder; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $widgetId): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <!--[if BLOCK]><![endif]--><?php if($widgetId === 'stats_cards'): ?>
+            <!-- Stats Cards Widget -->
+            <div data-widget-id="stats_cards" class="relative <?php echo e($editMode ? 'ring-2 ring-dashed ring-gray-300 dark:ring-gray-600 rounded-2xl p-2' : ''); ?>">
+                <!--[if BLOCK]><![endif]--><?php if($editMode): ?>
+                <div class="widget-drag-handle absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 cursor-move bg-white dark:bg-gray-800 px-3 py-1 rounded-full shadow-md border border-gray-200 dark:border-gray-700 flex items-center space-x-2">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
+                    </svg>
+                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Stats Cards</span>
+                </div>
+                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
     <!-- 8 Stats Cards Grid (2x4) -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- 1. Total Servers Card -->
@@ -71,12 +122,12 @@
                     <p class="text-sm font-medium text-purple-100">Active Deployments</p>
                     <div class="flex items-center mt-2">
                         <p class="text-4xl font-bold text-white"><?php echo e($activeDeployments); ?></p>
-                        <?php if($activeDeployments > 0): ?>
+                        <!--[if BLOCK]><![endif]--><?php if($activeDeployments > 0): ?>
                             <span class="ml-3 flex h-3 w-3">
                                 <span class="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-white opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
                             </span>
-                        <?php endif; ?>
+                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                     </div>
                     <p class="text-sm text-purple-100 mt-2">
                         <span class="font-semibold"><?php echo e($stats['successful_deployments']); ?></span> successful total
@@ -97,11 +148,11 @@
                     <p class="text-sm font-medium <?php echo e($sslStats['expiring_soon'] > 0 ? 'text-amber-100' : 'text-teal-100'); ?>">SSL Certificates</p>
                     <p class="text-4xl font-bold text-white mt-2"><?php echo e($sslStats['active_certificates']); ?></p>
                     <p class="text-sm <?php echo e($sslStats['expiring_soon'] > 0 ? 'text-amber-100' : 'text-teal-100'); ?> mt-2">
-                        <?php if($sslStats['expiring_soon'] > 0): ?>
+                        <!--[if BLOCK]><![endif]--><?php if($sslStats['expiring_soon'] > 0): ?>
                             <span class="font-semibold"><?php echo e($sslStats['expiring_soon']); ?></span> expiring soon
                         <?php else: ?>
                             All certificates valid
-                        <?php endif; ?>
+                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                     </p>
                 </div>
                 <div class="p-3 bg-white/20 backdrop-blur-md rounded-xl">
@@ -119,11 +170,11 @@
                     <p class="text-sm font-medium <?php echo e($healthCheckStats['down'] > 0 ? 'text-red-100' : 'text-emerald-100'); ?>">Health Checks</p>
                     <p class="text-4xl font-bold text-white mt-2"><?php echo e($healthCheckStats['healthy']); ?></p>
                     <p class="text-sm <?php echo e($healthCheckStats['down'] > 0 ? 'text-red-100' : 'text-emerald-100'); ?> mt-2">
-                        <?php if($healthCheckStats['down'] > 0): ?>
+                        <!--[if BLOCK]><![endif]--><?php if($healthCheckStats['down'] > 0): ?>
                             <span class="font-semibold"><?php echo e($healthCheckStats['down']); ?></span> services down
                         <?php else: ?>
                             All systems operational
-                        <?php endif; ?>
+                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                     </p>
                 </div>
                 <div class="p-3 bg-white/20 backdrop-blur-md rounded-xl">
@@ -141,11 +192,11 @@
                     <p class="text-sm font-medium <?php echo e($queueStats['failed'] > 0 ? 'text-orange-100' : 'text-indigo-100'); ?>">Queue Jobs</p>
                     <p class="text-4xl font-bold text-white mt-2"><?php echo e($queueStats['pending']); ?></p>
                     <p class="text-sm <?php echo e($queueStats['failed'] > 0 ? 'text-orange-100' : 'text-indigo-100'); ?> mt-2">
-                        <?php if($queueStats['failed'] > 0): ?>
+                        <!--[if BLOCK]><![endif]--><?php if($queueStats['failed'] > 0): ?>
                             <span class="font-semibold"><?php echo e($queueStats['failed']); ?></span> failed jobs
                         <?php else: ?>
                             No failed jobs
-                        <?php endif; ?>
+                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                     </p>
                 </div>
                 <div class="p-3 bg-white/20 backdrop-blur-md rounded-xl">
@@ -187,7 +238,7 @@
                             Good security
                         <?php else: ?>
                             Needs attention
-                        <?php endif; ?>
+                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                     </p>
                 </div>
                 <div class="p-3 bg-white/20 backdrop-blur-md rounded-xl">
@@ -198,9 +249,20 @@
             </div>
         </div>
     </div>
-
+            </div>
+            <?php elseif($widgetId === 'quick_actions'): ?>
+            <!-- Quick Actions Widget -->
+            <div data-widget-id="quick_actions" class="relative <?php echo e($editMode ? 'ring-2 ring-dashed ring-gray-300 dark:ring-gray-600 rounded-2xl p-2' : ''); ?>">
+                <!--[if BLOCK]><![endif]--><?php if($editMode): ?>
+                <div class="widget-drag-handle absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 cursor-move bg-white dark:bg-gray-800 px-3 py-1 rounded-full shadow-md border border-gray-200 dark:border-gray-700 flex items-center space-x-2">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
+                    </svg>
+                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Quick Actions</span>
+                </div>
+                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
     <!-- Quick Actions Panel -->
-    <?php if($showQuickActions): ?>
+    <!--[if BLOCK]><![endif]--><?php if($showQuickActions): ?>
     <div class="mb-8">
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Quick Actions</h2>
@@ -211,7 +273,7 @@
             </button>
         </div>
 
-        <?php if(!in_array('quickActions', $collapsedSections)): ?>
+        <!--[if BLOCK]><![endif]--><?php if(!in_array('quickActions', $collapsedSections)): ?>
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
             <!-- New Project -->
             <a href="<?php echo e(route('projects.create')); ?>" class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center hover:shadow-lg hover:scale-105 transform transition-all duration-300 border-2 border-transparent hover:border-blue-500">
@@ -234,7 +296,7 @@
             </a>
 
             <!-- Deploy All -->
-            <button onclick="confirm('Deploy all projects?') || event.stopImmediatePropagation()" class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center hover:shadow-lg hover:scale-105 transform transition-all duration-300 border-2 border-transparent hover:border-purple-500">
+            <button wire:click="deployAll" wire:confirm="Are you sure you want to deploy all active projects?" class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center hover:shadow-lg hover:scale-105 transform transition-all duration-300 border-2 border-transparent hover:border-purple-500">
                 <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg inline-block mb-2">
                     <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
@@ -284,14 +346,25 @@
                 <p class="text-sm font-medium text-gray-900 dark:text-white">Settings</p>
             </a>
         </div>
-        <?php endif; ?>
+        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
     </div>
-    <?php endif; ?>
-
+    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+            </div>
+            <?php elseif($widgetId === 'activity_server_grid'): ?>
+            <!-- Activity & Server Health Widget -->
+            <div data-widget-id="activity_server_grid" class="relative <?php echo e($editMode ? 'ring-2 ring-dashed ring-gray-300 dark:ring-gray-600 rounded-2xl p-2' : ''); ?>">
+                <!--[if BLOCK]><![endif]--><?php if($editMode): ?>
+                <div class="widget-drag-handle absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 cursor-move bg-white dark:bg-gray-800 px-3 py-1 rounded-full shadow-md border border-gray-200 dark:border-gray-700 flex items-center space-x-2">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
+                    </svg>
+                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Activity & Health</span>
+                </div>
+                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
     <!-- Activity Feed and Server Health Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Activity Feed (2/3 width) -->
-        <?php if($showActivityFeed): ?>
+        <!--[if BLOCK]><![endif]--><?php if($showActivityFeed): ?>
         <div class="lg:col-span-2">
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
                 <div class="p-6 border-b border-gray-200 dark:border-gray-700">
@@ -312,12 +385,12 @@
                 <div class="p-6">
                     <div class="flow-root">
                         <ul class="-mb-8">
-                            <?php $__empty_1 = true; $__currentLoopData = $recentActivity; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $activity): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $recentActivity; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $activity): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                 <li>
                                     <div class="relative pb-8">
-                                        <?php if($index < count($recentActivity) - 1): ?>
+                                        <!--[if BLOCK]><![endif]--><?php if($index < count($recentActivity) - 1): ?>
                                             <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200 dark:bg-gray-700" aria-hidden="true"></span>
-                                        <?php endif; ?>
+                                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                         <div class="relative flex space-x-3">
                                             <div>
                                                 <span class="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white dark:ring-gray-800
@@ -330,7 +403,7 @@
                                                     <?php else: ?>
                                                         bg-blue-500
                                                     <?php endif; ?>">
-                                                    <?php if($activity['type'] === 'deployment'): ?>
+                                                    <!--[if BLOCK]><![endif]--><?php if($activity['type'] === 'deployment'): ?>
                                                         <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                                                         </svg>
@@ -338,7 +411,7 @@
                                                         <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                                         </svg>
-                                                    <?php endif; ?>
+                                                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                                 </span>
                                             </div>
                                             <div class="flex-1 min-w-0 pt-1.5">
@@ -360,7 +433,7 @@
                                                             <?php echo e($activity['timestamp']->diffForHumans()); ?>
 
                                                         </span>
-                                                        <?php if($activity['type'] === 'deployment'): ?>
+                                                        <!--[if BLOCK]><![endif]--><?php if($activity['type'] === 'deployment'): ?>
                                                             <span class="px-2 py-0.5 rounded-full text-xs font-medium
                                                                 <?php if($activity['status'] === 'success'): ?> bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
                                                                 <?php elseif($activity['status'] === 'failed'): ?> bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400
@@ -370,7 +443,7 @@
                                                                 <?php echo e(ucfirst($activity['status'])); ?>
 
                                                             </span>
-                                                        <?php endif; ?>
+                                                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                                     </div>
                                                 </div>
                                             </div>
@@ -384,12 +457,12 @@
                                     </svg>
                                     <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">No recent activity</p>
                                 </li>
-                            <?php endif; ?>
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         </ul>
                     </div>
 
                     <!-- Load More Button -->
-                    <?php if(count($recentActivity) > 0 && count($recentActivity) < 20): ?>
+                    <!--[if BLOCK]><![endif]--><?php if(count($recentActivity) > 0 && count($recentActivity) < 20): ?>
                     <div class="px-6 pb-6">
                         <button
                             wire:click="loadMoreActivity"
@@ -411,7 +484,7 @@
                             </span>
                         </button>
                     </div>
-                    <?php endif; ?>
+                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
                     <!-- Max Items Reached Message -->
                     <?php if(count($recentActivity) >= 20): ?>
@@ -422,14 +495,14 @@
                             </p>
                         </div>
                     </div>
-                    <?php endif; ?>
+                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                 </div>
             </div>
         </div>
-        <?php endif; ?>
+        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
         <!-- Server Health Summary (1/3 width) -->
-        <?php if($showServerHealth): ?>
+        <!--[if BLOCK]><![endif]--><?php if($showServerHealth): ?>
         <div class="lg:col-span-1">
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
                 <div class="p-6 border-b border-gray-200 dark:border-gray-700">
@@ -443,7 +516,7 @@
                     </div>
                 </div>
                 <div class="p-6 space-y-4 max-h-[600px] overflow-y-auto">
-                    <?php $__empty_1 = true; $__currentLoopData = $serverHealth; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $server): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $serverHealth; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $server): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 hover:shadow-md transition-shadow">
                             <div class="flex items-center justify-between mb-3">
                                 <h3 class="font-medium text-gray-900 dark:text-white"><?php echo e($server['server_name']); ?></h3>
@@ -458,7 +531,7 @@
                                 </span>
                             </div>
 
-                            <?php if($server['cpu_usage'] !== null): ?>
+                            <!--[if BLOCK]><![endif]--><?php if($server['cpu_usage'] !== null): ?>
                                 <!-- CPU Usage -->
                                 <div class="mb-3">
                                     <div class="flex justify-between items-center mb-1">
@@ -467,7 +540,7 @@
                                     </div>
                                     <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                                         <div class="h-2 rounded-full transition-all duration-500
-                                            <?php if($server['cpu_usage'] < 60): ?> bg-green-500
+                                            <!--[if BLOCK]><![endif]--><?php if($server['cpu_usage'] < 60): ?> bg-green-500
                                             <?php elseif($server['cpu_usage'] < 80): ?> bg-yellow-500
                                             <?php else: ?> bg-red-500
                                             <?php endif; ?>"
@@ -484,7 +557,7 @@
                                     </div>
                                     <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                                         <div class="h-2 rounded-full transition-all duration-500
-                                            <?php if($server['memory_usage'] < 60): ?> bg-green-500
+                                            <!--[if BLOCK]><![endif]--><?php if($server['memory_usage'] < 60): ?> bg-green-500
                                             <?php elseif($server['memory_usage'] < 80): ?> bg-yellow-500
                                             <?php else: ?> bg-red-500
                                             <?php endif; ?>"
@@ -501,7 +574,7 @@
                                     </div>
                                     <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                                         <div class="h-2 rounded-full transition-all duration-500
-                                            <?php if($server['disk_usage'] < 60): ?> bg-green-500
+                                            <!--[if BLOCK]><![endif]--><?php if($server['disk_usage'] < 60): ?> bg-green-500
                                             <?php elseif($server['disk_usage'] < 80): ?> bg-yellow-500
                                             <?php else: ?> bg-red-500
                                             <?php endif; ?>"
@@ -511,7 +584,7 @@
                                 </div>
                             <?php else: ?>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">No metrics available</p>
-                            <?php endif; ?>
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
                             <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
                                 <a href="<?php echo e(route('servers.show', $server['server_id'])); ?>" class="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
@@ -526,15 +599,26 @@
                             </svg>
                             <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">No servers online</p>
                         </div>
-                    <?php endif; ?>
+                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                 </div>
             </div>
         </div>
-        <?php endif; ?>
+        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
     </div>
-
+            </div>
+            <?php elseif($widgetId === 'deployment_timeline'): ?>
+            <!-- Deployment Timeline Widget -->
+            <div data-widget-id="deployment_timeline" class="relative <?php echo e($editMode ? 'ring-2 ring-dashed ring-gray-300 dark:ring-gray-600 rounded-2xl p-2' : ''); ?>">
+                <!--[if BLOCK]><![endif]--><?php if($editMode): ?>
+                <div class="widget-drag-handle absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 cursor-move bg-white dark:bg-gray-800 px-3 py-1 rounded-full shadow-md border border-gray-200 dark:border-gray-700 flex items-center space-x-2">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
+                    </svg>
+                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Deployment Timeline</span>
+                </div>
+                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
     <!-- Deployment Timeline Section -->
-    <div class="mt-8">
+    <div class="mt-0">
         <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden">
             <div class="p-6 border-b border-gray-200 dark:border-gray-700">
                 <div class="flex items-center justify-between">
@@ -554,11 +638,11 @@
                 </div>
             </div>
 
-            <?php if(!in_array('deploymentTimeline', $collapsedSections)): ?>
+            <!--[if BLOCK]><![endif]--><?php if(!in_array('deploymentTimeline', $collapsedSections)): ?>
             <div class="p-6">
-                <?php if(count($deploymentTimeline) > 0): ?>
+                <!--[if BLOCK]><![endif]--><?php if(count($deploymentTimeline) > 0): ?>
                     <div class="space-y-4">
-                        <?php $__currentLoopData = $deploymentTimeline; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $day): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $deploymentTimeline; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $day): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="flex items-center space-x-4">
                                 <!-- Date Label -->
                                 <div class="w-20 text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -568,35 +652,35 @@
 
                                 <!-- Bar Chart -->
                                 <div class="flex-1">
-                                    <?php if($day['total'] > 0): ?>
+                                    <!--[if BLOCK]><![endif]--><?php if($day['total'] > 0): ?>
                                         <div class="relative">
                                             <!-- Bar Container -->
                                             <div class="flex h-8 rounded-lg overflow-hidden shadow-md bg-gray-200 dark:bg-gray-700">
                                                 <!-- Success Bar -->
-                                                <?php if($day['successful'] > 0): ?>
+                                                <!--[if BLOCK]><![endif]--><?php if($day['successful'] > 0): ?>
                                                     <div
                                                         class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 transition-all duration-300 flex items-center justify-center"
                                                         style="width: <?php echo e($day['success_percent']); ?>%"
                                                         title="Successful: <?php echo e($day['successful']); ?> (<?php echo e($day['success_percent']); ?>%)"
                                                     >
-                                                        <?php if($day['success_percent'] > 15): ?>
+                                                        <!--[if BLOCK]><![endif]--><?php if($day['success_percent'] > 15): ?>
                                                             <span class="text-xs font-semibold text-white"><?php echo e($day['successful']); ?></span>
-                                                        <?php endif; ?>
+                                                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                                     </div>
-                                                <?php endif; ?>
+                                                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
                                                 <!-- Failed Bar -->
-                                                <?php if($day['failed'] > 0): ?>
+                                                <!--[if BLOCK]><![endif]--><?php if($day['failed'] > 0): ?>
                                                     <div
                                                         class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 transition-all duration-300 flex items-center justify-center"
                                                         style="width: <?php echo e($day['failed_percent']); ?>%"
                                                         title="Failed: <?php echo e($day['failed']); ?> (<?php echo e($day['failed_percent']); ?>%)"
                                                     >
-                                                        <?php if($day['failed_percent'] > 15): ?>
+                                                        <!--[if BLOCK]><![endif]--><?php if($day['failed_percent'] > 15): ?>
                                                             <span class="text-xs font-semibold text-white"><?php echo e($day['failed']); ?></span>
-                                                        <?php endif; ?>
+                                                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                                     </div>
-                                                <?php endif; ?>
+                                                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                             </div>
 
                                             <!-- Hover Tooltip (positioned above the bar) -->
@@ -614,22 +698,22 @@
                                         <div class="h-8 rounded-lg bg-gray-100 dark:bg-gray-700/30 flex items-center justify-center">
                                             <span class="text-xs text-gray-400 dark:text-gray-500">No deployments</span>
                                         </div>
-                                    <?php endif; ?>
+                                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                 </div>
 
                                 <!-- Total Count -->
                                 <div class="w-16 text-right">
-                                    <?php if($day['total'] > 0): ?>
+                                    <!--[if BLOCK]><![endif]--><?php if($day['total'] > 0): ?>
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
                                             <?php echo e($day['total']); ?>
 
                                         </span>
                                     <?php else: ?>
                                         <span class="text-sm text-gray-400 dark:text-gray-500">0</span>
-                                    <?php endif; ?>
+                                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                 </div>
                             </div>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                     </div>
 
                     <!-- Legend -->
@@ -652,10 +736,34 @@
                         </svg>
                         <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">No deployment data available</p>
                     </div>
-                <?php endif; ?>
+                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
             </div>
-            <?php endif; ?>
+            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
         </div>
     </div>
+            </div>
+            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+    </div>
+
+    <!-- Initialize SortableJS after Livewire updates -->
+        <?php
+        $__scriptKey = '455901926-0';
+        ob_start();
+    ?>
+    <script>
+        // Initialize on component load
+        $wire.on('refresh', () => {
+            setTimeout(() => window.initDashboardSortable?.(), 100);
+        });
+
+        // Initialize on first load
+        setTimeout(() => window.initDashboardSortable?.(), 100);
+    </script>
+        <?php
+        $__output = ob_get_clean();
+
+        \Livewire\store($this)->push('scripts', $__output, $__scriptKey)
+    ?>
 </div>
 <?php /**PATH /home/roshdy/Work/projects/DEVFLOW_PRO/resources/views/livewire/dashboard.blade.php ENDPATH**/ ?>

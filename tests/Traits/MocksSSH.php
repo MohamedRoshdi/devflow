@@ -125,9 +125,9 @@ trait MocksSSH
             Process::fake([
                 '*git pull*' => Process::result(output: 'Already up to date.'),
                 '*git fetch*' => Process::result(output: 'Fetching origin'),
-                '*git reset*' => Process::result(output: 'HEAD is now at ' . $commitHash),
+                '*git reset*' => Process::result(output: 'HEAD is now at '.$commitHash),
                 '*git rev-parse*' => Process::result(output: $commitHash),
-                '*git log*' => Process::result(output: $commitHash . ' Test commit message'),
+                '*git log*' => Process::result(output: $commitHash.' Test commit message'),
             ]);
         } else {
             Process::fake([

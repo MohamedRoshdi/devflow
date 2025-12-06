@@ -1,0 +1,223 @@
+Note: Using configuration file /home/roshdy/Work/projects/DEVFLOW_PRO/phpstan.neon.
+   0/239 [░░░░░░░░░░░░░░░░░░░░░░░░░░░░]   0%[1G[2K  20/239 [▓▓░░░░░░░░░░░░░░░░░░░░░░░░░░]   8%[1G[2K  60/239 [▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░░░░░░]  25%[1G[2K  80/239 [▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░░░░]  33%[1G[2K 100/239 [▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░░]  41%[1G[2K 120/239 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░]  50%[1G[2K 140/239 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░]  58%[1G[2K 160/239 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░]  66%[1G[2K 180/239 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░]  75%[1G[2K 200/239 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░]  83%[1G[2K 220/239 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░]  92%[1G[2K 239/239 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 100%
+
+ ------ --------------------------------------------------------------------- 
+  Line   Console/Commands/ProvisionServer.php                                 
+ ------ --------------------------------------------------------------------- 
+  121    Parameter #2 $array of function implode expects array, array|string  
+         given.                                                               
+         🪪  argument.type                                                    
+ ------ --------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------- 
+  Line   Console/Commands/RenewSSL.php                                       
+ ------ -------------------------------------------------------------------- 
+  33     Parameter #1 $domainName of method                                  
+         App\Console\Commands\RenewSSL::renewSingleDomain() expects string,  
+         array|string|true given.                                            
+         🪪  argument.type                                                   
+  33     Parameter #2 $force of method                                       
+         App\Console\Commands\RenewSSL::renewSingleDomain() expects bool,    
+         array|bool|string|null given.                                       
+         🪪  argument.type                                                   
+ ------ -------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   Console/Commands/RunQualityTests.php                                   
+ ------ ----------------------------------------------------------------------- 
+  84     Parameter #2 $subject of function preg_match expects string,           
+         string|false|null given.                                               
+         🪪  argument.type                                                      
+  85     Parameter #2 $subject of function preg_match expects string,           
+         string|false|null given.                                               
+         🪪  argument.type                                                      
+  86     Parameter #2 $subject of function preg_match expects string,           
+         string|false|null given.                                               
+         🪪  argument.type                                                      
+  194    Parameter #1 $haystack of function strpos expects string,              
+         string|false|null given.                                               
+         🪪  argument.type                                                      
+  217    Cannot call method xpath() on SimpleXMLElement|false.                  
+         🪪  method.nonObject                                                   
+  338    Method App\Console\Commands\RunQualityTests::calculateOverallHealth()  
+         should return int but returns float|int.                               
+         🪪  return.type                                                        
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------- 
+  Line   Http/Controllers/GitHubAuthController.php                  
+ ------ ----------------------------------------------------------- 
+  121    Parameter #1 $userId of static method                      
+         App\Models\GitHubConnection::activeForUser() expects int,  
+         int|string|null given.                                     
+         🪪  argument.type                                          
+ ------ ----------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   Livewire/Projects/PipelineSettings.php                                 
+ ------ ----------------------------------------------------------------------- 
+  53     Property                                                               
+         App\Livewire\Projects\PipelineSettings::$auto_deploy_branches (array<  
+         int, string>) does not accept array|string.                            
+         🪪  assign.propertyType                                                
+  54     Property App\Livewire\Projects\PipelineSettings::$skip_patterns        
+         (array<int, string>) does not accept array|string.                     
+         🪪  assign.propertyType                                                
+  55     Property App\Livewire\Projects\PipelineSettings::$deploy_patterns      
+         (array<int, string>) does not accept array|string.                     
+         🪪  assign.propertyType                                                
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   Livewire/Servers/ServerMetricsDashboard.php                            
+ ------ ----------------------------------------------------------------------- 
+  48     Property App\Livewire\Servers\ServerMetricsDashboard::$metrics         
+         (Illuminate\Database\Eloquent\Collection<int, App\Models\ServerMetric  
+         >) does not accept Illuminate\Support\Collection<(int|string), mixed>  
+         .                                                                      
+         🪪  assign.propertyType                                                
+ ------ ----------------------------------------------------------------------- 
+
+ ------ --------------------------------------------------------------------- 
+  Line   Livewire/Settings/SSHKeyManager.php                                  
+ ------ --------------------------------------------------------------------- 
+  131    Offset 'public_key' might not exist on array{success: true,          
+         public_key?: string, private_key?: string, fingerprint?: string,     
+         error?: string}.                                                     
+         🪪  offsetAccess.notFound                                            
+  132    Offset 'private_key' might not exist on array{success: true,         
+         public_key?: string, private_key?: string, fingerprint?: string,     
+         error?: string}.                                                     
+         🪪  offsetAccess.notFound                                            
+  133    Offset 'fingerprint' might not exist on array{success: true,         
+         public_key?: string, private_key?: string, fingerprint?: string,     
+         error?: string}.                                                     
+         🪪  offsetAccess.notFound                                            
+  140    Offset 'public_key' might not exist on array{success: true,          
+         public_key?: string, private_key?: string, fingerprint?: string,     
+         error?: string}.                                                     
+         🪪  offsetAccess.notFound                                            
+  141    Offset 'private_key' might not exist on array{success: true,         
+         public_key?: string, private_key?: string, fingerprint?: string,     
+         error?: string}.                                                     
+         🪪  offsetAccess.notFound                                            
+  142    Offset 'fingerprint' might not exist on array{success: true,         
+         public_key?: string, private_key?: string, fingerprint?: string,     
+         error?: string}.                                                     
+         🪪  offsetAccess.notFound                                            
+  178    Offset 'fingerprint' might not exist on array{success: true,         
+         fingerprint?: string, type?: string, error?: string}.                
+         🪪  offsetAccess.notFound                                            
+  191    Offset 'type' might not exist on array{success: true, fingerprint?:  
+         string, type?: string, error?: string}.                              
+         🪪  offsetAccess.notFound                                            
+  194    Offset 'fingerprint' might not exist on array{success: true,         
+         fingerprint?: string, type?: string, error?: string}.                
+         🪪  offsetAccess.notFound                                            
+ ------ --------------------------------------------------------------------- 
+
+ ------ --------------------------------------------------- 
+  Line   Models/BackupSchedule.php                          
+ ------ --------------------------------------------------- 
+  169    Cannot call method format() on Carbon\Carbon|int.  
+         🪪  method.nonObject                               
+ ------ --------------------------------------------------- 
+
+ ------ --------------------------------------------------------------------- 
+  Line   Models/PipelineConfig.php                                            
+ ------ --------------------------------------------------------------------- 
+  63     Argument of an invalid type array|string supplied for foreach, only  
+         iterables are supported.                                             
+         🪪  foreach.nonIterable                                              
+  71     Argument of an invalid type array|string supplied for foreach, only  
+         iterables are supported.                                             
+         🪪  foreach.nonIterable                                              
+ ------ --------------------------------------------------------------------- 
+
+ ------ --------------------------------------------------- 
+  Line   Models/ServerBackupSchedule.php                    
+ ------ --------------------------------------------------- 
+  107    Cannot call method format() on Carbon\Carbon|int.  
+         🪪  method.nonObject                               
+ ------ --------------------------------------------------- 
+
+ ------ ---------------------------------------------- 
+  Line   Models/UserSettings.php                       
+ ------ ---------------------------------------------- 
+  89     Cannot assign offset string to array|string.  
+         🪪  offsetAssign.dimType                      
+ ------ ---------------------------------------------- 
+
+ ------ --------------------------------------------------------------------- 
+  Line   Notifications/ServerProvisioningCompleted.php                        
+ ------ --------------------------------------------------------------------- 
+  35     Parameter #2 $array of function implode expects array, array|string  
+         given.                                                               
+         🪪  argument.type                                                    
+ ------ --------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   Services/DatabaseBackupService.php                                     
+ ------ ----------------------------------------------------------------------- 
+  776    Method App\Services\DatabaseBackupService::calculateChecksum() should  
+         return string but returns string|false.                                
+         🪪  return.type                                                        
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ---------------------------------------------------------------------- 
+  Line   Services/SSHKeyService.php                                            
+ ------ ---------------------------------------------------------------------- 
+  211    Method App\Services\SSHKeyService::deployKeyToServer() should return  
+         array{success: bool, message?: string, error?: string} but returns    
+         array.                                                                
+         🪪  return.type                                                       
+  215    Method App\Services\SSHKeyService::deployKeyToServer() should return  
+         array{success: bool, message?: string, error?: string} but returns    
+         array.                                                                
+         🪪  return.type                                                       
+  239    Method App\Services\SSHKeyService::removeKeyFromServer() should       
+         return array{success: bool, message?: string, error?: string} but     
+         returns array.                                                        
+         🪪  return.type                                                       
+  243    Method App\Services\SSHKeyService::removeKeyFromServer() should       
+         return array{success: bool, message?: string, error?: string} but     
+         returns array.                                                        
+         🪪  return.type                                                       
+ ------ ---------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   Services/Security/FirewallService.php                                  
+ ------ ----------------------------------------------------------------------- 
+  401    Argument of an invalid type list<string>|false supplied for foreach,   
+         only iterables are supported.                                          
+         🪪  foreach.nonIterable                                                
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   Services/Security/SecurityScoreService.php                             
+ ------ ----------------------------------------------------------------------- 
+  222    Method                                                                 
+         App\Services\Security\SecurityScoreService::calculateScoreFromFinding  
+         s() should return int but returns float|int<0, 100>.                   
+         🪪  return.type                                                        
+ ------ ----------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------- 
+  Line   Services/ServerProvisioningService.php            
+ ------ -------------------------------------------------- 
+  44     Cannot assign new offset to array|string.         
+         🪪  offsetAssign.dimType                          
+  50     Cannot assign new offset to list<string>|string.  
+         🪪  offsetAssign.dimType                          
+  56     Cannot assign new offset to list<string>|string.  
+         🪪  offsetAssign.dimType                          
+  61     Cannot assign new offset to list<string>|string.  
+         🪪  offsetAssign.dimType                          
+  67     Cannot assign new offset to list<string>|string.  
+         🪪  offsetAssign.dimType                          
+  73     Cannot assign new offset to list<string>|string.  
+         🪪  offsetAssign.dimType                          
+ ------ -------------------------------------------------- 
+
+ [ERROR] Found 42 errors                                                        
+

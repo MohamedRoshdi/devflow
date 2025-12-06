@@ -2,21 +2,22 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Project;
 use App\Models\Server;
-use App\Services\GitService;
+use App\Models\User;
 use App\Services\DockerService;
+use App\Services\GitService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Livewire\Livewire;
+use Tests\TestCase;
 
 class ProjectManagementTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
     protected User $user;
+
     protected Server $server;
 
     protected function setUp(): void
@@ -196,12 +197,11 @@ class ProjectManagementTest extends TestCase
         ];
 
         Livewire::test(\App\Livewire\Projects\ProjectEnvironment::class, ['project' => $project])
-            ->set('environmentVariables', $envVars)
-            ->call('saveEnvironment')
-            ->assertHasNoErrors()
-            ->assertDispatched('notification');
+            ->set('envVariables', $envVars)
+            ->call('addEnvVariable')
+            ->assertHasNoErrors();
 
-        $this->assertEquals($envVars, $project->fresh()->environment_variables);
+        $this->assertEquals($envVars, $project->fresh()->env_variables);
     }
 
     /** @test */

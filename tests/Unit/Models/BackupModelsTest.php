@@ -13,10 +13,12 @@ use App\Models\ServerBackup;
 use App\Models\StorageConfiguration;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Tests\CreatesApplication;
 
-class BackupModelsTest extends TestCase
+class BackupModelsTest extends BaseTestCase
 {
+    use CreatesApplication;
     use RefreshDatabase;
 
     /**
@@ -28,16 +30,13 @@ class BackupModelsTest extends TestCase
 
     protected function setUp(): void
     {
+        // Set SQLite before parent setUp to avoid MySQL migration issues
+        putenv('DB_CONNECTION=sqlite');
+        putenv('DB_DATABASE=:memory:');
+
         parent::setUp();
 
-        // Use in-memory SQLite for faster tests
-        config(['database.default' => 'sqlite']);
-        config(['database.connections.sqlite' => [
-            'driver' => 'sqlite',
-            'database' => ':memory:',
-            'prefix' => '',
-            'foreign_key_constraints' => true,
-        ]]);
+        $this->withoutVite();
     }
 
     // ==========================================

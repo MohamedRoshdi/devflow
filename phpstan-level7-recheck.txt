@@ -1,0 +1,65 @@
+Note: Using configuration file /home/roshdy/Work/projects/DEVFLOW_PRO/phpstan.neon.
+   0/239 [░░░░░░░░░░░░░░░░░░░░░░░░░░░░]   0%[1G[2K  20/239 [▓▓░░░░░░░░░░░░░░░░░░░░░░░░░░]   8%[1G[2K  40/239 [▓▓▓▓░░░░░░░░░░░░░░░░░░░░░░░░]  16%[1G[2K  60/239 [▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░░░░░░]  25%[1G[2K  80/239 [▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░░░░]  33%[1G[2K 100/239 [▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░░]  41%[1G[2K 120/239 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░]  50%[1G[2K 140/239 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░]  58%[1G[2K 160/239 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░]  66%[1G[2K 180/239 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░]  75%[1G[2K 199/239 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░]  83%[1G[2K 239/239 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 100%
+
+ ------ ----------------------------------------------------------------------- 
+  Line   Console/Commands/ProvisionServer.php                                   
+ ------ ----------------------------------------------------------------------- 
+  122    Call to function is_array() with string|null will always evaluate to   
+         false.                                                                 
+         🪪  function.impossibleType                                            
+         💡  Because the type is coming from a PHPDoc, you can turn off this    
+         check by setting treatPhpDocTypesAsCertain: false in your phpstan.neo  
+         n.                                                                     
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   Models/BackupSchedule.php                                              
+ ------ ----------------------------------------------------------------------- 
+  168    Call to function is_string() with string will always evaluate to       
+         true.                                                                  
+         🪪  function.alreadyNarrowedType                                       
+         💡  Because the type is coming from a PHPDoc, you can turn off this    
+         check by setting treatPhpDocTypesAsCertain: false in your phpstan.neo  
+         n.                                                                     
+  169    Call to function is_string() with string will always evaluate to       
+         true.                                                                  
+         🪪  function.alreadyNarrowedType                                       
+         💡  Because the type is coming from a PHPDoc, you can turn off this    
+         check by setting treatPhpDocTypesAsCertain: false in your phpstan.neo  
+         n.                                                                     
+  169    Cannot call method format() on Carbon\Carbon|int.                      
+         🪪  method.nonObject                                                   
+  170    Call to function is_string() with string will always evaluate to       
+         true.                                                                  
+         🪪  function.alreadyNarrowedType                                       
+         💡  Because the type is coming from a PHPDoc, you can turn off this    
+         check by setting treatPhpDocTypesAsCertain: false in your phpstan.neo  
+         n.                                                                     
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   Models/ServerBackupSchedule.php                                        
+ ------ ----------------------------------------------------------------------- 
+  105    Call to function is_string() with string will always evaluate to       
+         true.                                                                  
+         🪪  function.alreadyNarrowedType                                       
+         💡  Because the type is coming from a PHPDoc, you can turn off this    
+         check by setting treatPhpDocTypesAsCertain: false in your phpstan.neo  
+         n.                                                                     
+  108    Cannot call method format() on Carbon\Carbon|int.                      
+         🪪  method.nonObject                                                   
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   Notifications/ServerProvisioningCompleted.php                          
+ ------ ----------------------------------------------------------------------- 
+  31     Call to function is_array() with string|null will always evaluate to   
+         false.                                                                 
+         🪪  function.impossibleType                                            
+         💡  Because the type is coming from a PHPDoc, you can turn off this    
+         check by setting treatPhpDocTypesAsCertain: false in your phpstan.neo  
+         n.                                                                     
+ ------ ----------------------------------------------------------------------- 
+
+ [ERROR] Found 8 errors                                                         
+

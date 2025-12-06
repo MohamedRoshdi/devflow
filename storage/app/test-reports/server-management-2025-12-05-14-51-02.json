@@ -1,0 +1,15 @@
+{
+    "timestamp": "2025-12-05T14:51:02+00:00",
+    "test_suite": "Server Management Tests",
+    "test_results": {
+        "ssh_terminal_visible": "SSH Terminal section is visible"
+    },
+    "summary": {
+        "total_tests": 1
+    },
+    "environment": {
+        "servers_tested": 3,
+        "users_tested": 1,
+        "projects_tested": 2
+    }
+}

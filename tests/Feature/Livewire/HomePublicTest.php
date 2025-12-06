@@ -18,6 +18,7 @@ class HomePublicTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Server $server;
 
     protected function setUp(): void

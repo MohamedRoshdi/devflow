@@ -1,0 +1,147 @@
+Note: Using configuration file /home/roshdy/Work/projects/DEVFLOW_PRO/phpstan.neon.
+   0/239 [░░░░░░░░░░░░░░░░░░░░░░░░░░░░]   0%[1G[2K  20/239 [▓▓░░░░░░░░░░░░░░░░░░░░░░░░░░]   8%[1G[2K  40/239 [▓▓▓▓░░░░░░░░░░░░░░░░░░░░░░░░]  16%[1G[2K  60/239 [▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░░░░░░]  25%[1G[2K  80/239 [▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░░░░]  33%[1G[2K 100/239 [▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░░]  41%[1G[2K 120/239 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░]  50%[1G[2K 140/239 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░]  58%[1G[2K 160/239 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░]  66%[1G[2K 180/239 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░]  75%[1G[2K 200/239 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░]  83%[1G[2K 219/239 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░]  91%[1G[2K 239/239 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 100%
+
+ ------ ----------------------------------------------------------------------- 
+  Line   Console/Commands/ProvisionServer.php                                   
+ ------ ----------------------------------------------------------------------- 
+  123    Call to function is_array() with array<int, string> will always evalu  
+         ate to true.                                                           
+         🪪  function.alreadyNarrowedType                                       
+         💡  Because the type is coming from a PHPDoc, you can turn off this    
+         check by setting treatPhpDocTypesAsCertain: false in your phpstan.neo  
+         n.                                                                     
+ ------ ----------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Livewire/CICD/PipelineBuilder.php                       
+ ------ -------------------------------------------------------- 
+  313    Cannot access property $id on App\Models\Project|null.  
+         🪪  property.nonObject                                  
+ ------ -------------------------------------------------------- 
+
+ ------ --------------------------------------------------------------------- 
+  Line   Livewire/Deployments/DeploymentShow.php                              
+ ------ --------------------------------------------------------------------- 
+  96     Property App\Livewire\Deployments\DeploymentShow::$deployment        
+         (App\Models\Deployment) does not accept App\Models\Deployment|null.  
+         🪪  assign.propertyType                                              
+ ------ --------------------------------------------------------------------- 
+
+ ------ ------------------------------------------------- 
+  Line   Livewire/Deployments/ScheduledDeployments.php    
+ ------ ------------------------------------------------- 
+  103    Cannot call method utc() on Carbon\Carbon|null.  
+         🪪  method.nonObject                             
+ ------ ------------------------------------------------- 
+
+ ------ ---------------------------------------------------------------------- 
+  Line   Livewire/Kubernetes/ClusterManager.php                                
+ ------ ---------------------------------------------------------------------- 
+  92     Property App\Livewire\Kubernetes\ClusterManager::$namespace (string)  
+         does not accept string|null.                                          
+         🪪  assign.propertyType                                               
+ ------ ---------------------------------------------------------------------- 
+
+ ------ ---------------------------------------------------- 
+  Line   Livewire/Logs/NotificationLogs.php                  
+ ------ ---------------------------------------------------- 
+  73     Cannot call method format() on Carbon\Carbon|null.  
+         🪪  method.nonObject                                
+  73     Expression on left side of ?? is not nullable.      
+         🪪  nullCoalesce.expr                               
+ ------ ---------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   Livewire/Projects/FileBackupManager.php                                
+ ------ ----------------------------------------------------------------------- 
+  80     Cannot call method format() on Illuminate\Support\Carbon|null.         
+         🪪  method.nonObject                                                   
+  81     Cannot call method diffForHumans() on Illuminate\Support\Carbon|null.  
+         🪪  method.nonObject                                                   
+  101    Cannot call method format() on Illuminate\Support\Carbon|null.         
+         🪪  method.nonObject                                                   
+ ------ ----------------------------------------------------------------------- 
+
+ ------ --------------------------------------------------------- 
+  Line   Livewire/Settings/ApiTokenManager.php                    
+ ------ --------------------------------------------------------- 
+  62     Cannot call method apiTokens() on App\Models\User|null.  
+         🪪  method.nonObject                                     
+ ------ --------------------------------------------------------- 
+
+ ------ ---------------------------------------------------------- 
+  Line   Notifications/DeploymentApprovalRequested.php             
+ ------ ---------------------------------------------------------- 
+  35     Cannot access property $name on App\Models\Project|null.  
+         🪪  property.nonObject                                    
+  37     Cannot access property $name on App\Models\Project|null.  
+         🪪  property.nonObject                                    
+  58     Cannot access property $id on App\Models\Project|null.    
+         🪪  property.nonObject                                    
+  59     Cannot access property $name on App\Models\Project|null.  
+         🪪  property.nonObject                                    
+  62     Cannot access property $name on App\Models\Project|null.  
+         🪪  property.nonObject                                    
+ ------ ---------------------------------------------------------- 
+
+ ------ ----------------------------------------- 
+  Line   Services/AlertNotificationService.php    
+ ------ ----------------------------------------- 
+  188    Cannot call method toIso8601String() on  
+         Illuminate\Support\Carbon|null.          
+         🪪  method.nonObject                     
+ ------ ----------------------------------------- 
+
+ ------ --------------------------------------------------------------- 
+  Line   Services/DatabaseBackupService.php                             
+ ------ --------------------------------------------------------------- 
+  312    Cannot access property $ip_address on App\Models\Server|null.  
+         🪪  property.nonObject                                         
+  326    Cannot access property $ip_address on App\Models\Server|null.  
+         🪪  property.nonObject                                         
+  531    Cannot access property $id on App\Models\DatabaseBackup|null.  
+         🪪  property.nonObject                                         
+  542    Cannot access property $id on App\Models\DatabaseBackup|null.  
+         🪪  property.nonObject                                         
+ ------ --------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------- 
+  Line   Services/MultiTenant/MultiTenantService.php                         
+ ------ -------------------------------------------------------------------- 
+  46     Method App\Services\MultiTenant\MultiTenantService::deleteTenant()  
+         should return bool but returns bool|null.                           
+         🪪  return.type                                                     
+ ------ -------------------------------------------------------------------- 
+
+ ------ ---------------------------------------------------------- 
+  Line   Services/NotificationService.php                          
+ ------ ---------------------------------------------------------- 
+  375    Cannot access property $name on App\Models\Project|null.  
+         🪪  property.nonObject                                    
+  397    Cannot access property $name on App\Models\Project|null.  
+         🪪  property.nonObject                                    
+  402    Cannot access property $name on App\Models\Project|null.  
+         🪪  property.nonObject                                    
+ ------ ---------------------------------------------------------- 
+
+ ------ --------------------------------------------------------------- 
+  Line   Services/RollbackService.php                                   
+ ------ --------------------------------------------------------------- 
+  75     Cannot access property $id on App\Models\Project|null.         
+         🪪  property.nonObject                                         
+  77     Cannot access property $server_id on App\Models\Project|null.  
+         🪪  property.nonObject                                         
+  306    Call to an undefined method                                    
+         Illuminate\Support\Collection<(int|string), mixed>::latest().  
+         🪪  method.notFound                                            
+ ------ --------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------- 
+  Line   Services/TeamService.php                             
+ ------ ----------------------------------------------------- 
+  184    Cannot access property $id on App\Models\User|null.  
+         🪪  property.nonObject                               
+ ------ ----------------------------------------------------- 
+
+ [ERROR] Found 29 errors                                                        
+

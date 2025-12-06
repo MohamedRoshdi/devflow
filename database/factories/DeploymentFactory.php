@@ -44,9 +44,8 @@ class DeploymentFactory extends Factory
             'started_at' => $startedAt,
             'completed_at' => $completedAt,
             'duration_seconds' => $durationSeconds,
-            'output' => $status === 'success' ? "Deployment completed successfully\n" : null,
-            'error_message' => $status === 'failed' ? fake()->sentence() : null,
-            'rollback_deployment_id' => null,
+            'output_log' => $status === 'success' ? "Deployment completed successfully\n" : null,
+            'error_log' => $status === 'failed' ? fake()->sentence() : null,
         ];
     }
 
@@ -63,8 +62,8 @@ class DeploymentFactory extends Factory
                 'status' => 'success',
                 'completed_at' => $completedAt,
                 'duration_seconds' => $completedAt->getTimestamp() - $startedAt->getTimestamp(),
-                'output' => "Deployment completed successfully\nAll services started\n",
-                'error_message' => null,
+                'output_log' => "Deployment completed successfully\nAll services started\n",
+                'error_log' => null,
             ];
         });
     }
@@ -82,7 +81,7 @@ class DeploymentFactory extends Factory
                 'status' => 'failed',
                 'completed_at' => $completedAt,
                 'duration_seconds' => $completedAt->getTimestamp() - $startedAt->getTimestamp(),
-                'error_message' => fake()->randomElement([
+                'error_log' => fake()->randomElement([
                     'Docker build failed: out of memory',
                     'Git pull failed: authentication error',
                     'Container startup failed: port already in use',

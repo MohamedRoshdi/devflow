@@ -2,22 +2,23 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
+use App\Events\DeploymentStatusUpdated;
+use App\Models\Deployment;
 use App\Models\Project;
 use App\Models\Server;
-use App\Models\Deployment;
+use App\Models\User;
 use App\Services\RollbackService;
-use App\Events\DeploymentStatusUpdated;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
+use Tests\TestCase;
 
 class DeploymentTest extends TestCase
 {
     use RefreshDatabase;
 
     protected User $user;
+
     protected Project $project;
 
     protected function setUp(): void

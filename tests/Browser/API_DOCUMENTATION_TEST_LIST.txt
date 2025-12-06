@@ -1,0 +1,73 @@
+API DOCUMENTATION BROWSER TESTS - COMPLETE LIST
+================================================
+
+File: tests/Browser/ApiDocumentationTest.php
+Total Tests: 35
+
+TEST LIST:
+----------
+
+1.  test_user_can_view_api_documentation
+2.  test_authentication_section_visible
+3.  test_api_endpoints_are_listed
+4.  test_projects_api_endpoints_documented
+5.  test_servers_api_endpoints_documented
+6.  test_deployments_api_endpoints_documented
+7.  test_api_request_examples_shown
+8.  test_api_response_examples_displayed
+9.  test_http_methods_documented
+10. test_api_versioning_information_shown
+11. test_authentication_requirements_documented
+12. test_rate_limiting_information_displayed
+13. test_error_codes_documented
+14. test_webhook_documentation_available
+15. test_navigation_between_api_sections
+16. test_api_token_creation_link_visible
+17. test_api_base_url_documented
+18. test_request_headers_documented
+19. test_response_formats_explained
+20. test_pagination_documentation_present
+21. test_filtering_sorting_parameters_documented
+22. test_code_snippets_syntax_highlighted
+23. test_api_changelog_available
+24. test_search_functionality_in_docs
+25. test_api_request_builder_present
+26. test_api_usage_statistics_shown
+27. test_api_token_management_link_works
+28. test_multiple_api_versions_documented
+29. test_webhook_event_types_listed
+30. test_api_security_best_practices_documented
+31. test_api_token_scopes_explained
+32. test_api_endpoint_parameters_detailed
+33. test_api_data_validation_rules_shown
+34. test_quick_start_guide_available
+35. test_api_documentation_mobile_responsive
+
+COVERAGE SUMMARY:
+-----------------
+✅ API documentation page access (3 tests)
+✅ API token management (3 tests)
+✅ API endpoint documentation display (6 tests)
+✅ API authentication testing (4 tests)
+✅ API rate limiting display (1 test)
+✅ API versioning documentation (3 tests)
+✅ API response examples (3 tests)
+✅ API request builder/tester (1 test)
+✅ Webhook documentation (2 tests)
+✅ API usage statistics (1 test)
+✅ Additional features (8 tests)
+
+FEATURES:
+---------
+- Uses LoginViaUI trait pattern
+- Shared database approach (no migrations)
+- Screenshot capture for each test
+- Automated test reporting (JSON format)
+- Mobile responsiveness testing
+- Page source validation
+- Graceful fallback assertions
+
+RUN COMMAND:
+------------
+php artisan dusk tests/Browser/ApiDocumentationTest.php
+

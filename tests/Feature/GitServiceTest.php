@@ -2,20 +2,22 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Project;
 use App\Models\Server;
+use App\Models\User;
 use App\Services\GitService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Process;
+use Tests\TestCase;
 
 class GitServiceTest extends TestCase
 {
     use RefreshDatabase;
 
     protected User $user;
+
     protected Server $server;
+
     protected Project $project;
 
     protected function setUp(): void
@@ -40,7 +42,7 @@ class GitServiceTest extends TestCase
     /** @test */
     public function ssh_command_escapes_single_quotes_correctly()
     {
-        $gitService = new GitService();
+        $gitService = new GitService;
 
         // Use reflection to access protected method
         $reflection = new \ReflectionClass($gitService);
@@ -56,7 +58,7 @@ class GitServiceTest extends TestCase
     /** @test */
     public function ssh_command_preserves_git_format_strings()
     {
-        $gitService = new GitService();
+        $gitService = new GitService;
 
         $reflection = new \ReflectionClass($gitService);
         $method = $reflection->getMethod('buildSSHCommand');
@@ -77,7 +79,7 @@ class GitServiceTest extends TestCase
     /** @test */
     public function ssh_command_uses_single_quotes_wrapper()
     {
-        $gitService = new GitService();
+        $gitService = new GitService;
 
         $reflection = new \ReflectionClass($gitService);
         $method = $reflection->getMethod('buildSSHCommand');
@@ -96,12 +98,12 @@ class GitServiceTest extends TestCase
         // Fake the Process facade to simulate SSH response
         Process::fake([
             '*' => Process::result(
-                output: "abc123def456|Test Author|test@example.com|1700000000|Test commit message",
+                output: 'abc123def456|Test Author|test@example.com|1700000000|Test commit message',
                 exitCode: 0
             ),
         ]);
 
-        $gitService = new GitService();
+        $gitService = new GitService;
         $result = $gitService->getLatestCommits($this->project, 10, 1);
 
         $this->assertArrayHasKey('success', $result);
@@ -117,12 +119,12 @@ class GitServiceTest extends TestCase
         // Fake the Process facade
         Process::fake([
             '*' => Process::result(
-                output: "abc123def456",
+                output: 'abc123def456',
                 exitCode: 0
             ),
         ]);
 
-        $gitService = new GitService();
+        $gitService = new GitService;
         $result = $gitService->checkForUpdates($this->project);
 
         $this->assertArrayHasKey('success', $result);
@@ -140,10 +142,10 @@ class GitServiceTest extends TestCase
     {
         // Fake repo doesn't exist
         Process::fake([
-            '*test -d*' => Process::result(output: "not-exists", exitCode: 0),
+            '*test -d*' => Process::result(output: 'not-exists', exitCode: 0),
         ]);
 
-        $gitService = new GitService();
+        $gitService = new GitService;
         $result = $gitService->getLatestCommits($this->project, 10, 1);
 
         $this->assertTrue($result['success']);
@@ -154,7 +156,7 @@ class GitServiceTest extends TestCase
     /** @test */
     public function pagination_calculates_skip_correctly()
     {
-        $gitService = new GitService();
+        $gitService = new GitService;
 
         // Use reflection to test internal calculation
         $reflection = new \ReflectionClass($gitService);
@@ -174,14 +176,14 @@ class GitServiceTest extends TestCase
     public function commit_diff_returns_commits_between_hashes()
     {
         Process::fake([
-            '*test -d*' => Process::result(output: "exists", exitCode: 0),
+            '*test -d*' => Process::result(output: 'exists', exitCode: 0),
             '*git log*' => Process::result(
                 output: "abc123|Author|1700000000|Commit 1\ndef456|Author|1700000100|Commit 2",
                 exitCode: 0
             ),
         ]);
 
-        $gitService = new GitService();
+        $gitService = new GitService;
         $result = $gitService->getCommitDiff($this->project, 'abc123', 'def456');
 
         $this->assertArrayHasKey('success', $result);

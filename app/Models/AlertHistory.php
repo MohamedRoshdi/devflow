@@ -34,6 +34,9 @@ class AlertHistory extends Model
     /** @use HasFactory<\Database\Factories\AlertHistoryFactory> */
     use HasFactory;
 
+    /** @var string */
+    protected $table = 'alert_history';
+
     /** @var array<int, string> */
     protected $fillable = [
         'resource_alert_id',

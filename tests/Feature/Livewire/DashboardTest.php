@@ -2,27 +2,27 @@
 
 namespace Tests\Feature\Livewire;
 
-use Tests\TestCase;
-use App\Models\User;
-use App\Models\Server;
-use App\Models\Project;
-use App\Models\Deployment;
-use App\Models\SSLCertificate;
-use App\Models\HealthCheck;
-use App\Models\ServerMetric;
-use App\Models\UserSettings;
 use App\Livewire\Dashboard;
+use App\Models\Deployment;
+use App\Models\HealthCheck;
+use App\Models\Project;
+use App\Models\Server;
+use App\Models\ServerMetric;
+use App\Models\SSLCertificate;
+use App\Models\User;
+use App\Models\UserSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
-use Carbon\Carbon;
+use Tests\TestCase;
 
 class DashboardTest extends TestCase
 {
     use RefreshDatabase;
 
     protected User $user;
+
     protected Server $server;
 
     protected function setUp(): void
@@ -258,7 +258,7 @@ class DashboardTest extends TestCase
         $this->assertCount(7, $timeline);
 
         // Check that days without deployments have 0 counts
-        $emptyDays = array_filter($timeline, fn($entry) => $entry['total'] === 0);
+        $emptyDays = array_filter($timeline, fn ($entry) => $entry['total'] === 0);
         $this->assertGreaterThan(0, count($emptyDays));
     }
 
@@ -499,7 +499,7 @@ class DashboardTest extends TestCase
         Livewire::test(Dashboard::class)
             ->dispatch('deployment-completed')
             ->assertSet('stats', function ($stats) {
-                return !isset($stats['test']) || $stats['test'] !== 'old_data';
+                return ! isset($stats['test']) || $stats['test'] !== 'old_data';
             });
     }
 

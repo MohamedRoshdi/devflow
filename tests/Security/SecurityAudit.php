@@ -2,16 +2,17 @@
 
 namespace Tests\Security;
 
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Project;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
+use App\Models\User;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Tests\TestCase;
 
 class SecurityAudit extends TestCase
 {
     protected array $vulnerabilities = [];
+
     protected array $passed = [];
 
     /**
@@ -38,7 +39,7 @@ class SecurityAudit extends TestCase
     /**
      * Test authentication security
      */
-    protected function testAuthentication(): void
+    protected function test_authentication(): void
     {
         // Test brute force protection
         $user = User::factory()->create([
@@ -55,7 +56,7 @@ class SecurityAudit extends TestCase
             ]);
 
             if ($response->status() === 429) {
-                $this->passed[] = 'Brute force protection active after ' . $i . ' attempts';
+                $this->passed[] = 'Brute force protection active after '.$i.' attempts';
                 break;
             }
             $attempts++;
@@ -89,7 +90,7 @@ class SecurityAudit extends TestCase
     /**
      * Test authorization
      */
-    protected function testAuthorization(): void
+    protected function test_authorization(): void
     {
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
@@ -131,7 +132,7 @@ class SecurityAudit extends TestCase
     /**
      * Test SQL injection vulnerabilities
      */
-    protected function testSQLInjection(): void
+    protected function test_sql_injection(): void
     {
         $maliciousInputs = [
             "'; DROP TABLE users; --",
@@ -143,7 +144,7 @@ class SecurityAudit extends TestCase
         foreach ($maliciousInputs as $input) {
             try {
                 // Test in search
-                DB::select("SELECT * FROM projects WHERE name = ?", [$input]);
+                DB::select('SELECT * FROM projects WHERE name = ?', [$input]);
 
                 // Test in user input
                 $this->actingAs(User::factory()->create())
@@ -152,14 +153,14 @@ class SecurityAudit extends TestCase
                         'slug' => 'test',
                     ]);
 
-                $this->passed[] = 'SQL injection protection for: ' . substr($input, 0, 20);
+                $this->passed[] = 'SQL injection protection for: '.substr($input, 0, 20);
             } catch (\Exception $e) {
                 if (strpos($e->getMessage(), 'syntax error') !== false) {
                     $this->vulnerabilities[] = [
                         'type' => 'sql_injection',
                         'severity' => 'critical',
                         'issue' => 'SQL injection vulnerability',
-                        'details' => 'Input not properly escaped: ' . $input,
+                        'details' => 'Input not properly escaped: '.$input,
                         'fix' => 'Use parameterized queries and Eloquent ORM',
                     ];
                 }
@@ -170,7 +171,7 @@ class SecurityAudit extends TestCase
     /**
      * Test XSS protection
      */
-    protected function testXSSProtection(): void
+    protected function test_xss_protection(): void
     {
         $xssPayloads = [
             '<script>alert("XSS")</script>',
@@ -195,11 +196,11 @@ class SecurityAudit extends TestCase
                     'type' => 'xss',
                     'severity' => 'high',
                     'issue' => 'XSS vulnerability',
-                    'details' => 'Unescaped output: ' . substr($payload, 0, 30),
+                    'details' => 'Unescaped output: '.substr($payload, 0, 30),
                     'fix' => 'Use {{ }} instead of {!! !!} in Blade templates',
                 ];
             } else {
-                $this->passed[] = 'XSS protection working for: ' . substr($payload, 0, 20);
+                $this->passed[] = 'XSS protection working for: '.substr($payload, 0, 20);
             }
         }
     }
@@ -207,7 +208,7 @@ class SecurityAudit extends TestCase
     /**
      * Test CSRF protection
      */
-    protected function testCSRFProtection(): void
+    protected function test_csrf_protection(): void
     {
         $user = User::factory()->create();
 
@@ -232,7 +233,7 @@ class SecurityAudit extends TestCase
     /**
      * Test password security
      */
-    protected function testPasswordSecurity(): void
+    protected function test_password_security(): void
     {
         // Test weak passwords
         $weakPasswords = ['123456', 'password', 'admin123'];
@@ -246,12 +247,12 @@ class SecurityAudit extends TestCase
                         'type' => 'password',
                         'severity' => 'medium',
                         'issue' => 'Weak passwords allowed',
-                        'details' => 'System accepts password: ' . $password,
+                        'details' => 'System accepts password: '.$password,
                         'fix' => 'Implement password strength requirements',
                     ];
                 }
             } catch (\Exception $e) {
-                $this->passed[] = 'Password validation prevents: ' . $password;
+                $this->passed[] = 'Password validation prevents: '.$password;
             }
         }
 
@@ -275,7 +276,7 @@ class SecurityAudit extends TestCase
     /**
      * Test file upload security
      */
-    protected function testFileUploadSecurity(): void
+    protected function test_file_upload_security(): void
     {
         $maliciousFiles = [
             ['name' => 'exploit.php', 'content' => '<?php system($_GET["cmd"]); ?>'],
@@ -285,14 +286,14 @@ class SecurityAudit extends TestCase
 
         foreach ($maliciousFiles as $file) {
             // Test file upload restrictions
-            if (!$this->isFileTypeAllowed($file['name'])) {
-                $this->passed[] = 'File type blocked: ' . $file['name'];
+            if (! $this->isFileTypeAllowed($file['name'])) {
+                $this->passed[] = 'File type blocked: '.$file['name'];
             } else {
                 $this->vulnerabilities[] = [
                     'type' => 'file_upload',
                     'severity' => 'critical',
                     'issue' => 'Dangerous file types allowed',
-                    'details' => 'Can upload: ' . $file['name'],
+                    'details' => 'Can upload: '.$file['name'],
                     'fix' => 'Implement strict file type validation',
                 ];
             }
@@ -302,7 +303,7 @@ class SecurityAudit extends TestCase
     /**
      * Test API security headers
      */
-    protected function testAPISecurityHeaders(): void
+    protected function test_api_security_headers(): void
     {
         $response = $this->get('/api/health');
 
@@ -317,24 +318,24 @@ class SecurityAudit extends TestCase
         foreach ($requiredHeaders as $header => $expectedValue) {
             $actualValue = $response->headers->get($header);
 
-            if (!$actualValue) {
+            if (! $actualValue) {
                 $this->vulnerabilities[] = [
                     'type' => 'headers',
                     'severity' => 'medium',
                     'issue' => 'Missing security header',
-                    'details' => $header . ' is not set',
-                    'fix' => 'Add ' . $header . ' header with value: ' . $expectedValue,
+                    'details' => $header.' is not set',
+                    'fix' => 'Add '.$header.' header with value: '.$expectedValue,
                 ];
             } elseif (strpos($actualValue, explode(' ', $expectedValue)[0]) === false) {
                 $this->vulnerabilities[] = [
                     'type' => 'headers',
                     'severity' => 'low',
                     'issue' => 'Weak security header',
-                    'details' => $header . ' has value: ' . $actualValue,
-                    'fix' => 'Set to: ' . $expectedValue,
+                    'details' => $header.' has value: '.$actualValue,
+                    'fix' => 'Set to: '.$expectedValue,
                 ];
             } else {
-                $this->passed[] = 'Security header present: ' . $header;
+                $this->passed[] = 'Security header present: '.$header;
             }
         }
     }
@@ -342,7 +343,7 @@ class SecurityAudit extends TestCase
     /**
      * Test rate limiting
      */
-    protected function testRateLimiting(): void
+    protected function test_rate_limiting(): void
     {
         $endpoints = [
             '/api/projects' => 60,  // 60 requests per minute
@@ -356,7 +357,7 @@ class SecurityAudit extends TestCase
                 $response = $this->get($endpoint);
 
                 if ($response->status() === 429) {
-                    $this->passed[] = 'Rate limiting active on ' . $endpoint . ' after ' . $i . ' requests';
+                    $this->passed[] = 'Rate limiting active on '.$endpoint.' after '.$i.' requests';
                     break;
                 }
                 $hitCount++;
@@ -366,7 +367,7 @@ class SecurityAudit extends TestCase
                 $this->vulnerabilities[] = [
                     'type' => 'rate_limiting',
                     'severity' => 'medium',
-                    'issue' => 'No rate limiting on ' . $endpoint,
+                    'issue' => 'No rate limiting on '.$endpoint,
                     'details' => 'Endpoint accepts unlimited requests',
                     'fix' => 'Implement rate limiting middleware',
                 ];
@@ -377,7 +378,7 @@ class SecurityAudit extends TestCase
     /**
      * Test encryption
      */
-    protected function testEncryption(): void
+    protected function test_encryption(): void
     {
         // Test sensitive data encryption
         $sensitiveData = 'api_secret_key_123456';
@@ -413,7 +414,7 @@ class SecurityAudit extends TestCase
                     'type' => 'data_exposure',
                     'severity' => 'high',
                     'issue' => 'Sensitive data in logs',
-                    'details' => 'Pattern found: ' . $pattern,
+                    'details' => 'Pattern found: '.$pattern,
                     'fix' => 'Filter sensitive data from logs',
                 ];
             }
@@ -423,11 +424,11 @@ class SecurityAudit extends TestCase
     /**
      * Test session security
      */
-    protected function testSessionSecurity(): void
+    protected function test_session_security(): void
     {
         $sessionConfig = config('session');
 
-        if (!($sessionConfig['secure'] ?? false)) {
+        if (! ($sessionConfig['secure'] ?? false)) {
             $this->vulnerabilities[] = [
                 'type' => 'session',
                 'severity' => 'medium',
@@ -437,7 +438,7 @@ class SecurityAudit extends TestCase
             ];
         }
 
-        if (!($sessionConfig['http_only'] ?? true)) {
+        if (! ($sessionConfig['http_only'] ?? true)) {
             $this->vulnerabilities[] = [
                 'type' => 'session',
                 'severity' => 'medium',
@@ -452,7 +453,7 @@ class SecurityAudit extends TestCase
                 'type' => 'session',
                 'severity' => 'low',
                 'issue' => 'Long session lifetime',
-                'details' => 'Sessions last ' . $sessionConfig['lifetime'] . ' minutes',
+                'details' => 'Sessions last '.$sessionConfig['lifetime'].' minutes',
                 'fix' => 'Reduce session lifetime to 8 hours or less',
             ];
         }
@@ -461,7 +462,7 @@ class SecurityAudit extends TestCase
     /**
      * Test dependency vulnerabilities
      */
-    protected function testDependencyVulnerabilities(): void
+    protected function test_dependency_vulnerabilities(): void
     {
         // Check composer packages
         $composerLock = json_decode(file_get_contents(base_path('composer.lock')), true);
@@ -480,8 +481,8 @@ class SecurityAudit extends TestCase
                         'type' => 'dependency',
                         'severity' => 'high',
                         'issue' => 'Vulnerable dependency',
-                        'details' => $package['name'] . ' ' . $package['version'] . ' has known vulnerabilities',
-                        'fix' => 'Update to version ' . $constraint . ' or higher',
+                        'details' => $package['name'].' '.$package['version'].' has known vulnerabilities',
+                        'fix' => 'Update to version '.$constraint.' or higher',
                     ];
                 }
             }
@@ -496,7 +497,7 @@ class SecurityAudit extends TestCase
         $blockedExtensions = ['php', 'phtml', 'php3', 'php4', 'php5', 'asp', 'aspx', 'exe', 'sh'];
         $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
-        return !in_array($extension, $blockedExtensions);
+        return ! in_array($extension, $blockedExtensions);
     }
 
     /**
@@ -510,17 +511,17 @@ class SecurityAudit extends TestCase
             'passed' => $this->passed,
             'statistics' => [
                 'total_vulnerabilities' => count($this->vulnerabilities),
-                'critical' => count(array_filter($this->vulnerabilities, fn($v) => ($v['severity'] ?? '') === 'critical')),
-                'high' => count(array_filter($this->vulnerabilities, fn($v) => ($v['severity'] ?? '') === 'high')),
-                'medium' => count(array_filter($this->vulnerabilities, fn($v) => ($v['severity'] ?? '') === 'medium')),
-                'low' => count(array_filter($this->vulnerabilities, fn($v) => ($v['severity'] ?? '') === 'low')),
+                'critical' => count(array_filter($this->vulnerabilities, fn ($v) => ($v['severity'] ?? '') === 'critical')),
+                'high' => count(array_filter($this->vulnerabilities, fn ($v) => ($v['severity'] ?? '') === 'high')),
+                'medium' => count(array_filter($this->vulnerabilities, fn ($v) => ($v['severity'] ?? '') === 'medium')),
+                'low' => count(array_filter($this->vulnerabilities, fn ($v) => ($v['severity'] ?? '') === 'low')),
                 'tests_passed' => count($this->passed),
             ],
             'security_score' => $this->calculateSecurityScore(),
         ];
 
         // Save report
-        $reportPath = storage_path('app/security-reports/audit-' . now()->format('Y-m-d-H-i-s') . '.json');
+        $reportPath = storage_path('app/security-reports/audit-'.now()->format('Y-m-d-H-i-s').'.json');
         @mkdir(dirname($reportPath), 0755, true);
         file_put_contents($reportPath, json_encode($report, JSON_PRETTY_PRINT));
 

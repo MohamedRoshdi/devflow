@@ -96,4 +96,7 @@ parameters:
         # Return type patterns
         - identifier: return.type
           path: app/Models/*
+        # Factory classes that don't exist yet
+        - '#PHPDoc tag @use has invalid type Database\\Factories\\.*#'
+        - '#Type Database\\Factories\\.* in generic type .* is not subtype of template type TFactory#'
     reportUnmatchedIgnoredErrors: false

@@ -26,16 +26,16 @@ class SSLCertificateFactory extends Factory
         return [
             'domain_id' => null,
             'server_id' => Server::factory(),
-            'domain' => fake()->domainName(),
-            'provider' => fake()->randomElement(['letsencrypt', 'cloudflare', 'custom', 'self-signed']),
-            'status' => fake()->randomElement(['issued', 'pending', 'failed', 'expired']),
+            'domain_name' => fake()->domainName(),
+            'provider' => fake()->randomElement(['letsencrypt', 'custom', 'none']),
+            'status' => fake()->randomElement(['issued', 'pending', 'failed', 'expired', 'revoked']),
             'issued_at' => $issuedAt,
             'expires_at' => $expiresAt,
             'auto_renew' => fake()->boolean(80),
             'certificate_path' => '/etc/ssl/certs/'.fake()->slug().'.crt',
             'private_key_path' => '/etc/ssl/private/'.fake()->slug().'.key',
-            'certificate_content' => '-----BEGIN CERTIFICATE-----'."\n".fake()->sha256()."\n".'-----END CERTIFICATE-----',
-            'error_message' => null,
+            'chain_path' => '/etc/ssl/certs/'.fake()->slug().'-chain.pem',
+            'renewal_error' => null,
         ];
     }
 
@@ -51,7 +51,7 @@ class SSLCertificateFactory extends Factory
                 'status' => 'issued',
                 'issued_at' => $issuedAt,
                 'expires_at' => $issuedAt->copy()->addDays(90),
-                'error_message' => null,
+                'renewal_error' => null,
             ];
         });
     }
@@ -97,7 +97,7 @@ class SSLCertificateFactory extends Factory
             'status' => 'failed',
             'issued_at' => null,
             'expires_at' => null,
-            'error_message' => fake()->randomElement([
+            'renewal_error' => fake()->randomElement([
                 'Domain validation failed',
                 'Rate limit exceeded',
                 'DNS challenge failed',

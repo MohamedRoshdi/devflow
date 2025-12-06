@@ -1,4 +1,4 @@
-<div wire:poll.30s="loadMetrics">
+<div x-data="serverMetrics()" x-init="initCharts()" wire:ignore.self>
     <!-- Hero Section -->
     <div class="relative mb-8 rounded-2xl bg-gradient-to-br from-indigo-800 via-purple-900 to-indigo-800 p-8 shadow-2xl overflow-hidden">
         <!-- Background Pattern -->
@@ -24,7 +24,7 @@
                     </div>
 
                     <div>
-                        <h1 class="text-3xl font-bold text-white">Server Metrics Dashboard</h1>
+                        <h1 class="text-3xl font-bold text-white">Real-time Server Metrics</h1>
                         <div class="flex flex-wrap items-center gap-3 mt-2">
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white/10 text-white/90">
                                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -33,9 +33,13 @@
                                 <?php echo e($server->name); ?>
 
                             </span>
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white/10 text-white/90">
-                                <?php echo e($server->ip_address); ?>
-
+                            <!-- Live Indicator -->
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-500/20 text-green-300 border border-green-500/30">
+                                <span class="relative flex h-2 w-2 mr-2">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                </span>
+                                Live Updates
                             </span>
                         </div>
                     </div>
@@ -65,62 +69,55 @@
         </div>
     </div>
 
-    <!-- Flash Messages -->
-    <?php if(session()->has('message')): ?>
-        <div class="mb-6 bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 text-green-400 px-5 py-4 rounded-xl flex items-center gap-3">
-            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <?php echo e(session('message')); ?>
+    <!-- Alert Banner -->
+    <!--[if BLOCK]><![endif]--><?php if($this->alertStatus['status'] !== 'healthy' && $this->alertStatus['status'] !== 'unknown'): ?>
+        <div class="mb-6 rounded-xl p-4 <?php echo e($this->alertStatus['status'] === 'critical' ? 'bg-red-500/10 border border-red-500/30' : 'bg-yellow-500/10 border border-yellow-500/30'); ?>">
+            <div class="flex items-start gap-3">
+                <div class="p-2 rounded-lg <?php echo e($this->alertStatus['status'] === 'critical' ? 'bg-red-500/20' : 'bg-yellow-500/20'); ?>">
+                    <svg class="w-5 h-5 <?php echo e($this->alertStatus['status'] === 'critical' ? 'text-red-400' : 'text-yellow-400'); ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-semibold <?php echo e($this->alertStatus['status'] === 'critical' ? 'text-red-400' : 'text-yellow-400'); ?>">
+                        <?php echo e($this->alertStatus['status'] === 'critical' ? 'Critical Alert' : 'Warning'); ?>
 
+                    </h3>
+                    <div class="mt-1 space-y-1">
+                        <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $this->alertStatus['alerts']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $alert): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <p class="text-sm <?php echo e($alert['type'] === 'critical' ? 'text-red-300' : 'text-yellow-300'); ?>">
+                                <?php echo e($alert['metric']); ?> usage is at <?php echo e(number_format($alert['value'], 1)); ?>%
+                            </p>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+                    </div>
+                </div>
+            </div>
         </div>
-    <?php endif; ?>
-
-    <?php if(session()->has('error')): ?>
-        <div class="mb-6 bg-gradient-to-r from-red-500/20 to-red-600/20 border border-red-500/30 text-red-400 px-5 py-4 rounded-xl flex items-center gap-3">
-            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <?php echo e(session('error')); ?>
-
-        </div>
-    <?php endif; ?>
+    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
     <!-- Time Range Selector -->
     <div class="mb-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 transition-colors">
-        <div class="flex flex-wrap items-center gap-3">
-            <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Time Range:</span>
-            <div class="flex gap-2">
-                <button wire:click="setPeriod('1h')"
-                        class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                        <?php if($period === '1h'): ?> bg-indigo-600 text-white shadow-md <?php else: ?> bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 <?php endif; ?>">
-                    1 Hour
-                </button>
-                <button wire:click="setPeriod('6h')"
-                        class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                        <?php if($period === '6h'): ?> bg-indigo-600 text-white shadow-md <?php else: ?> bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 <?php endif; ?>">
-                    6 Hours
-                </button>
-                <button wire:click="setPeriod('24h')"
-                        class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                        <?php if($period === '24h'): ?> bg-indigo-600 text-white shadow-md <?php else: ?> bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 <?php endif; ?>">
-                    24 Hours
-                </button>
-                <button wire:click="setPeriod('7d')"
-                        class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                        <?php if($period === '7d'): ?> bg-indigo-600 text-white shadow-md <?php else: ?> bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 <?php endif; ?>">
-                    7 Days
-                </button>
-                <button wire:click="setPeriod('30d')"
-                        class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                        <?php if($period === '30d'): ?> bg-indigo-600 text-white shadow-md <?php else: ?> bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 <?php endif; ?>">
-                    30 Days
-                </button>
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Time Range:</span>
+                <div class="flex gap-2">
+                    <!--[if BLOCK]><![endif]--><?php $__currentLoopData = ['1h' => '1 Hour', '6h' => '6 Hours', '24h' => '24 Hours', '7d' => '7 Days']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <button wire:click="setPeriod('<?php echo e($key); ?>')"
+                                class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                                <?php if($period === $key): ?> bg-indigo-600 text-white shadow-md <?php else: ?> bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 <?php endif; ?>">
+                            <?php echo e($label); ?>
+
+                        </button>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+                </div>
+            </div>
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+                Last updated: <span x-text="lastUpdate"><?php echo e($latestMetric?->recorded_at?->diffForHumans() ?? 'Never'); ?></span>
             </div>
         </div>
     </div>
 
-    <?php if($latestMetric): ?>
+    <!--[if BLOCK]><![endif]--><?php if($latestMetric): ?>
         <!-- Current Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <!-- CPU Usage Card -->
@@ -142,7 +139,7 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <span class="text-4xl font-bold text-gray-900 dark:text-white"><?php echo e(number_format($latestMetric->cpu_usage, 1)); ?></span>
+                    <span class="text-4xl font-bold text-gray-900 dark:text-white" x-text="currentMetrics.cpu"><?php echo e(number_format($latestMetric->cpu_usage, 1)); ?></span>
                     <span class="text-xl text-gray-500 dark:text-gray-400">%</span>
                 </div>
                 <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
@@ -150,7 +147,7 @@
                         <?php if($latestMetric->cpu_usage > 80): ?> bg-gradient-to-r from-red-500 to-red-600
                         <?php elseif($latestMetric->cpu_usage > 60): ?> bg-gradient-to-r from-yellow-500 to-orange-500
                         <?php else: ?> bg-gradient-to-r from-blue-500 to-indigo-600
-                        <?php endif; ?>" style="width: <?php echo e(min($latestMetric->cpu_usage, 100)); ?>%"></div>
+                        <?php endif; ?>" :style="'width: ' + Math.min(currentMetrics.cpu, 100) + '%'"></div>
                 </div>
                 <div class="mt-3 text-xs text-gray-500 dark:text-gray-400">
                     Load Avg: <?php echo e($latestMetric->load_average_1); ?>, <?php echo e($latestMetric->load_average_5); ?>, <?php echo e($latestMetric->load_average_15); ?>
@@ -177,7 +174,7 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <span class="text-4xl font-bold text-gray-900 dark:text-white"><?php echo e(number_format($latestMetric->memory_usage, 1)); ?></span>
+                    <span class="text-4xl font-bold text-gray-900 dark:text-white" x-text="currentMetrics.memory"><?php echo e(number_format($latestMetric->memory_usage, 1)); ?></span>
                     <span class="text-xl text-gray-500 dark:text-gray-400">%</span>
                 </div>
                 <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
@@ -185,7 +182,7 @@
                         <?php if($latestMetric->memory_usage > 80): ?> bg-gradient-to-r from-red-500 to-red-600
                         <?php elseif($latestMetric->memory_usage > 60): ?> bg-gradient-to-r from-yellow-500 to-orange-500
                         <?php else: ?> bg-gradient-to-r from-green-500 to-emerald-600
-                        <?php endif; ?>" style="width: <?php echo e(min($latestMetric->memory_usage, 100)); ?>%"></div>
+                        <?php endif; ?>" :style="'width: ' + Math.min(currentMetrics.memory, 100) + '%'"></div>
                 </div>
                 <div class="mt-3 text-xs text-gray-500 dark:text-gray-400">
                     <?php echo e(number_format($latestMetric->memory_used_mb / 1024, 1)); ?> GB / <?php echo e(number_format($latestMetric->memory_total_mb / 1024, 1)); ?> GB
@@ -211,7 +208,7 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <span class="text-4xl font-bold text-gray-900 dark:text-white"><?php echo e(number_format($latestMetric->disk_usage, 1)); ?></span>
+                    <span class="text-4xl font-bold text-gray-900 dark:text-white" x-text="currentMetrics.disk"><?php echo e(number_format($latestMetric->disk_usage, 1)); ?></span>
                     <span class="text-xl text-gray-500 dark:text-gray-400">%</span>
                 </div>
                 <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
@@ -219,10 +216,39 @@
                         <?php if($latestMetric->disk_usage > 80): ?> bg-gradient-to-r from-red-500 to-red-600
                         <?php elseif($latestMetric->disk_usage > 60): ?> bg-gradient-to-r from-yellow-500 to-orange-500
                         <?php else: ?> bg-gradient-to-r from-purple-500 to-pink-600
-                        <?php endif; ?>" style="width: <?php echo e(min($latestMetric->disk_usage, 100)); ?>%"></div>
+                        <?php endif; ?>" :style="'width: ' + Math.min(currentMetrics.disk, 100) + '%'"></div>
                 </div>
                 <div class="mt-3 text-xs text-gray-500 dark:text-gray-400">
                     <?php echo e($latestMetric->disk_used_gb); ?> GB / <?php echo e($latestMetric->disk_total_gb); ?> GB
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- CPU & Memory Chart -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 transition-colors">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+                    </svg>
+                    CPU & Memory Trend
+                </h3>
+                <div class="h-64">
+                    <canvas id="cpuMemoryChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Disk & Load Chart -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 transition-colors">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    Disk Usage & Load Average
+                </h3>
+                <div class="h-64">
+                    <canvas id="diskLoadChart"></canvas>
                 </div>
             </div>
         </div>
@@ -238,7 +264,7 @@
                         </svg>
                     </div>
                     <div>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Network In</p>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Network In (Total)</p>
                         <p class="text-2xl font-bold text-gray-900 dark:text-white">
                             <?php echo e(number_format($latestMetric->network_in_bytes / 1024 / 1024 / 1024, 2)); ?> GB
                         </p>
@@ -255,7 +281,7 @@
                         </svg>
                     </div>
                     <div>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Network Out</p>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Network Out (Total)</p>
                         <p class="text-2xl font-bold text-gray-900 dark:text-white">
                             <?php echo e(number_format($latestMetric->network_out_bytes / 1024 / 1024 / 1024, 2)); ?> GB
                         </p>
@@ -263,7 +289,166 @@
                 </div>
             </div>
         </div>
-    <?php endif; ?>
+
+        <!-- Process List Viewer -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl transition-colors overflow-hidden">
+            <div class="p-6 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-750">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                            </svg>
+                            Top Running Processes
+                        </h2>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Real-time process monitoring</p>
+                    </div>
+                    <button wire:click="refreshProcesses"
+                            wire:loading.attr="disabled"
+                            wire:loading.class="opacity-50 cursor-not-allowed"
+                            wire:target="refreshProcesses"
+                            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all duration-200 font-medium flex items-center gap-2">
+                        <svg wire:loading.remove wire:target="refreshProcesses" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        <svg wire:loading wire:target="refreshProcesses" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span wire:loading.remove wire:target="refreshProcesses">Refresh</span>
+                        <span wire:loading wire:target="refreshProcesses">Loading...</span>
+                    </button>
+                </div>
+
+                <!-- Tab Navigation -->
+                <div class="flex gap-2 mt-4">
+                    <button wire:click="switchProcessView('cpu')"
+                            class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                            <?php if($processView === 'cpu'): ?> bg-indigo-600 text-white shadow-md <?php else: ?> bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 <?php endif; ?>">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+                            </svg>
+                            By CPU Usage
+                        </div>
+                    </button>
+                    <button wire:click="switchProcessView('memory')"
+                            class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                            <?php if($processView === 'memory'): ?> bg-indigo-600 text-white shadow-md <?php else: ?> bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 <?php endif; ?>">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                            </svg>
+                            By Memory Usage
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <!--[if BLOCK]><![endif]--><?php if($isLoadingProcesses): ?>
+                    <div class="flex items-center justify-center py-12">
+                        <div class="flex flex-col items-center gap-4">
+                            <svg class="animate-spin w-12 h-12 text-indigo-600" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <p class="text-gray-500 dark:text-gray-400 font-medium">Loading processes...</p>
+                        </div>
+                    </div>
+                <?php elseif(count($topProcesses) > 0): ?>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50 dark:bg-gray-700/50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">PID</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">User</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">CPU %</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Memory %</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Command</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $topProcesses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $process): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
+                                        <td class="px-4 py-3 text-sm font-mono text-gray-900 dark:text-white whitespace-nowrap">
+                                            <?php echo e($process['pid']); ?>
+
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300">
+                                                <?php echo e($process['user']); ?>
+
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 text-sm font-semibold whitespace-nowrap
+                                            <?php if($process['cpu'] > 50): ?> text-red-600 dark:text-red-400
+                                            <?php elseif($process['cpu'] > 20): ?> text-yellow-600 dark:text-yellow-400
+                                            <?php else: ?> text-green-600 dark:text-green-400
+                                            <?php endif; ?>">
+                                            <div class="flex items-center gap-2">
+                                                <span><?php echo e(number_format($process['cpu'], 1)); ?>%</span>
+                                                <!--[if BLOCK]><![endif]--><?php if($index === 0 && $processView === 'cpu'): ?>
+                                                    <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 text-sm font-semibold whitespace-nowrap
+                                            <?php if($process['mem'] > 10): ?> text-red-600 dark:text-red-400
+                                            <?php elseif($process['mem'] > 5): ?> text-yellow-600 dark:text-yellow-400
+                                            <?php else: ?> text-green-600 dark:text-green-400
+                                            <?php endif; ?>">
+                                            <div class="flex items-center gap-2">
+                                                <span><?php echo e(number_format($process['mem'], 1)); ?>%</span>
+                                                <!--[if BLOCK]><![endif]--><?php if($index === 0 && $processView === 'memory'): ?>
+                                                    <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                            <div class="font-mono text-xs" title="<?php echo e($process['full_command']); ?>">
+                                                <?php echo e($process['command']); ?>
+
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!--[if BLOCK]><![endif]--><?php if($liveMode): ?>
+                        <div class="mt-4 flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                            </span>
+                            Auto-refreshing every 30 seconds
+                        </div>
+                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                <?php else: ?>
+                    <div class="text-center py-12">
+                        <svg class="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                        </svg>
+                        <p class="text-gray-500 dark:text-gray-400 text-lg font-medium">No processes found</p>
+                        <p class="text-sm text-gray-400 dark:text-gray-500 mt-2">Unable to retrieve process information from the server</p>
+                        <button wire:click="refreshProcesses"
+                                class="mt-4 inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors font-medium">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            Try Again
+                        </button>
+                    </div>
+                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+            </div>
+        </div>
+    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
     <!-- Metrics History Table -->
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl transition-colors overflow-hidden">
@@ -277,7 +462,7 @@
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Showing data for the last <?php echo e($period); ?></p>
         </div>
         <div class="p-6">
-            <?php if($metrics->count() > 0): ?>
+            <!--[if BLOCK]><![endif]--><?php if($metrics->count() > 0): ?>
                 <div class="overflow-x-auto">
                     <table class="w-full">
                         <thead class="bg-gray-50 dark:bg-gray-700/50">
@@ -292,10 +477,10 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                            <?php $__currentLoopData = $metrics; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $metric): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $metrics->take(20); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $metric): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
                                     <td class="px-4 py-3 text-sm text-gray-900 dark:text-white whitespace-nowrap">
-                                        <?php echo e($metric->recorded_at->format('M d, Y H:i')); ?>
+                                        <?php echo e($metric->recorded_at->format('M d, H:i')); ?>
 
                                     </td>
                                     <td class="px-4 py-3 text-sm font-semibold whitespace-nowrap
@@ -330,7 +515,7 @@
 
                                     </td>
                                 </tr>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                         </tbody>
                     </table>
                 </div>
@@ -349,8 +534,263 @@
                         Collect Metrics Now
                     </button>
                 </div>
-            <?php endif; ?>
+            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
         </div>
     </div>
 </div>
+
+    <?php
+        $__scriptKey = '1487525205-0';
+        ob_start();
+    ?>
+<script>
+    Alpine.data('serverMetrics', () => ({
+        cpuMemoryChart: null,
+        diskLoadChart: null,
+        lastUpdate: '<?php echo e($latestMetric?->recorded_at?->diffForHumans() ?? "Never"); ?>',
+        processRefreshInterval: null,
+        currentMetrics: {
+            cpu: <?php echo e($latestMetric?->cpu_usage ?? 0); ?>,
+            memory: <?php echo e($latestMetric?->memory_usage ?? 0); ?>,
+            disk: <?php echo e($latestMetric?->disk_usage ?? 0); ?>
+
+        },
+
+        initCharts() {
+            const chartData = <?php echo json_encode($this->chartData, 15, 512) ?>;
+            this.createCpuMemoryChart(chartData);
+            this.createDiskLoadChart(chartData);
+
+            // Start auto-refresh for processes if live mode is enabled
+            this.startProcessAutoRefresh();
+
+            // Listen for chart updates from Livewire
+            Livewire.on('metrics-chart-update', (event) => {
+                this.updateCharts(event.data);
+                this.lastUpdate = 'Just now';
+            });
+
+            // Listen for real-time WebSocket updates
+            if (window.Echo) {
+                window.Echo.channel('server-metrics.<?php echo e($server->id); ?>')
+                    .listen('ServerMetricsUpdated', (e) => {
+                        console.log('Real-time metrics received:', e);
+                        this.currentMetrics = {
+                            cpu: e.metrics.cpu_usage,
+                            memory: e.metrics.memory_usage,
+                            disk: e.metrics.disk_usage
+                        };
+                        this.lastUpdate = 'Just now';
+
+                        // Show toast for alerts
+                        if (e.alerts && e.alerts.length > 0) {
+                            e.alerts.forEach(alert => {
+                                window.showToast(alert.message, alert.type === 'critical' ? 'error' : 'warning');
+                            });
+                        }
+                    });
+            }
+
+            // Clean up on component destroy
+            this.$watch('$wire.liveMode', (value) => {
+                if (value) {
+                    this.startProcessAutoRefresh();
+                } else {
+                    this.stopProcessAutoRefresh();
+                }
+            });
+        },
+
+        startProcessAutoRefresh() {
+            const liveMode = <?php echo json_encode($this->liveMode, 15, 512) ?>;
+            if (liveMode && !this.processRefreshInterval) {
+                // Refresh processes every 30 seconds
+                this.processRefreshInterval = setInterval(() => {
+                    console.log('Auto-refreshing processes...');
+                    Livewire.dispatch('refresh-processes');
+                }, 30000);
+            }
+        },
+
+        stopProcessAutoRefresh() {
+            if (this.processRefreshInterval) {
+                clearInterval(this.processRefreshInterval);
+                this.processRefreshInterval = null;
+            }
+        },
+
+        createCpuMemoryChart(data) {
+            const ctx = document.getElementById('cpuMemoryChart');
+            if (!ctx || !window.Chart) return;
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            const textColor = isDark ? '#9CA3AF' : '#6B7280';
+
+            this.cpuMemoryChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'CPU %',
+                            data: data.cpu,
+                            borderColor: 'rgb(99, 102, 241)',
+                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 2,
+                            pointHoverRadius: 5
+                        },
+                        {
+                            label: 'Memory %',
+                            data: data.memory,
+                            borderColor: 'rgb(16, 185, 129)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 2,
+                            pointHoverRadius: 5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { color: textColor }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: gridColor },
+                            ticks: { color: textColor }
+                        },
+                        x: {
+                            grid: { color: gridColor },
+                            ticks: { color: textColor, maxRotation: 0 }
+                        }
+                    }
+                }
+            });
+        },
+
+        createDiskLoadChart(data) {
+            const ctx = document.getElementById('diskLoadChart');
+            if (!ctx || !window.Chart) return;
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            const textColor = isDark ? '#9CA3AF' : '#6B7280';
+
+            this.diskLoadChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Disk %',
+                            data: data.disk,
+                            borderColor: 'rgb(168, 85, 247)',
+                            backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 2,
+                            pointHoverRadius: 5,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Load Avg',
+                            data: data.load,
+                            borderColor: 'rgb(245, 158, 11)',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 2,
+                            pointHoverRadius: 5,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { color: textColor }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: gridColor },
+                            ticks: { color: textColor }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            beginAtZero: true,
+                            grid: { drawOnChartArea: false },
+                            ticks: { color: textColor }
+                        },
+                        x: {
+                            grid: { color: gridColor },
+                            ticks: { color: textColor, maxRotation: 0 }
+                        }
+                    }
+                }
+            });
+        },
+
+        updateCharts(data) {
+            if (this.cpuMemoryChart) {
+                this.cpuMemoryChart.data.labels = data.labels;
+                this.cpuMemoryChart.data.datasets[0].data = data.cpu;
+                this.cpuMemoryChart.data.datasets[1].data = data.memory;
+                this.cpuMemoryChart.update('none');
+            }
+
+            if (this.diskLoadChart) {
+                this.diskLoadChart.data.labels = data.labels;
+                this.diskLoadChart.data.datasets[0].data = data.disk;
+                this.diskLoadChart.data.datasets[1].data = data.load;
+                this.diskLoadChart.update('none');
+            }
+
+            // Update current metrics
+            if (data.cpu.length > 0) {
+                this.currentMetrics.cpu = data.cpu[data.cpu.length - 1];
+            }
+            if (data.memory.length > 0) {
+                this.currentMetrics.memory = data.memory[data.memory.length - 1];
+            }
+            if (data.disk.length > 0) {
+                this.currentMetrics.disk = data.disk[data.disk.length - 1];
+            }
+        }
+    }));
+</script>
+    <?php
+        $__output = ob_get_clean();
+
+        \Livewire\store($this)->push('scripts', $__output, $__scriptKey)
+    ?>
 <?php /**PATH /home/roshdy/Work/projects/DEVFLOW_PRO/resources/views/livewire/servers/server-metrics-dashboard.blade.php ENDPATH**/ ?>

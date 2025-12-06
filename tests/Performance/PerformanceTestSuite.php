@@ -2,12 +2,12 @@
 
 namespace Tests\Performance;
 
-use Tests\TestCase;
-use App\Models\User;
-use App\Models\Project;
 use App\Models\Deployment;
-use Illuminate\Support\Facades\DB;
+use App\Models\Project;
+use App\Models\User;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Tests\TestCase;
 
 class PerformanceTestSuite extends TestCase
 {
@@ -30,13 +30,13 @@ class PerformanceTestSuite extends TestCase
     /**
      * Test database query performance
      */
-    protected function testDatabaseQueryPerformance(): void
+    protected function test_database_query_performance(): void
     {
         $tests = [
-            'simple_select' => function() {
+            'simple_select' => function () {
                 return DB::table('projects')->limit(100)->get();
             },
-            'complex_join' => function() {
+            'complex_join' => function () {
                 return DB::table('projects')
                     ->join('deployments', 'projects.id', '=', 'deployments.project_id')
                     ->join('servers', 'projects.server_id', '=', 'servers.id')
@@ -44,7 +44,7 @@ class PerformanceTestSuite extends TestCase
                     ->limit(100)
                     ->get();
             },
-            'aggregation' => function() {
+            'aggregation' => function () {
                 return DB::table('deployments')
                     ->selectRaw('project_id, COUNT(*) as count, AVG(duration_seconds) as avg_duration')
                     ->groupBy('project_id')
@@ -95,7 +95,7 @@ class PerformanceTestSuite extends TestCase
     /**
      * Test cache performance
      */
-    protected function testCachePerformance(): void
+    protected function test_cache_performance(): void
     {
         $testData = str_repeat('x', 10000); // 10KB of data
         $iterations = 100;
@@ -130,7 +130,7 @@ class PerformanceTestSuite extends TestCase
     /**
      * Test API response times
      */
-    protected function testApiResponseTimes(): void
+    protected function test_api_response_times(): void
     {
         $user = User::factory()->create();
         $this->actingAs($user);
@@ -158,16 +158,16 @@ class PerformanceTestSuite extends TestCase
     /**
      * Test memory usage
      */
-    protected function testMemoryUsage(): void
+    protected function test_memory_usage(): void
     {
         $scenarios = [
-            'load_100_projects' => function() {
+            'load_100_projects' => function () {
                 return Project::limit(100)->with(['deployments', 'domains'])->get();
             },
-            'load_1000_deployments' => function() {
+            'load_1000_deployments' => function () {
                 return Deployment::limit(1000)->get();
             },
-            'process_large_dataset' => function() {
+            'process_large_dataset' => function () {
                 $data = [];
                 for ($i = 0; $i < 10000; $i++) {
                     $data[] = [
@@ -175,7 +175,8 @@ class PerformanceTestSuite extends TestCase
                         'data' => str_repeat('x', 100),
                     ];
                 }
-                return collect($data)->map(function($item) {
+
+                return collect($data)->map(function ($item) {
                     return array_merge($item, ['processed' => true]);
                 })->toArray();
             },
@@ -206,7 +207,7 @@ class PerformanceTestSuite extends TestCase
     /**
      * Test concurrent user load
      */
-    protected function testConcurrentUserLoad(): void
+    protected function test_concurrent_user_load(): void
     {
         $concurrentUsers = 10;
         $requestsPerUser = 5;
@@ -253,7 +254,7 @@ class PerformanceTestSuite extends TestCase
         ];
 
         // Save report to file
-        $reportPath = storage_path('app/performance-reports/report-' . now()->format('Y-m-d-H-i-s') . '.json');
+        $reportPath = storage_path('app/performance-reports/report-'.now()->format('Y-m-d-H-i-s').'.json');
         file_put_contents($reportPath, json_encode($report, JSON_PRETTY_PRINT));
 
         return $report;

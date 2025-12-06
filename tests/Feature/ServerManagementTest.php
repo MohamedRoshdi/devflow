@@ -2,14 +2,13 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Server;
+use App\Models\User;
 use App\Services\ServerConnectivityService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Livewire\Livewire;
-use Mockery;
+use Tests\TestCase;
 
 class ServerManagementTest extends TestCase
 {
@@ -293,7 +292,7 @@ test_key_content
     /** @test */
     public function connectivity_service_extracts_numeric_values_correctly()
     {
-        $service = new ServerConnectivityService();
+        $service = new ServerConnectivityService;
         $reflection = new \ReflectionClass($service);
         $method = $reflection->getMethod('extractNumericValue');
         $method->setAccessible(true);

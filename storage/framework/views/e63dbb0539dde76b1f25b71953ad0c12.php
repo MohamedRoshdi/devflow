@@ -76,7 +76,7 @@
     </div>
 
     
-    <?php if($schedules->isNotEmpty()): ?>
+    <!--[if BLOCK]><![endif]--><?php if($schedules->isNotEmpty()): ?>
     <div class="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-700">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Backup Schedules</h3>
@@ -97,7 +97,7 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
-                    <?php $__currentLoopData = $schedules; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $schedule): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $schedules; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $schedule): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                         <td class="whitespace-nowrap px-6 py-4">
                             <div class="flex items-center">
@@ -160,12 +160,12 @@
                             </button>
                         </td>
                     </tr>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                 </tbody>
             </table>
         </div>
     </div>
-    <?php endif; ?>
+    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
     
     <div class="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
@@ -173,7 +173,7 @@
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Backup History</h3>
         </div>
 
-        <?php if($backups->isEmpty()): ?>
+        <!--[if BLOCK]><![endif]--><?php if($backups->isEmpty()): ?>
         <div class="px-6 py-12 text-center">
             <i class="fas fa-database text-6xl text-gray-300 dark:text-gray-600"></i>
             <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No backups yet</h3>
@@ -195,7 +195,7 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
-                    <?php $__currentLoopData = $backups; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $backup): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $backups; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $backup): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                         <td class="whitespace-nowrap px-6 py-4">
                             <div class="flex items-center">
@@ -239,7 +239,7 @@
                             </span>
                         </td>
                         <td class="whitespace-nowrap px-6 py-4">
-                            <?php if($backup->status === 'completed'): ?>
+                            <!--[if BLOCK]><![endif]--><?php if($backup->status === 'completed'): ?>
                                 <span class="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-800 dark:bg-green-900 dark:text-green-300">
                                     <i class="fas fa-check-circle mr-1"></i> Completed
                                 </span>
@@ -255,11 +255,22 @@
                                 <span class="inline-flex rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-800 dark:bg-gray-900 dark:text-gray-300">
                                     <i class="fas fa-clock mr-1"></i> Pending
                                 </span>
-                            <?php endif; ?>
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         </td>
                         <td class="whitespace-nowrap px-6 py-4 text-right text-sm">
                             <div class="flex items-center justify-end gap-2">
-                                <?php if($backup->status === 'completed'): ?>
+                                <!--[if BLOCK]><![endif]--><?php if($backup->status === 'completed'): ?>
+                                    <!--[if BLOCK]><![endif]--><?php if($backup->isVerified()): ?>
+                                        <span class="text-green-600 dark:text-green-400" title="Verified at <?php echo e($backup->verified_at->format('Y-m-d H:i')); ?>">
+                                            <i class="fas fa-shield-check"></i>
+                                        </span>
+                                    <?php else: ?>
+                                        <button wire:click="confirmVerifyBackup(<?php echo e($backup->id); ?>)"
+                                                class="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300"
+                                                title="Verify Integrity">
+                                            <i class="fas fa-shield-alt"></i>
+                                        </button>
+                                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                     <button wire:click="downloadBackup(<?php echo e($backup->id); ?>)"
                                             class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
                                             title="Download">
@@ -270,7 +281,7 @@
                                             title="Restore">
                                         <i class="fas fa-undo"></i>
                                     </button>
-                                <?php endif; ?>
+                                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                 <button wire:click="confirmDeleteBackup(<?php echo e($backup->id); ?>)"
                                         class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                                         title="Delete">
@@ -279,7 +290,7 @@
                             </div>
                         </td>
                     </tr>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                 </tbody>
             </table>
         </div>
@@ -288,11 +299,11 @@
             <?php echo e($backups->links()); ?>
 
         </div>
-        <?php endif; ?>
+        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
     </div>
 
     
-    <?php if($showCreateBackupModal): ?>
+    <!--[if BLOCK]><![endif]--><?php if($showCreateBackupModal): ?>
     <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" wire:click="showCreateBackupModal = false"></div>
@@ -308,26 +319,26 @@
                                 <option value="postgresql">PostgreSQL</option>
                                 <option value="sqlite">SQLite</option>
                             </select>
-                            <?php $__errorArgs = ['databaseType'];
+                            <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['databaseType'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> <span class="text-sm text-red-600"><?php echo e($message); ?></span> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Database Name</label>
                             <input type="text" wire:model="databaseName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white" placeholder="my_database">
-                            <?php $__errorArgs = ['databaseName'];
+                            <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['databaseName'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> <span class="text-sm text-red-600"><?php echo e($message); ?></span> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                         </div>
                     </div>
                 </div>
@@ -343,10 +354,10 @@ unset($__errorArgs, $__bag); ?>
             </div>
         </div>
     </div>
-    <?php endif; ?>
+    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
     
-    <?php if($showScheduleModal): ?>
+    <!--[if BLOCK]><![endif]--><?php if($showScheduleModal): ?>
     <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" wire:click="showScheduleModal = false"></div>
@@ -362,26 +373,26 @@ unset($__errorArgs, $__bag); ?>
                                 <option value="postgresql">PostgreSQL</option>
                                 <option value="sqlite">SQLite</option>
                             </select>
-                            <?php $__errorArgs = ['scheduleDatabaseType'];
+                            <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['scheduleDatabaseType'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> <span class="text-sm text-red-600"><?php echo e($message); ?></span> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Database Name</label>
                             <input type="text" wire:model="scheduleDatabase" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white" placeholder="my_database">
-                            <?php $__errorArgs = ['scheduleDatabase'];
+                            <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['scheduleDatabase'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> <span class="text-sm text-red-600"><?php echo e($message); ?></span> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Frequency</label>
@@ -391,28 +402,28 @@ unset($__errorArgs, $__bag); ?>
                                 <option value="weekly">Weekly</option>
                                 <option value="monthly">Monthly</option>
                             </select>
-                            <?php $__errorArgs = ['frequency'];
+                            <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['frequency'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> <span class="text-sm text-red-600"><?php echo e($message); ?></span> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Time</label>
                             <input type="time" wire:model="time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
-                            <?php $__errorArgs = ['time'];
+                            <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['time'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> <span class="text-sm text-red-600"><?php echo e($message); ?></span> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                         </div>
-                        <?php if($frequency === 'weekly'): ?>
+                        <!--[if BLOCK]><![endif]--><?php if($frequency === 'weekly'): ?>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Day of Week</label>
                             <select wire:model="dayOfWeek" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
@@ -424,41 +435,41 @@ unset($__errorArgs, $__bag); ?>
                                 <option value="5">Friday</option>
                                 <option value="6">Saturday</option>
                             </select>
-                            <?php $__errorArgs = ['dayOfWeek'];
+                            <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['dayOfWeek'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> <span class="text-sm text-red-600"><?php echo e($message); ?></span> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                         </div>
-                        <?php endif; ?>
-                        <?php if($frequency === 'monthly'): ?>
+                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                        <!--[if BLOCK]><![endif]--><?php if($frequency === 'monthly'): ?>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Day of Month</label>
                             <input type="number" wire:model="dayOfMonth" min="1" max="31" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
-                            <?php $__errorArgs = ['dayOfMonth'];
+                            <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['dayOfMonth'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> <span class="text-sm text-red-600"><?php echo e($message); ?></span> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                         </div>
-                        <?php endif; ?>
+                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Retention (days)</label>
                             <input type="number" wire:model="retentionDays" min="1" max="365" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
-                            <?php $__errorArgs = ['retentionDays'];
+                            <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['retentionDays'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> <span class="text-sm text-red-600"><?php echo e($message); ?></span> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Storage</label>
@@ -466,14 +477,14 @@ unset($__errorArgs, $__bag); ?>
                                 <option value="local">Local</option>
                                 <option value="s3">Amazon S3</option>
                             </select>
-                            <?php $__errorArgs = ['storageDisk'];
+                            <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['storageDisk'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> <span class="text-sm text-red-600"><?php echo e($message); ?></span> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                         </div>
                     </div>
                 </div>
@@ -489,10 +500,10 @@ unset($__errorArgs, $__bag); ?>
             </div>
         </div>
     </div>
-    <?php endif; ?>
+    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
     
-    <?php if($showDeleteModal): ?>
+    <!--[if BLOCK]><![endif]--><?php if($showDeleteModal): ?>
     <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" wire:click="showDeleteModal = false"></div>
@@ -522,10 +533,45 @@ unset($__errorArgs, $__bag); ?>
             </div>
         </div>
     </div>
-    <?php endif; ?>
+    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
     
-    <?php if($showRestoreModal): ?>
+    <!--[if BLOCK]><![endif]--><?php if($showVerifyModal): ?>
+    <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" wire:click="showVerifyModal = false"></div>
+            <span class="hidden sm:inline-block sm:h-screen sm:align-middle">&#8203;</span>
+            <div class="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all dark:bg-gray-800 sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
+                <div class="bg-white px-4 pb-4 pt-5 dark:bg-gray-800 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900 sm:mx-0 sm:h-10 sm:w-10">
+                            <i class="fas fa-shield-alt text-purple-600 dark:text-purple-400"></i>
+                        </div>
+                        <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                            <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white">Verify Backup Integrity</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500 dark:text-gray-400">This will verify the backup file integrity by comparing the stored checksum with the calculated checksum.</p>
+                                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">This process may take a few moments for large backups.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 dark:bg-gray-900 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button wire:click="verifyBackup" :disabled="isVerifying" class="inline-flex w-full justify-center rounded-md border border-transparent bg-purple-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 sm:ml-3 sm:w-auto sm:text-sm">
+                        <span wire:loading.remove wire:target="verifyBackup">Verify</span>
+                        <span wire:loading wire:target="verifyBackup"><i class="fas fa-spinner fa-spin mr-2"></i>Verifying...</span>
+                    </button>
+                    <button wire:click="showVerifyModal = false" type="button" class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+
+    
+    <!--[if BLOCK]><![endif]--><?php if($showRestoreModal): ?>
     <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" wire:click="showRestoreModal = false"></div>
@@ -557,6 +603,6 @@ unset($__errorArgs, $__bag); ?>
             </div>
         </div>
     </div>
-    <?php endif; ?>
+    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 </div>
 <?php /**PATH /home/roshdy/Work/projects/DEVFLOW_PRO/resources/views/livewire/projects/database-backup-manager.blade.php ENDPATH**/ ?>

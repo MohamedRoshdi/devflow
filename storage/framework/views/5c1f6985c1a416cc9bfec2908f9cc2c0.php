@@ -28,7 +28,7 @@
                                     'bg-gradient-to-r from-red-500 to-rose-500 ring-2 ring-red-400/50' => $project->status === 'failed' || $project->status === 'error',
                                     'bg-gradient-to-r from-blue-500 to-indigo-500 ring-2 ring-blue-400/50' => !in_array($project->status, ['running','building','stopped','failed','error'])
                                 ]); ?>"">
-                                <?php if($project->status === 'running'): ?>
+                                <!--[if BLOCK]><![endif]--><?php if($project->status === 'running'): ?>
                                     <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
                                 <?php elseif($project->status === 'building'): ?>
                                     <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,7 +47,7 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
-                                <?php endif; ?>
+                                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                 <?php echo e(ucfirst($project->status)); ?>
 
                             </span>
@@ -75,14 +75,14 @@
                                 <span class="font-medium">Branch</span>
                                 <span class="font-mono text-white/90"><?php echo e($project->branch); ?></span>
                             </div>
-                            <?php if($project->environment): ?>
+                            <!--[if BLOCK]><![endif]--><?php if($project->environment): ?>
                                 <div class="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2 border border-white/10">
                                     <svg class="w-4 h-4 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 16v-2m8-6h2M4 12H2m15.364-7.364l1.414-1.414M6.343 17.657l-1.414 1.414m0-13.657L6.343 6.343m11.314 11.314l1.414 1.414" />
                                     </svg>
                                     <span class="font-medium">Environment</span>
                                     <span class="inline-flex items-center gap-1 text-white/90">
-                                        <?php if($project->environment === 'production'): ?>
+                                        <!--[if BLOCK]><![endif]--><?php if($project->environment === 'production'): ?>
                                             <span class="text-lg">🚀</span>
                                         <?php elseif($project->environment === 'staging'): ?>
                                             <span class="text-lg">🔧</span>
@@ -90,15 +90,15 @@
                                             <span class="text-lg">💻</span>
                                         <?php else: ?>
                                             <span class="text-lg">🏠</span>
-                                        <?php endif; ?>
+                                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                         <?php echo e(ucfirst($project->environment)); ?>
 
                                     </span>
                                 </div>
-                            <?php endif; ?>
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         </div>
 
-                        <?php if($project->status === 'running'): ?>
+                        <!--[if BLOCK]><![endif]--><?php if($project->status === 'running'): ?>
                             <?php
                                 $primaryDomain = $project->domains->where('is_primary', true)->first();
                                 if ($primaryDomain) {
@@ -110,7 +110,7 @@
                                     $url = null;
                                 }
                             ?>
-                            <?php if($url): ?>
+                            <!--[if BLOCK]><![endif]--><?php if($url): ?>
                             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white/10 border border-white/10 rounded-2xl px-4 py-3">
                                 <div class="flex items-center gap-3">
                                     <span class="w-2.5 h-2.5 rounded-full bg-emerald-300 animate-pulse"></span>
@@ -131,12 +131,12 @@
                                     Copy URL
                                 </button>
                             </div>
-                            <?php endif; ?>
-                        <?php endif; ?>
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                     </div>
 
                     <div class="flex flex-col sm:flex-row lg:flex-col items-stretch gap-3">
-                        <?php if($project->status === 'running'): ?>
+                        <!--[if BLOCK]><![endif]--><?php if($project->status === 'running'): ?>
                             <button wire:click="stopProject" wire:confirm="Stop this project?"
                                     wire:loading.attr="disabled"
                                     wire:target="stopProject"
@@ -177,7 +177,7 @@
                                 </div>
                                 <p class="text-[11px] text-white/70 tracking-wide">Boots container and services</p>
                             </button>
-                        <?php endif; ?>
+                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
                         <button wire:click="$set('showDeployModal', true)"
                                 class="group px-6 py-3 rounded-xl bg-white text-indigo-700 font-semibold shadow-lg hover:shadow-xl transition-transform transform hover:-translate-y-0.5">
@@ -202,7 +202,7 @@
     </div>
 
     <!-- Alerts -->
-    <?php if(session()->has('message')): ?>
+    <!--[if BLOCK]><![endif]--><?php if(session()->has('message')): ?>
         <div class="mb-6 bg-green-50 dark:bg-green-900/30 border-l-4 border-green-500 text-green-800 dark:text-green-400 px-6 py-4 rounded-r-lg shadow">
             <div class="flex items-center">
                 <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
@@ -212,7 +212,7 @@
 
             </div>
         </div>
-    <?php endif; ?>
+    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
     <?php if(session()->has('error')): ?>
         <div class="mb-6 bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 text-red-800 dark:text-red-400 px-6 py-4 rounded-r-lg shadow">
@@ -224,10 +224,10 @@
 
             </div>
         </div>
-    <?php endif; ?>
+    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
     <!-- Git Update Alert -->
-    <?php if($checkingForUpdates && !$updateStatusLoaded): ?>
+    <!--[if BLOCK]><![endif]--><?php if($checkingForUpdates && !$updateStatusLoaded): ?>
         <div class="mb-8 rounded-3xl border border-blue-200/70 bg-gradient-to-br from-blue-50 via-slate-50 to-white dark:from-blue-900/10 dark:via-slate-900/10 dark:to-slate-900 shadow-xl">
             <div class="flex items-center justify-between gap-6 p-6">
                 <div class="flex items-center gap-4">
@@ -270,9 +270,9 @@
                                 <code class="font-mono text-sm text-emerald-700 dark:text-emerald-100"><?php echo e($updateStatus['remote_commit']); ?></code>
                             </div>
                         </div>
-                        <?php if(isset($updateStatus['remote_meta']['message'])): ?>
+                        <!--[if BLOCK]><![endif]--><?php if(isset($updateStatus['remote_meta']['message'])): ?>
                             <p class="text-xs text-amber-500 dark:text-amber-200 italic">Latest change: "<?php echo e(Str::limit($updateStatus['remote_meta']['message'], 120)); ?>"</p>
-                        <?php endif; ?>
+                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                     </div>
                 </div>
                 <div class="flex flex-col items-stretch gap-3">
@@ -285,7 +285,7 @@
                 </div>
             </div>
         </div>
-    <?php endif; ?>
+    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
     <!-- Quick Stats Cards -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -401,9 +401,9 @@
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
                     <span>Git & Commits</span>
-                    <?php if($project->status === 'running' && $isUpdatePending): ?>
+                    <!--[if BLOCK]><![endif]--><?php if($project->status === 'running' && $isUpdatePending): ?>
                         <span class="ml-1 w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></span>
-                    <?php endif; ?>
+                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                 </button>
 
                 <button wire:click="setActiveTab('logs')"
@@ -451,7 +451,7 @@
     <!-- Tab Content -->
     <div class="relative">
         <!-- Overview Tab -->
-        <?php if($activeTab === 'overview'): ?>
+        <!--[if BLOCK]><![endif]--><?php if($activeTab === 'overview'): ?>
         <div class="space-y-8">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <!-- Project Details Card -->
@@ -541,9 +541,9 @@
                         </div>
                     </div>
                     <div class="p-6">
-                        <?php if($domains->count() > 0): ?>
+                        <!--[if BLOCK]><![endif]--><?php if($domains->count() > 0): ?>
                             <div class="space-y-3">
-                                <?php $__currentLoopData = $domains; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $domain): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $domains; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $domain): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <?php
                                         $isIpPort = str_contains($domain->domain, ':');
                                         $protocol = $domain->ssl_enabled ? 'https' : 'http';
@@ -560,7 +560,7 @@
                                                     </svg>
                                                 </a>
                                                 <div class="flex items-center space-x-3 mt-2">
-                                                    <?php if($isIpPort): ?>
+                                                    <!--[if BLOCK]><![endif]--><?php if($isIpPort): ?>
                                                         <span class="inline-flex items-center text-xs text-purple-600 dark:text-purple-400 font-medium">
                                                             <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                                                 <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
@@ -581,10 +581,10 @@
                                                             </svg>
                                                             No SSL
                                                         </span>
-                                                    <?php endif; ?>
-                                                    <?php if($domain->is_primary): ?>
+                                                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                                                    <!--[if BLOCK]><![endif]--><?php if($domain->is_primary): ?>
                                                         <span class="px-2 py-1 bg-blue-500 text-white text-xs rounded-full font-medium">Primary</span>
-                                                    <?php endif; ?>
+                                                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                                     <span class="text-xs font-medium
                                                         <?php if($domain->status === 'active'): ?> text-green-600 dark:text-green-400
                                                         <?php elseif($domain->status === 'pending'): ?> text-yellow-600 dark:text-yellow-400
@@ -600,7 +600,7 @@
                                             </a>
                                         </div>
                                     </div>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                             </div>
                         <?php else: ?>
                             <div class="text-center py-12">
@@ -610,15 +610,15 @@
                                 <p class="mt-4 text-gray-500 dark:text-gray-400">No domains configured</p>
                                 <button class="mt-4 btn btn-primary">+ Add First Domain</button>
                             </div>
-                        <?php endif; ?>
+                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                     </div>
                 </div>
             </div>
         </div>
-        <?php endif; ?>
+        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
         <!-- Docker Tab -->
-        <?php if($activeTab === 'docker'): ?>
+        <!--[if BLOCK]><![endif]--><?php if($activeTab === 'docker'): ?>
         <div class="space-y-8">
             <?php
 $__split = function ($name, $params = []) {
@@ -637,10 +637,10 @@ unset($__split);
 if (isset($__slots)) unset($__slots);
 ?>
         </div>
-        <?php endif; ?>
+        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
         <!-- Environment Tab -->
-        <?php if($activeTab === 'environment'): ?>
+        <!--[if BLOCK]><![endif]--><?php if($activeTab === 'environment'): ?>
         <div class="space-y-8">
             <?php
 $__split = function ($name, $params = []) {
@@ -659,11 +659,11 @@ unset($__split);
 if (isset($__slots)) unset($__slots);
 ?>
         </div>
-        <?php endif; ?>
+        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
         <!-- Git & Commits Tab -->
-        <?php if($activeTab === 'git'): ?>
-        <div class="space-y-8" <?php if($autoRefreshEnabled): ?> wire:poll.<?php echo e($autoRefreshInterval); ?>s="autoRefreshGit" <?php endif; ?>>
+        <!--[if BLOCK]><![endif]--><?php if($activeTab === 'git'): ?>
+        <div class="space-y-8" wire:poll.<?php echo e($autoRefreshInterval); ?>s="autoRefreshGit">
 
             <!-- Git Content -->
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 overflow-hidden">
@@ -692,7 +692,7 @@ if (isset($__slots)) unset($__slots);
                                     <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out <?php echo e($autoRefreshEnabled ? 'translate-x-4' : 'translate-x-0'); ?>"></span>
                                 </button>
                                 <span class="text-xs font-medium text-white/80">Auto</span>
-                                <?php if($autoRefreshEnabled): ?>
+                                <!--[if BLOCK]><![endif]--><?php if($autoRefreshEnabled): ?>
                                     <select wire:change="setAutoRefreshInterval($event.target.value)"
                                             class="text-xs bg-slate-800 text-white border border-white/20 rounded-lg py-1.5 px-2 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 cursor-pointer appearance-none pr-6"
                                             style="background-image: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27none%27 viewBox=%270 0 20 20%27%3E%3Cpath stroke=%27%23ffffff%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%271.5%27 d=%27M6 8l4 4 4-4%27/%3E%3C/svg%3E'); background-position: right 0.25rem center; background-repeat: no-repeat; background-size: 1.25em 1.25em;">
@@ -702,7 +702,7 @@ if (isset($__slots)) unset($__slots);
                                         <option value="120" <?php echo e($autoRefreshInterval == 120 ? 'selected' : ''); ?> class="bg-slate-800 text-white">2m</option>
                                         <option value="300" <?php echo e($autoRefreshInterval == 300 ? 'selected' : ''); ?> class="bg-slate-800 text-white">5m</option>
                                     </select>
-                                <?php endif; ?>
+                                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                             </div>
                             <button wire:click="refreshGitData"
                                     wire:loading.attr="disabled"
@@ -728,7 +728,7 @@ if (isset($__slots)) unset($__slots);
                         </div>
                     </div>
                     <!-- Last refresh indicator -->
-                    <?php if($lastGitRefreshAt): ?>
+                    <!--[if BLOCK]><![endif]--><?php if($lastGitRefreshAt): ?>
                         <div class="mt-4 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-2">
                             <div class="flex items-center gap-2 text-xs text-white/60">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -736,7 +736,7 @@ if (isset($__slots)) unset($__slots);
                                 </svg>
                                 <span>Last updated: <span class="text-white/80 font-medium"><?php echo e(\Carbon\Carbon::parse($lastGitRefreshAt)->diffForHumans()); ?></span></span>
                             </div>
-                            <?php if($autoRefreshEnabled): ?>
+                            <!--[if BLOCK]><![endif]--><?php if($autoRefreshEnabled): ?>
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-xs font-medium">
                                     <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
                                     Auto-refresh: <?php echo e($autoRefreshInterval < 60 ? $autoRefreshInterval . 's' : ($autoRefreshInterval / 60) . 'm'); ?>
@@ -747,9 +747,9 @@ if (isset($__slots)) unset($__slots);
                                     <span class="w-2 h-2 bg-white/30 rounded-full"></span>
                                     Auto-refresh paused
                                 </span>
-                            <?php endif; ?>
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         </div>
-                    <?php endif; ?>
+                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                 </div>
 
                 <div class="p-6 sm:p-8 space-y-8">
@@ -814,7 +814,7 @@ if (isset($__slots)) unset($__slots);
                         </div>
 
                         <div class="lg:col-span-2 space-y-6">
-                            <?php if($updateStatus): ?>
+                            <!--[if BLOCK]><![endif]--><?php if($updateStatus): ?>
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div class="p-5 rounded-xl border border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800">
                                         <h5 class="text-xs font-semibold uppercase tracking-wide text-blue-700 dark:text-blue-300 mb-2">Local (Deployed)</h5>
@@ -823,12 +823,12 @@ if (isset($__slots)) unset($__slots);
                                             <?php echo e($updateStatus['local_meta']['message'] ?? 'Local commit metadata unavailable.'); ?>
 
                                         </p>
-                                        <?php if(isset($updateStatus['local_meta']['author'])): ?>
+                                        <!--[if BLOCK]><![endif]--><?php if(isset($updateStatus['local_meta']['author'])): ?>
                                             <p class="mt-2 text-xs text-blue-700 dark:text-blue-300">
                                                 <?php echo e($updateStatus['local_meta']['author']); ?> • <?php echo e(\Carbon\Carbon::parse($updateStatus['local_meta']['date'])->diffForHumans()); ?>
 
                                             </p>
-                                        <?php endif; ?>
+                                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                     </div>
                                     <div class="p-5 rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-700">
                                         <h5 class="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-300 mb-2">Remote (origin/<?php echo e($project->branch); ?>)</h5>
@@ -837,34 +837,34 @@ if (isset($__slots)) unset($__slots);
                                             <?php echo e($updateStatus['remote_meta']['message'] ?? 'Remote commit metadata unavailable.'); ?>
 
                                         </p>
-                                        <?php if(isset($updateStatus['remote_meta']['author'])): ?>
+                                        <!--[if BLOCK]><![endif]--><?php if(isset($updateStatus['remote_meta']['author'])): ?>
                                             <p class="mt-2 text-xs text-emerald-700 dark:text-emerald-300">
                                                 <?php echo e($updateStatus['remote_meta']['author']); ?> • <?php echo e(\Carbon\Carbon::parse($updateStatus['remote_meta']['date'])->diffForHumans()); ?>
 
                                             </p>
-                                        <?php endif; ?>
+                                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                     </div>
                                     <div class="p-5 rounded-xl border border-amber-200 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-700">
                                         <h5 class="text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-300 mb-2">Sync Status</h5>
                                         <p class="text-2xl font-bold text-amber-700 dark:text-amber-300">
-                                            <?php if($updateStatus['up_to_date']): ?>
+                                            <!--[if BLOCK]><![endif]--><?php if($updateStatus['up_to_date']): ?>
                                                 Up-to-date ✅
                                             <?php else: ?>
                                                 <?php echo e($updateStatus['commits_behind']); ?> commit<?php echo e($updateStatus['commits_behind'] === 1 ? '' : 's'); ?> behind
-                                            <?php endif; ?>
+                                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                         </p>
                                         <p class="mt-3 text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
                                             Local: <code class="bg-amber-200/70 dark:bg-amber-900/40 px-1.5 py-0.5 rounded font-mono"><?php echo e($updateStatus['local_commit']); ?></code><br>
                                             Remote: <code class="bg-amber-200/70 dark:bg-amber-900/40 px-1.5 py-0.5 rounded font-mono"><?php echo e($updateStatus['remote_commit']); ?></code>
                                         </p>
-                                        <?php if (! ($updateStatus['up_to_date'])): ?>
+                                        <!--[if BLOCK]><![endif]--><?php if (! ($updateStatus['up_to_date'])): ?>
                                             <p class="mt-3 text-xs text-amber-600 dark:text-amber-200">Trigger a deployment to bring this project in sync with origin/<?php echo e($project->branch); ?>.</p>
-                                        <?php endif; ?>
+                                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                     </div>
                                 </div>
-                            <?php endif; ?>
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
-                            <?php if($project->current_commit_hash): ?>
+                            <!--[if BLOCK]><![endif]--><?php if($project->current_commit_hash): ?>
                                 <div class="p-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200 dark:border-blue-700 rounded-xl">
                                     <h4 class="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-3 flex items-center">
                                         <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -886,7 +886,7 @@ if (isset($__slots)) unset($__slots);
                                         </div>
                                     </div>
                                 </div>
-                            <?php endif; ?>
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         </div>
                     </div>
 
@@ -902,7 +902,7 @@ if (isset($__slots)) unset($__slots);
                     </div>
 
                     <div wire:loading.remove wire:target="refreshGitData, autoRefreshGit, loadCommits">
-                    <?php if(count($commits) > 0): ?>
+                    <!--[if BLOCK]><![endif]--><?php if(count($commits) > 0): ?>
                         <?php
                             $commitPages = max(1, (int) ceil(max(0, $commitTotal) / $commitPerPage));
                         ?>
@@ -915,9 +915,9 @@ if (isset($__slots)) unset($__slots);
                             <div class="flex flex-wrap items-center gap-3">
                                 <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Per page</label>
                                 <select wire:change="setCommitPerPage($event.target.value)" class="border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1.5 text-sm bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500">
-                                    <?php $__currentLoopData = [5, 8, 10, 15]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $size): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <!--[if BLOCK]><![endif]--><?php $__currentLoopData = [5, 8, 10, 15]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $size): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <option value="<?php echo e($size); ?>" <?php if($commitPerPage === $size): echo 'selected'; endif; ?>><?php echo e($size); ?></option>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                                 </select>
                                 <div class="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
                                     <button wire:click="firstCommitPage" wire:loading.attr="disabled" <?php if($commitPage <= 1): echo 'disabled'; endif; ?>
@@ -947,7 +947,7 @@ if (isset($__slots)) unset($__slots);
                                     $currentCommitHash = $project->current_commit_hash;
                                     $foundCurrentCommit = false;
                                 ?>
-                                <?php $__currentLoopData = $commits; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $commit): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $commits; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $commit): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <?php
                                         $isCurrentCommit = $currentCommitHash && str_starts_with($commit['hash'], substr($currentCommitHash, 0, 7));
                                         $isUnmerged = !$foundCurrentCommit && !$isCurrentCommit && $currentCommitHash;
@@ -986,7 +986,7 @@ if (isset($__slots)) unset($__slots);
                                                             bg-blue-600 text-white
                                                         <?php endif; ?>"><?php echo e($commit['short_hash']); ?></code>
                                                     
-                                                    <?php if($isCurrentCommit): ?>
+                                                    <!--[if BLOCK]><![endif]--><?php if($isCurrentCommit): ?>
                                                         <span class="text-xs px-2 py-0.5 rounded-full bg-green-500 text-white font-medium shadow-sm">
                                                             Deployed
                                                         </span>
@@ -998,7 +998,7 @@ if (isset($__slots)) unset($__slots);
                                                         <span class="text-xs px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 font-medium">
                                                             Merged
                                                         </span>
-                                                    <?php endif; ?>
+                                                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                                     <button type="button"
                                                             onclick="navigator.clipboard.writeText('<?php echo e($commit['hash']); ?>')"
                                                             class="text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">
@@ -1033,7 +1033,7 @@ if (isset($__slots)) unset($__slots);
                                             </div>
                                         </div>
                                     </div>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                             </div>
                         </div>
 
@@ -1058,15 +1058,15 @@ if (isset($__slots)) unset($__slots);
                             <p class="mt-4 text-gray-500 dark:text-gray-400 text-lg">No commit history available</p>
                             <p class="text-sm text-gray-400 dark:text-gray-500 mt-2">Deploy the project first to start tracking commits.</p>
                         </div>
-                    <?php endif; ?>
+                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                     </div><!-- End wire:loading.remove wrapper -->
                 </div>
             </div>
         </div>
-        <?php endif; ?>
+        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
         <!-- Logs Tab -->
-        <?php if($activeTab === 'logs'): ?>
+        <!--[if BLOCK]><![endif]--><?php if($activeTab === 'logs'): ?>
         <div class="space-y-8">
             <?php
 $__split = function ($name, $params = []) {
@@ -1085,10 +1085,10 @@ unset($__split);
 if (isset($__slots)) unset($__slots);
 ?>
         </div>
-        <?php endif; ?>
+        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
         <!-- Deployments Tab -->
-        <?php if($activeTab === 'deployments'): ?>
+        <!--[if BLOCK]><![endif]--><?php if($activeTab === 'deployments'): ?>
         <div class="space-y-8">
             <!-- Scheduled Deployments Section -->
             <?php
@@ -1138,9 +1138,9 @@ if (isset($__slots)) unset($__slots);
                     <p class="text-white/80 text-sm mt-2">Track all deployments with detailed status and logs</p>
                 </div>
                 <div class="p-6">
-                    <?php if($deployments->count() > 0): ?>
+                    <!--[if BLOCK]><![endif]--><?php if($deployments->count() > 0): ?>
                         <div class="space-y-4">
-                            <?php $__currentLoopData = $deployments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $deployment): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $deployments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $deployment): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="p-5 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-all border border-gray-200 dark:border-gray-600 hover:shadow-md">
                                     <div class="flex items-center justify-between">
                                         <div class="flex-1">
@@ -1154,12 +1154,12 @@ if (isset($__slots)) unset($__slots);
                                                     <?php echo e(ucfirst($deployment->status)); ?>
 
                                                 </span>
-                                                <?php if($deployment->commit_hash): ?>
+                                                <!--[if BLOCK]><![endif]--><?php if($deployment->commit_hash): ?>
                                                     <code class="text-xs bg-gray-700 dark:bg-gray-600 text-white px-3 py-1.5 rounded-lg font-mono font-bold">
                                                         <?php echo e(substr($deployment->commit_hash, 0, 7)); ?>
 
                                                     </code>
-                                                <?php endif; ?>
+                                                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                             </div>
                                             <p class="text-base font-medium text-gray-900 dark:text-white mb-2">
                                                 <?php echo e($deployment->commit_message ?? 'No commit message'); ?>
@@ -1173,14 +1173,14 @@ if (isset($__slots)) unset($__slots);
                                                     <?php echo e($deployment->created_at->diffForHumans()); ?>
 
                                                 </span>
-                                                <?php if($deployment->duration_seconds): ?>
+                                                <!--[if BLOCK]><![endif]--><?php if($deployment->duration_seconds): ?>
                                                     <span class="flex items-center">
                                                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
                                                         </svg>
                                                         Duration: <?php echo e(number_format($deployment->duration_seconds / 60, 1)); ?> min
                                                     </span>
-                                                <?php endif; ?>
+                                                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                             </div>
                                         </div>
                                         <a href="<?php echo e(route('deployments.show', $deployment)); ?>" 
@@ -1189,7 +1189,7 @@ if (isset($__slots)) unset($__slots);
                                         </a>
                                     </div>
                                 </div>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                         </div>
                     <?php else: ?>
                         <div class="text-center py-16">
@@ -1201,7 +1201,7 @@ if (isset($__slots)) unset($__slots);
                                 🚀 Start First Deployment
                             </button>
                         </div>
-                    <?php endif; ?>
+                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                 </div>
             </div>
             <div class="mt-6">
@@ -1209,11 +1209,11 @@ if (isset($__slots)) unset($__slots);
 
             </div>
         </div>
-        <?php endif; ?>
+        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
         <!-- End of Deployments Tab -->
 
         <!-- Webhooks Tab -->
-        <?php if($activeTab === 'webhooks'): ?>
+        <!--[if BLOCK]><![endif]--><?php if($activeTab === 'webhooks'): ?>
             <?php
 $__split = function ($name, $params = []) {
     return [$name, $params];
@@ -1230,13 +1230,13 @@ unset($__params);
 unset($__split);
 if (isset($__slots)) unset($__slots);
 ?>
-        <?php endif; ?>
+        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
         <!-- End of Webhooks Tab -->
     </div>
     <!-- End of Tab Content Container -->
 
     <!-- Deploy Modal -->
-    <?php if($showDeployModal): ?>
+    <!--[if BLOCK]><![endif]--><?php if($showDeployModal): ?>
         <div wire:key="deploy-modal-<?php echo e($project->id); ?>"
              class="fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4"
              x-data="{ deploying: false }"
@@ -1308,6 +1308,6 @@ if (isset($__slots)) unset($__slots);
                 </div>
             </div>
         </div>
-    <?php endif; ?>
+    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 </div>
 <?php /**PATH /home/roshdy/Work/projects/DEVFLOW_PRO/resources/views/livewire/projects/project-show.blade.php ENDPATH**/ ?>
