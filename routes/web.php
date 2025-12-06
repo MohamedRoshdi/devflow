@@ -134,6 +134,9 @@ Route::middleware('auth')->group(function () {
 
     // System Status
     Route::get('/settings/system-status', \App\Livewire\Settings\SystemStatus::class)->name('settings.system-status');
+
+    // System Settings (Admin)
+    Route::get('/settings/system', \App\Livewire\Settings\SystemSettings::class)->name('settings.system');
 });
 
 // Webhook endpoints (public, no auth required)
