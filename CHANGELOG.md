@@ -7,6 +7,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.23.0] - 2025-12-06
+
+### Added
+
+- **FirewallServiceTest.php** - 52 unit tests for UFW firewall management
+  - UFW status checking (active/inactive)
+  - Enable/disable firewall operations
+  - Port and IP-based allow/deny rules
+  - Rule deletion and listing
+  - SSH command execution with different auth methods
+  - Security event logging
+
+- **FileBackupServiceTest.php** - 42 unit tests for file backup operations
+  - Full and incremental backup creation
+  - Backup scheduling and configuration
+  - Retention policy enforcement
+  - Multi-storage backend support (local, S3)
+  - Backup restoration and verification
+  - Exclude patterns management
+
+- **WebhookServiceTest.php** - 42 unit tests for webhook processing
+  - GitHub HMAC-SHA256 signature verification
+  - GitLab token verification
+  - GitHub/GitLab payload parsing
+  - Event type detection
+  - Deployment trigger decision logic
+  - Webhook delivery recording
+
+- **TeamServiceTest.php** - 39 unit tests for team management
+  - Team creation with owner assignment
+  - Team invitation and acceptance workflow
+  - Member management (add/remove/roles)
+  - Role-based permissions
+  - Ownership transfer
+  - Team deletion and cleanup
+
+### Improved
+
+- Unit test coverage expanded with 175 new service tests
+- Total unit tests now at 520 (345 + 175)
+- PHPStan Level 6 compliance maintained (0 errors)
+- Laravel Pint code style compliance maintained (0 issues)
+- New factories: TeamFactory, TeamMemberFactory, TeamInvitationFactory, FileBackupFactory
+
+---
+
 ## [5.22.0] - 2025-12-06
 
 ### Added
