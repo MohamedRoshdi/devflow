@@ -7,6 +7,67 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.29.0] - 2025-12-06
+
+### Added
+
+- **DashboardAdminComponentsTest.php** - 92 Livewire component tests
+  - Dashboard: stats loading, server/project counts, quick actions
+  - DashboardOptimized: cached stats, performance optimization
+  - HealthDashboard: health checks display, status indicators
+  - SystemAdmin: admin functions, system settings
+  - AuditLogViewer: log filtering, pagination, search
+  - Login/Register/ForgotPassword: auth flows, validation
+  - HomePublic: public portfolio, project showcase
+  - AnalyticsDashboard: metrics display, chart data
+
+- **ServerComponentsTest.php** - 135 Livewire component tests
+  - ServerList: server listing, filtering, status display
+  - ServerShow/Create/Edit: CRUD operations, validation
+  - ServerProvisioning: provisioning workflow, progress tracking
+  - ServerMetricsDashboard: metrics visualization, polling
+  - ServerBackupManager: backup operations, scheduling
+  - ServerTagManager/Assignment: tag CRUD, server assignment
+  - SSHTerminal: terminal interaction, command execution
+  - SSLManager: certificate management, renewal
+  - ResourceAlertManager: alert configuration, thresholds
+  - Security components: firewall, fail2ban, SSH security, scans
+
+- **ProjectDeploymentComponentsTest.php** - 76 Livewire component tests
+  - ProjectList/Show/Create/Edit: project CRUD operations
+  - ProjectConfiguration: settings management
+  - ProjectEnvironment: env variable management
+  - ProjectLogs/DockerManagement: log viewing, Docker ops
+  - DatabaseBackupManager/FileBackupManager: backup operations
+  - GitHubRepoPicker: GitHub integration
+  - DeploymentList/Show: deployment listing, details
+  - DeploymentApprovals/Comments: approval workflow
+  - DeploymentRollback: rollback functionality
+  - ScheduledDeployments: scheduling management
+
+- **SettingsUtilityComponentsTest.php** - 87 Livewire component tests
+  - ApiTokenManager/SSHKeyManager: token/key CRUD
+  - GitHubSettings/StorageSettings: integration settings
+  - QueueMonitor: queue status, job management
+  - HealthCheckManager: health check configuration
+  - SystemStatus: system health display
+  - TeamList/Settings/Switcher: team management
+  - UserList: user administration
+  - LogViewer/LogSourceManager: log management
+  - NotificationChannelManager: notification config
+  - ScriptManager/DockerDashboard: utilities
+  - TenantManager/ClusterManager: advanced features
+
+### Improved
+
+- Livewire component test coverage: 390 new tests across 4 test files
+- Total unit tests now at 1,958 (31 service + 4 model + 4 Livewire test files)
+- 75 Livewire components now have test coverage
+- PHPStan Level 6 compliance maintained (0 errors)
+- Laravel Pint code style compliance maintained (0 issues)
+
+---
+
 ## [5.28.0] - 2025-12-06
 
 ### Added
