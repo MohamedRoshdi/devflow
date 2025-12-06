@@ -42,9 +42,6 @@ class ServerMetricFactory extends Factory
             'load_average_15' => fake()->randomFloat(2, 0, 10),
             'network_in_bytes' => fake()->numberBetween(1000000, 10000000000),
             'network_out_bytes' => fake()->numberBetween(1000000, 10000000000),
-            'processes_running' => fake()->numberBetween(50, 300),
-            'processes_total' => fake()->numberBetween(100, 500),
-            'uptime_seconds' => fake()->numberBetween(3600, 2592000),
             'recorded_at' => fake()->dateTimeBetween('-1 hour', 'now'),
         ];
     }

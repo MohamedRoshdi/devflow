@@ -2,11 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Artisan;
 
+/**
+ * @use HasFactory<\Database\Factories\FailedJobFactory>
+ */
 class FailedJob extends Model
 {
+    /** @use HasFactory<\Database\Factories\FailedJobFactory> */
+    use HasFactory;
+
     protected $table = 'failed_jobs';
 
     public $timestamps = false;

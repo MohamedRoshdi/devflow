@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.28.0] - 2025-12-06
+
+### Added
+
+- **CoreModelsTest.php** - 112 unit tests for core models
+  - User model: relationships, accessors, scopes, role management
+  - Server model: status checks, online/offline scopes, SSH configuration
+  - Project model: deployment relations, framework detection, active scopes
+  - Deployment model: status management, duration calculation, rollback relations
+
+- **InfrastructureModelsTest.php** - 86 unit tests for infrastructure models
+  - Domain model: SSL status, primary domain handling, project relations
+  - SSLCertificate model: expiry checks, renewal status, validity scopes
+  - HealthCheck model: result relations, active/inactive scopes
+  - LogEntry model: severity levels, source relations, filtering
+
+- **BackupModelsTest.php** - 69 unit tests for backup models
+  - DatabaseBackup model: project/server relations, status scopes
+  - FileBackup model: storage configuration, backup types
+  - ServerBackup model: scheduling, status management
+  - BackupSchedule model: frequency settings, next run calculation
+
+- **TeamAuthModelsTest.php** - 92 unit tests for team/auth models
+  - Team model: member relations, owner validation, settings
+  - TeamMember model: role management, permission scopes
+  - ApiToken model: expiry handling, scope validation
+  - AuditLog model: action tracking, user relations
+
+### Improved
+
+- Model unit test coverage: 359 new tests across 4 test files
+- Total unit tests now at 1,568 (31 service + 4 model test files)
+- PHPStan Level 6 compliance maintained (0 errors)
+- Laravel Pint code style compliance maintained (0 issues)
+- Fixed FailedJob model PHPDoc for generic trait
+
+---
+
 ## [5.27.0] - 2025-12-06
 
 ### Added
