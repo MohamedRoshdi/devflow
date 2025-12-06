@@ -7,6 +7,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.22.0] - 2025-12-06
+
+### Added
+
+- **NotificationServiceTest.php** - 41 unit tests for notification system
+  - Email notification sending (success/failure)
+  - Slack notifications with Block Kit formatting
+  - Discord notifications with embeds
+  - Webhook notification delivery with signatures
+  - Health check failure/recovery notifications
+  - Deployment event notifications
+  - Channel configuration and selection
+
+- **SSLManagementServiceTest.php** - 44 unit tests for SSL certificates
+  - Certificate issuance via Let's Encrypt
+  - Certificate renewal workflows
+  - Auto-renewal scheduling and cron setup
+  - Expiry date parsing and checking
+  - Certificate revocation operations
+  - Domain validation (HTTP-01, DNS-01)
+  - SSH command execution mocking
+
+- **HealthCheckServiceTest.php** - 37 unit tests for health monitoring
+  - HTTP health checks (200/non-200 responses)
+  - TCP connectivity checks
+  - Ping operations and timeouts
+  - SSL certificate expiry checks
+  - Health result recording
+  - Status transitions (healthy/degraded/down)
+  - Consecutive failure tracking
+  - Notification triggering
+
+- **ServerConnectivityServiceTest.php** - 43 unit tests for server connectivity
+  - SSH connection testing (success/failure)
+  - Password and SSH key authentication
+  - Latency measurement
+  - Localhost detection
+  - Server status updates
+  - Service restart operations
+  - System cache clearing
+  - Disk and memory usage monitoring
+
+### Improved
+
+- Unit test coverage expanded with 165 new service tests
+- Total unit tests now at 345 (180 + 165)
+- PHPStan Level 6 compliance maintained (0 errors)
+- Laravel Pint code style compliance maintained (0 issues)
+
+---
+
 ## [5.21.0] - 2025-12-06
 
 ### Added

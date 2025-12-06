@@ -2,22 +2,23 @@
 
 namespace Tests\Unit\Services;
 
-use Tests\TestCase;
-use Tests\Traits\{CreatesServers, MocksSSH};
+use App\Models\ServerMetric;
 use App\Services\ServerMetricsService;
-use App\Models\{Server, ServerMetric};
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+use Tests\Traits\CreatesServers;
+use Tests\Traits\MocksSSH;
 
 class ServerMetricsServiceTest extends TestCase
 {
-    use RefreshDatabase, CreatesServers, MocksSSH;
+    use CreatesServers, MocksSSH, RefreshDatabase;
 
     protected ServerMetricsService $service;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new ServerMetricsService();
+        $this->service = new ServerMetricsService;
     }
 
     /** @test */
@@ -146,9 +147,9 @@ class ServerMetricsServiceTest extends TestCase
 
         \Illuminate\Support\Facades\Process::fake([
             '*ps aux*' => \Illuminate\Support\Facades\Process::result(
-                output: "USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND\n" .
-                        "root         1  0.5  0.2 169564 10952 ?        Ss   Jan01   1:23 /sbin/init\n" .
-                        "www-data  1234 15.0  5.5 456789 123456 ?       Ssl  10:00   0:45 php-fpm: pool www"
+                output: "USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND\n".
+                        "root         1  0.5  0.2 169564 10952 ?        Ss   Jan01   1:23 /sbin/init\n".
+                        'www-data  1234 15.0  5.5 456789 123456 ?       Ssl  10:00   0:45 php-fpm: pool www'
             ),
         ]);
 
@@ -170,9 +171,9 @@ class ServerMetricsServiceTest extends TestCase
 
         \Illuminate\Support\Facades\Process::fake([
             '*ps aux*' => \Illuminate\Support\Facades\Process::result(
-                output: "USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND\n" .
-                        "mysql      500  5.0 25.0 123456 678910 ?       Ssl  Jan01  10:00 mysqld\n" .
-                        "www-data  1234  2.0  8.5 456789 123456 ?       Ssl  10:00   0:45 php-fpm"
+                output: "USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND\n".
+                        "mysql      500  5.0 25.0 123456 678910 ?       Ssl  Jan01  10:00 mysqld\n".
+                        'www-data  1234  2.0  8.5 456789 123456 ?       Ssl  10:00   0:45 php-fpm'
             ),
         ]);
 

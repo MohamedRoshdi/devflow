@@ -2,23 +2,26 @@
 
 namespace Tests\Unit\Services;
 
-use Tests\TestCase;
-use Tests\Traits\{CreatesServers, MocksSSH};
+use App\Models\BackupSchedule;
+use App\Models\DatabaseBackup;
+use App\Models\Project;
 use App\Services\DatabaseBackupService;
-use App\Models\{Server, DatabaseBackup, BackupSchedule, Project};
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
+use Tests\TestCase;
+use Tests\Traits\CreatesServers;
+use Tests\Traits\MocksSSH;
 
 class DatabaseBackupServiceTest extends TestCase
 {
-    use RefreshDatabase, CreatesServers, MocksSSH;
+    use CreatesServers, MocksSSH, RefreshDatabase;
 
     protected DatabaseBackupService $service;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new DatabaseBackupService();
+        $this->service = new DatabaseBackupService;
 
         // Create storage disk for testing
         Storage::fake('local');

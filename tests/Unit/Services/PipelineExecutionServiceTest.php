@@ -2,22 +2,27 @@
 
 namespace Tests\Unit\Services;
 
-use Tests\TestCase;
-use Tests\Traits\{CreatesProjects, CreatesServers, MocksSSH};
+use App\Models\Deployment;
+use App\Models\PipelineRun;
+use App\Models\PipelineStage;
+use App\Models\PipelineStageRun;
 use App\Services\CICD\PipelineExecutionService;
-use App\Models\{Project, PipelineRun, PipelineStage, PipelineStageRun, Deployment};
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+use Tests\Traits\CreatesProjects;
+use Tests\Traits\CreatesServers;
+use Tests\Traits\MocksSSH;
 
 class PipelineExecutionServiceTest extends TestCase
 {
-    use RefreshDatabase, CreatesProjects, CreatesServers, MocksSSH;
+    use CreatesProjects, CreatesServers, MocksSSH, RefreshDatabase;
 
     protected PipelineExecutionService $service;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new PipelineExecutionService();
+        $this->service = new PipelineExecutionService;
     }
 
     /** @test */
