@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.31.0] - 2025-12-06
+
+### Added
+
+- **MiddlewareRequestsTest.php** - 57 Middleware & Request unit tests
+  - AuthenticateApiToken: token validation, authentication flow
+  - EnsureTeamAccess: team membership verification
+  - StoreServerRequest: server creation validation rules
+  - UpdateServerRequest: server update validation rules
+  - StoreProjectRequest: project creation validation rules
+  - UpdateProjectRequest: project update validation rules
+
+- **PoliciesTest.php** - 37 Policy unit tests
+  - ServerPolicy: view, create, update, delete authorization
+  - ProjectPolicy: CRUD and deployment authorization
+  - DeploymentPolicy: view, create, rollback authorization
+  - Ownership-based and team-based access control
+
+- **EventsNotificationsTest.php** - 71 Event, Notification & Mail tests
+  - DashboardUpdated, DeploymentCompleted/Failed/Started events
+  - DeploymentLogUpdated, DeploymentStatusUpdated events
+  - PipelineStageUpdated, ProjectSetupUpdated events
+  - ServerMetricsUpdated event broadcasting
+  - DeploymentApprovalRequested notification
+  - ServerProvisioningCompleted notification
+  - SSLCertificateExpiring/Renewed notifications
+  - UserMentionedInComment notification
+  - TeamInvitation mailable
+
+### Improved
+
+- Complete application test coverage: 165 new tests across 3 test files
+- Total unit tests now at 2,308 (complete application coverage)
+- PHPStan Level 6 compliance maintained (0 errors)
+- Laravel Pint code style compliance maintained (0 issues)
+- 100% coverage achieved for ALL application layers
+
+---
+
 ## [5.30.0] - 2025-12-06
 
 ### Added
