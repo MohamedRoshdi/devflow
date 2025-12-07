@@ -108,7 +108,8 @@ class DockerService
 
             if ($usesCompose) {
                 // Use docker compose build for projects with docker-compose.yml
-                $buildCommand = "cd {$projectPath} && docker compose build";
+                // --no-cache ensures fresh build, --pull gets latest base images
+                $buildCommand = "cd {$projectPath} && docker compose build --no-cache --pull";
 
                 $command = $this->isLocalhost($server)
                     ? $buildCommand
@@ -142,18 +143,18 @@ class DockerService
             $checkProcess->run();
             $dockerfileType = trim($checkProcess->getOutput());
 
-            // Build Docker image
+            // Build Docker image (--no-cache ensures fresh build, --pull gets latest base images)
             if ($dockerfileType === 'Dockerfile') {
                 // Use project's Dockerfile
                 $buildCommand = sprintf(
-                    'cd %s && docker build -t %s .',
+                    'cd %s && docker build --no-cache --pull -t %s .',
                     $projectPath,
                     $project->slug
                 );
             } elseif ($dockerfileType === 'Dockerfile.production') {
                 // Use project's Dockerfile.production
                 $buildCommand = sprintf(
-                    'cd %s && docker build -f Dockerfile.production -t %s .',
+                    'cd %s && docker build --no-cache --pull -f Dockerfile.production -t %s .',
                     $projectPath,
                     $project->slug
                 );
@@ -161,7 +162,7 @@ class DockerService
                 // Generate Dockerfile if project doesn't have one
                 $dockerfile = $this->generateDockerfile($project);
                 $buildCommand = sprintf(
-                    "cd %s && echo '%s' > Dockerfile && docker build -t %s .",
+                    "cd %s && echo '%s' > Dockerfile && docker build --no-cache --pull -t %s .",
                     $projectPath,
                     addslashes($dockerfile),
                     $project->slug
