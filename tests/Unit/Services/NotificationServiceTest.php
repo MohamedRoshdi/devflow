@@ -11,7 +11,6 @@ use App\Models\NotificationChannel;
 use App\Models\Project;
 use App\Models\User;
 use App\Services\NotificationService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -21,7 +20,6 @@ use Tests\TestCase;
 
 class NotificationServiceTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected NotificationService $service;
 

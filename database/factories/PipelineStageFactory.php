@@ -15,13 +15,12 @@ class PipelineStageFactory extends Factory
         return [
             'project_id' => Project::factory(),
             'name' => fake()->words(3, true),
-            'description' => fake()->sentence(),
             'type' => fake()->randomElement(['pre_deploy', 'deploy', 'post_deploy']),
             'order' => fake()->numberBetween(1, 10),
             'commands' => ['echo "test"', 'ls -la'],
             'timeout_seconds' => 600,
             'continue_on_failure' => false,
-            'is_enabled' => true,
+            'enabled' => true,
         ];
     }
 

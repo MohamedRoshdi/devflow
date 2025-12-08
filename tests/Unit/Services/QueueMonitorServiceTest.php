@@ -6,7 +6,6 @@ namespace Tests\Unit\Services;
 
 use App\Models\FailedJob;
 use App\Services\QueueMonitorService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +16,6 @@ use Tests\TestCase;
 
 class QueueMonitorServiceTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected QueueMonitorService $service;
 

@@ -1,26 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Browser;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\DB;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Traits\LoginViaUI;
 use Tests\DuskTestCase;
 
 class QueueMonitorTest extends DuskTestCase
 {
-    use DatabaseMigrations, LoginViaUI;
+    use LoginViaUI;
 
     protected User $user;
-
     protected array $testResults = [];
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        // Use existing test user (shared database approach)
         $this->user = User::firstOrCreate(
             ['email' => 'admin@devflow.test'],
             [
@@ -32,110 +32,47 @@ class QueueMonitorTest extends DuskTestCase
     }
 
     /**
-     * Test 1: Queue monitor dashboard access
+     * Test 1: Queue monitor page loads successfully
      *
      * @test
      */
-    public function test_user_can_view_queue_monitor(): void
+    public function test_queue_monitor_page_loads_successfully(): void
     {
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('queue-monitor-dashboard');
+                ->pause(1000)
+                ->assertSee('Queue Monitor')
+                ->screenshot('queue-monitor-page-loaded');
 
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasQueueContent =
-                str_contains($pageSource, 'queue') ||
-                str_contains($pageSource, 'job') ||
-                str_contains($pageSource, 'monitor');
-
-            $this->assertTrue($hasQueueContent, 'Queue monitor dashboard should be accessible');
-            $this->testResults['queue_monitor_access'] = 'Queue monitor dashboard accessed successfully';
+            $this->testResults['page_load'] = 'Queue monitor page loaded successfully';
         });
     }
 
     /**
-     * Test 2: Queue statistics are displayed
+     * Test 2: Queue statistics cards are displayed
      *
      * @test
      */
-    public function test_queue_statistics_display(): void
+    public function test_queue_statistics_cards_displayed(): void
     {
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('queue-statistics-display');
+                ->pause(1000)
+                ->assertSeeIn('body', 'Pending Jobs')
+                ->assertSeeIn('body', 'Processing')
+                ->assertSeeIn('body', 'Failed Jobs')
+                ->screenshot('queue-statistics-cards');
 
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasStatistics =
-                str_contains($pageSource, 'pending') ||
-                str_contains($pageSource, 'processing') ||
-                str_contains($pageSource, 'failed') ||
-                str_contains($pageSource, 'statistic');
-
-            $this->assertTrue($hasStatistics || true, 'Queue statistics should be displayed');
-            $this->testResults['queue_statistics'] = 'Queue statistics displayed successfully';
+            $this->testResults['statistics_cards'] = 'Queue statistics cards displayed';
         });
     }
 
     /**
-     * Test 3: Failed jobs listing displays
-     *
-     * @test
-     */
-    public function test_failed_jobs_listing_displays(): void
-    {
-        $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
-                ->visit('/settings/queue-monitor')
-                ->pause(2000)
-                ->waitFor('body', 15)
-                ->screenshot('failed-jobs-listing');
-
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasFailedJobs =
-                str_contains($pageSource, 'failed') ||
-                str_contains($pageSource, 'job') ||
-                str_contains($pageSource, 'exception') ||
-                str_contains($pageSource, 'error');
-
-            $this->assertTrue($hasFailedJobs || true, 'Failed jobs listing should display');
-            $this->testResults['failed_jobs_listing'] = 'Failed jobs listing displays successfully';
-        });
-    }
-
-    /**
-     * Test 4: Worker status is displayed
-     *
-     * @test
-     */
-    public function test_worker_status_displayed(): void
-    {
-        $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
-                ->visit('/settings/queue-monitor')
-                ->pause(2000)
-                ->waitFor('body', 15)
-                ->screenshot('worker-status-display');
-
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasWorkerStatus =
-                str_contains($pageSource, 'worker') ||
-                str_contains($pageSource, 'running') ||
-                str_contains($pageSource, 'stopped') ||
-                str_contains($pageSource, 'status');
-
-            $this->assertTrue($hasWorkerStatus || true, 'Worker status should be displayed');
-            $this->testResults['worker_status'] = 'Worker status displayed successfully';
-        });
-    }
-
-    /**
-     * Test 5: Pending jobs count is shown
+     * Test 3: Pending jobs count is shown
      *
      * @test
      */
@@ -144,73 +81,57 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
+                ->pause(1000)
+                ->assertSeeIn('body', 'Pending Jobs')
                 ->screenshot('pending-jobs-count');
 
             $pageSource = strtolower($browser->driver->getPageSource());
-            $hasPendingCount =
-                str_contains($pageSource, 'pending') ||
-                str_contains($pageSource, 'waiting') ||
-                str_contains($pageSource, 'queued');
-
-            $this->assertTrue($hasPendingCount || true, 'Pending jobs count should be shown');
-            $this->testResults['pending_jobs_count'] = 'Pending jobs count shown successfully';
+            $this->assertStringContainsString('pending', $pageSource);
+            $this->testResults['pending_count'] = 'Pending jobs count shown';
         });
     }
 
     /**
-     * Test 6: Processing jobs count is displayed
+     * Test 4: Failed jobs count is shown
      *
      * @test
      */
-    public function test_processing_jobs_count_displayed(): void
+    public function test_failed_jobs_count_shown(): void
     {
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('processing-jobs-count');
-
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasProcessingCount =
-                str_contains($pageSource, 'processing') ||
-                str_contains($pageSource, 'running') ||
-                str_contains($pageSource, 'active');
-
-            $this->assertTrue($hasProcessingCount || true, 'Processing jobs count should be displayed');
-            $this->testResults['processing_jobs_count'] = 'Processing jobs count displayed successfully';
-        });
-    }
-
-    /**
-     * Test 7: Failed jobs count is visible
-     *
-     * @test
-     */
-    public function test_failed_jobs_count_visible(): void
-    {
-        $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
-                ->visit('/settings/queue-monitor')
-                ->pause(2000)
-                ->waitFor('body', 15)
+                ->pause(1000)
+                ->assertSeeIn('body', 'Failed Jobs')
                 ->screenshot('failed-jobs-count');
 
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasFailedCount =
-                str_contains($pageSource, 'failed') ||
-                str_contains($pageSource, 'error') ||
-                str_contains($pageSource, 'exception');
-
-            $this->assertTrue($hasFailedCount || true, 'Failed jobs count should be visible');
-            $this->testResults['failed_jobs_count'] = 'Failed jobs count visible successfully';
+            $this->testResults['failed_count'] = 'Failed jobs count shown';
         });
     }
 
     /**
-     * Test 8: Jobs per hour metric displays
+     * Test 5: Processing jobs count is shown
+     *
+     * @test
+     */
+    public function test_processing_jobs_shown(): void
+    {
+        $this->browse(function (Browser $browser) {
+            $this->loginViaUI($browser)
+                ->visit('/settings/queue-monitor')
+                ->waitFor('body', 15)
+                ->pause(1000)
+                ->assertSeeIn('body', 'Processing')
+                ->screenshot('processing-jobs-shown');
+
+            $this->testResults['processing_shown'] = 'Processing jobs shown';
+        });
+    }
+
+    /**
+     * Test 6: Jobs per hour metric displays
      *
      * @test
      */
@@ -219,851 +140,618 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
+                ->pause(1000)
+                ->assertSeeIn('body', 'Jobs/Hour')
                 ->screenshot('jobs-per-hour-metric');
 
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasHourlyMetric =
-                str_contains($pageSource, 'hour') ||
-                str_contains($pageSource, 'rate') ||
-                str_contains($pageSource, 'throughput') ||
-                str_contains($pageSource, 'per');
-
-            $this->assertTrue($hasHourlyMetric || true, 'Jobs per hour metric should display');
-            $this->testResults['jobs_per_hour'] = 'Jobs per hour metric displays successfully';
+            $this->testResults['jobs_per_hour'] = 'Jobs per hour metric displayed';
         });
     }
 
     /**
-     * Test 9: Refresh statistics button is visible
+     * Test 7: Worker status is displayed
      *
      * @test
      */
-    public function test_refresh_statistics_button_visible(): void
+    public function test_worker_status_displayed(): void
     {
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('refresh-statistics-button');
+                ->pause(1000)
+                ->assertSeeIn('body', 'Worker Status')
+                ->screenshot('worker-status-displayed');
+
+            $this->testResults['worker_status'] = 'Worker status displayed';
+        });
+    }
+
+    /**
+     * Test 8: Refresh button is visible
+     *
+     * @test
+     */
+    public function test_refresh_button_works(): void
+    {
+        $this->browse(function (Browser $browser) {
+            $this->loginViaUI($browser)
+                ->visit('/settings/queue-monitor')
+                ->waitFor('body', 15)
+                ->pause(1000)
+                ->assertSeeIn('button', 'Refresh')
+                ->screenshot('refresh-button-visible');
+
+            $this->testResults['refresh_button'] = 'Refresh button visible';
+        });
+    }
+
+    /**
+     * Test 9: Failed jobs table headers are present
+     *
+     * @test
+     */
+    public function test_failed_jobs_table_headers_present(): void
+    {
+        $this->browse(function (Browser $browser) {
+            $browser = $this->loginViaUI($browser)
+                ->visit('/settings/queue-monitor')
+                ->waitFor('body', 15)
+                ->pause(1000);
 
             $pageSource = $browser->driver->getPageSource();
-            $hasRefreshButton =
-                str_contains($pageSource, 'Refresh') ||
-                str_contains($pageSource, 'refresh') ||
-                str_contains($pageSource, 'Reload') ||
-                str_contains($pageSource, 'wire:click');
 
-            $this->assertTrue($hasRefreshButton || true, 'Refresh statistics button should be visible');
-            $this->testResults['refresh_button'] = 'Refresh statistics button visible successfully';
+            // Check if either the table headers exist or "No Failed Jobs" message exists
+            $hasTableOrEmpty = str_contains($pageSource, 'ID') ||
+                              str_contains($pageSource, 'No Failed Jobs') ||
+                              str_contains($pageSource, 'Queue') ||
+                              str_contains($pageSource, 'Job Class');
+
+            $this->assertTrue($hasTableOrEmpty, 'Should show failed jobs table or empty state');
+            $browser->screenshot('failed-jobs-table-headers');
+
+            $this->testResults['table_headers'] = 'Failed jobs table headers or empty state shown';
         });
     }
 
     /**
-     * Test 10: Queue breakdown by queue name is shown
+     * Test 10: Retry all failed button exists
      *
      * @test
      */
-    public function test_queue_breakdown_shown(): void
+    public function test_retry_all_failed_button_exists(): void
     {
         $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
+            $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('queue-breakdown');
-
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasQueueBreakdown =
-                str_contains($pageSource, 'queue') ||
-                str_contains($pageSource, 'default') ||
-                str_contains($pageSource, 'high') ||
-                str_contains($pageSource, 'breakdown');
-
-            $this->assertTrue($hasQueueBreakdown || true, 'Queue breakdown should be shown');
-            $this->testResults['queue_breakdown'] = 'Queue breakdown shown successfully';
-        });
-    }
-
-    /**
-     * Test 11: Failed job details can be viewed
-     *
-     * @test
-     */
-    public function test_failed_job_details_viewable(): void
-    {
-        $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
-                ->visit('/settings/queue-monitor')
-                ->pause(2000)
-                ->waitFor('body', 15)
-                ->screenshot('failed-job-details');
-
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasJobDetails =
-                str_contains($pageSource, 'view') ||
-                str_contains($pageSource, 'details') ||
-                str_contains($pageSource, 'show') ||
-                str_contains($pageSource, 'exception');
-
-            $this->assertTrue($hasJobDetails || true, 'Failed job details should be viewable');
-            $this->testResults['job_details'] = 'Failed job details viewable successfully';
-        });
-    }
-
-    /**
-     * Test 12: Retry job button is available for failed jobs
-     *
-     * @test
-     */
-    public function test_retry_job_button_available(): void
-    {
-        $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
-                ->visit('/settings/queue-monitor')
-                ->pause(2000)
-                ->waitFor('body', 15)
-                ->screenshot('retry-job-button');
+                ->pause(1000);
 
             $pageSource = $browser->driver->getPageSource();
-            $hasRetryButton =
-                str_contains($pageSource, 'Retry') ||
-                str_contains($pageSource, 'retry') ||
-                str_contains($pageSource, 'Requeue') ||
-                str_contains($pageSource, 'retryJob');
 
-            $this->assertTrue($hasRetryButton || true, 'Retry job button should be available');
-            $this->testResults['retry_button'] = 'Retry job button available successfully';
+            // Button exists if there are failed jobs, or message shown if no failed jobs
+            $hasRetryOrEmpty = str_contains($pageSource, 'Retry All') ||
+                              str_contains($pageSource, 'retryAllFailed') ||
+                              str_contains($pageSource, 'No Failed Jobs');
+
+            $this->assertTrue($hasRetryOrEmpty, 'Should show retry all button or empty state');
+            $browser->screenshot('retry-all-button');
+
+            $this->testResults['retry_all_button'] = 'Retry all button or empty state shown';
         });
     }
 
     /**
-     * Test 13: Delete job button is present for failed jobs
+     * Test 11: Clear all failed button exists
      *
      * @test
      */
-    public function test_delete_job_button_present(): void
+    public function test_clear_all_failed_button_exists(): void
     {
         $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
+            $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('delete-job-button');
+                ->pause(1000);
 
             $pageSource = $browser->driver->getPageSource();
-            $hasDeleteButton =
-                str_contains($pageSource, 'Delete') ||
-                str_contains($pageSource, 'delete') ||
-                str_contains($pageSource, 'Remove') ||
-                str_contains($pageSource, 'deleteJob');
 
-            $this->assertTrue($hasDeleteButton || true, 'Delete job button should be present');
-            $this->testResults['delete_button'] = 'Delete job button present successfully';
+            $hasClearOrEmpty = str_contains($pageSource, 'Clear All') ||
+                              str_contains($pageSource, 'clearAllFailed') ||
+                              str_contains($pageSource, 'No Failed Jobs');
+
+            $this->assertTrue($hasClearOrEmpty, 'Should show clear all button or empty state');
+            $browser->screenshot('clear-all-button');
+
+            $this->testResults['clear_all_button'] = 'Clear all button or empty state shown';
         });
     }
 
     /**
-     * Test 14: Retry all failed jobs button exists
+     * Test 12: Job details can be viewed
      *
      * @test
      */
-    public function test_retry_all_failed_jobs_button_exists(): void
+    public function test_job_details_viewable(): void
     {
         $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
+            $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('retry-all-button');
+                ->pause(1000);
 
             $pageSource = $browser->driver->getPageSource();
-            $hasRetryAllButton =
-                str_contains($pageSource, 'Retry All') ||
-                str_contains($pageSource, 'retry all') ||
-                str_contains($pageSource, 'Retry Failed') ||
-                str_contains($pageSource, 'retryAllFailed');
 
-            $this->assertTrue($hasRetryAllButton || true, 'Retry all failed jobs button should exist');
-            $this->testResults['retry_all_button'] = 'Retry all failed jobs button exists successfully';
+            // If there are failed jobs, "View Full Error" link should be present
+            $hasDetailsOrEmpty = str_contains($pageSource, 'View Full Error') ||
+                                str_contains($pageSource, 'viewJobDetails') ||
+                                str_contains($pageSource, 'No Failed Jobs');
+
+            $this->assertTrue($hasDetailsOrEmpty, 'Should show view details link or empty state');
+            $browser->screenshot('job-details-viewable');
+
+            $this->testResults['job_details'] = 'Job details link or empty state shown';
         });
     }
 
     /**
-     * Test 15: Clear all failed jobs button is visible
-     *
-     * @test
-     */
-    public function test_clear_all_failed_jobs_button_visible(): void
-    {
-        $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
-                ->visit('/settings/queue-monitor')
-                ->pause(2000)
-                ->waitFor('body', 15)
-                ->screenshot('clear-all-button');
-
-            $pageSource = $browser->driver->getPageSource();
-            $hasClearAllButton =
-                str_contains($pageSource, 'Clear All') ||
-                str_contains($pageSource, 'clear all') ||
-                str_contains($pageSource, 'Delete All') ||
-                str_contains($pageSource, 'clearAllFailed');
-
-            $this->assertTrue($hasClearAllButton || true, 'Clear all failed jobs button should be visible');
-            $this->testResults['clear_all_button'] = 'Clear all failed jobs button visible successfully';
-        });
-    }
-
-    /**
-     * Test 16: Job payload information is displayed
-     *
-     * @test
-     */
-    public function test_job_payload_information_displayed(): void
-    {
-        $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
-                ->visit('/settings/queue-monitor')
-                ->pause(2000)
-                ->waitFor('body', 15)
-                ->screenshot('job-payload-info');
-
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasPayloadInfo =
-                str_contains($pageSource, 'payload') ||
-                str_contains($pageSource, 'data') ||
-                str_contains($pageSource, 'class') ||
-                str_contains($pageSource, 'job');
-
-            $this->assertTrue($hasPayloadInfo || true, 'Job payload information should be displayed');
-            $this->testResults['job_payload'] = 'Job payload information displayed successfully';
-        });
-    }
-
-    /**
-     * Test 17: Exception message is shown for failed jobs
+     * Test 13: Exception message is shown for failed jobs
      *
      * @test
      */
     public function test_exception_message_shown(): void
     {
         $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
+            $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('exception-message');
+                ->pause(1000);
 
             $pageSource = strtolower($browser->driver->getPageSource());
-            $hasExceptionMessage =
-                str_contains($pageSource, 'exception') ||
-                str_contains($pageSource, 'error') ||
-                str_contains($pageSource, 'message') ||
-                str_contains($pageSource, 'trace');
 
-            $this->assertTrue($hasExceptionMessage || true, 'Exception message should be shown');
-            $this->testResults['exception_message'] = 'Exception message shown successfully';
+            $hasExceptionOrEmpty = str_contains($pageSource, 'exception') ||
+                                  str_contains($pageSource, 'error') ||
+                                  str_contains($pageSource, 'no failed jobs');
+
+            $this->assertTrue($hasExceptionOrEmpty, 'Should show exception message or empty state');
+            $browser->screenshot('exception-message-shown');
+
+            $this->testResults['exception_message'] = 'Exception message or empty state shown';
         });
     }
 
     /**
-     * Test 18: Job failed timestamp is displayed
+     * Test 14: Failed at timestamp is displayed
      *
      * @test
      */
-    public function test_job_failed_timestamp_displayed(): void
+    public function test_failed_at_timestamp_displayed(): void
     {
         $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
+            $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('failed-timestamp');
+                ->pause(1000);
 
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasTimestamp =
-                str_contains($pageSource, 'failed at') ||
-                str_contains($pageSource, 'time') ||
-                str_contains($pageSource, 'date') ||
-                str_contains($pageSource, 'ago');
+            $pageSource = $browser->driver->getPageSource();
 
-            $this->assertTrue($hasTimestamp || true, 'Job failed timestamp should be displayed');
-            $this->testResults['failed_timestamp'] = 'Job failed timestamp displayed successfully';
+            $hasTimestampOrEmpty = str_contains($pageSource, 'Failed At') ||
+                                  str_contains($pageSource, 'failed_at') ||
+                                  str_contains($pageSource, 'No Failed Jobs');
+
+            $this->assertTrue($hasTimestampOrEmpty, 'Should show timestamp or empty state');
+            $browser->screenshot('failed-at-timestamp');
+
+            $this->testResults['failed_timestamp'] = 'Failed at timestamp or empty state shown';
         });
     }
 
     /**
-     * Test 19: Queue connection information is shown
-     *
-     * @test
-     */
-    public function test_queue_connection_information_shown(): void
-    {
-        $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
-                ->visit('/settings/queue-monitor')
-                ->pause(2000)
-                ->waitFor('body', 15)
-                ->screenshot('queue-connection-info');
-
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasConnectionInfo =
-                str_contains($pageSource, 'connection') ||
-                str_contains($pageSource, 'database') ||
-                str_contains($pageSource, 'redis') ||
-                str_contains($pageSource, 'sync');
-
-            $this->assertTrue($hasConnectionInfo || true, 'Queue connection information should be shown');
-            $this->testResults['connection_info'] = 'Queue connection information shown successfully';
-        });
-    }
-
-    /**
-     * Test 20: Queue name is displayed for jobs
+     * Test 15: Queue name is displayed
      *
      * @test
      */
     public function test_queue_name_displayed(): void
     {
         $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
+            $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('queue-name-display');
+                ->pause(1000);
 
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasQueueName =
-                str_contains($pageSource, 'queue') ||
-                str_contains($pageSource, 'default') ||
-                str_contains($pageSource, 'high') ||
-                str_contains($pageSource, 'low');
+            $pageSource = $browser->driver->getPageSource();
 
-            $this->assertTrue($hasQueueName || true, 'Queue name should be displayed');
-            $this->testResults['queue_name'] = 'Queue name displayed successfully';
+            $hasQueueOrEmpty = str_contains($pageSource, 'Queue') ||
+                              str_contains($pageSource, 'default') ||
+                              str_contains($pageSource, 'No Failed Jobs');
+
+            $this->assertTrue($hasQueueOrEmpty, 'Should show queue name or empty state');
+            $browser->screenshot('queue-name-displayed');
+
+            $this->testResults['queue_name'] = 'Queue name or empty state shown';
         });
     }
 
     /**
-     * Test 21: Worker count is visible
+     * Test 16: Retry job button is available
      *
      * @test
      */
-    public function test_worker_count_visible(): void
+    public function test_retry_job_button_available(): void
     {
         $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
+            $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('worker-count');
+                ->pause(1000);
 
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasWorkerCount =
-                str_contains($pageSource, 'worker') ||
-                str_contains($pageSource, 'count') ||
-                str_contains($pageSource, 'process') ||
-                str_contains($pageSource, 'running');
+            $pageSource = $browser->driver->getPageSource();
 
-            $this->assertTrue($hasWorkerCount || true, 'Worker count should be visible');
-            $this->testResults['worker_count'] = 'Worker count visible successfully';
+            $hasRetryOrEmpty = str_contains($pageSource, 'retryJob') ||
+                              str_contains($pageSource, 'Retry Job') ||
+                              str_contains($pageSource, 'No Failed Jobs');
+
+            $this->assertTrue($hasRetryOrEmpty, 'Should show retry button or empty state');
+            $browser->screenshot('retry-job-button');
+
+            $this->testResults['retry_job_button'] = 'Retry job button or empty state shown';
         });
     }
 
     /**
-     * Test 22: Job class name is shown
+     * Test 17: Delete job button is present
      *
      * @test
      */
-    public function test_job_class_name_shown(): void
+    public function test_delete_job_button_present(): void
     {
         $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
+            $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('job-class-name');
+                ->pause(1000);
 
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasJobClass =
-                str_contains($pageSource, 'class') ||
-                str_contains($pageSource, 'job') ||
-                str_contains($pageSource, 'app\\') ||
-                str_contains($pageSource, 'type');
+            $pageSource = $browser->driver->getPageSource();
 
-            $this->assertTrue($hasJobClass || true, 'Job class name should be shown');
-            $this->testResults['job_class'] = 'Job class name shown successfully';
+            $hasDeleteOrEmpty = str_contains($pageSource, 'deleteJob') ||
+                               str_contains($pageSource, 'Delete Job') ||
+                               str_contains($pageSource, 'No Failed Jobs');
+
+            $this->assertTrue($hasDeleteOrEmpty, 'Should show delete button or empty state');
+            $browser->screenshot('delete-job-button');
+
+            $this->testResults['delete_job_button'] = 'Delete job button or empty state shown';
         });
     }
 
     /**
-     * Test 23: Job UUID is displayed
+     * Test 18: Auto-refresh is configured (wire:poll)
      *
      * @test
      */
-    public function test_job_uuid_displayed(): void
+    public function test_auto_refresh_configured(): void
     {
         $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
+            $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('job-uuid');
+                ->pause(1000);
 
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasUuid =
-                str_contains($pageSource, 'uuid') ||
-                str_contains($pageSource, 'id') ||
-                str_contains($pageSource, 'identifier') ||
-                preg_match('/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/', $pageSource);
+            $pageSource = $browser->driver->getPageSource();
 
-            $this->assertTrue($hasUuid || true, 'Job UUID should be displayed');
-            $this->testResults['job_uuid'] = 'Job UUID displayed successfully';
+            $this->assertStringContainsString('wire:poll', $pageSource);
+            $browser->screenshot('auto-refresh-configured');
+
+            $this->testResults['auto_refresh'] = 'Auto-refresh configured with wire:poll';
         });
     }
 
     /**
-     * Test 24: Loading indicator appears during refresh
-     *
-     * @test
-     */
-    public function test_loading_indicator_during_refresh(): void
-    {
-        $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
-                ->visit('/settings/queue-monitor')
-                ->pause(2000)
-                ->waitFor('body', 15)
-                ->screenshot('loading-indicator');
-
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasLoadingIndicator =
-                str_contains($pageSource, 'loading') ||
-                str_contains($pageSource, 'spinner') ||
-                str_contains($pageSource, 'wire:loading') ||
-                str_contains($pageSource, 'isloading');
-
-            $this->assertTrue($hasLoadingIndicator || true, 'Loading indicator should appear during refresh');
-            $this->testResults['loading_indicator'] = 'Loading indicator displays successfully';
-        });
-    }
-
-    /**
-     * Test 25: Empty state is shown when no failed jobs exist
+     * Test 19: Empty state is shown when no failed jobs
      *
      * @test
      */
     public function test_empty_state_shown_when_no_failed_jobs(): void
     {
         $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
+            // Clear all failed jobs first
+            DB::table('failed_jobs')->delete();
+
+            $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('empty-state');
+                ->pause(1000);
 
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasEmptyState =
-                str_contains($pageSource, 'no failed jobs') ||
-                str_contains($pageSource, 'no jobs') ||
-                str_contains($pageSource, 'empty') ||
-                str_contains($pageSource, 'none found');
+            $pageSource = $browser->driver->getPageSource();
 
-            $this->assertTrue($hasEmptyState || true, 'Empty state should be shown when no failed jobs exist');
-            $this->testResults['empty_state'] = 'Empty state shown successfully';
+            $hasEmptyState = str_contains($pageSource, 'No Failed Jobs') ||
+                            str_contains($pageSource, 'no failed jobs') ||
+                            str_contains($pageSource, 'All queue jobs are processing successfully');
+
+            $this->assertTrue($hasEmptyState, 'Should show empty state message');
+            $browser->screenshot('empty-state-no-failed-jobs');
+
+            $this->testResults['empty_state'] = 'Empty state shown when no failed jobs';
         });
     }
 
     /**
-     * Test 26: Success rate percentage is calculated
+     * Test 20: Flash messages display area exists
      *
      * @test
      */
-    public function test_success_rate_percentage_calculated(): void
+    public function test_flash_messages_display(): void
     {
         $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
+            $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('success-rate');
+                ->pause(1000);
 
             $pageSource = strtolower($browser->driver->getPageSource());
-            $hasSuccessRate =
-                str_contains($pageSource, 'success') ||
-                str_contains($pageSource, 'rate') ||
-                str_contains($pageSource, '%') ||
-                str_contains($pageSource, 'percent');
 
-            $this->assertTrue($hasSuccessRate || true, 'Success rate percentage should be calculated');
-            $this->testResults['success_rate'] = 'Success rate percentage calculated successfully';
+            // Check for notification/toast/alert system
+            $hasNotificationSystem = str_contains($pageSource, 'notification') ||
+                                    str_contains($pageSource, '@notification.window') ||
+                                    str_contains($pageSource, 'toast') ||
+                                    str_contains($pageSource, 'alert');
+
+            $this->assertTrue($hasNotificationSystem, 'Should have notification system');
+            $browser->screenshot('flash-messages-area');
+
+            $this->testResults['flash_messages'] = 'Flash messages display area exists';
         });
     }
 
     /**
-     * Test 27: Queue throughput metrics are displayed
+     * Test 21: Job class name is shown in table
      *
      * @test
      */
-    public function test_queue_throughput_metrics_displayed(): void
+    public function test_job_class_name_shown(): void
     {
         $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
+            $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('throughput-metrics');
+                ->pause(1000);
 
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasThroughput =
-                str_contains($pageSource, 'throughput') ||
-                str_contains($pageSource, 'per hour') ||
-                str_contains($pageSource, 'per minute') ||
-                str_contains($pageSource, 'rate');
+            $pageSource = $browser->driver->getPageSource();
 
-            $this->assertTrue($hasThroughput || true, 'Queue throughput metrics should be displayed');
-            $this->testResults['throughput_metrics'] = 'Queue throughput metrics displayed successfully';
+            $hasJobClassOrEmpty = str_contains($pageSource, 'Job Class') ||
+                                 str_contains($pageSource, 'job_class') ||
+                                 str_contains($pageSource, 'No Failed Jobs');
+
+            $this->assertTrue($hasJobClassOrEmpty, 'Should show job class column or empty state');
+            $browser->screenshot('job-class-name-shown');
+
+            $this->testResults['job_class'] = 'Job class name column or empty state shown';
         });
     }
 
     /**
-     * Test 28: Recent jobs are listed
+     * Test 22: Modal structure exists for job details
      *
      * @test
      */
-    public function test_recent_jobs_listed(): void
+    public function test_modal_structure_exists(): void
     {
         $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
+            $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('recent-jobs');
+                ->pause(1000);
 
             $pageSource = strtolower($browser->driver->getPageSource());
-            $hasRecentJobs =
-                str_contains($pageSource, 'recent') ||
-                str_contains($pageSource, 'latest') ||
-                str_contains($pageSource, 'job') ||
-                str_contains($pageSource, 'history');
 
-            $this->assertTrue($hasRecentJobs || true, 'Recent jobs should be listed');
-            $this->testResults['recent_jobs'] = 'Recent jobs listed successfully';
+            $hasModalStructure = str_contains($pageSource, 'showjobdetails') ||
+                                str_contains($pageSource, 'modal') ||
+                                str_contains($pageSource, 'closejobdetails');
+
+            $this->assertTrue($hasModalStructure, 'Should have modal structure for job details');
+            $browser->screenshot('modal-structure-exists');
+
+            $this->testResults['modal_structure'] = 'Modal structure for job details exists';
         });
     }
 
     /**
-     * Test 29: Job attempts count is shown
+     * Test 23: Job UUID field exists in details
      *
      * @test
      */
-    public function test_job_attempts_count_shown(): void
+    public function test_job_uuid_field_exists(): void
     {
         $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
+            $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('job-attempts');
+                ->pause(1000);
 
             $pageSource = strtolower($browser->driver->getPageSource());
-            $hasAttempts =
-                str_contains($pageSource, 'attempt') ||
-                str_contains($pageSource, 'tries') ||
-                str_contains($pageSource, 'retry') ||
-                str_contains($pageSource, 'count');
 
-            $this->assertTrue($hasAttempts || true, 'Job attempts count should be shown');
-            $this->testResults['job_attempts'] = 'Job attempts count shown successfully';
+            $hasUuidField = str_contains($pageSource, 'uuid') ||
+                           str_contains($pageSource, 'id');
+
+            $this->assertTrue($hasUuidField, 'Should have UUID field in job details');
+            $browser->screenshot('job-uuid-field');
+
+            $this->testResults['job_uuid'] = 'Job UUID field exists';
         });
     }
 
     /**
-     * Test 30: Queue health indicators are present
+     * Test 24: Exception stack trace section exists
      *
      * @test
      */
-    public function test_queue_health_indicators_present(): void
+    public function test_exception_stack_trace_section_exists(): void
     {
         $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
+            $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('queue-health');
+                ->pause(1000);
 
             $pageSource = strtolower($browser->driver->getPageSource());
-            $hasHealthIndicators =
-                str_contains($pageSource, 'health') ||
-                str_contains($pageSource, 'status') ||
-                str_contains($pageSource, 'healthy') ||
-                str_contains($pageSource, 'unhealthy');
 
-            $this->assertTrue($hasHealthIndicators || true, 'Queue health indicators should be present');
-            $this->testResults['health_indicators'] = 'Queue health indicators present successfully';
+            $hasStackTrace = str_contains($pageSource, 'exception stack trace') ||
+                            str_contains($pageSource, 'stack trace') ||
+                            str_contains($pageSource, 'trace');
+
+            $this->assertTrue($hasStackTrace, 'Should have exception stack trace section');
+            $browser->screenshot('exception-stack-trace');
+
+            $this->testResults['stack_trace'] = 'Exception stack trace section exists';
         });
     }
 
     /**
-     * Test 31: Job filtering by queue is available
+     * Test 25: Loading state indicator exists
      *
      * @test
      */
-    public function test_job_filtering_by_queue_available(): void
+    public function test_loading_state_indicator_exists(): void
     {
         $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
+            $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('queue-filtering');
+                ->pause(1000);
 
             $pageSource = strtolower($browser->driver->getPageSource());
-            $hasFiltering =
-                str_contains($pageSource, 'filter') ||
-                str_contains($pageSource, 'search') ||
-                str_contains($pageSource, 'select') ||
-                str_contains($pageSource, 'queue');
 
-            $this->assertTrue($hasFiltering || true, 'Job filtering by queue should be available');
-            $this->testResults['queue_filtering'] = 'Job filtering by queue available successfully';
+            $hasLoadingState = str_contains($pageSource, 'isloading') ||
+                              str_contains($pageSource, 'loading') ||
+                              str_contains($pageSource, 'animate-spin');
+
+            $this->assertTrue($hasLoadingState, 'Should have loading state indicator');
+            $browser->screenshot('loading-state-indicator');
+
+            $this->testResults['loading_state'] = 'Loading state indicator exists';
         });
     }
 
     /**
-     * Test 32: Job details modal can be opened
+     * Test 26: Confirmation dialog markup exists
      *
      * @test
      */
-    public function test_job_details_modal_can_open(): void
+    public function test_confirmation_dialog_markup_exists(): void
     {
         $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
+            $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('job-details-modal');
+                ->pause(1000);
 
             $pageSource = strtolower($browser->driver->getPageSource());
-            $hasModal =
-                str_contains($pageSource, 'modal') ||
-                str_contains($pageSource, 'dialog') ||
-                str_contains($pageSource, 'showjobdetails') ||
-                str_contains($pageSource, 'details');
 
-            $this->assertTrue($hasModal || true, 'Job details modal should be openable');
-            $this->testResults['details_modal'] = 'Job details modal can open successfully';
+            $hasConfirm = str_contains($pageSource, 'wire:confirm') ||
+                         str_contains($pageSource, 'are you sure');
+
+            $this->assertTrue($hasConfirm, 'Should have confirmation dialog markup');
+            $browser->screenshot('confirmation-dialog-markup');
+
+            $this->testResults['confirmation_dialog'] = 'Confirmation dialog markup exists';
         });
     }
 
     /**
-     * Test 33: Job stack trace is viewable
+     * Test 27: Hero section with title is present
      *
      * @test
      */
-    public function test_job_stack_trace_viewable(): void
+    public function test_hero_section_with_title_present(): void
     {
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('stack-trace');
+                ->pause(1000)
+                ->assertSee('Queue Monitor')
+                ->assertSeeIn('body', 'Monitor and manage Laravel queue jobs')
+                ->screenshot('hero-section-title');
 
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasStackTrace =
-                str_contains($pageSource, 'stack') ||
-                str_contains($pageSource, 'trace') ||
-                str_contains($pageSource, 'backtrace') ||
-                str_contains($pageSource, 'exception');
-
-            $this->assertTrue($hasStackTrace || true, 'Job stack trace should be viewable');
-            $this->testResults['stack_trace'] = 'Job stack trace viewable successfully';
+            $this->testResults['hero_section'] = 'Hero section with title present';
         });
     }
 
     /**
-     * Test 34: Queue statistics auto-refresh is configurable
+     * Test 28: Statistics cards have proper styling classes
      *
      * @test
      */
-    public function test_queue_statistics_auto_refresh_configurable(): void
+    public function test_statistics_cards_styling(): void
     {
         $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
+            $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('auto-refresh-config');
+                ->pause(1000);
 
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasAutoRefresh =
-                str_contains($pageSource, 'auto') ||
-                str_contains($pageSource, 'refresh') ||
-                str_contains($pageSource, 'interval') ||
-                str_contains($pageSource, 'poll');
+            $pageSource = $browser->driver->getPageSource();
 
-            $this->assertTrue($hasAutoRefresh || true, 'Queue statistics auto-refresh should be configurable');
-            $this->testResults['auto_refresh'] = 'Queue statistics auto-refresh configurable successfully';
+            // Check for grid layout and card styling
+            $hasStyling = str_contains($pageSource, 'grid-cols') ||
+                         str_contains($pageSource, 'rounded-xl') ||
+                         str_contains($pageSource, 'shadow-lg');
+
+            $this->assertTrue($hasStyling, 'Should have proper styling classes');
+            $browser->screenshot('statistics-cards-styling');
+
+            $this->testResults['card_styling'] = 'Statistics cards have proper styling';
         });
     }
 
     /**
-     * Test 35: Notification is shown after job retry
+     * Test 29: Dark mode classes are present
      *
      * @test
      */
-    public function test_notification_shown_after_job_retry(): void
+    public function test_dark_mode_classes_present(): void
     {
         $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
+            $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('retry-notification');
+                ->pause(1000);
 
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasNotification =
-                str_contains($pageSource, 'notification') ||
-                str_contains($pageSource, 'toast') ||
-                str_contains($pageSource, 'alert') ||
-                str_contains($pageSource, 'message');
+            $pageSource = $browser->driver->getPageSource();
 
-            $this->assertTrue($hasNotification || true, 'Notification should be shown after job retry');
-            $this->testResults['retry_notification'] = 'Notification shown after job retry successfully';
+            $hasDarkMode = str_contains($pageSource, 'dark:bg-') ||
+                          str_contains($pageSource, 'dark:text-');
+
+            $this->assertTrue($hasDarkMode, 'Should have dark mode classes');
+            $browser->screenshot('dark-mode-classes');
+
+            $this->testResults['dark_mode'] = 'Dark mode classes present';
         });
     }
 
     /**
-     * Test 36: Confirmation dialog appears before deleting job
+     * Test 30: Livewire component is properly initialized
      *
      * @test
      */
-    public function test_confirmation_dialog_before_delete(): void
+    public function test_livewire_component_initialized(): void
     {
         $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
+            $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->pause(2000)
                 ->waitFor('body', 15)
-                ->screenshot('delete-confirmation');
+                ->pause(1000);
 
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasConfirmation =
-                str_contains($pageSource, 'confirm') ||
-                str_contains($pageSource, 'are you sure') ||
-                str_contains($pageSource, 'delete') ||
-                str_contains($pageSource, 'warning');
+            $pageSource = $browser->driver->getPageSource();
 
-            $this->assertTrue($hasConfirmation || true, 'Confirmation dialog should appear before deleting job');
-            $this->testResults['delete_confirmation'] = 'Confirmation dialog appears before delete successfully';
-        });
-    }
+            $hasLivewire = str_contains($pageSource, 'wire:') ||
+                          str_contains($pageSource, 'livewire');
 
-    /**
-     * Test 37: Batch operations are supported
-     *
-     * @test
-     */
-    public function test_batch_operations_supported(): void
-    {
-        $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
-                ->visit('/settings/queue-monitor')
-                ->pause(2000)
-                ->waitFor('body', 15)
-                ->screenshot('batch-operations');
+            $this->assertTrue($hasLivewire, 'Livewire component should be initialized');
+            $browser->screenshot('livewire-initialized');
 
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasBatchOps =
-                str_contains($pageSource, 'batch') ||
-                str_contains($pageSource, 'all') ||
-                str_contains($pageSource, 'select all') ||
-                str_contains($pageSource, 'bulk');
-
-            $this->assertTrue($hasBatchOps || true, 'Batch operations should be supported');
-            $this->testResults['batch_operations'] = 'Batch operations supported successfully';
-        });
-    }
-
-    /**
-     * Test 38: Queue priority information is displayed
-     *
-     * @test
-     */
-    public function test_queue_priority_information_displayed(): void
-    {
-        $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
-                ->visit('/settings/queue-monitor')
-                ->pause(2000)
-                ->waitFor('body', 15)
-                ->screenshot('queue-priority');
-
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasPriority =
-                str_contains($pageSource, 'priority') ||
-                str_contains($pageSource, 'high') ||
-                str_contains($pageSource, 'low') ||
-                str_contains($pageSource, 'normal');
-
-            $this->assertTrue($hasPriority || true, 'Queue priority information should be displayed');
-            $this->testResults['queue_priority'] = 'Queue priority information displayed successfully';
-        });
-    }
-
-    /**
-     * Test 39: Job history and logs are accessible
-     *
-     * @test
-     */
-    public function test_job_history_and_logs_accessible(): void
-    {
-        $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
-                ->visit('/settings/queue-monitor')
-                ->pause(2000)
-                ->waitFor('body', 15)
-                ->screenshot('job-history');
-
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasHistory =
-                str_contains($pageSource, 'history') ||
-                str_contains($pageSource, 'log') ||
-                str_contains($pageSource, 'timeline') ||
-                str_contains($pageSource, 'activity');
-
-            $this->assertTrue($hasHistory || true, 'Job history and logs should be accessible');
-            $this->testResults['job_history'] = 'Job history and logs accessible successfully';
-        });
-    }
-
-    /**
-     * Test 40: Real-time updates are shown via Livewire
-     *
-     * @test
-     */
-    public function test_realtime_updates_via_livewire(): void
-    {
-        $this->browse(function (Browser $browser) {
-            $this->loginViaUI($browser)
-                ->visit('/settings/queue-monitor')
-                ->pause(2000)
-                ->waitFor('body', 15)
-                ->screenshot('realtime-updates');
-
-            $pageSource = strtolower($browser->driver->getPageSource());
-            $hasLivewire =
-                str_contains($pageSource, 'wire:poll') ||
-                str_contains($pageSource, 'livewire') ||
-                str_contains($pageSource, 'wire:') ||
-                str_contains($pageSource, 'real-time');
-
-            $this->assertTrue($hasLivewire || true, 'Real-time updates should be shown via Livewire');
-            $this->testResults['realtime_updates'] = 'Real-time updates via Livewire working successfully';
+            $this->testResults['livewire_init'] = 'Livewire component initialized';
         });
     }
 
@@ -1072,39 +760,30 @@ class QueueMonitorTest extends DuskTestCase
      */
     protected function tearDown(): void
     {
-        if (! empty($this->testResults)) {
+        if (!empty($this->testResults)) {
             $report = [
                 'timestamp' => now()->toIso8601String(),
-                'test_suite' => 'Queue Monitor Tests',
+                'test_suite' => 'QueueMonitor Browser Tests',
+                'total_tests' => count($this->testResults),
                 'test_results' => $this->testResults,
                 'summary' => [
-                    'total_tests' => count($this->testResults),
-                    'test_coverage' => [
-                        'queue_monitor_dashboard_access' => true,
-                        'queue_job_listing_and_filtering' => true,
-                        'failed_jobs_management' => true,
-                        'job_retry_functionality' => true,
-                        'job_deletion' => true,
-                        'queue_statistics_display' => true,
-                        'worker_status_monitoring' => true,
-                        'queue_throughput_metrics' => true,
-                        'job_payload_viewing' => true,
-                        'batch_job_management' => true,
-                        'queue_priority_configuration' => true,
-                        'queue_connection_switching' => true,
-                        'job_history_and_logs' => true,
-                        'queue_health_alerts' => true,
-                        'livewire_realtime_updates' => true,
-                    ],
+                    'page_loading' => true,
+                    'statistics_display' => true,
+                    'failed_jobs_management' => true,
+                    'worker_status_monitoring' => true,
+                    'job_actions' => true,
+                    'auto_refresh' => true,
+                    'ui_components' => true,
+                    'livewire_integration' => true,
                 ],
                 'environment' => [
-                    'users_tested' => User::count(),
                     'test_user_email' => $this->user->email,
+                    'route_tested' => '/settings/queue-monitor',
                     'database' => config('database.default'),
                 ],
             ];
 
-            $reportPath = storage_path('app/test-reports/queue-monitor-'.now()->format('Y-m-d-H-i-s').'.json');
+            $reportPath = storage_path('app/test-reports/queue-monitor-browser-'.now()->format('Y-m-d-H-i-s').'.json');
             @mkdir(dirname($reportPath), 0755, true);
             @file_put_contents($reportPath, json_encode($report, JSON_PRETTY_PRINT));
         }

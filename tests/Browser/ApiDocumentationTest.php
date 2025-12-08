@@ -133,7 +133,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'project') ||
                 str_contains($pageSource, '/api/v1/projects');
 
-            $this->assertTrue($hasProjectsEndpoints || true, 'Projects API endpoints should be documented');
+            $this->assertTrue($hasProjectsEndpoints, 'Projects API endpoints should be documented');
 
             $this->testResults['projects_endpoints'] = 'Projects API endpoints are documented';
         });
@@ -158,7 +158,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'server') ||
                 str_contains($pageSource, '/api/v1/servers');
 
-            $this->assertTrue($hasServersEndpoints || true, 'Servers API endpoints should be documented');
+            $this->assertTrue($hasServersEndpoints, 'Servers API endpoints should be documented');
 
             $this->testResults['servers_endpoints'] = 'Servers API endpoints are documented';
         });
@@ -183,7 +183,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'deployment') ||
                 str_contains($pageSource, 'deploy');
 
-            $this->assertTrue($hasDeploymentsEndpoints || true, 'Deployments API endpoints should be documented');
+            $this->assertTrue($hasDeploymentsEndpoints, 'Deployments API endpoints should be documented');
 
             $this->testResults['deployments_endpoints'] = 'Deployments API endpoints are documented';
         });
@@ -210,7 +210,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'request') ||
                 str_contains($pageSource, 'sample');
 
-            $this->assertTrue($hasRequestExamples || true, 'API request examples should be shown');
+            $this->assertTrue($hasRequestExamples, 'API request examples should be shown');
 
             $this->testResults['request_examples'] = 'API request examples are shown';
         });
@@ -237,7 +237,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'status') ||
                 str_contains($pageSource, '200');
 
-            $this->assertTrue($hasResponseExamples || true, 'API response examples should be displayed');
+            $this->assertTrue($hasResponseExamples, 'API response examples should be displayed');
 
             $this->testResults['response_examples'] = 'API response examples are displayed';
         });
@@ -291,7 +291,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'version') ||
                 str_contains($pageSource, '/api/v1');
 
-            $this->assertTrue($hasVersioning || true, 'API versioning information should be shown');
+            $this->assertTrue($hasVersioning, 'API versioning information should be shown');
 
             $this->testResults['api_versioning'] = 'API versioning information is shown';
         });
@@ -318,7 +318,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'api key') ||
                 str_contains($pageSource, 'api token');
 
-            $this->assertTrue($hasAuthRequirements || true, 'Authentication requirements should be documented');
+            $this->assertTrue($hasAuthRequirements, 'Authentication requirements should be documented');
 
             $this->testResults['auth_requirements'] = 'Authentication requirements are documented';
         });
@@ -345,7 +345,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'requests per') ||
                 str_contains($pageSource, 'quota');
 
-            $this->assertTrue($hasRateLimiting || true, 'Rate limiting information should be displayed');
+            $this->assertTrue($hasRateLimiting, 'Rate limiting information should be displayed');
 
             $this->testResults['rate_limiting'] = 'Rate limiting information is displayed';
         });
@@ -375,7 +375,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, '500') ||
                 str_contains(strtolower($pageSource), 'error');
 
-            $this->assertTrue($hasErrorCodes || true, 'Error codes should be documented');
+            $this->assertTrue($hasErrorCodes, 'Error codes should be documented');
 
             $this->testResults['error_codes'] = 'Error codes are documented';
         });
@@ -401,7 +401,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'callback') ||
                 str_contains($pageSource, 'event');
 
-            $this->assertTrue($hasWebhookDocs || true, 'Webhook documentation should be available');
+            $this->assertTrue($hasWebhookDocs, 'Webhook documentation should be available');
 
             $this->testResults['webhook_docs'] = 'Webhook documentation is available';
         });
@@ -428,7 +428,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'server') ||
                 str_contains($pageSource, 'deployment');
 
-            $this->assertTrue($hasSections || true, 'Should have navigable API sections');
+            $this->assertTrue($hasSections, 'Should have navigable API sections');
 
             // Try clicking on a section if clickable elements exist
             try {
@@ -463,7 +463,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'api token') ||
                 str_contains($pageSource, '/settings/api-tokens');
 
-            $this->assertTrue($hasTokenLink || true, 'API token creation link should be visible');
+            $this->assertTrue($hasTokenLink, 'API token creation link should be visible');
 
             $this->testResults['token_creation_link'] = 'API token creation link is visible';
         });
@@ -489,7 +489,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, '/api/v1') ||
                 str_contains($pageSource, 'endpoint');
 
-            $this->assertTrue($hasBaseUrl || true, 'API base URL should be documented');
+            $this->assertTrue($hasBaseUrl, 'API base URL should be documented');
 
             $this->testResults['base_url'] = 'API base URL is documented';
         });
@@ -516,7 +516,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'content-type') ||
                 str_contains($pageSource, 'authorization');
 
-            $this->assertTrue($hasHeaders || true, 'Request headers should be documented');
+            $this->assertTrue($hasHeaders, 'Request headers should be documented');
 
             $this->testResults['request_headers'] = 'Request headers are documented';
         });
@@ -543,7 +543,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'meta') ||
                 str_contains($pageSource, 'format');
 
-            $this->assertTrue($hasResponseFormats || true, 'Response formats should be explained');
+            $this->assertTrue($hasResponseFormats, 'Response formats should be explained');
 
             $this->testResults['response_formats'] = 'Response formats are explained';
         });
@@ -570,7 +570,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'page') ||
                 str_contains($pageSource, 'limit');
 
-            $this->assertTrue($hasPagination || true, 'Pagination documentation should be present');
+            $this->assertTrue($hasPagination, 'Pagination documentation should be present');
 
             $this->testResults['pagination_docs'] = 'Pagination documentation is present';
         });
@@ -597,7 +597,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'order') ||
                 str_contains($pageSource, 'parameter');
 
-            $this->assertTrue($hasFiltering || true, 'Filtering and sorting parameters should be documented');
+            $this->assertTrue($hasFiltering, 'Filtering and sorting parameters should be documented');
 
             $this->testResults['filtering_sorting'] = 'Filtering and sorting parameters are documented';
         });
@@ -625,7 +625,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'language-') ||
                 str_contains($pageSource, 'highlight');
 
-            $this->assertTrue($hasCodeSnippets || true, 'Code snippets should be syntax highlighted');
+            $this->assertTrue($hasCodeSnippets, 'Code snippets should be syntax highlighted');
 
             $this->testResults['code_snippets'] = 'Code snippets are syntax highlighted';
         });
@@ -652,7 +652,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'history') ||
                 str_contains($pageSource, 'release');
 
-            $this->assertTrue($hasChangelog || true, 'API changelog should be available');
+            $this->assertTrue($hasChangelog, 'API changelog should be available');
 
             $this->testResults['api_changelog'] = 'API changelog is available';
         });
@@ -678,7 +678,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'type="search"') ||
                 str_contains($pageSource, 'placeholder');
 
-            $this->assertTrue($hasSearch || true, 'Search functionality should be in documentation');
+            $this->assertTrue($hasSearch, 'Search functionality should be in documentation');
 
             $this->testResults['docs_search'] = 'Search functionality is in documentation';
         });
@@ -705,7 +705,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'playground') ||
                 str_contains($pageSource, 'execute');
 
-            $this->assertTrue($hasRequestBuilder || true, 'API request builder should be present');
+            $this->assertTrue($hasRequestBuilder, 'API request builder should be present');
 
             $this->testResults['request_builder'] = 'API request builder is present';
         });
@@ -732,7 +732,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'request') ||
                 str_contains($pageSource, 'analytics');
 
-            $this->assertTrue($hasUsageStats || true, 'API usage statistics should be shown');
+            $this->assertTrue($hasUsageStats, 'API usage statistics should be shown');
 
             $this->testResults['usage_statistics'] = 'API usage statistics are shown';
         });
@@ -793,7 +793,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'version 1') ||
                 str_contains($pageSource, 'api version');
 
-            $this->assertTrue($hasVersions || true, 'Multiple API versions should be documented');
+            $this->assertTrue($hasVersions, 'Multiple API versions should be documented');
 
             $this->testResults['api_versions'] = 'Multiple API versions are documented';
         });
@@ -820,7 +820,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'webhook') ||
                 str_contains($pageSource, 'trigger');
 
-            $this->assertTrue($hasWebhookEvents || true, 'Webhook event types should be listed');
+            $this->assertTrue($hasWebhookEvents, 'Webhook event types should be listed');
 
             $this->testResults['webhook_events'] = 'Webhook event types are listed';
         });
@@ -847,7 +847,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'secure') ||
                 str_contains($pageSource, 'best practice');
 
-            $this->assertTrue($hasSecurity || true, 'API security best practices should be documented');
+            $this->assertTrue($hasSecurity, 'API security best practices should be documented');
 
             $this->testResults['security_practices'] = 'API security best practices are documented';
         });
@@ -874,7 +874,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'ability') ||
                 str_contains($pageSource, 'access');
 
-            $this->assertTrue($hasScopes || true, 'API token scopes should be explained');
+            $this->assertTrue($hasScopes, 'API token scopes should be explained');
 
             $this->testResults['token_scopes'] = 'API token scopes are explained';
         });
@@ -901,7 +901,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'optional') ||
                 str_contains($pageSource, 'type');
 
-            $this->assertTrue($hasParameters || true, 'API endpoint parameters should be detailed');
+            $this->assertTrue($hasParameters, 'API endpoint parameters should be detailed');
 
             $this->testResults['endpoint_parameters'] = 'API endpoint parameters are detailed';
         });
@@ -929,7 +929,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'integer') ||
                 str_contains($pageSource, 'rule');
 
-            $this->assertTrue($hasValidation || true, 'API data validation rules should be shown');
+            $this->assertTrue($hasValidation, 'API data validation rules should be shown');
 
             $this->testResults['validation_rules'] = 'API data validation rules are shown';
         });
@@ -956,7 +956,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'introduction') ||
                 str_contains($pageSource, 'overview');
 
-            $this->assertTrue($hasQuickStart || true, 'Quick start guide should be available');
+            $this->assertTrue($hasQuickStart, 'Quick start guide should be available');
 
             $this->testResults['quick_start'] = 'Quick start guide is available';
         });
@@ -983,7 +983,7 @@ class ApiDocumentationTest extends DuskTestCase
                 str_contains($pageSource, 'api') ||
                 str_contains($pageSource, 'documentation');
 
-            $this->assertTrue($hasContent || true, 'API documentation should be mobile responsive');
+            $this->assertTrue($hasContent, 'API documentation should be mobile responsive');
 
             $this->testResults['mobile_responsive'] = 'API documentation is mobile responsive';
 

@@ -288,7 +288,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'pending') ||
                 str_contains($pageSource, 'verification');
 
-            $this->assertTrue($hasDNSStatus || true, 'DNS configuration status should be shown');
+            $this->assertTrue($hasDNSStatus, 'DNS configuration status should be shown');
 
             $this->testResults['dns_configuration_status'] = 'DNS configuration status is shown';
         });
@@ -318,7 +318,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'domain') ||
                 str_contains($pageSource, 'Domain');
 
-            $this->assertTrue($hasCount || true, 'Domain count should be accurate');
+            $this->assertTrue($hasCount, 'Domain count should be accurate');
 
             $this->testResults['domain_count'] = "Domain count is accurate ({$domainCount} domains)";
         });
@@ -346,7 +346,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'Create Domain') ||
                 str_contains($pageSource, 'add-domain');
 
-            $this->assertTrue($hasAddButton || true, 'Add new domain button should be visible');
+            $this->assertTrue($hasAddButton, 'Add new domain button should be visible');
 
             $this->testResults['add_domain_button'] = 'Add new domain button is visible';
         });
@@ -374,7 +374,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'update') ||
                 str_contains($pageSource, 'configure');
 
-            $this->assertTrue($hasEditButton || true, 'Domain edit functionality should be present');
+            $this->assertTrue($hasEditButton, 'Domain edit functionality should be present');
 
             $this->testResults['edit_functionality'] = 'Domain edit functionality is present';
         });
@@ -402,7 +402,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'trash') ||
                 str_contains($pageSource, 'danger');
 
-            $this->assertTrue($hasDeleteOption || true, 'Domain deletion option should be available');
+            $this->assertTrue($hasDeleteOption, 'Domain deletion option should be available');
 
             $this->testResults['deletion_option'] = 'Domain deletion option is available';
         });
@@ -430,7 +430,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'warning') ||
                 str_contains($pageSource, 'renew');
 
-            $this->assertTrue($hasExpiryWarning || true, 'SSL certificate expiry warning should be shown');
+            $this->assertTrue($hasExpiryWarning, 'SSL certificate expiry warning should be shown');
 
             $this->testResults['ssl_expiry_warning'] = 'SSL certificate expiry warning is shown';
         });
@@ -458,7 +458,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'pending') ||
                 str_contains($pageSource, 'active');
 
-            $this->assertTrue($hasVerificationStatus || true, 'Domain verification status should display correctly');
+            $this->assertTrue($hasVerificationStatus, 'Domain verification status should display correctly');
 
             $this->testResults['verification_status'] = 'Domain verification status displays correctly';
         });
@@ -486,7 +486,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'api.') ||
                 str_contains($pageSource, 'www.');
 
-            $this->assertTrue($hasSubdomain || true, 'Subdomain support should be indicated');
+            $this->assertTrue($hasSubdomain, 'Subdomain support should be indicated');
 
             $this->testResults['subdomain_support'] = 'Subdomain support is indicated';
         });
@@ -514,7 +514,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'provider') ||
                 str_contains($pageSource, 'certbot');
 
-            $this->assertTrue($hasProviderInfo || true, 'SSL provider information should be displayed');
+            $this->assertTrue($hasProviderInfo, 'SSL provider information should be displayed');
 
             $this->testResults['ssl_provider_info'] = 'SSL provider information is displayed';
         });
@@ -542,7 +542,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'automatic') ||
                 str_contains($pageSource, 'enabled');
 
-            $this->assertTrue($hasAutoRenew || true, 'Auto-renew SSL status should be visible');
+            $this->assertTrue($hasAutoRenew, 'Auto-renew SSL status should be visible');
 
             $this->testResults['auto_renew_status'] = 'Auto-renew SSL status is visible';
         });
@@ -570,7 +570,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'yellow') ||
                 str_contains($pageSource, 'status');
 
-            $this->assertTrue($hasColorCoding || true, 'Domain status badges should be color-coded');
+            $this->assertTrue($hasColorCoding, 'Domain status badges should be color-coded');
 
             $this->testResults['status_badges_color'] = 'Domain status badges are color-coded';
         });
@@ -598,7 +598,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'not configured') ||
                 str_contains($pageSource, 'setup required');
 
-            $this->assertTrue($hasPendingHighlight || true, 'Pending DNS domains should be highlighted');
+            $this->assertTrue($hasPendingHighlight, 'Pending DNS domains should be highlighted');
 
             $this->testResults['pending_dns_highlighted'] = 'Pending DNS domains are highlighted';
         });
@@ -626,7 +626,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'primary') ||
                 str_contains($pageSource, 'setPrimary');
 
-            $this->assertTrue($hasSetPrimaryAction || true, 'Set primary domain action should be available');
+            $this->assertTrue($hasSetPrimaryAction, 'Set primary domain action should be available');
 
             $this->testResults['set_primary_action'] = 'Set primary domain action is available';
         });
@@ -654,7 +654,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'type="text"') ||
                 str_contains($pageSource, 'wire:model');
 
-            $this->assertTrue($hasSearchFilter || true, 'Domain search/filter functionality should be present');
+            $this->assertTrue($hasSearchFilter, 'Domain search/filter functionality should be present');
 
             $this->testResults['search_filter'] = 'Domain search/filter functionality is present';
         });
@@ -682,7 +682,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'days') ||
                 str_contains($pageSource, '202'); // Year pattern
 
-            $this->assertTrue($hasSSLDates || true, 'SSL certificate dates should be displayed');
+            $this->assertTrue($hasSSLDates, 'SSL certificate dates should be displayed');
 
             $this->testResults['ssl_dates'] = 'SSL certificate dates are displayed';
         });
@@ -710,7 +710,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'Validate') ||
                 str_contains($pageSource, 'verify');
 
-            $this->assertTrue($hasVerifyButton || true, 'Verify domain DNS button should be present');
+            $this->assertTrue($hasVerifyButton, 'Verify domain DNS button should be present');
 
             $this->testResults['verify_dns_button'] = 'Verify domain DNS button is present';
         });
@@ -738,7 +738,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'Get SSL') ||
                 str_contains($pageSource, 'enableSsl');
 
-            $this->assertTrue($hasEnableSSL || true, 'Enable SSL button should be available for non-SSL domains');
+            $this->assertTrue($hasEnableSSL, 'Enable SSL button should be available for non-SSL domains');
 
             $this->testResults['enable_ssl_button'] = 'Enable SSL button is available for non-SSL domains';
         });
@@ -766,7 +766,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'modal') ||
                 str_contains($pageSource, 'wire:click');
 
-            $this->assertTrue($hasModalTrigger || true, 'Domain details modal should be openable');
+            $this->assertTrue($hasModalTrigger, 'Domain details modal should be openable');
 
             $this->testResults['details_modal'] = 'Domain details modal can be opened';
         });
@@ -794,7 +794,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'disabled') ||
                 str_contains($pageSource, 'gray');
 
-            $this->assertTrue($hasInactiveStyle || true, 'Inactive domains should be visually distinguished');
+            $this->assertTrue($hasInactiveStyle, 'Inactive domains should be visually distinguished');
 
             $this->testResults['inactive_distinguished'] = 'Inactive domains are visually distinguished';
         });
@@ -822,7 +822,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'error') ||
                 str_contains($pageSource, 'invalid');
 
-            $this->assertTrue($hasValidation || true, 'Domain creation form validation should be present');
+            $this->assertTrue($hasValidation, 'Domain creation form validation should be present');
 
             $this->testResults['form_validation'] = 'Domain creation form validation is present';
         });
@@ -850,7 +850,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'instruction') ||
                 str_contains($pageSource, 'record');
 
-            $this->assertTrue($hasInstructions || true, 'DNS configuration instructions should be available');
+            $this->assertTrue($hasInstructions, 'DNS configuration instructions should be available');
 
             $this->testResults['dns_instructions'] = 'DNS configuration instructions are available';
         });
@@ -878,7 +878,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'Update Certificate') ||
                 str_contains($pageSource, 'renewSsl');
 
-            $this->assertTrue($hasRenewalAction || true, 'SSL renewal action should be available');
+            $this->assertTrue($hasRenewalAction, 'SSL renewal action should be available');
 
             $this->testResults['ssl_renewal_action'] = 'SSL renewal action is available';
         });
@@ -906,7 +906,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'alias') ||
                 str_contains($pageSource, '301');
 
-            $this->assertTrue($hasRedirection || true, 'Domain redirection settings should be accessible');
+            $this->assertTrue($hasRedirection, 'Domain redirection settings should be accessible');
 
             $this->testResults['redirection_settings'] = 'Domain redirection settings are accessible';
         });
@@ -934,7 +934,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'Secure') ||
                 str_contains($pageSource, 'SSL redirect');
 
-            $this->assertTrue($hasForceHTTPS || true, 'Force HTTPS option should be visible');
+            $this->assertTrue($hasForceHTTPS, 'Force HTTPS option should be visible');
 
             $this->testResults['force_https_option'] = 'Force HTTPS option is visible';
         });
@@ -962,7 +962,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'valid until') ||
                 str_contains($pageSource, 'expiry');
 
-            $this->assertTrue($hasExpiryTracking || true, 'Domain expiry tracking for SSL should be shown');
+            $this->assertTrue($hasExpiryTracking, 'Domain expiry tracking for SSL should be shown');
 
             $this->testResults['expiry_tracking'] = 'Domain expiry tracking for SSL is shown';
         });
@@ -990,7 +990,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'checkbox') ||
                 str_contains($pageSource, 'selected');
 
-            $this->assertTrue($hasBulkActions || true, 'Bulk domain actions should be available');
+            $this->assertTrue($hasBulkActions, 'Bulk domain actions should be available');
 
             $this->testResults['bulk_actions'] = 'Bulk domain actions are available';
         });
@@ -1018,7 +1018,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'reachable') ||
                 str_contains($pageSource, 'status');
 
-            $this->assertTrue($hasHealthCheck || true, 'Domain health check status should be displayed');
+            $this->assertTrue($hasHealthCheck, 'Domain health check status should be displayed');
 
             $this->testResults['health_check_status'] = 'Domain health check status is displayed';
         });
@@ -1074,7 +1074,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'orderBy') ||
                 str_contains($pageSource, 'order');
 
-            $this->assertTrue($hasSorting || true, 'Domain sorting functionality should be available');
+            $this->assertTrue($hasSorting, 'Domain sorting functionality should be available');
 
             $this->testResults['sorting_functionality'] = 'Domain sorting functionality is available';
         });
@@ -1102,7 +1102,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'showing') ||
                 str_contains($pageSource, 'of');
 
-            $this->assertTrue($hasPagination || true, 'Domain pagination should work correctly');
+            $this->assertTrue($hasPagination, 'Domain pagination should work correctly');
 
             $this->testResults['pagination'] = 'Domain pagination works correctly';
         });
@@ -1130,7 +1130,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'dns') ||
                 str_contains($pageSource, 'record');
 
-            $this->assertTrue($hasDNSRecords || true, 'Domain DNS records should display correctly');
+            $this->assertTrue($hasDNSRecords, 'Domain DNS records should display correctly');
 
             $this->testResults['dns_records_display'] = 'Domain DNS records display correctly';
         });
@@ -1158,7 +1158,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'validity') ||
                 str_contains($pageSource, 'ssl');
 
-            $this->assertTrue($hasDetailedSSL || true, 'Domain SSL certificate information should be detailed');
+            $this->assertTrue($hasDetailedSSL, 'Domain SSL certificate information should be detailed');
 
             $this->testResults['ssl_certificate_detailed'] = 'Domain SSL certificate information is detailed';
         });
@@ -1185,7 +1185,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'Wildcard') ||
                 str_contains($pageSource, '*.');
 
-            $this->assertTrue($hasWildcardSupport || true, 'Domain wildcard SSL support should be indicated');
+            $this->assertTrue($hasWildcardSupport, 'Domain wildcard SSL support should be indicated');
 
             $this->testResults['wildcard_ssl_support'] = 'Domain wildcard SSL support is indicated';
         });
@@ -1213,7 +1213,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'dropdown') ||
                 str_contains($pageSource, 'menu');
 
-            $this->assertTrue($hasQuickActions || true, 'Domain quick actions menu should be accessible');
+            $this->assertTrue($hasQuickActions, 'Domain quick actions menu should be accessible');
 
             $this->testResults['quick_actions_menu'] = 'Domain quick actions menu is accessible';
         });
@@ -1241,7 +1241,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'download') ||
                 str_contains($pageSource, 'CSV');
 
-            $this->assertTrue($hasImportExport || true, 'Domain import/export functionality should be present');
+            $this->assertTrue($hasImportExport, 'Domain import/export functionality should be present');
 
             $this->testResults['import_export_functionality'] = 'Domain import/export functionality is present';
         });
@@ -1269,7 +1269,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'log') ||
                 str_contains($pageSource, 'audit');
 
-            $this->assertTrue($hasActivityLog || true, 'Domain activity log should be viewable');
+            $this->assertTrue($hasActivityLog, 'Domain activity log should be viewable');
 
             $this->testResults['activity_log'] = 'Domain activity log is viewable';
         });
@@ -1297,7 +1297,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'warning') ||
                 str_contains($pageSource, 'expired');
 
-            $this->assertTrue($hasErrorAlerts || true, 'Domain error alerts should be displayed prominently');
+            $this->assertTrue($hasErrorAlerts, 'Domain error alerts should be displayed prominently');
 
             $this->testResults['error_alerts'] = 'Domain error alerts are displayed prominently';
         });
@@ -1325,7 +1325,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'Copy') ||
                 str_contains($pageSource, 'clone');
 
-            $this->assertTrue($hasClone || true, 'Domain clone/duplicate functionality should be available');
+            $this->assertTrue($hasClone, 'Domain clone/duplicate functionality should be available');
 
             $this->testResults['clone_functionality'] = 'Domain clone/duplicate functionality is available';
         });
@@ -1353,7 +1353,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'active') ||
                 str_contains($pageSource, 'count');
 
-            $this->assertTrue($hasStatistics || true, 'Domain statistics summary should be shown');
+            $this->assertTrue($hasStatistics, 'Domain statistics summary should be shown');
 
             $this->testResults['statistics_summary'] = 'Domain statistics summary is shown';
         });
@@ -1381,7 +1381,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'wire:model') ||
                 str_contains($pageSource, 'name=');
 
-            $this->assertTrue($hasInputFields || true, 'Domain form should have proper input fields');
+            $this->assertTrue($hasInputFields, 'Domain form should have proper input fields');
 
             $this->testResults['form_input_fields'] = 'Domain form has proper input fields';
         });
@@ -1409,7 +1409,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'active') ||
                 str_contains($pageSource, 'inactive');
 
-            $this->assertTrue($hasStatusFilter || true, 'Domain status filter functionality should work');
+            $this->assertTrue($hasStatusFilter, 'Domain status filter functionality should work');
 
             $this->testResults['status_filter'] = 'Domain status filter functionality works';
         });
@@ -1437,7 +1437,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'enabled') ||
                 str_contains($pageSource, 'secure');
 
-            $this->assertTrue($hasSSLFilter || true, 'Domain SSL filter functionality should work');
+            $this->assertTrue($hasSSLFilter, 'Domain SSL filter functionality should work');
 
             $this->testResults['ssl_filter'] = 'Domain SSL filter functionality works';
         });
@@ -1465,7 +1465,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'Reload') ||
                 str_contains($pageSource, 'refresh');
 
-            $this->assertTrue($hasRefreshSync || true, 'Domain refresh/sync button should be available');
+            $this->assertTrue($hasRefreshSync, 'Domain refresh/sync button should be available');
 
             $this->testResults['refresh_sync_button'] = 'Domain refresh/sync button is available';
         });
@@ -1493,7 +1493,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'checking') ||
                 str_contains($pageSource, 'pending');
 
-            $this->assertTrue($hasProgressIndicator || true, 'Domain DNS verification progress indicator should work');
+            $this->assertTrue($hasProgressIndicator, 'Domain DNS verification progress indicator should work');
 
             $this->testResults['dns_verification_progress'] = 'Domain DNS verification progress indicator works';
         });
@@ -1521,7 +1521,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'Guide') ||
                 str_contains($pageSource, 'docs');
 
-            $this->assertTrue($hasDocumentation || true, 'Domain documentation links should be accessible');
+            $this->assertTrue($hasDocumentation, 'Domain documentation links should be accessible');
 
             $this->testResults['documentation_links'] = 'Domain documentation links are accessible';
         });
@@ -1549,7 +1549,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'email') ||
                 str_contains($pageSource, 'notify');
 
-            $this->assertTrue($hasNotificationPrefs || true, 'Domain notifications preferences should be configurable');
+            $this->assertTrue($hasNotificationPrefs, 'Domain notifications preferences should be configurable');
 
             $this->testResults['notifications_preferences'] = 'Domain notifications preferences are configurable';
         });
@@ -1577,7 +1577,7 @@ class DomainsTest extends DuskTestCase
                 str_contains($pageSource, 'response') ||
                 str_contains($pageSource, 'metric');
 
-            $this->assertTrue($hasPerformanceMetrics || true, 'Domain performance metrics should be visible');
+            $this->assertTrue($hasPerformanceMetrics, 'Domain performance metrics should be visible');
 
             $this->testResults['performance_metrics'] = 'Domain performance metrics are visible';
         });

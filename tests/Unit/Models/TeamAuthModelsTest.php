@@ -13,12 +13,10 @@ use App\Models\Team;
 use App\Models\TeamInvitation;
 use App\Models\TeamMember;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class TeamAuthModelsTest extends TestCase
 {
-    use RefreshDatabase;
 
     // ========================================
     // Team Model Tests

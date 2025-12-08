@@ -10,14 +10,12 @@ use App\Models\TeamInvitation;
 use App\Models\TeamMember;
 use App\Models\User;
 use App\Services\TeamService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class TeamServiceTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected TeamService $service;
 

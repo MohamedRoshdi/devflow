@@ -22,13 +22,14 @@ class SSHKeyFactory extends Factory
     public function definition(): array
     {
         $type = fake()->randomElement(['ed25519', 'rsa', 'ecdsa']);
+        $privateKey = $this->generateMockPrivateKey($type);
 
         return [
             'user_id' => User::factory(),
             'name' => fake()->words(2, true).' SSH Key',
             'type' => $type,
             'public_key' => $this->generateMockPublicKey($type),
-            'private_key_encrypted' => null,
+            'private_key_encrypted' => Crypt::encryptString($privateKey),
             'fingerprint' => $this->generateMockFingerprint(),
             'expires_at' => fake()->optional(0.3)->dateTimeBetween('now', '+1 year'),
         ];

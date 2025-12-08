@@ -36,7 +36,7 @@ class LogSourceFactory extends Factory
             'path' => $source['path'],
             'is_active' => fake()->boolean(80),
             'last_synced_at' => fake()->boolean(70) ? fake()->dateTimeBetween('-7 days', 'now') : null,
-            'last_position' => fake()->boolean(70) ? fake()->numberBetween(0, 1000000) : null,
+            'last_position' => fake()->numberBetween(0, 1000000),
         ];
     }
 }

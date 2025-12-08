@@ -367,7 +367,7 @@ class ServerTagsTest extends DuskTestCase
                 str_contains($pageSource, 'orderby') ||
                 str_contains($pageSource, 'sort');
 
-            $this->assertTrue($hasSorting || true, 'Tag list should be sortable');
+            $this->assertTrue($hasSorting, 'Tag list should be sortable');
             $this->testResults['tag_list_sortable'] = 'Tag list is sortable';
         });
     }
@@ -391,7 +391,7 @@ class ServerTagsTest extends DuskTestCase
                 str_contains($pageSource, 'tag') ||
                 str_contains($pageSource, 'label');
 
-            $this->assertTrue($hasTagsOnServerList || true, 'Server list should show tags');
+            $this->assertTrue($hasTagsOnServerList, 'Server list should show tags');
             $this->testResults['server_list_tags'] = 'Server list page shows tags';
         });
     }
@@ -415,7 +415,7 @@ class ServerTagsTest extends DuskTestCase
                 str_contains($pageSource, 'tag') ||
                 str_contains($pageSource, 'label');
 
-            $this->assertTrue($hasTagsOnDetail || true, 'Server detail should show tags');
+            $this->assertTrue($hasTagsOnDetail, 'Server detail should show tags');
             $this->testResults['server_detail_tags'] = 'Server detail page shows tags';
         });
     }
@@ -440,7 +440,7 @@ class ServerTagsTest extends DuskTestCase
                 str_contains($pageSource, 'Assign Tag') ||
                 str_contains($pageSource, 'Add Tag');
 
-            $this->assertTrue($hasTagAssignment || true, 'Tag assignment interface should be available');
+            $this->assertTrue($hasTagAssignment, 'Tag assignment interface should be available');
             $this->testResults['tag_assignment_interface'] = 'Tag assignment interface is available';
         });
     }
@@ -465,7 +465,7 @@ class ServerTagsTest extends DuskTestCase
                 str_contains($pageSource, 'Remove Tag') ||
                 str_contains($pageSource, 'detachTag');
 
-            $this->assertTrue($hasTagRemoval || true, 'Tag removal interface should be available');
+            $this->assertTrue($hasTagRemoval, 'Tag removal interface should be available');
             $this->testResults['tag_removal_interface'] = 'Tag removal interface is available';
         });
     }
@@ -490,7 +490,7 @@ class ServerTagsTest extends DuskTestCase
                 str_contains($pageSource, 'filter by tag') ||
                 str_contains($pageSource, 'selectedtag');
 
-            $this->assertTrue($hasTagFilter || true, 'Server filter by tag should be available');
+            $this->assertTrue($hasTagFilter, 'Server filter by tag should be available');
             $this->testResults['server_filter_by_tag'] = 'Server filter by tag is available';
         });
     }
@@ -515,7 +515,7 @@ class ServerTagsTest extends DuskTestCase
                 str_contains($pageSource, 'Search tags') ||
                 str_contains($pageSource, 'wire:model.live="search"');
 
-            $this->assertTrue($hasTagSearch || true, 'Tag search functionality should be present');
+            $this->assertTrue($hasTagSearch, 'Tag search functionality should be present');
             $this->testResults['tag_search'] = 'Tag search functionality is present';
         });
     }
@@ -540,7 +540,7 @@ class ServerTagsTest extends DuskTestCase
                 str_contains($pageSource, 'statistics') ||
                 str_contains($pageSource, 'count');
 
-            $this->assertTrue($hasStatistics || true, 'Tag statistics should be displayed');
+            $this->assertTrue($hasStatistics, 'Tag statistics should be displayed');
             $this->testResults['tag_statistics'] = 'Tag statistics are displayed';
         });
     }
@@ -589,7 +589,7 @@ class ServerTagsTest extends DuskTestCase
                 str_contains($pageSource, 'Bulk Assign') ||
                 str_contains($pageSource, 'selectedServers');
 
-            $this->assertTrue($hasBulkTagAssignment || true, 'Bulk tag assignment should be available');
+            $this->assertTrue($hasBulkTagAssignment, 'Bulk tag assignment should be available');
             $this->testResults['bulk_tag_assignment'] = 'Bulk tag assignment is available';
         });
     }
@@ -613,7 +613,7 @@ class ServerTagsTest extends DuskTestCase
                 str_contains($pageSource, 'bulkRemoveTag') ||
                 str_contains($pageSource, 'Bulk Remove');
 
-            $this->assertTrue($hasBulkTagRemoval || true, 'Bulk tag removal should be available');
+            $this->assertTrue($hasBulkTagRemoval, 'Bulk tag removal should be available');
             $this->testResults['bulk_tag_removal'] = 'Bulk tag removal is available';
         });
     }
@@ -638,7 +638,7 @@ class ServerTagsTest extends DuskTestCase
                 str_contains($pageSource, 'suggestions') ||
                 str_contains($pageSource, 'datalist');
 
-            $this->assertTrue($hasAutoSuggestion || true, 'Tag auto-suggestion should be present');
+            $this->assertTrue($hasAutoSuggestion, 'Tag auto-suggestion should be present');
             $this->testResults['tag_auto_suggestion'] = 'Tag auto-suggestion is present';
         });
     }
@@ -663,7 +663,7 @@ class ServerTagsTest extends DuskTestCase
                 str_contains($pageSource, 'group') ||
                 str_contains($pageSource, 'groupby');
 
-            $this->assertTrue($hasCategoryGrouping || true, 'Tag category grouping should be available');
+            $this->assertTrue($hasCategoryGrouping, 'Tag category grouping should be available');
             $this->testResults['tag_category_grouping'] = 'Tag category grouping is available';
         });
     }
@@ -687,7 +687,7 @@ class ServerTagsTest extends DuskTestCase
                 str_contains($pageSource, 'group by tag') ||
                 str_contains($pageSource, 'groupbytag');
 
-            $this->assertTrue($hasServerGrouping || true, 'Tag-based server grouping should work');
+            $this->assertTrue($hasServerGrouping, 'Tag-based server grouping should work');
             $this->testResults['tag_based_server_grouping'] = 'Tag-based server grouping works';
         });
     }
@@ -712,7 +712,7 @@ class ServerTagsTest extends DuskTestCase
                 str_contains($pageSource, 'authorize') ||
                 str_contains($pageSource, 'permission');
 
-            $this->assertTrue($hasPermissions || true, 'Tag permissions should be enforced');
+            $this->assertTrue($hasPermissions, 'Tag permissions should be enforced');
             $this->testResults['tag_permissions'] = 'Tag permissions are enforced';
         });
     }
@@ -787,7 +787,7 @@ class ServerTagsTest extends DuskTestCase
                 str_contains($pageSource, 'Export') ||
                 str_contains($pageSource, 'download');
 
-            $this->assertTrue($hasExport || true, 'Tag export functionality should be available');
+            $this->assertTrue($hasExport, 'Tag export functionality should be available');
             $this->testResults['tag_export'] = 'Tag export functionality is available';
         });
     }
@@ -812,7 +812,7 @@ class ServerTagsTest extends DuskTestCase
                 str_contains($pageSource, 'Import') ||
                 str_contains($pageSource, 'upload');
 
-            $this->assertTrue($hasImport || true, 'Tag import functionality should be available');
+            $this->assertTrue($hasImport, 'Tag import functionality should be available');
             $this->testResults['tag_import'] = 'Tag import functionality is available';
         });
     }
@@ -1083,7 +1083,7 @@ class ServerTagsTest extends DuskTestCase
                 str_contains($pageSource, 'dropdown') ||
                 str_contains($pageSource, 'tag');
 
-            $this->assertTrue($hasDropdown || true, 'Tag assignment dropdown should be populated');
+            $this->assertTrue($hasDropdown, 'Tag assignment dropdown should be populated');
             $this->testResults['tag_assignment_dropdown'] = 'Tag assignment dropdown is populated';
         });
     }
@@ -1107,7 +1107,7 @@ class ServerTagsTest extends DuskTestCase
                 str_contains($pageSource, 'count') ||
                 str_contains($pageSource, 'server');
 
-            $this->assertTrue($hasFilterCount || true, 'Tag filter should show correct server count');
+            $this->assertTrue($hasFilterCount, 'Tag filter should show correct server count');
             $this->testResults['tag_filter_count'] = 'Tag filter shows correct server count';
         });
     }
@@ -1131,7 +1131,7 @@ class ServerTagsTest extends DuskTestCase
                 str_contains($pageSource, 'background-color') ||
                 str_contains($pageSource, 'bg-');
 
-            $this->assertTrue($hasColorInList || true, 'Tag color should be visible in server list');
+            $this->assertTrue($hasColorInList, 'Tag color should be visible in server list');
             $this->testResults['tag_color_in_list'] = 'Tag color is visible in server list';
         });
     }
@@ -1255,7 +1255,7 @@ class ServerTagsTest extends DuskTestCase
                 str_contains($pageSource, 'empty') ||
                 str_contains($pageSource, 'create your first tag');
 
-            $this->assertTrue($hasEmptyState || true, 'Tag empty state should be displayed when no tags exist');
+            $this->assertTrue($hasEmptyState, 'Tag empty state should be displayed when no tags exist');
             $this->testResults['tag_empty_state'] = 'Tag empty state is displayed';
         });
     }

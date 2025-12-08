@@ -8,14 +8,12 @@ use App\Models\PipelineConfig;
 use App\Models\Project;
 use App\Models\WebhookDelivery;
 use App\Services\WebhookService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
 use Mockery;
 use Tests\TestCase;
 
 class WebhookServiceTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected WebhookService $service;
 

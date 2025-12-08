@@ -8,7 +8,6 @@ use App\Models\AlertHistory;
 use App\Models\ResourceAlert;
 use App\Models\Server;
 use App\Services\AlertNotificationService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Mockery;
@@ -16,7 +15,6 @@ use Tests\TestCase;
 
 class AlertNotificationServiceTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected $seed = false;
 

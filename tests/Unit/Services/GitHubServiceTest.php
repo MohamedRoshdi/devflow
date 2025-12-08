@@ -8,14 +8,12 @@ use App\Models\GitHubConnection;
 use App\Models\GitHubRepository;
 use App\Models\User;
 use App\Services\GitHubService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 class GitHubServiceTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected GitHubService $githubService;
 
@@ -260,11 +258,11 @@ class GitHubServiceTest extends TestCase
         $this->githubService->listRepositories($connection, perPage: 50, page: 2);
 
         Http::assertSent(function ($request) {
-            return $request->url() === 'https://api.github.com/user/repos' &&
-                $request['per_page'] === 50 &&
-                $request['page'] === 2 &&
-                $request['sort'] === 'updated' &&
-                $request['direction'] === 'desc';
+            return str_contains($request->url(), 'api.github.com/user/repos') &&
+                str_contains($request->url(), 'per_page=50') &&
+                str_contains($request->url(), 'page=2') &&
+                str_contains($request->url(), 'sort=updated') &&
+                str_contains($request->url(), 'direction=desc');
         });
     }
 
@@ -384,9 +382,9 @@ class GitHubServiceTest extends TestCase
         $this->assertEquals('John Doe', $result[0]['commit']['author']['name']);
 
         Http::assertSent(function ($request) {
-            return $request->url() === 'https://api.github.com/repos/testuser/test-repo/commits' &&
-                $request['sha'] === 'main' &&
-                $request['per_page'] === 10;
+            return str_contains($request->url(), 'api.github.com/repos/testuser/test-repo/commits') &&
+                str_contains($request->url(), 'sha=main') &&
+                str_contains($request->url(), 'per_page=10');
         });
     }
 

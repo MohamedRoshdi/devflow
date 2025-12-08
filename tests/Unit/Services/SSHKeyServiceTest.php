@@ -6,14 +6,12 @@ use App\Models\Server;
 use App\Models\SSHKey;
 use App\Models\User;
 use App\Services\SSHKeyService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Process;
 use Mockery;
 use Tests\TestCase;
 
 class SSHKeyServiceTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected SSHKeyService $service;
 

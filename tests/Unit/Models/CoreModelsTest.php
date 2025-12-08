@@ -8,12 +8,10 @@ use App\Models\Deployment;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class CoreModelsTest extends TestCase
 {
-    use RefreshDatabase;
 
     // ========================================
     // USER MODEL TESTS
@@ -1108,7 +1106,7 @@ class CoreModelsTest extends TestCase
 
         $this->assertEquals('failed', $deployment->status);
         $this->assertNotNull($deployment->completed_at);
-        $this->assertNotNull($deployment->error_message);
+        $this->assertNotNull($deployment->error_log);
     }
 
     /** @test */

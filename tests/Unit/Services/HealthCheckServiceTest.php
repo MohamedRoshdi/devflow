@@ -10,7 +10,6 @@ use App\Models\NotificationChannel;
 use App\Models\Server;
 use App\Services\HealthCheckService;
 use App\Services\NotificationService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -19,7 +18,6 @@ use Tests\TestCase;
 
 class HealthCheckServiceTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected HealthCheckService $service;
 

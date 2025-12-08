@@ -336,7 +336,7 @@ class ServerMetricsTest extends DuskTestCase
                         str_contains($pageSource, 'csv') ||
                         str_contains($pageSource, 'exportmetrics');
 
-            $this->assertTrue($hasExport || true, 'Metrics export functionality should be available');
+            $this->assertTrue($hasExport, 'Metrics export functionality should be available');
             $this->testResults['metrics_export'] = 'Metrics export functionality is available';
         });
     }
@@ -360,7 +360,7 @@ class ServerMetricsTest extends DuskTestCase
                                  str_contains($pageSource, 'threshold') ||
                                  str_contains($pageSource, 'warning');
 
-            $this->assertTrue($hasAlertThresholds || true, 'Metrics alerting thresholds should be configurable');
+            $this->assertTrue($hasAlertThresholds, 'Metrics alerting thresholds should be configurable');
             $this->testResults['alert_thresholds'] = 'Metrics alerting thresholds are configurable';
         });
     }
@@ -432,7 +432,7 @@ class ServerMetricsTest extends DuskTestCase
                             str_contains($pageSource, 'comparison') ||
                             str_contains($pageSource, 'compare servers');
 
-            $this->assertTrue($hasComparison || true, 'Metrics comparison between servers should be available');
+            $this->assertTrue($hasComparison, 'Metrics comparison between servers should be available');
             $this->testResults['metrics_comparison'] = 'Metrics comparison between servers is available';
         });
     }
@@ -456,7 +456,7 @@ class ServerMetricsTest extends DuskTestCase
                                str_contains($pageSource, 'configure') ||
                                str_contains($pageSource, 'settings');
 
-            $this->assertTrue($hasCustomMetrics || true, 'Custom metrics configuration should be present');
+            $this->assertTrue($hasCustomMetrics, 'Custom metrics configuration should be present');
             $this->testResults['custom_metrics_config'] = 'Custom metrics configuration is present';
         });
     }
@@ -648,7 +648,7 @@ class ServerMetricsTest extends DuskTestCase
                                str_contains($pageSource, 'now') ||
                                str_contains($pageSource, 'live');
 
-            $this->assertTrue($hasCurrentValues || true, 'Metrics dashboard should show current values');
+            $this->assertTrue($hasCurrentValues, 'Metrics dashboard should show current values');
             $this->testResults['current_values'] = 'Metrics dashboard shows current values';
         });
     }
@@ -672,7 +672,7 @@ class ServerMetricsTest extends DuskTestCase
                             str_contains($pageSource, 'max') ||
                             str_contains($pageSource, 'highest');
 
-            $this->assertTrue($hasPeakValues || true, 'Metrics dashboard should show peak values');
+            $this->assertTrue($hasPeakValues, 'Metrics dashboard should show peak values');
             $this->testResults['peak_values'] = 'Metrics dashboard shows peak values';
         });
     }
@@ -696,7 +696,7 @@ class ServerMetricsTest extends DuskTestCase
                                str_contains($pageSource, 'avg') ||
                                str_contains($pageSource, 'mean');
 
-            $this->assertTrue($hasAverageValues || true, 'Metrics dashboard should show average values');
+            $this->assertTrue($hasAverageValues, 'Metrics dashboard should show average values');
             $this->testResults['average_values'] = 'Metrics dashboard shows average values';
         });
     }
@@ -720,7 +720,7 @@ class ServerMetricsTest extends DuskTestCase
                             str_contains($pageSource, 'from') ||
                             str_contains($pageSource, 'to');
 
-            $this->assertTrue($hasDateFilter || true, 'Metrics should be filterable by date range');
+            $this->assertTrue($hasDateFilter, 'Metrics should be filterable by date range');
             $this->testResults['date_filter'] = 'Metrics can be filtered by date range';
         });
     }
@@ -818,7 +818,7 @@ class ServerMetricsTest extends DuskTestCase
                          str_contains($pageSource, 'temp') ||
                          str_contains($pageSource, '°c');
 
-            $this->assertTrue($hasCpuTemp || true, 'CPU temperature should be monitored');
+            $this->assertTrue($hasCpuTemp, 'CPU temperature should be monitored');
             $this->testResults['cpu_temperature'] = 'CPU temperature is monitored';
         });
     }
@@ -842,7 +842,7 @@ class ServerMetricsTest extends DuskTestCase
                       str_contains($pageSource, 'swap usage') ||
                       str_contains($pageSource, 'swap_usage');
 
-            $this->assertTrue($hasSwap || true, 'Swap usage should be tracked');
+            $this->assertTrue($hasSwap, 'Swap usage should be tracked');
             $this->testResults['swap_usage'] = 'Swap usage is tracked';
         });
     }
@@ -866,7 +866,7 @@ class ServerMetricsTest extends DuskTestCase
                               str_contains($pageSource, 'io') ||
                               str_contains($pageSource, 'disk i/o');
 
-            $this->assertTrue($hasIoMonitoring || true, 'I/O operations should be monitored');
+            $this->assertTrue($hasIoMonitoring, 'I/O operations should be monitored');
             $this->testResults['io_monitoring'] = 'I/O operations are monitored';
         });
     }
@@ -890,7 +890,7 @@ class ServerMetricsTest extends DuskTestCase
                              str_contains($pageSource, 'connections') ||
                              str_contains($pageSource, 'active');
 
-            $this->assertTrue($hasConnections || true, 'Active connections should be displayed');
+            $this->assertTrue($hasConnections, 'Active connections should be displayed');
             $this->testResults['active_connections'] = 'Active connections are displayed';
         });
     }
@@ -914,7 +914,7 @@ class ServerMetricsTest extends DuskTestCase
                              str_contains($pageSource, 'score') ||
                              str_contains($pageSource, 'status');
 
-            $this->assertTrue($hasHealthScore || true, 'Server health score should be calculated');
+            $this->assertTrue($hasHealthScore, 'Server health score should be calculated');
             $this->testResults['health_score'] = 'Server health score is calculated';
         });
     }
@@ -938,7 +938,7 @@ class ServerMetricsTest extends DuskTestCase
                              str_contains($pageSource, 'configure') ||
                              str_contains($pageSource, 'threshold');
 
-            $this->assertTrue($hasAlertConfig || true, 'Metrics alerts should be configurable');
+            $this->assertTrue($hasAlertConfig, 'Metrics alerts should be configurable');
             $this->testResults['alert_config'] = 'Metrics alerts can be configured';
         });
     }
@@ -962,7 +962,7 @@ class ServerMetricsTest extends DuskTestCase
                                str_contains($pageSource, 'notify') ||
                                str_contains($pageSource, 'alert');
 
-            $this->assertTrue($hasNotifications || true, 'Metrics should trigger notifications');
+            $this->assertTrue($hasNotifications, 'Metrics should trigger notifications');
             $this->testResults['metrics_notifications'] = 'Metrics can trigger notifications';
         });
     }
@@ -986,7 +986,7 @@ class ServerMetricsTest extends DuskTestCase
                               str_contains($pageSource, 'delete') ||
                               str_contains($pageSource, 'purge');
 
-            $this->assertTrue($hasClearHistory || true, 'Historical data should be clearable');
+            $this->assertTrue($hasClearHistory, 'Historical data should be clearable');
             $this->testResults['clear_history'] = 'Historical data can be cleared';
         });
     }
@@ -1010,7 +1010,7 @@ class ServerMetricsTest extends DuskTestCase
                               str_contains($pageSource, 'latency') ||
                               str_contains($pageSource, 'time');
 
-            $this->assertTrue($hasResponseTime || true, 'Metrics should show response times');
+            $this->assertTrue($hasResponseTime, 'Metrics should show response times');
             $this->testResults['response_times'] = 'Metrics show response times';
         });
     }
@@ -1082,7 +1082,7 @@ class ServerMetricsTest extends DuskTestCase
                           str_contains($pageSource, 'pdf') ||
                           str_contains($pageSource, 'export');
 
-            $this->assertTrue($hasPrintPdf || true, 'Metrics should be printable/exportable to PDF');
+            $this->assertTrue($hasPrintPdf, 'Metrics should be printable/exportable to PDF');
             $this->testResults['print_pdf'] = 'Metrics can be printed/exported to PDF';
         });
     }
@@ -1107,7 +1107,7 @@ class ServerMetricsTest extends DuskTestCase
                         str_contains($pageSource, 'decrease') ||
                         str_contains($pageSource, 'arrow');
 
-            $this->assertTrue($hasTrends || true, 'Metrics should show trend indicators');
+            $this->assertTrue($hasTrends, 'Metrics should show trend indicators');
             $this->testResults['trend_indicators'] = 'Metrics show trend indicators';
         });
     }
@@ -1132,7 +1132,7 @@ class ServerMetricsTest extends DuskTestCase
                             str_contains($pageSource, 'vs') ||
                             str_contains($pageSource, 'last');
 
-            $this->assertTrue($hasComparison || true, 'Metrics should show comparison with previous period');
+            $this->assertTrue($hasComparison, 'Metrics should show comparison with previous period');
             $this->testResults['period_comparison'] = 'Metrics show comparison with previous period';
         });
     }
@@ -1254,7 +1254,7 @@ class ServerMetricsTest extends DuskTestCase
                             str_contains($pageSource, 'volume') ||
                             str_contains($pageSource, 'mount');
 
-            $this->assertTrue($hasPartitions || true, 'Disk partitions should be listed');
+            $this->assertTrue($hasPartitions, 'Disk partitions should be listed');
             $this->testResults['disk_partitions'] = 'Disk partitions are listed';
         });
     }
@@ -1278,7 +1278,7 @@ class ServerMetricsTest extends DuskTestCase
                             str_contains($pageSource, 'eth') ||
                             str_contains($pageSource, 'network adapter');
 
-            $this->assertTrue($hasInterfaces || true, 'Network interfaces should be displayed');
+            $this->assertTrue($hasInterfaces, 'Network interfaces should be displayed');
             $this->testResults['network_interfaces'] = 'Network interfaces are displayed';
         });
     }
@@ -1302,7 +1302,7 @@ class ServerMetricsTest extends DuskTestCase
                                  str_contains($pageSource, 'update frequency') ||
                                  str_contains($pageSource, 'polling');
 
-            $this->assertTrue($hasRefreshInterval || true, 'Metrics refresh interval should be customizable');
+            $this->assertTrue($hasRefreshInterval, 'Metrics refresh interval should be customizable');
             $this->testResults['refresh_interval'] = 'Metrics refresh interval can be customized';
         });
     }

@@ -38,11 +38,11 @@ use App\Models\UserSettings;
 use App\Models\WebhookDelivery;
 use App\Services\GitHubService;
 use App\Services\HealthCheckService;
+use App\Services\LogAggregationService;
 use App\Services\NotificationService;
 use App\Services\QueueMonitorService;
 use App\Services\SSHKeyService;
 use App\Services\TeamService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Process;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
@@ -50,7 +50,6 @@ use Tests\TestCase;
 
 class SettingsUtilityComponentsTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -114,7 +113,7 @@ class SettingsUtilityComponentsTest extends TestCase
     {
         $user = User::factory()->create();
 
-        Livewire::actingAs($user)
+        $component = Livewire::actingAs($user)
             ->test(ApiTokenManager::class)
             ->set('newTokenName', 'Test Token')
             ->set('newTokenAbilities', ['projects:read', 'projects:write'])
@@ -122,9 +121,9 @@ class SettingsUtilityComponentsTest extends TestCase
             ->call('createToken')
             ->assertSet('showCreateModal', false)
             ->assertSet('showTokenModal', true)
-            ->assertNotNull('createdTokenPlain')
             ->assertDispatched('notification');
 
+        $this->assertNotNull($component->createdTokenPlain);
         $this->assertDatabaseHas('api_tokens', [
             'user_id' => $user->id,
             'name' => 'Test Token',
@@ -169,13 +168,13 @@ class SettingsUtilityComponentsTest extends TestCase
         $token = ApiToken::factory()->create(['user_id' => $user->id]);
         $oldToken = $token->token;
 
-        Livewire::actingAs($user)
+        $component = Livewire::actingAs($user)
             ->test(ApiTokenManager::class)
             ->call('regenerateToken', $token->id)
             ->assertSet('showTokenModal', true)
-            ->assertNotNull('createdTokenPlain')
             ->assertDispatched('notification');
 
+        $this->assertNotNull($component->createdTokenPlain);
         $token->refresh();
         $this->assertNotEquals($oldToken, $token->token);
     }
@@ -244,13 +243,13 @@ class SettingsUtilityComponentsTest extends TestCase
                 'fingerprint' => 'SHA256:abc123',
             ]);
 
-        Livewire::actingAs($user)
+        $component = Livewire::actingAs($user)
             ->test(SSHKeyManager::class)
             ->set('newKeyName', 'Test Key')
             ->set('newKeyType', 'ed25519')
-            ->call('generateKey')
-            ->assertNotNull('generatedKey');
+            ->call('generateKey');
 
+        $this->assertNotNull($component->generatedKey);
         $this->assertDatabaseHas('ssh_keys', [
             'user_id' => $user->id,
             'name' => 'Test Key',
@@ -306,6 +305,7 @@ class SettingsUtilityComponentsTest extends TestCase
     public function github_settings_renders(): void
     {
         $user = User::factory()->create();
+        $this->mock(GitHubService::class);
 
         Livewire::actingAs($user)
             ->test(GitHubSettings::class)
@@ -318,6 +318,7 @@ class SettingsUtilityComponentsTest extends TestCase
     public function github_settings_shows_connection(): void
     {
         $user = User::factory()->create();
+        $this->mock(GitHubService::class);
         $connection = GitHubConnection::factory()->create([
             'user_id' => $user->id,
             'is_active' => true,
@@ -355,6 +356,7 @@ class SettingsUtilityComponentsTest extends TestCase
     public function github_settings_links_repository_to_project(): void
     {
         $user = User::factory()->create();
+        $this->mock(GitHubService::class);
         $connection = GitHubConnection::factory()->create(['user_id' => $user->id, 'is_active' => true]);
         $project = Project::factory()->create();
         $repository = GitHubRepository::factory()->create([
@@ -377,6 +379,7 @@ class SettingsUtilityComponentsTest extends TestCase
     public function github_settings_unlinks_repository(): void
     {
         $user = User::factory()->create();
+        $this->mock(GitHubService::class);
         $connection = GitHubConnection::factory()->create(['user_id' => $user->id, 'is_active' => true]);
         $project = Project::factory()->create();
         $repository = GitHubRepository::factory()->create([
@@ -462,12 +465,13 @@ class SettingsUtilityComponentsTest extends TestCase
     {
         $user = User::factory()->create();
 
-        Livewire::actingAs($user)
+        $component = Livewire::actingAs($user)
             ->test(StorageSettings::class)
             ->call('generateEncryptionKey')
             ->assertSet('enable_encryption', true)
-            ->assertNotEmpty('encryption_key')
             ->assertDispatched('notification');
+
+        $this->assertNotEmpty($component->encryption_key);
     }
 
     /** @test */
@@ -619,6 +623,8 @@ class SettingsUtilityComponentsTest extends TestCase
     public function health_check_manager_renders(): void
     {
         $user = User::factory()->create();
+        $this->mock(HealthCheckService::class);
+        $this->mock(NotificationService::class);
 
         Livewire::actingAs($user)
             ->test(HealthCheckManager::class)
@@ -630,6 +636,8 @@ class SettingsUtilityComponentsTest extends TestCase
     public function health_check_manager_opens_create_modal(): void
     {
         $user = User::factory()->create();
+        $this->mock(HealthCheckService::class);
+        $this->mock(NotificationService::class);
 
         Livewire::actingAs($user)
             ->test(HealthCheckManager::class)
@@ -643,6 +651,8 @@ class SettingsUtilityComponentsTest extends TestCase
     public function health_check_manager_validates_health_check(): void
     {
         $user = User::factory()->create();
+        $this->mock(HealthCheckService::class);
+        $this->mock(NotificationService::class);
 
         Livewire::actingAs($user)
             ->test(HealthCheckManager::class)
@@ -657,6 +667,8 @@ class SettingsUtilityComponentsTest extends TestCase
     public function health_check_manager_creates_health_check(): void
     {
         $user = User::factory()->create();
+        $this->mock(HealthCheckService::class);
+        $this->mock(NotificationService::class);
         $project = Project::factory()->create();
 
         Livewire::actingAs($user)
@@ -682,6 +694,8 @@ class SettingsUtilityComponentsTest extends TestCase
     public function health_check_manager_deletes_health_check(): void
     {
         $user = User::factory()->create();
+        $this->mock(HealthCheckService::class);
+        $this->mock(NotificationService::class);
         $healthCheck = HealthCheck::factory()->create();
 
         Livewire::actingAs($user)
@@ -698,6 +712,7 @@ class SettingsUtilityComponentsTest extends TestCase
         $user = User::factory()->create();
         $healthCheck = HealthCheck::factory()->create();
         $healthCheckService = $this->mock(HealthCheckService::class);
+        $this->mock(NotificationService::class);
         $healthCheckService->shouldReceive('runCheck')->once()->with($healthCheck);
 
         Livewire::actingAs($user)
@@ -710,6 +725,8 @@ class SettingsUtilityComponentsTest extends TestCase
     public function health_check_manager_creates_notification_channel(): void
     {
         $user = User::factory()->create();
+        $this->mock(HealthCheckService::class);
+        $this->mock(NotificationService::class);
 
         Livewire::actingAs($user)
             ->test(HealthCheckManager::class)
@@ -732,6 +749,7 @@ class SettingsUtilityComponentsTest extends TestCase
     {
         $user = User::factory()->create();
         $channel = NotificationChannel::factory()->create(['user_id' => $user->id]);
+        $this->mock(HealthCheckService::class);
         $notificationService = $this->mock(NotificationService::class);
         $notificationService->shouldReceive('sendTestNotification')->once()->with($channel)->andReturn(true);
 
@@ -866,6 +884,7 @@ class SettingsUtilityComponentsTest extends TestCase
     public function team_list_renders(): void
     {
         $user = User::factory()->create();
+        $this->mock(TeamService::class);
 
         Livewire::actingAs($user)
             ->test(TeamList::class)
@@ -877,6 +896,7 @@ class SettingsUtilityComponentsTest extends TestCase
     public function team_list_opens_create_modal(): void
     {
         $user = User::factory()->create();
+        $this->mock(TeamService::class);
 
         Livewire::actingAs($user)
             ->test(TeamList::class)
@@ -890,6 +910,7 @@ class SettingsUtilityComponentsTest extends TestCase
     public function team_list_validates_team_creation(): void
     {
         $user = User::factory()->create();
+        $this->mock(TeamService::class);
 
         Livewire::actingAs($user)
             ->test(TeamList::class)
@@ -917,6 +938,7 @@ class SettingsUtilityComponentsTest extends TestCase
     public function team_list_switches_team(): void
     {
         $user = User::factory()->create();
+        $this->mock(TeamService::class);
         $team = Team::factory()->create();
         $team->members()->attach($user->id, ['role' => 'member']);
 
@@ -1269,11 +1291,12 @@ class SettingsUtilityComponentsTest extends TestCase
         $user = User::factory()->create();
         $log = NotificationLog::factory()->create();
 
-        Livewire::actingAs($user)
+        $component = Livewire::actingAs($user)
             ->test(NotificationLogs::class)
             ->call('viewDetails', $log->id)
-            ->assertSet('showDetails', true)
-            ->assertNotEmpty('selectedLog');
+            ->assertSet('showDetails', true);
+
+        $this->assertNotEmpty($component->selectedLog);
     }
 
     /** @test */
@@ -1322,11 +1345,12 @@ class SettingsUtilityComponentsTest extends TestCase
         $user = User::factory()->create();
         $delivery = WebhookDelivery::factory()->create();
 
-        Livewire::actingAs($user)
+        $component = Livewire::actingAs($user)
             ->test(WebhookLogs::class)
             ->call('viewDetails', $delivery->id)
-            ->assertSet('showDetails', true)
-            ->assertNotEmpty('selectedDelivery');
+            ->assertSet('showDetails', true);
+
+        $this->assertNotEmpty($component->selectedDelivery);
     }
 
     /** @test */
@@ -1349,6 +1373,7 @@ class SettingsUtilityComponentsTest extends TestCase
     public function log_source_manager_renders(): void
     {
         $user = User::factory()->create();
+        $this->mock(LogAggregationService::class);
         $server = Server::factory()->create();
 
         Livewire::actingAs($user)
@@ -1361,6 +1386,7 @@ class SettingsUtilityComponentsTest extends TestCase
     public function log_source_manager_opens_add_modal(): void
     {
         $user = User::factory()->create();
+        $this->mock(LogAggregationService::class);
         $server = Server::factory()->create();
 
         Livewire::actingAs($user)
@@ -1375,6 +1401,7 @@ class SettingsUtilityComponentsTest extends TestCase
     public function log_source_manager_validates_source(): void
     {
         $user = User::factory()->create();
+        $this->mock(LogAggregationService::class);
         $server = Server::factory()->create();
 
         Livewire::actingAs($user)
@@ -1389,6 +1416,7 @@ class SettingsUtilityComponentsTest extends TestCase
     public function log_source_manager_adds_source(): void
     {
         $user = User::factory()->create();
+        $this->mock(LogAggregationService::class);
         $server = Server::factory()->create();
 
         Livewire::actingAs($user)
@@ -1411,6 +1439,7 @@ class SettingsUtilityComponentsTest extends TestCase
     public function log_source_manager_toggles_source(): void
     {
         $user = User::factory()->create();
+        $this->mock(LogAggregationService::class);
         $server = Server::factory()->create();
         $source = LogSource::factory()->create([
             'server_id' => $server->id,
@@ -1430,6 +1459,7 @@ class SettingsUtilityComponentsTest extends TestCase
     public function log_source_manager_removes_source(): void
     {
         $user = User::factory()->create();
+        $this->mock(LogAggregationService::class);
         $server = Server::factory()->create();
         $source = LogSource::factory()->create(['server_id' => $server->id]);
 

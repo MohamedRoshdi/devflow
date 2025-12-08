@@ -145,7 +145,7 @@ class TeamsTest extends DuskTestCase
                                        str_contains($modalSource, 'description');
 
                 $this->assertTrue($hasNameField, 'Modal should have name field');
-                $this->assertTrue($hasDescriptionField || true, 'Modal should have description field');
+                $this->assertTrue($hasDescriptionField, 'Modal should have description field');
 
                 $this->testResults['team_creation_modal'] = 'Team creation modal displays correctly';
             } else {
@@ -268,7 +268,7 @@ class TeamsTest extends DuskTestCase
                 str_contains($pageSource, 'tab') ||
                 str_contains($pageSource, 'navigation');
 
-            $this->assertTrue($hasTabs || true, 'Settings tabs should be present');
+            $this->assertTrue($hasTabs, 'Settings tabs should be present');
 
             $this->testResults['team_settings_tabs'] = 'Team settings tabs are functional';
         });
@@ -348,7 +348,7 @@ class TeamsTest extends DuskTestCase
                 str_contains($pageSource, 'current') ||
                 str_contains($pageSource, 'active');
 
-            $this->assertTrue($hasSwitchOption || true, 'Switch team option should be available');
+            $this->assertTrue($hasSwitchOption, 'Switch team option should be available');
 
             $this->testResults['switch_team'] = 'Switch team functionality is accessible';
         });
@@ -374,7 +374,7 @@ class TeamsTest extends DuskTestCase
                 str_contains($pageSource, 'description') ||
                 str_contains($pageSource, 'A test team for browser tests');
 
-            $this->assertTrue($hasDescription || true, 'Team description should be visible');
+            $this->assertTrue($hasDescription, 'Team description should be visible');
 
             $this->testResults['team_description'] = 'Team description is visible';
         });
@@ -427,7 +427,7 @@ class TeamsTest extends DuskTestCase
                 str_contains($pageSource, 'member') ||
                 preg_match('/\d+\s*(member|user)/i', $pageSource);
 
-            $this->assertTrue($hasMemberCount || true, 'Member count should be displayed');
+            $this->assertTrue($hasMemberCount, 'Member count should be displayed');
 
             $this->testResults['member_count'] = 'Member count is displayed';
         });
@@ -480,7 +480,7 @@ class TeamsTest extends DuskTestCase
                 str_contains($pageSource, 'remove') ||
                 str_contains($pageSource, 'transfer');
 
-            $this->assertTrue($hasDangerZone || true, 'Danger zone should be visible for owner');
+            $this->assertTrue($hasDangerZone, 'Danger zone should be visible for owner');
 
             $this->testResults['danger_zone'] = 'Danger zone section is visible for team owner';
         });
@@ -507,7 +507,7 @@ class TeamsTest extends DuskTestCase
                 str_contains($pageSource, 'active') ||
                 str_contains($pageSource, 'selected');
 
-            $this->assertTrue($hasCurrentIndicator || true, 'Current team indicator should be present');
+            $this->assertTrue($hasCurrentIndicator, 'Current team indicator should be present');
 
             $this->testResults['current_team_indicator'] = 'Current team indicator is present';
         });
@@ -637,7 +637,7 @@ class TeamsTest extends DuskTestCase
                 str_contains($pageSource, 'edit') ||
                 str_contains($pageSource, 'view');
 
-            $this->assertTrue($hasActionsMenu || true, 'Team actions menu should be present');
+            $this->assertTrue($hasActionsMenu, 'Team actions menu should be present');
 
             $this->testResults['team_actions_menu'] = 'Team actions menu is present';
         });
@@ -842,7 +842,7 @@ class TeamsTest extends DuskTestCase
                 str_contains($pageSource, 'Update') ||
                 str_contains($pageSource, 'wire:click');
 
-            $this->assertTrue($hasSaveButton || true, 'Settings should have save capability');
+            $this->assertTrue($hasSaveButton, 'Settings should have save capability');
             $this->testResults['settings_update'] = 'Team settings update interface verified';
         });
     }
@@ -981,7 +981,7 @@ class TeamsTest extends DuskTestCase
             $hasCount = str_contains($pageSource, (string) $memberCount) ||
                        str_contains(strtolower($pageSource), 'member');
 
-            $this->assertTrue($hasCount || true, 'Member count should be displayed');
+            $this->assertTrue($hasCount, 'Member count should be displayed');
             $this->testResults['member_count_accurate'] = 'Team member count is displayed';
         });
     }
@@ -1222,7 +1222,7 @@ class TeamsTest extends DuskTestCase
                 str_contains($pageSource, '@') ||
                 str_contains($pageSource, $this->user->email);
 
-            $this->assertTrue($hasEmail || true, 'Member emails should be displayed');
+            $this->assertTrue($hasEmail, 'Member emails should be displayed');
             $this->testResults['member_email'] = 'Team member email is displayed in member list';
         });
     }
@@ -1357,9 +1357,9 @@ class TeamsTest extends DuskTestCase
             $pageSource = $browser->driver->getPageSource();
             $hasMultipleTeams =
                 str_contains($pageSource, 'Test Team') &&
-                (str_contains($pageSource, 'Development Team') || true);
+                str_contains($pageSource, 'Development Team');
 
-            $this->assertTrue($hasMultipleTeams || true, 'Multiple teams should be viewable');
+            $this->assertTrue($hasMultipleTeams, 'Multiple teams should be viewable');
             $this->testResults['multiple_teams'] = 'Multiple teams can be viewed in list';
         });
     }
@@ -1411,7 +1411,7 @@ class TeamsTest extends DuskTestCase
                 str_contains($pageSource, 'wire:click="save"') ||
                 str_contains($pageSource, 'wire:click="update"');
 
-            $this->assertTrue($hasSaveButton || true, 'Save button should be present');
+            $this->assertTrue($hasSaveButton, 'Save button should be present');
             $this->testResults['save_button'] = 'Team settings save button is functional';
         });
     }

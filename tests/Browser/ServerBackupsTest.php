@@ -83,7 +83,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'backup') ||
                 str_contains($pageSource, 'server');
 
-            $this->assertTrue($hasBackupContent || true, 'Server backups page should load');
+            $this->assertTrue($hasBackupContent , 'Server backups page should load');
 
             $this->testResults['server_backups_page'] = 'Server backups page loaded successfully';
         });
@@ -109,7 +109,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'Create') ||
                 str_contains($pageSource, 'Backup');
 
-            $this->assertTrue($hasCreateButton || true, 'Full backup creation button should be visible');
+            $this->assertTrue($hasCreateButton , 'Full backup creation button should be visible');
 
             $this->testResults['full_backup_button'] = 'Full backup creation button is visible';
         });
@@ -134,7 +134,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'incremental') ||
                 str_contains($pageSource, 'backup');
 
-            $this->assertTrue($hasIncremental || true, 'Incremental backup option should be available');
+            $this->assertTrue($hasIncremental , 'Incremental backup option should be available');
 
             $this->testResults['incremental_backup_option'] = 'Incremental backup option is available';
         });
@@ -161,7 +161,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'daily') ||
                 str_contains($pageSource, 'weekly');
 
-            $this->assertTrue($hasScheduling || true, 'Backup scheduling configuration should load');
+            $this->assertTrue($hasScheduling , 'Backup scheduling configuration should load');
 
             $this->testResults['scheduling_configuration'] = 'Backup scheduling configuration loaded';
         });
@@ -188,7 +188,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'local') ||
                 str_contains($pageSource, 's3');
 
-            $this->assertTrue($hasStorage || true, 'Storage location settings should be visible');
+            $this->assertTrue($hasStorage , 'Storage location settings should be visible');
 
             $this->testResults['storage_location_settings'] = 'Storage location settings are visible';
         });
@@ -230,7 +230,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'restore') ||
                 str_contains($pageSource, 'recovery');
 
-            $this->assertTrue($hasRestore || true, 'Backup restoration process should be accessible');
+            $this->assertTrue($hasRestore , 'Backup restoration process should be accessible');
 
             $this->testResults['restoration_process'] = 'Backup restoration process is accessible';
         });
@@ -255,7 +255,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'download') ||
                 str_contains($pageSource, 'export');
 
-            $this->assertTrue($hasDownload || true, 'Backup download functionality should be available');
+            $this->assertTrue($hasDownload , 'Backup download functionality should be available');
 
             $this->testResults['download_functionality'] = 'Backup download functionality is available';
         });
@@ -281,7 +281,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'remove') ||
                 str_contains($pageSource, 'confirm');
 
-            $this->assertTrue($hasDelete || true, 'Backup deletion confirmation should be available');
+            $this->assertTrue($hasDelete , 'Backup deletion confirmation should be available');
 
             $this->testResults['deletion_confirmation'] = 'Backup deletion with confirmation is available';
         });
@@ -307,7 +307,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'backup') ||
                 str_contains($pageSource, 'completed');
 
-            $this->assertTrue($hasHistory || true, 'Backup history should display');
+            $this->assertTrue($hasHistory , 'Backup history should display');
 
             $this->testResults['backup_history'] = 'Backup history displays successfully';
         });
@@ -333,7 +333,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'output') ||
                 str_contains($pageSource, 'details');
 
-            $this->assertTrue($hasLogs || true, 'Backup logs should be viewable');
+            $this->assertTrue($hasLogs , 'Backup logs should be viewable');
 
             $this->testResults['backup_logs'] = 'Backup logs are viewable';
         });
@@ -359,7 +359,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'security') ||
                 str_contains($pageSource, 'password');
 
-            $this->assertTrue($hasEncryption || true, 'Backup encryption settings should be available');
+            $this->assertTrue($hasEncryption , 'Backup encryption settings should be available');
 
             $this->testResults['encryption_settings'] = 'Backup encryption settings are available';
         });
@@ -385,7 +385,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'policy') ||
                 str_contains($pageSource, 'days');
 
-            $this->assertTrue($hasRetention || true, 'Backup retention policies should be configurable');
+            $this->assertTrue($hasRetention , 'Backup retention policies should be configurable');
 
             $this->testResults['retention_policies'] = 'Backup retention policies are configurable';
         });
@@ -411,7 +411,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'checksum') ||
                 str_contains($pageSource, 'integrity');
 
-            $this->assertTrue($hasVerification || true, 'Backup verification should be available');
+            $this->assertTrue($hasVerification , 'Backup verification should be available');
 
             $this->testResults['verification_check'] = 'Backup verification/integrity check is available';
         });
@@ -437,7 +437,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'notify') ||
                 str_contains($pageSource, 'alert');
 
-            $this->assertTrue($hasNotifications || true, 'Backup notification settings should be configurable');
+            $this->assertTrue($hasNotifications , 'Backup notification settings should be configurable');
 
             $this->testResults['notification_settings'] = 'Backup notification settings are configurable';
         });
@@ -463,7 +463,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'amazon') ||
                 str_contains($pageSource, 'remote');
 
-            $this->assertTrue($hasS3 || true, 'S3 remote backup destination should be available');
+            $this->assertTrue($hasS3 , 'S3 remote backup destination should be available');
 
             $this->testResults['s3_destination'] = 'S3 remote backup destination option is available';
         });
@@ -489,7 +489,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'google') ||
                 str_contains($pageSource, 'cloud');
 
-            $this->assertTrue($hasGCS || true, 'Google Cloud Storage destination should be available');
+            $this->assertTrue($hasGCS , 'Google Cloud Storage destination should be available');
 
             $this->testResults['gcs_destination'] = 'Google Cloud Storage remote destination is available';
         });
@@ -514,7 +514,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'azure') ||
                 str_contains($pageSource, 'blob');
 
-            $this->assertTrue($hasAzure || true, 'Azure Blob Storage destination should be available');
+            $this->assertTrue($hasAzure , 'Azure Blob Storage destination should be available');
 
             $this->testResults['azure_destination'] = 'Azure Blob Storage remote destination is available';
         });
@@ -554,7 +554,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'running') ||
                 str_contains($pageSource, 'pending');
 
-            $this->assertTrue($hasProgress || true, 'Backup progress tracking should be visible');
+            $this->assertTrue($hasProgress , 'Backup progress tracking should be visible');
 
             $this->testResults['progress_tracking'] = 'Backup progress tracking is visible';
         });
@@ -579,7 +579,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'compare') ||
                 str_contains($pageSource, 'diff');
 
-            $this->assertTrue($hasComparison || true, 'Backup comparison functionality should be available');
+            $this->assertTrue($hasComparison , 'Backup comparison functionality should be available');
 
             $this->testResults['comparison_functionality'] = 'Backup comparison functionality is available';
         });
@@ -605,7 +605,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'difference') ||
                 str_contains($pageSource, 'changes');
 
-            $this->assertTrue($hasDiff || true, 'Backup diff view should be accessible');
+            $this->assertTrue($hasDiff , 'Backup diff view should be accessible');
 
             $this->testResults['diff_view'] = 'Backup diff view is accessible';
         });
@@ -630,7 +630,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'daily') ||
                 str_contains($pageSource, 'frequency');
 
-            $this->assertTrue($hasDaily || true, 'Daily backup schedule should be configurable');
+            $this->assertTrue($hasDaily , 'Daily backup schedule should be configurable');
 
             $this->testResults['daily_schedule'] = 'Daily backup schedule configuration is available';
         });
@@ -655,7 +655,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'weekly') ||
                 str_contains($pageSource, 'week');
 
-            $this->assertTrue($hasWeekly || true, 'Weekly backup schedule should be configurable');
+            $this->assertTrue($hasWeekly , 'Weekly backup schedule should be configurable');
 
             $this->testResults['weekly_schedule'] = 'Weekly backup schedule configuration is available';
         });
@@ -680,7 +680,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'monthly') ||
                 str_contains($pageSource, 'month');
 
-            $this->assertTrue($hasMonthly || true, 'Monthly backup schedule should be configurable');
+            $this->assertTrue($hasMonthly , 'Monthly backup schedule should be configurable');
 
             $this->testResults['monthly_schedule'] = 'Monthly backup schedule configuration is available';
         });
@@ -706,7 +706,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'mb') ||
                 str_contains($pageSource, 'gb');
 
-            $this->assertTrue($hasSize || true, 'Backup size information should be displayed');
+            $this->assertTrue($hasSize , 'Backup size information should be displayed');
 
             $this->testResults['size_information'] = 'Backup size information is displayed';
         });
@@ -733,7 +733,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'failed') ||
                 str_contains($pageSource, 'status');
 
-            $this->assertTrue($hasStatus || true, 'Backup status indicators should be shown');
+            $this->assertTrue($hasStatus , 'Backup status indicators should be shown');
 
             $this->testResults['status_indicators'] = 'Backup status indicators are shown';
         });
@@ -759,7 +759,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'hash') ||
                 str_contains($pageSource, 'md5');
 
-            $this->assertTrue($hasChecksum || true, 'Backup checksum should be displayed');
+            $this->assertTrue($hasChecksum , 'Backup checksum should be displayed');
 
             $this->testResults['checksum_display'] = 'Backup checksum/hash is displayed';
         });
@@ -785,7 +785,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'time') ||
                 str_contains($pageSource, 'started');
 
-            $this->assertTrue($hasDuration || true, 'Backup duration should be shown');
+            $this->assertTrue($hasDuration , 'Backup duration should be shown');
 
             $this->testResults['duration_display'] = 'Backup duration is shown';
         });
@@ -826,7 +826,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'active') ||
                 str_contains($pageSource, 'enable');
 
-            $this->assertTrue($hasToggle || true, 'Backup schedule status should be toggleable');
+            $this->assertTrue($hasToggle , 'Backup schedule status should be toggleable');
 
             $this->testResults['schedule_toggle'] = 'Backup schedule status is toggleable';
         });
@@ -866,7 +866,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'error') ||
                 str_contains($pageSource, 'failed');
 
-            $this->assertTrue($hasErrors || true, 'Backup error messages should be displayed');
+            $this->assertTrue($hasErrors , 'Backup error messages should be displayed');
 
             $this->testResults['error_messages'] = 'Backup error messages are displayed';
         });
@@ -892,7 +892,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'gzip') ||
                 str_contains($pageSource, 'zip');
 
-            $this->assertTrue($hasCompression || true, 'Backup compression options should be available');
+            $this->assertTrue($hasCompression , 'Backup compression options should be available');
 
             $this->testResults['compression_options'] = 'Backup compression options are available';
         });
@@ -918,7 +918,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'statistics') ||
                 str_contains($pageSource, 'count');
 
-            $this->assertTrue($hasStatistics || true, 'Backup statistics should be displayed');
+            $this->assertTrue($hasStatistics , 'Backup statistics should be displayed');
 
             $this->testResults['backup_statistics'] = 'Backup statistics are displayed';
         });
@@ -944,7 +944,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'search') ||
                 str_contains($pageSource, 'type');
 
-            $this->assertTrue($hasFiltering || true, 'Backup filtering options should work');
+            $this->assertTrue($hasFiltering , 'Backup filtering options should work');
 
             $this->testResults['filtering_options'] = 'Backup filtering options work';
         });
@@ -970,7 +970,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'order') ||
                 str_contains($pageSource, 'date');
 
-            $this->assertTrue($hasSorting || true, 'Backup sorting options should be available');
+            $this->assertTrue($hasSorting , 'Backup sorting options should be available');
 
             $this->testResults['sorting_options'] = 'Backup sorting options are available';
         });
@@ -996,7 +996,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'next') ||
                 str_contains($pageSource, 'previous');
 
-            $this->assertTrue($hasPagination || true, 'Backup pagination should work');
+            $this->assertTrue($hasPagination , 'Backup pagination should work');
 
             $this->testResults['pagination'] = 'Backup pagination works';
         });
@@ -1021,7 +1021,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'next') ||
                 str_contains($pageSource, 'scheduled');
 
-            $this->assertTrue($hasNextRun || true, 'Backup schedule next run should be displayed');
+            $this->assertTrue($hasNextRun , 'Backup schedule next run should be displayed');
 
             $this->testResults['schedule_next_run'] = 'Backup schedule next run is displayed';
         });
@@ -1047,7 +1047,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'purge') ||
                 str_contains($pageSource, 'auto');
 
-            $this->assertTrue($hasCleanup || true, 'Backup cleanup automation should be available');
+            $this->assertTrue($hasCleanup , 'Backup cleanup automation should be available');
 
             $this->testResults['cleanup_automation'] = 'Backup cleanup automation is available';
         });
@@ -1073,7 +1073,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'download') ||
                 str_contains($pageSource, 'local');
 
-            $this->assertTrue($hasExport || true, 'Backup export to local should be available');
+            $this->assertTrue($hasExport , 'Backup export to local should be available');
 
             $this->testResults['export_local'] = 'Backup export to local functionality is available';
         });
@@ -1099,7 +1099,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'hour') ||
                 str_contains($pageSource, 'schedule');
 
-            $this->assertTrue($hasTimeSelection || true, 'Backup time selection should be available');
+            $this->assertTrue($hasTimeSelection , 'Backup time selection should be available');
 
             $this->testResults['time_selection'] = 'Backup time selection for schedule is available';
         });
@@ -1125,7 +1125,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'incremental') ||
                 str_contains($pageSource, 'type');
 
-            $this->assertTrue($hasTypeIndicators || true, 'Backup type indicators should be visible');
+            $this->assertTrue($hasTypeIndicators , 'Backup type indicators should be visible');
 
             $this->testResults['type_indicators'] = 'Backup type indicators are visible';
         });
@@ -1151,7 +1151,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'point') ||
                 str_contains($pageSource, 'select');
 
-            $this->assertTrue($hasRestorePoint || true, 'Backup restore point selection should be available');
+            $this->assertTrue($hasRestorePoint , 'Backup restore point selection should be available');
 
             $this->testResults['restore_point_selection'] = 'Backup restore point selection is available';
         });
@@ -1177,7 +1177,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'storage') ||
                 str_contains($pageSource, 'space');
 
-            $this->assertTrue($hasUsageMetrics || true, 'Backup storage usage metrics should be shown');
+            $this->assertTrue($hasUsageMetrics , 'Backup storage usage metrics should be shown');
 
             $this->testResults['storage_usage'] = 'Backup storage usage metrics are shown';
         });
@@ -1203,7 +1203,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'update') ||
                 str_contains($pageSource, 'modify');
 
-            $this->assertTrue($hasEdit || true, 'Backup schedule edit should be available');
+            $this->assertTrue($hasEdit , 'Backup schedule edit should be available');
 
             $this->testResults['schedule_edit'] = 'Backup schedule edit functionality is available';
         });
@@ -1229,7 +1229,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'confirm') ||
                 str_contains($pageSource, 'remove');
 
-            $this->assertTrue($hasDeleteConfirm || true, 'Schedule delete confirmation should be available');
+            $this->assertTrue($hasDeleteConfirm , 'Schedule delete confirmation should be available');
 
             $this->testResults['schedule_delete'] = 'Backup schedule delete confirmation is available';
         });
@@ -1255,7 +1255,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'slack') ||
                 str_contains($pageSource, 'notification');
 
-            $this->assertTrue($hasChannels || true, 'Notification channels should be configurable');
+            $this->assertTrue($hasChannels , 'Notification channels should be configurable');
 
             $this->testResults['notification_channels'] = 'Backup notification channels are configurable';
         });
@@ -1281,7 +1281,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'test') ||
                 str_contains($pageSource, 'verify');
 
-            $this->assertTrue($hasIntegrity || true, 'Backup integrity test should be available');
+            $this->assertTrue($hasIntegrity , 'Backup integrity test should be available');
 
             $this->testResults['integrity_test'] = 'Backup integrity test functionality is available';
         });
@@ -1307,7 +1307,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'contents') ||
                 str_contains($pageSource, 'files');
 
-            $this->assertTrue($hasManifest || true, 'Backup manifest should be viewable');
+            $this->assertTrue($hasManifest , 'Backup manifest should be viewable');
 
             $this->testResults['backup_manifest'] = 'Backup manifest/contents are viewable';
         });
@@ -1333,7 +1333,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'restore') ||
                 str_contains($pageSource, 'selective');
 
-            $this->assertTrue($hasPartialRestore || true, 'Partial restore option should be available');
+            $this->assertTrue($hasPartialRestore , 'Partial restore option should be available');
 
             $this->testResults['partial_restore'] = 'Backup partial restore option is available';
         });
@@ -1359,7 +1359,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'throttle') ||
                 str_contains($pageSource, 'limit');
 
-            $this->assertTrue($hasThrottling || true, 'Bandwidth throttling settings should be available');
+            $this->assertTrue($hasThrottling , 'Bandwidth throttling settings should be available');
 
             $this->testResults['bandwidth_throttling'] = 'Backup bandwidth throttling settings are available';
         });
@@ -1385,7 +1385,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'notification') ||
                 str_contains($pageSource, 'recipient');
 
-            $this->assertTrue($hasEmailConfig || true, 'Email notification configuration should be available');
+            $this->assertTrue($hasEmailConfig , 'Email notification configuration should be available');
 
             $this->testResults['email_notification'] = 'Backup email notification configuration is available';
         });
@@ -1411,7 +1411,7 @@ class ServerBackupsTest extends DuskTestCase
                 str_contains($pageSource, 'url') ||
                 str_contains($pageSource, 'notification');
 
-            $this->assertTrue($hasWebhook || true, 'Webhook notification option should be available');
+            $this->assertTrue($hasWebhook , 'Webhook notification option should be available');
 
             $this->testResults['webhook_notification'] = 'Backup webhook notification option is available';
         });

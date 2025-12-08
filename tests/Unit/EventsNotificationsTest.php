@@ -32,7 +32,6 @@ use App\Notifications\UserMentionedInComment;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
@@ -40,7 +39,6 @@ use Tests\TestCase;
 
 class EventsNotificationsTest extends TestCase
 {
-    use RefreshDatabase;
 
     // ========================================
     // DashboardUpdated Event Tests

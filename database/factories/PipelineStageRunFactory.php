@@ -16,7 +16,7 @@ class PipelineStageRunFactory extends Factory
         return [
             'pipeline_run_id' => PipelineRun::factory(),
             'pipeline_stage_id' => PipelineStage::factory(),
-            'status' => fake()->randomElement(['pending', 'running', 'success', 'failed', 'skipped', 'cancelled']),
+            'status' => fake()->randomElement(['pending', 'running', 'success', 'failed', 'skipped']),
             'output' => fake()->optional()->paragraph(),
             'error_message' => null,
             'started_at' => null,

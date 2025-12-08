@@ -19,7 +19,6 @@ use App\Services\GitService;
 use App\Services\ProjectSetupService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
@@ -33,7 +32,6 @@ use Tests\TestCase;
 
 class JobsTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -126,7 +124,7 @@ class JobsTest extends TestCase
         // Mock services
         $dockerService = Mockery::mock(DockerService::class);
         $dockerService->shouldReceive('buildContainer')->andReturn(['success' => true, 'output' => '']);
-        $dockerService->shouldReceive('stopContainer')->andReturn(true);
+        $dockerService->shouldReceive('stopContainer')->andReturn(['success' => true]);
         $dockerService->shouldReceive('startContainer')->andReturn(['success' => true]);
         $dockerService->shouldReceive('usesDockerCompose')->andReturn(false);
         $dockerService->shouldReceive('getAppContainerName')->andReturn($project->slug);
@@ -168,13 +166,12 @@ class JobsTest extends TestCase
         // Create a pipeline stage
         PipelineStage::factory()->create([
             'project_id' => $project->id,
-            'enabled' => true,
         ]);
 
         $pipelineService = Mockery::mock(PipelineExecutionService::class);
-        $pipelineRun = Mockery::mock(\App\Models\PipelineRun::class);
-        $pipelineRun->status = 'success';
+        $pipelineRun = Mockery::mock(\App\Models\PipelineRun::class)->makePartial();
         $pipelineRun->id = 1;
+        $pipelineRun->status = 'success';
 
         $pipelineService->shouldReceive('executePipeline')
             ->once()
@@ -204,7 +201,7 @@ class JobsTest extends TestCase
         // Mock services
         $dockerService = Mockery::mock(DockerService::class);
         $dockerService->shouldReceive('buildContainer')->andReturn(['success' => true, 'output' => '']);
-        $dockerService->shouldReceive('stopContainer')->andReturn(true);
+        $dockerService->shouldReceive('stopContainer')->andReturn(['success' => true]);
         $dockerService->shouldReceive('startContainer')->andReturn(['success' => true]);
         $dockerService->shouldReceive('usesDockerCompose')->andReturn(false);
         $dockerService->shouldReceive('getAppContainerName')->andReturn($project->slug);
@@ -269,9 +266,14 @@ class JobsTest extends TestCase
     #[Test]
     public function deploy_project_job_throws_exception_when_project_not_found(): void
     {
+        // Create a project then delete it to simulate missing project
+        $project = Project::factory()->create();
         $deployment = Deployment::factory()->create([
-            'project_id' => null,
+            'project_id' => $project->id,
         ]);
+
+        // Delete the project to simulate it not being found
+        $project->delete();
 
         $job = new DeployProjectJob($deployment);
         $job->handle();
@@ -297,7 +299,7 @@ class JobsTest extends TestCase
         // Mock services
         $dockerService = Mockery::mock(DockerService::class);
         $dockerService->shouldReceive('buildContainer')->andReturn(['success' => true, 'output' => '']);
-        $dockerService->shouldReceive('stopContainer')->andReturn(true);
+        $dockerService->shouldReceive('stopContainer')->andReturn(['success' => true]);
         $dockerService->shouldReceive('startContainer')->andReturn(['success' => true]);
         $dockerService->shouldReceive('usesDockerCompose')->andReturn(false);
         $dockerService->shouldReceive('getAppContainerName')->andReturn($project->slug);
@@ -339,7 +341,7 @@ class JobsTest extends TestCase
         // Mock services
         $dockerService = Mockery::mock(DockerService::class);
         $dockerService->shouldReceive('buildContainer')->andReturn(['success' => true, 'output' => '']);
-        $dockerService->shouldReceive('stopContainer')->andReturn(true);
+        $dockerService->shouldReceive('stopContainer')->andReturn(['success' => true]);
         $dockerService->shouldReceive('startContainer')->andReturn(['success' => true]);
         $dockerService->shouldReceive('usesDockerCompose')->andReturn(false);
         $dockerService->shouldReceive('getAppContainerName')->andReturn($project->slug);
@@ -570,6 +572,8 @@ class JobsTest extends TestCase
             ->with('Docker installation job started', ['server_id' => $server->id])
             ->atLeast()
             ->once();
+
+        $this->assertTrue(true); // PHPUnit requires at least one assertion
     }
 
     #[Test]
@@ -592,6 +596,8 @@ class JobsTest extends TestCase
             }))
             ->atLeast()
             ->once();
+
+        $this->assertTrue(true); // PHPUnit requires at least one assertion
     }
 
     #[Test]
@@ -613,6 +619,8 @@ class JobsTest extends TestCase
             ->with('Docker installation failed', Mockery::on(function ($context) use ($server) {
                 return $context['server_id'] === $server->id;
             }));
+
+        $this->assertTrue(true); // PHPUnit requires at least one assertion
     }
 
     // ========================================
@@ -724,6 +732,8 @@ class JobsTest extends TestCase
                 return $context['project_id'] === $project->id
                     && $context['error'] === 'Setup failed';
             }));
+
+        $this->assertTrue(true); // PHPUnit requires at least one assertion
     }
 
     #[Test]

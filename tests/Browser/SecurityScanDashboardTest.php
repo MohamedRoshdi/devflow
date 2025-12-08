@@ -190,7 +190,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'New Scan') ||
                 str_contains($pageSource, 'wire:click');
 
-            $this->assertTrue($hasStartButton || true, 'Start scan button should be visible');
+            $this->assertTrue($hasStartButton, 'Start scan button should be visible');
 
             $this->testResults['start_scan_button'] = 'Start new scan button is visible';
         });
@@ -217,7 +217,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'past') ||
                 str_contains($pageSource, 'scan');
 
-            $this->assertTrue($hasHistory || true, 'Scan history should be displayed');
+            $this->assertTrue($hasHistory, 'Scan history should be displayed');
 
             $this->testResults['scan_history'] = 'Security scan history is displayed';
         });
@@ -244,7 +244,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'score') ||
                 str_contains($pageSource, 'completed');
 
-            $this->assertTrue($hasLatestScan || true, 'Latest scan should be visible');
+            $this->assertTrue($hasLatestScan, 'Latest scan should be visible');
 
             $this->testResults['latest_scan'] = 'Latest security scan is visible';
         });
@@ -270,7 +270,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, '/100') ||
                 str_contains($pageSource, 'rating');
 
-            $this->assertTrue($hasScore || true, 'Security score should be displayed');
+            $this->assertTrue($hasScore, 'Security score should be displayed');
 
             $this->testResults['security_score'] = 'Security score is displayed';
         });
@@ -298,7 +298,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'low') ||
                 str_contains($pageSource, 'risk');
 
-            $this->assertTrue($hasRiskLevel || true, 'Risk level should be shown');
+            $this->assertTrue($hasRiskLevel, 'Risk level should be shown');
 
             $this->testResults['risk_level'] = 'Risk level indicator is shown';
         });
@@ -325,7 +325,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'pending') ||
                 str_contains($pageSource, 'failed');
 
-            $this->assertTrue($hasStatus || true, 'Scan status badges should be visible');
+            $this->assertTrue($hasStatus, 'Scan status badges should be visible');
 
             $this->testResults['status_badges'] = 'Scan status badges are visible';
         });
@@ -352,7 +352,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'scanning') ||
                 str_contains($pageSource, 'in progress');
 
-            $this->assertTrue($hasProgress || true, 'Running scan should show progress');
+            $this->assertTrue($hasProgress, 'Running scan should show progress');
 
             $this->testResults['scan_progress'] = 'Running scan shows progress indicator';
         });
@@ -379,7 +379,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'vulnerability') ||
                 str_contains($pageSource, 'issue');
 
-            $this->assertTrue($hasSummary || true, 'Scan results summary should be displayed');
+            $this->assertTrue($hasSummary, 'Scan results summary should be displayed');
 
             $this->testResults['results_summary'] = 'Scan results summary is displayed';
         });
@@ -406,7 +406,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'More Info') ||
                 str_contains($pageSource, 'wire:click');
 
-            $this->assertTrue($hasViewButton || true, 'View details button should be present');
+            $this->assertTrue($hasViewButton, 'View details button should be present');
 
             $this->testResults['view_details_button'] = 'View scan details button is present';
         });
@@ -432,7 +432,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'severe') ||
                 str_contains($pageSource, 'urgent');
 
-            $this->assertTrue($hasCritical || true, 'Critical vulnerabilities should be highlighted');
+            $this->assertTrue($hasCritical, 'Critical vulnerabilities should be highlighted');
 
             $this->testResults['critical_vulnerabilities'] = 'Critical vulnerabilities are highlighted';
         });
@@ -458,7 +458,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'severity') ||
                 str_contains($pageSource, 'important');
 
-            $this->assertTrue($hasHighSeverity || true, 'High severity vulnerabilities should be shown');
+            $this->assertTrue($hasHighSeverity, 'High severity vulnerabilities should be shown');
 
             $this->testResults['high_severity'] = 'High severity vulnerabilities are shown';
         });
@@ -484,7 +484,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'moderate') ||
                 str_contains($pageSource, 'severity');
 
-            $this->assertTrue($hasMediumSeverity || true, 'Medium severity vulnerabilities should be displayed');
+            $this->assertTrue($hasMediumSeverity, 'Medium severity vulnerabilities should be displayed');
 
             $this->testResults['medium_severity'] = 'Medium severity vulnerabilities are displayed';
         });
@@ -510,7 +510,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'minor') ||
                 str_contains($pageSource, 'severity');
 
-            $this->assertTrue($hasLowSeverity || true, 'Low severity vulnerabilities should be listed');
+            $this->assertTrue($hasLowSeverity, 'Low severity vulnerabilities should be listed');
 
             $this->testResults['low_severity'] = 'Low severity vulnerabilities are listed';
         });
@@ -536,7 +536,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'finding') ||
                 str_contains($pageSource, 'issue');
 
-            $this->assertTrue($hasCount || true, 'Vulnerability count should be shown');
+            $this->assertTrue($hasCount, 'Vulnerability count should be shown');
 
             $this->testResults['vulnerability_count'] = 'Vulnerability count by severity is shown';
         });
@@ -563,7 +563,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'fix') ||
                 str_contains($pageSource, 'solution');
 
-            $this->assertTrue($hasRemediation || true, 'Remediation suggestions should be available');
+            $this->assertTrue($hasRemediation, 'Remediation suggestions should be available');
 
             $this->testResults['remediation'] = 'Remediation suggestions are available';
         });
@@ -590,7 +590,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'seconds') ||
                 str_contains($pageSource, 'minutes');
 
-            $this->assertTrue($hasDuration || true, 'Scan duration should be displayed');
+            $this->assertTrue($hasDuration, 'Scan duration should be displayed');
 
             $this->testResults['scan_duration'] = 'Scan duration is displayed';
         });
@@ -617,7 +617,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'started') ||
                 str_contains($pageSource, 'completed');
 
-            $this->assertTrue($hasTimestamp || true, 'Scan timestamp should be shown');
+            $this->assertTrue($hasTimestamp, 'Scan timestamp should be shown');
 
             $this->testResults['scan_timestamp'] = 'Scan timestamp is shown';
         });
@@ -644,7 +644,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'previous') ||
                 str_contains($pageSource, 'page');
 
-            $this->assertTrue($hasPagination || true, 'Pagination should work for scan history');
+            $this->assertTrue($hasPagination, 'Pagination should work for scan history');
 
             $this->testResults['pagination'] = 'Pagination for scan history works';
         });
@@ -671,7 +671,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'critical') ||
                 str_contains($pageSource, 'high');
 
-            $this->assertTrue($hasFilter || true, 'Should be able to filter scans by severity');
+            $this->assertTrue($hasFilter, 'Should be able to filter scans by severity');
 
             $this->testResults['filter_severity'] = 'Filter scans by severity works';
         });
@@ -697,7 +697,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'wire:model') ||
                 str_contains($pageSource, 'input');
 
-            $this->assertTrue($hasSearch || true, 'Should be able to search vulnerabilities');
+            $this->assertTrue($hasSearch, 'Should be able to search vulnerabilities');
 
             $this->testResults['search_vulnerabilities'] = 'Search vulnerabilities by keyword works';
         });
@@ -723,7 +723,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'details') ||
                 str_contains($pageSource, 'wire:click');
 
-            $this->assertTrue($hasModal || true, 'Vulnerability details modal should open');
+            $this->assertTrue($hasModal, 'Vulnerability details modal should open');
 
             $this->testResults['details_modal'] = 'Vulnerability details modal can be opened';
         });
@@ -750,7 +750,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'mark') ||
                 str_contains($pageSource, 'close');
 
-            $this->assertTrue($hasResolve || true, 'Should be able to mark vulnerability as resolved');
+            $this->assertTrue($hasResolve, 'Should be able to mark vulnerability as resolved');
 
             $this->testResults['mark_resolved'] = 'Mark vulnerability as resolved works';
         });
@@ -776,7 +776,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'ignore') ||
                 str_contains($pageSource, 'dismiss');
 
-            $this->assertTrue($hasFalsePositive || true, 'Mark as false positive option should exist');
+            $this->assertTrue($hasFalsePositive, 'Mark as false positive option should exist');
 
             $this->testResults['false_positive'] = 'Mark as false positive option available';
         });
@@ -803,7 +803,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'download') ||
                 str_contains($pageSource, 'report');
 
-            $this->assertTrue($hasExportPDF || true, 'Export scan report as PDF should be available');
+            $this->assertTrue($hasExportPDF, 'Export scan report as PDF should be available');
 
             $this->testResults['export_pdf'] = 'Export scan report as PDF option available';
         });
@@ -829,7 +829,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'csv') ||
                 str_contains($pageSource, 'download');
 
-            $this->assertTrue($hasExportCSV || true, 'Export scan report as CSV should be available');
+            $this->assertTrue($hasExportCSV, 'Export scan report as CSV should be available');
 
             $this->testResults['export_csv'] = 'Export scan report as CSV option available';
         });
@@ -856,7 +856,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'automatic') ||
                 str_contains($pageSource, 'frequency');
 
-            $this->assertTrue($hasSchedule || true, 'Schedule recurring scans option should exist');
+            $this->assertTrue($hasSchedule, 'Schedule recurring scans option should exist');
 
             $this->testResults['schedule_scans'] = 'Schedule recurring scans option available';
         });
@@ -883,7 +883,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'before') ||
                 str_contains($pageSource, 'after');
 
-            $this->assertTrue($hasComparison || true, 'Scan comparison feature should exist');
+            $this->assertTrue($hasComparison, 'Scan comparison feature should exist');
 
             $this->testResults['scan_comparison'] = 'Scan comparison feature exists';
         });
@@ -910,7 +910,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'configuration') ||
                 str_contains($pageSource, 'category');
 
-            $this->assertTrue($hasCategories || true, 'Vulnerability categories should be displayed');
+            $this->assertTrue($hasCategories, 'Vulnerability categories should be displayed');
 
             $this->testResults['vulnerability_categories'] = 'Vulnerability categories are displayed';
         });
@@ -937,7 +937,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'configuration') ||
                 str_contains($pageSource, 'type');
 
-            $this->assertTrue($hasScanTypes || true, 'Scan type selection should be available');
+            $this->assertTrue($hasScanTypes, 'Scan type selection should be available');
 
             $this->testResults['scan_types'] = 'Scan type selection is available';
         });
@@ -963,7 +963,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'compliance') ||
                 str_contains($pageSource, 'standard');
 
-            $this->assertTrue($hasPCI || true, 'PCI compliance check option should exist');
+            $this->assertTrue($hasPCI, 'PCI compliance check option should exist');
 
             $this->testResults['pci_compliance'] = 'PCI compliance check option available';
         });
@@ -989,7 +989,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'compliance') ||
                 str_contains($pageSource, 'health');
 
-            $this->assertTrue($hasHIPAA || true, 'HIPAA compliance check option should exist');
+            $this->assertTrue($hasHIPAA, 'HIPAA compliance check option should exist');
 
             $this->testResults['hipaa_compliance'] = 'HIPAA compliance check option available';
         });
@@ -1015,7 +1015,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'alert') ||
                 str_contains($pageSource, 'email');
 
-            $this->assertTrue($hasNotifications || true, 'Scan notifications should be configurable');
+            $this->assertTrue($hasNotifications, 'Scan notifications should be configurable');
 
             $this->testResults['scan_notifications'] = 'Scan notifications are configurable';
         });
@@ -1042,7 +1042,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'graph') ||
                 str_contains($pageSource, 'history');
 
-            $this->assertTrue($hasTrend || true, 'Security score trend chart should be visible');
+            $this->assertTrue($hasTrend, 'Security score trend chart should be visible');
 
             $this->testResults['score_trend'] = 'Security score trend chart is visible';
         });
@@ -1068,7 +1068,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'scan') ||
                 str_contains($pageSource, 'run');
 
-            $this->assertTrue($hasQuickScan || true, 'Quick scan action should be available');
+            $this->assertTrue($hasQuickScan, 'Quick scan action should be available');
 
             $this->testResults['quick_scan'] = 'Quick scan action is available';
         });
@@ -1095,7 +1095,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'full') ||
                 str_contains($pageSource, 'thorough');
 
-            $this->assertTrue($hasDeepScan || true, 'Deep scan option should be available');
+            $this->assertTrue($hasDeepScan, 'Deep scan option should be available');
 
             $this->testResults['deep_scan'] = 'Deep scan option is available';
         });
@@ -1122,7 +1122,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'percent') ||
                 str_contains($pageSource, 'running');
 
-            $this->assertTrue($hasProgress || true, 'Scan progress percentage should be shown');
+            $this->assertTrue($hasProgress, 'Scan progress percentage should be shown');
 
             $this->testResults['progress_percentage'] = 'Scan progress percentage is shown';
         });
@@ -1148,7 +1148,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'reload') ||
                 str_contains($pageSource, 'update');
 
-            $this->assertTrue($hasRefresh || true, 'Refresh scan results button should exist');
+            $this->assertTrue($hasRefresh, 'Refresh scan results button should exist');
 
             $this->testResults['refresh_button'] = 'Refresh scan results button exists';
         });
@@ -1201,7 +1201,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'location') ||
                 str_contains($pageSource, 'affected');
 
-            $this->assertTrue($hasAffectedFiles || true, 'Vulnerability details should show affected files');
+            $this->assertTrue($hasAffectedFiles, 'Vulnerability details should show affected files');
 
             $this->testResults['affected_files'] = 'Vulnerability details show affected files';
         });
@@ -1227,7 +1227,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'reference') ||
                 str_contains($pageSource, 'vulnerability');
 
-            $this->assertTrue($hasCVE || true, 'CVE references should be linked');
+            $this->assertTrue($hasCVE, 'CVE references should be linked');
 
             $this->testResults['cve_references'] = 'CVE references are linked';
         });
@@ -1254,7 +1254,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'abort') ||
                 str_contains($pageSource, 'running');
 
-            $this->assertTrue($hasCancel || true, 'Scan should be cancellable while running');
+            $this->assertTrue($hasCancel, 'Scan should be cancellable while running');
 
             $this->testResults['cancel_scan'] = 'Scan can be cancelled while running';
         });
@@ -1281,7 +1281,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'high') ||
                 str_contains($pageSource, 'critical');
 
-            $this->assertTrue($hasPriority || true, 'Vulnerability remediation priority should be shown');
+            $this->assertTrue($hasPriority, 'Vulnerability remediation priority should be shown');
 
             $this->testResults['remediation_priority'] = 'Vulnerability remediation priority is shown';
         });
@@ -1308,7 +1308,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'range') ||
                 str_contains($pageSource, 'from');
 
-            $this->assertTrue($hasDateFilter || true, 'Scan history should be filterable by date range');
+            $this->assertTrue($hasDateFilter, 'Scan history should be filterable by date range');
 
             $this->testResults['date_filter'] = 'Scan history can be filtered by date range';
         });
@@ -1335,7 +1335,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'recommendation') ||
                 str_contains($pageSource, 'fix');
 
-            $this->assertTrue($hasAutomated || true, 'Automated remediation suggestions should exist');
+            $this->assertTrue($hasAutomated, 'Automated remediation suggestions should exist');
 
             $this->testResults['automated_remediation'] = 'Automated remediation suggestions exist';
         });
@@ -1362,7 +1362,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'finding') ||
                 str_contains($pageSource, 'vulnerability');
 
-            $this->assertTrue($hasTotalIssues || true, 'Scan summary should show total issues');
+            $this->assertTrue($hasTotalIssues, 'Scan summary should show total issues');
 
             $this->testResults['total_issues'] = 'Scan summary shows total issues found';
         });
@@ -1388,7 +1388,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'polling') ||
                 str_contains($pageSource, 'livewire');
 
-            $this->assertTrue($hasPolling || true, 'Real-time scan updates should work via polling');
+            $this->assertTrue($hasPolling, 'Real-time scan updates should work via polling');
 
             $this->testResults['realtime_updates'] = 'Real-time scan updates via Livewire polling work';
         });
@@ -1415,7 +1415,7 @@ class SecurityScanDashboardTest extends DuskTestCase
                 str_contains($pageSource, 'improve') ||
                 str_contains($pageSource, 'suggestion');
 
-            $this->assertTrue($hasBestPractices || true, 'Security best practices recommendations should exist');
+            $this->assertTrue($hasBestPractices, 'Security best practices recommendations should exist');
 
             $this->testResults['best_practices'] = 'Security best practices recommendations section exists';
         });

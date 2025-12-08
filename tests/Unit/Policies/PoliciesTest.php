@@ -11,7 +11,6 @@ use App\Models\User;
 use App\Policies\DeploymentPolicy;
 use App\Policies\ProjectPolicy;
 use App\Policies\ServerPolicy;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
@@ -23,7 +22,6 @@ use Tests\TestCase;
  */
 class PoliciesTest extends TestCase
 {
-    use RefreshDatabase;
 
     // ========================================
     // ServerPolicy Tests

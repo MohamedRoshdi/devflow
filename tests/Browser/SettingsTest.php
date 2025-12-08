@@ -248,7 +248,7 @@ class SettingsTest extends DuskTestCase
                 str_contains($pageSource, 'Generate') ||
                 str_contains($pageSource, 'Add Token');
 
-            $this->assertTrue($hasCreateButton || true, 'API token creation button should be visible');
+            $this->assertTrue($hasCreateButton, 'API token creation button should be visible');
 
             $this->testResults['api_token_create_button'] = 'API token creation button is visible';
         });
@@ -276,7 +276,7 @@ class SettingsTest extends DuskTestCase
                 str_contains($pageSource, 'authorize') ||
                 str_contains($pageSource, 'authenticated');
 
-            $this->assertTrue($hasOAuthStatus || true, 'GitHub OAuth connection status should be displayed');
+            $this->assertTrue($hasOAuthStatus, 'GitHub OAuth connection status should be displayed');
 
             $this->testResults['github_oauth_status'] = 'GitHub OAuth connection status is displayed';
         });
@@ -304,7 +304,7 @@ class SettingsTest extends DuskTestCase
                 str_contains($pageSource, 'check') ||
                 str_contains($pageSource, 'interval');
 
-            $this->assertTrue($hasEndpoints || true, 'Health check endpoints list should be visible');
+            $this->assertTrue($hasEndpoints, 'Health check endpoints list should be visible');
 
             $this->testResults['health_check_endpoints'] = 'Health check endpoints list is visible';
         });
@@ -332,7 +332,7 @@ class SettingsTest extends DuskTestCase
                 str_contains($pageSource, 'fingerprint') ||
                 str_contains($pageSource, 'add');
 
-            $this->assertTrue($hasKeyList || true, 'SSH key list should display existing keys');
+            $this->assertTrue($hasKeyList, 'SSH key list should display existing keys');
 
             $this->testResults['ssh_key_list'] = 'SSH key list displays existing keys';
         });
@@ -360,7 +360,7 @@ class SettingsTest extends DuskTestCase
                 str_contains($pageSource, 'disk') ||
                 str_contains($pageSource, 'uptime');
 
-            $this->assertTrue($hasMetrics || true, 'System metrics should be displayed');
+            $this->assertTrue($hasMetrics, 'System metrics should be displayed');
 
             $this->testResults['system_metrics'] = 'System metrics are displayed on status page';
         });
@@ -388,7 +388,7 @@ class SettingsTest extends DuskTestCase
                 str_contains($pageSource, 'available') ||
                 str_contains($pageSource, 'total');
 
-            $this->assertTrue($hasUsageStats || true, 'Storage usage statistics should be shown');
+            $this->assertTrue($hasUsageStats, 'Storage usage statistics should be shown');
 
             $this->testResults['storage_usage_stats'] = 'Storage usage statistics are shown';
         });
@@ -416,7 +416,7 @@ class SettingsTest extends DuskTestCase
                 str_contains($pageSource, 'completed') ||
                 str_contains($pageSource, 'failed');
 
-            $this->assertTrue($hasQueueStats || true, 'Queue statistics should be visible');
+            $this->assertTrue($hasQueueStats, 'Queue statistics should be visible');
 
             $this->testResults['queue_statistics'] = 'Queue statistics are visible';
         });
@@ -444,7 +444,7 @@ class SettingsTest extends DuskTestCase
                 str_contains($pageSource, 'access') ||
                 str_contains($pageSource, 'ability');
 
-            $this->assertTrue($hasPermissions || true, 'API token permissions should be configurable');
+            $this->assertTrue($hasPermissions, 'API token permissions should be configurable');
 
             $this->testResults['api_token_permissions'] = 'API token permissions are configurable';
         });
@@ -472,7 +472,7 @@ class SettingsTest extends DuskTestCase
                 str_contains($pageSource, 'branch') ||
                 str_contains($pageSource, 'sync');
 
-            $this->assertTrue($hasRepositories || true, 'GitHub repository list should be accessible');
+            $this->assertTrue($hasRepositories, 'GitHub repository list should be accessible');
 
             $this->testResults['github_repositories'] = 'GitHub repository list is accessible';
         });
@@ -500,7 +500,7 @@ class SettingsTest extends DuskTestCase
                 str_contains($pageSource, 'New Health Check') ||
                 str_contains($pageSource, 'wire:click');
 
-            $this->assertTrue($hasAddButton || true, 'Add health check button should be present');
+            $this->assertTrue($hasAddButton, 'Add health check button should be present');
 
             $this->testResults['add_health_check_button'] = 'Add health check button is present';
         });
@@ -528,7 +528,7 @@ class SettingsTest extends DuskTestCase
                 str_contains($pageSource, 'New Key') ||
                 str_contains($pageSource, 'Add SSH Key');
 
-            $this->assertTrue($hasGenerationOption || true, 'SSH key generation option should be available');
+            $this->assertTrue($hasGenerationOption, 'SSH key generation option should be available');
 
             $this->testResults['ssh_key_generation'] = 'SSH key generation option is available';
         });
@@ -556,7 +556,7 @@ class SettingsTest extends DuskTestCase
                 str_contains($pageSource, 'stopped') ||
                 str_contains($pageSource, 'active');
 
-            $this->assertTrue($hasServiceStatus || true, 'Service status indicators should be shown');
+            $this->assertTrue($hasServiceStatus, 'Service status indicators should be shown');
 
             $this->testResults['service_status_indicators'] = 'Service status indicators are shown';
         });
@@ -584,7 +584,7 @@ class SettingsTest extends DuskTestCase
                 str_contains($pageSource, 's3') ||
                 str_contains($pageSource, 'config');
 
-            $this->assertTrue($hasDriverConfig || true, 'Storage driver configuration should be visible');
+            $this->assertTrue($hasDriverConfig, 'Storage driver configuration should be visible');
 
             $this->testResults['storage_driver_config'] = 'Storage driver configuration is visible';
         });
@@ -612,7 +612,7 @@ class SettingsTest extends DuskTestCase
                 str_contains($pageSource, 'running') ||
                 str_contains($pageSource, 'idle');
 
-            $this->assertTrue($hasWorkerStatus || true, 'Queue worker status should be displayed');
+            $this->assertTrue($hasWorkerStatus, 'Queue worker status should be displayed');
 
             $this->testResults['queue_worker_status'] = 'Queue worker status is displayed';
         });
@@ -640,7 +640,7 @@ class SettingsTest extends DuskTestCase
                 str_contains($pageSource, 'remove') ||
                 str_contains($pageSource, 'disable');
 
-            $this->assertTrue($hasRevocationOption || true, 'API token revocation option should be available');
+            $this->assertTrue($hasRevocationOption, 'API token revocation option should be available');
 
             $this->testResults['api_token_revocation'] = 'API token revocation option is available';
         });
@@ -668,7 +668,7 @@ class SettingsTest extends DuskTestCase
                 str_contains($pageSource, 'minute') ||
                 str_contains($pageSource, 'schedule');
 
-            $this->assertTrue($hasFrequencySettings || true, 'Health check frequency settings should be editable');
+            $this->assertTrue($hasFrequencySettings, 'Health check frequency settings should be editable');
 
             $this->testResults['health_check_frequency'] = 'Health check frequency settings are editable';
         });
@@ -696,7 +696,7 @@ class SettingsTest extends DuskTestCase
                 str_contains($pageSource, 'sha') ||
                 str_contains($pageSource, 'md5');
 
-            $this->assertTrue($hasFingerprint || true, 'SSH key fingerprint should be displayed');
+            $this->assertTrue($hasFingerprint, 'SSH key fingerprint should be displayed');
 
             $this->testResults['ssh_key_fingerprint'] = 'SSH key fingerprint is displayed';
         });
@@ -724,7 +724,7 @@ class SettingsTest extends DuskTestCase
                 str_contains($pageSource, 'cpu') ||
                 str_contains($pageSource, 'usage');
 
-            $this->assertTrue($hasLoadAverages || true, 'System load averages should be shown');
+            $this->assertTrue($hasLoadAverages, 'System load averages should be shown');
 
             $this->testResults['system_load_averages'] = 'System load averages are shown';
         });
@@ -787,7 +787,7 @@ class SettingsTest extends DuskTestCase
                 str_contains($pageSource, 'storage') ||
                 str_contains($pageSource, 'queue');
 
-            $this->assertTrue($hasNavigation || true, 'Settings sections should have proper navigation');
+            $this->assertTrue($hasNavigation, 'Settings sections should have proper navigation');
 
             $this->testResults['settings_navigation'] = 'Settings sections have proper navigation';
         });

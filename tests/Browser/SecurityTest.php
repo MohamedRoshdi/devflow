@@ -215,7 +215,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'enabled') ||
                 str_contains($pageSource, 'disabled');
 
-            $this->assertTrue($hasMetrics || true, 'Security metrics should be displayed');
+            $this->assertTrue($hasMetrics, 'Security metrics should be displayed');
 
             $this->testResults['security_metrics'] = 'Security metrics are displayed';
         });
@@ -273,7 +273,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'valid') ||
                 str_contains($pageSource, 'issue');
 
-            $this->assertTrue($hasCertificatesList || true, 'SSL certificates list should be displayed');
+            $this->assertTrue($hasCertificatesList, 'SSL certificates list should be displayed');
 
             $this->testResults['ssl_certificates'] = 'SSL certificates list is displayed';
         });
@@ -331,7 +331,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'service') ||
                 str_contains($pageSource, 'enabled');
 
-            $this->assertTrue($hasJails || true, 'Fail2ban jails should be listed');
+            $this->assertTrue($hasJails, 'Fail2ban jails should be listed');
 
             $this->testResults['fail2ban_jails'] = 'Fail2ban jails are listed';
         });
@@ -387,7 +387,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'Create Rule') ||
                 str_contains($pageSource, 'wire:click');
 
-            $this->assertTrue($hasAddButton || true, 'Firewall add rule button should be present');
+            $this->assertTrue($hasAddButton, 'Firewall add rule button should be present');
 
             $this->testResults['firewall_add_button'] = 'Firewall add rule button is present';
         });
@@ -415,7 +415,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'update') ||
                 str_contains($pageSource, 'install');
 
-            $this->assertTrue($hasRenewalOption || true, 'SSL renewal option should be visible');
+            $this->assertTrue($hasRenewalOption, 'SSL renewal option should be visible');
 
             $this->testResults['ssl_renewal'] = 'SSL renewal option is visible';
         });
@@ -442,7 +442,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'port') ||
                 str_contains($pageSource, 'input');
 
-            $this->assertTrue($hasPortConfig || true, 'SSH port configuration should be editable');
+            $this->assertTrue($hasPortConfig, 'SSH port configuration should be editable');
 
             $this->testResults['ssh_port_config'] = 'SSH port configuration is editable';
         });
@@ -470,7 +470,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'address') ||
                 str_contains($pageSource, 'block');
 
-            $this->assertTrue($hasBannedIPs || true, 'Fail2ban banned IPs should be shown');
+            $this->assertTrue($hasBannedIPs, 'Fail2ban banned IPs should be shown');
 
             $this->testResults['fail2ban_banned_ips'] = 'Fail2ban banned IPs are shown';
         });
@@ -527,7 +527,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'disabled') ||
                 str_contains($pageSource, 'status');
 
-            $this->assertTrue($hasStatusIndicator || true, 'Firewall status indicator should be displayed');
+            $this->assertTrue($hasStatusIndicator, 'Firewall status indicator should be displayed');
 
             $this->testResults['firewall_status'] = 'Firewall status indicator is displayed';
         });
@@ -555,7 +555,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'days') ||
                 str_contains($pageSource, 'date');
 
-            $this->assertTrue($hasExpirationInfo || true, 'SSL expiration warnings should be visible');
+            $this->assertTrue($hasExpirationInfo, 'SSL expiration warnings should be visible');
 
             $this->testResults['ssl_expiration'] = 'SSL expiration warnings are visible';
         });
@@ -612,7 +612,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'enable') ||
                 str_contains($pageSource, 'disable');
 
-            $this->assertTrue($hasControlButtons || true, 'Fail2ban service control buttons should be present');
+            $this->assertTrue($hasControlButtons, 'Fail2ban service control buttons should be present');
 
             $this->testResults['fail2ban_controls'] = 'Fail2ban service control buttons are present';
         });
@@ -640,7 +640,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'grade') ||
                 str_contains($pageSource, 'level');
 
-            $this->assertTrue($hasScore || true, 'Security score should be displayed');
+            $this->assertTrue($hasScore, 'Security score should be displayed');
 
             $this->testResults['security_score'] = 'Security score display is visible';
         });
@@ -668,7 +668,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'improve') ||
                 str_contains($pageSource, 'action');
 
-            $this->assertTrue($hasRecommendations || true, 'Security recommendations should be shown');
+            $this->assertTrue($hasRecommendations, 'Security recommendations should be shown');
 
             $this->testResults['security_recommendations'] = 'Security recommendations are shown';
         });
@@ -752,7 +752,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'two factor') ||
                 str_contains($pageSource, 'authentication');
 
-            $this->assertTrue($has2FA || true, 'Two-factor authentication settings should exist');
+            $this->assertTrue($has2FA, 'Two-factor authentication settings should exist');
 
             $this->testResults['two_factor_settings'] = 'Two-factor authentication settings exist';
         });
@@ -808,7 +808,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'detection') ||
                 str_contains($pageSource, 'attempt');
 
-            $this->assertTrue($hasAlerts || true, 'Intrusion detection alerts should be displayed');
+            $this->assertTrue($hasAlerts, 'Intrusion detection alerts should be displayed');
 
             $this->testResults['intrusion_alerts'] = 'Intrusion detection alerts are displayed';
         });
@@ -836,7 +836,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'permitted') ||
                 str_contains($pageSource, 'ip');
 
-            $this->assertTrue($hasWhitelist || true, 'IP whitelist management should be available');
+            $this->assertTrue($hasWhitelist, 'IP whitelist management should be available');
 
             $this->testResults['ip_whitelist'] = 'IP whitelist management is available';
         });
@@ -864,7 +864,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'deny') ||
                 str_contains($pageSource, 'banned');
 
-            $this->assertTrue($hasBlacklist || true, 'IP blacklist management should be available');
+            $this->assertTrue($hasBlacklist, 'IP blacklist management should be available');
 
             $this->testResults['ip_blacklist'] = 'IP blacklist management is available';
         });
@@ -948,7 +948,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'issue') ||
                 str_contains($pageSource, 'vulnerability');
 
-            $this->assertTrue($hasResults || true, 'Security scan results should be displayed');
+            $this->assertTrue($hasResults, 'Security scan results should be displayed');
 
             $this->testResults['security_scan_results'] = 'Security scan results are displayed';
         });
@@ -976,7 +976,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'toggle') ||
                 str_contains($pageSource, 'active');
 
-            $this->assertTrue($hasToggle || true, 'Firewall should enable/disable rules');
+            $this->assertTrue($hasToggle, 'Firewall should enable/disable rules');
 
             $this->testResults['firewall_toggle'] = 'Firewall can enable/disable rules';
         });
@@ -1004,7 +1004,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'renew') ||
                 str_contains($pageSource, 'schedule');
 
-            $this->assertTrue($hasAutoRenewal || true, 'SSL auto-renewal settings should be visible');
+            $this->assertTrue($hasAutoRenewal, 'SSL auto-renewal settings should be visible');
 
             $this->testResults['ssl_auto_renewal'] = 'SSL auto-renewal settings are visible';
         });
@@ -1032,7 +1032,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'login') ||
                 str_contains($pageSource, 'disable');
 
-            $this->assertTrue($hasRootSetting || true, 'SSH root login should be configurable');
+            $this->assertTrue($hasRootSetting, 'SSH root login should be configurable');
 
             $this->testResults['ssh_root_login'] = 'SSH root login can be disabled';
         });
@@ -1060,7 +1060,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'duration') ||
                 str_contains($pageSource, 'minutes');
 
-            $this->assertTrue($hasBanTime || true, 'Fail2ban ban time should be configurable');
+            $this->assertTrue($hasBanTime, 'Fail2ban ban time should be configurable');
 
             $this->testResults['fail2ban_ban_time'] = 'Fail2ban ban time is configurable';
         });
@@ -1088,7 +1088,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'history') ||
                 str_contains($pageSource, 'activity');
 
-            $this->assertTrue($hasTimeline || true, 'Security events timeline should be shown');
+            $this->assertTrue($hasTimeline, 'Security events timeline should be shown');
 
             $this->testResults['security_timeline'] = 'Security events timeline is shown';
         });
@@ -1116,7 +1116,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'position') ||
                 str_contains($pageSource, 'number');
 
-            $this->assertTrue($hasPriority || true, 'Firewall rule priorities should be configurable');
+            $this->assertTrue($hasPriority, 'Firewall rule priorities should be configurable');
 
             $this->testResults['firewall_priorities'] = 'Firewall rule priorities can be set';
         });
@@ -1144,7 +1144,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'verified') ||
                 str_contains($pageSource, 'check');
 
-            $this->assertTrue($hasValidation || true, 'SSL validation status should be shown');
+            $this->assertTrue($hasValidation, 'SSL validation status should be shown');
 
             $this->testResults['ssl_validation'] = 'SSL certificate validation status shown';
         });
@@ -1172,7 +1172,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'enable') ||
                 str_contains($pageSource, 'disable');
 
-            $this->assertTrue($hasPasswordAuth || true, 'SSH password authentication should be toggleable');
+            $this->assertTrue($hasPasswordAuth, 'SSH password authentication should be toggleable');
 
             $this->testResults['ssh_password_auth'] = 'SSH password authentication can be toggled';
         });
@@ -1200,7 +1200,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'attempt') ||
                 str_contains($pageSource, 'tries');
 
-            $this->assertTrue($hasMaxRetry || true, 'Fail2ban max retry should be configurable');
+            $this->assertTrue($hasMaxRetry, 'Fail2ban max retry should be configurable');
 
             $this->testResults['fail2ban_max_retry'] = 'Fail2ban max retry attempts configurable';
         });
@@ -1228,7 +1228,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'email') ||
                 str_contains($pageSource, 'settings');
 
-            $this->assertTrue($hasNotifications || true, 'Security notification preferences should exist');
+            $this->assertTrue($hasNotifications, 'Security notification preferences should exist');
 
             $this->testResults['security_notifications'] = 'Security notification preferences exist';
         });
@@ -1256,7 +1256,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'record') ||
                 str_contains($pageSource, 'track');
 
-            $this->assertTrue($hasLogging || true, 'Firewall logging should be configurable');
+            $this->assertTrue($hasLogging, 'Firewall logging should be configurable');
 
             $this->testResults['firewall_logging'] = 'Firewall logging is configurable';
         });
@@ -1284,7 +1284,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'ca') ||
                 str_contains($pageSource, 'authority');
 
-            $this->assertTrue($hasChainValidation || true, 'SSL certificate chain should be validated');
+            $this->assertTrue($hasChainValidation, 'SSL certificate chain should be validated');
 
             $this->testResults['ssl_chain_validation'] = 'SSL certificate chain is validated';
         });
@@ -1312,7 +1312,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'hash') ||
                 str_contains($pageSource, 'ssh');
 
-            $this->assertTrue($hasFingerprints || true, 'SSH key fingerprints should be displayed');
+            $this->assertTrue($hasFingerprints, 'SSH key fingerprints should be displayed');
 
             $this->testResults['ssh_fingerprints'] = 'SSH key fingerprints are displayed';
         });
@@ -1340,7 +1340,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'delete') ||
                 str_contains($pageSource, 'release');
 
-            $this->assertTrue($hasUnban || true, 'Fail2ban unban functionality should exist');
+            $this->assertTrue($hasUnban, 'Fail2ban unban functionality should exist');
 
             $this->testResults['fail2ban_unban'] = 'Fail2ban unban functionality exists';
         });
@@ -1368,7 +1368,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'audit') ||
                 str_contains($pageSource, 'standard');
 
-            $this->assertTrue($hasCompliance || true, 'Security compliance reports should be available');
+            $this->assertTrue($hasCompliance, 'Security compliance reports should be available');
 
             $this->testResults['compliance_reports'] = 'Security compliance reports available';
         });
@@ -1396,7 +1396,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'incoming') ||
                 str_contains($pageSource, 'outgoing');
 
-            $this->assertTrue($hasDefaultPolicies || true, 'Firewall default policies should be configurable');
+            $this->assertTrue($hasDefaultPolicies, 'Firewall default policies should be configurable');
 
             $this->testResults['firewall_default_policies'] = 'Firewall default policies can be set';
         });
@@ -1424,7 +1424,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'new') ||
                 str_contains($pageSource, 'certificate');
 
-            $this->assertTrue($hasWizard || true, 'SSL installation wizard should exist');
+            $this->assertTrue($hasWizard, 'SSL installation wizard should exist');
 
             $this->testResults['ssl_installation_wizard'] = 'SSL certificate installation wizard exists';
         });
@@ -1452,7 +1452,7 @@ class SecurityTest extends DuskTestCase
                 str_contains($pageSource, 'idle') ||
                 str_contains($pageSource, 'disconnect');
 
-            $this->assertTrue($hasTimeout || true, 'SSH connection timeout should be configurable');
+            $this->assertTrue($hasTimeout, 'SSH connection timeout should be configurable');
 
             $this->testResults['ssh_timeout'] = 'SSH connection timeout is configurable';
         });

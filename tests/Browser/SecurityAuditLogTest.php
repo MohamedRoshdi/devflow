@@ -499,7 +499,7 @@ class SecurityAuditLogTest extends DuskTestCase
                 str_contains($pageSource, 'download') ||
                 str_contains($pageSource, 'csv');
 
-            $this->assertTrue($hasExport || true, 'CSV export should be available');
+            $this->assertTrue($hasExport, 'CSV export should be available');
             $this->testResults['export_csv'] = 'CSV export checked';
         });
     }
@@ -574,7 +574,7 @@ class SecurityAuditLogTest extends DuskTestCase
                 str_contains($pageSource, 'medium') ||
                 str_contains($pageSource, 'low');
 
-            $this->assertTrue($hasSeverity || true, 'Severity indicators should be visible');
+            $this->assertTrue($hasSeverity, 'Severity indicators should be visible');
             $this->testResults['severity_indicators'] = 'Severity level indicators checked';
         });
     }

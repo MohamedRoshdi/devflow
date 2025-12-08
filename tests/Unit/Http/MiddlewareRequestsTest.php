@@ -15,7 +15,6 @@ use App\Models\Project;
 use App\Models\Server;
 use App\Models\Team;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
@@ -24,7 +23,6 @@ use Tests\TestCase;
 
 class MiddlewareRequestsTest extends TestCase
 {
-    use RefreshDatabase;
 
     // ========================================
     // AuthenticateApiToken Middleware Tests

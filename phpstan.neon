@@ -99,4 +99,10 @@ parameters:
         # Factory classes that don't exist yet
         - '#PHPDoc tag @use has invalid type Database\\Factories\\.*#'
         - '#Type Database\\Factories\\.* in generic type .* is not subtype of template type TFactory#'
+        # Mockery in tests
+        - '#Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage::.*#'
+        - path: tests/*
+          message: '#does not accept Mockery\\MockInterface#'
+        - path: tests/*
+          message: '#expects .*, Mockery\\MockInterface given#'
     reportUnmatchedIgnoredErrors: false

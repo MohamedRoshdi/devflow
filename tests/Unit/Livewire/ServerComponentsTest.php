@@ -30,7 +30,6 @@ use App\Models\ServerMetric;
 use App\Models\ServerTag;
 use App\Models\SSLCertificate;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Process;
 use Livewire\Livewire;
@@ -38,7 +37,6 @@ use Tests\TestCase;
 
 class ServerComponentsTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected User $user;
 

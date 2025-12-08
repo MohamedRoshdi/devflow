@@ -423,7 +423,7 @@ class ProjectLogsTest extends DuskTestCase
                     str_contains($pageSource, 'refreshing') ||
                     str_contains($pageSource, 'animate-spin');
 
-                $this->assertTrue($hasLoadingState || true, 'Loading state should appear');
+                $this->assertTrue($hasLoadingState, 'Loading state should appear');
             } catch (\Exception $e) {
                 $this->assertTrue(true, 'Loading state test attempted');
             }
@@ -448,7 +448,7 @@ class ProjectLogsTest extends DuskTestCase
                 str_contains($pageSource, 'error') ||
                 str_contains($pageSource, 'no log output available');
 
-            $this->assertTrue($hasErrorStructure || true, 'Error structure should be present');
+            $this->assertTrue($hasErrorStructure, 'Error structure should be present');
         });
     }
 
@@ -468,7 +468,7 @@ class ProjectLogsTest extends DuskTestCase
             $hasSourceIndicator = str_contains($pageSource, 'Source:') ||
                 str_contains($pageSource, 'Log Source');
 
-            $this->assertTrue($hasSourceIndicator || true, 'Source indicator should be shown');
+            $this->assertTrue($hasSourceIndicator, 'Source indicator should be shown');
         });
     }
 
@@ -557,7 +557,7 @@ class ProjectLogsTest extends DuskTestCase
                     $hasSpinner = str_contains($pageSource, 'animate-spin') ||
                         str_contains($pageSource, 'Refreshing');
 
-                    $this->assertTrue($hasSpinner || true, 'Loading spinner should appear');
+                    $this->assertTrue($hasSpinner, 'Loading spinner should appear');
                 } else {
                     $this->assertTrue(true, 'Refresh button not found');
                 }
@@ -643,7 +643,7 @@ class ProjectLogsTest extends DuskTestCase
             $hasEmptyState = str_contains($pageSource, 'No log output available') ||
                 str_contains($pageSource, 'no logs');
 
-            $this->assertTrue($hasEmptyState || true, 'Empty state should be handled');
+            $this->assertTrue($hasEmptyState, 'Empty state should be handled');
         });
     }
 
@@ -847,7 +847,7 @@ class ProjectLogsTest extends DuskTestCase
                 str_contains($pageSource, 'success') ||
                 str_contains($pageSource, 'message');
 
-            $this->assertTrue($hasSuccessStructure || true, 'Success message structure should exist');
+            $this->assertTrue($hasSuccessStructure, 'Success message structure should exist');
         });
     }
 
@@ -910,7 +910,7 @@ class ProjectLogsTest extends DuskTestCase
             $hasCurrentTimestamp = str_contains($pageSource, $currentMonth) ||
                 str_contains($pageSource, $currentDay);
 
-            $this->assertTrue($hasCurrentTimestamp || true, 'Current timestamp should be shown');
+            $this->assertTrue($hasCurrentTimestamp, 'Current timestamp should be shown');
         });
     }
 

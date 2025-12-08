@@ -11,14 +11,12 @@ use App\Models\Server;
 use App\Services\LogAggregationService;
 use App\Services\ServerConnectivityService;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
 use Mockery;
 use Tests\TestCase;
 
 class LogAggregationServiceTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected LogAggregationService $service;
 

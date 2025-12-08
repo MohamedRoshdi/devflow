@@ -726,7 +726,7 @@ class ProjectConfigurationTest extends DuskTestCase
                 str_contains($pageSource, 'message') ||
                 str_contains($pageSource, 'flash');
 
-            $this->assertTrue($hasSuccessMessage || true, 'Success message display should be implemented');
+            $this->assertTrue($hasSuccessMessage, 'Success message display should be implemented');
             $this->testResults['success_message_display'] = 'Success message display is implemented';
         });
     }
@@ -800,7 +800,7 @@ class ProjectConfigurationTest extends DuskTestCase
                 str_contains($pageSource, 'back') ||
                 str_contains($pageSource, 'return');
 
-            $this->assertTrue($hasCancelButton || true, 'Cancel or back button should be available');
+            $this->assertTrue($hasCancelButton, 'Cancel or back button should be available');
             $this->testResults['cancel_button_available'] = 'Cancel or back button is available';
         });
     }
@@ -990,7 +990,7 @@ class ProjectConfigurationTest extends DuskTestCase
                 str_contains($pageSource, 'health_check_url') &&
                 (str_contains($pageSource, 'type="url"') || str_contains($pageSource, 'type="text"'));
 
-            $this->assertTrue($hasProperInput || true, 'Health check URL should have proper input type');
+            $this->assertTrue($hasProperInput, 'Health check URL should have proper input type');
             $this->testResults['health_url_input_type'] = 'Health check URL has proper input type';
         });
     }
@@ -1111,7 +1111,7 @@ class ProjectConfigurationTest extends DuskTestCase
                 str_contains($pageSource, 'loading') ||
                 str_contains($pageSource, 'spinner');
 
-            $this->assertTrue($hasLoadingStates || true, 'Loading states should be implemented');
+            $this->assertTrue($hasLoadingStates, 'Loading states should be implemented');
             $this->testResults['loading_states'] = 'Loading states are implemented';
         });
     }
@@ -1212,7 +1212,7 @@ class ProjectConfigurationTest extends DuskTestCase
                 str_contains($pageSource, 'role=') ||
                 str_contains($pageSource, 'for=');
 
-            $this->assertTrue($hasAccessibility || true, 'Form should have proper accessibility attributes');
+            $this->assertTrue($hasAccessibility, 'Form should have proper accessibility attributes');
             $this->testResults['has_accessibility'] = 'Form has proper accessibility attributes';
         });
     }
@@ -1261,7 +1261,7 @@ class ProjectConfigurationTest extends DuskTestCase
                 str_contains($pageSource, 'disabled') ||
                 str_contains($pageSource, 'prevent');
 
-            $this->assertTrue($hasPreventDuplicates || true, 'Form should prevent duplicate submissions');
+            $this->assertTrue($hasPreventDuplicates, 'Form should prevent duplicate submissions');
             $this->testResults['prevents_duplicates'] = 'Form prevents duplicate submissions';
         });
     }

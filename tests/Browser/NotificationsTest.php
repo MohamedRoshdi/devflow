@@ -83,7 +83,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'New Channel') ||
                 str_contains($pageSource, 'wire:click');
 
-            $this->assertTrue($hasAddButton || true, 'Add notification channel button should be visible');
+            $this->assertTrue($hasAddButton, 'Add notification channel button should be visible');
 
             $this->testResults['add_notification_channel_button'] = 'Add notification channel button is visible';
         });
@@ -112,7 +112,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'webhook') ||
                 str_contains($pageSource, 'teams');
 
-            $this->assertTrue($hasProviders || true, 'Notification channel providers should be listed');
+            $this->assertTrue($hasProviders, 'Notification channel providers should be listed');
 
             $this->testResults['notification_providers'] = 'Notification channel providers are listed';
         });
@@ -139,7 +139,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'webhook') ||
                 str_contains($pageSource, 'url');
 
-            $this->assertTrue($hasSlackConfig || true, 'Slack channel configuration should be available');
+            $this->assertTrue($hasSlackConfig, 'Slack channel configuration should be available');
 
             $this->testResults['slack_channel_config'] = 'Slack channel configuration is available';
         });
@@ -166,7 +166,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'webhook') ||
                 str_contains($pageSource, 'url');
 
-            $this->assertTrue($hasDiscordConfig || true, 'Discord channel configuration should be available');
+            $this->assertTrue($hasDiscordConfig, 'Discord channel configuration should be available');
 
             $this->testResults['discord_channel_config'] = 'Discord channel configuration is available';
         });
@@ -193,7 +193,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'mail') ||
                 str_contains($pageSource, '@');
 
-            $this->assertTrue($hasEmailConfig || true, 'Email channel configuration should be available');
+            $this->assertTrue($hasEmailConfig, 'Email channel configuration should be available');
 
             $this->testResults['email_channel_config'] = 'Email channel configuration is available';
         });
@@ -220,7 +220,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'url') ||
                 str_contains($pageSource, 'http');
 
-            $this->assertTrue($hasWebhookConfig || true, 'Webhook channel configuration should be available');
+            $this->assertTrue($hasWebhookConfig, 'Webhook channel configuration should be available');
 
             $this->testResults['webhook_channel_config'] = 'Webhook channel configuration is available';
         });
@@ -247,7 +247,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'microsoft') ||
                 str_contains($pageSource, 'webhook');
 
-            $this->assertTrue($hasTeamsConfig || true, 'Microsoft Teams channel configuration should be available');
+            $this->assertTrue($hasTeamsConfig, 'Microsoft Teams channel configuration should be available');
 
             $this->testResults['teams_channel_config'] = 'Microsoft Teams channel configuration is available';
         });
@@ -274,7 +274,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'Send Test') ||
                 str_contains($pageSource, 'wire:click');
 
-            $this->assertTrue($hasTestButton || true, 'Test notification button should be present');
+            $this->assertTrue($hasTestButton, 'Test notification button should be present');
 
             $this->testResults['test_notification_button'] = 'Test notification button is present';
         });
@@ -302,7 +302,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'success') ||
                 str_contains($pageSource, 'failed');
 
-            $this->assertTrue($hasDeploymentEvents || true, 'Deployment notification events should be configurable');
+            $this->assertTrue($hasDeploymentEvents, 'Deployment notification events should be configurable');
 
             $this->testResults['deployment_notification_events'] = 'Deployment notification events are configurable';
         });
@@ -330,7 +330,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'recovered') ||
                 str_contains($pageSource, 'health');
 
-            $this->assertTrue($hasServerEvents || true, 'Server notification events should be configurable');
+            $this->assertTrue($hasServerEvents, 'Server notification events should be configurable');
 
             $this->testResults['server_notification_events'] = 'Server notification events are configurable';
         });
@@ -358,7 +358,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'expiring') ||
                 str_contains($pageSource, 'expired');
 
-            $this->assertTrue($hasSSLEvents || true, 'SSL certificate notification events should be configurable');
+            $this->assertTrue($hasSSLEvents, 'SSL certificate notification events should be configurable');
 
             $this->testResults['ssl_notification_events'] = 'SSL certificate notification events are configurable';
         });
@@ -386,7 +386,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'disk') ||
                 str_contains($pageSource, 'backup');
 
-            $this->assertTrue($hasStorageEvents || true, 'Storage notification events should be configurable');
+            $this->assertTrue($hasStorageEvents, 'Storage notification events should be configurable');
 
             $this->testResults['storage_notification_events'] = 'Storage notification events are configurable';
         });
@@ -413,7 +413,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'completed') ||
                 str_contains($pageSource, 'failed');
 
-            $this->assertTrue($hasBackupEvents || true, 'Backup notification events should be configurable');
+            $this->assertTrue($hasBackupEvents, 'Backup notification events should be configurable');
 
             $this->testResults['backup_notification_events'] = 'Backup notification events are configurable';
         });
@@ -441,7 +441,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'failed') ||
                 str_contains($pageSource, 'recovered');
 
-            $this->assertTrue($hasHealthCheckEvents || true, 'Health check notification events should be configurable');
+            $this->assertTrue($hasHealthCheckEvents, 'Health check notification events should be configurable');
 
             $this->testResults['health_check_notification_events'] = 'Health check notification events are configurable';
         });
@@ -469,7 +469,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'active') ||
                 str_contains($pageSource, 'inactive');
 
-            $this->assertTrue($hasToggle || true, 'Notification channel enable/disable toggle should work');
+            $this->assertTrue($hasToggle, 'Notification channel enable/disable toggle should work');
 
             $this->testResults['notification_channel_toggle'] = 'Notification channel enable/disable toggle works';
         });
@@ -496,7 +496,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'remove') ||
                 str_contains($pageSource, 'trash');
 
-            $this->assertTrue($hasDeleteOption || true, 'Notification channel deletion should be available');
+            $this->assertTrue($hasDeleteOption, 'Notification channel deletion should be available');
 
             $this->testResults['notification_channel_deletion'] = 'Notification channel deletion is available';
         });
@@ -523,7 +523,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'update') ||
                 str_contains($pageSource, 'modify');
 
-            $this->assertTrue($hasEditOption || true, 'Notification channel edit functionality should exist');
+            $this->assertTrue($hasEditOption, 'Notification channel edit functionality should exist');
 
             $this->testResults['notification_channel_edit'] = 'Notification channel edit functionality exists';
         });
@@ -550,7 +550,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'all projects') ||
                 str_contains($pageSource, 'specific');
 
-            $this->assertTrue($hasProjectFilter || true, 'Project-specific notification channels should be supported');
+            $this->assertTrue($hasProjectFilter, 'Project-specific notification channels should be supported');
 
             $this->testResults['project_specific_notifications'] = 'Project-specific notification channels are supported';
         });
@@ -578,7 +578,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'sent') ||
                 str_contains($pageSource, 'delivered');
 
-            $this->assertTrue($hasNotificationLogs || true, 'Notification logs page should be accessible');
+            $this->assertTrue($hasNotificationLogs, 'Notification logs page should be accessible');
 
             $this->testResults['notification_logs_page'] = 'Notification logs page is accessible';
         });
@@ -606,7 +606,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'timestamp') ||
                 str_contains($pageSource, 'status');
 
-            $this->assertTrue($hasHistory || true, 'Notification history should display sent notifications');
+            $this->assertTrue($hasHistory, 'Notification history should display sent notifications');
 
             $this->testResults['notification_history'] = 'Notification history displays sent notifications';
         });
@@ -634,7 +634,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'pending') ||
                 str_contains($pageSource, 'delivered');
 
-            $this->assertTrue($hasStatusIndicators || true, 'Notification status indicators should be shown');
+            $this->assertTrue($hasStatusIndicators, 'Notification status indicators should be shown');
 
             $this->testResults['notification_status_indicators'] = 'Notification status indicators are shown';
         });
@@ -661,7 +661,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'channel name') ||
                 str_contains($pageSource, 'input');
 
-            $this->assertTrue($hasNameField || true, 'Notification channel name should be editable');
+            $this->assertTrue($hasNameField, 'Notification channel name should be editable');
 
             $this->testResults['notification_channel_name_edit'] = 'Notification channel name is editable';
         });
@@ -688,7 +688,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'token') ||
                 str_contains($pageSource, 'security');
 
-            $this->assertTrue($hasWebhookSecret || true, 'Webhook secret configuration should be available');
+            $this->assertTrue($hasWebhookSecret, 'Webhook secret configuration should be available');
 
             $this->testResults['webhook_secret_config'] = 'Webhook secret configuration is available';
         });
@@ -715,7 +715,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'select all') ||
                 str_contains($pageSource, 'event');
 
-            $this->assertTrue($hasMultipleEvents || true, 'Multiple notification events should be selectable');
+            $this->assertTrue($hasMultipleEvents, 'Multiple notification events should be selectable');
 
             $this->testResults['multiple_notification_events'] = 'Multiple notification events can be selected';
         });
@@ -743,7 +743,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'svg') ||
                 str_contains($pageSource, 'img');
 
-            $this->assertTrue($hasProviderIcons || true, 'Notification channel list should show provider icons');
+            $this->assertTrue($hasProviderIcons, 'Notification channel list should show provider icons');
 
             $this->testResults['provider_icons'] = 'Notification channel list shows provider icons';
         });
@@ -770,7 +770,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'setting') ||
                 str_contains($pageSource, 'configuration');
 
-            $this->assertTrue($hasPreferences || true, 'Notification preferences should be configurable');
+            $this->assertTrue($hasPreferences, 'Notification preferences should be configurable');
 
             $this->testResults['notification_preferences'] = 'Notification preferences can be configured';
         });
@@ -797,7 +797,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'validation') ||
                 str_contains($pageSource, 'error');
 
-            $this->assertTrue($hasValidation || true, 'Notification channel validation errors should be displayed');
+            $this->assertTrue($hasValidation, 'Notification channel validation errors should be displayed');
 
             $this->testResults['notification_validation_errors'] = 'Notification channel validation errors are displayed';
         });
@@ -825,7 +825,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'previous') ||
                 str_contains($pageSource, 'page');
 
-            $this->assertTrue($hasPagination || true, 'Notification channel list should support pagination');
+            $this->assertTrue($hasPagination, 'Notification channel list should support pagination');
 
             $this->testResults['notification_pagination'] = 'Notification channel list supports pagination';
         });
@@ -853,7 +853,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'search') ||
                 str_contains($pageSource, 'select');
 
-            $this->assertTrue($hasFilter || true, 'Notification logs should be filterable by type');
+            $this->assertTrue($hasFilter, 'Notification logs should be filterable by type');
 
             $this->testResults['notification_logs_filter'] = 'Notification logs can be filtered by type';
         });
@@ -881,7 +881,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'ago') ||
                 str_contains($pageSource, 'created');
 
-            $this->assertTrue($hasTimestamp || true, 'Notification logs should show timestamp information');
+            $this->assertTrue($hasTimestamp, 'Notification logs should show timestamp information');
 
             $this->testResults['notification_logs_timestamp'] = 'Notification logs show timestamp information';
         });
@@ -908,7 +908,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'count') ||
                 str_contains($pageSource, 'channel');
 
-            $this->assertTrue($hasCount || true, 'Notification channel count should be displayed');
+            $this->assertTrue($hasCount, 'Notification channel count should be displayed');
 
             $this->testResults['notification_channel_count'] = 'Notification channel count is displayed';
         });
@@ -936,7 +936,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'failed') ||
                 str_contains($pageSource, 'status');
 
-            $this->assertTrue($hasDeliveryStatus || true, 'Notification delivery status should be tracked');
+            $this->assertTrue($hasDeliveryStatus, 'Notification delivery status should be tracked');
 
             $this->testResults['notification_delivery_status'] = 'Notification delivery status is tracked';
         });
@@ -963,7 +963,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'resend') ||
                 str_contains($pageSource, 'attempt');
 
-            $this->assertTrue($hasRetry || true, 'Notification retry mechanism should be available');
+            $this->assertTrue($hasRetry, 'Notification retry mechanism should be available');
 
             $this->testResults['notification_retry'] = 'Notification retry mechanism is available';
         });
@@ -990,7 +990,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'note') ||
                 str_contains($pageSource, 'details');
 
-            $this->assertTrue($hasDescription || true, 'Notification channel description field should be available');
+            $this->assertTrue($hasDescription, 'Notification channel description field should be available');
 
             $this->testResults['notification_channel_description'] = 'Notification channel description field is available';
         });
@@ -1018,7 +1018,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'to') ||
                 str_contains($pageSource, 'range');
 
-            $this->assertTrue($hasDateFilter || true, 'Notification logs should support date range filtering');
+            $this->assertTrue($hasDateFilter, 'Notification logs should support date range filtering');
 
             $this->testResults['notification_date_range_filter'] = 'Notification logs support date range filtering';
         });
@@ -1045,7 +1045,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'filter') ||
                 str_contains($pageSource, 'select');
 
-            $this->assertTrue($hasChannelFilter || true, 'Notification logs should be filterable by channel');
+            $this->assertTrue($hasChannelFilter, 'Notification logs should be filterable by channel');
 
             $this->testResults['notification_logs_channel_filter'] = 'Notification logs can be filtered by channel';
         });
@@ -1072,7 +1072,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'message') ||
                 str_contains($pageSource, 'details');
 
-            $this->assertTrue($hasErrorDisplay || true, 'Notification logs should show detailed error messages');
+            $this->assertTrue($hasErrorDisplay, 'Notification logs should show detailed error messages');
 
             $this->testResults['notification_error_messages'] = 'Notification logs show detailed error messages';
         });
@@ -1100,7 +1100,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'deployment') ||
                 str_contains($pageSource, 'server');
 
-            $this->assertTrue($hasEventType || true, 'Notification logs should display event type information');
+            $this->assertTrue($hasEventType, 'Notification logs should display event type information');
 
             $this->testResults['notification_event_type'] = 'Notification logs display event type information';
         });
@@ -1129,7 +1129,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'pending') ||
                 str_contains($pageSource, 'stats');
 
-            $this->assertTrue($hasStatistics || true, 'Notification channel statistics should be displayed');
+            $this->assertTrue($hasStatistics, 'Notification channel statistics should be displayed');
 
             $this->testResults['notification_statistics'] = 'Notification channel statistics are displayed';
         });
@@ -1156,7 +1156,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'reset') ||
                 str_contains($pageSource, 'filter');
 
-            $this->assertTrue($hasClearButton || true, 'Clear filters button should be available in notification logs');
+            $this->assertTrue($hasClearButton, 'Clear filters button should be available in notification logs');
 
             $this->testResults['clear_filters_button'] = 'Clear filters button is available in notification logs';
         });
@@ -1183,7 +1183,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'view') ||
                 str_contains($pageSource, 'modal');
 
-            $this->assertTrue($hasDetailsView || true, 'Notification log details modal should be accessible');
+            $this->assertTrue($hasDetailsView, 'Notification log details modal should be accessible');
 
             $this->testResults['notification_details_modal'] = 'Notification log details modal is accessible';
         });
@@ -1211,7 +1211,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'json') ||
                 str_contains($pageSource, 'message');
 
-            $this->assertTrue($hasPayload || true, 'Notification logs should show payload information');
+            $this->assertTrue($hasPayload, 'Notification logs should show payload information');
 
             $this->testResults['notification_payload'] = 'Notification logs show payload information';
         });
@@ -1240,7 +1240,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'webhook') ||
                 str_contains($pageSource, 'badge');
 
-            $this->assertTrue($hasTypeIndicators || true, 'Notification channel type indicators should be visible');
+            $this->assertTrue($hasTypeIndicators, 'Notification channel type indicators should be visible');
 
             $this->testResults['notification_type_indicators'] = 'Notification channel type indicators are visible';
         });
@@ -1267,7 +1267,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'all events') ||
                 str_contains($pageSource, 'checkbox');
 
-            $this->assertTrue($hasSelectAll || true, 'Notification event selection should support select all');
+            $this->assertTrue($hasSelectAll, 'Notification event selection should support select all');
 
             $this->testResults['notification_select_all_events'] = 'Notification event selection supports select all';
         });
@@ -1294,7 +1294,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'find') ||
                 str_contains($pageSource, 'input');
 
-            $this->assertTrue($hasSearch || true, 'Notification logs search functionality should work');
+            $this->assertTrue($hasSearch, 'Notification logs search functionality should work');
 
             $this->testResults['notification_search'] = 'Notification logs search functionality works';
         });
@@ -1322,7 +1322,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'alert') ||
                 str_contains($pageSource, 'badge');
 
-            $this->assertTrue($hasIndicators || true, 'Real-time notification indicators should be present');
+            $this->assertTrue($hasIndicators, 'Real-time notification indicators should be present');
 
             $this->testResults['realtime_notification_indicators'] = 'Real-time notification indicators are present';
         });
@@ -1350,7 +1350,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'notification') ||
                 str_contains($pageSource, 'toggle');
 
-            $this->assertTrue($hasSoundToggle || true, 'Notification sound toggle should be available');
+            $this->assertTrue($hasSoundToggle, 'Notification sound toggle should be available');
 
             $this->testResults['notification_sound_toggle'] = 'Notification sound toggle is available';
         });
@@ -1378,7 +1378,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'notification') ||
                 str_contains($pageSource, 'permission');
 
-            $this->assertTrue($hasDesktopToggle || true, 'Desktop notification toggle should be available');
+            $this->assertTrue($hasDesktopToggle, 'Desktop notification toggle should be available');
 
             $this->testResults['desktop_notification_toggle'] = 'Desktop notification toggle is available';
         });
@@ -1405,7 +1405,7 @@ class NotificationsTest extends DuskTestCase
                 str_contains($pageSource, 'global') ||
                 str_contains($pageSource, 'project');
 
-            $this->assertTrue($hasAllProjects || true, 'Notification channel should be configurable for all projects');
+            $this->assertTrue($hasAllProjects, 'Notification channel should be configurable for all projects');
 
             $this->testResults['notification_all_projects'] = 'Notification channel can be configured for all projects';
         });

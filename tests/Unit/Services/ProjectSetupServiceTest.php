@@ -8,7 +8,6 @@ use App\Events\ProjectSetupUpdated;
 use App\Models\Project;
 use App\Models\ProjectSetupTask;
 use App\Services\ProjectSetupService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
@@ -17,7 +16,6 @@ use Tests\TestCase;
 
 class ProjectSetupServiceTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected ProjectSetupService $service;
 

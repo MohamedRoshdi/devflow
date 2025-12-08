@@ -23,16 +23,17 @@ class NotificationChannelFactory extends Factory
      */
     public function definition(): array
     {
-        $provider = fake()->randomElement(['slack', 'discord']);
+        $type = fake()->randomElement(['slack', 'discord', 'email']);
 
         return [
+            'project_id' => Project::factory(),
             'name' => fake()->words(3, true).' Channel',
-            'provider' => $provider,
-            'webhook_url' => 'https://hooks.'.$provider.'.com/'.fake()->uuid(),
-            'webhook_secret' => null,
+            'type' => $type,
+            'webhook_url' => 'https://hooks.example.com/'.fake()->uuid(),
             'enabled' => true,
-            'events' => ['deployment.started', 'deployment.completed'],
-            'metadata' => [],
+            'events' => ['deployment_success', 'deployment_failed'],
+            'metadata' => null,
+            'config' => json_encode($this->getConfigForType($type)),
         ];
     }
 

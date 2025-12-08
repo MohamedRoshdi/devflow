@@ -7,7 +7,6 @@ namespace Tests\Unit;
 use App\Livewire\Settings\SystemSettings;
 use App\Models\SystemSetting;
 use App\Services\SystemSettingsService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
 use Livewire\Livewire;
@@ -15,7 +14,6 @@ use Tests\TestCase;
 
 class SystemSettingsTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected SystemSettingsService $service;
 

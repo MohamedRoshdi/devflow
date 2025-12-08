@@ -22,6 +22,19 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
+     * Tear down the test environment.
+     */
+    protected function tearDown(): void
+    {
+        // Close Mockery before parent tearDown to avoid transaction issues
+        if (class_exists(\Mockery::class)) {
+            \Mockery::close();
+        }
+
+        parent::tearDown();
+    }
+
+    /**
      * Create and authenticate a user.
      */
     protected function actingAsUser($user = null): self

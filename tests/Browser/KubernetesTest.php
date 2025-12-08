@@ -169,7 +169,7 @@ class KubernetesTest extends DuskTestCase
                     str_contains($pageSource, 'API Endpoint') ||
                     str_contains($pageSource, 'Kubeconfig');
 
-                $this->assertTrue($hasModal || true, 'Add cluster modal should open');
+                $this->assertTrue($hasModal, 'Add cluster modal should open');
                 $this->testResults['add_cluster_modal'] = 'Add cluster modal can be opened';
             } catch (\Exception $e) {
                 // Modal might not open in test environment
@@ -201,7 +201,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'kubeconfig') &&
                 str_contains($pageSource, 'namespace');
 
-            $this->assertTrue($hasFormFields || true, 'Cluster form should have required fields');
+            $this->assertTrue($hasFormFields, 'Cluster form should have required fields');
 
             $this->testResults['cluster_form_fields'] = 'Cluster form has required fields';
         });
@@ -227,7 +227,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'namespace') &&
                 (str_contains($pageSource, 'default') || str_contains($pageSource, 'optional'));
 
-            $this->assertTrue($hasNamespaceField || true, 'Cluster namespace field should be present');
+            $this->assertTrue($hasNamespaceField, 'Cluster namespace field should be present');
 
             $this->testResults['cluster_namespace_field'] = 'Cluster namespace field is present';
         });
@@ -255,7 +255,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'replicas') ||
                 str_contains($pageSource, 'resource');
 
-            $this->assertTrue($hasDeployContent || true, 'Deploy to Kubernetes functionality should exist');
+            $this->assertTrue($hasDeployContent, 'Deploy to Kubernetes functionality should exist');
 
             $this->testResults['deploy_modal'] = 'Deploy to Kubernetes modal functionality present';
         });
@@ -283,7 +283,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'limit') ||
                 str_contains($pageSource, 'request');
 
-            $this->assertTrue($hasResourceLimits || true, 'Deployment resource limits should be configurable');
+            $this->assertTrue($hasResourceLimits, 'Deployment resource limits should be configurable');
 
             $this->testResults['resource_limits'] = 'Deployment resource limits configuration available';
         });
@@ -310,7 +310,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'instance') ||
                 str_contains($pageSource, 'scale');
 
-            $this->assertTrue($hasReplicaConfig || true, 'Replica count configuration should be available');
+            $this->assertTrue($hasReplicaConfig, 'Replica count configuration should be available');
 
             $this->testResults['replica_config'] = 'Replica count configuration is available';
         });
@@ -338,7 +338,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'min') ||
                 str_contains($pageSource, 'max');
 
-            $this->assertTrue($hasAutoscaling || true, 'Auto-scaling configuration should be present');
+            $this->assertTrue($hasAutoscaling, 'Auto-scaling configuration should be present');
 
             $this->testResults['autoscaling_config'] = 'Auto-scaling configuration is present';
         });
@@ -366,7 +366,7 @@ class KubernetesTest extends DuskTestCase
                  str_contains($pageSource, 'nodeport') ||
                  str_contains($pageSource, 'loadbalancer'));
 
-            $this->assertTrue($hasServiceType || true, 'Service type selection should be available');
+            $this->assertTrue($hasServiceType, 'Service type selection should be available');
 
             $this->testResults['service_type_selection'] = 'Service type selection is available';
         });
@@ -394,7 +394,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'active') ||
                 str_contains($pageSource, 'running');
 
-            $this->assertTrue($hasStatusIndicators || true, 'Cluster status indicators should be shown');
+            $this->assertTrue($hasStatusIndicators, 'Cluster status indicators should be shown');
 
             $this->testResults['cluster_status'] = 'Cluster status indicators are shown';
         });
@@ -421,7 +421,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'primary') ||
                 str_contains($pageSource, 'is_default');
 
-            $this->assertTrue($hasDefaultIndicator || true, 'Default cluster indicator should be visible');
+            $this->assertTrue($hasDefaultIndicator, 'Default cluster indicator should be visible');
 
             $this->testResults['default_cluster_indicator'] = 'Default cluster indicator is visible';
         });
@@ -447,7 +447,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'test') &&
                 (str_contains($pageSource, 'connection') || str_contains($pageSource, 'cluster'));
 
-            $this->assertTrue($hasTestButton || true, 'Cluster connection test button should be present');
+            $this->assertTrue($hasTestButton, 'Cluster connection test button should be present');
 
             $this->testResults['cluster_test_button'] = 'Cluster connection test button is present';
         });
@@ -474,7 +474,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'config') ||
                 str_contains($pageSource, 'credentials');
 
-            $this->assertTrue($hasKubeconfigField || true, 'Kubeconfig input field should be present');
+            $this->assertTrue($hasKubeconfigField, 'Kubeconfig input field should be present');
 
             $this->testResults['kubeconfig_input'] = 'Kubeconfig input field is secure and present';
         });
@@ -500,7 +500,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'project') &&
                 (str_contains($pageSource, 'count') || preg_match('/\d+\s*project/', $pageSource));
 
-            $this->assertTrue($hasProjectCount || true, 'Project count should be displayed for each cluster');
+            $this->assertTrue($hasProjectCount, 'Project count should be displayed for each cluster');
 
             $this->testResults['project_count'] = 'Project count is displayed per cluster';
         });
@@ -526,7 +526,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'delete') &&
                 (str_contains($pageSource, 'confirm') || str_contains($pageSource, 'sure'));
 
-            $this->assertTrue($hasDeleteConfirmation || true, 'Cluster deletion should require confirmation');
+            $this->assertTrue($hasDeleteConfirmation, 'Cluster deletion should require confirmation');
 
             $this->testResults['delete_confirmation'] = 'Cluster deletion confirmation is required';
         });
@@ -553,7 +553,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'update') ||
                 str_contains($pageSource, 'modify');
 
-            $this->assertTrue($hasEditFunction || true, 'Cluster edit functionality should be available');
+            $this->assertTrue($hasEditFunction, 'Cluster edit functionality should be available');
 
             $this->testResults['cluster_edit'] = 'Cluster edit functionality is available';
         });
@@ -581,7 +581,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'get started') ||
                 str_contains($pageSource, 'first cluster');
 
-            $this->assertTrue($hasEmptyState || true, 'Empty state message should be displayed when no clusters');
+            $this->assertTrue($hasEmptyState, 'Empty state message should be displayed when no clusters');
 
             $this->testResults['empty_state'] = 'Empty state message is displayed appropriately';
         });
@@ -607,7 +607,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'endpoint') &&
                 (str_contains($pageSource, 'url') || str_contains($pageSource, 'https'));
 
-            $this->assertTrue($hasEndpointValidation || true, 'Cluster API endpoint should have validation');
+            $this->assertTrue($hasEndpointValidation, 'Cluster API endpoint should have validation');
 
             $this->testResults['endpoint_validation'] = 'Cluster API endpoint validation is present';
         });
@@ -633,7 +633,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'cpu') &&
                 (str_contains($pageSource, 'request') || str_contains($pageSource, 'limit'));
 
-            $this->assertTrue($hasCPUConfig || true, 'Deployment CPU configuration fields should exist');
+            $this->assertTrue($hasCPUConfig, 'Deployment CPU configuration fields should exist');
 
             $this->testResults['cpu_config'] = 'Deployment CPU configuration fields are present';
         });
@@ -659,7 +659,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'memory') &&
                 (str_contains($pageSource, 'request') || str_contains($pageSource, 'limit'));
 
-            $this->assertTrue($hasMemoryConfig || true, 'Deployment memory configuration fields should exist');
+            $this->assertTrue($hasMemoryConfig, 'Deployment memory configuration fields should exist');
 
             $this->testResults['memory_config'] = 'Deployment memory configuration fields are present';
         });
@@ -685,7 +685,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'project') &&
                 (str_contains($pageSource, 'select') || str_contains($pageSource, 'choose'));
 
-            $this->assertTrue($hasProjectSelection || true, 'Project selection dropdown should be in deployment modal');
+            $this->assertTrue($hasProjectSelection, 'Project selection dropdown should be in deployment modal');
 
             $this->testResults['project_selection'] = 'Project selection dropdown is in deployment modal';
         });
@@ -711,7 +711,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'namespace') &&
                 (str_contains($pageSource, 'default') || str_contains($pageSource, 'kube'));
 
-            $this->assertTrue($hasNamespaceManagement || true, 'Cluster namespace management should be visible');
+            $this->assertTrue($hasNamespaceManagement, 'Cluster namespace management should be visible');
 
             $this->testResults['namespace_management'] = 'Cluster namespace management is visible';
         });
@@ -738,7 +738,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'icon') ||
                 str_contains($pageSource, 'path');
 
-            $this->assertTrue($hasKubernetesIcon || true, 'Kubernetes icon/logo should be displayed');
+            $this->assertTrue($hasKubernetesIcon, 'Kubernetes icon/logo should be displayed');
 
             $this->testResults['kubernetes_icon'] = 'Kubernetes icon/logo is displayed';
         });
@@ -766,7 +766,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'previous') ||
                 str_contains($pageSource, 'pagination');
 
-            $this->assertTrue($hasPagination || true, 'Cluster list pagination should work');
+            $this->assertTrue($hasPagination, 'Cluster list pagination should work');
 
             $this->testResults['cluster_pagination'] = 'Cluster list pagination works';
         });
@@ -793,7 +793,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'close') ||
                 str_contains($pageSource, 'dismiss');
 
-            $this->assertTrue($hasCancelButton || true, 'Cluster modal should have cancel/close functionality');
+            $this->assertTrue($hasCancelButton, 'Cluster modal should have cancel/close functionality');
 
             $this->testResults['modal_cancel'] = 'Cluster modal can be cancelled/closed';
         });
@@ -821,7 +821,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'bg-gray-800') ||
                 str_contains($pageSource, 'bg-gray-900');
 
-            $this->assertTrue($hasDarkMode || true, 'Kubernetes page should support dark mode');
+            $this->assertTrue($hasDarkMode, 'Kubernetes page should support dark mode');
 
             $this->testResults['dark_mode_support'] = 'Dark mode support for Kubernetes page exists';
         });
@@ -849,7 +849,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'lg:') ||
                 str_contains($pageSource, 'responsive');
 
-            $this->assertTrue($hasResponsiveDesign || true, 'Kubernetes page should have responsive design');
+            $this->assertTrue($hasResponsiveDesign, 'Kubernetes page should have responsive design');
 
             $this->testResults['responsive_design'] = 'Responsive design for Kubernetes page implemented';
         });
@@ -875,7 +875,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'pod') &&
                 (str_contains($pageSource, 'running') || str_contains($pageSource, 'pending'));
 
-            $this->assertTrue($hasPodListing || true, 'Pod listing functionality should exist');
+            $this->assertTrue($hasPodListing, 'Pod listing functionality should exist');
 
             $this->testResults['pod_listing'] = 'Pod listing functionality is present';
         });
@@ -903,7 +903,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'failed') ||
                 str_contains($pageSource, 'succeeded');
 
-            $this->assertTrue($hasStatusIndicators || true, 'Pod status indicators should be shown');
+            $this->assertTrue($hasStatusIndicators, 'Pod status indicators should be shown');
 
             $this->testResults['pod_status_indicators'] = 'Pod status indicators are displayed';
         });
@@ -929,7 +929,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'log') &&
                 (str_contains($pageSource, 'view') || str_contains($pageSource, 'show'));
 
-            $this->assertTrue($hasPodLogs || true, 'Pod logs viewing functionality should exist');
+            $this->assertTrue($hasPodLogs, 'Pod logs viewing functionality should exist');
 
             $this->testResults['pod_logs_viewing'] = 'Pod logs viewing functionality is present';
         });
@@ -956,7 +956,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'config map') ||
                 str_contains($pageSource, 'configuration');
 
-            $this->assertTrue($hasConfigMap || true, 'ConfigMap management interface should exist');
+            $this->assertTrue($hasConfigMap, 'ConfigMap management interface should exist');
 
             $this->testResults['configmap_management'] = 'ConfigMap management interface is present';
         });
@@ -983,7 +983,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'credential') ||
                 str_contains($pageSource, 'sensitive');
 
-            $this->assertTrue($hasSecretManagement || true, 'Secret management interface should exist');
+            $this->assertTrue($hasSecretManagement, 'Secret management interface should exist');
 
             $this->testResults['secret_management'] = 'Secret management interface is present';
         });
@@ -1010,7 +1010,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'route') ||
                 str_contains($pageSource, 'proxy');
 
-            $this->assertTrue($hasIngressConfig || true, 'Ingress configuration interface should exist');
+            $this->assertTrue($hasIngressConfig, 'Ingress configuration interface should exist');
 
             $this->testResults['ingress_configuration'] = 'Ingress configuration interface is present';
         });
@@ -1036,7 +1036,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'resource') &&
                 (str_contains($pageSource, 'monitor') || str_contains($pageSource, 'usage'));
 
-            $this->assertTrue($hasResourceMonitoring || true, 'Cluster resource monitoring dashboard should exist');
+            $this->assertTrue($hasResourceMonitoring, 'Cluster resource monitoring dashboard should exist');
 
             $this->testResults['resource_monitoring_dashboard'] = 'Cluster resource monitoring dashboard is present';
         });
@@ -1063,7 +1063,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'command') ||
                 str_contains($pageSource, 'terminal');
 
-            $this->assertTrue($hasKubectlInterface || true, 'Kubectl command execution interface should exist');
+            $this->assertTrue($hasKubectlInterface, 'Kubectl command execution interface should exist');
 
             $this->testResults['kubectl_execution'] = 'Kubectl command execution interface is present';
         });
@@ -1090,7 +1090,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'chart') ||
                 str_contains($pageSource, 'package');
 
-            $this->assertTrue($hasHelmManagement || true, 'Helm chart management interface should exist');
+            $this->assertTrue($hasHelmManagement, 'Helm chart management interface should exist');
 
             $this->testResults['helm_chart_management'] = 'Helm chart management interface is present';
         });
@@ -1117,7 +1117,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'resize') ||
                 str_contains($pageSource, 'horizontal');
 
-            $this->assertTrue($hasScalingControls || true, 'Cluster scaling controls should exist');
+            $this->assertTrue($hasScalingControls, 'Cluster scaling controls should exist');
 
             $this->testResults['cluster_scaling'] = 'Cluster scaling controls are present';
         });
@@ -1143,7 +1143,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'health') &&
                 (str_contains($pageSource, 'check') || str_contains($pageSource, 'status'));
 
-            $this->assertTrue($hasHealthMonitoring || true, 'Cluster health monitoring indicators should exist');
+            $this->assertTrue($hasHealthMonitoring, 'Cluster health monitoring indicators should exist');
 
             $this->testResults['cluster_health_monitoring'] = 'Cluster health monitoring indicators are present';
         });
@@ -1170,7 +1170,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'revision') ||
                 str_contains($pageSource, 'history');
 
-            $this->assertTrue($hasRolloutHistory || true, 'Deployment rollout history should exist');
+            $this->assertTrue($hasRolloutHistory, 'Deployment rollout history should exist');
 
             $this->testResults['rollout_history'] = 'Deployment rollout history is present';
         });
@@ -1197,7 +1197,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'revert') ||
                 str_contains($pageSource, 'undo');
 
-            $this->assertTrue($hasRollbackFunction || true, 'Deployment rollback functionality should exist');
+            $this->assertTrue($hasRollbackFunction, 'Deployment rollback functionality should exist');
 
             $this->testResults['deployment_rollback'] = 'Deployment rollback functionality is present';
         });
@@ -1223,7 +1223,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'node') &&
                 (str_contains($pageSource, 'worker') || str_contains($pageSource, 'master'));
 
-            $this->assertTrue($hasNodeInfo || true, 'Cluster node information should be displayed');
+            $this->assertTrue($hasNodeInfo, 'Cluster node information should be displayed');
 
             $this->testResults['cluster_node_info'] = 'Cluster node information display is present';
         });
@@ -1250,7 +1250,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'storage') ||
                 str_contains($pageSource, 'persistent');
 
-            $this->assertTrue($hasPVManagement || true, 'Persistent Volume management should exist');
+            $this->assertTrue($hasPVManagement, 'Persistent Volume management should exist');
 
             $this->testResults['pv_management'] = 'Persistent Volume management is present';
         });
@@ -1277,7 +1277,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'stateful set') ||
                 str_contains($pageSource, 'ordered');
 
-            $this->assertTrue($hasStatefulSetManagement || true, 'StatefulSet management interface should exist');
+            $this->assertTrue($hasStatefulSetManagement, 'StatefulSet management interface should exist');
 
             $this->testResults['statefulset_management'] = 'StatefulSet management interface is present';
         });
@@ -1304,7 +1304,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'daemon set') ||
                 str_contains($pageSource, 'node-level');
 
-            $this->assertTrue($hasDaemonSetManagement || true, 'DaemonSet management interface should exist');
+            $this->assertTrue($hasDaemonSetManagement, 'DaemonSet management interface should exist');
 
             $this->testResults['daemonset_management'] = 'DaemonSet management interface is present';
         });
@@ -1331,7 +1331,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'cronjob') ||
                 str_contains($pageSource, 'scheduled');
 
-            $this->assertTrue($hasJobManagement || true, 'Job and CronJob management should exist');
+            $this->assertTrue($hasJobManagement, 'Job and CronJob management should exist');
 
             $this->testResults['job_cronjob_management'] = 'Job and CronJob management is present';
         });
@@ -1358,7 +1358,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'autoscaler') ||
                 str_contains($pageSource, 'horizontal');
 
-            $this->assertTrue($hasHPAConfig || true, 'Horizontal Pod Autoscaler configuration should exist');
+            $this->assertTrue($hasHPAConfig, 'Horizontal Pod Autoscaler configuration should exist');
 
             $this->testResults['hpa_configuration'] = 'Horizontal Pod Autoscaler configuration is present';
         });
@@ -1384,7 +1384,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'network') &&
                 (str_contains($pageSource, 'policy') || str_contains($pageSource, 'firewall'));
 
-            $this->assertTrue($hasNetworkPolicy || true, 'Network Policy management should exist');
+            $this->assertTrue($hasNetworkPolicy, 'Network Policy management should exist');
 
             $this->testResults['network_policy'] = 'Network Policy management is present';
         });
@@ -1411,7 +1411,7 @@ class KubernetesTest extends DuskTestCase
                 str_contains($pageSource, 'istio') ||
                 str_contains($pageSource, 'linkerd');
 
-            $this->assertTrue($hasServiceMesh || true, 'Service mesh integration indicators should exist');
+            $this->assertTrue($hasServiceMesh, 'Service mesh integration indicators should exist');
 
             $this->testResults['service_mesh_integration'] = 'Service mesh integration indicators are present';
         });

@@ -113,7 +113,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'no health checks') ||
                 str_contains($pageSource, 'no checks');
 
-            $this->assertTrue($hasCheckList || true, 'Health check list should display');
+            $this->assertTrue($hasCheckList, 'Health check list should display');
 
             $this->testResults['health_check_list'] = 'Health check list displays successfully';
         });
@@ -142,7 +142,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'Add Check') ||
                 str_contains($pageSource, 'wire:click');
 
-            $this->assertTrue($hasCreateButton || true, 'Create health check button should be visible');
+            $this->assertTrue($hasCreateButton, 'Create health check button should be visible');
 
             $this->testResults['create_button'] = 'Create health check button is visible';
         });
@@ -169,7 +169,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'dialog') ||
                 str_contains($pageSource, 'form');
 
-            $this->assertTrue($hasModal || true, 'Health check creation modal should be accessible');
+            $this->assertTrue($hasModal, 'Health check creation modal should be accessible');
 
             $browser->pause(500)->screenshot('after-modal-attempt');
 
@@ -201,7 +201,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'expected_status') ||
                 str_contains($pageSource, 'wire:model');
 
-            $this->assertTrue($hasFormElements || true, 'Health check configuration form should exist');
+            $this->assertTrue($hasFormElements, 'Health check configuration form should exist');
 
             $this->testResults['configuration_form'] = 'Health check configuration form exists';
         });
@@ -227,7 +227,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'http') ||
                 str_contains($pageSource, 'https');
 
-            $this->assertTrue($hasHttpType || true, 'HTTP health check type should be available');
+            $this->assertTrue($hasHttpType, 'HTTP health check type should be available');
 
             $this->testResults['http_type'] = 'HTTP health check type is available';
         });
@@ -253,7 +253,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'tcp') ||
                 str_contains($pageSource, 'port');
 
-            $this->assertTrue($hasTcpType || true, 'TCP health check type should be available');
+            $this->assertTrue($hasTcpType, 'TCP health check type should be available');
 
             $this->testResults['tcp_type'] = 'TCP health check type is available';
         });
@@ -279,7 +279,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'dns') ||
                 str_contains($pageSource, 'domain');
 
-            $this->assertTrue($hasDnsType || true, 'DNS health check type should be available');
+            $this->assertTrue($hasDnsType, 'DNS health check type should be available');
 
             $this->testResults['dns_type'] = 'DNS health check type is available';
         });
@@ -305,7 +305,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'ssl') ||
                 str_contains($pageSource, 'certificate');
 
-            $this->assertTrue($hasSslType || true, 'SSL health check type should be available');
+            $this->assertTrue($hasSslType, 'SSL health check type should be available');
 
             $this->testResults['ssl_type'] = 'SSL health check type is available';
         });
@@ -333,7 +333,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'frequency') ||
                 str_contains($pageSource, 'schedule');
 
-            $this->assertTrue($hasIntervalConfig || true, 'Health check interval should be configurable');
+            $this->assertTrue($hasIntervalConfig, 'Health check interval should be configurable');
 
             $this->testResults['interval_config'] = 'Health check interval is configurable';
         });
@@ -360,7 +360,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'second') ||
                 str_contains($pageSource, 'duration');
 
-            $this->assertTrue($hasTimeoutConfig || true, 'Health check timeout should be configurable');
+            $this->assertTrue($hasTimeoutConfig, 'Health check timeout should be configurable');
 
             $this->testResults['timeout_config'] = 'Health check timeout is configurable';
         });
@@ -388,7 +388,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, '200') ||
                 str_contains($pageSource, 'code');
 
-            $this->assertTrue($hasStatusConfig || true, 'Expected status code should be configurable');
+            $this->assertTrue($hasStatusConfig, 'Expected status code should be configurable');
 
             $this->testResults['status_config'] = 'Expected status code is configurable';
         });
@@ -416,7 +416,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'view') ||
                 str_contains($pageSource, 'details');
 
-            $this->assertTrue($hasResultsView || true, 'Health check results should be accessible');
+            $this->assertTrue($hasResultsView, 'Health check results should be accessible');
 
             $this->testResults['results_modal'] = 'Health check results modal is accessible';
         });
@@ -444,7 +444,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'last check') ||
                 str_contains($pageSource, 'checked_at');
 
-            $this->assertTrue($hasHistory || true, 'Health check history should display');
+            $this->assertTrue($hasHistory, 'Health check history should display');
 
             $this->testResults['check_history'] = 'Health check history displays';
         });
@@ -473,7 +473,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'unknown') ||
                 str_contains($pageSource, 'status');
 
-            $this->assertTrue($hasStatusIndicators || true, 'Health check status indicators should be shown');
+            $this->assertTrue($hasStatusIndicators, 'Health check status indicators should be shown');
 
             $this->testResults['status_indicators'] = 'Health check status indicators are shown';
         });
@@ -501,7 +501,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'channel') ||
                 str_contains($pageSource, 'notify');
 
-            $this->assertTrue($hasAlertConfig || true, 'Alert configuration should be available');
+            $this->assertTrue($hasAlertConfig, 'Alert configuration should be available');
 
             $this->testResults['alert_config'] = 'Alert configuration is available';
         });
@@ -529,7 +529,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'slack') ||
                 str_contains($pageSource, 'discord');
 
-            $this->assertTrue($hasChannelManagement || true, 'Notification channels should be manageable');
+            $this->assertTrue($hasChannelManagement, 'Notification channels should be manageable');
 
             $this->testResults['notification_channels'] = 'Notification channels are manageable';
         });
@@ -556,7 +556,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'failure') ||
                 str_contains($pageSource, 'alert on fail');
 
-            $this->assertTrue($hasFailureNotification || true, 'Notification on failure should be configurable');
+            $this->assertTrue($hasFailureNotification, 'Notification on failure should be configurable');
 
             $this->testResults['notify_failure'] = 'Notification on failure is configurable';
         });
@@ -583,7 +583,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'recovery') ||
                 str_contains($pageSource, 'restored');
 
-            $this->assertTrue($hasRecoveryNotification || true, 'Notification on recovery should be configurable');
+            $this->assertTrue($hasRecoveryNotification, 'Notification on recovery should be configurable');
 
             $this->testResults['notify_recovery'] = 'Notification on recovery is configurable';
         });
@@ -611,7 +611,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'enabled') ||
                 str_contains($pageSource, 'toggle');
 
-            $this->assertTrue($hasToggle || true, 'Health check should be toggleable');
+            $this->assertTrue($hasToggle, 'Health check should be toggleable');
 
             $this->testResults['toggle_active'] = 'Health check can be toggled active/inactive';
         });
@@ -638,7 +638,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'suspend') ||
                 str_contains($pageSource, 'disable');
 
-            $this->assertTrue($hasPause || true, 'Health check should be pausable');
+            $this->assertTrue($hasPause, 'Health check should be pausable');
 
             $this->testResults['pause_check'] = 'Health check can be paused';
         });
@@ -665,7 +665,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'enable') ||
                 str_contains($pageSource, 'activate');
 
-            $this->assertTrue($hasResume || true, 'Health check should be resumable');
+            $this->assertTrue($hasResume, 'Health check should be resumable');
 
             $this->testResults['resume_check'] = 'Health check can be resumed';
         });
@@ -693,7 +693,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'execute') ||
                 str_contains($pageSource, 'check now');
 
-            $this->assertTrue($hasManualRun || true, 'Health check should be manually runnable');
+            $this->assertTrue($hasManualRun, 'Health check should be manually runnable');
 
             $this->testResults['manual_run'] = 'Health check can be manually run';
         });
@@ -720,7 +720,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'update') ||
                 str_contains($pageSource, 'modify');
 
-            $this->assertTrue($hasEditFunction || true, 'Health check edit functionality should exist');
+            $this->assertTrue($hasEditFunction, 'Health check edit functionality should exist');
 
             $this->testResults['edit_functionality'] = 'Health check edit functionality exists';
         });
@@ -747,7 +747,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'remove') ||
                 str_contains($pageSource, 'destroy');
 
-            $this->assertTrue($hasDeleteFunction || true, 'Health check delete functionality should exist');
+            $this->assertTrue($hasDeleteFunction, 'Health check delete functionality should exist');
 
             $this->testResults['delete_functionality'] = 'Health check delete functionality exists';
         });
@@ -774,7 +774,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'project_id') ||
                 str_contains($pageSource, 'select project');
 
-            $this->assertTrue($hasProjectLink || true, 'Project health checks should be linkable');
+            $this->assertTrue($hasProjectLink, 'Project health checks should be linkable');
 
             $this->testResults['project_linkable'] = 'Project health checks are linkable';
         });
@@ -801,7 +801,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'server_id') ||
                 str_contains($pageSource, 'select server');
 
-            $this->assertTrue($hasServerLink || true, 'Server health checks should be linkable');
+            $this->assertTrue($hasServerLink, 'Server health checks should be linkable');
 
             $this->testResults['server_linkable'] = 'Server health checks are linkable';
         });
@@ -830,7 +830,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'statistic') ||
                 str_contains($pageSource, 'count');
 
-            $this->assertTrue($hasStatistics || true, 'Health statistics should be displayed');
+            $this->assertTrue($hasStatistics, 'Health statistics should be displayed');
 
             $this->testResults['health_statistics'] = 'Health statistics are displayed';
         });
@@ -858,7 +858,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'ms') ||
                 str_contains($pageSource, 'latency');
 
-            $this->assertTrue($hasResponseTime || true, 'Response time should be tracked');
+            $this->assertTrue($hasResponseTime, 'Response time should be tracked');
 
             $this->testResults['response_time'] = 'Response time is tracked';
         });
@@ -885,7 +885,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'failure') ||
                 str_contains($pageSource, 'failed');
 
-            $this->assertTrue($hasFailureTracking || true, 'Consecutive failures should be tracked');
+            $this->assertTrue($hasFailureTracking, 'Consecutive failures should be tracked');
 
             $this->testResults['consecutive_failures'] = 'Consecutive failures are tracked';
         });
@@ -913,7 +913,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'last_check_at') ||
                 str_contains($pageSource, 'ago');
 
-            $this->assertTrue($hasLastChecked || true, 'Last checked time should be shown');
+            $this->assertTrue($hasLastChecked, 'Last checked time should be shown');
 
             $this->testResults['last_checked'] = 'Last checked time is shown';
         });
@@ -941,7 +941,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'system health') ||
                 str_contains($pageSource, 'status');
 
-            $this->assertTrue($hasOverallStatus || true, 'Health dashboard should show overall status');
+            $this->assertTrue($hasOverallStatus, 'Health dashboard should show overall status');
 
             $this->testResults['overall_status'] = 'Health dashboard shows overall status';
         });
@@ -968,7 +968,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'health') ||
                 str_contains($pageSource, 'status');
 
-            $this->assertTrue($hasProjectHealth || true, 'Health dashboard should show project health');
+            $this->assertTrue($hasProjectHealth, 'Health dashboard should show project health');
 
             $this->testResults['project_health_dashboard'] = 'Health dashboard shows project health';
         });
@@ -995,7 +995,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'health') ||
                 str_contains($pageSource, 'status');
 
-            $this->assertTrue($hasServerHealth || true, 'Health dashboard should show server health');
+            $this->assertTrue($hasServerHealth, 'Health dashboard should show server health');
 
             $this->testResults['server_health_dashboard'] = 'Health dashboard shows server health';
         });
@@ -1022,7 +1022,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'reload') ||
                 str_contains($pageSource, 'update');
 
-            $this->assertTrue($hasRefresh || true, 'Health dashboard should be refreshable');
+            $this->assertTrue($hasRefresh, 'Health dashboard should be refreshable');
 
             $this->testResults['dashboard_refresh'] = 'Health dashboard can be refreshed';
         });
@@ -1049,7 +1049,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'availability') ||
                 str_contains($pageSource, 'percentage');
 
-            $this->assertTrue($hasUptimeStats || true, 'Uptime statistics should be shown');
+            $this->assertTrue($hasUptimeStats, 'Uptime statistics should be shown');
 
             $this->testResults['uptime_stats'] = 'Uptime statistics are shown';
         });
@@ -1076,7 +1076,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'category') ||
                 str_contains($pageSource, 'tag');
 
-            $this->assertTrue($hasGroups || true, 'Health check groups/categories should exist');
+            $this->assertTrue($hasGroups, 'Health check groups/categories should exist');
 
             $this->testResults['check_groups'] = 'Health check groups/categories exist';
         });
@@ -1103,7 +1103,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'select all') ||
                 str_contains($pageSource, 'checkbox');
 
-            $this->assertTrue($hasBulkOps || true, 'Bulk health check operations should be available');
+            $this->assertTrue($hasBulkOps, 'Bulk health check operations should be available');
 
             $this->testResults['bulk_operations'] = 'Bulk health check operations are available';
         });
@@ -1130,7 +1130,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'expected_response') ||
                 str_contains($pageSource, 'body contains');
 
-            $this->assertTrue($hasValidation || true, 'Response validation should be configurable');
+            $this->assertTrue($hasValidation, 'Response validation should be configurable');
 
             $this->testResults['response_validation'] = 'Response validation rules can be configured';
         });
@@ -1157,7 +1157,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'rule') ||
                 str_contains($pageSource, 'threshold');
 
-            $this->assertTrue($hasAlertingRules || true, 'Alerting rules should be configurable');
+            $this->assertTrue($hasAlertingRules, 'Alerting rules should be configurable');
 
             $this->testResults['alerting_rules'] = 'Alerting rules can be configured';
         });
@@ -1183,7 +1183,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'email') ||
                 str_contains($pageSource, 'mail');
 
-            $this->assertTrue($hasEmailChannel || true, 'Email notification channel type should be available');
+            $this->assertTrue($hasEmailChannel, 'Email notification channel type should be available');
 
             $this->testResults['email_channel'] = 'Email notification channel type is available';
         });
@@ -1209,7 +1209,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'slack') ||
                 str_contains($pageSource, 'webhook');
 
-            $this->assertTrue($hasSlackChannel || true, 'Slack notification channel type should be available');
+            $this->assertTrue($hasSlackChannel, 'Slack notification channel type should be available');
 
             $this->testResults['slack_channel'] = 'Slack notification channel type is available';
         });
@@ -1235,7 +1235,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'discord') ||
                 str_contains($pageSource, 'webhook');
 
-            $this->assertTrue($hasDiscordChannel || true, 'Discord notification channel type should be available');
+            $this->assertTrue($hasDiscordChannel, 'Discord notification channel type should be available');
 
             $this->testResults['discord_channel'] = 'Discord notification channel type is available';
         });
@@ -1262,7 +1262,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'send test') ||
                 str_contains($pageSource, 'verify');
 
-            $this->assertTrue($hasTestFunction || true, 'Notification channel test functionality should exist');
+            $this->assertTrue($hasTestFunction, 'Notification channel test functionality should exist');
 
             $this->testResults['channel_test'] = 'Notification channel test functionality exists';
         });
@@ -1290,7 +1290,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'csv') ||
                 str_contains($pageSource, 'json');
 
-            $this->assertTrue($hasExport || true, 'Health check export functionality should exist');
+            $this->assertTrue($hasExport, 'Health check export functionality should exist');
 
             $this->testResults['export_checks'] = 'Health check export functionality exists';
         });
@@ -1317,7 +1317,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'upload') ||
                 str_contains($pageSource, 'file');
 
-            $this->assertTrue($hasImport || true, 'Health check import functionality should exist');
+            $this->assertTrue($hasImport, 'Health check import functionality should exist');
 
             $this->testResults['import_checks'] = 'Health check import functionality exists';
         });
@@ -1344,7 +1344,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'filter') ||
                 str_contains($pageSource, 'input');
 
-            $this->assertTrue($hasSearch || true, 'Health check search functionality should exist');
+            $this->assertTrue($hasSearch, 'Health check search functionality should exist');
 
             $this->testResults['search_checks'] = 'Health check search functionality exists';
         });
@@ -1371,7 +1371,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'filter') ||
                 str_contains($pageSource, 'select');
 
-            $this->assertTrue($hasTypeFilter || true, 'Health check filter by type should exist');
+            $this->assertTrue($hasTypeFilter, 'Health check filter by type should exist');
 
             $this->testResults['filter_type'] = 'Health check filter by type functionality exists';
         });
@@ -1398,7 +1398,7 @@ class HealthChecksTest extends DuskTestCase
                 str_contains($pageSource, 'filter') ||
                 str_contains($pageSource, 'select');
 
-            $this->assertTrue($hasStatusFilter || true, 'Health check filter by status should exist');
+            $this->assertTrue($hasStatusFilter, 'Health check filter by status should exist');
 
             $this->testResults['filter_status'] = 'Health check filter by status functionality exists';
         });

@@ -7,7 +7,6 @@ namespace Tests\Unit\Services;
 use App\Models\Project;
 use App\Models\Server;
 use App\Services\GPSService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -15,7 +14,6 @@ use Tests\TestCase;
 
 class GPSServiceTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected GPSService $gpsService;
 

@@ -142,7 +142,7 @@ class AdminTest extends DuskTestCase
                         str_contains($pageSource, 'add user') ||
                         str_contains($pageSource, 'showcreatemodal');
 
-                    $this->assertTrue($hasModal || true, 'User creation modal should open');
+                    $this->assertTrue($hasModal, 'User creation modal should open');
                 }
 
                 $browser->screenshot('admin-user-create-modal');
@@ -340,7 +340,7 @@ class AdminTest extends DuskTestCase
                 str_contains($pageSource, 'verification') ||
                 str_contains($pageSource, 'not verified');
 
-            $this->assertTrue($hasVerificationStatus || true, 'Email verification status should be shown');
+            $this->assertTrue($hasVerificationStatus, 'Email verification status should be shown');
 
             $this->testResults['email_verification'] = 'Email verification status is shown';
         });
@@ -420,7 +420,7 @@ class AdminTest extends DuskTestCase
                 str_contains($pageSource, 'wire:model="email"') ||
                 str_contains($pageSource, 'wire:model="password"');
 
-            $this->assertTrue($hasFormFields || true, 'User form should have required fields');
+            $this->assertTrue($hasFormFields, 'User form should have required fields');
 
             $browser->screenshot('admin-form-fields');
             $this->testResults['form_fields'] = 'User form has required fields defined';
@@ -446,7 +446,7 @@ class AdminTest extends DuskTestCase
                 str_contains($pageSource, 'wire:model="selectedRoles"') ||
                 str_contains($pageSource, 'type="checkbox"');
 
-            $this->assertTrue($hasRoleCheckboxes || true, 'Role assignment checkboxes should be present');
+            $this->assertTrue($hasRoleCheckboxes, 'Role assignment checkboxes should be present');
 
             $browser->screenshot('admin-role-checkboxes');
             $this->testResults['role_checkboxes'] = 'Role assignment checkboxes are present';
@@ -501,7 +501,7 @@ class AdminTest extends DuskTestCase
                 str_contains($pageSource, 'next') ||
                 str_contains($pageSource, 'previous');
 
-            $this->assertTrue($hasPagination || true, 'Pagination should be present');
+            $this->assertTrue($hasPagination, 'Pagination should be present');
 
             $this->testResults['pagination'] = 'Pagination is present';
         });
@@ -554,7 +554,7 @@ class AdminTest extends DuskTestCase
                 str_contains($pageSource, '@forelse') ||
                 str_contains($pageSource, 'no users found');
 
-            $this->assertTrue($hasEmptyState || true, 'Empty state message should be defined');
+            $this->assertTrue($hasEmptyState, 'Empty state message should be defined');
 
             $browser->screenshot('admin-empty-state');
             $this->testResults['empty_state'] = 'Empty state message is defined';
@@ -715,7 +715,7 @@ class AdminTest extends DuskTestCase
                 str_contains($pageSource, 'clearfilters') ||
                 str_contains($pageSource, 'clear filter');
 
-            $this->assertTrue($hasClearFilters || true, 'Filters should be clearable');
+            $this->assertTrue($hasClearFilters, 'Filters should be clearable');
 
             $this->testResults['clear_filters'] = 'Filters can be cleared';
         });
@@ -949,7 +949,7 @@ class AdminTest extends DuskTestCase
                 str_contains($pageSource, 'backup') ||
                 str_contains($pageSource, 'last backup');
 
-            $this->assertTrue($hasBackupStats || true, 'Backup stats should be shown');
+            $this->assertTrue($hasBackupStats, 'Backup stats should be shown');
             $this->testResults['backup_stats'] = 'Backup stats are shown';
         });
     }
@@ -1000,7 +1000,7 @@ class AdminTest extends DuskTestCase
                 str_contains($pageSource, 'warning') ||
                 str_contains($pageSource, 'notification');
 
-            $this->assertTrue($hasAlerts || true, 'Recent alerts section should exist');
+            $this->assertTrue($hasAlerts, 'Recent alerts section should exist');
             $this->testResults['recent_alerts'] = 'Recent alerts section exists';
         });
     }
@@ -1025,7 +1025,7 @@ class AdminTest extends DuskTestCase
                 str_contains($pageSource, 'viewBackupLogs') ||
                 str_contains($pageSource, 'Backup Logs');
 
-            $this->assertTrue($hasBackupLogsTab || true, 'Backup logs tab should be accessible');
+            $this->assertTrue($hasBackupLogsTab, 'Backup logs tab should be accessible');
             $this->testResults['backup_logs_tab'] = 'Backup logs tab is accessible';
         });
     }
@@ -1050,7 +1050,7 @@ class AdminTest extends DuskTestCase
                 str_contains($pageSource, 'viewMonitoringLogs') ||
                 str_contains($pageSource, 'Monitoring');
 
-            $this->assertTrue($hasMonitoringLogsTab || true, 'Monitoring logs tab should be accessible');
+            $this->assertTrue($hasMonitoringLogsTab, 'Monitoring logs tab should be accessible');
             $this->testResults['monitoring_logs_tab'] = 'Monitoring logs tab is accessible';
         });
     }
@@ -1075,7 +1075,7 @@ class AdminTest extends DuskTestCase
                 str_contains($pageSource, 'viewOptimizationLogs') ||
                 str_contains($pageSource, 'Optimization');
 
-            $this->assertTrue($hasOptimizationLogsTab || true, 'Optimization logs tab should be accessible');
+            $this->assertTrue($hasOptimizationLogsTab, 'Optimization logs tab should be accessible');
             $this->testResults['optimization_logs_tab'] = 'Optimization logs tab is accessible';
         });
     }
@@ -1100,7 +1100,7 @@ class AdminTest extends DuskTestCase
                 str_contains($pageSource, 'Run Backup') ||
                 str_contains($pageSource, 'Backup Now');
 
-            $this->assertTrue($hasRunBackupButton || true, 'Run backup now button should exist');
+            $this->assertTrue($hasRunBackupButton, 'Run backup now button should exist');
             $this->testResults['run_backup_button'] = 'Run backup now button exists';
         });
     }
@@ -1125,7 +1125,7 @@ class AdminTest extends DuskTestCase
                 str_contains($pageSource, 'Optimize') ||
                 str_contains($pageSource, 'Run Optimization');
 
-            $this->assertTrue($hasOptimizationButton || true, 'Run optimization button should exist');
+            $this->assertTrue($hasOptimizationButton, 'Run optimization button should exist');
             $this->testResults['run_optimization_button'] = 'Run optimization button exists';
         });
     }
@@ -1150,7 +1150,7 @@ class AdminTest extends DuskTestCase
                 str_contains($pageSource, 'log') ||
                 str_contains($pageSource, 'activity');
 
-            $this->assertTrue($hasAuditLogs || true, 'Audit log viewer should be accessible');
+            $this->assertTrue($hasAuditLogs, 'Audit log viewer should be accessible');
             $this->testResults['audit_log_viewer'] = 'Audit log viewer is accessible';
         });
     }
@@ -1200,7 +1200,7 @@ class AdminTest extends DuskTestCase
                 str_contains($pageSource, 'modelType') ||
                 str_contains($pageSource, 'filter');
 
-            $this->assertTrue($hasFilters || true, 'Audit log filters should be available');
+            $this->assertTrue($hasFilters, 'Audit log filters should be available');
             $this->testResults['audit_log_filters'] = 'Audit log filters are available';
         });
     }
@@ -1225,7 +1225,7 @@ class AdminTest extends DuskTestCase
                 str_contains($pageSource, 'toDate') ||
                 str_contains($pageSource, 'type="date"');
 
-            $this->assertTrue($hasDateFilter || true, 'Audit log date range filter should be present');
+            $this->assertTrue($hasDateFilter, 'Audit log date range filter should be present');
             $this->testResults['audit_log_date_filter'] = 'Audit log date range filter present';
         });
     }
@@ -1250,7 +1250,7 @@ class AdminTest extends DuskTestCase
                 str_contains($pageSource, 'Export') ||
                 str_contains($pageSource, 'Download');
 
-            $this->assertTrue($hasExport || true, 'Audit log export functionality should exist');
+            $this->assertTrue($hasExport, 'Audit log export functionality should exist');
             $this->testResults['audit_log_export'] = 'Audit log export functionality exists';
         });
     }
@@ -1275,7 +1275,7 @@ class AdminTest extends DuskTestCase
                 str_contains($pageSource, 'Clear Filters') ||
                 str_contains($pageSource, 'Reset');
 
-            $this->assertTrue($hasClearFilters || true, 'Audit log clear filters button should be present');
+            $this->assertTrue($hasClearFilters, 'Audit log clear filters button should be present');
             $this->testResults['audit_log_clear_filters'] = 'Audit log clear filters button present';
         });
     }
@@ -1325,7 +1325,7 @@ class AdminTest extends DuskTestCase
                 str_contains($pageSource, 'queue') ||
                 str_contains($pageSource, 'redis');
 
-            $this->assertTrue($hasCacheManagement || true, 'Cache management should be accessible');
+            $this->assertTrue($hasCacheManagement, 'Cache management should be accessible');
             $this->testResults['cache_management'] = 'Cache management functionality accessible';
         });
     }
@@ -1350,7 +1350,7 @@ class AdminTest extends DuskTestCase
                 str_contains($pageSource, 'job') ||
                 str_contains($pageSource, 'pending');
 
-            $this->assertTrue($hasQueueMonitoring || true, 'Queue monitoring should be available');
+            $this->assertTrue($hasQueueMonitoring, 'Queue monitoring should be available');
             $this->testResults['queue_monitoring'] = 'Queue monitoring is available';
         });
     }

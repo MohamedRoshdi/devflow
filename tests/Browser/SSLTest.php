@@ -279,7 +279,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'Details') ||
                 str_contains($pageSource, 'Certificate');
 
-            $this->assertTrue($hasCertificateInfo || true, 'Certificate details should be accessible');
+            $this->assertTrue($hasCertificateInfo, 'Certificate details should be accessible');
 
             $this->testResults['certificate_details_modal'] = 'Certificate details modal functionality present';
         });
@@ -335,7 +335,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'all') ||
                 str_contains($pageSource, 'active');
 
-            $this->assertTrue($hasFilters || true, 'SSL status filter should be available');
+            $this->assertTrue($hasFilters, 'SSL status filter should be available');
 
             $this->testResults['status_filter'] = 'SSL status filter functionality present';
         });
@@ -363,7 +363,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'type="text"') ||
                 str_contains($pageSource, 'wire:model');
 
-            $this->assertTrue($hasSearch || true, 'Certificate search functionality should be present');
+            $this->assertTrue($hasSearch, 'Certificate search functionality should be present');
 
             $this->testResults['search_functionality'] = 'Certificate search functionality present';
         });
@@ -391,7 +391,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'Refresh') ||
                 str_contains($pageSource, 'wire:click');
 
-            $this->assertTrue($hasRenewalButton || true, 'Certificate renewal button should be visible');
+            $this->assertTrue($hasRenewalButton, 'Certificate renewal button should be visible');
 
             $this->testResults['renewal_button'] = 'Certificate renewal button is visible';
         });
@@ -419,7 +419,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'provider') ||
                 str_contains($pageSource, 'certbot');
 
-            $this->assertTrue($hasProviderInfo || true, "Let's Encrypt provider information should be displayed");
+            $this->assertTrue($hasProviderInfo , "Let's Encrypt provider information should be displayed");
 
             $this->testResults['letsencrypt_provider'] = "Let's Encrypt provider information displayed";
         });
@@ -447,7 +447,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'active') ||
                 str_contains($pageSource, 'pending');
 
-            $this->assertTrue($hasStatusIndicators || true, 'Certificate status indicators should be shown');
+            $this->assertTrue($hasStatusIndicators, 'Certificate status indicators should be shown');
 
             $this->testResults['status_indicators'] = 'Certificate status indicators are shown';
         });
@@ -475,7 +475,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'warning') ||
                 str_contains($pageSource, 'expires');
 
-            $this->assertTrue($hasExpiringHighlight || true, 'Expiring certificates should be highlighted');
+            $this->assertTrue($hasExpiringHighlight, 'Expiring certificates should be highlighted');
 
             $this->testResults['expiring_highlighted'] = 'Expiring certificates are highlighted';
         });
@@ -503,7 +503,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'red') ||
                 str_contains($pageSource, 'danger');
 
-            $this->assertTrue($hasExpiredError || true, 'Expired certificates should be shown with error state');
+            $this->assertTrue($hasExpiredError, 'Expired certificates should be shown with error state');
 
             $this->testResults['expired_error_state'] = 'Expired certificates shown with error state';
         });
@@ -531,7 +531,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'error') ||
                 str_contains($pageSource, 'dns validation');
 
-            $this->assertTrue($hasFailedCertificate || true, 'Failed certificate issuance should be displayed');
+            $this->assertTrue($hasFailedCertificate, 'Failed certificate issuance should be displayed');
 
             $this->testResults['failed_issuance'] = 'Failed certificate issuance is displayed';
         });
@@ -559,7 +559,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'dns') ||
                 str_contains($pageSource, 'configured');
 
-            $this->assertTrue($hasVerificationStatus || true, 'Domain verification status should be shown');
+            $this->assertTrue($hasVerificationStatus, 'Domain verification status should be shown');
 
             $this->testResults['domain_verification'] = 'Domain verification status is shown';
         });
@@ -587,7 +587,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'automatic') ||
                 str_contains($pageSource, 'enabled');
 
-            $this->assertTrue($hasAutoRenewal || true, 'Certificate auto-renewal status should be visible');
+            $this->assertTrue($hasAutoRenewal, 'Certificate auto-renewal status should be visible');
 
             $this->testResults['auto_renewal_status'] = 'Certificate auto-renewal status is visible';
         });
@@ -615,7 +615,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'days') ||
                 str_contains($pageSource, '202'); // Year pattern
 
-            $this->assertTrue($hasExpiryDates || true, 'Certificate expiry dates should be displayed');
+            $this->assertTrue($hasExpiryDates, 'Certificate expiry dates should be displayed');
 
             $this->testResults['expiry_dates'] = 'Certificate expiry dates are displayed';
         });
@@ -643,7 +643,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'obtained') ||
                 str_contains($pageSource, 'ago');
 
-            $this->assertTrue($hasIssueDates || true, 'Certificate issue date should be shown');
+            $this->assertTrue($hasIssueDates, 'Certificate issue date should be shown');
 
             $this->testResults['issue_date'] = 'Certificate issue date is shown';
         });
@@ -671,7 +671,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'renewAll') ||
                 str_contains($pageSource, 'Renew Expiring');
 
-            $this->assertTrue($hasBulkRenewal || true, 'Bulk renewal option should be available');
+            $this->assertTrue($hasBulkRenewal, 'Bulk renewal option should be available');
 
             $this->testResults['bulk_renewal'] = 'Bulk renewal option is available';
         });
@@ -699,7 +699,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'Export') ||
                 str_contains($pageSource, 'export');
 
-            $this->assertTrue($hasDownloadOption || true, 'Certificate download option should be present');
+            $this->assertTrue($hasDownloadOption, 'Certificate download option should be present');
 
             $this->testResults['download_option'] = 'Certificate download option is present';
         });
@@ -727,7 +727,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'privkey.pem') ||
                 str_contains($pageSource, 'Path');
 
-            $this->assertTrue($hasCertificatePaths || true, 'Certificate paths should be accessible');
+            $this->assertTrue($hasCertificatePaths, 'Certificate paths should be accessible');
 
             $this->testResults['certificate_paths'] = 'Certificate paths are accessible';
         });
@@ -755,7 +755,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'attention') ||
                 str_contains($pageSource, 'priority');
 
-            $this->assertTrue($hasCriticalSection || true, 'Critical certificates section should display');
+            $this->assertTrue($hasCriticalSection, 'Critical certificates section should display');
 
             $this->testResults['critical_certificates'] = 'Critical certificates section displays';
         });
@@ -783,7 +783,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'certbot') ||
                 str_contains($pageSource, 'acme');
 
-            $this->assertTrue($hasProviderBadge || true, 'Certificate provider badge should be shown');
+            $this->assertTrue($hasProviderBadge, 'Certificate provider badge should be shown');
 
             $this->testResults['provider_badge'] = 'Certificate provider badge is shown';
         });
@@ -811,7 +811,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'd)') ||
                 preg_match('/\d+\s*day/i', $pageSource);
 
-            $this->assertTrue($hasDaysCounter || true, 'Days until expiry counter should be visible');
+            $this->assertTrue($hasDaysCounter, 'Days until expiry counter should be visible');
 
             $this->testResults['days_counter'] = 'Days until expiry counter is visible';
         });
@@ -839,7 +839,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'failed') ||
                 str_contains($pageSource, 'validation');
 
-            $this->assertTrue($hasValidationErrors || true, 'Certificate validation error messages should be displayed');
+            $this->assertTrue($hasValidationErrors, 'Certificate validation error messages should be displayed');
 
             $this->testResults['validation_errors'] = 'Certificate validation error messages displayed';
         });
@@ -867,7 +867,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'Previous') ||
                 str_contains($pageSource, 'Page');
 
-            $this->assertTrue($hasPagination || true, 'SSL certificate pagination should work');
+            $this->assertTrue($hasPagination, 'SSL certificate pagination should work');
 
             $this->testResults['pagination'] = 'SSL certificate pagination works';
         });
@@ -895,7 +895,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'Add Certificate') ||
                 str_contains($pageSource, 'Create');
 
-            $this->assertTrue($hasIssueButton || true, 'Issue new certificate button should be visible');
+            $this->assertTrue($hasIssueButton, 'Issue new certificate button should be visible');
 
             $this->testResults['issue_new_button'] = 'Issue new certificate button is visible';
         });
@@ -923,7 +923,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'remove') ||
                 str_contains($pageSource, 'disable');
 
-            $this->assertTrue($hasRevocationOption || true, 'Certificate revocation option should be available');
+            $this->assertTrue($hasRevocationOption, 'Certificate revocation option should be available');
 
             $this->testResults['revocation_option'] = 'Certificate revocation option is available';
         });
@@ -951,7 +951,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'Verify') ||
                 str_contains($pageSource, 'Update');
 
-            $this->assertTrue($hasRefreshAction || true, 'Certificate refresh/check expiry action should work');
+            $this->assertTrue($hasRefreshAction, 'Certificate refresh/check expiry action should work');
 
             $this->testResults['refresh_check_expiry'] = 'Certificate refresh/check expiry action works';
         });
@@ -979,7 +979,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'domain') ||
                 str_contains($pageSource, '.com');
 
-            $this->assertTrue($hasDomainList || true, 'Domain list linked to certificates should be shown');
+            $this->assertTrue($hasDomainList, 'Domain list linked to certificates should be shown');
 
             $this->testResults['domain_list'] = 'Domain list linked to certificates is shown';
         });
@@ -1007,7 +1007,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'ago') ||
                 str_contains($pageSource, 'hour');
 
-            $this->assertTrue($hasRenewalAttempt || true, 'Last renewal attempt timestamp should be displayed');
+            $this->assertTrue($hasRenewalAttempt, 'Last renewal attempt timestamp should be displayed');
 
             $this->testResults['last_renewal_attempt'] = 'Last renewal attempt timestamp is displayed';
         });
@@ -1038,7 +1038,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'Total') ||
                 str_contains($pageSource, 'total');
 
-            $this->assertTrue($hasCount || true, 'SSL certificate count should be accurate');
+            $this->assertTrue($hasCount, 'SSL certificate count should be accurate');
 
             $this->testResults['certificate_count'] = "SSL certificate count is accurate ({$certificateCount} certificates)";
         });
@@ -1066,7 +1066,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'intermediate') ||
                 str_contains($pageSource, 'valid');
 
-            $this->assertTrue($hasChainValidation || true, 'Certificate chain validation status should be shown');
+            $this->assertTrue($hasChainValidation, 'Certificate chain validation status should be shown');
 
             $this->testResults['chain_validation'] = 'Certificate chain validation status is shown';
         });
@@ -1094,7 +1094,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'timeline') ||
                 str_contains($pageSource, 'activity');
 
-            $this->assertTrue($hasHistory || true, 'Certificate history/logs should be accessible');
+            $this->assertTrue($hasHistory, 'Certificate history/logs should be accessible');
 
             $this->testResults['history_logs'] = 'Certificate history/logs are accessible';
         });
@@ -1122,7 +1122,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'subdomain') ||
                 str_contains($pageSource, 'multiple');
 
-            $this->assertTrue($hasWildcardSupport || true, 'Wildcard certificate support should be indicated');
+            $this->assertTrue($hasWildcardSupport, 'Wildcard certificate support should be indicated');
 
             $this->testResults['wildcard_support'] = 'Wildcard certificate support is indicated';
         });
@@ -1150,7 +1150,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'Download') ||
                 str_contains($pageSource, 'download');
 
-            $this->assertTrue($hasExportFunctionality || true, 'SSL certificate export functionality should be present');
+            $this->assertTrue($hasExportFunctionality, 'SSL certificate export functionality should be present');
 
             $this->testResults['export_functionality'] = 'SSL certificate export functionality is present';
         });
@@ -1178,7 +1178,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'switch') ||
                 str_contains($pageSource, 'enabled');
 
-            $this->assertTrue($hasAutoRenewalToggle || true, 'Certificate auto-renewal toggle should be available');
+            $this->assertTrue($hasAutoRenewalToggle, 'Certificate auto-renewal toggle should be available');
 
             $this->testResults['auto_renewal_toggle'] = 'Certificate auto-renewal toggle is available';
         });
@@ -1206,7 +1206,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'email') ||
                 str_contains($pageSource, 'settings');
 
-            $this->assertTrue($hasNotificationSettings || true, 'Certificate notification settings should be configurable');
+            $this->assertTrue($hasNotificationSettings, 'Certificate notification settings should be configurable');
 
             $this->testResults['notification_settings'] = 'Certificate notification settings are configurable';
         });
@@ -1234,7 +1234,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'New Certificate') ||
                 str_contains($pageSource, 'Add Certificate');
 
-            $this->assertTrue($hasCreationModal || true, 'SSL certificate creation modal should be available');
+            $this->assertTrue($hasCreationModal, 'SSL certificate creation modal should be available');
 
             $this->testResults['creation_modal'] = 'SSL certificate creation modal is available';
         });
@@ -1262,7 +1262,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'acme') ||
                 str_contains($pageSource, 'certbot');
 
-            $this->assertTrue($hasLetsEncryptOption || true, "Let's Encrypt certificate option should be available");
+            $this->assertTrue($hasLetsEncryptOption , "Let's Encrypt certificate option should be available");
 
             $this->testResults['letsencrypt_option'] = "Let's Encrypt certificate option is available";
         });
@@ -1290,7 +1290,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'file') ||
                 str_contains($pageSource, 'import');
 
-            $this->assertTrue($hasCustomUpload || true, 'Custom certificate upload option should be present');
+            $this->assertTrue($hasCustomUpload, 'Custom certificate upload option should be present');
 
             $this->testResults['custom_upload'] = 'Custom certificate upload option is present';
         });
@@ -1318,7 +1318,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'Check') ||
                 str_contains($pageSource, 'Validate');
 
-            $this->assertTrue($hasVerificationButton || true, 'Certificate verification button should be visible');
+            $this->assertTrue($hasVerificationButton, 'Certificate verification button should be visible');
 
             $this->testResults['verification_button'] = 'Certificate verification button is visible';
         });
@@ -1346,7 +1346,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'asc') ||
                 str_contains($pageSource, 'desc');
 
-            $this->assertTrue($hasSorting || true, 'SSL certificate sorting functionality should work');
+            $this->assertTrue($hasSorting, 'SSL certificate sorting functionality should work');
 
             $this->testResults['sorting_functionality'] = 'SSL certificate sorting functionality works';
         });
@@ -1374,7 +1374,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'letsencrypt') ||
                 str_contains($pageSource, 'provider');
 
-            $this->assertTrue($hasIssuerInfo || true, 'Certificate details should show issuer information');
+            $this->assertTrue($hasIssuerInfo, 'Certificate details should show issuer information');
 
             $this->testResults['issuer_information'] = 'Certificate details show issuer information';
         });
@@ -1402,7 +1402,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'bulk') ||
                 str_contains($pageSource, 'select');
 
-            $this->assertTrue($hasBulkDeletion || true, 'Certificate bulk deletion option should be available');
+            $this->assertTrue($hasBulkDeletion, 'Certificate bulk deletion option should be available');
 
             $this->testResults['bulk_deletion'] = 'Certificate bulk deletion option is available';
         });
@@ -1430,7 +1430,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'acme') ||
                 str_contains($pageSource, 'client');
 
-            $this->assertTrue($hasCertbotStatus || true, 'Certbot installation status should be shown');
+            $this->assertTrue($hasCertbotStatus, 'Certbot installation status should be shown');
 
             $this->testResults['certbot_status'] = 'Certbot installation status is shown';
         });
@@ -1458,7 +1458,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'dropdown') ||
                 str_contains($pageSource, 'wire:click');
 
-            $this->assertTrue($hasQuickActions || true, 'SSL certificate quick actions menu should be available');
+            $this->assertTrue($hasQuickActions, 'SSL certificate quick actions menu should be available');
 
             $this->testResults['quick_actions'] = 'SSL certificate quick actions menu is available';
         });
@@ -1486,7 +1486,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'days') ||
                 str_contains($pageSource, 'alert');
 
-            $this->assertTrue($hasExpiryNotifications || true, 'Certificate expiry notifications preview should be visible');
+            $this->assertTrue($hasExpiryNotifications, 'Certificate expiry notifications preview should be visible');
 
             $this->testResults['expiry_notifications'] = 'Certificate expiry notifications preview is visible';
         });
@@ -1514,7 +1514,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'devflow.test') ||
                 str_contains($pageSource, 'associated');
 
-            $this->assertTrue($hasDomainAssociation || true, 'SSL certificate domain association should be clear');
+            $this->assertTrue($hasDomainAssociation, 'SSL certificate domain association should be clear');
 
             $this->testResults['domain_association'] = 'SSL certificate domain association is clear';
         });
@@ -1542,7 +1542,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'spinner') ||
                 str_contains($pageSource, 'wire:loading');
 
-            $this->assertTrue($hasProgressIndicator || true, 'Certificate renewal progress indicator should be present');
+            $this->assertTrue($hasProgressIndicator, 'Certificate renewal progress indicator should be present');
 
             $this->testResults['renewal_progress'] = 'Certificate renewal progress indicator is present';
         });
@@ -1570,7 +1570,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'expiring') ||
                 str_contains($pageSource, 'card');
 
-            $this->assertTrue($hasStatisticsCards || true, 'SSL certificate statistics cards should display correctly');
+            $this->assertTrue($hasStatisticsCards, 'SSL certificate statistics cards should display correctly');
 
             $this->testResults['statistics_cards'] = 'SSL certificate statistics cards display correctly';
         });
@@ -1599,7 +1599,7 @@ class SSLTest extends DuskTestCase
                 str_contains($pageSource, 'grid') ||
                 str_contains($pageSource, 'flex');
 
-            $this->assertTrue($isResponsive || true, 'Certificate management page should be responsive');
+            $this->assertTrue($isResponsive, 'Certificate management page should be responsive');
 
             $this->testResults['responsive_page'] = 'Certificate management page is responsive';
         });

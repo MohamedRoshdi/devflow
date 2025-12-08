@@ -358,7 +358,7 @@ class ServersTest extends DuskTestCase
                 str_contains($pageSource, 'statusfilter') ||
                 str_contains($pageSource, 'filter by status');
 
-            $this->assertTrue($hasFilter || true, 'Server status filter should be available');
+            $this->assertTrue($hasFilter, 'Server status filter should be available');
 
             $this->testResults['server_status_filter'] = 'Server status filter is available';
         });
@@ -839,7 +839,7 @@ class ServersTest extends DuskTestCase
                 str_contains($pageSource, 'select all') ||
                 str_contains($pageSource, 'selectedservers');
 
-            $this->assertTrue($hasBulkActions || true, 'Server bulk actions should be available');
+            $this->assertTrue($hasBulkActions, 'Server bulk actions should be available');
 
             $this->testResults['server_bulk_actions'] = 'Server bulk actions are available';
         });
@@ -919,7 +919,7 @@ class ServersTest extends DuskTestCase
                 str_contains($pageSource, 'last_ping_at') ||
                 str_contains($pageSource, 'checked');
 
-            $this->assertTrue($hasLastPing || true, 'Server last ping time should be displayed');
+            $this->assertTrue($hasLastPing, 'Server last ping time should be displayed');
 
             $this->testResults['server_last_ping'] = 'Server last ping time is displayed';
         });
@@ -945,7 +945,7 @@ class ServersTest extends DuskTestCase
                 str_contains($pageSource, 'restartService') ||
                 str_contains($pageSource, 'Restart Service');
 
-            $this->assertTrue($hasServiceRestart || true, 'Server service restart should be available');
+            $this->assertTrue($hasServiceRestart, 'Server service restart should be available');
 
             $this->testResults['server_service_restart'] = 'Server service restart is available';
         });
@@ -971,7 +971,7 @@ class ServersTest extends DuskTestCase
                 str_contains($pageSource, 'clearSystemCache') ||
                 str_contains($pageSource, 'Clear Cache');
 
-            $this->assertTrue($hasCacheClear || true, 'Server cache clear should be available');
+            $this->assertTrue($hasCacheClear, 'Server cache clear should be available');
 
             $this->testResults['server_cache_clear'] = 'Server cache clear is available';
         });
@@ -1024,7 +1024,7 @@ class ServersTest extends DuskTestCase
                 str_contains($pageSource, 'page') ||
                 str_contains($pageSource, 'next');
 
-            $this->assertTrue($hasPagination || true, 'Server pagination should be present');
+            $this->assertTrue($hasPagination, 'Server pagination should be present');
 
             $this->testResults['server_pagination'] = 'Server pagination is present';
         });
@@ -1131,7 +1131,7 @@ class ServersTest extends DuskTestCase
                 str_contains($pageSource, 'addCurrentServer') ||
                 str_contains($pageSource, 'Add Current Server');
 
-            $this->assertTrue($hasQuickAdd || true, 'Server current VPS quick add should be available');
+            $this->assertTrue($hasQuickAdd, 'Server current VPS quick add should be available');
 
             $this->testResults['server_quick_add'] = 'Server current VPS quick add is available';
         });

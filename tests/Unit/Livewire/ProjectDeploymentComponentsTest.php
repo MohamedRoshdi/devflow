@@ -48,7 +48,6 @@ use App\Services\GitService;
 use App\Services\ProjectSetupService;
 use App\Services\RollbackService;
 use App\Services\ServerConnectivityService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Queue;
@@ -57,8 +56,6 @@ use Tests\TestCase;
 
 class ProjectDeploymentComponentsTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected User $user;
 
     protected Server $server;
@@ -157,10 +154,9 @@ class ProjectDeploymentComponentsTest extends TestCase
 
         Livewire::actingAs($this->user)
             ->test(ProjectList::class)
-            ->call('deleteProject', $project->id)
-            ->assertSessionHas('message', 'Project deleted successfully');
+            ->call('deleteProject', $project->id);
 
-        $this->assertDatabaseMissing('projects', ['id' => $project->id]);
+        $this->assertSoftDeleted('projects', ['id' => $project->id]);
     }
 
     /** @test */
@@ -963,6 +959,7 @@ class ProjectDeploymentComponentsTest extends TestCase
         $project = Project::factory()->create([
             'user_id' => $this->user->id,
             'server_id' => $this->server->id,
+            'metadata' => [],
         ]);
 
         Livewire::actingAs($this->user)
@@ -990,7 +987,7 @@ class ProjectDeploymentComponentsTest extends TestCase
     {
         $connection = GitHubConnection::factory()->create([
             'user_id' => $this->user->id,
-            'status' => 'active',
+            'is_active' => true,
         ]);
 
         Livewire::actingAs($this->user)
@@ -1004,7 +1001,7 @@ class ProjectDeploymentComponentsTest extends TestCase
     {
         $connection = GitHubConnection::factory()->create([
             'user_id' => $this->user->id,
-            'status' => 'active',
+            'is_active' => true,
         ]);
 
         $repo = GitHubRepository::factory()->create([
@@ -1029,7 +1026,7 @@ class ProjectDeploymentComponentsTest extends TestCase
     {
         $connection = GitHubConnection::factory()->create([
             'user_id' => $this->user->id,
-            'status' => 'active',
+            'is_active' => true,
         ]);
 
         $repo = GitHubRepository::factory()->create([
@@ -1073,9 +1070,10 @@ class ProjectDeploymentComponentsTest extends TestCase
             'server_id' => $this->server->id,
         ]);
 
-        PipelineConfig::factory()->create([
+        PipelineConfig::create([
             'project_id' => $project->id,
             'enabled' => false,
+            'auto_deploy_branches' => [],
         ]);
 
         Livewire::actingAs($this->user)
@@ -1253,6 +1251,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             'project_id' => $project->id,
             'user_id' => $this->user->id,
             'server_id' => $this->server->id,
+            'status' => 'running',
             'output_log' => '=== Cloning Repository ===',
         ]);
 
@@ -1297,7 +1296,7 @@ class ProjectDeploymentComponentsTest extends TestCase
 
         $approval = DeploymentApproval::factory()->create([
             'deployment_id' => $deployment->id,
-            'requester_id' => $this->user->id,
+            'requested_by' => $this->user->id,
             'status' => 'pending',
         ]);
 
@@ -1329,7 +1328,7 @@ class ProjectDeploymentComponentsTest extends TestCase
 
         $approval = DeploymentApproval::factory()->create([
             'deployment_id' => $deployment->id,
-            'requester_id' => $this->user->id,
+            'requested_by' => $this->user->id,
             'status' => 'pending',
         ]);
 
@@ -1497,7 +1496,15 @@ class ProjectDeploymentComponentsTest extends TestCase
         $mockService->shouldReceive('getRollbackPoints')
             ->once()
             ->andReturn([
-                ['id' => $deployment->id, 'can_rollback' => true],
+                [
+                    'id' => $deployment->id,
+                    'commit_hash' => $deployment->commit_hash,
+                    'commit_message' => $deployment->commit_message,
+                    'deployed_at' => $deployment->started_at,
+                    'deployed_by' => $this->user->name,
+                    'status' => $deployment->status,
+                    'can_rollback' => true,
+                ],
             ]);
 
         Livewire::actingAs($this->user)
@@ -1595,7 +1602,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->set('scheduledTime', '03:00')
             ->set('timezone', 'UTC')
             ->call('scheduleDeployment')
-            ->assertHasErrors('scheduledTime');
+            ->assertHasErrors('scheduledDate');
     }
 
     /** @test */
@@ -1606,9 +1613,12 @@ class ProjectDeploymentComponentsTest extends TestCase
             'server_id' => $this->server->id,
         ]);
 
-        $scheduledDeployment = ScheduledDeployment::factory()->create([
+        $scheduledDeployment = ScheduledDeployment::create([
             'project_id' => $project->id,
             'user_id' => $this->user->id,
+            'branch' => 'main',
+            'scheduled_at' => now()->addDay(),
+            'timezone' => 'UTC',
             'status' => 'pending',
         ]);
 

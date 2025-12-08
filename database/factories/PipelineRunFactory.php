@@ -15,6 +15,7 @@ class PipelineRunFactory extends Factory
         return [
             'project_id' => Project::factory(),
             'deployment_id' => null,
+            'run_number' => fake()->numberBetween(1, 100),
             'status' => fake()->randomElement(['pending', 'running', 'success', 'failed', 'cancelled']),
             'triggered_by' => fake()->randomElement(['manual', 'webhook', 'scheduled']),
             'trigger_data' => json_encode([]),
@@ -22,7 +23,7 @@ class PipelineRunFactory extends Factory
             'commit_sha' => fake()->sha1(),
             'logs' => json_encode([]),
             'started_at' => null,
-            'completed_at' => null,
+            'finished_at' => null,
         ];
     }
 
@@ -39,7 +40,7 @@ class PipelineRunFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'status' => 'success',
             'started_at' => now()->subMinutes(5),
-            'completed_at' => now(),
+            'finished_at' => now(),
         ]);
     }
 
@@ -48,7 +49,7 @@ class PipelineRunFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'status' => 'failed',
             'started_at' => now()->subMinutes(5),
-            'completed_at' => now(),
+            'finished_at' => now(),
         ]);
     }
 }

@@ -388,7 +388,7 @@ class DashboardTest extends DuskTestCase
             $hasDropdown = $browser->element('[x-show="open"]') !== null;
 
             $this->assertTrue(
-                $hasDropdown || true, // Allow pass if dropdown structure differs
+                $hasDropdown, // Allow pass if dropdown structure differs
                 'User dropdown should be present'
             );
         });

@@ -133,7 +133,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'storage') ||
                 str_contains($pageSource, 'bucket');
 
-            $this->assertTrue($hasConfigList || true, 'Storage configurations list should display');
+            $this->assertTrue($hasConfigList, 'Storage configurations list should display');
 
             $this->testResults['storage_configurations_list'] = 'Storage configurations list displays successfully';
         });
@@ -161,7 +161,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'New') ||
                 str_contains($pageSource, 'openCreateModal');
 
-            $this->assertTrue($hasCreateButton || true, 'Create storage configuration modal should be accessible');
+            $this->assertTrue($hasCreateButton, 'Create storage configuration modal should be accessible');
 
             $this->testResults['create_storage_config_modal'] = 'Create storage configuration modal is accessible';
         });
@@ -188,7 +188,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'amazon') ||
                 str_contains($pageSource, 'aws');
 
-            $this->assertTrue($hasS3Option || true, 'S3 storage provider tab should be available');
+            $this->assertTrue($hasS3Option, 'S3 storage provider tab should be available');
 
             $this->testResults['s3_provider_tab'] = 'S3 storage provider tab is available';
         });
@@ -215,7 +215,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'google') ||
                 str_contains($pageSource, 'cloud storage');
 
-            $this->assertTrue($hasGcsOption || true, 'Google Cloud Storage provider tab should be available');
+            $this->assertTrue($hasGcsOption, 'Google Cloud Storage provider tab should be available');
 
             $this->testResults['gcs_provider_tab'] = 'Google Cloud Storage provider tab is available';
         });
@@ -241,7 +241,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'ftp') ||
                 str_contains($pageSource, 'file transfer');
 
-            $this->assertTrue($hasFtpOption || true, 'FTP storage provider tab should be available');
+            $this->assertTrue($hasFtpOption, 'FTP storage provider tab should be available');
 
             $this->testResults['ftp_provider_tab'] = 'FTP storage provider tab is available';
         });
@@ -268,7 +268,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'secure ftp') ||
                 str_contains($pageSource, 'ssh');
 
-            $this->assertTrue($hasSftpOption || true, 'SFTP storage provider tab should be available');
+            $this->assertTrue($hasSftpOption, 'SFTP storage provider tab should be available');
 
             $this->testResults['sftp_provider_tab'] = 'SFTP storage provider tab is available';
         });
@@ -295,7 +295,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'storage') ||
                 str_contains($pageSource, 'disk');
 
-            $this->assertTrue($hasLocalOption || true, 'Local storage provider option should be available');
+            $this->assertTrue($hasLocalOption, 'Local storage provider option should be available');
 
             $this->testResults['local_storage_option'] = 'Local storage provider option is available';
         });
@@ -324,7 +324,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'credential') ||
                 str_contains($pageSource, 'password');
 
-            $this->assertTrue($hasCredentialFields || true, 'Storage credentials fields should be present');
+            $this->assertTrue($hasCredentialFields, 'Storage credentials fields should be present');
 
             $this->testResults['storage_credentials_fields'] = 'Storage credentials fields are present';
         });
@@ -351,7 +351,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'container') ||
                 str_contains($pageSource, 'name');
 
-            $this->assertTrue($hasBucketField || true, 'Storage bucket/container field should be present');
+            $this->assertTrue($hasBucketField, 'Storage bucket/container field should be present');
 
             $this->testResults['storage_bucket_field'] = 'Storage bucket/container field is present';
         });
@@ -379,7 +379,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'us-east') ||
                 str_contains($pageSource, 'eu-west');
 
-            $this->assertTrue($hasRegionField || true, 'Storage region selection should be available');
+            $this->assertTrue($hasRegionField, 'Storage region selection should be available');
 
             $this->testResults['storage_region_selection'] = 'Storage region selection is available';
         });
@@ -406,7 +406,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'path') ||
                 str_contains($pageSource, 'folder');
 
-            $this->assertTrue($hasPathPrefix || true, 'Storage path prefix field should be available');
+            $this->assertTrue($hasPathPrefix, 'Storage path prefix field should be available');
 
             $this->testResults['storage_path_prefix'] = 'Storage path prefix field is available';
         });
@@ -433,7 +433,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'encryption') ||
                 str_contains($pageSource, 'secure');
 
-            $this->assertTrue($hasEncryptionOption || true, 'Storage encryption option should be available');
+            $this->assertTrue($hasEncryptionOption, 'Storage encryption option should be available');
 
             $this->testResults['storage_encryption_option'] = 'Storage encryption option is available';
         });
@@ -460,7 +460,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'key') ||
                 str_contains($pageSource, 'generateencryptionkey');
 
-            $this->assertTrue($hasGenerateKeyButton || true, 'Generate encryption key button should be available');
+            $this->assertTrue($hasGenerateKeyButton, 'Generate encryption key button should be available');
 
             $this->testResults['generate_encryption_key'] = 'Generate encryption key button is available';
         });
@@ -487,7 +487,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'testconnection') ||
                 str_contains($pageSource, 'verify');
 
-            $this->assertTrue($hasTestButton || true, 'Test storage connection functionality should be available');
+            $this->assertTrue($hasTestButton, 'Test storage connection functionality should be available');
 
             $this->testResults['test_storage_connection'] = 'Test storage connection functionality is available';
         });
@@ -514,7 +514,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'setasdefault') ||
                 str_contains($pageSource, 'primary');
 
-            $this->assertTrue($hasDefaultOption || true, 'Set default storage option should be available');
+            $this->assertTrue($hasDefaultOption, 'Set default storage option should be available');
 
             $this->testResults['set_default_storage'] = 'Set default storage option is available';
         });
@@ -541,7 +541,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'openeditmodal') ||
                 str_contains($pageSource, 'update');
 
-            $this->assertTrue($hasEditButton || true, 'Edit storage configuration modal should be accessible');
+            $this->assertTrue($hasEditButton, 'Edit storage configuration modal should be accessible');
 
             $this->testResults['edit_storage_config_modal'] = 'Edit storage configuration modal is accessible';
         });
@@ -568,7 +568,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'remove') ||
                 str_contains($pageSource, 'confirmdelete');
 
-            $this->assertTrue($hasDeleteButton || true, 'Delete storage configuration option should be available');
+            $this->assertTrue($hasDeleteButton, 'Delete storage configuration option should be available');
 
             $this->testResults['delete_storage_config'] = 'Delete storage configuration option is available';
         });
@@ -596,7 +596,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'inactive') ||
                 str_contains($pageSource, 'connected');
 
-            $this->assertTrue($hasStatusIndicator || true, 'Storage configuration status should be shown');
+            $this->assertTrue($hasStatusIndicator, 'Storage configuration status should be shown');
 
             $this->testResults['storage_config_status'] = 'Storage configuration status indicator is shown';
         });
@@ -627,7 +627,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'ago') ||
                 str_contains($pageSource, 'verified');
 
-            $this->assertTrue($hasLastTested || true, 'Storage last tested timestamp should be displayed');
+            $this->assertTrue($hasLastTested, 'Storage last tested timestamp should be displayed');
 
             $this->testResults['storage_last_tested'] = 'Storage last tested timestamp is displayed';
         });
@@ -656,7 +656,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'gb') ||
                 str_contains($pageSource, 'storage');
 
-            $this->assertTrue($hasUsageStats || true, 'Storage usage statistics should be shown');
+            $this->assertTrue($hasUsageStats, 'Storage usage statistics should be shown');
 
             $this->testResults['storage_usage_stats'] = 'Storage usage statistics are displayed';
         });
@@ -684,7 +684,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'clear') ||
                 str_contains($pageSource, 'purge');
 
-            $this->assertTrue($hasCleanupTools || true, 'Storage cleanup tools should be accessible');
+            $this->assertTrue($hasCleanupTools, 'Storage cleanup tools should be accessible');
 
             $this->testResults['storage_cleanup_tools'] = 'Storage cleanup tools are accessible';
         });
@@ -711,7 +711,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'assign') ||
                 str_contains($pageSource, 'project_id');
 
-            $this->assertTrue($hasProjectAssignment || true, 'Storage project assignment should be available');
+            $this->assertTrue($hasProjectAssignment, 'Storage project assignment should be available');
 
             $this->testResults['storage_project_assignment'] = 'Storage project assignment is available';
         });
@@ -738,7 +738,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'url') ||
                 str_contains($pageSource, 'custom');
 
-            $this->assertTrue($hasEndpointField || true, 'Storage endpoint configuration should be available');
+            $this->assertTrue($hasEndpointField, 'Storage endpoint configuration should be available');
 
             $this->testResults['storage_endpoint_config'] = 'Storage endpoint configuration is available';
         });
@@ -766,7 +766,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'success') ||
                 str_contains($pageSource, 'failed');
 
-            $this->assertTrue($hasTestResults || true, 'Storage test results display should be available');
+            $this->assertTrue($hasTestResults, 'Storage test results display should be available');
 
             $this->testResults['storage_test_results'] = 'Storage test results display is available';
         });
@@ -794,7 +794,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'icon') ||
                 str_contains($pageSource, 'badge');
 
-            $this->assertTrue($hasDriverIcon || true, 'Storage driver icon/badge should be displayed');
+            $this->assertTrue($hasDriverIcon, 'Storage driver icon/badge should be displayed');
 
             $this->testResults['storage_driver_icon'] = 'Storage driver icon/badge is displayed';
         });
@@ -821,7 +821,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'label') ||
                 str_contains($pageSource, 'title');
 
-            $this->assertTrue($hasNameField || true, 'Storage configuration name field should be editable');
+            $this->assertTrue($hasNameField, 'Storage configuration name field should be editable');
 
             $this->testResults['storage_config_name'] = 'Storage configuration name field is editable';
         });
@@ -848,7 +848,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'ftp_passive') ||
                 str_contains($pageSource, 'mode');
 
-            $this->assertTrue($hasPassiveMode || true, 'FTP passive mode toggle should be available');
+            $this->assertTrue($hasPassiveMode, 'FTP passive mode toggle should be available');
 
             $this->testResults['ftp_passive_mode'] = 'FTP passive mode toggle is available';
         });
@@ -876,7 +876,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'secure') ||
                 str_contains($pageSource, 'ftp_ssl');
 
-            $this->assertTrue($hasSslOption || true, 'FTP SSL/TLS option should be available');
+            $this->assertTrue($hasSslOption, 'FTP SSL/TLS option should be available');
 
             $this->testResults['ftp_ssl_option'] = 'FTP SSL/TLS option is available';
         });
@@ -904,7 +904,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'sftp_private_key') ||
                 str_contains($pageSource, 'ssh');
 
-            $this->assertTrue($hasPrivateKeyField || true, 'SFTP private key field should be available');
+            $this->assertTrue($hasPrivateKeyField, 'SFTP private key field should be available');
 
             $this->testResults['sftp_private_key_field'] = 'SFTP private key field is available';
         });
@@ -931,7 +931,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'create') ||
                 str_contains($pageSource, 'submit');
 
-            $this->assertTrue($hasSaveButton || true, 'Storage configuration save button should work');
+            $this->assertTrue($hasSaveButton, 'Storage configuration save button should work');
 
             $this->testResults['storage_config_save'] = 'Storage configuration save button is functional';
         });
@@ -958,7 +958,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'validate') ||
                 str_contains($pageSource, 'error');
 
-            $this->assertTrue($hasValidation || true, 'Storage configuration validation should work');
+            $this->assertTrue($hasValidation, 'Storage configuration validation should work');
 
             $this->testResults['storage_config_validation'] = 'Storage configuration validation is functional';
         });
@@ -988,7 +988,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'primary') ||
                 str_contains($pageSource, 'badge');
 
-            $this->assertTrue($hasDefaultBadge || true, 'Storage default badge should be displayed');
+            $this->assertTrue($hasDefaultBadge, 'Storage default badge should be displayed');
 
             $this->testResults['storage_default_badge'] = 'Storage default badge is displayed';
         });
@@ -1015,7 +1015,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, '21') ||
                 str_contains($pageSource, '22');
 
-            $this->assertTrue($hasPortField || true, 'Storage port configuration should be available');
+            $this->assertTrue($hasPortField, 'Storage port configuration should be available');
 
             $this->testResults['storage_port_config'] = 'Storage port configuration is available';
         });
@@ -1042,7 +1042,7 @@ class StorageTest extends DuskTestCase
                 str_contains($pageSource, 'search') ||
                 str_contains($pageSource, 'find');
 
-            $this->assertTrue($hasFiltering || true, 'Storage configuration filtering should be available');
+            $this->assertTrue($hasFiltering, 'Storage configuration filtering should be available');
 
             $this->testResults['storage_config_filtering'] = 'Storage configuration filtering is available';
         });

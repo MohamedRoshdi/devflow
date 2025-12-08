@@ -130,7 +130,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'redis') ||
                 str_contains($pageSource, 'cache');
 
-            $this->assertTrue($hasRedisStatus || true, 'Redis connection status should be shown');
+            $this->assertTrue($hasRedisStatus, 'Redis connection status should be shown');
 
             $this->testResults['redis_status'] = 'Redis connection status is shown';
         });
@@ -182,7 +182,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'websocket') ||
                 str_contains($pageSource, 'broadcast');
 
-            $this->assertTrue($hasWebSocketStatus || true, 'WebSocket/Reverb status should be visible');
+            $this->assertTrue($hasWebSocketStatus, 'WebSocket/Reverb status should be visible');
 
             $this->testResults['websocket_status'] = 'WebSocket/Reverb server status is visible';
         });
@@ -235,7 +235,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, '8.') ||
                 str_contains($pageSource, 'version');
 
-            $this->assertTrue($hasPhpVersion || true, 'PHP version should be displayed');
+            $this->assertTrue($hasPhpVersion, 'PHP version should be displayed');
 
             $this->testResults['php_version'] = 'PHP version is displayed';
         });
@@ -288,7 +288,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'local') ||
                 str_contains($pageSource, 'staging');
 
-            $this->assertTrue($hasAppInfo || true, 'Application version/environment should be displayed');
+            $this->assertTrue($hasAppInfo, 'Application version/environment should be displayed');
 
             $this->testResults['app_version'] = 'Application version/environment is displayed';
         });
@@ -314,7 +314,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'running') ||
                 str_contains($pageSource, 'day');
 
-            $this->assertTrue($hasUptime || true, 'Server uptime should be shown');
+            $this->assertTrue($hasUptime, 'Server uptime should be shown');
 
             $this->testResults['server_uptime'] = 'Server uptime is shown';
         });
@@ -341,7 +341,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'mb') ||
                 str_contains($pageSource, 'gb');
 
-            $this->assertTrue($hasMemoryUsage || true, 'Memory usage display should be visible');
+            $this->assertTrue($hasMemoryUsage, 'Memory usage display should be visible');
 
             $this->testResults['memory_usage'] = 'Memory usage display is visible';
         });
@@ -367,7 +367,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'processor') ||
                 str_contains($pageSource, 'load');
 
-            $this->assertTrue($hasCpuUsage || true, 'CPU usage information should be shown');
+            $this->assertTrue($hasCpuUsage, 'CPU usage information should be shown');
 
             $this->testResults['cpu_usage'] = 'CPU usage information is shown';
         });
@@ -393,7 +393,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'storage') ||
                 str_contains($pageSource, 'space');
 
-            $this->assertTrue($hasDiskSpace || true, 'Disk space/storage status should be displayed');
+            $this->assertTrue($hasDiskSpace, 'Disk space/storage status should be displayed');
 
             $this->testResults['disk_space'] = 'Disk space/storage status is displayed';
         });
@@ -475,7 +475,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'stopped') ||
                 str_contains($pageSource, 'error');
 
-            $this->assertTrue($hasRedIndicator || true, 'Stopped status should show red indicator');
+            $this->assertTrue($hasRedIndicator, 'Stopped status should show red indicator');
 
             $this->testResults['red_indicator'] = 'Stopped status shows red indicator';
         });
@@ -502,7 +502,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'text-yellow') ||
                 str_contains($pageSource, 'warning');
 
-            $this->assertTrue($hasYellowIndicator || true, 'Warning status should show yellow indicator');
+            $this->assertTrue($hasYellowIndicator, 'Warning status should show yellow indicator');
 
             $this->testResults['yellow_indicator'] = 'Warning status shows yellow indicator';
         });
@@ -669,7 +669,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'redis') ||
                 str_contains($pageSource, 'cache');
 
-            $this->assertTrue($hasRedisInfo || true, 'Redis info should be displayed when Redis is used');
+            $this->assertTrue($hasRedisInfo, 'Redis info should be displayed when Redis is used');
 
             $this->testResults['redis_info'] = 'Redis info is displayed when Redis is used';
         });
@@ -721,7 +721,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'reverb') ||
                 str_contains($pageSource, '8080');
 
-            $this->assertTrue($hasReverbPort || true, 'Reverb WebSocket port information should be displayed');
+            $this->assertTrue($hasReverbPort, 'Reverb WebSocket port information should be displayed');
 
             $this->testResults['reverb_port'] = 'Reverb WebSocket port information is displayed';
         });
@@ -773,7 +773,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'testBroadcast') ||
                 str_contains($pageSource, 'broadcast');
 
-            $this->assertTrue($hasTestBroadcast || true, 'Test broadcast button should be visible');
+            $this->assertTrue($hasTestBroadcast, 'Test broadcast button should be visible');
 
             $this->testResults['test_broadcast_button'] = 'Test broadcast button is visible';
         });
@@ -799,7 +799,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'reverb') ||
                 str_contains($pageSource, 'websocket');
 
-            $this->assertTrue($hasBroadcastStatus || true, 'Broadcasting status should be indicated');
+            $this->assertTrue($hasBroadcastStatus, 'Broadcasting status should be indicated');
 
             $this->testResults['broadcasting_status'] = 'Broadcasting status is indicated';
         });
@@ -826,7 +826,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'staging') ||
                 str_contains($pageSource, 'environment');
 
-            $this->assertTrue($hasEnvironment || true, 'Environment display should show correct env');
+            $this->assertTrue($hasEnvironment, 'Environment display should show correct env');
 
             $this->testResults['environment_display'] = 'Environment display shows correct env';
         });
@@ -852,7 +852,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'warning') ||
                 str_contains($pageSource, 'production');
 
-            $this->assertTrue($hasDebugInfo || true, 'Debug mode warning should be shown when enabled');
+            $this->assertTrue($hasDebugInfo, 'Debug mode warning should be shown when enabled');
 
             $this->testResults['debug_warning'] = 'Debug mode warning is shown when enabled';
         });
@@ -878,7 +878,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'down') ||
                 str_contains($pageSource, 'mode');
 
-            $this->assertTrue($hasMaintenanceInfo || true, 'Maintenance mode status should be displayed');
+            $this->assertTrue($hasMaintenanceInfo, 'Maintenance mode status should be displayed');
 
             $this->testResults['maintenance_mode'] = 'Maintenance mode status is displayed';
         });
@@ -904,7 +904,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'loading') ||
                 str_contains($pageSource, 'spinner');
 
-            $this->assertTrue($hasLoadingState || true, 'Loading state should be shown during refresh');
+            $this->assertTrue($hasLoadingState, 'Loading state should be shown during refresh');
 
             $this->testResults['loading_state'] = 'Loading state is shown during refresh';
         });
@@ -957,7 +957,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'job') ||
                 str_contains($pageSource, 'error');
 
-            $this->assertTrue($hasFailedJobsCount || true, 'Failed jobs count should be displayed');
+            $this->assertTrue($hasFailedJobsCount, 'Failed jobs count should be displayed');
 
             $this->testResults['failed_jobs_count'] = 'Failed jobs count is displayed';
         });
@@ -983,7 +983,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'queue') ||
                 str_contains($pageSource, 'job');
 
-            $this->assertTrue($hasPendingJobsCount || true, 'Pending jobs count should be shown');
+            $this->assertTrue($hasPendingJobsCount, 'Pending jobs count should be shown');
 
             $this->testResults['pending_jobs_count'] = 'Pending jobs count is shown';
         });
@@ -1009,7 +1009,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'memory') ||
                 str_contains($pageSource, 'cache');
 
-            $this->assertTrue($hasRedisMemory || true, 'Redis memory usage should be displayed');
+            $this->assertTrue($hasRedisMemory, 'Redis memory usage should be displayed');
 
             $this->testResults['redis_memory'] = 'Redis memory usage is displayed';
         });
@@ -1035,7 +1035,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'client') ||
                 str_contains($pageSource, 'connected');
 
-            $this->assertTrue($hasRedisClients || true, 'Redis connected clients count should be shown');
+            $this->assertTrue($hasRedisClients, 'Redis connected clients count should be shown');
 
             $this->testResults['redis_clients'] = 'Redis connected clients count is shown';
         });
@@ -1114,7 +1114,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'not running') ||
                 str_contains($pageSource, 'stopped');
 
-            $this->assertTrue($hasErrorHandling || true, 'Error messages should be displayed for failed services');
+            $this->assertTrue($hasErrorHandling, 'Error messages should be displayed for failed services');
 
             $this->testResults['error_messages'] = 'Error messages are displayed for failed services';
         });
@@ -1166,7 +1166,7 @@ class SystemStatusTest extends DuskTestCase
                 str_contains($pageSource, 'wire:poll') ||
                 str_contains($pageSource, 'livewire');
 
-            $this->assertTrue($hasPolling || true, 'Real-time status updates should work with Livewire polling');
+            $this->assertTrue($hasPolling, 'Real-time status updates should work with Livewire polling');
 
             $this->testResults['livewire_polling'] = 'Real-time status updates work with Livewire polling';
         });
@@ -1197,7 +1197,7 @@ class SystemStatusTest extends DuskTestCase
                     str_contains($pageSource, 'updated') ||
                     str_contains($pageSource, 'success');
 
-                $this->assertTrue($hasNotification || true, 'Notification should appear after refresh');
+                $this->assertTrue($hasNotification, 'Notification should appear after refresh');
 
                 $this->testResults['refresh_notification'] = 'Notification appears after refresh';
             } catch (\Exception $e) {

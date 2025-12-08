@@ -218,7 +218,7 @@ class SSHTerminalTest extends DuskTestCase
                 str_contains($pageSource, 'output') ||
                 str_contains($pageSource, 'history');
 
-            $this->assertTrue($hasOutput || true, 'Command output display area should exist');
+            $this->assertTrue($hasOutput, 'Command output display area should exist');
 
             $this->testResults['output_display'] = 'Command output display area exists';
         });
@@ -244,7 +244,7 @@ class SSHTerminalTest extends DuskTestCase
                 str_contains($pageSource, 'history') ||
                 str_contains($pageSource, 'clear history');
 
-            $this->assertTrue($hasHistory || true, 'Terminal history section should be available');
+            $this->assertTrue($hasHistory, 'Terminal history section should be available');
 
             $this->testResults['terminal_history'] = 'Terminal history section is available';
         });
@@ -270,7 +270,7 @@ class SSHTerminalTest extends DuskTestCase
                 str_contains($pageSource, 'Clear History') ||
                 str_contains($pageSource, 'clearHistory');
 
-            $this->assertTrue($hasClearButton || true, 'Clear history button should be present');
+            $this->assertTrue($hasClearButton, 'Clear history button should be present');
 
             $this->testResults['clear_history_button'] = 'Clear history button is present';
         });
@@ -402,7 +402,7 @@ class SSHTerminalTest extends DuskTestCase
                 str_contains($pageSource, 'Services') ||
                 str_contains($pageSource, 'ps aux');
 
-            $this->assertTrue($hasProcessCommands || true, 'Process & Services commands should be available');
+            $this->assertTrue($hasProcessCommands, 'Process & Services commands should be available');
 
             $this->testResults['process_commands'] = 'Process & Services commands are available';
         });
@@ -479,7 +479,7 @@ class SSHTerminalTest extends DuskTestCase
                 str_contains($pageSource, 'Rerun') ||
                 str_contains($pageSource, 'rerunCommand');
 
-            $this->assertTrue($hasRerun || true, 'Command rerun functionality should be available');
+            $this->assertTrue($hasRerun, 'Command rerun functionality should be available');
 
             $this->testResults['rerun_functionality'] = 'Command rerun functionality is available';
         });
@@ -505,7 +505,7 @@ class SSHTerminalTest extends DuskTestCase
                 str_contains($pageSource, 'exit_code') ||
                 str_contains($pageSource, 'Exit');
 
-            $this->assertTrue($hasExitCode || true, 'Exit code should be displayed in history');
+            $this->assertTrue($hasExitCode, 'Exit code should be displayed in history');
 
             $this->testResults['exit_code_display'] = 'Exit code is displayed in history';
         });
@@ -532,7 +532,7 @@ class SSHTerminalTest extends DuskTestCase
                 str_contains($pageSource, 'bg-red-900') ||
                 str_contains($pageSource, 'success');
 
-            $this->assertTrue($hasIndicators || true, 'Success/failure indicators should be present');
+            $this->assertTrue($hasIndicators, 'Success/failure indicators should be present');
 
             $this->testResults['success_indicators'] = 'Success/failure indicators are present';
         });
@@ -558,7 +558,7 @@ class SSHTerminalTest extends DuskTestCase
                 str_contains($pageSource, 'timestamp') ||
                 str_contains($pageSource, 'diffForHumans');
 
-            $this->assertTrue($hasTimestamp || true, 'Timestamp should be shown for commands');
+            $this->assertTrue($hasTimestamp, 'Timestamp should be shown for commands');
 
             $this->testResults['timestamp_display'] = 'Timestamp is shown for commands';
         });
@@ -585,7 +585,7 @@ class SSHTerminalTest extends DuskTestCase
                 str_contains($pageSource, 'nginx') ||
                 str_contains($pageSource, 'apache');
 
-            $this->assertTrue($hasWebCommands || true, 'Web services commands should be available');
+            $this->assertTrue($hasWebCommands, 'Web services commands should be available');
 
             $this->testResults['web_commands'] = 'Web services commands are available';
         });
@@ -612,7 +612,7 @@ class SSHTerminalTest extends DuskTestCase
                 str_contains($pageSource, 'journalctl') ||
                 str_contains($pageSource, 'tail');
 
-            $this->assertTrue($hasLogCommands || true, 'Log viewing commands should be present');
+            $this->assertTrue($hasLogCommands, 'Log viewing commands should be present');
 
             $this->testResults['log_commands'] = 'Log viewing commands are present';
         });
@@ -923,7 +923,7 @@ class SSHTerminalTest extends DuskTestCase
                 str_contains($pageSource, 'ls -la') ||
                 str_contains($pageSource, 'pwd');
 
-            $this->assertTrue($hasExploreCommands || true, 'Explore system commands should be available');
+            $this->assertTrue($hasExploreCommands, 'Explore system commands should be available');
 
             $this->testResults['explore_commands'] = 'Explore system commands are available';
         });
@@ -1154,7 +1154,7 @@ class SSHTerminalTest extends DuskTestCase
                 str_contains($pageSource, 'confirm(') ||
                 str_contains($pageSource, 'Clear command history');
 
-            $this->assertTrue($hasConfirm || true, 'Terminal should have confirmation for clear history');
+            $this->assertTrue($hasConfirm, 'Terminal should have confirmation for clear history');
 
             $this->testResults['clear_confirmation'] = 'Terminal has confirmation for clear history';
         });

@@ -78,7 +78,7 @@ class ProjectWebhooksTest extends DuskTestCase
             $pageSource = strtolower($browser->driver->getPageSource());
             $hasWebhook = str_contains($pageSource, 'webhook');
 
-            $this->assertTrue($hasWebhook || true, 'Project webhooks page should load');
+            $this->assertTrue($hasWebhook, 'Project webhooks page should load');
             $this->testResults['webhook_page_loads'] = 'Project webhooks page loads successfully';
         });
     }
@@ -98,7 +98,7 @@ class ProjectWebhooksTest extends DuskTestCase
             $pageSource = strtolower($browser->driver->getPageSource());
             $hasWebhookLink = str_contains($pageSource, 'webhook');
 
-            $this->assertTrue($hasWebhookLink || true, 'Webhook settings should be accessible');
+            $this->assertTrue($hasWebhookLink, 'Webhook settings should be accessible');
             $this->testResults['webhook_settings_accessible'] = 'Webhook settings accessible from project page';
         });
     }
@@ -119,7 +119,7 @@ class ProjectWebhooksTest extends DuskTestCase
             $hasToggle = str_contains($pageSource, 'webhook') &&
                 (str_contains($pageSource, 'enable') || str_contains($pageSource, 'toggle'));
 
-            $this->assertTrue($hasToggle || true, 'Webhook toggle should be visible');
+            $this->assertTrue($hasToggle, 'Webhook toggle should be visible');
             $this->testResults['webhook_toggle_visible'] = 'Webhook enable/disable toggle is visible';
         });
     }
@@ -140,7 +140,7 @@ class ProjectWebhooksTest extends DuskTestCase
             $hasUrl = str_contains($pageSource, 'webhook') &&
                 (str_contains($pageSource, 'url') || str_contains($pageSource, 'http'));
 
-            $this->assertTrue($hasUrl || true, 'Webhook URL should be displayed');
+            $this->assertTrue($hasUrl, 'Webhook URL should be displayed');
             $this->testResults['webhook_url_displayed'] = 'Webhook URL is displayed when enabled';
         });
     }
@@ -160,7 +160,7 @@ class ProjectWebhooksTest extends DuskTestCase
             $pageSource = strtolower($browser->driver->getPageSource());
             $hasGitHub = str_contains($pageSource, 'github');
 
-            $this->assertTrue($hasGitHub || true, 'GitHub webhook URL should be shown');
+            $this->assertTrue($hasGitHub, 'GitHub webhook URL should be shown');
             $this->testResults['github_webhook_url'] = 'GitHub webhook URL is shown';
         });
     }
@@ -180,7 +180,7 @@ class ProjectWebhooksTest extends DuskTestCase
             $pageSource = strtolower($browser->driver->getPageSource());
             $hasGitLab = str_contains($pageSource, 'gitlab');
 
-            $this->assertTrue($hasGitLab || true, 'GitLab webhook URL should be shown');
+            $this->assertTrue($hasGitLab, 'GitLab webhook URL should be shown');
             $this->testResults['gitlab_webhook_url'] = 'GitLab webhook URL is shown';
         });
     }
@@ -201,7 +201,7 @@ class ProjectWebhooksTest extends DuskTestCase
             $hasBitbucket = str_contains($pageSource, 'bitbucket') ||
                 str_contains($pageSource, 'webhook');
 
-            $this->assertTrue($hasBitbucket || true, 'Bitbucket webhook info should be available');
+            $this->assertTrue($hasBitbucket, 'Bitbucket webhook info should be available');
             $this->testResults['bitbucket_webhook_info'] = 'Bitbucket webhook integration information';
         });
     }
@@ -221,7 +221,7 @@ class ProjectWebhooksTest extends DuskTestCase
             $pageSource = strtolower($browser->driver->getPageSource());
             $hasSecret = str_contains($pageSource, 'secret') || str_contains($pageSource, 'token');
 
-            $this->assertTrue($hasSecret || true, 'Webhook secret should be displayed');
+            $this->assertTrue($hasSecret, 'Webhook secret should be displayed');
             $this->testResults['webhook_secret_displayed'] = 'Webhook secret is displayed';
         });
     }
@@ -241,7 +241,7 @@ class ProjectWebhooksTest extends DuskTestCase
             $pageSource = strtolower($browser->driver->getPageSource());
             $hasVisibilityToggle = str_contains($pageSource, 'show') || str_contains($pageSource, 'hide');
 
-            $this->assertTrue($hasVisibilityToggle || true, 'Secret visibility toggle should work');
+            $this->assertTrue($hasVisibilityToggle, 'Secret visibility toggle should work');
             $this->testResults['secret_visibility_toggle'] = 'Webhook secret visibility toggle works';
         });
     }
@@ -261,7 +261,7 @@ class ProjectWebhooksTest extends DuskTestCase
             $pageSource = strtolower($browser->driver->getPageSource());
             $hasRegenerateButton = str_contains($pageSource, 'regenerate') || str_contains($pageSource, 'generate');
 
-            $this->assertTrue($hasRegenerateButton || true, 'Regenerate secret button should be available');
+            $this->assertTrue($hasRegenerateButton, 'Regenerate secret button should be available');
             $this->testResults['regenerate_secret_button'] = 'Regenerate webhook secret button is available';
         });
     }
@@ -281,7 +281,7 @@ class ProjectWebhooksTest extends DuskTestCase
             $pageSource = strtolower($browser->driver->getPageSource());
             $hasConfirmation = str_contains($pageSource, 'confirm') || str_contains($pageSource, 'warning');
 
-            $this->assertTrue($hasConfirmation || true, 'Secret regeneration should require confirmation');
+            $this->assertTrue($hasConfirmation, 'Secret regeneration should require confirmation');
             $this->testResults['regeneration_confirmation'] = 'Webhook secret regeneration requires confirmation';
         });
     }
@@ -301,7 +301,7 @@ class ProjectWebhooksTest extends DuskTestCase
             $pageSource = strtolower($browser->driver->getPageSource());
             $hasCopyButton = str_contains($pageSource, 'copy') || str_contains($pageSource, 'clipboard');
 
-            $this->assertTrue($hasCopyButton || true, 'Copy webhook URL button should be available');
+            $this->assertTrue($hasCopyButton, 'Copy webhook URL button should be available');
             $this->testResults['copy_url_button'] = 'Copy webhook URL button is available';
         });
     }
@@ -321,7 +321,7 @@ class ProjectWebhooksTest extends DuskTestCase
             $pageSource = strtolower($browser->driver->getPageSource());
             $hasDeliveries = str_contains($pageSource, 'delivery') || str_contains($pageSource, 'recent');
 
-            $this->assertTrue($hasDeliveries || true, 'Recent webhook deliveries should be visible');
+            $this->assertTrue($hasDeliveries, 'Recent webhook deliveries should be visible');
             $this->testResults['recent_deliveries_visible'] = 'Recent webhook deliveries section is visible';
         });
     }
@@ -343,7 +343,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'success') ||
                 str_contains($pageSource, 'failed');
 
-            $this->assertTrue($hasStatusIndicators || true, 'Status indicators should be shown');
+            $this->assertTrue($hasStatusIndicators, 'Status indicators should be shown');
             $this->testResults['delivery_status_indicators'] = 'Webhook delivery status indicators are shown';
         });
     }
@@ -365,7 +365,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'push') ||
                 str_contains($pageSource, 'pull');
 
-            $this->assertTrue($hasEventSelection || true, 'Event type selection should be available');
+            $this->assertTrue($hasEventSelection, 'Event type selection should be available');
             $this->testResults['event_type_selection'] = 'Webhook event type selection is available';
         });
     }
@@ -385,7 +385,7 @@ class ProjectWebhooksTest extends DuskTestCase
             $pageSource = strtolower($browser->driver->getPageSource());
             $hasValidation = str_contains($pageSource, 'url') || str_contains($pageSource, 'valid');
 
-            $this->assertTrue($hasValidation || true, 'URL validation should be shown');
+            $this->assertTrue($hasValidation, 'URL validation should be shown');
             $this->testResults['url_validation'] = 'Webhook URL validation is shown';
         });
     }
@@ -407,7 +407,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'history') ||
                 str_contains($pageSource, 'table');
 
-            $this->assertTrue($hasHistoryTable || true, 'Delivery history table should be displayed');
+            $this->assertTrue($hasHistoryTable, 'Delivery history table should be displayed');
             $this->testResults['delivery_history_table'] = 'Webhook delivery history table is displayed';
         });
     }
@@ -427,7 +427,7 @@ class ProjectWebhooksTest extends DuskTestCase
             $pageSource = strtolower($browser->driver->getPageSource());
             $hasRetry = str_contains($pageSource, 'retry') || str_contains($pageSource, 'resend');
 
-            $this->assertTrue($hasRetry || true, 'Retry functionality should be available');
+            $this->assertTrue($hasRetry, 'Retry functionality should be available');
             $this->testResults['retry_functionality'] = 'Webhook retry functionality is available';
         });
     }
@@ -449,7 +449,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'json') ||
                 str_contains($pageSource, 'data');
 
-            $this->assertTrue($hasPayloadInspection || true, 'Payload inspection should be available');
+            $this->assertTrue($hasPayloadInspection, 'Payload inspection should be available');
             $this->testResults['payload_inspection'] = 'Webhook payload inspection is available';
         });
     }
@@ -471,7 +471,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'trigger') ||
                 str_contains($pageSource, 'manual');
 
-            $this->assertTrue($hasManualTrigger || true, 'Manual trigger should be available');
+            $this->assertTrue($hasManualTrigger, 'Manual trigger should be available');
             $this->testResults['manual_trigger'] = 'Webhook testing (manual trigger) option is available';
         });
     }
@@ -493,7 +493,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'date') ||
                 str_contains($pageSource, 'ago');
 
-            $this->assertTrue($hasTimestamp || true, 'Delivery timestamp should be displayed');
+            $this->assertTrue($hasTimestamp, 'Delivery timestamp should be displayed');
             $this->testResults['delivery_timestamp'] = 'Webhook delivery timestamp is displayed';
         });
     }
@@ -515,7 +515,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'custom') ||
                 str_contains($pageSource, 'configuration');
 
-            $this->assertTrue($hasCustomHeaders || true, 'Custom headers configuration should be available');
+            $this->assertTrue($hasCustomHeaders, 'Custom headers configuration should be available');
             $this->testResults['custom_headers'] = 'Webhook custom headers configuration';
         });
     }
@@ -537,7 +537,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'verify') ||
                 str_contains($pageSource, 'secure');
 
-            $this->assertTrue($hasSSLSettings || true, 'SSL verification settings should be available');
+            $this->assertTrue($hasSSLSettings, 'SSL verification settings should be available');
             $this->testResults['ssl_verification'] = 'Webhook SSL verification settings';
         });
     }
@@ -559,7 +559,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'code') ||
                 str_contains($pageSource, 'response');
 
-            $this->assertTrue($hasStatusCode || true, 'Response status code should be shown');
+            $this->assertTrue($hasStatusCode, 'Response status code should be shown');
             $this->testResults['response_status_code'] = 'Webhook response status code is shown';
         });
     }
@@ -581,7 +581,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'total') ||
                 str_contains($pageSource, 'delivery');
 
-            $this->assertTrue($hasDeliveryCount || true, 'Delivery count should be displayed');
+            $this->assertTrue($hasDeliveryCount, 'Delivery count should be displayed');
             $this->testResults['delivery_count'] = 'Webhook delivery count is displayed';
         });
     }
@@ -603,7 +603,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'rate') ||
                 str_contains($pageSource, '%');
 
-            $this->assertTrue($hasSuccessRate || true, 'Success rate should be shown');
+            $this->assertTrue($hasSuccessRate, 'Success rate should be shown');
             $this->testResults['success_rate'] = 'Webhook success rate is shown';
         });
     }
@@ -625,7 +625,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'how to') ||
                 str_contains($pageSource, 'setup');
 
-            $this->assertTrue($hasInstructions || true, 'Configuration instructions should be available');
+            $this->assertTrue($hasInstructions, 'Configuration instructions should be available');
             $this->testResults['configuration_instructions'] = 'Webhook configuration instructions are available';
         });
     }
@@ -647,7 +647,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'warning') ||
                 str_contains($pageSource, 'important');
 
-            $this->assertTrue($hasSecurityWarning || true, 'Security warning should be displayed');
+            $this->assertTrue($hasSecurityWarning, 'Security warning should be displayed');
             $this->testResults['security_warning'] = 'Webhook security warning is displayed';
         });
     }
@@ -669,7 +669,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'push') ||
                 str_contains($pageSource, 'type');
 
-            $this->assertTrue($hasEventTypes || true, 'Event types should be documented');
+            $this->assertTrue($hasEventTypes, 'Event types should be documented');
             $this->testResults['event_types_documented'] = 'Webhook event types are documented';
         });
     }
@@ -691,7 +691,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'view') ||
                 str_contains($pageSource, 'modal');
 
-            $this->assertTrue($hasDetailView || true, 'Delivery detail view should be accessible');
+            $this->assertTrue($hasDetailView, 'Delivery detail view should be accessible');
             $this->testResults['delivery_detail_view'] = 'Webhook delivery detail modal/view is accessible';
         });
     }
@@ -712,7 +712,7 @@ class ProjectWebhooksTest extends DuskTestCase
             $hasRequestHeaders = str_contains($pageSource, 'header') ||
                 str_contains($pageSource, 'request');
 
-            $this->assertTrue($hasRequestHeaders || true, 'Request headers should be shown');
+            $this->assertTrue($hasRequestHeaders, 'Request headers should be shown');
             $this->testResults['request_headers'] = 'Webhook delivery request headers are shown';
         });
     }
@@ -734,7 +734,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'body') ||
                 str_contains($pageSource, 'payload');
 
-            $this->assertTrue($hasResponseBody || true, 'Response body should be viewable');
+            $this->assertTrue($hasResponseBody, 'Response body should be viewable');
             $this->testResults['response_body'] = 'Webhook delivery response body is viewable';
         });
     }
@@ -756,7 +756,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'verified') ||
                 str_contains($pageSource, 'verification');
 
-            $this->assertTrue($hasSignatureVerification || true, 'Signature verification should be shown');
+            $this->assertTrue($hasSignatureVerification, 'Signature verification should be shown');
             $this->testResults['signature_verification'] = 'Webhook signature verification status is shown';
         });
     }
@@ -778,7 +778,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'next') ||
                 str_contains($pageSource, 'previous');
 
-            $this->assertTrue($hasPagination || true, 'Delivery pagination should work');
+            $this->assertTrue($hasPagination, 'Delivery pagination should work');
             $this->testResults['delivery_pagination'] = 'Webhook delivery pagination works';
         });
     }
@@ -800,7 +800,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'gitlab') ||
                 str_contains($pageSource, 'icon');
 
-            $this->assertTrue($hasProviderIcons || true, 'Provider icons should be displayed');
+            $this->assertTrue($hasProviderIcons, 'Provider icons should be displayed');
             $this->testResults['provider_icons'] = 'Webhook provider icons/badges are displayed';
         });
     }
@@ -821,7 +821,7 @@ class ProjectWebhooksTest extends DuskTestCase
             $hasDeploymentLink = str_contains($pageSource, 'deployment') ||
                 str_contains($pageSource, 'link');
 
-            $this->assertTrue($hasDeploymentLink || true, 'Deployment link should be shown');
+            $this->assertTrue($hasDeploymentLink, 'Deployment link should be shown');
             $this->testResults['deployment_link'] = 'Webhook deployment link is shown in delivery';
         });
     }
@@ -843,7 +843,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'message') ||
                 str_contains($pageSource, 'failed');
 
-            $this->assertTrue($hasErrorMessages || true, 'Error messages should be displayed');
+            $this->assertTrue($hasErrorMessages, 'Error messages should be displayed');
             $this->testResults['error_messages'] = 'Webhook error messages are displayed';
         });
     }
@@ -865,7 +865,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'status') ||
                 str_contains($pageSource, 'success');
 
-            $this->assertTrue($hasStatusFilter || true, 'Status filter should work');
+            $this->assertTrue($hasStatusFilter, 'Status filter should work');
             $this->testResults['filter_by_status'] = 'Webhook filter by status works';
         });
     }
@@ -887,7 +887,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'time') ||
                 str_contains($pageSource, 'ms');
 
-            $this->assertTrue($hasDuration || true, 'Delivery duration should be shown');
+            $this->assertTrue($hasDuration, 'Delivery duration should be shown');
             $this->testResults['delivery_duration'] = 'Webhook delivery duration is shown';
         });
     }
@@ -909,7 +909,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'filter') ||
                 str_contains($pageSource, 'main');
 
-            $this->assertTrue($hasBranchFilter || true, 'Branch filter should be available');
+            $this->assertTrue($hasBranchFilter, 'Branch filter should be available');
             $this->testResults['branch_filter'] = 'Webhook branch filter is available';
         });
     }
@@ -931,7 +931,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'summary') ||
                 str_contains($pageSource, 'total');
 
-            $this->assertTrue($hasStatistics || true, 'Statistics summary should be displayed');
+            $this->assertTrue($hasStatistics, 'Statistics summary should be displayed');
             $this->testResults['statistics_summary'] = 'Webhook statistics summary is displayed';
         });
     }
@@ -953,7 +953,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'timeline') ||
                 str_contains($pageSource, 'recent');
 
-            $this->assertTrue($hasActivityTimeline || true, 'Activity timeline should be shown');
+            $this->assertTrue($hasActivityTimeline, 'Activity timeline should be shown');
             $this->testResults['activity_timeline'] = 'Webhook recent activity timeline is shown';
         });
     }
@@ -975,7 +975,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'documentation') ||
                 str_contains($pageSource, 'docs');
 
-            $this->assertTrue($hasHelpLink || true, 'Help documentation link should be available');
+            $this->assertTrue($hasHelpLink, 'Help documentation link should be available');
             $this->testResults['help_documentation'] = 'Webhook help documentation link is available';
         });
     }
@@ -1011,7 +1011,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'empty') ||
                 str_contains($pageSource, 'delivery');
 
-            $this->assertTrue($hasEmptyState || true, 'Empty state should be shown');
+            $this->assertTrue($hasEmptyState, 'Empty state should be shown');
             $this->testResults['empty_state'] = 'Webhook empty state message is shown when no deliveries';
         });
     }
@@ -1033,7 +1033,7 @@ class ProjectWebhooksTest extends DuskTestCase
                 str_contains($pageSource, 'auto') ||
                 str_contains($pageSource, 'setting');
 
-            $this->assertTrue($hasAutoRetrySettings || true, 'Auto-retry settings should be configurable');
+            $this->assertTrue($hasAutoRetrySettings, 'Auto-retry settings should be configurable');
             $this->testResults['auto_retry_settings'] = 'Webhook auto-retry settings are configurable';
         });
     }

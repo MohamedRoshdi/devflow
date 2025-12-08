@@ -338,7 +338,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'server') ||
                 str_contains($pageSource, 'filter');
 
-            $this->assertTrue($hasServerFilter || true, 'Server filter should be visible');
+            $this->assertTrue($hasServerFilter, 'Server filter should be visible');
         });
     }
 
@@ -362,7 +362,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'project') ||
                 str_contains($pageSource, 'filter');
 
-            $this->assertTrue($hasProjectFilter || true, 'Project filter should be visible');
+            $this->assertTrue($hasProjectFilter, 'Project filter should be visible');
         });
     }
 
@@ -398,7 +398,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, $this->server->name) ||
                 str_contains($pageSource, $this->project->name);
 
-            $this->assertTrue($hasLogInfo || true, 'Log entries should display with information');
+            $this->assertTrue($hasLogInfo, 'Log entries should display with information');
         });
     }
 
@@ -451,7 +451,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'warning') ||
                 str_contains($pageSource, 'info');
 
-            $this->assertTrue($hasLevelBadges || true, 'Log level badges should display');
+            $this->assertTrue($hasLevelBadges, 'Log level badges should display');
         });
     }
 
@@ -477,7 +477,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'slack') ||
                 str_contains($pageSource, 'database');
 
-            $this->assertTrue($hasNotificationTypes || true, 'Notification types should be visible');
+            $this->assertTrue($hasNotificationTypes, 'Notification types should be visible');
         });
     }
 
@@ -503,7 +503,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'status') ||
                 str_contains($pageSource, 'payload');
 
-            $this->assertTrue($hasWebhookDetails || true, 'Webhook request details should be visible');
+            $this->assertTrue($hasWebhookDetails, 'Webhook request details should be visible');
         });
     }
 
@@ -530,7 +530,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'created') ||
                 str_contains($pageSource, 'updated');
 
-            $this->assertTrue($hasUserActions || true, 'User actions should be visible in audit log');
+            $this->assertTrue($hasUserActions, 'User actions should be visible in audit log');
         });
     }
 
@@ -579,7 +579,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'warning') ||
                 str_contains($pageSource, 'statistic');
 
-            $this->assertTrue($hasStatistics || true, 'Log statistics should be displayed');
+            $this->assertTrue($hasStatistics, 'Log statistics should be displayed');
         });
     }
 
@@ -605,7 +605,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'to') ||
                 str_contains($pageSource, 'datetime');
 
-            $this->assertTrue($hasDateFilter || true, 'Date range filter should be available');
+            $this->assertTrue($hasDateFilter, 'Date range filter should be available');
         });
     }
 
@@ -630,7 +630,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'download') ||
                 str_contains($pageSource, 'csv');
 
-            $this->assertTrue($hasExport || true, 'Log export functionality should exist');
+            $this->assertTrue($hasExport, 'Log export functionality should exist');
         });
     }
 
@@ -655,7 +655,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'refresh') ||
                 str_contains($pageSource, 'reload');
 
-            $this->assertTrue($hasSync || true, 'Log sync functionality should be present');
+            $this->assertTrue($hasSync, 'Log sync functionality should be present');
         });
     }
 
@@ -693,7 +693,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'previous') ||
                 str_contains($pageSource, 'pagination');
 
-            $this->assertTrue($hasPagination || true, 'Pagination should work for logs');
+            $this->assertTrue($hasPagination, 'Pagination should work for logs');
         });
     }
 
@@ -717,7 +717,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'clear') ||
                 str_contains($pageSource, 'reset');
 
-            $this->assertTrue($hasClearButton || true, 'Clear filters button should be available');
+            $this->assertTrue($hasClearButton, 'Clear filters button should be available');
 
             // Try to click clear filters if present
             try {
@@ -753,7 +753,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'system') ||
                 str_contains($pageSource, 'nginx');
 
-            $this->assertTrue($hasSourceTypes || true, 'Log source types should be displayed');
+            $this->assertTrue($hasSourceTypes, 'Log source types should be displayed');
         });
     }
 
@@ -778,7 +778,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'refresh') ||
                 str_contains($pageSource, 'poll');
 
-            $this->assertTrue($hasAutoRefresh || true, 'Auto-refresh toggle should exist');
+            $this->assertTrue($hasAutoRefresh, 'Auto-refresh toggle should exist');
         });
     }
 
@@ -815,7 +815,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'view more') ||
                 str_contains($pageSource, 'wire:click');
 
-            $this->assertTrue($hasExpandable || true, 'Log detail view should be expandable');
+            $this->assertTrue($hasExpandable, 'Log detail view should be expandable');
         });
     }
 
@@ -899,7 +899,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'empty') ||
                 str_contains($pageSource, 'not found');
 
-            $this->assertTrue($hasEmptyState || true, 'Empty state should display when no logs exist');
+            $this->assertTrue($hasEmptyState, 'Empty state should display when no logs exist');
         });
     }
 
@@ -924,7 +924,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'New') ||
                 str_contains($pageSource, 'Create');
 
-            $this->assertTrue($hasAddButton || true, 'Add source button should be visible');
+            $this->assertTrue($hasAddButton, 'Add source button should be visible');
         });
     }
 
@@ -950,7 +950,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'nginx') ||
                 str_contains($pageSource, 'apache');
 
-            $this->assertTrue($hasTemplates || true, 'Log source templates should be available');
+            $this->assertTrue($hasTemplates, 'Log source templates should be available');
         });
     }
 
@@ -976,7 +976,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'streaming') ||
                 str_contains($pageSource, 'wire:poll');
 
-            $this->assertTrue($hasRealtime || true, 'Real-time streaming indicator should exist');
+            $this->assertTrue($hasRealtime, 'Real-time streaming indicator should exist');
         });
     }
 
@@ -1002,7 +1002,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'retention') ||
                 str_contains($pageSource, 'log');
 
-            $this->assertTrue($hasRotationSettings || true, 'Log rotation settings should be accessible');
+            $this->assertTrue($hasRotationSettings, 'Log rotation settings should be accessible');
         });
     }
 
@@ -1028,7 +1028,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'purge') ||
                 str_contains($pageSource, 'clear old');
 
-            $this->assertTrue($hasCleanup || true, 'Log cleanup operations should be available');
+            $this->assertTrue($hasCleanup, 'Log cleanup operations should be available');
         });
     }
 
@@ -1063,7 +1063,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'danger') ||
                 str_contains($pageSource, 'emergency');
 
-            $this->assertTrue($hasCritical || true, 'Critical logs should be highlighted');
+            $this->assertTrue($hasCritical, 'Critical logs should be highlighted');
         });
     }
 
@@ -1097,7 +1097,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'debug') ||
                 str_contains($pageSource, 'trace');
 
-            $this->assertTrue($hasDebug || true, 'Debug level should be filterable');
+            $this->assertTrue($hasDebug, 'Debug level should be filterable');
         });
     }
 
@@ -1133,7 +1133,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'user_id') ||
                 str_contains($pageSource, 'action');
 
-            $this->assertTrue($hasContext || true, 'Log context should be displayed');
+            $this->assertTrue($hasContext, 'Log context should be displayed');
         });
     }
 
@@ -1170,7 +1170,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'php') ||
                 str_contains($pageSource, 'line');
 
-            $this->assertTrue($hasFilePath || true, 'Log file path should be shown');
+            $this->assertTrue($hasFilePath, 'Log file path should be shown');
         });
     }
 
@@ -1206,7 +1206,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, now()->format('Y')) ||
                 preg_match('/\d{2}:\d{2}/', $pageSource);
 
-            $this->assertTrue($hasTimestamp || true, 'Log timestamp should be displayed');
+            $this->assertTrue($hasTimestamp, 'Log timestamp should be displayed');
         });
     }
 
@@ -1232,7 +1232,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'failed') ||
                 str_contains($pageSource, 'delivered');
 
-            $this->assertTrue($hasStatus || true, 'Notification delivery status should be shown');
+            $this->assertTrue($hasStatus, 'Notification delivery status should be shown');
         });
     }
 
@@ -1258,7 +1258,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'status') ||
                 str_contains($pageSource, 'code');
 
-            $this->assertTrue($hasResponseCodes || true, 'Webhook response codes should be displayed');
+            $this->assertTrue($hasResponseCodes, 'Webhook response codes should be displayed');
         });
     }
 
@@ -1283,7 +1283,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains(strtolower($pageSource), 'ip') ||
                 str_contains(strtolower($pageSource), 'address');
 
-            $this->assertTrue($hasIpAddresses || true, 'IP addresses should be shown in security logs');
+            $this->assertTrue($hasIpAddresses, 'IP addresses should be shown in security logs');
         });
     }
 
@@ -1309,7 +1309,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'last week') ||
                 str_contains($pageSource, 'today');
 
-            $this->assertTrue($hasQuickFilters || true, 'Quick time filters should be available');
+            $this->assertTrue($hasQuickFilters, 'Quick time filters should be available');
         });
     }
 
@@ -1347,7 +1347,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, '50') ||
                 str_contains($pageSource, '100');
 
-            $this->assertTrue($hasPerPage || true, 'Per page selector should be available');
+            $this->assertTrue($hasPerPage, 'Per page selector should be available');
         });
     }
 
@@ -1373,7 +1373,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'toggle') ||
                 str_contains($pageSource, 'switch');
 
-            $this->assertTrue($hasToggle || true, 'Log source toggle should be available');
+            $this->assertTrue($hasToggle, 'Log source toggle should be available');
         });
     }
 
@@ -1399,7 +1399,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'last') ||
                 str_contains($pageSource, 'ago');
 
-            $this->assertTrue($hasSyncTime || true, 'Last sync time should be displayed');
+            $this->assertTrue($hasSyncTime, 'Last sync time should be displayed');
         });
     }
 
@@ -1426,7 +1426,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'health') ||
                 str_contains($pageSource, 'metrics');
 
-            $this->assertTrue($hasMetrics || true, 'Server health metrics should be displayed');
+            $this->assertTrue($hasMetrics, 'Server health metrics should be displayed');
         });
     }
 
@@ -1452,7 +1452,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'threshold') ||
                 str_contains($pageSource, 'resource');
 
-            $this->assertTrue($hasAlertConfig || true, 'Alert configuration should be accessible');
+            $this->assertTrue($hasAlertConfig, 'Alert configuration should be accessible');
         });
     }
 
@@ -1478,7 +1478,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'days') ||
                 str_contains($pageSource, 'policy');
 
-            $this->assertTrue($hasRetentionSettings || true, 'Log retention settings should exist');
+            $this->assertTrue($hasRetentionSettings, 'Log retention settings should exist');
         });
     }
 
@@ -1521,7 +1521,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'error') &&
                 str_contains($pageSource, 'warning');
 
-            $this->assertTrue($hasLevelFilter || true, 'Multiple log levels should be available for filtering');
+            $this->assertTrue($hasLevelFilter, 'Multiple log levels should be available for filtering');
         });
     }
 
@@ -1556,7 +1556,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'download') ||
                 str_contains($pageSource, 'csv');
 
-            $this->assertTrue($hasExport || true, 'Log export should include filtered data');
+            $this->assertTrue($hasExport, 'Log export should include filtered data');
         });
     }
 
@@ -1582,7 +1582,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'authentication') ||
                 str_contains($pageSource, 'attempt');
 
-            $this->assertTrue($hasFailedLogins || true, 'Failed login attempts should be visible');
+            $this->assertTrue($hasFailedLogins, 'Failed login attempts should be visible');
         });
     }
 
@@ -1620,7 +1620,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'entries') ||
                 preg_match('/\d+/', $pageSource);
 
-            $this->assertTrue($hasCount || true, 'Total count should be displayed');
+            $this->assertTrue($hasCount, 'Total count should be displayed');
         });
     }
 
@@ -1645,7 +1645,7 @@ class LogsAndMonitoringTest extends DuskTestCase
                 str_contains($pageSource, 'resend') ||
                 str_contains($pageSource, 'replay');
 
-            $this->assertTrue($hasRetry || true, 'Webhook retry functionality should exist');
+            $this->assertTrue($hasRetry, 'Webhook retry functionality should exist');
         });
     }
 }

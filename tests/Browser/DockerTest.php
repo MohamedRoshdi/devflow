@@ -135,7 +135,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'system info') ||
                 str_contains($pageSource, 'disk usage');
 
-            $this->assertTrue($hasOverview || true, 'Docker overview tab should be accessible');
+            $this->assertTrue($hasOverview, 'Docker overview tab should be accessible');
 
             $this->testResults['docker_overview_tab'] = 'Docker overview tab is accessible';
         });
@@ -173,7 +173,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'repository') ||
                 str_contains($pageSource, 'tag');
 
-            $this->assertTrue($hasImages || true, 'Docker images section should be visible');
+            $this->assertTrue($hasImages, 'Docker images section should be visible');
 
             $this->testResults['docker_images_list'] = 'Docker images list is visible';
         });
@@ -200,7 +200,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'storage') ||
                 str_contains($pageSource, 'mountpoint');
 
-            $this->assertTrue($hasVolumes || true, 'Docker volumes section should be visible');
+            $this->assertTrue($hasVolumes, 'Docker volumes section should be visible');
 
             $this->testResults['docker_volumes_list'] = 'Docker volumes list is visible';
         });
@@ -227,7 +227,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'bridge') ||
                 str_contains($pageSource, 'subnet');
 
-            $this->assertTrue($hasNetworks || true, 'Docker networks section should be visible');
+            $this->assertTrue($hasNetworks, 'Docker networks section should be visible');
 
             $this->testResults['docker_networks_list'] = 'Docker networks list is visible';
         });
@@ -256,7 +256,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'gb') ||
                 str_contains($pageSource, 'mb');
 
-            $this->assertTrue($hasDiskUsage || true, 'Docker disk usage information should be displayed');
+            $this->assertTrue($hasDiskUsage, 'Docker disk usage information should be displayed');
 
             $this->testResults['docker_disk_usage'] = 'Docker disk usage information is displayed';
         });
@@ -284,7 +284,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'clean up') ||
                 str_contains($pageSource, 'remove unused');
 
-            $this->assertTrue($hasPruneButtons || true, 'Docker prune buttons should be present');
+            $this->assertTrue($hasPruneButtons, 'Docker prune buttons should be present');
 
             $this->testResults['docker_prune_buttons'] = 'Docker prune buttons are present';
         });
@@ -311,7 +311,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'remove') ||
                 str_contains($pageSource, 'deleteimage');
 
-            $this->assertTrue($hasDeleteOption || true, 'Docker image delete functionality should be available');
+            $this->assertTrue($hasDeleteOption, 'Docker image delete functionality should be available');
 
             $this->testResults['docker_image_delete'] = 'Docker image delete functionality is available';
         });
@@ -337,7 +337,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'docker') ||
                 str_contains($pageSource, 'container');
 
-            $this->assertTrue($hasDockerSection || true, 'Project Docker management should be accessible');
+            $this->assertTrue($hasDockerSection, 'Project Docker management should be accessible');
 
             $this->testResults['project_docker_management'] = 'Project Docker management is accessible';
         });
@@ -380,7 +380,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'startcontainer') ||
                 str_contains($pageSource, 'stopcontainer');
 
-            $this->assertTrue($hasContainerControls || true, 'Container start/stop buttons should be present');
+            $this->assertTrue($hasContainerControls, 'Container start/stop buttons should be present');
 
             $this->testResults['container_controls'] = 'Container start/stop buttons are present';
         });
@@ -407,7 +407,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'log viewer') ||
                 str_contains($pageSource, 'output');
 
-            $this->assertTrue($hasLogs || true, 'Container logs viewing should be available');
+            $this->assertTrue($hasLogs, 'Container logs viewing should be available');
 
             $this->testResults['container_logs'] = 'Container logs viewing is available';
         });
@@ -435,7 +435,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'stopped') ||
                 str_contains($pageSource, 'state');
 
-            $this->assertTrue($hasStatus || true, 'Container status information should be displayed');
+            $this->assertTrue($hasStatus, 'Container status information should be displayed');
 
             $this->testResults['container_status'] = 'Container status information is displayed';
         });
@@ -463,7 +463,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'stats') ||
                 str_contains($pageSource, 'usage');
 
-            $this->assertTrue($hasStats || true, 'Container statistics should be displayed');
+            $this->assertTrue($hasStats, 'Container statistics should be displayed');
 
             $this->testResults['container_stats'] = 'Container statistics are displayed';
         });
@@ -490,7 +490,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'rebuild') ||
                 str_contains($pageSource, 'buildimage');
 
-            $this->assertTrue($hasBuild || true, 'Docker compose build button should be present');
+            $this->assertTrue($hasBuild, 'Docker compose build button should be present');
 
             $this->testResults['docker_compose_build'] = 'Docker compose build button is present';
         });
@@ -516,7 +516,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'deletevolume') ||
                 (str_contains($pageSource, 'volume') && str_contains($pageSource, 'delete'));
 
-            $this->assertTrue($hasVolumeDelete || true, 'Docker volume delete functionality should be available');
+            $this->assertTrue($hasVolumeDelete, 'Docker volume delete functionality should be available');
 
             $this->testResults['docker_volume_delete'] = 'Docker volume delete functionality is available';
         });
@@ -542,7 +542,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'deletenetwork') ||
                 (str_contains($pageSource, 'network') && str_contains($pageSource, 'delete'));
 
-            $this->assertTrue($hasNetworkDelete || true, 'Docker network delete functionality should be available');
+            $this->assertTrue($hasNetworkDelete, 'Docker network delete functionality should be available');
 
             $this->testResults['docker_network_delete'] = 'Docker network delete functionality is available';
         });
@@ -569,7 +569,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'backup') ||
                 str_contains($pageSource, 'exportcontainer');
 
-            $this->assertTrue($hasExport || true, 'Container export/backup functionality should be available');
+            $this->assertTrue($hasExport, 'Container export/backup functionality should be available');
 
             $this->testResults['container_export'] = 'Container export/backup functionality is available';
         });
@@ -596,7 +596,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'system prune') ||
                 str_contains($pageSource, 'cleanup');
 
-            $this->assertTrue($hasSystemPrune || true, 'Docker system prune functionality should be available');
+            $this->assertTrue($hasSystemPrune, 'Docker system prune functionality should be available');
 
             $this->testResults['docker_system_prune'] = 'Docker system prune functionality is available';
         });
@@ -659,7 +659,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'prune images') ||
                 (str_contains($pageSource, 'image') && str_contains($pageSource, 'prune'));
 
-            $this->assertTrue($hasImagePrune || true, 'Docker image prune functionality should be available');
+            $this->assertTrue($hasImagePrune, 'Docker image prune functionality should be available');
 
             $this->testResults['docker_image_prune'] = 'Docker image prune functionality is available';
         });
@@ -686,7 +686,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'restartcontainer') ||
                 str_contains($pageSource, 're-start');
 
-            $this->assertTrue($hasRestart || true, 'Container restart functionality should be available');
+            $this->assertTrue($hasRestart, 'Container restart functionality should be available');
 
             $this->testResults['container_restart'] = 'Container restart functionality is available';
         });
@@ -715,7 +715,7 @@ class DockerTest extends DuskTestCase
                 (str_contains($pageSource, 'overview') &&
                  (str_contains($pageSource, 'images') || str_contains($pageSource, 'volumes')));
 
-            $this->assertTrue($hasTabs || true, 'Docker tabs should be functional');
+            $this->assertTrue($hasTabs, 'Docker tabs should be functional');
 
             $this->testResults['docker_tabs'] = 'Docker tabs/navigation is functional';
         });
@@ -742,7 +742,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'reload') ||
                 str_contains($pageSource, 'loaddockerinfo');
 
-            $this->assertTrue($hasRefresh || true, 'Docker refresh functionality should be available');
+            $this->assertTrue($hasRefresh, 'Docker refresh functionality should be available');
 
             $this->testResults['docker_refresh'] = 'Refresh/reload Docker information is available';
         });
@@ -771,7 +771,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'notification');
 
             // Error handling should be present in the UI structure
-            $this->assertTrue($hasErrorHandling || true, 'Error messages should be displayable');
+            $this->assertTrue($hasErrorHandling, 'Error messages should be displayable');
 
             $this->testResults['docker_error_messages'] = 'Error messages are displayed when operations fail';
         });
@@ -799,7 +799,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'variable') ||
                 str_contains($pageSource, 'config');
 
-            $this->assertTrue($hasEnvVars || true, 'Container environment variables should be displayed');
+            $this->assertTrue($hasEnvVars, 'Container environment variables should be displayed');
 
             $this->testResults['container_env_vars'] = 'Container environment variables are displayed';
         });
@@ -827,7 +827,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, '443') ||
                 str_contains($pageSource, 'mapping');
 
-            $this->assertTrue($hasPortMappings || true, 'Container port mappings should be displayed');
+            $this->assertTrue($hasPortMappings, 'Container port mappings should be displayed');
 
             $this->testResults['container_port_mappings'] = 'Container port mappings are displayed';
         });
@@ -855,7 +855,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'healthy') ||
                 str_contains($pageSource, 'unhealthy');
 
-            $this->assertTrue($hasHealthChecks || true, 'Container health checks should be displayed');
+            $this->assertTrue($hasHealthChecks, 'Container health checks should be displayed');
 
             $this->testResults['container_health_checks'] = 'Container health checks are displayed';
         });
@@ -883,7 +883,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'docker_installed') ||
                 str_contains($pageSource, 'docker');
 
-            $this->assertTrue($hasDockerStatus || true, 'Docker installation status should be displayed');
+            $this->assertTrue($hasDockerStatus, 'Docker installation status should be displayed');
 
             $this->testResults['docker_installation_status'] = 'Docker installation status is displayed';
         });
@@ -911,7 +911,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'createcontainer') ||
                 str_contains($pageSource, 'run');
 
-            $this->assertTrue($hasContainerCreation || true, 'Container creation from images should be available');
+            $this->assertTrue($hasContainerCreation, 'Container creation from images should be available');
 
             $this->testResults['container_creation'] = 'Container creation from images is available';
         });
@@ -939,7 +939,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'private registry') ||
                 str_contains($pageSource, 'credentials');
 
-            $this->assertTrue($hasRegistryConfig || true, 'Docker registry configuration should be accessible');
+            $this->assertTrue($hasRegistryConfig, 'Docker registry configuration should be accessible');
 
             $this->testResults['docker_registry_config'] = 'Docker registry configuration is accessible';
         });
@@ -966,7 +966,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'processor') ||
                 str_contains($pageSource, 'cores');
 
-            $this->assertTrue($hasCpuMonitoring || true, 'Container CPU usage should be monitored');
+            $this->assertTrue($hasCpuMonitoring, 'Container CPU usage should be monitored');
 
             $this->testResults['container_cpu_monitoring'] = 'Container CPU usage is monitored';
         });
@@ -993,7 +993,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'ram') ||
                 str_contains($pageSource, 'mem');
 
-            $this->assertTrue($hasMemoryMonitoring || true, 'Container memory usage should be monitored');
+            $this->assertTrue($hasMemoryMonitoring, 'Container memory usage should be monitored');
 
             $this->testResults['container_memory_monitoring'] = 'Container memory usage is monitored';
         });
@@ -1020,7 +1020,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'start') ||
                 str_contains($pageSource, 'deploy');
 
-            $this->assertTrue($hasComposeUp || true, 'Docker compose up functionality should be available');
+            $this->assertTrue($hasComposeUp, 'Docker compose up functionality should be available');
 
             $this->testResults['docker_compose_up'] = 'Docker compose up functionality is available';
         });
@@ -1047,7 +1047,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'stop') ||
                 str_contains($pageSource, 'shutdown');
 
-            $this->assertTrue($hasComposeDown || true, 'Docker compose down functionality should be available');
+            $this->assertTrue($hasComposeDown, 'Docker compose down functionality should be available');
 
             $this->testResults['docker_compose_down'] = 'Docker compose down functionality is available';
         });
@@ -1074,7 +1074,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'restart') ||
                 str_contains($pageSource, 'reboot');
 
-            $this->assertTrue($hasComposeRestart || true, 'Docker compose restart functionality should be available');
+            $this->assertTrue($hasComposeRestart, 'Docker compose restart functionality should be available');
 
             $this->testResults['docker_compose_restart'] = 'Docker compose restart functionality is available';
         });
@@ -1101,7 +1101,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'new volume') ||
                 str_contains($pageSource, 'createvolume');
 
-            $this->assertTrue($hasVolumeCreation || true, 'Docker volume creation should be available');
+            $this->assertTrue($hasVolumeCreation, 'Docker volume creation should be available');
 
             $this->testResults['docker_volume_creation'] = 'Docker volume creation is available';
         });
@@ -1128,7 +1128,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'new network') ||
                 str_contains($pageSource, 'createnetwork');
 
-            $this->assertTrue($hasNetworkCreation || true, 'Docker network creation should be available');
+            $this->assertTrue($hasNetworkCreation, 'Docker network creation should be available');
 
             $this->testResults['docker_network_creation'] = 'Docker network creation is available';
         });
@@ -1155,7 +1155,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'pullimage') ||
                 str_contains($pageSource, 'download');
 
-            $this->assertTrue($hasImagePull || true, 'Docker image pull functionality should be available');
+            $this->assertTrue($hasImagePull, 'Docker image pull functionality should be available');
 
             $this->testResults['docker_image_pull'] = 'Docker image pull functionality is available';
         });
@@ -1182,7 +1182,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'details') ||
                 str_contains($pageSource, 'view');
 
-            $this->assertTrue($hasInspect || true, 'Docker container inspect functionality should be available');
+            $this->assertTrue($hasInspect, 'Docker container inspect functionality should be available');
 
             $this->testResults['docker_container_inspect'] = 'Docker container inspect functionality is available';
         });
@@ -1210,7 +1210,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'terminal') ||
                 str_contains($pageSource, 'ssh');
 
-            $this->assertTrue($hasExec || true, 'Docker container exec/shell functionality should be available');
+            $this->assertTrue($hasExec, 'Docker container exec/shell functionality should be available');
 
             $this->testResults['docker_container_exec'] = 'Docker container exec/shell functionality is available';
         });
@@ -1236,7 +1236,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'volume') &&
                 (str_contains($pageSource, 'inspect') || str_contains($pageSource, 'details'));
 
-            $this->assertTrue($hasVolumeInspect || true, 'Docker volume inspect functionality should be available');
+            $this->assertTrue($hasVolumeInspect, 'Docker volume inspect functionality should be available');
 
             $this->testResults['docker_volume_inspect'] = 'Docker volume inspect functionality is available';
         });
@@ -1262,7 +1262,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'network') &&
                 (str_contains($pageSource, 'inspect') || str_contains($pageSource, 'details'));
 
-            $this->assertTrue($hasNetworkInspect || true, 'Docker network inspect functionality should be available');
+            $this->assertTrue($hasNetworkInspect, 'Docker network inspect functionality should be available');
 
             $this->testResults['docker_network_inspect'] = 'Docker network inspect functionality is available';
         });
@@ -1289,7 +1289,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'edit name') ||
                 str_contains($pageSource, 'change name');
 
-            $this->assertTrue($hasRename || true, 'Docker container rename functionality should be available');
+            $this->assertTrue($hasRename, 'Docker container rename functionality should be available');
 
             $this->testResults['docker_container_rename'] = 'Docker container rename functionality is available';
         });
@@ -1316,7 +1316,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'unpause') ||
                 str_contains($pageSource, 'suspend');
 
-            $this->assertTrue($hasPause || true, 'Docker container pause/unpause functionality should be available');
+            $this->assertTrue($hasPause, 'Docker container pause/unpause functionality should be available');
 
             $this->testResults['docker_container_pause'] = 'Docker container pause/unpause functionality is available';
         });
@@ -1343,7 +1343,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'retag') ||
                 (str_contains($pageSource, 'image') && str_contains($pageSource, 'version'));
 
-            $this->assertTrue($hasImageTag || true, 'Docker image tag functionality should be available');
+            $this->assertTrue($hasImageTag, 'Docker image tag functionality should be available');
 
             $this->testResults['docker_image_tag'] = 'Docker image tag functionality is available';
         });
@@ -1371,7 +1371,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'deletecontainer') ||
                 str_contains($pageSource, 'removecontainer');
 
-            $this->assertTrue($hasRemove || true, 'Docker container remove functionality should be available');
+            $this->assertTrue($hasRemove, 'Docker container remove functionality should be available');
 
             $this->testResults['docker_container_remove'] = 'Docker container remove functionality is available';
         });
@@ -1398,7 +1398,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'pull') ||
                 str_contains($pageSource, 'update images');
 
-            $this->assertTrue($hasComposePull || true, 'Docker compose pull functionality should be available');
+            $this->assertTrue($hasComposePull, 'Docker compose pull functionality should be available');
 
             $this->testResults['docker_compose_pull'] = 'Docker compose pull functionality is available';
         });
@@ -1426,7 +1426,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'real-time') ||
                 str_contains($pageSource, 'live');
 
-            $this->assertTrue($hasRealtimeStats || true, 'Docker stats real-time monitoring should be available');
+            $this->assertTrue($hasRealtimeStats, 'Docker stats real-time monitoring should be available');
 
             $this->testResults['docker_stats_realtime'] = 'Docker stats real-time monitoring is available';
         });
@@ -1454,7 +1454,7 @@ class DockerTest extends DuskTestCase
                 str_contains($pageSource, 'edit') ||
                 str_contains($pageSource, 'configuration');
 
-            $this->assertTrue($hasComposeEdit || true, 'Docker compose file editing should be accessible');
+            $this->assertTrue($hasComposeEdit, 'Docker compose file editing should be accessible');
 
             $this->testResults['docker_compose_file_edit'] = 'Docker compose file editing is accessible';
         });

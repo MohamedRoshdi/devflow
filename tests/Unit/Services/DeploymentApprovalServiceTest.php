@@ -12,7 +12,6 @@ use App\Notifications\DeploymentApprovalRequested;
 use App\Services\AuditService;
 use App\Services\DeploymentApprovalService;
 use App\Services\NotificationService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Mockery;
@@ -21,7 +20,6 @@ use Tests\TestCase;
 
 class DeploymentApprovalServiceTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected DeploymentApprovalService $service;
 
