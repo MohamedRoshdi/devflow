@@ -462,6 +462,45 @@ php -d memory_limit=512M artisan test
 
 ---
 
+## Docker-Based Testing
+
+For environments without PHP installed locally, use Docker:
+
+```bash
+# Run all tests via Docker
+docker run --rm \
+  -v $(pwd):/app \
+  -w /app \
+  -e APP_ENV=testing \
+  -e DB_CONNECTION=sqlite \
+  -e DB_DATABASE=:memory: \
+  -e CACHE_DRIVER=array \
+  -e SESSION_DRIVER=array \
+  -e QUEUE_CONNECTION=sync \
+  php:8.4-cli \
+  php -d memory_limit=1G vendor/bin/phpunit
+
+# Run specific test suite
+docker run --rm \
+  -v $(pwd):/app \
+  -w /app \
+  -e APP_ENV=testing \
+  -e DB_CONNECTION=sqlite \
+  -e DB_DATABASE=:memory: \
+  php:8.4-cli \
+  php vendor/bin/phpunit --testsuite=Feature
+
+# Using docker-compose (included in repo)
+docker-compose run --rm test
+```
+
+### Available Docker Files
+- `Dockerfile.test` - Test-specific Docker image
+- `docker-compose.yml` - Docker Compose configuration for testing
+- `phpunit.dusk.xml` - PHPUnit configuration for browser tests
+
+---
+
 ## Contributing
 
 When adding new features:

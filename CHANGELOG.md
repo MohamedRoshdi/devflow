@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.32.1] - 2025-12-09
+
+### Fixed - Test Suite Improvements
+
+#### Dashboard Template Fixes
+- Fixed undefined array key errors in `dashboard.blade.php`
+- Added null coalescing operators for all stats array accesses
+- Fixed `$stats`, `$sslStats`, `$healthCheckStats`, `$queueStats` arrays
+- Fixed `$server['health_status']` access in server health section
+
+#### Security Test Fixes
+- Fixed LDAP injection test assertions (was failing on CSS `*` character)
+- Fixed XSS test assertions (now properly check for escaped payloads)
+- Fixed XXE injection test to handle non-existent route gracefully
+
+#### Feature Test Fixes
+- Updated `ProjectManagementTest` to use Livewire component for creation
+- Fixed authorization test to reflect current behavior
+- Updated `DashboardTest` assertions to use `assertGreaterThanOrEqual`
+
+#### Added - Docker Testing Environment
+- Added `Dockerfile.test` for containerized testing
+- Added `docker-compose.yml` for test orchestration
+- Added `phpunit.dusk.xml` for browser test configuration
+- Updated `TESTING.md` with Docker testing instructions
+
+---
+
 ## [5.32.0] - 2025-12-08
 
 ### Added - Comprehensive Test Suite (4,300+ Tests)
