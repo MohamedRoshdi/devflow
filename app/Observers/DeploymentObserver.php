@@ -14,9 +14,9 @@ class DeploymentObserver
      */
     public function created(Deployment $deployment): void
     {
-        // Only dispatch job for pending deployments created via normal flow
+        // Only dispatch job for pending deployments
         // Skip if status is not 'pending' to allow manual creation without auto-deploying
-        if ($deployment->status === 'pending' && $deployment->wasRecentlyCreated) {
+        if ($deployment->status === 'pending') {
             DeployProjectJob::dispatch($deployment);
         }
     }

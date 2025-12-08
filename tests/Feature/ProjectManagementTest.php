@@ -203,17 +203,19 @@ class ProjectManagementTest extends TestCase
             'server_id' => $this->server->id,
         ]);
 
-        $envVars = [
-            'APP_ENV' => 'production',
-            'APP_DEBUG' => 'false',
-        ];
-
         Livewire::test(\App\Livewire\Projects\ProjectEnvironment::class, ['project' => $project])
-            ->set('envVariables', $envVars)
+            ->set('newEnvKey', 'APP_ENV')
+            ->set('newEnvValue', 'production')
+            ->call('addEnvVariable')
+            ->assertHasNoErrors()
+            ->set('newEnvKey', 'APP_DEBUG')
+            ->set('newEnvValue', 'false')
             ->call('addEnvVariable')
             ->assertHasNoErrors();
 
-        $this->assertEquals($envVars, $project->fresh()->env_variables);
+        $project = $project->fresh();
+        $this->assertEquals('production', $project->env_variables['APP_ENV']);
+        $this->assertEquals('false', $project->env_variables['APP_DEBUG']);
     }
 
     /** @test */
@@ -258,10 +260,10 @@ class ProjectManagementTest extends TestCase
         ]);
 
         $response = $this->get(route('projects.show', $runningProject));
-        $response->assertSee('bg-green-500/90');
+        $response->assertSee('from-green-500');
 
         $response = $this->get(route('projects.show', $stoppedProject));
-        $response->assertSee('bg-slate-500/90');
+        $response->assertSee('from-slate-500');
     }
 
     /** @test */

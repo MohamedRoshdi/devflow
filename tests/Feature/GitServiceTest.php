@@ -140,9 +140,10 @@ class GitServiceTest extends TestCase
     /** @test */
     public function get_latest_commits_handles_empty_repository()
     {
-        // Fake repo doesn't exist
+        // Fake repo doesn't exist - the check command returns 'not-exists'
         Process::fake([
             '*test -d*' => Process::result(output: 'not-exists', exitCode: 0),
+            '*' => Process::result(output: '', exitCode: 0),
         ]);
 
         $gitService = new GitService;

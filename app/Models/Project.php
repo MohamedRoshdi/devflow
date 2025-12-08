@@ -80,6 +80,17 @@ class Project extends Model
     }
 
     /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::updated(function (Project $project) {
+            // Clear project-specific cache when project is updated
+            cache()->forget("project_{$project->id}_stats");
+        });
+    }
+
+    /**
      * Get the route key for the model.
      */
     public function getRouteKeyName(): string

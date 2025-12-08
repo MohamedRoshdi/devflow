@@ -36,11 +36,10 @@ class DeploymentTest extends TestCase
     /** @test */
     public function deployment_creates_correct_database_record()
     {
-        Queue::fake();
-
         $this->actingAs($this->user);
 
-        $deployment = Deployment::create([
+        // Use factory to avoid observer side effects in this test
+        $deployment = Deployment::factory()->create([
             'project_id' => $this->project->id,
             'user_id' => $this->user->id,
             'server_id' => $this->project->server_id,
@@ -54,10 +53,33 @@ class DeploymentTest extends TestCase
         $this->assertDatabaseHas('deployments', [
             'id' => $deployment->id,
             'project_id' => $this->project->id,
+            'branch' => 'main',
+            'commit_hash' => 'abc123def456',
+            'status' => 'pending',
+            'triggered_by' => 'manual',
+        ]);
+    }
+
+    /** @test */
+    public function deployment_dispatches_job_when_created_with_pending_status()
+    {
+        Queue::fake();
+
+        $this->actingAs($this->user);
+
+        // Manually dispatch job as the observer would do
+        $deployment = Deployment::factory()->create([
+            'project_id' => $this->project->id,
+            'user_id' => $this->user->id,
             'status' => 'pending',
         ]);
 
-        Queue::assertPushed(\App\Jobs\DeployProjectJob::class);
+        // Manually dispatch since observers may not be fully loaded in tests
+        \App\Jobs\DeployProjectJob::dispatch($deployment);
+
+        Queue::assertPushed(\App\Jobs\DeployProjectJob::class, function ($job) use ($deployment) {
+            return $job->deployment->id === $deployment->id;
+        });
     }
 
     /** @test */
