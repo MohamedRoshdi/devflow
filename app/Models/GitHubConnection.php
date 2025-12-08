@@ -76,7 +76,7 @@ class GitHubConnection extends Model
      */
     public function repositories(): HasMany
     {
-        return $this->hasMany(GitHubRepository::class);
+        return $this->hasMany(GitHubRepository::class, 'github_connection_id');
     }
 
     /**

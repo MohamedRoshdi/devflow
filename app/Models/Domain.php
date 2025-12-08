@@ -73,6 +73,15 @@ class Domain extends Model
         return $this->ssl_expires_at->isPast();
     }
 
+    public function daysUntilExpiry(): ?int
+    {
+        if (! $this->ssl_expires_at) {
+            return null;
+        }
+
+        return (int) now()->diffInDays($this->ssl_expires_at, false);
+    }
+
     public function getStatusColorAttribute(): string
     {
         if ($this->sslIsExpired()) {

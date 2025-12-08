@@ -80,12 +80,12 @@ class DeploymentScriptRun extends Model
     /**
      * @return int|null
      */
-    public function getDurationAttribute()
+    public function getDurationAttribute(): ?int
     {
         if (! $this->started_at || ! $this->finished_at) {
             return null;
         }
 
-        return $this->finished_at->diffInSeconds($this->started_at);
+        return (int) $this->finished_at->diffInSeconds($this->started_at);
     }
 }

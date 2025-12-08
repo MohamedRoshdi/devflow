@@ -35,7 +35,7 @@ class Login extends Component
     /**
      * Attempt to authenticate the user.
      */
-    public function login(): ?RedirectResponse
+    public function login()
     {
         $this->validate();
 

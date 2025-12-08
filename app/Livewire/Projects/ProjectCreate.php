@@ -88,7 +88,8 @@ class ProjectCreate extends Component
     public function mount(): void
     {
         // All servers are shared
-        $this->servers = Server::orderByRaw("FIELD(status, 'online', 'maintenance', 'offline', 'error')")
+        // Use CASE for SQLite compatibility instead of MySQL's FIELD()
+        $this->servers = Server::orderByRaw("CASE status WHEN 'online' THEN 1 WHEN 'maintenance' THEN 2 WHEN 'offline' THEN 3 WHEN 'error' THEN 4 ELSE 5 END")
             ->get();
 
         $this->templates = ProjectTemplate::active()->get();

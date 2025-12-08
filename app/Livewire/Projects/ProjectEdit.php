@@ -90,7 +90,8 @@ class ProjectEdit extends Component
         $this->longitude = $project->longitude;
 
         // All servers are shared
-        $this->servers = Server::orderByRaw("FIELD(status, 'online', 'maintenance', 'offline', 'error')")
+        // Use CASE for SQLite compatibility instead of MySQL's FIELD()
+        $this->servers = Server::orderByRaw("CASE status WHEN 'online' THEN 1 WHEN 'maintenance' THEN 2 WHEN 'offline' THEN 3 WHEN 'error' THEN 4 ELSE 5 END")
             ->get();
     }
 
@@ -108,7 +109,8 @@ class ProjectEdit extends Component
             $connectivityService->pingAndUpdateStatus($server);
 
             // Reload servers list (all shared)
-            $this->servers = Server::orderByRaw("FIELD(status, 'online', 'maintenance', 'offline', 'error')")
+            // Use CASE for SQLite compatibility instead of MySQL's FIELD()
+            $this->servers = Server::orderByRaw("CASE status WHEN 'online' THEN 1 WHEN 'maintenance' THEN 2 WHEN 'offline' THEN 3 WHEN 'error' THEN 4 ELSE 5 END")
                 ->get();
 
             session()->flash('server_status_updated', 'Server status refreshed');

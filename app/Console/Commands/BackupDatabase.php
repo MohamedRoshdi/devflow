@@ -44,7 +44,7 @@ class BackupDatabase extends Command
      * Backup a single project
      */
     protected function backupSingleProject(
-        string $identifier,
+        string|int $identifier,
         string $type,
         ?string $databaseName,
         DatabaseBackupService $backupService

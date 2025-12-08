@@ -77,7 +77,7 @@ class GitHubService
             'access_token' => $result['access_token'],
             'refresh_token' => $result['refresh_token'] ?? $connection->refresh_token,
             'token_expires_at' => isset($result['expires_in'])
-                ? now()->addSeconds($result['expires_in'])
+                ? now()->addSeconds((int) $result['expires_in'])
                 : null,
         ]);
     }

@@ -125,7 +125,7 @@ class ServerBackup extends Model
             return null;
         }
 
-        return $this->started_at->diffInSeconds($this->completed_at);
+        return (int) $this->started_at->diffInSeconds($this->completed_at);
     }
 
     public function getFormattedDurationAttribute(): string

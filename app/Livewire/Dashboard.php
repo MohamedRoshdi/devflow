@@ -391,6 +391,7 @@ class Dashboard extends Component
                             'load_average' => null,
                             'status' => $server->status,
                             'recorded_at' => null,
+                            'health_status' => 'unknown',
                         ];
                     }
 
@@ -438,6 +439,7 @@ class Dashboard extends Component
                         'load_average' => null,
                         'status' => $server->status,
                         'recorded_at' => null,
+                        'health_status' => 'unknown',
                     ];
                 }
 

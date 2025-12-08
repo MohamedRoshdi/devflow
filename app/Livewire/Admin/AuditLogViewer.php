@@ -44,9 +44,12 @@ class AuditLogViewer extends Component
 
     public ?int $expandedLogId = null;
 
-    public function __construct(
-        private readonly AuditService $auditService
-    ) {}
+    private AuditService $auditService;
+
+    public function boot(AuditService $auditService): void
+    {
+        $this->auditService = $auditService;
+    }
 
     #[Computed]
     public function logs()

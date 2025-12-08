@@ -45,7 +45,7 @@ class CleanupBackups extends Command
      * Cleanup backups for a single project
      */
     protected function cleanupSingleProject(
-        string $identifier,
+        string|int $identifier,
         DatabaseBackupService $backupService,
         bool $dryRun
     ): int {

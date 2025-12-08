@@ -57,19 +57,10 @@ class DeploymentWebhookController extends Controller
     {
         $payload = $request->all();
 
-        // GitHub
-        if (isset($payload['ref'])) {
-            return [
-                'branch' => str_replace('refs/heads/', '', $payload['ref']),
-                'commit_hash' => $payload['after'] ?? null,
-                'commit_message' => $payload['head_commit']['message'] ?? null,
-            ];
-        }
-
-        // GitLab
+        // GitLab (check first since it also has 'ref' like GitHub)
         if (isset($payload['object_kind']) && $payload['object_kind'] === 'push') {
             return [
-                'branch' => str_replace('refs/heads/', '', $payload['ref']),
+                'branch' => str_replace('refs/heads/', '', $payload['ref'] ?? ''),
                 'commit_hash' => $payload['checkout_sha'] ?? null,
                 'commit_message' => $payload['commits'][0]['message'] ?? null,
             ];
@@ -83,6 +74,15 @@ class DeploymentWebhookController extends Controller
                 'branch' => $change['new']['name'] ?? null,
                 'commit_hash' => $change['new']['target']['hash'] ?? null,
                 'commit_message' => $change['new']['target']['message'] ?? null,
+            ];
+        }
+
+        // GitHub (check last as fallback for 'ref' key)
+        if (isset($payload['ref'])) {
+            return [
+                'branch' => str_replace('refs/heads/', '', $payload['ref']),
+                'commit_hash' => $payload['after'] ?? null,
+                'commit_message' => $payload['head_commit']['message'] ?? null,
             ];
         }
 

@@ -14,7 +14,7 @@ class SSLRenewCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'ssl:renew {--days=7 : Number of days before expiry to renew}';
+    protected $signature = 'ssl:renew-expiring {--days=7 : Number of days before expiry to renew}';
 
     /**
      * The console command description.

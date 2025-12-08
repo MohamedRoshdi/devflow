@@ -42,7 +42,7 @@ class Register extends Component
     /**
      * Register a new user.
      */
-    public function register(): RedirectResponse
+    public function register()
     {
         $this->validate();
 

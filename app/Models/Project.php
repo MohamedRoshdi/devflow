@@ -113,6 +113,11 @@ class Project extends Model
         return $this->hasMany(Deployment::class);
     }
 
+    public function latestDeployment()
+    {
+        return $this->hasOne(Deployment::class)->latestOfMany();
+    }
+
     public function domains()
     {
         return $this->hasMany(Domain::class);

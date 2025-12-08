@@ -216,11 +216,14 @@ class DockerService
             if ($usesCompose) {
                 // Use docker compose for projects with docker-compose.yml (V2 syntax)
                 // First stop and remove any orphaned containers to prevent name conflicts
+                // Timeout increased to 180s for complex docker-compose projects
                 $cleanupCommand = "cd {$projectPath} && docker compose down --remove-orphans 2>/dev/null; true";
                 $cleanupCmd = $this->isLocalhost($server)
                     ? $cleanupCommand
                     : $this->buildSSHCommand($server, $cleanupCommand);
-                Process::fromShellCommandline($cleanupCmd)->run();
+                $cleanupProcess = Process::fromShellCommandline($cleanupCmd);
+                $cleanupProcess->setTimeout(180); // 3 minutes for complex projects
+                $cleanupProcess->run();
 
                 $startCommand = "cd {$projectPath} && docker compose up -d --remove-orphans";
 
@@ -402,6 +405,7 @@ class DockerService
 
             if ($usesCompose) {
                 // Use docker compose down with --remove-orphans to prevent name conflicts
+                // Timeout increased to 180s for complex docker-compose projects (multiple services, volumes)
                 $stopCommand = "cd {$projectPath} && docker compose down --remove-orphans";
 
                 $command = $this->isLocalhost($server)
@@ -409,7 +413,7 @@ class DockerService
                     : $this->buildSSHCommand($server, $stopCommand);
 
                 $process = Process::fromShellCommandline($command);
-                $process->setTimeout(120);
+                $process->setTimeout(180); // 3 minutes for complex projects
                 $process->run();
 
                 return [
