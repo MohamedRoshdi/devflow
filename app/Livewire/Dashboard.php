@@ -111,10 +111,21 @@ class Dashboard extends Component
     #[On('refresh-dashboard')]
     public function loadStats(): void
     {
+        // Default stats structure to ensure all keys are always present
+        $defaultStats = [
+            'total_servers' => 0,
+            'online_servers' => 0,
+            'total_projects' => 0,
+            'running_projects' => 0,
+            'total_deployments' => 0,
+            'successful_deployments' => 0,
+            'failed_deployments' => 0,
+        ];
+
         // All resources are shared across all users
         // Cache for 60 seconds to improve performance
         try {
-            $this->stats = Cache::remember('dashboard_stats', 60, function () {
+            $cachedStats = Cache::remember('dashboard_stats', 60, function () {
                 return [
                     'total_servers' => Server::count(),
                     'online_servers' => Server::where('status', 'online')->count(),
@@ -125,9 +136,11 @@ class Dashboard extends Component
                     'failed_deployments' => Deployment::where('status', 'failed')->count(),
                 ];
             });
+            // Merge with defaults to ensure all keys exist (handles corrupted cache data)
+            $this->stats = array_merge($defaultStats, is_array($cachedStats) ? $cachedStats : []);
         } catch (\Exception $e) {
             // If Redis is not available, fetch directly without caching
-            $this->stats = [
+            $this->stats = array_merge($defaultStats, [
                 'total_servers' => Server::count(),
                 'online_servers' => Server::where('status', 'online')->count(),
                 'total_projects' => Project::count(),
@@ -135,7 +148,7 @@ class Dashboard extends Component
                 'total_deployments' => Deployment::count(),
                 'successful_deployments' => Deployment::where('status', 'success')->count(),
                 'failed_deployments' => Deployment::where('status', 'failed')->count(),
-            ];
+            ]);
         }
     }
 
@@ -379,9 +392,22 @@ class Dashboard extends Component
 
     public function loadServerHealth(): void
     {
+        // Default server entry structure to ensure all keys are present
+        $defaultServerEntry = [
+            'server_id' => 0,
+            'server_name' => 'Unknown',
+            'cpu_usage' => null,
+            'memory_usage' => null,
+            'disk_usage' => null,
+            'load_average' => null,
+            'status' => 'unknown',
+            'recorded_at' => null,
+            'health_status' => 'unknown',
+        ];
+
         // Cache for 1 minute (60 seconds) - server metrics change frequently
         try {
-            $this->serverHealth = Cache::remember('dashboard_server_health', 60, function () {
+            $cachedHealth = Cache::remember('dashboard_server_health', 60, function () {
                 $servers = Server::with(['latestMetric'])
                     ->where('status', 'online')
                     ->get();
@@ -428,6 +454,12 @@ class Dashboard extends Component
                     ];
                 })->all();
             });
+
+            // Sanitize cached data to ensure all server entries have required keys
+            $this->serverHealth = is_array($cachedHealth) ? array_map(
+                fn ($server) => is_array($server) ? array_merge($defaultServerEntry, $server) : $defaultServerEntry,
+                $cachedHealth
+            ) : [];
         } catch (\Exception $e) {
             // If Redis is not available, fetch directly without caching
             $servers = Server::with(['latestMetric'])
@@ -559,12 +591,13 @@ class Dashboard extends Component
         $endDate = now()->endOfDay();
 
         // Get all deployments in the last 7 days
+        // Use single quotes for string literals for SQLite compatibility
         $deployments = Deployment::whereBetween('created_at', [$startDate, $endDate])
             ->select(
                 DB::raw('DATE(created_at) as date'),
                 DB::raw('COUNT(*) as total'),
-                DB::raw('SUM(CASE WHEN status = "success" THEN 1 ELSE 0 END) as successful'),
-                DB::raw('SUM(CASE WHEN status = "failed" THEN 1 ELSE 0 END) as failed')
+                DB::raw("SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END) as successful"),
+                DB::raw("SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) as failed")
             )
             ->groupBy('date')
             ->orderBy('date', 'asc')
