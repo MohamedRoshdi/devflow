@@ -112,7 +112,7 @@ class ProjectListTest extends DuskTestCase
 
             $browser->visit('/projects')
                 ->pause(1000)
-                ->assertSee('New Project')
+                ->assertSee('+ New Project')
                 ->assertPresent('a[href*="projects/create"]');
 
             $this->testResults['create_button_visible'] = true;

@@ -20,7 +20,7 @@
         <form wire:submit="createServer" class="space-y-6">
             <!-- Server Name -->
             <div>
-                <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Server Name</label>
+                <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Server Name <span class="text-red-500">*</span></label>
                 <input wire:model="name" 
                        id="name" 
                        type="text" 
@@ -64,7 +64,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Port -->
                 <div>
-                    <label for="port" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SSH Port</label>
+                    <label for="port" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SSH Port <span class="text-red-500">*</span></label>
                     <input wire:model="port" 
                            id="port" 
                            type="number" 

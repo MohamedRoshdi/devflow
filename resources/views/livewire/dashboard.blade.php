@@ -10,11 +10,11 @@
             <!-- Quick stats in hero -->
             <div class="mt-6 lg:mt-0 flex flex-wrap gap-4">
                 <div class="bg-white/20 backdrop-blur-md rounded-xl px-4 py-3">
-                    <div class="text-2xl font-bold text-white">{{ $stats['online_servers'] }}/{{ $stats['total_servers'] }}</div>
+                    <div class="text-2xl font-bold text-white">{{ $stats['online_servers'] ?? 0 }}/{{ $stats['total_servers'] ?? 0 }}</div>
                     <div class="text-sm text-white/80">Servers Online</div>
                 </div>
                 <div class="bg-white/20 backdrop-blur-md rounded-xl px-4 py-3">
-                    <div class="text-2xl font-bold text-white">{{ $stats['running_projects'] }}</div>
+                    <div class="text-2xl font-bold text-white">{{ $stats['running_projects'] ?? 0 }}</div>
                     <div class="text-sm text-white/80">Running Projects</div>
                 </div>
                 <div class="bg-white/20 backdrop-blur-md rounded-xl px-4 py-3">
@@ -83,10 +83,10 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-blue-100">Total Servers</p>
-                    <p class="text-4xl font-bold text-white mt-2">{{ $stats['total_servers'] }}</p>
+                    <p class="text-4xl font-bold text-white mt-2">{{ $stats['total_servers'] ?? 0 }}</p>
                     <p class="text-sm text-blue-100 mt-2">
-                        <span class="font-semibold">{{ $stats['online_servers'] }}</span> online,
-                        <span class="font-semibold">{{ $stats['total_servers'] - $stats['online_servers'] }}</span> offline
+                        <span class="font-semibold">{{ $stats['online_servers'] ?? 0 }}</span> online,
+                        <span class="font-semibold">{{ ($stats['total_servers'] ?? 0) - ($stats['online_servers'] ?? 0) }}</span> offline
                     </p>
                 </div>
                 <div class="p-3 bg-white/20 backdrop-blur-md rounded-xl">
@@ -102,9 +102,9 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-green-100">Total Projects</p>
-                    <p class="text-4xl font-bold text-white mt-2">{{ $stats['total_projects'] }}</p>
+                    <p class="text-4xl font-bold text-white mt-2">{{ $stats['total_projects'] ?? 0 }}</p>
                     <p class="text-sm text-green-100 mt-2">
-                        <span class="font-semibold">{{ $stats['running_projects'] }}</span> running
+                        <span class="font-semibold">{{ $stats['running_projects'] ?? 0 }}</span> running
                     </p>
                 </div>
                 <div class="p-3 bg-white/20 backdrop-blur-md rounded-xl">
@@ -130,7 +130,7 @@
                         @endif
                     </div>
                     <p class="text-sm text-purple-100 mt-2">
-                        <span class="font-semibold">{{ $stats['successful_deployments'] }}</span> successful total
+                        <span class="font-semibold">{{ $stats['successful_deployments'] ?? 0 }}</span> successful total
                     </p>
                 </div>
                 <div class="p-3 bg-white/20 backdrop-blur-md rounded-xl">
@@ -142,14 +142,14 @@
         </div>
 
         <!-- 4. SSL Certificates Card -->
-        <div class="bg-gradient-to-br from-{{ $sslStats['expiring_soon'] > 0 ? 'amber-500 to-amber-600 dark:from-amber-600 dark:to-amber-700' : 'teal-500 to-teal-600 dark:from-teal-600 dark:to-teal-700' }} rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 p-6">
+        <div class="bg-gradient-to-br from-{{ ($sslStats['expiring_soon'] ?? 0) > 0 ? 'amber-500 to-amber-600 dark:from-amber-600 dark:to-amber-700' : 'teal-500 to-teal-600 dark:from-teal-600 dark:to-teal-700' }} rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium {{ $sslStats['expiring_soon'] > 0 ? 'text-amber-100' : 'text-teal-100' }}">SSL Certificates</p>
-                    <p class="text-4xl font-bold text-white mt-2">{{ $sslStats['active_certificates'] }}</p>
-                    <p class="text-sm {{ $sslStats['expiring_soon'] > 0 ? 'text-amber-100' : 'text-teal-100' }} mt-2">
-                        @if($sslStats['expiring_soon'] > 0)
-                            <span class="font-semibold">{{ $sslStats['expiring_soon'] }}</span> expiring soon
+                    <p class="text-sm font-medium {{ ($sslStats['expiring_soon'] ?? 0) > 0 ? 'text-amber-100' : 'text-teal-100' }}">SSL Certificates</p>
+                    <p class="text-4xl font-bold text-white mt-2">{{ $sslStats['active_certificates'] ?? 0 }}</p>
+                    <p class="text-sm {{ ($sslStats['expiring_soon'] ?? 0) > 0 ? 'text-amber-100' : 'text-teal-100' }} mt-2">
+                        @if(($sslStats['expiring_soon'] ?? 0) > 0)
+                            <span class="font-semibold">{{ $sslStats['expiring_soon'] ?? 0 }}</span> expiring soon
                         @else
                             All certificates valid
                         @endif
@@ -164,14 +164,14 @@
         </div>
 
         <!-- 5. Health Checks Card -->
-        <div class="bg-gradient-to-br from-{{ $healthCheckStats['down'] > 0 ? 'red-500 to-red-600 dark:from-red-600 dark:to-red-700' : 'emerald-500 to-emerald-600 dark:from-emerald-600 dark:to-emerald-700' }} rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 p-6">
+        <div class="bg-gradient-to-br from-{{ ($healthCheckStats['down'] ?? 0) > 0 ? 'red-500 to-red-600 dark:from-red-600 dark:to-red-700' : 'emerald-500 to-emerald-600 dark:from-emerald-600 dark:to-emerald-700' }} rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium {{ $healthCheckStats['down'] > 0 ? 'text-red-100' : 'text-emerald-100' }}">Health Checks</p>
-                    <p class="text-4xl font-bold text-white mt-2">{{ $healthCheckStats['healthy'] }}</p>
-                    <p class="text-sm {{ $healthCheckStats['down'] > 0 ? 'text-red-100' : 'text-emerald-100' }} mt-2">
-                        @if($healthCheckStats['down'] > 0)
-                            <span class="font-semibold">{{ $healthCheckStats['down'] }}</span> services down
+                    <p class="text-sm font-medium {{ ($healthCheckStats['down'] ?? 0) > 0 ? 'text-red-100' : 'text-emerald-100' }}">Health Checks</p>
+                    <p class="text-4xl font-bold text-white mt-2">{{ $healthCheckStats['healthy'] ?? 0 }}</p>
+                    <p class="text-sm {{ ($healthCheckStats['down'] ?? 0) > 0 ? 'text-red-100' : 'text-emerald-100' }} mt-2">
+                        @if(($healthCheckStats['down'] ?? 0) > 0)
+                            <span class="font-semibold">{{ $healthCheckStats['down'] ?? 0 }}</span> services down
                         @else
                             All systems operational
                         @endif
@@ -186,14 +186,14 @@
         </div>
 
         <!-- 6. Queue Jobs Card -->
-        <div class="bg-gradient-to-br from-{{ $queueStats['failed'] > 0 ? 'orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700' : 'indigo-500 to-indigo-600 dark:from-indigo-600 dark:to-indigo-700' }} rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 p-6">
+        <div class="bg-gradient-to-br from-{{ ($queueStats['failed'] ?? 0) > 0 ? 'orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700' : 'indigo-500 to-indigo-600 dark:from-indigo-600 dark:to-indigo-700' }} rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium {{ $queueStats['failed'] > 0 ? 'text-orange-100' : 'text-indigo-100' }}">Queue Jobs</p>
-                    <p class="text-4xl font-bold text-white mt-2">{{ $queueStats['pending'] }}</p>
-                    <p class="text-sm {{ $queueStats['failed'] > 0 ? 'text-orange-100' : 'text-indigo-100' }} mt-2">
-                        @if($queueStats['failed'] > 0)
-                            <span class="font-semibold">{{ $queueStats['failed'] }}</span> failed jobs
+                    <p class="text-sm font-medium {{ ($queueStats['failed'] ?? 0) > 0 ? 'text-orange-100' : 'text-indigo-100' }}">Queue Jobs</p>
+                    <p class="text-4xl font-bold text-white mt-2">{{ $queueStats['pending'] ?? 0 }}</p>
+                    <p class="text-sm {{ ($queueStats['failed'] ?? 0) > 0 ? 'text-orange-100' : 'text-indigo-100' }} mt-2">
+                        @if(($queueStats['failed'] ?? 0) > 0)
+                            <span class="font-semibold">{{ $queueStats['failed'] ?? 0 }}</span> failed jobs
                         @else
                             No failed jobs
                         @endif
@@ -214,7 +214,7 @@
                     <p class="text-sm font-medium text-cyan-100">Deployments Today</p>
                     <p class="text-4xl font-bold text-white mt-2">{{ $deploymentsToday }}</p>
                     <p class="text-sm text-cyan-100 mt-2">
-                        <span class="font-semibold">{{ $stats['total_deployments'] }}</span> all time
+                        <span class="font-semibold">{{ $stats['total_deployments'] ?? 0 }}</span> all time
                     </p>
                 </div>
                 <div class="p-3 bg-white/20 backdrop-blur-md rounded-xl">
@@ -517,12 +517,12 @@
                                 <h3 class="font-medium text-gray-900 dark:text-white">{{ $server['server_name'] }}</h3>
                                 <span class="flex items-center">
                                     <span class="h-2 w-2 rounded-full mr-2
-                                        @if($server['health_status'] === 'healthy') bg-green-500
-                                        @elseif($server['health_status'] === 'warning') bg-yellow-500
+                                        @if(($server['health_status'] ?? 'unknown') === 'healthy') bg-green-500
+                                        @elseif(($server['health_status'] ?? 'unknown') === 'warning') bg-yellow-500
                                         @else bg-red-500
                                         @endif">
                                     </span>
-                                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">{{ ucfirst($server['health_status']) }}</span>
+                                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">{{ ucfirst($server['health_status'] ?? 'unknown') }}</span>
                                 </span>
                             </div>
 

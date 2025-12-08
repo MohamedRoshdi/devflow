@@ -56,9 +56,9 @@ class ProjectManagementTest extends DuskTestCase
                 'name' => 'Test Project',
                 'framework' => 'laravel',
                 'status' => 'running',
-                'repository' => 'https://github.com/test/test-project.git',
+                'repository_url' => 'https://github.com/test/test-project.git',
                 'branch' => 'main',
-                'deploy_path' => '/var/www/test-project',
+                'root_directory' => '/var/www/test-project',
             ]
         );
     }

@@ -18,7 +18,15 @@ use Livewire\Component;
 class Dashboard extends Component
 {
     /** @var array<string, int> */
-    public array $stats = [];
+    public array $stats = [
+        'total_servers' => 0,
+        'online_servers' => 0,
+        'total_projects' => 0,
+        'running_projects' => 0,
+        'total_deployments' => 0,
+        'successful_deployments' => 0,
+        'failed_deployments' => 0,
+    ];
 
     /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\Deployment>|array<int, mixed> */
     public $recentDeployments = [];
