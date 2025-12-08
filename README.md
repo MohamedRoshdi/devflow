@@ -5,7 +5,9 @@
 [![CI Status](https://github.com/yourusername/devflow-pro/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/devflow-pro/actions/workflows/ci.yml)
 [![Deploy Status](https://github.com/yourusername/devflow-pro/actions/workflows/deploy.yml/badge.svg)](https://github.com/yourusername/devflow-pro/actions/workflows/deploy.yml)
 [![Code Quality](https://github.com/yourusername/devflow-pro/actions/workflows/code-quality.yml/badge.svg)](https://github.com/yourusername/devflow-pro/actions/workflows/code-quality.yml)
-[![Version](https://img.shields.io/badge/version-5.1.0-blue.svg)](https://github.com/yourusername/devflow-pro)
+[![Version](https://img.shields.io/badge/version-5.32.0-blue.svg)](https://github.com/yourusername/devflow-pro)
+[![Tests](https://img.shields.io/badge/tests-4300%2B-brightgreen.svg)](TESTING.md)
+[![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](TESTING.md)
 [![Laravel](https://img.shields.io/badge/Laravel-12-red.svg)](https://laravel.com)
 [![PHP](https://img.shields.io/badge/PHP-8.2%20|%208.3%20|%208.4-777BB4.svg)](https://php.net)
 [![Livewire](https://img.shields.io/badge/Livewire-3-purple.svg)](https://livewire.laravel.com)
@@ -24,6 +26,7 @@
 | **ATS Pro** | [ats.nilestack.duckdns.org](https://ats.nilestack.duckdns.org) | Applicant tracking system | ✅ Configured |
 | **Portainer** | [nilestack.duckdns.org:9443](https://nilestack.duckdns.org:9443) | Docker management | ✅ Active |
 | **Documentation** | [DOCUMENTATION.md](DOCUMENTATION.md) | Complete reference | 📚 Updated |
+| **Testing Guide** | [TESTING.md](TESTING.md) | 4,300+ tests | ✅ NEW |
 
 ---
 

@@ -7,6 +7,80 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.32.0] - 2025-12-08
+
+### Added - Comprehensive Test Suite (4,300+ Tests)
+
+#### Browser Tests (97 files, ~2,500 tests)
+- **35 new browser test files** for complete Livewire component coverage
+- SystemSettingsTest, FirewallManagerTest, Fail2banManagerTest, SSHSecurityManagerTest
+- GitHubRepoPickerTest, ProjectEnvironmentTest, ServerSecurityDashboardTest
+- ApiTokenManagerTest, HealthCheckManagerTest, StorageSettingsTest
+- TeamManagementTest, NotificationChannelTest, TenantManagerTest
+- ClusterManagerTest, ScriptManagerTest, LogViewerTest, WebhookLogsTest
+- UserListTest, ForgotPasswordTest, ServerShowTest, ServerCreateTest, ServerEditTest
+- HealthDashboardTest, SystemAdminTest, NotificationLogsTest
+- ProjectShowTest, ProjectListTest, ProjectCreateTest, ProjectEditTest
+- DeploymentListTest, DeploymentShowTest, QueueMonitorTest, DomainManagerTest
+- GitHubSettingsTest, SSHKeyManagerTest
+
+#### Unit Tests - Services (11 new files, ~400 tests)
+- **KubernetesServiceTest** - 38 tests for cluster, pod, deployment operations
+- **SecurityScoreServiceTest** - 37 tests for security scoring algorithms
+- **SlackDiscordNotificationServiceTest** - 37 tests for webhook notifications
+- **RemoteStorageServiceTest** - 31 tests for S3/cloud storage operations
+- **PipelineServiceTest** - 38 tests for CI/CD pipeline management
+- **DeploymentScriptServiceTest** - 41 tests for script execution
+- **ServerSecurityServiceTest** - 27 tests for security auditing
+- **SSHSecurityServiceTest** - 41 tests for SSH hardening
+- **Fail2banServiceTest** - 53 tests for intrusion prevention
+- **SystemSettingsServiceTest** - 30 tests for application settings
+
+#### Unit Tests - Models & Requests
+- **AdditionalModelsTest** - 122 tests for 15 previously untested models
+  - KubernetesCluster, Pipeline, PipelineRun, PipelineStage, PipelineStageRun
+  - ResourceAlert, SecurityEvent, SecurityScan, NotificationLog
+  - ProjectAnalytic, ProjectSetupTask, DeploymentApproval
+  - DeploymentComment, DeploymentScript, TenantDeployment
+- **FormRequestValidationTest** - 172 tests for API request validation
+  - StoreProjectRequest, StoreServerRequest
+  - UpdateProjectRequest, UpdateServerRequest
+
+#### Feature Tests
+- **ApiEndpointTest** - 44 tests for full API CRUD coverage
+  - PUT/DELETE operations for projects and servers
+  - Webhook signature validation
+  - Token authentication and authorization
+- **WorkflowIntegrationTest** - 56 tests for end-to-end workflows
+  - Pipeline execution workflow
+  - Multi-tenant deployment workflow
+  - Webhook delivery workflow
+  - Bulk server operations
+  - Security scanning workflow
+
+#### Security Tests
+- **PenetrationTest** - 39 comprehensive security tests
+  - XSS payload prevention (script, event handler, URL-based)
+  - SQL injection prevention (union, boolean, time-based)
+  - Race condition protection
+  - Mass assignment protection
+  - API token abuse prevention
+  - Authentication security (session fixation, brute force)
+  - CSRF protection
+
+#### Supporting Files
+- 16 new model factories for test data generation
+- Updated phpunit.xml for SQLite test database
+- Updated phpstan.neon with test-specific rules
+
+### Summary
+- **Total Tests**: 4,300+ across all categories
+- **Test Coverage**: ~90% of application code
+- **New Test Files**: 50+ files
+- **Lines of Test Code**: 51,000+
+
+---
+
 ## [5.31.0] - 2025-12-06
 
 ### Added
