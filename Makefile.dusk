@@ -1,0 +1,116 @@
+# DevFlow Pro - Dusk Testing Makefile
+# Convenient shortcuts for running Dusk browser tests
+
+.PHONY: help dusk-up dusk-down dusk-test dusk-test-filter dusk-watch dusk-clean dusk-logs dusk-shell dusk-migrate dusk-vnc
+
+# Default target
+.DEFAULT_GOAL := help
+
+help: ## Display this help message
+	@echo "DevFlow Pro - Dusk Testing Commands"
+	@echo ""
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
+	@echo ""
+	@echo "Examples:"
+	@echo "  make dusk-test                    # Run all Dusk tests"
+	@echo "  make dusk-test-filter FILTER=Auth # Run tests matching 'Auth'"
+	@echo "  make dusk-vnc                     # Open VNC viewer in browser"
+
+dusk-up: ## Start Docker containers for Dusk testing
+	@echo "Starting Dusk testing environment..."
+	@docker compose -f docker-compose.dusk.yml up -d
+	@echo "Waiting for services to be ready..."
+	@sleep 10
+	@echo "✓ Dusk environment is ready!"
+	@echo "  - Application: http://localhost:9000"
+	@echo "  - Selenium Grid: http://localhost:4444"
+	@echo "  - VNC Viewer: http://localhost:7900 (password: secret)"
+
+dusk-down: ## Stop and remove Docker containers
+	@echo "Stopping Dusk testing environment..."
+	@docker compose -f docker-compose.dusk.yml down
+	@echo "✓ Environment stopped"
+
+dusk-down-clean: ## Stop containers and remove volumes
+	@echo "Stopping Dusk testing environment and removing volumes..."
+	@docker compose -f docker-compose.dusk.yml down -v
+	@echo "✓ Environment stopped and cleaned"
+
+dusk-test: ## Run all Dusk tests
+	@./run-dusk-tests.sh
+
+dusk-test-filter: ## Run Dusk tests matching filter (usage: make dusk-test-filter FILTER=TestName)
+	@./run-dusk-tests.sh --filter=$(FILTER)
+
+dusk-test-group: ## Run Dusk tests in specific group (usage: make dusk-test-group GROUP=authentication)
+	@./run-dusk-tests.sh --group=$(GROUP)
+
+dusk-test-stop: ## Run Dusk tests and stop on first failure
+	@./run-dusk-tests.sh --stop-on-failure
+
+dusk-watch: ## Watch and run tests on file changes (requires entr)
+	@echo "Watching for changes... (Ctrl+C to stop)"
+	@find tests/Browser -name '*.php' | entr -c ./run-dusk-tests.sh
+
+dusk-migrate: ## Run database migrations in Dusk environment
+	@docker compose -f docker-compose.dusk.yml exec app php artisan migrate:fresh --seed
+
+dusk-logs: ## View logs from all Dusk containers
+	@docker compose -f docker-compose.dusk.yml logs -f
+
+dusk-logs-app: ## View application logs
+	@docker compose -f docker-compose.dusk.yml logs -f app
+
+dusk-logs-selenium: ## View Selenium logs
+	@docker compose -f docker-compose.dusk.yml logs -f selenium
+
+dusk-logs-mysql: ## View MySQL logs
+	@docker compose -f docker-compose.dusk.yml logs -f mysql
+
+dusk-shell: ## Open shell in application container
+	@docker compose -f docker-compose.dusk.yml exec app bash
+
+dusk-mysql: ## Open MySQL shell
+	@docker compose -f docker-compose.dusk.yml exec mysql mysql -u devflow -psecret devflow_dusk
+
+dusk-clean: ## Clean up test artifacts
+	@echo "Cleaning up test artifacts..."
+	@rm -rf tests/Browser/screenshots/*
+	@rm -rf tests/Browser/console/*
+	@echo "✓ Artifacts cleaned"
+
+dusk-vnc: ## Open VNC viewer in default browser
+	@echo "Opening VNC viewer..."
+	@open http://localhost:7900 || xdg-open http://localhost:7900 || start http://localhost:7900 || echo "Please open http://localhost:7900 in your browser"
+
+dusk-status: ## Show status of Dusk containers
+	@docker compose -f docker-compose.dusk.yml ps
+
+dusk-restart: ## Restart all Dusk containers
+	@echo "Restarting Dusk containers..."
+	@docker compose -f docker-compose.dusk.yml restart
+	@echo "✓ Containers restarted"
+
+dusk-rebuild: ## Rebuild Docker images
+	@echo "Rebuilding Docker images..."
+	@docker compose -f docker-compose.dusk.yml build --no-cache
+	@echo "✓ Images rebuilt"
+
+dusk-reset: dusk-down-clean dusk-up dusk-migrate ## Complete reset of Dusk environment
+	@echo "✓ Dusk environment reset complete"
+
+# Quick test shortcuts
+test-auth: ## Run authentication tests
+	@./run-dusk-tests.sh --filter=Authentication
+
+test-projects: ## Run project tests
+	@./run-dusk-tests.sh --filter=Project
+
+test-servers: ## Run server tests
+	@./run-dusk-tests.sh --filter=Server
+
+test-deployments: ## Run deployment tests
+	@./run-dusk-tests.sh --filter=Deployment
+
+test-dashboard: ## Run dashboard tests
+	@./run-dusk-tests.sh --filter=Dashboard

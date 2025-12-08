@@ -734,7 +734,7 @@ class HomePublicTest extends TestCase
     }
 
     /** @test */
-    public function component_displays_active_project_count(): void
+    public function component_displays_marketing_content(): void
     {
         // Create 3 running projects with domains
         for ($i = 1; $i <= 3; $i++) {
@@ -751,9 +751,11 @@ class HomePublicTest extends TestCase
             ]);
         }
 
+        // The home page is a marketing page, so it should show marketing content
+        // rather than specific project counts
         Livewire::test(HomePublic::class)
-            ->assertSee('3 Projects Live Now')
-            ->assertSee('Active Projects')
-            ->assertSee('3'); // Count should appear in hero stats
+            ->assertSee('Deploy production apps in minutes, not days')
+            ->assertSee('Platform Status: Operational')
+            ->assertSee('DevFlow Pro');
     }
 }

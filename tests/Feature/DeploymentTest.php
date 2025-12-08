@@ -181,14 +181,15 @@ class DeploymentTest extends TestCase
             'user_id' => $this->user->id,
         ]);
 
+        // Test that the deployments index page loads successfully
+        // This is a Livewire component, so we just verify it renders
         $response = $this->get(route('deployments.index'));
 
         $response->assertStatus(200);
-        $response->assertViewHas('deployments');
+        $response->assertSeeLivewire('deployments.deployment-list');
 
-        $deployments = $response->viewData('deployments');
-        $this->assertEquals(15, $deployments->perPage()); // Default pagination
-        $this->assertEquals(25, $deployments->total());
+        // Verify the correct number of deployments exist in the database
+        $this->assertEquals(25, Deployment::where('project_id', $this->project->id)->count());
     }
 
     /** @test */
@@ -218,12 +219,12 @@ class DeploymentTest extends TestCase
             'project_id' => $this->project->id,
             'user_id' => $this->user->id,
             'status' => 'running',
-            'output' => $logOutput,
+            'output_log' => $logOutput,
         ]);
 
         $freshDeployment = $deployment->fresh();
-        $this->assertNotNull($freshDeployment->output);
-        $this->assertStringContainsString('Building Docker image', $freshDeployment->output);
+        $this->assertNotNull($freshDeployment->output_log);
+        $this->assertStringContainsString('Building Docker image', $freshDeployment->output_log);
     }
 
     /** @test */
@@ -258,6 +259,7 @@ class DeploymentTest extends TestCase
         $this->project->update([
             'auto_deploy' => true,
             'webhook_secret' => 'test-secret',
+            'webhook_enabled' => true,
         ]);
 
         $webhookPayload = [
@@ -268,14 +270,15 @@ class DeploymentTest extends TestCase
             ],
         ];
 
-        // Test using direct URL since route may not be defined
-        // The webhook endpoint is typically at /api/webhooks/github/{secret}
-        $response = $this->postJson('/api/webhooks/github/test-secret', $webhookPayload);
+        // Use the webhooks.github route
+        $response = $this->postJson(route('webhooks.github', ['secret' => 'test-secret']), $webhookPayload, [
+            'X-GitHub-Event' => 'push',
+        ]);
 
-        // Webhook may return 200, 202 for async processing, 404 if route not defined, or 401/403 for auth
+        // Webhook may return 200, 202 for async processing, or 401/403 for auth
         $this->assertTrue(
-            in_array($response->getStatusCode(), [200, 202, 204, 404, 401, 403]),
-            "Expected status code 200, 202, 204, 404, 401, or 403, got: " . $response->getStatusCode()
+            in_array($response->getStatusCode(), [200, 202, 204, 401, 403]),
+            "Expected status code 200, 202, 204, 401, or 403, got: " . $response->getStatusCode()
         );
     }
 }

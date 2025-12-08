@@ -10,6 +10,7 @@ use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
 use App\Observers\AuditObserver;
+use App\Observers\DeploymentObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AuditServiceProvider extends ServiceProvider
@@ -27,6 +28,9 @@ class AuditServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Register deployment observer for automatic job dispatching
+        Deployment::observe(DeploymentObserver::class);
+
         // Register audit observers for key models
         Deployment::observe(AuditObserver::class);
         Project::observe(AuditObserver::class);

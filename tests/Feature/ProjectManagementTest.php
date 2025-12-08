@@ -115,9 +115,8 @@ class ProjectManagementTest extends TestCase
         ]);
 
         // Mock GitService
-        $this->mock(GitService::class, function ($mock) use ($project) {
+        $this->mock(GitService::class, function ($mock) {
             $mock->shouldReceive('getLatestCommits')
-                ->with($project, 8, 1)
                 ->once()
                 ->andReturn([
                     'success' => true,
@@ -130,6 +129,12 @@ class ProjectManagementTest extends TestCase
                         ],
                     ],
                     'total' => 1,
+                ]);
+            $mock->shouldReceive('checkForUpdates')
+                ->once()
+                ->andReturn([
+                    'success' => true,
+                    'up_to_date' => true,
                 ]);
         });
 

@@ -19,7 +19,9 @@ abstract class DuskTestCase extends BaseTestCase
     #[BeforeClass]
     public static function prepare(): void
     {
-        if (! static::runningInSail()) {
+        // When using Docker/Selenium, we don't need to start ChromeDriver locally
+        // Only start ChromeDriver if running locally (not in Docker)
+        if (! static::runningInSail() && ! static::runningInDocker()) {
             static::startChromeDriver(['--port=9515']);
         }
     }
@@ -37,14 +39,28 @@ abstract class DuskTestCase extends BaseTestCase
             return $items->merge([
                 '--disable-gpu',
                 '--headless=new',
+                '--no-sandbox',
+                '--disable-dev-shm-usage',
             ]);
         })->all());
 
+        $driverUrl = $_ENV['DUSK_DRIVER_URL'] ?? env('DUSK_DRIVER_URL') ?? 'http://localhost:9515';
+
         return RemoteWebDriver::create(
-            $_ENV['DUSK_DRIVER_URL'] ?? env('DUSK_DRIVER_URL') ?? 'http://localhost:9515',
+            $driverUrl,
             DesiredCapabilities::chrome()->setCapability(
                 ChromeOptions::CAPABILITY, $options
-            )
+            ),
+            60000, // Connection timeout (60 seconds)
+            60000  // Request timeout (60 seconds)
         );
+    }
+
+    /**
+     * Determine if tests are running in Docker.
+     */
+    protected static function runningInDocker(): bool
+    {
+        return env('DUSK_DRIVER_URL') !== null || file_exists('/.dockerenv');
     }
 }

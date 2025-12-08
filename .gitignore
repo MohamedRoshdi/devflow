@@ -42,3 +42,7 @@ user_response.txt
 /tests/Browser/console/*
 !/tests/Browser/screenshots/.gitignore
 !/tests/Browser/console/.gitignore
+/coverage-report
+
+# PostgreSQL test data
+postgres_test_data/

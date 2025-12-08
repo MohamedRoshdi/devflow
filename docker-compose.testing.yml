@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for Testing
+  postgres_test:
+    image: postgres:16-alpine
+    container_name: devflow_postgres_test
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: devflow_test
+      POSTGRES_USER: devflow_test
+      POSTGRES_PASSWORD: devflow_test_password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devflow_test -d devflow_test"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - devflow_test_network
+
+  # Optional: Redis for testing (if needed for cache/queue tests)
+  redis_test:
+    image: redis:7-alpine
+    container_name: devflow_redis_test
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - devflow_test_network
+
+volumes:
+  postgres_test_data:
+    driver: local
+
+networks:
+  devflow_test_network:
+    driver: bridge

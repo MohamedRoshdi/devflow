@@ -1,0 +1,87 @@
+# Example GitHub Actions Workflow for PostgreSQL Testing
+# Copy this to .github/workflows/tests.yml to enable CI/CD testing
+
+name: Tests
+
+on:
+  push:
+    branches: [ master, main, develop ]
+  pull_request:
+    branches: [ master, main, develop ]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: devflow_test
+          POSTGRES_USER: devflow_test
+          POSTGRES_PASSWORD: devflow_test_password
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6380:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, pdo_pgsql, bcmath, soap, intl, gd, exif, iconv
+          coverage: xdebug
+
+      - name: Copy .env.testing
+        run: cp .env.testing .env
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress --optimize-autoloader
+
+      - name: Generate application key
+        run: php artisan key:generate --env=testing
+
+      - name: Directory Permissions
+        run: chmod -R 777 storage bootstrap/cache
+
+      - name: Run Migrations
+        run: php artisan migrate --env=testing --force
+
+      - name: Run Unit Tests
+        run: vendor/bin/phpunit --testsuite=Unit
+
+      - name: Run Feature Tests
+        run: vendor/bin/phpunit --testsuite=Feature
+
+      - name: Run Performance Tests
+        run: vendor/bin/phpunit --testsuite=Performance
+
+      - name: Run Security Tests
+        run: vendor/bin/phpunit --testsuite=Security
+
+      # Optional: Generate coverage report
+      - name: Run Tests with Coverage
+        run: vendor/bin/phpunit --coverage-clover coverage.xml
+
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: false

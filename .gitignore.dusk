@@ -1,0 +1,17 @@
+# Laravel Dusk Testing Artifacts
+# Add these lines to your main .gitignore file
+
+# Dusk test artifacts
+tests/Browser/screenshots/*
+!tests/Browser/screenshots/.gitkeep
+tests/Browser/console/*
+!tests/Browser/console/.gitkeep
+
+# Dusk temporary environment file
+.env.dusk.testing
+
+# Chrome driver logs
+chromedriver.log
+
+# Dusk test cache
+.phpunit.cache/
