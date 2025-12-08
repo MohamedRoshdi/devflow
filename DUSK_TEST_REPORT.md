@@ -123,7 +123,7 @@ The majority of Unit test errors are caused by:
 There is already an active transaction
 ```
 
-**Recommendation:** These require running tests with a proper MySQL test database for accurate results.
+**Recommendation:** These require running tests with a proper PostgreSQL test database for accurate results.
 
 ### Feature Tests (34 errors, 22 failures)
 
@@ -203,7 +203,7 @@ docker run --rm \
 3. **Input sanitization** - Add XSS filtering at form input level
 
 ### Test Infrastructure:
-1. **Use MySQL for testing** - SQLite limitations cause cascade failures
+1. **Use PostgreSQL for testing and production** - SQLite limitations cause cascade failures
 2. **Set up ChromeDriver** - For Browser/Dusk tests
 3. **Add CI/CD pipeline** - Automated test runs on each commit
 
@@ -238,7 +238,7 @@ This test session successfully:
 4. Documented remaining work needed
 
 **Next Steps:**
-1. Set up MySQL test database
+1. Set up PostgreSQL test database (recommended for testing and production)
 2. Install ChromeDriver for browser tests
-3. Add missing route definitions
+3. Add input sanitization for XSS protection at the application level
 4. Implement proper authorization middleware

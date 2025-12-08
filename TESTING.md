@@ -441,7 +441,10 @@ jobs:
 
 **1. Database connection errors**
 ```bash
-# Use SQLite for tests
+# Use PostgreSQL for tests (recommended)
+DB_CONNECTION=pgsql DB_DATABASE=devflow_test php artisan test
+
+# Or use SQLite for quick local tests (may have cascade issues)
 DB_CONNECTION=sqlite DB_DATABASE=:memory: php artisan test
 ```
 
