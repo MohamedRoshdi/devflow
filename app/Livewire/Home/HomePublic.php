@@ -71,7 +71,9 @@ class HomePublic extends Component
 
     public function render()
     {
-        return view('livewire.home.home-public')
-            ->layout('layouts.marketing');
+        return view('livewire.home.home-public', [
+            'projects' => $this->projects,
+            'frameworks' => $this->frameworks,
+        ])->layout('layouts.marketing');
     }
 }

@@ -89,7 +89,7 @@ class ServerCreate extends Component
         }
     }
 
-    public function createServer(): RedirectResponse
+    public function createServer(): void
     {
         $this->validate();
 
@@ -145,8 +145,7 @@ class ServerCreate extends Component
             ? 'Server added successfully and is online!'
             : 'Server added but appears offline. Check SSH credentials.';
 
-        return redirect()->route('servers.show', $server)
-            ->with('message', $message);
+        $this->redirect(route('servers.show', $server), navigate: true);
     }
 
     public function render(): View

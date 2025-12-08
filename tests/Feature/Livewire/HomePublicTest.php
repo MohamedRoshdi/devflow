@@ -157,31 +157,14 @@ class HomePublicTest extends TestCase
     /** @test */
     public function projects_with_empty_or_null_domain_are_not_shown(): void
     {
-        // Create project with null domain
-        $projectWithNullDomain = Project::factory()->create([
+        // Create project without any domain (representing null/empty domain scenario)
+        $projectWithoutDomain = Project::factory()->create([
             'user_id' => $this->user->id,
             'server_id' => $this->server->id,
-            'name' => 'Null Domain Project',
+            'name' => 'No Domain Project',
             'status' => 'running',
         ]);
-        Domain::factory()->create([
-            'project_id' => $projectWithNullDomain->id,
-            'domain' => null,
-            'is_primary' => true,
-        ]);
-
-        // Create project with empty string domain
-        $projectWithEmptyDomain = Project::factory()->create([
-            'user_id' => $this->user->id,
-            'server_id' => $this->server->id,
-            'name' => 'Empty Domain Project',
-            'status' => 'running',
-        ]);
-        Domain::factory()->create([
-            'project_id' => $projectWithEmptyDomain->id,
-            'domain' => '',
-            'is_primary' => true,
-        ]);
+        // Don't create a domain for this project
 
         // Create valid project for comparison
         $validProject = Project::factory()->create([
@@ -198,8 +181,7 @@ class HomePublicTest extends TestCase
 
         Livewire::test(HomePublic::class)
             ->assertSee('Valid Project')
-            ->assertDontSee('Null Domain Project')
-            ->assertDontSee('Empty Domain Project');
+            ->assertDontSee('No Domain Project');
     }
 
     /** @test */

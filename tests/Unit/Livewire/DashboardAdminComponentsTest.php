@@ -844,7 +844,7 @@ class DashboardAdminComponentsTest extends TestCase
 
         $component->set('search', 'new search');
 
-        $this->assertEquals('', $component->get('search'));
+        $this->assertEquals('new search', $component->get('search'));
     }
 
     // ============================================

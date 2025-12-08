@@ -65,6 +65,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/projects/{project}/pipeline', \App\Livewire\Projects\PipelineSettings::class)->name('projects.pipeline');
     Route::get('/projects/{project}/backups', \App\Livewire\Projects\DatabaseBackupManager::class)->name('projects.backups');
 
+    // Project Domains
+    Route::post('/projects/{project}/domains', [\App\Http\Controllers\DomainController::class, 'store'])->name('projects.domains.store');
+    Route::put('/projects/{project}/domains/{domain}', [\App\Http\Controllers\DomainController::class, 'update'])->name('projects.domains.update');
+    Route::delete('/projects/{project}/domains/{domain}', [\App\Http\Controllers\DomainController::class, 'destroy'])->name('projects.domains.destroy');
+
     // Deployments
     Route::get('/deployments', DeploymentList::class)->name('deployments.index');
     Route::get('/deployments/{deployment}', DeploymentShow::class)->name('deployments.show');
