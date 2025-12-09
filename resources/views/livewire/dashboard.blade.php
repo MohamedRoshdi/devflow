@@ -204,7 +204,7 @@
         </a>
 
         {{-- Security Score --}}
-        <a href="{{ route('settings.security') }}" class="group bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-lg transition-all">
+        <a href="{{ route('settings.system') }}" class="group bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-lg transition-all">
             <div class="flex items-center justify-between">
                 <div class="p-2 {{ $overallSecurityScore >= 80 ? 'bg-emerald-100 dark:bg-emerald-900/30' : ($overallSecurityScore >= 60 ? 'bg-amber-100 dark:bg-amber-900/30' : 'bg-red-100 dark:bg-red-900/30') }} rounded-lg group-hover:bg-emerald-500 transition-colors">
                     <svg class="w-5 h-5 {{ $overallSecurityScore >= 80 ? 'text-emerald-600 dark:text-emerald-400' : ($overallSecurityScore >= 60 ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400') }} group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
