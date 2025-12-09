@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.33.0] - 2025-12-09
+
+### Added - Deploy Script Enhancements
+- **Automatic Backup** before each deployment (app files + database)
+- **Rollback Command** (`./deploy.sh --rollback`) to restore previous deployment
+- **Health Check** after deployment (HTTP, database, queue workers)
+- **Backup Rotation** - keeps only last 5 backups to save disk space
+- **Colored Output** for better visibility of deployment stages
+- **Timestamp Tracking** for each deployment
+
+### Added - Health Dashboard Lazy Loading
+- Page loads instantly with skeleton placeholders
+- Health data loads asynchronously via `wire:init`
+- Animated pulse placeholders while loading
+- Filter buttons disabled during loading state
+
+### Fixed - Deployment Live Streaming
+- Show actual SSH and Docker commands being executed (`$ ssh ...`, `$ docker exec ...`)
+- Save logs more frequently for real-time updates
+- Added `failed()` handler to properly mark failed deployments
+- Increased timeout to 30 minutes for large builds
+- Set tries=1 to prevent auto-retry on deployments
+- Show git clone/pull progress output
+
+### Fixed - Docker Container Cleanup
+- Aggressive cleanup of orphaned containers before starting compose services
+- Parse docker-compose.yml for explicit container_names
+- Remove containers matching project slug pattern
+- Prevents "container name already in use" errors
+
+### Fixed - Analytics Dashboard
+- Cast avg() result to float before round() to fix PHP 8 type error
+
+---
+
 ## [5.32.1] - 2025-12-09
 
 ### Fixed - Test Suite Improvements
