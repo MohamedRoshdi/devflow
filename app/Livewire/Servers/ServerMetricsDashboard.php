@@ -67,10 +67,10 @@ class ServerMetricsDashboard extends Component
 
         return [
             'labels' => $metrics->map(fn (ServerMetric $m): string => $m->recorded_at->format('H:i'))->toArray(),
-            'cpu' => $metrics->map(fn (ServerMetric $m): float => round($m->cpu_usage, 1))->toArray(),
-            'memory' => $metrics->map(fn (ServerMetric $m): float => round($m->memory_usage, 1))->toArray(),
-            'disk' => $metrics->map(fn (ServerMetric $m): float => round($m->disk_usage, 1))->toArray(),
-            'load' => $metrics->map(fn (ServerMetric $m): float => round($m->load_average_1, 2))->toArray(),
+            'cpu' => $metrics->map(fn (ServerMetric $m): float => round((float) $m->cpu_usage, 1))->toArray(),
+            'memory' => $metrics->map(fn (ServerMetric $m): float => round((float) $m->memory_usage, 1))->toArray(),
+            'disk' => $metrics->map(fn (ServerMetric $m): float => round((float) $m->disk_usage, 1))->toArray(),
+            'load' => $metrics->map(fn (ServerMetric $m): float => round((float) $m->load_average_1, 2))->toArray(),
         ];
     }
 
