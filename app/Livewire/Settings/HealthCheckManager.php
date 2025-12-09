@@ -78,11 +78,6 @@ class HealthCheckManager extends Component
     #[Validate('required|boolean')]
     public bool $channel_is_active = true;
 
-    public function __construct(
-        private readonly HealthCheckService $healthCheckService,
-        private readonly NotificationService $notificationService
-    ) {}
-
     #[Computed]
     public function healthChecks()
     {
@@ -236,7 +231,7 @@ class HealthCheckManager extends Component
     {
         try {
             $check = HealthCheck::findOrFail($checkId);
-            $this->healthCheckService->runCheck($check);
+            app(HealthCheckService::class)->runCheck($check);
             $this->dispatch('notification', type: 'success', message: 'Health check executed successfully');
             $this->reset(['healthChecks']);
         } catch (\Exception $e) {
@@ -323,7 +318,7 @@ class HealthCheckManager extends Component
     {
         try {
             $channel = NotificationChannel::findOrFail($channelId);
-            $success = $this->notificationService->sendTestNotification($channel);
+            $success = app(NotificationService::class)->sendTestNotification($channel);
 
             if ($success) {
                 $this->dispatch('notification', type: 'success', message: 'Test notification sent successfully');
