@@ -52,9 +52,12 @@ class NotificationChannelManager extends Component
 
     public ?NotificationChannel $testingChannel = null;
 
-    public function __construct(
-        private readonly NotificationService $notificationService
-    ) {}
+    private NotificationService $notificationService;
+
+    public function boot(NotificationService $notificationService): void
+    {
+        $this->notificationService = $notificationService;
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Collection<int, Project>
