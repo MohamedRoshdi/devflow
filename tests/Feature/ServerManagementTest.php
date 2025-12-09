@@ -211,10 +211,8 @@ test_key_content
 
         $response = $this->get(route('servers.show', $server));
 
-        // Servers are currently accessible to all authenticated users
-        // This test documents the current behavior
-        // TODO: Implement user-level authorization if needed
-        $response->assertStatus(200);
+        // After implementing proper authorization, users cannot access other users' servers
+        $response->assertStatus(403);
     }
 
     /** @test */

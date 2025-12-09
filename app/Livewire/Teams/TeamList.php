@@ -27,9 +27,10 @@ class TeamList extends Component
     #[Validate('nullable|image|max:2048')]
     public mixed $avatar = null;
 
-    public function __construct(
-        private readonly TeamService $teamService
-    ) {}
+    private function teamService(): TeamService
+    {
+        return app(TeamService::class);
+    }
 
     #[Computed]
     public function teams()
@@ -85,7 +86,7 @@ class TeamList extends Component
                 $data['avatar'] = $this->avatar->store('teams', 'public');
             }
 
-            $team = $this->teamService->createTeam(Auth::user(), $data);
+            $team = $this->teamService()->createTeam(Auth::user(), $data);
 
             $this->dispatch('notification', [
                 'type' => 'success',
@@ -146,7 +147,7 @@ class TeamList extends Component
         }
 
         try {
-            $this->teamService->deleteTeam($team);
+            $this->teamService()->deleteTeam($team);
 
             $this->dispatch('notification', [
                 'type' => 'success',

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Livewire\Teams\TeamList;
+use App\Livewire\Teams\TeamSettings;
 use App\Models\Team;
 use App\Models\TeamInvitation;
 use App\Models\TeamMember;
@@ -12,6 +14,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class TeamManagementTest extends TestCase
@@ -34,6 +37,13 @@ class TeamManagementTest extends TestCase
             'name' => 'Test Team',
             'owner_id' => $this->owner->id,
         ]);
+
+        // Make owner a member of the team
+        TeamMember::factory()->create([
+            'team_id' => $this->team->id,
+            'user_id' => $this->owner->id,
+            'role' => 'owner',
+        ]);
     }
 
     // ==================== Team Creation Tests ====================
@@ -43,12 +53,11 @@ class TeamManagementTest extends TestCase
     {
         $this->actingAs($this->owner);
 
-        $response = $this->post('/teams', [
-            'name' => 'New Team',
-            'description' => 'A new team description',
-        ]);
-
-        $response->assertRedirect();
+        Livewire::test(TeamList::class)
+            ->set('name', 'New Team')
+            ->set('description', 'A new team description')
+            ->call('createTeam')
+            ->assertHasNoErrors();
 
         $this->assertDatabaseHas('teams', [
             'name' => 'New Team',
@@ -61,11 +70,11 @@ class TeamManagementTest extends TestCase
     {
         $this->actingAs($this->owner);
 
-        $response = $this->post('/teams', [
-            'description' => 'Description without name',
-        ]);
-
-        $response->assertSessionHasErrors('name');
+        Livewire::test(TeamList::class)
+            ->set('name', '')
+            ->set('description', 'Description without name')
+            ->call('createTeam')
+            ->assertHasErrors('name');
     }
 
     // ==================== Team Update Tests ====================
@@ -75,11 +84,10 @@ class TeamManagementTest extends TestCase
     {
         $this->actingAs($this->owner);
 
-        $response = $this->put('/teams/' . $this->team->id, [
-            'name' => 'Updated Team Name',
-        ]);
-
-        $response->assertRedirect();
+        Livewire::test(TeamSettings::class, ['team' => $this->team])
+            ->set('name', 'Updated Team Name')
+            ->call('updateTeam')
+            ->assertHasNoErrors();
 
         $this->assertDatabaseHas('teams', [
             'id' => $this->team->id,
@@ -99,14 +107,11 @@ class TeamManagementTest extends TestCase
 
         $this->actingAs($member);
 
-        $response = $this->put('/teams/' . $this->team->id, [
-            'name' => 'Hacked Name',
-        ]);
-
-        $this->assertTrue(
-            $response->status() === 403 ||
-            $response->status() === 302
-        );
+        // Member can access settings but not update
+        Livewire::test(TeamSettings::class, ['team' => $this->team])
+            ->set('name', 'Hacked Name')
+            ->call('updateTeam')
+            ->assertDispatched('notification');
 
         $this->team->refresh();
         $this->assertNotEquals('Hacked Name', $this->team->name);
@@ -120,11 +125,12 @@ class TeamManagementTest extends TestCase
         $this->actingAs($this->owner);
         $teamId = $this->team->id;
 
-        $response = $this->delete('/teams/' . $this->team->id);
+        Livewire::test(TeamSettings::class, ['team' => $this->team])
+            ->set('deleteConfirmation', 'Test Team')
+            ->call('deleteTeam');
 
-        $response->assertRedirect();
-
-        $this->assertDatabaseMissing('teams', [
+        // Team model uses SoftDeletes, so check deleted_at is set
+        $this->assertSoftDeleted('teams', [
             'id' => $teamId,
         ]);
     }
@@ -142,13 +148,11 @@ class TeamManagementTest extends TestCase
         $this->actingAs($member);
         $teamId = $this->team->id;
 
-        $response = $this->delete('/teams/' . $this->team->id);
+        Livewire::test(TeamSettings::class, ['team' => $this->team])
+            ->set('deleteConfirmation', 'Test Team')
+            ->call('deleteTeam');
 
-        $this->assertTrue(
-            $response->status() === 403 ||
-            $response->status() === 302
-        );
-
+        // Team should still exist
         $this->assertDatabaseHas('teams', [
             'id' => $teamId,
         ]);
@@ -164,12 +168,11 @@ class TeamManagementTest extends TestCase
 
         $this->actingAs($this->owner);
 
-        $response = $this->post('/teams/' . $this->team->id . '/invitations', [
-            'email' => 'newmember@example.com',
-            'role' => 'member',
-        ]);
-
-        $response->assertRedirect();
+        Livewire::test(TeamSettings::class, ['team' => $this->team])
+            ->set('inviteEmail', 'newmember@example.com')
+            ->set('inviteRole', 'member')
+            ->call('inviteMember')
+            ->assertHasNoErrors();
 
         $this->assertDatabaseHas('team_invitations', [
             'team_id' => $this->team->id,
@@ -193,7 +196,7 @@ class TeamManagementTest extends TestCase
 
         $this->actingAs($invitedUser);
 
-        $response = $this->post('/teams/invitations/' . $invitation->token . '/accept');
+        $response = $this->post('/invitations/' . $invitation->token . '/accept');
 
         $this->assertTrue(
             $response->status() === 200 ||
@@ -205,7 +208,7 @@ class TeamManagementTest extends TestCase
     public function owner_can_remove_member(): void
     {
         $member = User::factory()->create();
-        $teamMember = TeamMember::factory()->create([
+        TeamMember::factory()->create([
             'team_id' => $this->team->id,
             'user_id' => $member->id,
             'role' => 'member',
@@ -213,9 +216,8 @@ class TeamManagementTest extends TestCase
 
         $this->actingAs($this->owner);
 
-        $response = $this->delete('/teams/' . $this->team->id . '/members/' . $member->id);
-
-        $response->assertRedirect();
+        Livewire::test(TeamSettings::class, ['team' => $this->team])
+            ->call('removeMember', $member->id);
 
         $this->assertDatabaseMissing('team_members', [
             'team_id' => $this->team->id,
@@ -243,13 +245,10 @@ class TeamManagementTest extends TestCase
 
         $this->actingAs($member1);
 
-        $response = $this->delete('/teams/' . $this->team->id . '/members/' . $member2->id);
+        Livewire::test(TeamSettings::class, ['team' => $this->team])
+            ->call('removeMember', $member2->id);
 
-        $this->assertTrue(
-            $response->status() === 403 ||
-            $response->status() === 302
-        );
-
+        // Member2 should still exist
         $this->assertDatabaseHas('team_members', [
             'team_id' => $this->team->id,
             'user_id' => $member2->id,
@@ -270,14 +269,14 @@ class TeamManagementTest extends TestCase
 
         $this->actingAs($this->owner);
 
-        $response = $this->put('/teams/' . $this->team->id . '/members/' . $member->id, [
+        Livewire::test(TeamSettings::class, ['team' => $this->team])
+            ->call('updateRole', $member->id, 'admin');
+
+        $this->assertDatabaseHas('team_members', [
+            'team_id' => $this->team->id,
+            'user_id' => $member->id,
             'role' => 'admin',
         ]);
-
-        $this->assertTrue(
-            $response->status() === 200 ||
-            $response->status() === 302
-        );
     }
 
     /** @test */
@@ -286,14 +285,15 @@ class TeamManagementTest extends TestCase
         // Owner tries to leave their own team without transferring ownership
         $this->actingAs($this->owner);
 
-        $response = $this->delete('/teams/' . $this->team->id . '/members/' . $this->owner->id);
+        // Owner should not be able to remove themselves
+        Livewire::test(TeamSettings::class, ['team' => $this->team])
+            ->call('removeMember', $this->owner->id);
 
-        // Should fail - owner must transfer ownership or delete team
-        $this->assertTrue(
-            $response->status() === 422 ||
-            $response->status() === 403 ||
-            $response->status() === 302
-        );
+        // Owner should still be a member
+        $this->assertDatabaseHas('team_members', [
+            'team_id' => $this->team->id,
+            'user_id' => $this->owner->id,
+        ]);
     }
 
     // ==================== Team Visibility Tests ====================
@@ -328,7 +328,7 @@ class TeamManagementTest extends TestCase
 
         $this->actingAs($member);
 
-        $response = $this->get('/teams/' . $this->team->id);
+        $response = $this->get('/teams/' . $this->team->id . '/settings');
 
         $response->assertOk();
     }

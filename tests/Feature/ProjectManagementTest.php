@@ -77,10 +77,8 @@ class ProjectManagementTest extends TestCase
 
         $response = $this->get(route('projects.show', $project));
 
-        // Projects are currently accessible to all authenticated users
-        // This test documents the current behavior
-        // TODO: Implement user-level authorization if needed
-        $response->assertStatus(200);
+        // After implementing proper authorization, users cannot access other users' projects
+        $response->assertStatus(403);
     }
 
     /** @test */
