@@ -132,7 +132,7 @@
                 </div>
 
                 {{-- Step 4 --}}
-                <a href="{{ route('domains.index') }}" class="group relative flex items-center gap-4 p-4 rounded-xl border-2 transition-all {{ $onboardingSteps['setup_domain'] ? 'border-green-500 bg-green-50 dark:bg-green-900/10' : ($onboardingSteps['first_deployment'] ? 'border-gray-200 dark:border-gray-700 hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/10' : 'border-gray-100 dark:border-gray-800 opacity-50 pointer-events-none') }}">
+                <a href="{{ route('projects.index') }}" class="group relative flex items-center gap-4 p-4 rounded-xl border-2 transition-all {{ $onboardingSteps['setup_domain'] ? 'border-green-500 bg-green-50 dark:bg-green-900/10' : ($onboardingSteps['first_deployment'] ? 'border-gray-200 dark:border-gray-700 hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/10' : 'border-gray-100 dark:border-gray-800 opacity-50 pointer-events-none') }}">
                     <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center {{ $onboardingSteps['setup_domain'] ? 'bg-green-500' : ($onboardingSteps['first_deployment'] ? 'bg-gray-200 dark:bg-gray-700 group-hover:bg-indigo-500' : 'bg-gray-100 dark:bg-gray-800') }} transition-colors">
                         @if($onboardingSteps['setup_domain'])
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>

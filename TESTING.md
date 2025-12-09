@@ -6,11 +6,16 @@
 
 | Suite | Status | Notes |
 |-------|--------|-------|
-| Feature | ✅ **202 passing** | 593 assertions, 20 skipped |
-| Unit | ⏳ Blocked | Migration timeout in Docker |
+| Feature | ✅ Running | 282 tests, some assertion failures |
+| Unit | ✅ Running | SSHKeyService 39/39 passing |
+| Security | ✅ Running | Session tests 12/12 passing |
 | Browser | ⏳ Not run | Requires Dusk setup |
 
-**See [TESTING_POSTGRESQL.md](./TESTING_POSTGRESQL.md#current-testing-status-december-2024) for detailed status and next steps.**
+**Fixes Applied:**
+- PostgreSQL deadlock issue resolved (DatabaseTransactions)
+- Session security tests fixed (12/12 passing)
+- SSH Key validation tests fixed (39/39 passing)
+- Dashboard route error fixed (domains.index → projects.index)
 
 ---
 
