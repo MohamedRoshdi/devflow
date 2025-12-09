@@ -51,9 +51,12 @@ class TeamSettings extends Component
 
     public string $deleteConfirmation = '';
 
-    public function __construct(
-        private readonly TeamService $teamService
-    ) {}
+    private TeamService $teamService;
+
+    public function boot(TeamService $teamService): void
+    {
+        $this->teamService = $teamService;
+    }
 
     public function mount(Team $team): void
     {

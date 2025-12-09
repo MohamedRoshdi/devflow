@@ -25,14 +25,25 @@ class ServerShow extends Component
     /** @var array<string, mixed>|null */
     public ?array $dockerInstallStatus = null;
 
+    public bool $isLoading = true;
+
     public function mount(Server $server)
     {
         $this->authorize('view', $server);
 
         $this->server = $server;
         $this->recentMetrics = collect();
+        // Don't load metrics on mount - use wire:init for lazy loading
+    }
+
+    /**
+     * Lazy load server data - called via wire:init
+     */
+    public function loadServerData(): void
+    {
         $this->loadMetrics();
         $this->checkDockerInstallProgress();
+        $this->isLoading = false;
     }
 
     /**

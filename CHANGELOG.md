@@ -17,11 +17,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Colored Output** for better visibility of deployment stages
 - **Timestamp Tracking** for each deployment
 
-### Added - Health Dashboard Lazy Loading
-- Page loads instantly with skeleton placeholders
-- Health data loads asynchronously via `wire:init`
-- Animated pulse placeholders while loading
-- Filter buttons disabled during loading state
+### Added - Comprehensive Lazy Loading
+- **Health Dashboard**: Page loads instantly with skeleton placeholders
+- **Server Show**: Metrics load asynchronously after initial render
+- **Docker Dashboard**: All SSH operations deferred via `wire:init`
+- Animated pulse skeleton placeholders across all heavy components
+- Filter buttons disabled during loading states
+
+### Fixed - Livewire Constructor Injection
+- Fixed `TeamSettings.php` constructor injection (Livewire 3 incompatibility)
+- Changed to `boot()` method for service injection
 
 ### Fixed - Deployment Live Streaming
 - Show actual SSH and Docker commands being executed (`$ ssh ...`, `$ docker exec ...`)

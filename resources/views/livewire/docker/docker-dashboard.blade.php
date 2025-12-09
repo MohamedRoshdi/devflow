@@ -1,4 +1,4 @@
-<div class="space-y-6">
+<div wire:init="loadInitialData" class="space-y-6">
     {{-- Header with Gradient --}}
     <div class="relative mb-8 rounded-2xl bg-gradient-to-br from-cyan-500 via-blue-500 to-indigo-500 dark:from-cyan-600 dark:via-blue-600 dark:to-indigo-600 p-8 shadow-xl overflow-hidden">
         <div class="absolute inset-0 bg-black/10 dark:bg-black/20 backdrop-blur-sm"></div>
@@ -49,26 +49,56 @@
         </div>
     @endif
 
+    {{-- Initial Loading Skeleton --}}
+    @if($isLoading)
+        <div class="space-y-6 animate-pulse">
+            {{-- Tabs Skeleton --}}
+            <div class="border-b border-gray-200 dark:border-gray-700">
+                <nav class="-mb-px flex space-x-8">
+                    @for($i = 0; $i < 5; $i++)
+                        <div class="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded my-4"></div>
+                    @endfor
+                </nav>
+            </div>
+            {{-- Content Skeleton --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                @for($i = 0; $i < 4; $i++)
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+                        <div class="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
+                        <div class="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    </div>
+                @endfor
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+                <div class="h-5 w-32 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
+                <div class="space-y-3">
+                    @for($i = 0; $i < 3; $i++)
+                        <div class="h-4 w-full bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    @endfor
+                </div>
+            </div>
+        </div>
+    @else
     {{-- Tabs --}}
-    <div class="border-b border-gray-200 dark:border-gray-700 dark:border-gray-700">
+    <div class="border-b border-gray-200 dark:border-gray-700">
         <nav class="-mb-px flex space-x-8">
-            <button wire:click="switchTab('overview')" 
+            <button wire:click="switchTab('overview')"
                     class="@if($activeTab === 'overview') border-blue-500 text-blue-600 @else border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 hover:border-gray-300 @endif whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
                 📊 Overview
             </button>
-            <button wire:click="switchTab('images')" 
+            <button wire:click="switchTab('images')"
                     class="@if($activeTab === 'images') border-blue-500 text-blue-600 @else border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 hover:border-gray-300 @endif whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
                 🖼️ Images ({{ count($images) }})
             </button>
-            <button wire:click="switchTab('volumes')" 
+            <button wire:click="switchTab('volumes')"
                     class="@if($activeTab === 'volumes') border-blue-500 text-blue-600 @else border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 hover:border-gray-300 @endif whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
                 💾 Volumes ({{ count($volumes) }})
             </button>
-            <button wire:click="switchTab('networks')" 
+            <button wire:click="switchTab('networks')"
                     class="@if($activeTab === 'networks') border-blue-500 text-blue-600 @else border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 hover:border-gray-300 @endif whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
                 🌐 Networks ({{ count($networks) }})
             </button>
-            <button wire:click="switchTab('cleanup')" 
+            <button wire:click="switchTab('cleanup')"
                     class="@if($activeTab === 'cleanup') border-blue-500 text-blue-600 @else border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 hover:border-gray-300 @endif whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
                 🧹 Cleanup
             </button>
@@ -398,5 +428,6 @@
             </div>
         </div>
     @endif
+    @endif {{-- End of isLoading else block --}}
 </div>
 

@@ -32,6 +32,8 @@ class DockerDashboard extends Component
 
     public bool $loading = false;
 
+    public bool $isLoading = true;
+
     public ?string $error = null;
 
     protected DockerService $dockerService;
@@ -45,7 +47,16 @@ class DockerDashboard extends Component
     {
         // All servers are shared across all users
         $this->server = $server;
+        // Don't load Docker info on mount - use wire:init for lazy loading
+    }
+
+    /**
+     * Lazy load Docker data - called via wire:init
+     */
+    public function loadInitialData(): void
+    {
         $this->loadDockerInfo();
+        $this->isLoading = false;
     }
 
     public function loadDockerInfo(): void
