@@ -2,6 +2,18 @@
 
 > Comprehensive test suite with 4,300+ tests covering browser, unit, feature, integration, and security testing.
 
+## ⚠️ Current Status (December 2024)
+
+| Suite | Status | Notes |
+|-------|--------|-------|
+| Feature | ✅ **202 passing** | 593 assertions, 20 skipped |
+| Unit | ⏳ Blocked | Migration timeout in Docker |
+| Browser | ⏳ Not run | Requires Dusk setup |
+
+**See [TESTING_POSTGRESQL.md](./TESTING_POSTGRESQL.md#current-testing-status-december-2024) for detailed status and next steps.**
+
+---
+
 ## Quick Start
 
 ```bash

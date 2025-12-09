@@ -265,6 +265,87 @@ If you need to switch back to SQLite for any reason:
 - [PostgreSQL Documentation](https://www.postgresql.org/docs/)
 - [Docker Compose Documentation](https://docs.docker.com/compose/)
 
+## Current Testing Status (December 2024)
+
+### Summary
+
+| Test Suite | Status | Count | Notes |
+|------------|--------|-------|-------|
+| **Feature Tests** | ✅ PASSING | 202 tests, 593 assertions | 20 skipped (expected) |
+| **Unit Tests** | ⏳ BLOCKED | 3,044 tests | Hanging during migration |
+| **Browser Tests** | ⏳ Not yet run | ~2,500 tests | Requires Dusk setup |
+
+### Infrastructure Status
+
+| Component | Status | Details |
+|-----------|--------|---------|
+| Docker Test Image | ✅ Ready | `devflow-test:latest` with pdo_pgsql |
+| PostgreSQL Database | ✅ Running | Port 5433, `devflow_test` database |
+| Database Connection | ✅ Verified | Connection from Docker container works |
+
+### Fixed Issues
+
+1. **PDO PostgreSQL Driver** (December 9, 2024)
+   - Added `pdo_pgsql` extension to `Dockerfile.test`
+   - Docker image now includes all required PHP extensions
+
+2. **Composer ext-ftp Requirement** (December 9, 2024)
+   - Fixed Docker build failure due to missing ext-ftp
+   - Added `--ignore-platform-req=ext-ftp` to composer install in Dockerfile.test
+
+3. **MySQL-Specific Migration Queries** (December 9, 2024)
+   - Fixed `2025_12_03_000001_add_performance_indexes.php` for PostgreSQL compatibility
+   - Added multi-driver index existence checking (SQLite, PostgreSQL, MySQL)
+
+### Known Issues
+
+1. **Unit Tests Hanging During Migration**
+   - **Symptom**: Tests display PHPUnit header but freeze during database initialization
+   - **Cause**: `RefreshDatabase` trait migration taking excessive time in Docker
+   - **Investigation Needed**:
+     - Migration timeout or deadlock during `migrate:fresh`
+     - Possible index creation bottleneck
+     - Docker network latency to database
+
+### Next Steps
+
+1. **Debug Migration Hang**
+   ```bash
+   # Run single test with verbose migration output
+   docker run --rm --network host \
+     -v $(pwd):/app -w /app devflow-test:latest \
+     php artisan migrate:fresh --env=testing -v
+   ```
+
+2. **Try Direct PHPUnit Without RefreshDatabase**
+   - Temporarily modify tests to skip RefreshDatabase
+   - Identify if issue is migration-specific
+
+3. **Profile Migration Performance**
+   - Add timing output to migrations
+   - Check for slow index creation queries
+
+4. **Alternative: SQLite for Unit Tests**
+   - Unit tests may work with SQLite in-memory database
+   - Reserve PostgreSQL for Feature/Integration tests only
+
+### Running Tests
+
+```bash
+# Feature tests (currently working)
+./run-tests.sh feature
+
+# Unit tests (currently blocked - investigation needed)
+./run-tests.sh unit
+
+# Using Docker directly with PostgreSQL
+docker run --rm --network host \
+  -v $(pwd):/app -w /app devflow-test:latest \
+  php -d memory_limit=1G vendor/bin/phpunit --testsuite=Feature
+```
+
+---
+
 ## Support
 
 For issues or questions about the testing setup, refer to:

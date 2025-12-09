@@ -26,8 +26,8 @@ WORKDIR /var/www/html
 # Copy composer files first for caching
 COPY composer.json composer.lock ./
 
-# Install dependencies
-RUN composer install --no-scripts --no-autoloader --prefer-dist
+# Install dependencies (ignore ext-ftp since it's not needed for testing)
+RUN composer install --no-scripts --no-autoloader --prefer-dist --ignore-platform-req=ext-ftp
 
 # Copy the rest of the application
 COPY . .
