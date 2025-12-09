@@ -90,8 +90,8 @@ class HealthCheckManager extends Component
     #[Computed]
     public function notificationChannels()
     {
-        return NotificationChannel::where('user_id', auth()->id())
-            ->orderBy('created_at', 'desc')
+        // Get all notification channels (table uses project_id, not user_id)
+        return NotificationChannel::orderBy('created_at', 'desc')
             ->get();
     }
 
