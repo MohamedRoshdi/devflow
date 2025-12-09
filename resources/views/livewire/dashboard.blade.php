@@ -1,954 +1,472 @@
-<div wire:poll.30s="refreshDashboard">
-    <!-- Hero Section with Gradient -->
-    <div class="relative mb-8 rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 dark:from-blue-600 dark:via-purple-600 dark:to-pink-600 p-8 shadow-xl overflow-hidden">
-        <!-- Animated background pattern -->
-        <div class="absolute inset-0 opacity-10">
-            <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 80 80\"><path fill=\"white\" d=\"M0 0h40v40H0zm40 40h40v40H40z\"/></svg>'); background-size: 40px 40px;"></div>
-        </div>
-        <div class="absolute inset-0 bg-black/10 dark:bg-black/20"></div>
-        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between">
-            <div>
-                <h1 class="text-3xl lg:text-4xl font-bold text-white flex items-center gap-3">
-                    @if($isNewUser)
-                        Welcome to DevFlow Pro!
-                    @else
-                        Welcome Back!
+<div wire:poll.30s="refreshDashboard" class="space-y-6">
+
+    {{-- System Status Banner (only show if issues) --}}
+    @if(($healthCheckStats['down'] ?? 0) > 0 || ($queueStats['failed'] ?? 0) > 0)
+    <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
+        <div class="flex items-center gap-3">
+            <div class="flex-shrink-0">
+                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+            </div>
+            <div class="flex-1">
+                <p class="text-sm font-medium text-red-800 dark:text-red-200">
+                    @if(($healthCheckStats['down'] ?? 0) > 0)
+                        {{ $healthCheckStats['down'] }} service(s) down
                     @endif
-                    <span class="hidden lg:inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white/20 backdrop-blur-md text-white">
-                        v2.5
-                    </span>
-                </h1>
-                <p class="text-white/90 text-lg mt-2">
-                    @if($isNewUser)
-                        Your all-in-one DevOps platform for managing servers, deployments & infrastructure
-                    @else
-                        Here's your infrastructure overview for today
+                    @if(($healthCheckStats['down'] ?? 0) > 0 && ($queueStats['failed'] ?? 0) > 0) &bull; @endif
+                    @if(($queueStats['failed'] ?? 0) > 0)
+                        {{ $queueStats['failed'] }} failed job(s)
                     @endif
                 </p>
             </div>
-            <!-- Quick stats in hero -->
-            <div class="mt-6 lg:mt-0 flex flex-wrap gap-4">
-                <div class="bg-white/20 backdrop-blur-md rounded-xl px-4 py-3 hover:bg-white/30 transition-all cursor-pointer" onclick="window.location.href='{{ route('servers.index') }}'">
-                    <div class="text-2xl font-bold text-white">{{ $stats['online_servers'] ?? 0 }}/{{ $stats['total_servers'] ?? 0 }}</div>
-                    <div class="text-sm text-white/80">Servers Online</div>
-                </div>
-                <div class="bg-white/20 backdrop-blur-md rounded-xl px-4 py-3 hover:bg-white/30 transition-all cursor-pointer" onclick="window.location.href='{{ route('projects.index') }}'">
-                    <div class="text-2xl font-bold text-white">{{ $stats['running_projects'] ?? 0 }}</div>
-                    <div class="text-sm text-white/80">Running Projects</div>
-                </div>
-                <div class="bg-white/20 backdrop-blur-md rounded-xl px-4 py-3 hover:bg-white/30 transition-all cursor-pointer" onclick="window.location.href='{{ route('deployments.index') }}'">
-                    <div class="text-2xl font-bold text-white">{{ $deploymentsToday }}</div>
-                    <div class="text-sm text-white/80">Deployments Today</div>
-                </div>
-            </div>
+            <a href="{{ route('settings.health-checks') }}" class="text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">View →</a>
         </div>
-    </div>
-
-    <!-- Dashboard Customization Controls -->
-    <div class="mb-6 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-            @if($editMode)
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
-                    <svg class="w-4 h-4 mr-1.5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
-                    </svg>
-                    Edit Mode - Drag widgets to reorder
-                </span>
-            @endif
-        </div>
-        <div class="flex items-center space-x-2">
-            @if($editMode)
-                <button wire:click="resetWidgetOrder" class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                    </svg>
-                    Reset Layout
-                </button>
-            @endif
-            <button wire:click="toggleEditMode" class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 {{ $editMode ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700' }}">
-                @if($editMode)
-                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    Done
-                @else
-                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
-                    </svg>
-                    Customize Layout
-                @endif
-            </button>
-        </div>
-    </div>
-
-    <!-- Draggable Widgets Container -->
-    <div id="dashboard-widgets" class="space-y-8">
-        @foreach($widgetOrder as $widgetId)
-            @if($widgetId === 'getting_started' && !$hasCompletedOnboarding)
-            <!-- Getting Started Widget -->
-            <div data-widget-id="getting_started" class="relative {{ $editMode ? 'ring-2 ring-dashed ring-gray-300 dark:ring-gray-600 rounded-2xl p-2' : '' }}">
-                @if($editMode)
-                <div class="widget-drag-handle absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 cursor-move bg-white dark:bg-gray-800 px-3 py-1 rounded-full shadow-md border border-gray-200 dark:border-gray-700 flex items-center space-x-2">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
-                    </svg>
-                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Getting Started</span>
-                </div>
-                @endif
-
-                <!-- Getting Started Section -->
-                <div class="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-xl border border-indigo-100 dark:border-gray-700 overflow-hidden mb-8">
-                    <div class="p-6 border-b border-indigo-100 dark:border-gray-700">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-3">
-                                <div class="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg">
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">Get Started with DevFlow Pro</h2>
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">Complete these steps to set up your deployment pipeline</p>
-                                </div>
-                            </div>
-                            <button wire:click="dismissGettingStarted" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" title="Dismiss">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="p-6">
-                        <!-- Progress Bar -->
-                        @php
-                            $completedSteps = collect($onboardingSteps)->filter(fn($v) => $v)->count();
-                            $totalSteps = count($onboardingSteps);
-                            $progressPercent = $totalSteps > 0 ? ($completedSteps / $totalSteps) * 100 : 0;
-                        @endphp
-                        <div class="mb-6">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Setup Progress</span>
-                                <span class="text-sm font-bold text-indigo-600 dark:text-indigo-400">{{ $completedSteps }}/{{ $totalSteps }} completed</span>
-                            </div>
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
-                                <div class="bg-gradient-to-r from-indigo-500 to-purple-600 h-3 rounded-full transition-all duration-500" style="width: {{ $progressPercent }}%"></div>
-                            </div>
-                        </div>
-
-                        <!-- Steps Grid -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <!-- Step 1: Add Server -->
-                            <a href="{{ route('servers.create') }}" class="group relative bg-white dark:bg-gray-800 rounded-xl p-5 border-2 transition-all duration-300 {{ $onboardingSteps['add_server'] ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-indigo-500 hover:shadow-lg' }}">
-                                <div class="absolute -top-3 -left-3 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold {{ $onboardingSteps['add_server'] ? 'bg-green-500 text-white' : 'bg-indigo-500 text-white' }}">
-                                    @if($onboardingSteps['add_server'])
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    @else
-                                        1
-                                    @endif
-                                </div>
-                                <div class="flex flex-col items-center text-center pt-2">
-                                    <div class="p-3 rounded-xl mb-3 {{ $onboardingSteps['add_server'] ? 'bg-green-100 dark:bg-green-900/30' : 'bg-indigo-100 dark:bg-indigo-900/30 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50' }} transition-colors">
-                                        <svg class="w-8 h-8 {{ $onboardingSteps['add_server'] ? 'text-green-600 dark:text-green-400' : 'text-indigo-600 dark:text-indigo-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"></path>
-                                        </svg>
-                                    </div>
-                                    <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Add a Server</h3>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">Connect your VPS via SSH</p>
-                                    @if(!$onboardingSteps['add_server'])
-                                        <span class="mt-2 inline-flex items-center text-xs font-medium text-indigo-600 dark:text-indigo-400">
-                                            Start here <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                                        </span>
-                                    @endif
-                                </div>
-                            </a>
-
-                            <!-- Step 2: Create Project -->
-                            <a href="{{ route('projects.create') }}" class="group relative bg-white dark:bg-gray-800 rounded-xl p-5 border-2 transition-all duration-300 {{ $onboardingSteps['create_project'] ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : ($onboardingSteps['add_server'] ? 'border-gray-200 dark:border-gray-700 hover:border-indigo-500 hover:shadow-lg' : 'border-gray-200 dark:border-gray-700 opacity-60') }}">
-                                <div class="absolute -top-3 -left-3 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold {{ $onboardingSteps['create_project'] ? 'bg-green-500 text-white' : ($onboardingSteps['add_server'] ? 'bg-indigo-500 text-white' : 'bg-gray-400 text-white') }}">
-                                    @if($onboardingSteps['create_project'])
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    @else
-                                        2
-                                    @endif
-                                </div>
-                                <div class="flex flex-col items-center text-center pt-2">
-                                    <div class="p-3 rounded-xl mb-3 {{ $onboardingSteps['create_project'] ? 'bg-green-100 dark:bg-green-900/30' : 'bg-purple-100 dark:bg-purple-900/30' }} transition-colors">
-                                        <svg class="w-8 h-8 {{ $onboardingSteps['create_project'] ? 'text-green-600 dark:text-green-400' : 'text-purple-600 dark:text-purple-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
-                                        </svg>
-                                    </div>
-                                    <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Create Project</h3>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">Link your Git repository</p>
-                                </div>
-                            </a>
-
-                            <!-- Step 3: First Deployment -->
-                            <div class="group relative bg-white dark:bg-gray-800 rounded-xl p-5 border-2 transition-all duration-300 {{ $onboardingSteps['first_deployment'] ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : ($onboardingSteps['create_project'] ? 'border-gray-200 dark:border-gray-700 hover:border-indigo-500' : 'border-gray-200 dark:border-gray-700 opacity-60') }}">
-                                <div class="absolute -top-3 -left-3 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold {{ $onboardingSteps['first_deployment'] ? 'bg-green-500 text-white' : ($onboardingSteps['create_project'] ? 'bg-indigo-500 text-white' : 'bg-gray-400 text-white') }}">
-                                    @if($onboardingSteps['first_deployment'])
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    @else
-                                        3
-                                    @endif
-                                </div>
-                                <div class="flex flex-col items-center text-center pt-2">
-                                    <div class="p-3 rounded-xl mb-3 {{ $onboardingSteps['first_deployment'] ? 'bg-green-100 dark:bg-green-900/30' : 'bg-blue-100 dark:bg-blue-900/30' }} transition-colors">
-                                        <svg class="w-8 h-8 {{ $onboardingSteps['first_deployment'] ? 'text-green-600 dark:text-green-400' : 'text-blue-600 dark:text-blue-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                                        </svg>
-                                    </div>
-                                    <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Deploy</h3>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">Run your first deployment</p>
-                                </div>
-                            </div>
-
-                            <!-- Step 4: Setup Domain -->
-                            <a href="{{ route('domains.index') }}" class="group relative bg-white dark:bg-gray-800 rounded-xl p-5 border-2 transition-all duration-300 {{ $onboardingSteps['setup_domain'] ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : ($onboardingSteps['first_deployment'] ? 'border-gray-200 dark:border-gray-700 hover:border-indigo-500 hover:shadow-lg' : 'border-gray-200 dark:border-gray-700 opacity-60') }}">
-                                <div class="absolute -top-3 -left-3 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold {{ $onboardingSteps['setup_domain'] ? 'bg-green-500 text-white' : ($onboardingSteps['first_deployment'] ? 'bg-indigo-500 text-white' : 'bg-gray-400 text-white') }}">
-                                    @if($onboardingSteps['setup_domain'])
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    @else
-                                        4
-                                    @endif
-                                </div>
-                                <div class="flex flex-col items-center text-center pt-2">
-                                    <div class="p-3 rounded-xl mb-3 {{ $onboardingSteps['setup_domain'] ? 'bg-green-100 dark:bg-green-900/30' : 'bg-teal-100 dark:bg-teal-900/30' }} transition-colors">
-                                        <svg class="w-8 h-8 {{ $onboardingSteps['setup_domain'] ? 'text-green-600 dark:text-green-400' : 'text-teal-600 dark:text-teal-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
-                                        </svg>
-                                    </div>
-                                    <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Add Domain</h3>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">Configure SSL & DNS</p>
-                                </div>
-                            </a>
-                        </div>
-
-                        <!-- Feature Highlights -->
-                        <div class="mt-8 pt-6 border-t border-indigo-100 dark:border-gray-700">
-                            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">What you can do with DevFlow Pro:</h3>
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    One-click deployments
-                                </div>
-                                <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    Docker orchestration
-                                </div>
-                                <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    SSL certificates
-                                </div>
-                                <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    Real-time monitoring
-                                </div>
-                                <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    CI/CD pipelines
-                                </div>
-                                <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    GitHub integration
-                                </div>
-                                <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    Database backups
-                                </div>
-                                <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    Slack/Discord alerts
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @elseif($widgetId === 'stats_cards')
-            <!-- Stats Cards Widget -->
-            <div data-widget-id="stats_cards" class="relative {{ $editMode ? 'ring-2 ring-dashed ring-gray-300 dark:ring-gray-600 rounded-2xl p-2' : '' }}">
-                @if($editMode)
-                <div class="widget-drag-handle absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 cursor-move bg-white dark:bg-gray-800 px-3 py-1 rounded-full shadow-md border border-gray-200 dark:border-gray-700 flex items-center space-x-2">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
-                    </svg>
-                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Stats Cards</span>
-                </div>
-                @endif
-    <!-- 8 Stats Cards Grid (2x4) -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- 1. Total Servers Card -->
-        <div class="bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-blue-100">Total Servers</p>
-                    <p class="text-4xl font-bold text-white mt-2">{{ $stats['total_servers'] ?? 0 }}</p>
-                    <p class="text-sm text-blue-100 mt-2">
-                        <span class="font-semibold">{{ $stats['online_servers'] ?? 0 }}</span> online,
-                        <span class="font-semibold">{{ ($stats['total_servers'] ?? 0) - ($stats['online_servers'] ?? 0) }}</span> offline
-                    </p>
-                </div>
-                <div class="p-3 bg-white/20 backdrop-blur-md rounded-xl">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"></path>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        <!-- 2. Total Projects Card -->
-        <div class="bg-gradient-to-br from-green-500 to-emerald-600 dark:from-green-600 dark:to-emerald-700 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-green-100">Total Projects</p>
-                    <p class="text-4xl font-bold text-white mt-2">{{ $stats['total_projects'] ?? 0 }}</p>
-                    <p class="text-sm text-green-100 mt-2">
-                        <span class="font-semibold">{{ $stats['running_projects'] ?? 0 }}</span> running
-                    </p>
-                </div>
-                <div class="p-3 bg-white/20 backdrop-blur-md rounded-xl">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        <!-- 3. Active Deployments Card -->
-        <div class="bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-purple-100">Active Deployments</p>
-                    <div class="flex items-center mt-2">
-                        <p class="text-4xl font-bold text-white">{{ $activeDeployments }}</p>
-                        @if($activeDeployments > 0)
-                            <span class="ml-3 flex h-3 w-3">
-                                <span class="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-white opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
-                            </span>
-                        @endif
-                    </div>
-                    <p class="text-sm text-purple-100 mt-2">
-                        <span class="font-semibold">{{ $stats['successful_deployments'] ?? 0 }}</span> successful total
-                    </p>
-                </div>
-                <div class="p-3 bg-white/20 backdrop-blur-md rounded-xl">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        <!-- 4. SSL Certificates Card -->
-        <div class="bg-gradient-to-br from-{{ ($sslStats['expiring_soon'] ?? 0) > 0 ? 'amber-500 to-amber-600 dark:from-amber-600 dark:to-amber-700' : 'teal-500 to-teal-600 dark:from-teal-600 dark:to-teal-700' }} rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium {{ ($sslStats['expiring_soon'] ?? 0) > 0 ? 'text-amber-100' : 'text-teal-100' }}">SSL Certificates</p>
-                    <p class="text-4xl font-bold text-white mt-2">{{ $sslStats['active_certificates'] ?? 0 }}</p>
-                    <p class="text-sm {{ ($sslStats['expiring_soon'] ?? 0) > 0 ? 'text-amber-100' : 'text-teal-100' }} mt-2">
-                        @if(($sslStats['expiring_soon'] ?? 0) > 0)
-                            <span class="font-semibold">{{ $sslStats['expiring_soon'] ?? 0 }}</span> expiring soon
-                        @else
-                            All certificates valid
-                        @endif
-                    </p>
-                </div>
-                <div class="p-3 bg-white/20 backdrop-blur-md rounded-xl">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        <!-- 5. Health Checks Card -->
-        <div class="bg-gradient-to-br from-{{ ($healthCheckStats['down'] ?? 0) > 0 ? 'red-500 to-red-600 dark:from-red-600 dark:to-red-700' : 'emerald-500 to-emerald-600 dark:from-emerald-600 dark:to-emerald-700' }} rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium {{ ($healthCheckStats['down'] ?? 0) > 0 ? 'text-red-100' : 'text-emerald-100' }}">Health Checks</p>
-                    <p class="text-4xl font-bold text-white mt-2">{{ $healthCheckStats['healthy'] ?? 0 }}</p>
-                    <p class="text-sm {{ ($healthCheckStats['down'] ?? 0) > 0 ? 'text-red-100' : 'text-emerald-100' }} mt-2">
-                        @if(($healthCheckStats['down'] ?? 0) > 0)
-                            <span class="font-semibold">{{ $healthCheckStats['down'] ?? 0 }}</span> services down
-                        @else
-                            All systems operational
-                        @endif
-                    </p>
-                </div>
-                <div class="p-3 bg-white/20 backdrop-blur-md rounded-xl">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        <!-- 6. Queue Jobs Card -->
-        <div class="bg-gradient-to-br from-{{ ($queueStats['failed'] ?? 0) > 0 ? 'orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700' : 'indigo-500 to-indigo-600 dark:from-indigo-600 dark:to-indigo-700' }} rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium {{ ($queueStats['failed'] ?? 0) > 0 ? 'text-orange-100' : 'text-indigo-100' }}">Queue Jobs</p>
-                    <p class="text-4xl font-bold text-white mt-2">{{ $queueStats['pending'] ?? 0 }}</p>
-                    <p class="text-sm {{ ($queueStats['failed'] ?? 0) > 0 ? 'text-orange-100' : 'text-indigo-100' }} mt-2">
-                        @if(($queueStats['failed'] ?? 0) > 0)
-                            <span class="font-semibold">{{ $queueStats['failed'] ?? 0 }}</span> failed jobs
-                        @else
-                            No failed jobs
-                        @endif
-                    </p>
-                </div>
-                <div class="p-3 bg-white/20 backdrop-blur-md rounded-xl">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        <!-- 7. Deployments Today Card -->
-        <div class="bg-gradient-to-br from-cyan-500 to-cyan-600 dark:from-cyan-600 dark:to-cyan-700 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-cyan-100">Deployments Today</p>
-                    <p class="text-4xl font-bold text-white mt-2">{{ $deploymentsToday }}</p>
-                    <p class="text-sm text-cyan-100 mt-2">
-                        <span class="font-semibold">{{ $stats['total_deployments'] ?? 0 }}</span> all time
-                    </p>
-                </div>
-                <div class="p-3 bg-white/20 backdrop-blur-md rounded-xl">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        <!-- 8. Security Score Card -->
-        <div class="bg-gradient-to-br from-{{ $overallSecurityScore >= 80 ? 'emerald-500 to-emerald-600 dark:from-emerald-600 dark:to-emerald-700' : ($overallSecurityScore >= 60 ? 'yellow-500 to-yellow-600 dark:from-yellow-600 dark:to-yellow-700' : 'red-500 to-red-600 dark:from-red-600 dark:to-red-700') }} rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium {{ $overallSecurityScore >= 80 ? 'text-emerald-100' : ($overallSecurityScore >= 60 ? 'text-yellow-100' : 'text-red-100') }}">Security Score</p>
-                    <p class="text-4xl font-bold text-white mt-2">{{ $overallSecurityScore }}%</p>
-                    <p class="text-sm {{ $overallSecurityScore >= 80 ? 'text-emerald-100' : ($overallSecurityScore >= 60 ? 'text-yellow-100' : 'text-red-100') }} mt-2">
-                        @if($overallSecurityScore >= 80)
-                            Excellent security
-                        @elseif($overallSecurityScore >= 60)
-                            Good security
-                        @else
-                            Needs attention
-                        @endif
-                    </p>
-                </div>
-                <div class="p-3 bg-white/20 backdrop-blur-md rounded-xl">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                    </svg>
-                </div>
-            </div>
-        </div>
-    </div>
-            </div>
-            @elseif($widgetId === 'quick_actions')
-            <!-- Quick Actions Widget -->
-            <div data-widget-id="quick_actions" class="relative {{ $editMode ? 'ring-2 ring-dashed ring-gray-300 dark:ring-gray-600 rounded-2xl p-2' : '' }}">
-                @if($editMode)
-                <div class="widget-drag-handle absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 cursor-move bg-white dark:bg-gray-800 px-3 py-1 rounded-full shadow-md border border-gray-200 dark:border-gray-700 flex items-center space-x-2">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
-                    </svg>
-                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Quick Actions</span>
-                </div>
-                @endif
-    <!-- Quick Actions Panel -->
-    @if($showQuickActions)
-    <div class="mb-8">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Quick Actions</h2>
-            <button wire:click="toggleSection('quickActions')" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-            </button>
-        </div>
-
-        @if(!in_array('quickActions', $collapsedSections))
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-            <!-- New Project -->
-            <a href="{{ route('projects.create') }}" class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center hover:shadow-lg hover:scale-105 transform transition-all duration-300 border-2 border-transparent hover:border-blue-500">
-                <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg inline-block mb-2">
-                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                </div>
-                <p class="text-sm font-medium text-gray-900 dark:text-white">New Project</p>
-            </a>
-
-            <!-- Add Server -->
-            <a href="{{ route('servers.create') }}" class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center hover:shadow-lg hover:scale-105 transform transition-all duration-300 border-2 border-transparent hover:border-green-500">
-                <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg inline-block mb-2">
-                    <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"></path>
-                    </svg>
-                </div>
-                <p class="text-sm font-medium text-gray-900 dark:text-white">Add Server</p>
-            </a>
-
-            <!-- Deploy All -->
-            <button wire:click="deployAll" wire:confirm="Are you sure you want to deploy all active projects?" class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center hover:shadow-lg hover:scale-105 transform transition-all duration-300 border-2 border-transparent hover:border-purple-500">
-                <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg inline-block mb-2">
-                    <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                    </svg>
-                </div>
-                <p class="text-sm font-medium text-gray-900 dark:text-white">Deploy All</p>
-            </button>
-
-            <!-- Clear Caches -->
-            <button wire:click="clearAllCaches" class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center hover:shadow-lg hover:scale-105 transform transition-all duration-300 border-2 border-transparent hover:border-orange-500">
-                <div class="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg inline-block mb-2">
-                    <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                    </svg>
-                </div>
-                <p class="text-sm font-medium text-gray-900 dark:text-white">Clear Caches</p>
-            </button>
-
-            <!-- View Logs -->
-            <a href="{{ route('logs.index') }}" class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center hover:shadow-lg hover:scale-105 transform transition-all duration-300 border-2 border-transparent hover:border-red-500">
-                <div class="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg inline-block mb-2">
-                    <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                </div>
-                <p class="text-sm font-medium text-gray-900 dark:text-white">View Logs</p>
-            </a>
-
-            <!-- Health Checks -->
-            <a href="{{ route('settings.health-checks') }}" class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center hover:shadow-lg hover:scale-105 transform transition-all duration-300 border-2 border-transparent hover:border-teal-500">
-                <div class="p-3 bg-teal-100 dark:bg-teal-900/30 rounded-lg inline-block mb-2">
-                    <svg class="w-6 h-6 text-teal-600 dark:text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-                <p class="text-sm font-medium text-gray-900 dark:text-white">Health Checks</p>
-            </a>
-
-            <!-- Settings -->
-            <a href="{{ route('settings.preferences') }}" class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center hover:shadow-lg hover:scale-105 transform transition-all duration-300 border-2 border-transparent hover:border-gray-500">
-                <div class="p-3 bg-gray-100 dark:bg-gray-900/30 rounded-lg inline-block mb-2">
-                    <svg class="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    </svg>
-                </div>
-                <p class="text-sm font-medium text-gray-900 dark:text-white">Settings</p>
-            </a>
-        </div>
-        @endif
     </div>
     @endif
-            </div>
-            @elseif($widgetId === 'activity_server_grid')
-            <!-- Activity & Server Health Widget -->
-            <div data-widget-id="activity_server_grid" class="relative {{ $editMode ? 'ring-2 ring-dashed ring-gray-300 dark:ring-gray-600 rounded-2xl p-2' : '' }}">
-                @if($editMode)
-                <div class="widget-drag-handle absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 cursor-move bg-white dark:bg-gray-800 px-3 py-1 rounded-full shadow-md border border-gray-200 dark:border-gray-700 flex items-center space-x-2">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
-                    </svg>
-                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Activity & Health</span>
-                </div>
+
+    {{-- Welcome Header --}}
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+            <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
+                @if($isNewUser)
+                    Welcome to DevFlow Pro
+                @else
+                    Dashboard
                 @endif
-    <!-- Activity Feed and Server Health Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Activity Feed (2/3 width) -->
-        @if($showActivityFeed)
-        <div class="lg:col-span-2">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
-                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                            </div>
-                            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Recent Activity</h2>
+            </h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">
+                @if($isNewUser)
+                    Your DevOps command center for servers, deployments & infrastructure
+                @else
+                    {{ now()->format('l, F j, Y') }}
+                @endif
+            </p>
+        </div>
+        <div class="flex items-center gap-3">
+            @if($activeDeployments > 0)
+            <div class="flex items-center gap-2 px-4 py-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-500 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-purple-600"></span>
+                </span>
+                <span class="text-sm font-medium text-purple-700 dark:text-purple-300">{{ $activeDeployments }} deploying</span>
+            </div>
+            @endif
+            <a href="{{ route('projects.create') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium rounded-lg shadow-sm transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                New Project
+            </a>
+        </div>
+    </div>
+
+    {{-- Getting Started Section (for new/incomplete users) --}}
+    @if(!$hasCompletedOnboarding)
+    <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-[2px]">
+        <div class="bg-white dark:bg-gray-900 rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Quick Setup</h2>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Get your first deployment running in minutes</p>
+                    </div>
+                </div>
+                <button wire:click="dismissGettingStarted" class="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            {{-- Progress Steps --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {{-- Step 1 --}}
+                <a href="{{ route('servers.create') }}" class="group relative flex items-center gap-4 p-4 rounded-xl border-2 transition-all {{ $onboardingSteps['add_server'] ? 'border-green-500 bg-green-50 dark:bg-green-900/10' : 'border-gray-200 dark:border-gray-700 hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/10' }}">
+                    <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center {{ $onboardingSteps['add_server'] ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700 group-hover:bg-indigo-500' }} transition-colors">
+                        @if($onboardingSteps['add_server'])
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        @else
+                            <span class="text-sm font-bold text-gray-600 dark:text-gray-300 group-hover:text-white">1</span>
+                        @endif
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-medium text-gray-900 dark:text-white">Add Server</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">Connect via SSH</p>
+                    </div>
+                    @if(!$onboardingSteps['add_server'])
+                    <svg class="w-5 h-5 text-gray-400 group-hover:text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    @endif
+                </a>
+
+                {{-- Step 2 --}}
+                <a href="{{ route('projects.create') }}" class="group relative flex items-center gap-4 p-4 rounded-xl border-2 transition-all {{ $onboardingSteps['create_project'] ? 'border-green-500 bg-green-50 dark:bg-green-900/10' : ($onboardingSteps['add_server'] ? 'border-gray-200 dark:border-gray-700 hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/10' : 'border-gray-100 dark:border-gray-800 opacity-50 pointer-events-none') }}">
+                    <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center {{ $onboardingSteps['create_project'] ? 'bg-green-500' : ($onboardingSteps['add_server'] ? 'bg-gray-200 dark:bg-gray-700 group-hover:bg-indigo-500' : 'bg-gray-100 dark:bg-gray-800') }} transition-colors">
+                        @if($onboardingSteps['create_project'])
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        @else
+                            <span class="text-sm font-bold {{ $onboardingSteps['add_server'] ? 'text-gray-600 dark:text-gray-300 group-hover:text-white' : 'text-gray-400' }}">2</span>
+                        @endif
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-medium text-gray-900 dark:text-white">Create Project</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">Link Git repository</p>
+                    </div>
+                </a>
+
+                {{-- Step 3 --}}
+                <div class="group relative flex items-center gap-4 p-4 rounded-xl border-2 {{ $onboardingSteps['first_deployment'] ? 'border-green-500 bg-green-50 dark:bg-green-900/10' : ($onboardingSteps['create_project'] ? 'border-gray-200 dark:border-gray-700' : 'border-gray-100 dark:border-gray-800 opacity-50') }}">
+                    <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center {{ $onboardingSteps['first_deployment'] ? 'bg-green-500' : ($onboardingSteps['create_project'] ? 'bg-gray-200 dark:bg-gray-700' : 'bg-gray-100 dark:bg-gray-800') }}">
+                        @if($onboardingSteps['first_deployment'])
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        @else
+                            <span class="text-sm font-bold text-gray-600 dark:text-gray-300">3</span>
+                        @endif
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-medium text-gray-900 dark:text-white">Deploy</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">First deployment</p>
+                    </div>
+                </div>
+
+                {{-- Step 4 --}}
+                <a href="{{ route('domains.index') }}" class="group relative flex items-center gap-4 p-4 rounded-xl border-2 transition-all {{ $onboardingSteps['setup_domain'] ? 'border-green-500 bg-green-50 dark:bg-green-900/10' : ($onboardingSteps['first_deployment'] ? 'border-gray-200 dark:border-gray-700 hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/10' : 'border-gray-100 dark:border-gray-800 opacity-50 pointer-events-none') }}">
+                    <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center {{ $onboardingSteps['setup_domain'] ? 'bg-green-500' : ($onboardingSteps['first_deployment'] ? 'bg-gray-200 dark:bg-gray-700 group-hover:bg-indigo-500' : 'bg-gray-100 dark:bg-gray-800') }} transition-colors">
+                        @if($onboardingSteps['setup_domain'])
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        @else
+                            <span class="text-sm font-bold {{ $onboardingSteps['first_deployment'] ? 'text-gray-600 dark:text-gray-300 group-hover:text-white' : 'text-gray-400' }}">4</span>
+                        @endif
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-medium text-gray-900 dark:text-white">Add Domain</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">SSL & DNS setup</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    {{-- Main Stats Grid --}}
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {{-- Servers --}}
+        <a href="{{ route('servers.index') }}" class="group bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-lg transition-all">
+            <div class="flex items-center justify-between">
+                <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg group-hover:bg-blue-500 transition-colors">
+                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"/>
+                    </svg>
+                </div>
+                <span class="text-xs font-medium px-2 py-1 rounded-full {{ ($stats['online_servers'] ?? 0) == ($stats['total_servers'] ?? 0) ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' }}">
+                    {{ $stats['online_servers'] ?? 0 }}/{{ $stats['total_servers'] ?? 0 }} online
+                </span>
+            </div>
+            <p class="mt-4 text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['total_servers'] ?? 0 }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Servers</p>
+        </a>
+
+        {{-- Projects --}}
+        <a href="{{ route('projects.index') }}" class="group bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 hover:border-green-500 dark:hover:border-green-500 hover:shadow-lg transition-all">
+            <div class="flex items-center justify-between">
+                <div class="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg group-hover:bg-green-500 transition-colors">
+                    <svg class="w-5 h-5 text-green-600 dark:text-green-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                    </svg>
+                </div>
+                <span class="text-xs font-medium px-2 py-1 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                    {{ $stats['running_projects'] ?? 0 }} running
+                </span>
+            </div>
+            <p class="mt-4 text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['total_projects'] ?? 0 }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Projects</p>
+        </a>
+
+        {{-- Deployments Today --}}
+        <a href="{{ route('deployments.index') }}" class="group bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500 hover:shadow-lg transition-all">
+            <div class="flex items-center justify-between">
+                <div class="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg group-hover:bg-purple-500 transition-colors">
+                    <svg class="w-5 h-5 text-purple-600 dark:text-purple-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                    </svg>
+                </div>
+                @if($activeDeployments > 0)
+                <span class="text-xs font-medium px-2 py-1 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 bg-purple-500 rounded-full animate-pulse"></span>
+                    {{ $activeDeployments }} active
+                </span>
+                @endif
+            </div>
+            <p class="mt-4 text-3xl font-bold text-gray-900 dark:text-white">{{ $deploymentsToday }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Deployments Today</p>
+        </a>
+
+        {{-- Security Score --}}
+        <a href="{{ route('settings.security') }}" class="group bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-lg transition-all">
+            <div class="flex items-center justify-between">
+                <div class="p-2 {{ $overallSecurityScore >= 80 ? 'bg-emerald-100 dark:bg-emerald-900/30' : ($overallSecurityScore >= 60 ? 'bg-amber-100 dark:bg-amber-900/30' : 'bg-red-100 dark:bg-red-900/30') }} rounded-lg group-hover:bg-emerald-500 transition-colors">
+                    <svg class="w-5 h-5 {{ $overallSecurityScore >= 80 ? 'text-emerald-600 dark:text-emerald-400' : ($overallSecurityScore >= 60 ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400') }} group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                </div>
+                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $overallSecurityScore >= 80 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : ($overallSecurityScore >= 60 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400') }}">
+                    {{ $overallSecurityScore >= 80 ? 'Excellent' : ($overallSecurityScore >= 60 ? 'Good' : 'Needs work') }}
+                </span>
+            </div>
+            <p class="mt-4 text-3xl font-bold text-gray-900 dark:text-white">{{ $overallSecurityScore }}%</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Security Score</p>
+        </a>
+    </div>
+
+    {{-- Quick Actions Bar --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Quick Actions</span>
+            <div class="flex items-center gap-2 flex-wrap">
+                <a href="{{ route('servers.create') }}" class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"/></svg>
+                    Add Server
+                </a>
+                <button wire:click="deployAll" wire:confirm="Deploy all active projects?" class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-900/30 hover:bg-purple-200 dark:hover:bg-purple-900/50 rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                    Deploy All
+                </button>
+                <button wire:click="clearAllCaches" class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-orange-700 dark:text-orange-300 bg-orange-100 dark:bg-orange-900/30 hover:bg-orange-200 dark:hover:bg-orange-900/50 rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    Clear Caches
+                </button>
+                <a href="{{ route('logs.index') }}" class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    View Logs
+                </a>
+                <a href="{{ route('settings.health-checks') }}" class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Health Checks
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {{-- Main Content Grid --}}
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+        {{-- Recent Activity (2/3) --}}
+        <div class="xl:col-span-2 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                <h2 class="font-semibold text-gray-900 dark:text-white">Recent Activity</h2>
+                <a href="{{ route('deployments.index') }}" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">View all →</a>
+            </div>
+            <div class="divide-y divide-gray-100 dark:divide-gray-700">
+                @forelse($recentActivity as $activity)
+                <div class="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 mt-0.5">
+                            <span class="w-8 h-8 rounded-full flex items-center justify-center
+                                @if($activity['type'] === 'deployment')
+                                    @if($activity['status'] === 'success') bg-green-100 dark:bg-green-900/30
+                                    @elseif($activity['status'] === 'failed') bg-red-100 dark:bg-red-900/30
+                                    @elseif($activity['status'] === 'running') bg-amber-100 dark:bg-amber-900/30
+                                    @else bg-gray-100 dark:bg-gray-700
+                                    @endif
+                                @else bg-blue-100 dark:bg-blue-900/30
+                                @endif">
+                                @if($activity['type'] === 'deployment')
+                                    <svg class="w-4 h-4 @if($activity['status'] === 'success') text-green-600 dark:text-green-400 @elseif($activity['status'] === 'failed') text-red-600 dark:text-red-400 @elseif($activity['status'] === 'running') text-amber-600 dark:text-amber-400 @else text-gray-600 dark:text-gray-400 @endif" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                    </svg>
+                                @else
+                                    <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                    </svg>
+                                @endif
+                            </span>
                         </div>
-                        <span class="text-sm text-gray-500 dark:text-gray-400" wire:poll.15s>
-                            Auto-refresh
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $activity['title'] }}</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $activity['description'] }}</p>
+                            <div class="mt-1 flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
+                                <span>{{ $activity['user'] }}</span>
+                                <span>&bull;</span>
+                                <span>{{ $activity['timestamp']->diffForHumans() }}</span>
+                                @if($activity['type'] === 'deployment')
+                                <span>&bull;</span>
+                                <span class="px-1.5 py-0.5 rounded text-xs font-medium
+                                    @if($activity['status'] === 'success') bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400
+                                    @elseif($activity['status'] === 'failed') bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400
+                                    @elseif($activity['status'] === 'running') bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400
+                                    @else bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300
+                                    @endif">{{ ucfirst($activity['status']) }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @empty
+                <div class="px-6 py-12 text-center">
+                    <svg class="mx-auto h-12 w-12 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                    </svg>
+                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">No recent activity</p>
+                    <a href="{{ route('projects.create') }}" class="mt-3 inline-flex items-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800">Create your first project →</a>
+                </div>
+                @endforelse
+            </div>
+            @if(count($recentActivity) > 0)
+            <div class="px-6 py-3 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-700">
+                <button wire:click="loadMoreActivity" wire:loading.attr="disabled" class="w-full text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-medium disabled:opacity-50">
+                    <span wire:loading.remove wire:target="loadMoreActivity">Load more</span>
+                    <span wire:loading wire:target="loadMoreActivity">Loading...</span>
+                </button>
+            </div>
+            @endif
+        </div>
+
+        {{-- Server Health (1/3) --}}
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                <h2 class="font-semibold text-gray-900 dark:text-white">Server Health</h2>
+                <a href="{{ route('servers.index') }}" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">View all →</a>
+            </div>
+            <div class="divide-y divide-gray-100 dark:divide-gray-700 max-h-[400px] overflow-y-auto">
+                @forelse($serverHealth as $server)
+                <a href="{{ route('servers.show', $server['server_id']) }}" class="block px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-medium text-gray-900 dark:text-white text-sm">{{ $server['server_name'] }}</span>
+                        <span class="flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full {{ ($server['health_status'] ?? 'unknown') === 'healthy' ? 'bg-green-500' : (($server['health_status'] ?? 'unknown') === 'warning' ? 'bg-amber-500' : 'bg-red-500') }}"></span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">{{ ucfirst($server['health_status'] ?? 'unknown') }}</span>
                         </span>
                     </div>
-                </div>
-                <div class="p-6">
-                    <div class="flow-root">
-                        <ul class="-mb-8">
-                            @forelse($recentActivity as $index => $activity)
-                                <li>
-                                    <div class="relative pb-8">
-                                        @if($index < count($recentActivity) - 1)
-                                            <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200 dark:bg-gray-700" aria-hidden="true"></span>
-                                        @endif
-                                        <div class="relative flex space-x-3">
-                                            <div>
-                                                <span class="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white dark:ring-gray-800
-                                                    @if($activity['type'] === 'deployment')
-                                                        @if($activity['status'] === 'success') bg-green-500
-                                                        @elseif($activity['status'] === 'failed') bg-red-500
-                                                        @elseif($activity['status'] === 'running') bg-yellow-500
-                                                        @else bg-gray-500
-                                                        @endif
-                                                    @else
-                                                        bg-blue-500
-                                                    @endif">
-                                                    @if($activity['type'] === 'deployment')
-                                                        <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                                                        </svg>
-                                                    @else
-                                                        <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                                                        </svg>
-                                                    @endif
-                                                </span>
-                                            </div>
-                                            <div class="flex-1 min-w-0 pt-1.5">
-                                                <div>
-                                                    <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                                        {{ $activity['title'] }}
-                                                    </p>
-                                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                                        {{ $activity['description'] }}
-                                                    </p>
-                                                    <div class="mt-2 flex items-center space-x-3">
-                                                        <span class="text-xs text-gray-500 dark:text-gray-400">
-                                                            by {{ $activity['user'] }}
-                                                        </span>
-                                                        <span class="text-xs text-gray-400 dark:text-gray-500">
-                                                            {{ $activity['timestamp']->diffForHumans() }}
-                                                        </span>
-                                                        @if($activity['type'] === 'deployment')
-                                                            <span class="px-2 py-0.5 rounded-full text-xs font-medium
-                                                                @if($activity['status'] === 'success') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
-                                                                @elseif($activity['status'] === 'failed') bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400
-                                                                @elseif($activity['status'] === 'running') bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400
-                                                                @else bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300
-                                                                @endif">
-                                                                {{ ucfirst($activity['status']) }}
-                                                            </span>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                            @empty
-                                <li class="text-center py-12">
-                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
-                                    </svg>
-                                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">No recent activity</p>
-                                </li>
-                            @endforelse
-                        </ul>
-                    </div>
-
-                    <!-- Load More Button -->
-                    @if(count($recentActivity) > 0 && count($recentActivity) < 20)
-                    <div class="px-6 pb-6">
-                        <button
-                            wire:click="loadMoreActivity"
-                            wire:loading.attr="disabled"
-                            class="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2"
-                        >
-                            <span wire:loading.remove wire:target="loadMoreActivity">
-                                <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m0 0l-4-4m4 4l4-4"></path>
-                                </svg>
-                                Load More Activity
-                            </span>
-                            <span wire:loading wire:target="loadMoreActivity" class="flex items-center">
-                                <svg class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                Loading...
-                            </span>
-                        </button>
-                    </div>
-                    @endif
-
-                    <!-- Max Items Reached Message -->
-                    @if(count($recentActivity) >= 20)
-                    <div class="px-6 pb-6">
-                        <div class="text-center py-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-                            <p class="text-sm text-gray-600 dark:text-gray-400">
-                                Showing maximum of 20 items
-                            </p>
-                        </div>
-                    </div>
-                    @endif
-                </div>
-            </div>
-        </div>
-        @endif
-
-        <!-- Server Health Summary (1/3 width) -->
-        @if($showServerHealth)
-        <div class="lg:col-span-1">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
-                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-                    <div class="flex items-center space-x-3">
-                        <div class="p-2 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                            </svg>
-                        </div>
-                        <h2 class="text-xl font-bold text-gray-900 dark:text-white">Server Health</h2>
-                    </div>
-                </div>
-                <div class="p-6 space-y-4 max-h-[600px] overflow-y-auto">
-                    @forelse($serverHealth as $server)
-                        <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 hover:shadow-md transition-shadow">
-                            <div class="flex items-center justify-between mb-3">
-                                <h3 class="font-medium text-gray-900 dark:text-white">{{ $server['server_name'] }}</h3>
-                                <span class="flex items-center">
-                                    <span class="h-2 w-2 rounded-full mr-2
-                                        @if(($server['health_status'] ?? 'unknown') === 'healthy') bg-green-500
-                                        @elseif(($server['health_status'] ?? 'unknown') === 'warning') bg-yellow-500
-                                        @else bg-red-500
-                                        @endif">
-                                    </span>
-                                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">{{ ucfirst($server['health_status'] ?? 'unknown') }}</span>
-                                </span>
+                    @if($server['cpu_usage'] !== null)
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-gray-500 dark:text-gray-400 w-12">CPU</span>
+                            <div class="flex-1 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                <div class="h-full rounded-full {{ $server['cpu_usage'] < 60 ? 'bg-green-500' : ($server['cpu_usage'] < 80 ? 'bg-amber-500' : 'bg-red-500') }}" style="width: {{ min($server['cpu_usage'], 100) }}%"></div>
                             </div>
-
-                            @if($server['cpu_usage'] !== null)
-                                <!-- CPU Usage -->
-                                <div class="mb-3">
-                                    <div class="flex justify-between items-center mb-1">
-                                        <span class="text-xs text-gray-600 dark:text-gray-400">CPU</span>
-                                        <span class="text-xs font-medium text-gray-900 dark:text-white">{{ number_format($server['cpu_usage'], 1) }}%</span>
-                                    </div>
-                                    <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
-                                        <div class="h-2 rounded-full transition-all duration-500
-                                            @if($server['cpu_usage'] < 60) bg-green-500
-                                            @elseif($server['cpu_usage'] < 80) bg-yellow-500
-                                            @else bg-red-500
-                                            @endif"
-                                            style="width: {{ min($server['cpu_usage'], 100) }}%">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Memory Usage -->
-                                <div class="mb-3">
-                                    <div class="flex justify-between items-center mb-1">
-                                        <span class="text-xs text-gray-600 dark:text-gray-400">Memory</span>
-                                        <span class="text-xs font-medium text-gray-900 dark:text-white">{{ number_format($server['memory_usage'], 1) }}%</span>
-                                    </div>
-                                    <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
-                                        <div class="h-2 rounded-full transition-all duration-500
-                                            @if($server['memory_usage'] < 60) bg-green-500
-                                            @elseif($server['memory_usage'] < 80) bg-yellow-500
-                                            @else bg-red-500
-                                            @endif"
-                                            style="width: {{ min($server['memory_usage'], 100) }}%">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Disk Usage -->
-                                <div class="mb-2">
-                                    <div class="flex justify-between items-center mb-1">
-                                        <span class="text-xs text-gray-600 dark:text-gray-400">Disk</span>
-                                        <span class="text-xs font-medium text-gray-900 dark:text-white">{{ number_format($server['disk_usage'], 1) }}%</span>
-                                    </div>
-                                    <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
-                                        <div class="h-2 rounded-full transition-all duration-500
-                                            @if($server['disk_usage'] < 60) bg-green-500
-                                            @elseif($server['disk_usage'] < 80) bg-yellow-500
-                                            @else bg-red-500
-                                            @endif"
-                                            style="width: {{ min($server['disk_usage'], 100) }}%">
-                                        </div>
-                                    </div>
-                                </div>
-                            @else
-                                <p class="text-xs text-gray-500 dark:text-gray-400">No metrics available</p>
-                            @endif
-
-                            <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
-                                <a href="{{ route('servers.show', $server['server_id']) }}" class="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
-                                    View Details →
-                                </a>
+                            <span class="text-xs font-medium text-gray-700 dark:text-gray-300 w-10 text-right">{{ number_format($server['cpu_usage'], 0) }}%</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-gray-500 dark:text-gray-400 w-12">RAM</span>
+                            <div class="flex-1 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                <div class="h-full rounded-full {{ $server['memory_usage'] < 60 ? 'bg-green-500' : ($server['memory_usage'] < 80 ? 'bg-amber-500' : 'bg-red-500') }}" style="width: {{ min($server['memory_usage'], 100) }}%"></div>
                             </div>
+                            <span class="text-xs font-medium text-gray-700 dark:text-gray-300 w-10 text-right">{{ number_format($server['memory_usage'], 0) }}%</span>
                         </div>
-                    @empty
-                        <div class="text-center py-12">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"></path>
-                            </svg>
-                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">No servers online</p>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-gray-500 dark:text-gray-400 w-12">Disk</span>
+                            <div class="flex-1 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                <div class="h-full rounded-full {{ $server['disk_usage'] < 60 ? 'bg-green-500' : ($server['disk_usage'] < 80 ? 'bg-amber-500' : 'bg-red-500') }}" style="width: {{ min($server['disk_usage'], 100) }}%"></div>
+                            </div>
+                            <span class="text-xs font-medium text-gray-700 dark:text-gray-300 w-10 text-right">{{ number_format($server['disk_usage'], 0) }}%</span>
                         </div>
-                    @endforelse
-                </div>
-            </div>
-        </div>
-        @endif
-    </div>
-            </div>
-            @elseif($widgetId === 'deployment_timeline')
-            <!-- Deployment Timeline Widget -->
-            <div data-widget-id="deployment_timeline" class="relative {{ $editMode ? 'ring-2 ring-dashed ring-gray-300 dark:ring-gray-600 rounded-2xl p-2' : '' }}">
-                @if($editMode)
-                <div class="widget-drag-handle absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 cursor-move bg-white dark:bg-gray-800 px-3 py-1 rounded-full shadow-md border border-gray-200 dark:border-gray-700 flex items-center space-x-2">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
+                    </div>
+                    @else
+                    <p class="text-xs text-gray-400 dark:text-gray-500">No metrics available</p>
+                    @endif
+                </a>
+                @empty
+                <div class="px-6 py-12 text-center">
+                    <svg class="mx-auto h-12 w-12 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"/>
                     </svg>
-                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Deployment Timeline</span>
+                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">No servers online</p>
+                    <a href="{{ route('servers.create') }}" class="mt-3 inline-flex items-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800">Add your first server →</a>
                 </div>
-                @endif
-    <!-- Deployment Timeline Section -->
-    <div class="mt-0">
-        <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden">
-            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div class="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                            </svg>
-                        </div>
-                        <h2 class="text-xl font-bold text-gray-900 dark:text-white">Deployment Timeline (Last 7 Days)</h2>
-                    </div>
-                    <button wire:click="toggleSection('deploymentTimeline')" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
-                        <svg class="w-5 h-5 transform transition-transform {{ in_array('deploymentTimeline', $collapsedSections) ? '' : 'rotate-180' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
-                </div>
+                @endforelse
             </div>
-
-            @if(!in_array('deploymentTimeline', $collapsedSections))
-            <div class="p-6">
-                @if(count($deploymentTimeline) > 0)
-                    <div class="space-y-4">
-                        @foreach($deploymentTimeline as $day)
-                            <div class="flex items-center space-x-4">
-                                <!-- Date Label -->
-                                <div class="w-20 text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    {{ $day['date'] }}
-                                </div>
-
-                                <!-- Bar Chart -->
-                                <div class="flex-1">
-                                    @if($day['total'] > 0)
-                                        <div class="relative">
-                                            <!-- Bar Container -->
-                                            <div class="flex h-8 rounded-lg overflow-hidden shadow-md bg-gray-200 dark:bg-gray-700">
-                                                <!-- Success Bar -->
-                                                @if($day['successful'] > 0)
-                                                    <div
-                                                        class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 transition-all duration-300 flex items-center justify-center"
-                                                        style="width: {{ $day['success_percent'] }}%"
-                                                        title="Successful: {{ $day['successful'] }} ({{ $day['success_percent'] }}%)"
-                                                    >
-                                                        @if($day['success_percent'] > 15)
-                                                            <span class="text-xs font-semibold text-white">{{ $day['successful'] }}</span>
-                                                        @endif
-                                                    </div>
-                                                @endif
-
-                                                <!-- Failed Bar -->
-                                                @if($day['failed'] > 0)
-                                                    <div
-                                                        class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 transition-all duration-300 flex items-center justify-center"
-                                                        style="width: {{ $day['failed_percent'] }}%"
-                                                        title="Failed: {{ $day['failed'] }} ({{ $day['failed_percent'] }}%)"
-                                                    >
-                                                        @if($day['failed_percent'] > 15)
-                                                            <span class="text-xs font-semibold text-white">{{ $day['failed'] }}</span>
-                                                        @endif
-                                                    </div>
-                                                @endif
-                                            </div>
-
-                                            <!-- Hover Tooltip (positioned above the bar) -->
-                                            <div class="absolute left-0 right-0 -top-10 opacity-0 hover:opacity-100 transition-opacity pointer-events-none">
-                                                <div class="bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg py-2 px-3 inline-block shadow-lg">
-                                                    <div class="flex items-center space-x-2">
-                                                        <span class="text-emerald-400">✓ {{ $day['successful'] }}</span>
-                                                        <span class="text-gray-400">|</span>
-                                                        <span class="text-red-400">✗ {{ $day['failed'] }}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @else
-                                        <div class="h-8 rounded-lg bg-gray-100 dark:bg-gray-700/30 flex items-center justify-center">
-                                            <span class="text-xs text-gray-400 dark:text-gray-500">No deployments</span>
-                                        </div>
-                                    @endif
-                                </div>
-
-                                <!-- Total Count -->
-                                <div class="w-16 text-right">
-                                    @if($day['total'] > 0)
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
-                                            {{ $day['total'] }}
-                                        </span>
-                                    @else
-                                        <span class="text-sm text-gray-400 dark:text-gray-500">0</span>
-                                    @endif
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-
-                    <!-- Legend -->
-                    <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                        <div class="flex items-center justify-center space-x-6 text-sm">
-                            <div class="flex items-center space-x-2">
-                                <div class="w-4 h-4 rounded bg-gradient-to-r from-emerald-500 to-emerald-600"></div>
-                                <span class="text-gray-700 dark:text-gray-300">Successful</span>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <div class="w-4 h-4 rounded bg-gradient-to-r from-red-500 to-red-600"></div>
-                                <span class="text-gray-700 dark:text-gray-300">Failed</span>
-                            </div>
-                        </div>
-                    </div>
-                @else
-                    <div class="text-center py-12">
-                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                        </svg>
-                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">No deployment data available</p>
-                    </div>
-                @endif
-            </div>
-            @endif
         </div>
     </div>
+
+    {{-- Deployment Timeline --}}
+    @if(count($deploymentTimeline) > 0 && collect($deploymentTimeline)->sum('total') > 0)
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <h2 class="font-semibold text-gray-900 dark:text-white">Deployment Activity (7 Days)</h2>
+            <div class="flex items-center gap-4 text-xs">
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-green-500"></span> Success</span>
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-red-500"></span> Failed</span>
             </div>
-            @endif
-        @endforeach
+        </div>
+        <div class="p-6">
+            <div class="flex items-end gap-2 h-32">
+                @foreach($deploymentTimeline as $day)
+                <div class="flex-1 flex flex-col items-center gap-1">
+                    <div class="w-full flex flex-col-reverse gap-0.5" style="height: 100px;">
+                        @if($day['total'] > 0)
+                            @php $maxTotal = max(collect($deploymentTimeline)->max('total'), 1); @endphp
+                            @if($day['successful'] > 0)
+                            <div class="w-full bg-green-500 rounded-t transition-all hover:bg-green-600" style="height: {{ ($day['successful'] / $maxTotal) * 100 }}%" title="{{ $day['successful'] }} successful"></div>
+                            @endif
+                            @if($day['failed'] > 0)
+                            <div class="w-full bg-red-500 {{ $day['successful'] == 0 ? 'rounded-t' : '' }} transition-all hover:bg-red-600" style="height: {{ ($day['failed'] / $maxTotal) * 100 }}%" title="{{ $day['failed'] }} failed"></div>
+                            @endif
+                        @endif
+                    </div>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ $day['date'] }}</span>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+    @endif
+
+    {{-- Secondary Stats --}}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-teal-100 dark:bg-teal-900/30 rounded-lg">
+                    <svg class="w-5 h-5 text-teal-600 dark:text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $sslStats['active_certificates'] ?? 0 }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">SSL Certificates</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
+                    <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $healthCheckStats['healthy'] ?? 0 }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Health Checks</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
+                    <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $queueStats['pending'] ?? 0 }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Queue Jobs</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-cyan-100 dark:bg-cyan-900/30 rounded-lg">
+                    <svg class="w-5 h-5 text-cyan-600 dark:text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['total_deployments'] ?? 0 }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Total Deployments</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Initialize SortableJS after Livewire updates -->
-    @script
-    <script>
-        // Initialize on component load
-        $wire.on('refresh', () => {
-            setTimeout(() => window.initDashboardSortable?.(), 100);
-        });
-
-        // Initialize on first load
-        setTimeout(() => window.initDashboardSortable?.(), 100);
-    </script>
-    @endscript
 </div>
