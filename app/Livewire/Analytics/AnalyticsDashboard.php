@@ -68,7 +68,7 @@ class AnalyticsDashboard extends Component
             'total' => $query->count(),
             'successful' => $query->clone()->where('status', 'success')->count(),
             'failed' => $query->clone()->where('status', 'failed')->count(),
-            'avg_duration' => round($query->clone()->whereNotNull('duration_seconds')->avg('duration_seconds') ?? 0, 2),
+            'avg_duration' => round((float) ($query->clone()->whereNotNull('duration_seconds')->avg('duration_seconds') ?? 0), 2),
         ];
     }
 
