@@ -82,6 +82,9 @@ class Dashboard extends Component
 
     public bool $editMode = false;
 
+    // Lazy loading state
+    public bool $isLoading = true;
+
     // Default widget order
     /** @var array<int, string> */
     public const DEFAULT_WIDGET_ORDER = [
@@ -107,8 +110,17 @@ class Dashboard extends Component
 
     public function mount(): void
     {
+        // Only load lightweight preferences on mount
+        // Heavy data loads via wire:init for better UX
         $this->loadUserPreferences();
         $this->loadOnboardingStatus();
+    }
+
+    /**
+     * Lazy load all dashboard data - called via wire:init
+     */
+    public function loadDashboardData(): void
+    {
         $this->loadStats();
         $this->loadRecentDeployments();
         $this->loadProjects();
@@ -121,6 +133,7 @@ class Dashboard extends Component
         $this->loadSecurityScore();
         $this->loadActiveDeployments();
         $this->loadDeploymentTimeline();
+        $this->isLoading = false;
     }
 
     /**

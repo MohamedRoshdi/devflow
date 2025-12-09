@@ -30,17 +30,24 @@ class SystemAdmin extends Component
     /** @var array<int, array<string, string>> */
     public array $recentAlerts = [];
 
+    public bool $isLoading = true;
+
     public function mount(): void
     {
-        $this->loadSystemData();
+        // Don't load data on mount - use wire:init for lazy loading
+        // SSH operations are slow and should not block page render
     }
 
+    /**
+     * Lazy load system data - called via wire:init
+     */
     public function loadSystemData(): void
     {
         // Load all system data
         $this->loadBackupStats();
         $this->loadSystemMetrics();
         $this->loadRecentAlerts();
+        $this->isLoading = false;
     }
 
     public function loadBackupStats(): void

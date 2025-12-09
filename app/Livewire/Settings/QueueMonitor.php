@@ -38,15 +38,18 @@ class QueueMonitor extends Component
 
     public function mount(): void
     {
-        $this->loadStats();
-        $this->isLoading = false;
+        // Don't load data on mount - use wire:init for lazy loading
     }
 
+    /**
+     * Lazy load stats - called via wire:init
+     */
     public function loadStats(): void
     {
         try {
             $this->queueStats = $this->queueMonitor->getQueueStatistics();
             $this->failedJobs = $this->queueMonitor->getFailedJobs(50);
+            $this->isLoading = false;
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to load queue statistics: '.$e->getMessage());
             $this->queueStats = [

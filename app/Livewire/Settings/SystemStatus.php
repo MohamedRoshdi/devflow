@@ -48,10 +48,12 @@ class SystemStatus extends Component
 
     public function mount(): void
     {
-        $this->loadAllStats();
-        $this->isLoading = false;
+        // Don't load data on mount - use wire:init for lazy loading
     }
 
+    /**
+     * Lazy load all stats - called via wire:init
+     */
     public function loadAllStats(): void
     {
         $this->loadReverbStatus();
@@ -59,6 +61,7 @@ class SystemStatus extends Component
         $this->loadCacheStats();
         $this->loadDatabaseStats();
         $this->loadServiceStatus();
+        $this->isLoading = false;
     }
 
     public function loadReverbStatus(): void

@@ -49,10 +49,21 @@ class ServerList extends Component
 
     public bool $showResultsModal = false;
 
+    public bool $isLoading = true;
+
     public function mount(): void
     {
-        // Auto-ping all servers on page load to get current status
+        // Don't ping on mount - use wire:init for lazy loading
+    }
+
+    /**
+     * Lazy load server data - called via wire:init
+     */
+    public function loadServerData(): void
+    {
+        // Auto-ping all servers after initial page render
         $this->pingAllServersInBackground();
+        $this->isLoading = false;
     }
 
     #[On('server-created')]

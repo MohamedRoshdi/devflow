@@ -1,4 +1,4 @@
-<div wire:poll.30s="refreshDashboard" class="space-y-6">
+<div wire:init="loadDashboardData" wire:poll.30s="refreshDashboard" class="space-y-6">
 
     {{-- System Status Banner (only show if issues) --}}
     @if(($healthCheckStats['down'] ?? 0) > 0 || ($queueStats['failed'] ?? 0) > 0)
@@ -152,6 +152,19 @@
 
     {{-- Main Stats Grid --}}
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        @if($isLoading)
+        {{-- Skeleton Loading --}}
+        @for($i = 0; $i < 4; $i++)
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 animate-pulse">
+            <div class="flex items-center justify-between">
+                <div class="w-9 h-9 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                <div class="w-16 h-5 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+            </div>
+            <div class="mt-4 w-12 h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            <div class="mt-1 w-20 h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+        </div>
+        @endfor
+        @else
         {{-- Servers --}}
         <a href="{{ route('servers.index') }}" class="group bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-lg transition-all">
             <div class="flex items-center justify-between">
@@ -218,6 +231,7 @@
             <p class="mt-4 text-3xl font-bold text-gray-900 dark:text-white">{{ $overallSecurityScore }}%</p>
             <p class="text-sm text-gray-500 dark:text-gray-400">Security Score</p>
         </a>
+        @endif
     </div>
 
     {{-- Quick Actions Bar --}}
