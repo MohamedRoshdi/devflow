@@ -24,11 +24,38 @@ class DeployProjectJob implements ShouldQueue
      * The number of seconds the job can run before timing out.
      * Increased for Docker builds which can take 10-20 minutes with npm builds
      */
-    public int $timeout = 1200; // 20 minutes
+    public int $timeout = 1800; // 30 minutes
+
+    /**
+     * The number of times the job may be attempted.
+     */
+    public int $tries = 1; // Only try once - deployments should not auto-retry
+
+    /**
+     * Delete the job if its models no longer exist.
+     */
+    public bool $deleteWhenMissingModels = true;
 
     public function __construct(
         public Deployment $deployment
     ) {}
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(?\Throwable $exception): void
+    {
+        $this->deployment->update([
+            'status' => 'failed',
+            'completed_at' => now(),
+            'error_log' => $exception?->getMessage() ?? 'Deployment job failed unexpectedly',
+        ]);
+
+        Log::error('Deployment job failed', [
+            'deployment_id' => $this->deployment->id,
+            'error' => $exception?->getMessage(),
+        ]);
+    }
 
     /**
      * Broadcast a log line to WebSocket listeners
@@ -188,10 +215,16 @@ class DeployProjectJob implements ShouldQueue
         $sshPrefix = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 {$server->username}@{$server->ip_address}";
 
         // Check if repository already exists (via SSH to ensure we check server state)
+        $addLog("$ ssh {$server->username}@{$server->ip_address} test -d {$projectPath}/.git");
         $checkResult = \Illuminate\Support\Facades\Process::run("{$sshPrefix} \"test -d {$projectPath}/.git && echo 'exists' || echo 'not_exists'\"");
         $repoExists = trim($checkResult->output()) === 'exists';
+        $addLog($repoExists ? '→ Repository exists' : '→ Repository not found');
+
+        // Save logs immediately so user can see progress
+        $this->deployment->update(['output_log' => implode("\n", $logs)]);
 
         if ($repoExists) {
+            $addLog('');
             $addLog('Repository already exists, pulling latest changes...');
 
             // Validate branch name format
@@ -201,6 +234,9 @@ class DeployProjectJob implements ShouldQueue
 
             // Run git operations via SSH as root (fixes permission issues)
             $escapedBranch = escapeshellarg($project->branch);
+            $addLog("$ git fetch origin {$project->branch}");
+            $addLog("$ git reset --hard origin/{$project->branch}");
+
             $gitCommand = "cd {$projectPath} && ".
                 "git config --global safe.directory '*' && ".
                 "chown -R root:root {$projectPath}/.git {$projectPath}/storage {$projectPath}/bootstrap 2>/dev/null || true && ".
@@ -212,13 +248,25 @@ class DeployProjectJob implements ShouldQueue
             $pullResult = \Illuminate\Support\Facades\Process::timeout(120)->run("{$sshPrefix} \"{$gitCommand}\"");
 
             if (! $pullResult->successful()) {
+                $addLog('✗ Git pull failed');
+                $addLog($pullResult->errorOutput());
                 throw new \Exception('Git pull failed: '.$pullResult->errorOutput());
+            }
+
+            // Show git output
+            if ($pullResult->output()) {
+                foreach (explode("\n", trim($pullResult->output())) as $outputLine) {
+                    if (trim($outputLine)) {
+                        $addLog("  {$outputLine}");
+                    }
+                }
             }
 
             $addLog('✓ Repository updated successfully');
         } else {
             // Repository doesn't exist, clone it
-            $addLog('Cloning repository...');
+            $addLog('');
+            $addLog('=== Cloning Repository ===');
 
             // Validate branch name format
             if (! preg_match('/^[a-zA-Z0-9._\/-]+$/', $project->branch)) {
@@ -228,20 +276,41 @@ class DeployProjectJob implements ShouldQueue
             // Run clone via SSH as root
             $escapedBranch = escapeshellarg($project->branch);
             $escapedRepoUrl = escapeshellarg($project->repository_url ?? '');
+
+            $addLog("$ git clone --branch {$project->branch} {$project->repository_url} {$projectPath}");
+            $addLog('→ This may take a few minutes for large repositories...');
+
+            // Save logs so user sees clone starting
+            $this->deployment->update(['output_log' => implode("\n", $logs)]);
+
             $cloneCommand = "git config --global safe.directory '*' && ".
                 "rm -rf {$projectPath} 2>/dev/null || true && ".
-                "git clone --branch {$escapedBranch} {$escapedRepoUrl} {$projectPath} && ".
-                "chown -R 1000:1000 {$projectPath}/storage {$projectPath}/bootstrap/cache && ".
-                "chmod -R 775 {$projectPath}/storage {$projectPath}/bootstrap/cache";
+                "git clone --branch {$escapedBranch} --progress {$escapedRepoUrl} {$projectPath} 2>&1 && ".
+                "chown -R 1000:1000 {$projectPath}/storage {$projectPath}/bootstrap/cache 2>/dev/null || true && ".
+                "chmod -R 775 {$projectPath}/storage {$projectPath}/bootstrap/cache 2>/dev/null || true";
 
             $cloneResult = \Illuminate\Support\Facades\Process::timeout(300)->run("{$sshPrefix} \"{$cloneCommand}\"");
 
             if (! $cloneResult->successful()) {
+                $addLog('✗ Git clone failed');
+                $addLog($cloneResult->errorOutput());
                 throw new \Exception('Git clone failed: '.$cloneResult->errorOutput());
+            }
+
+            // Show clone output
+            if ($cloneResult->output()) {
+                foreach (explode("\n", trim($cloneResult->output())) as $outputLine) {
+                    if (trim($outputLine)) {
+                        $addLog("  {$outputLine}");
+                    }
+                }
             }
 
             $addLog('✓ Repository cloned successfully');
         }
+
+        // Save logs after git operation
+        $this->deployment->update(['output_log' => implode("\n", $logs)]);
         $addLog('');
 
         // Get current commit information
@@ -357,7 +426,7 @@ class DeployProjectJob implements ShouldQueue
         ];
 
         foreach ($optimizationCommands as $cmd => $description) {
-            $addLog("→ {$description}...");
+            $addLog("$ docker exec {$containerName} {$cmd}");
             $dockerCmd = "docker exec {$containerName} {$cmd} 2>&1 || echo 'Command may have already run or not applicable'";
             $result = \Illuminate\Support\Facades\Process::run($dockerCmd);
 
@@ -367,6 +436,9 @@ class DeployProjectJob implements ShouldQueue
             } else {
                 $addLog("  ⚠ {$description} skipped or failed (not critical)");
             }
+
+            // Save logs after each command so user sees progress
+            $this->deployment->update(['output_log' => implode("\n", $logs)]);
         }
 
         $addLog('✓ Laravel optimization completed');
@@ -428,6 +500,7 @@ class DeployProjectJob implements ShouldQueue
             ];
 
             foreach ($cacheCommands as $cmd => $description) {
+                $addLog("$ docker exec {$containerName} {$cmd}");
                 $dockerCmd = "docker exec {$containerName} {$cmd} 2>&1 || echo 'skipped'";
                 $result = \Illuminate\Support\Facades\Process::run($dockerCmd);
 
@@ -438,6 +511,9 @@ class DeployProjectJob implements ShouldQueue
                 }
             }
 
+            // Save logs progress
+            $this->deployment->update(['output_log' => implode("\n", $logs)]);
+
             // Rebuild config cache with corrected .env values
             $addLog('Rebuilding configuration cache...');
             $rebuildCommands = [
@@ -447,6 +523,7 @@ class DeployProjectJob implements ShouldQueue
             ];
 
             foreach ($rebuildCommands as $cmd => $description) {
+                $addLog("$ docker exec {$containerName} {$cmd}");
                 $dockerCmd = "docker exec {$containerName} {$cmd} 2>&1 || echo 'skipped'";
                 $result = \Illuminate\Support\Facades\Process::run($dockerCmd);
 
@@ -454,6 +531,9 @@ class DeployProjectJob implements ShouldQueue
                     $addLog("  ✓ {$description} cached");
                 }
             }
+
+            // Save logs progress
+            $this->deployment->update(['output_log' => implode("\n", $logs)]);
 
             $addLog('✓ Permissions, environment, and caches handled');
 
