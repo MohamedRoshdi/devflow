@@ -1,23 +1,42 @@
 <div wire:poll.30s="refreshDashboard">
     <!-- Hero Section with Gradient -->
     <div class="relative mb-8 rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 dark:from-blue-600 dark:via-purple-600 dark:to-pink-600 p-8 shadow-xl overflow-hidden">
+        <!-- Animated background pattern -->
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 80 80\"><path fill=\"white\" d=\"M0 0h40v40H0zm40 40h40v40H40z\"/></svg>'); background-size: 40px 40px;"></div>
+        </div>
         <div class="absolute inset-0 bg-black/10 dark:bg-black/20"></div>
         <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between">
             <div>
-                <h1 class="text-3xl lg:text-4xl font-bold text-white">Welcome Back!</h1>
-                <p class="text-white/90 text-lg mt-2">Here's your infrastructure overview for today</p>
+                <h1 class="text-3xl lg:text-4xl font-bold text-white flex items-center gap-3">
+                    @if($isNewUser)
+                        Welcome to DevFlow Pro!
+                    @else
+                        Welcome Back!
+                    @endif
+                    <span class="hidden lg:inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white/20 backdrop-blur-md text-white">
+                        v2.5
+                    </span>
+                </h1>
+                <p class="text-white/90 text-lg mt-2">
+                    @if($isNewUser)
+                        Your all-in-one DevOps platform for managing servers, deployments & infrastructure
+                    @else
+                        Here's your infrastructure overview for today
+                    @endif
+                </p>
             </div>
             <!-- Quick stats in hero -->
             <div class="mt-6 lg:mt-0 flex flex-wrap gap-4">
-                <div class="bg-white/20 backdrop-blur-md rounded-xl px-4 py-3">
+                <div class="bg-white/20 backdrop-blur-md rounded-xl px-4 py-3 hover:bg-white/30 transition-all cursor-pointer" onclick="window.location.href='{{ route('servers.index') }}'">
                     <div class="text-2xl font-bold text-white">{{ $stats['online_servers'] ?? 0 }}/{{ $stats['total_servers'] ?? 0 }}</div>
                     <div class="text-sm text-white/80">Servers Online</div>
                 </div>
-                <div class="bg-white/20 backdrop-blur-md rounded-xl px-4 py-3">
+                <div class="bg-white/20 backdrop-blur-md rounded-xl px-4 py-3 hover:bg-white/30 transition-all cursor-pointer" onclick="window.location.href='{{ route('projects.index') }}'">
                     <div class="text-2xl font-bold text-white">{{ $stats['running_projects'] ?? 0 }}</div>
                     <div class="text-sm text-white/80">Running Projects</div>
                 </div>
-                <div class="bg-white/20 backdrop-blur-md rounded-xl px-4 py-3">
+                <div class="bg-white/20 backdrop-blur-md rounded-xl px-4 py-3 hover:bg-white/30 transition-all cursor-pointer" onclick="window.location.href='{{ route('deployments.index') }}'">
                     <div class="text-2xl font-bold text-white">{{ $deploymentsToday }}</div>
                     <div class="text-sm text-white/80">Deployments Today</div>
                 </div>
@@ -65,7 +84,188 @@
     <!-- Draggable Widgets Container -->
     <div id="dashboard-widgets" class="space-y-8">
         @foreach($widgetOrder as $widgetId)
-            @if($widgetId === 'stats_cards')
+            @if($widgetId === 'getting_started' && !$hasCompletedOnboarding)
+            <!-- Getting Started Widget -->
+            <div data-widget-id="getting_started" class="relative {{ $editMode ? 'ring-2 ring-dashed ring-gray-300 dark:ring-gray-600 rounded-2xl p-2' : '' }}">
+                @if($editMode)
+                <div class="widget-drag-handle absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 cursor-move bg-white dark:bg-gray-800 px-3 py-1 rounded-full shadow-md border border-gray-200 dark:border-gray-700 flex items-center space-x-2">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
+                    </svg>
+                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Getting Started</span>
+                </div>
+                @endif
+
+                <!-- Getting Started Section -->
+                <div class="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-xl border border-indigo-100 dark:border-gray-700 overflow-hidden mb-8">
+                    <div class="p-6 border-b border-indigo-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">Get Started with DevFlow Pro</h2>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Complete these steps to set up your deployment pipeline</p>
+                                </div>
+                            </div>
+                            <button wire:click="dismissGettingStarted" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" title="Dismiss">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-6">
+                        <!-- Progress Bar -->
+                        @php
+                            $completedSteps = collect($onboardingSteps)->filter(fn($v) => $v)->count();
+                            $totalSteps = count($onboardingSteps);
+                            $progressPercent = $totalSteps > 0 ? ($completedSteps / $totalSteps) * 100 : 0;
+                        @endphp
+                        <div class="mb-6">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Setup Progress</span>
+                                <span class="text-sm font-bold text-indigo-600 dark:text-indigo-400">{{ $completedSteps }}/{{ $totalSteps }} completed</span>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+                                <div class="bg-gradient-to-r from-indigo-500 to-purple-600 h-3 rounded-full transition-all duration-500" style="width: {{ $progressPercent }}%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Steps Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <!-- Step 1: Add Server -->
+                            <a href="{{ route('servers.create') }}" class="group relative bg-white dark:bg-gray-800 rounded-xl p-5 border-2 transition-all duration-300 {{ $onboardingSteps['add_server'] ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-indigo-500 hover:shadow-lg' }}">
+                                <div class="absolute -top-3 -left-3 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold {{ $onboardingSteps['add_server'] ? 'bg-green-500 text-white' : 'bg-indigo-500 text-white' }}">
+                                    @if($onboardingSteps['add_server'])
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    @else
+                                        1
+                                    @endif
+                                </div>
+                                <div class="flex flex-col items-center text-center pt-2">
+                                    <div class="p-3 rounded-xl mb-3 {{ $onboardingSteps['add_server'] ? 'bg-green-100 dark:bg-green-900/30' : 'bg-indigo-100 dark:bg-indigo-900/30 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50' }} transition-colors">
+                                        <svg class="w-8 h-8 {{ $onboardingSteps['add_server'] ? 'text-green-600 dark:text-green-400' : 'text-indigo-600 dark:text-indigo-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Add a Server</h3>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Connect your VPS via SSH</p>
+                                    @if(!$onboardingSteps['add_server'])
+                                        <span class="mt-2 inline-flex items-center text-xs font-medium text-indigo-600 dark:text-indigo-400">
+                                            Start here <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                        </span>
+                                    @endif
+                                </div>
+                            </a>
+
+                            <!-- Step 2: Create Project -->
+                            <a href="{{ route('projects.create') }}" class="group relative bg-white dark:bg-gray-800 rounded-xl p-5 border-2 transition-all duration-300 {{ $onboardingSteps['create_project'] ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : ($onboardingSteps['add_server'] ? 'border-gray-200 dark:border-gray-700 hover:border-indigo-500 hover:shadow-lg' : 'border-gray-200 dark:border-gray-700 opacity-60') }}">
+                                <div class="absolute -top-3 -left-3 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold {{ $onboardingSteps['create_project'] ? 'bg-green-500 text-white' : ($onboardingSteps['add_server'] ? 'bg-indigo-500 text-white' : 'bg-gray-400 text-white') }}">
+                                    @if($onboardingSteps['create_project'])
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    @else
+                                        2
+                                    @endif
+                                </div>
+                                <div class="flex flex-col items-center text-center pt-2">
+                                    <div class="p-3 rounded-xl mb-3 {{ $onboardingSteps['create_project'] ? 'bg-green-100 dark:bg-green-900/30' : 'bg-purple-100 dark:bg-purple-900/30' }} transition-colors">
+                                        <svg class="w-8 h-8 {{ $onboardingSteps['create_project'] ? 'text-green-600 dark:text-green-400' : 'text-purple-600 dark:text-purple-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Create Project</h3>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Link your Git repository</p>
+                                </div>
+                            </a>
+
+                            <!-- Step 3: First Deployment -->
+                            <div class="group relative bg-white dark:bg-gray-800 rounded-xl p-5 border-2 transition-all duration-300 {{ $onboardingSteps['first_deployment'] ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : ($onboardingSteps['create_project'] ? 'border-gray-200 dark:border-gray-700 hover:border-indigo-500' : 'border-gray-200 dark:border-gray-700 opacity-60') }}">
+                                <div class="absolute -top-3 -left-3 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold {{ $onboardingSteps['first_deployment'] ? 'bg-green-500 text-white' : ($onboardingSteps['create_project'] ? 'bg-indigo-500 text-white' : 'bg-gray-400 text-white') }}">
+                                    @if($onboardingSteps['first_deployment'])
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    @else
+                                        3
+                                    @endif
+                                </div>
+                                <div class="flex flex-col items-center text-center pt-2">
+                                    <div class="p-3 rounded-xl mb-3 {{ $onboardingSteps['first_deployment'] ? 'bg-green-100 dark:bg-green-900/30' : 'bg-blue-100 dark:bg-blue-900/30' }} transition-colors">
+                                        <svg class="w-8 h-8 {{ $onboardingSteps['first_deployment'] ? 'text-green-600 dark:text-green-400' : 'text-blue-600 dark:text-blue-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Deploy</h3>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Run your first deployment</p>
+                                </div>
+                            </div>
+
+                            <!-- Step 4: Setup Domain -->
+                            <a href="{{ route('domains.index') }}" class="group relative bg-white dark:bg-gray-800 rounded-xl p-5 border-2 transition-all duration-300 {{ $onboardingSteps['setup_domain'] ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : ($onboardingSteps['first_deployment'] ? 'border-gray-200 dark:border-gray-700 hover:border-indigo-500 hover:shadow-lg' : 'border-gray-200 dark:border-gray-700 opacity-60') }}">
+                                <div class="absolute -top-3 -left-3 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold {{ $onboardingSteps['setup_domain'] ? 'bg-green-500 text-white' : ($onboardingSteps['first_deployment'] ? 'bg-indigo-500 text-white' : 'bg-gray-400 text-white') }}">
+                                    @if($onboardingSteps['setup_domain'])
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    @else
+                                        4
+                                    @endif
+                                </div>
+                                <div class="flex flex-col items-center text-center pt-2">
+                                    <div class="p-3 rounded-xl mb-3 {{ $onboardingSteps['setup_domain'] ? 'bg-green-100 dark:bg-green-900/30' : 'bg-teal-100 dark:bg-teal-900/30' }} transition-colors">
+                                        <svg class="w-8 h-8 {{ $onboardingSteps['setup_domain'] ? 'text-green-600 dark:text-green-400' : 'text-teal-600 dark:text-teal-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Add Domain</h3>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Configure SSL & DNS</p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- Feature Highlights -->
+                        <div class="mt-8 pt-6 border-t border-indigo-100 dark:border-gray-700">
+                            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">What you can do with DevFlow Pro:</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    One-click deployments
+                                </div>
+                                <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    Docker orchestration
+                                </div>
+                                <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    SSL certificates
+                                </div>
+                                <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    Real-time monitoring
+                                </div>
+                                <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    CI/CD pipelines
+                                </div>
+                                <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    GitHub integration
+                                </div>
+                                <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    Database backups
+                                </div>
+                                <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    Slack/Discord alerts
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @elseif($widgetId === 'stats_cards')
             <!-- Stats Cards Widget -->
             <div data-widget-id="stats_cards" class="relative {{ $editMode ? 'ring-2 ring-dashed ring-gray-300 dark:ring-gray-600 rounded-2xl p-2' : '' }}">
                 @if($editMode)

@@ -85,15 +85,30 @@ class Dashboard extends Component
     // Default widget order
     /** @var array<int, string> */
     public const DEFAULT_WIDGET_ORDER = [
+        'getting_started',
         'stats_cards',
         'quick_actions',
         'activity_server_grid',
         'deployment_timeline',
     ];
 
+    // Onboarding state
+    public bool $isNewUser = false;
+
+    public bool $hasCompletedOnboarding = false;
+
+    /** @var array<string, bool> */
+    public array $onboardingSteps = [
+        'add_server' => false,
+        'create_project' => false,
+        'first_deployment' => false,
+        'setup_domain' => false,
+    ];
+
     public function mount(): void
     {
         $this->loadUserPreferences();
+        $this->loadOnboardingStatus();
         $this->loadStats();
         $this->loadRecentDeployments();
         $this->loadProjects();
@@ -106,6 +121,54 @@ class Dashboard extends Component
         $this->loadSecurityScore();
         $this->loadActiveDeployments();
         $this->loadDeploymentTimeline();
+    }
+
+    /**
+     * Load onboarding status to determine if user needs guidance
+     */
+    public function loadOnboardingStatus(): void
+    {
+        $serverCount = Server::count();
+        $projectCount = Project::count();
+        $deploymentCount = Deployment::count();
+        $domainCount = \App\Models\Domain::count();
+
+        // Check individual steps
+        $this->onboardingSteps = [
+            'add_server' => $serverCount > 0,
+            'create_project' => $projectCount > 0,
+            'first_deployment' => $deploymentCount > 0,
+            'setup_domain' => $domainCount > 0,
+        ];
+
+        // User is new if they have no servers and no projects
+        $this->isNewUser = $serverCount === 0 && $projectCount === 0;
+
+        // Onboarding is complete if all steps are done
+        $this->hasCompletedOnboarding = ! in_array(false, $this->onboardingSteps, true);
+    }
+
+    /**
+     * Dismiss the getting started section
+     */
+    public function dismissGettingStarted(): void
+    {
+        if (! Auth::check()) {
+            return;
+        }
+
+        try {
+            $userSettings = UserSettings::getForUser(Auth::user());
+            $userSettings->updateSetting('dashboard_getting_started_dismissed', true);
+            $this->hasCompletedOnboarding = true;
+
+            $this->dispatch('notification', [
+                'type' => 'success',
+                'message' => 'Getting started section hidden. You can always access features from the sidebar.',
+            ]);
+        } catch (\Exception $e) {
+            // Silently fail
+        }
     }
 
     #[On('refresh-dashboard')]
@@ -795,6 +858,12 @@ class Dashboard extends Component
             $userSettings = UserSettings::getForUser(Auth::user());
             $this->collapsedSections = $userSettings->getAdditionalSetting('dashboard_collapsed_sections', []);
             $this->widgetOrder = $userSettings->getAdditionalSetting('dashboard_widget_order', self::DEFAULT_WIDGET_ORDER);
+
+            // Check if getting started was dismissed
+            $gettingStartedDismissed = $userSettings->getAdditionalSetting('dashboard_getting_started_dismissed', false);
+            if ($gettingStartedDismissed) {
+                $this->hasCompletedOnboarding = true;
+            }
 
             // Ensure all default widgets are present (in case new widgets are added)
             foreach (self::DEFAULT_WIDGET_ORDER as $widget) {
