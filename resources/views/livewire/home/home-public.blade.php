@@ -25,6 +25,11 @@
                     <a href="#workflow" class="hidden md:inline-flex px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
                         Workflow
                     </a>
+                    @auth
+                    <a href="{{ route('docs.features') }}" class="hidden md:inline-flex px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                        Features Guide
+                    </a>
+                    @endauth
 
                     @auth
                         <a href="{{ route('dashboard') }}" class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-white bg-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100 rounded-full transition-colors">
@@ -238,6 +243,123 @@
                         </p>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- Who Is It For -->
+        <section class="py-24 bg-white dark:bg-slate-900">
+            <div class="mx-auto w-full max-w-[1560px] px-6 md:px-10 lg:px-16">
+                <div class="mx-auto max-w-3xl text-center mb-16">
+                    <h2 class="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-4xl">Who is DevFlow Pro For?</h2>
+                    <p class="mt-4 text-lg text-slate-600 dark:text-slate-400">
+                        Whether you're a developer, DevOps engineer, or agency managing multiple clients, DevFlow Pro simplifies your workflow.
+                    </p>
+                </div>
+
+                <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                    <!-- Developers -->
+                    <div class="rounded-2xl border border-slate-200 dark:border-slate-700 p-6 hover:border-blue-500 dark:hover:border-blue-400 transition-colors">
+                        <div class="text-4xl mb-4">👨‍💻</div>
+                        <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Developers</h3>
+                        <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                            Stop SSH-ing into servers. Deploy with one click, rollback instantly, and focus on writing code.
+                        </p>
+                        <ul class="mt-4 space-y-2 text-xs text-slate-500 dark:text-slate-400">
+                            <li class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                                One-click deployments
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                                Environment variables
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                                Real-time logs
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- DevOps -->
+                    <div class="rounded-2xl border border-slate-200 dark:border-slate-700 p-6 hover:border-purple-500 dark:hover:border-purple-400 transition-colors">
+                        <div class="text-4xl mb-4">🔧</div>
+                        <h3 class="text-lg font-semibold text-slate-900 dark:text-white">DevOps Engineers</h3>
+                        <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                            Full infrastructure control with CI/CD pipelines, Kubernetes support, and automated monitoring.
+                        </p>
+                        <ul class="mt-4 space-y-2 text-xs text-slate-500 dark:text-slate-400">
+                            <li class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+                                CI/CD pipelines
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+                                Kubernetes integration
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+                                Docker management
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- SysAdmins -->
+                    <div class="rounded-2xl border border-slate-200 dark:border-slate-700 p-6 hover:border-red-500 dark:hover:border-red-400 transition-colors">
+                        <div class="text-4xl mb-4">🔐</div>
+                        <h3 class="text-lg font-semibold text-slate-900 dark:text-white">System Administrators</h3>
+                        <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                            Security-first approach with firewall management, SSL automation, and comprehensive audit logs.
+                        </p>
+                        <ul class="mt-4 space-y-2 text-xs text-slate-500 dark:text-slate-400">
+                            <li class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                                Firewall (UFW) control
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                                SSL auto-renewal
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                                Security audits
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Agencies -->
+                    <div class="rounded-2xl border border-slate-200 dark:border-slate-700 p-6 hover:border-green-500 dark:hover:border-green-400 transition-colors">
+                        <div class="text-4xl mb-4">🏢</div>
+                        <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Agencies & Freelancers</h3>
+                        <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                            Manage unlimited client projects with team access, role-based permissions, and multi-tenant support.
+                        </p>
+                        <ul class="mt-4 space-y-2 text-xs text-slate-500 dark:text-slate-400">
+                            <li class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                                Team collaboration
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                                Role-based access
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                                Multi-tenant SaaS
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                @auth
+                <div class="mt-12 text-center">
+                    <a href="{{ route('docs.features') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full text-sm font-semibold hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                        </svg>
+                        View Complete Features Guide
+                    </a>
+                </div>
+                @endauth
             </div>
         </section>
 

@@ -128,8 +128,9 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
     Route::get('/settings/preferences', \App\Livewire\Settings\DefaultSetupPreferences::class)->name('settings.preferences');
     Route::get('/settings/storage', \App\Livewire\Settings\StorageSettings::class)->name('settings.storage');
 
-    // API Documentation
+    // Documentation
     Route::get('/docs/api', \App\Livewire\Docs\ApiDocumentation::class)->name('docs.api');
+    Route::get('/docs/features', \App\Livewire\Docs\FeaturesGuide::class)->name('docs.features');
 
     // GitHub OAuth
     Route::get('/auth/github', [GitHubAuthController::class, 'redirect'])->name('github.redirect');

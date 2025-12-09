@@ -30,6 +30,17 @@
 
 ---
 
+## 📚 New to DevFlow Pro?
+
+**Start here!** We've created comprehensive guides to help you understand and use DevFlow Pro:
+
+- **[Getting Started Guide](docs/GETTING_STARTED.md)** - Complete beginner's guide with step-by-step instructions
+- **[Features Guide](docs/features/)** - Detailed documentation for all features
+- **[User Guide](docs/USER_GUIDE.md)** - Daily usage guide for all operations
+- **[API Documentation](docs/API_DOCUMENTATION.md)** - REST API reference for automation
+
+---
+
 ## ✨ What is DevFlow Pro?
 
 DevFlow Pro is a **complete deployment management system** that makes it easy to deploy and manage multiple projects across multiple servers from a single dashboard. Built with Laravel 12 and Livewire 3, it provides real-time monitoring, automated deployments, and Docker integration.
