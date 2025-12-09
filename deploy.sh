@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # DevFlow Pro Deployment Script
-# Usage: ./deploy.sh
+# Usage: ./deploy.sh [--rollback]
+# Options:
+#   --rollback    Restore the previous deployment
 
 set -e
 
@@ -9,12 +11,70 @@ SERVER_IP="31.220.90.121"
 SERVER_USER="root"
 PROJECT_NAME="devflow-pro"
 REMOTE_PATH="/var/www/$PROJECT_NAME"
+BACKUP_PATH="/var/www/backups/$PROJECT_NAME"
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
-echo "🚀 Starting DevFlow Pro Deployment to $SERVER_IP"
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Check for rollback flag
+if [ "$1" == "--rollback" ]; then
+    echo -e "${YELLOW}🔄 Rolling back to previous deployment...${NC}"
+    ssh $SERVER_USER@$SERVER_IP << 'ENDSSH'
+    set -e
+
+    PROJECT_NAME="devflow-pro"
+    REMOTE_PATH="/var/www/$PROJECT_NAME"
+    BACKUP_PATH="/var/www/backups/$PROJECT_NAME"
+
+    # Find latest backup
+    LATEST_BACKUP=$(ls -t $BACKUP_PATH/app_*.tar.gz 2>/dev/null | head -1)
+    LATEST_DB_BACKUP=$(ls -t $BACKUP_PATH/db_*.sql 2>/dev/null | head -1)
+
+    if [ -z "$LATEST_BACKUP" ]; then
+        echo "❌ No backup found to rollback to!"
+        exit 1
+    fi
+
+    echo "📦 Found backup: $LATEST_BACKUP"
+
+    # Restore application files
+    echo "📂 Restoring application files..."
+    cd $REMOTE_PATH
+    tar -xzf $LATEST_BACKUP -C $REMOTE_PATH
+
+    # Restore database if backup exists
+    if [ -n "$LATEST_DB_BACKUP" ] && [ -f "$LATEST_DB_BACKUP" ]; then
+        echo "🗄️  Restoring database..."
+        source .env
+        mysql -u$DB_USERNAME -p$DB_PASSWORD $DB_DATABASE < $LATEST_DB_BACKUP
+    fi
+
+    # Clear caches
+    php artisan optimize:clear
+    php artisan config:cache
+    php artisan route:cache
+    php artisan view:cache
+
+    # Restart services
+    systemctl restart php8.2-fpm 2>/dev/null || systemctl restart php8.4-fpm 2>/dev/null || true
+    supervisorctl restart devflow-worker:* 2>/dev/null || true
+
+    echo "✅ Rollback completed!"
+ENDSSH
+    exit 0
+fi
+
+echo -e "${BLUE}🚀 Starting DevFlow Pro Deployment to $SERVER_IP${NC}"
 echo "================================================"
+echo -e "${BLUE}📅 Deployment timestamp: $TIMESTAMP${NC}"
 
 # Create deployment package
-echo "📦 Creating deployment package..."
+echo -e "${YELLOW}📦 Creating deployment package...${NC}"
 tar -czf devflow-pro.tar.gz \
     --exclude='.git' \
     --exclude='.gitignore' \
@@ -38,32 +98,73 @@ tar -czf devflow-pro.tar.gz \
 
 # Check if tar succeeded in creating the file
 if [ ! -f devflow-pro.tar.gz ]; then
-    echo "❌ Failed to create deployment package"
+    echo -e "${RED}❌ Failed to create deployment package${NC}"
     exit 1
 fi
 
-echo "✅ Package created: devflow-pro.tar.gz"
+echo -e "${GREEN}✅ Package created: devflow-pro.tar.gz${NC}"
 
 # Copy to server
-echo "📤 Uploading to server..."
+echo -e "${YELLOW}📤 Uploading to server...${NC}"
 scp devflow-pro.tar.gz $SERVER_USER@$SERVER_IP:/tmp/
 
-echo "🔧 Setting up on server..."
-ssh $SERVER_USER@$SERVER_IP << 'ENDSSH'
+echo -e "${YELLOW}🔧 Setting up on server...${NC}"
+ssh $SERVER_USER@$SERVER_IP << ENDSSH
 set -e
 
 PROJECT_NAME="devflow-pro"
-REMOTE_PATH="/var/www/$PROJECT_NAME"
+REMOTE_PATH="/var/www/\$PROJECT_NAME"
+BACKUP_PATH="/var/www/backups/\$PROJECT_NAME"
+TIMESTAMP="$TIMESTAMP"
+
+# Create backup directory
+mkdir -p \$BACKUP_PATH
+
+# ============================================
+# BACKUP CURRENT DEPLOYMENT
+# ============================================
+if [ -d "\$REMOTE_PATH" ] && [ -f "\$REMOTE_PATH/artisan" ]; then
+    echo "📦 Creating backup of current deployment..."
+
+    # Backup application files (excluding vendor, node_modules, storage)
+    cd \$REMOTE_PATH
+    tar -czf \$BACKUP_PATH/app_\$TIMESTAMP.tar.gz \
+        --exclude='vendor' \
+        --exclude='node_modules' \
+        --exclude='storage/logs/*' \
+        --exclude='storage/framework/cache/*' \
+        --exclude='storage/framework/sessions/*' \
+        --exclude='storage/framework/views/*' \
+        . 2>/dev/null || true
+
+    # Backup database
+    if [ -f "\$REMOTE_PATH/.env" ]; then
+        source \$REMOTE_PATH/.env
+        if [ -n "\$DB_DATABASE" ] && [ -n "\$DB_USERNAME" ]; then
+            echo "🗄️  Backing up database..."
+            mysqldump -u\$DB_USERNAME -p\$DB_PASSWORD \$DB_DATABASE > \$BACKUP_PATH/db_\$TIMESTAMP.sql 2>/dev/null || echo "   ⚠️  Database backup failed (may not exist yet)"
+        fi
+    fi
+
+    # Keep only last 5 backups
+    echo "🧹 Cleaning old backups (keeping last 5)..."
+    ls -t \$BACKUP_PATH/app_*.tar.gz 2>/dev/null | tail -n +6 | xargs rm -f 2>/dev/null || true
+    ls -t \$BACKUP_PATH/db_*.sql 2>/dev/null | tail -n +6 | xargs rm -f 2>/dev/null || true
+
+    echo "✅ Backup completed: \$BACKUP_PATH/app_\$TIMESTAMP.tar.gz"
+else
+    echo "ℹ️  No existing deployment found, skipping backup"
+fi
 
 # Create directory if not exists
-mkdir -p $REMOTE_PATH
+mkdir -p \$REMOTE_PATH
 
 # Extract files
 echo "📂 Extracting files..."
-tar -xzf /tmp/devflow-pro.tar.gz -C $REMOTE_PATH
+tar -xzf /tmp/devflow-pro.tar.gz -C \$REMOTE_PATH
 
 # Navigate to project
-cd $REMOTE_PATH
+cd \$REMOTE_PATH
 
 # Create necessary directories
 echo "📁 Creating required directories..."
@@ -117,21 +218,21 @@ echo "✅ Production environment configured"
 
 # Set permissions
 echo "🔐 Setting permissions..."
-chown -R www-data:www-data $REMOTE_PATH
-chmod -R 755 $REMOTE_PATH
-chmod -R 775 $REMOTE_PATH/storage
-chmod -R 775 $REMOTE_PATH/bootstrap/cache
+chown -R www-data:www-data \$REMOTE_PATH
+chmod -R 755 \$REMOTE_PATH
+chmod -R 775 \$REMOTE_PATH/storage
+chmod -R 775 \$REMOTE_PATH/bootstrap/cache
 
 # Fix Git ownership issues
 echo "🔧 Configuring Git safe directories..."
-git config --global --add safe.directory $REMOTE_PATH 2>/dev/null || true
+git config --global --add safe.directory \$REMOTE_PATH 2>/dev/null || true
 git config --global --add safe.directory "/var/www/*" 2>/dev/null || true
 
 # Build assets
 echo "🎨 Building assets..."
 npm run build
 
-# Run migrations (queue tables are created via migration file with hasTable check)
+# Run migrations
 echo "🗄️  Running database migrations..."
 php artisan migrate --force
 
@@ -234,13 +335,46 @@ if crontab -l 2>/dev/null | grep -q "schedule:run"; then
     echo "✅ Scheduler cron job already exists"
 else
     # Add cron job
-    (crontab -l 2>/dev/null; echo "$CRON_CMD") | crontab -
+    (crontab -l 2>/dev/null; echo "\$CRON_CMD") | crontab -
     echo "✅ Scheduler cron job added"
 fi
 
 # Restart queue workers gracefully
 echo "🔄 Restarting queue workers..."
 php artisan queue:restart
+
+# ============================================
+# HEALTH CHECK
+# ============================================
+echo ""
+echo "🏥 Running health check..."
+sleep 2
+
+# Get APP_URL from .env
+source .env
+APP_URL=\${APP_URL:-"http://localhost"}
+
+# Check if site responds
+HTTP_CODE=\$(curl -s -o /dev/null -w "%{http_code}" "\$APP_URL" 2>/dev/null || echo "000")
+
+if [ "\$HTTP_CODE" == "200" ] || [ "\$HTTP_CODE" == "302" ]; then
+    echo "✅ Health check PASSED - Site responding with HTTP \$HTTP_CODE"
+else
+    echo "⚠️  Health check WARNING - Site returned HTTP \$HTTP_CODE"
+    echo "   This might be normal if APP_URL is not configured correctly"
+    echo "   You can manually verify the site is working"
+fi
+
+# Check database connection
+php artisan tinker --execute="DB::connection()->getPdo(); echo 'OK';" 2>/dev/null && echo "✅ Database connection OK" || echo "⚠️  Database connection check failed"
+
+# Check queue workers
+WORKER_STATUS=\$(supervisorctl status devflow-worker:* 2>/dev/null | grep -c "RUNNING" || echo "0")
+if [ "\$WORKER_STATUS" -gt 0 ]; then
+    echo "✅ Queue workers running: \$WORKER_STATUS processes"
+else
+    echo "⚠️  Queue workers may not be running"
+fi
 
 # Cleanup
 rm -f /tmp/devflow-pro.tar.gz
@@ -255,16 +389,18 @@ echo "📋 Configuration:"
 echo "   ✅ Queue driver: database"
 echo "   ✅ Queue workers: 2 processes (supervisor)"
 echo "   ✅ Laravel scheduler: configured (cron)"
-echo "   ✅ Worker logs: $REMOTE_PATH/storage/logs/worker.log"
+echo "   ✅ Worker logs: \$REMOTE_PATH/storage/logs/worker.log"
+echo "   ✅ Backups: \$BACKUP_PATH"
 echo ""
 echo "🔧 Management commands:"
 echo "   - Check workers: supervisorctl status devflow-worker:*"
 echo "   - Restart workers: supervisorctl restart devflow-worker:*"
 echo "   - Stop workers: supervisorctl stop devflow-worker:*"
-echo "   - View logs: tail -f $REMOTE_PATH/storage/logs/worker.log"
+echo "   - View logs: tail -f \$REMOTE_PATH/storage/logs/worker.log"
 echo "   - Check queue: php artisan queue:work --once"
+echo "   - ROLLBACK: ./deploy.sh --rollback"
 echo ""
-echo "🌐 Web root: $REMOTE_PATH/public"
+echo "🌐 Web root: \$REMOTE_PATH/public"
 echo ""
 
 ENDSSH
@@ -273,7 +409,8 @@ ENDSSH
 rm -f devflow-pro.tar.gz
 
 echo ""
-echo "🎉 Deployment script completed!"
-echo "📝 Check server output above for next steps"
+echo -e "${GREEN}🎉 Deployment script completed!${NC}"
+echo "📝 Check server output above for health check results"
 echo ""
-
+echo -e "${BLUE}💡 Rollback command: ./deploy.sh --rollback${NC}"
+echo ""
