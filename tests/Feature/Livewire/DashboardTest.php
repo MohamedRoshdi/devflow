@@ -55,7 +55,9 @@ class DashboardTest extends TestCase
         Deployment::factory()->count(10)->success()->create();
         Deployment::factory()->count(3)->failed()->create();
 
-        $component = Livewire::test(Dashboard::class);
+        // Call loadDashboardData since wire:init doesn't fire in tests
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadDashboardData');
 
         $stats = $component->get('stats');
 
@@ -84,8 +86,9 @@ class DashboardTest extends TestCase
     {
         Cache::flush();
 
-        // First call should cache the results
-        $component = Livewire::test(Dashboard::class);
+        // First call should cache the results (call loadDashboardData since wire:init doesn't fire in tests)
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadDashboardData');
         $this->assertTrue(Cache::has('dashboard_stats'));
 
         // Verify cache TTL (should be around 60 seconds)
@@ -100,7 +103,8 @@ class DashboardTest extends TestCase
             'project_id' => Project::factory()->create(['server_id' => $this->server->id]),
         ]);
 
-        $component = Livewire::test(Dashboard::class);
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadDashboardData');
         $recentDeployments = $component->get('recentDeployments');
 
         $this->assertCount(10, $recentDeployments); // Should take only 10
@@ -115,7 +119,8 @@ class DashboardTest extends TestCase
             'server_id' => $this->server->id,
         ]);
 
-        $component = Livewire::test(Dashboard::class);
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadDashboardData');
         $projects = $component->get('projects');
 
         $this->assertCount(6, $projects); // Should take only 6
@@ -182,7 +187,8 @@ class DashboardTest extends TestCase
         // Create initial data
         Project::factory()->count(3)->create(['server_id' => $this->server->id]);
 
-        $component = Livewire::test(Dashboard::class);
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadDashboardData');
         $initialProjectsCount = count($component->get('projects'));
 
         // Create more data
@@ -223,7 +229,8 @@ class DashboardTest extends TestCase
             ]);
         }
 
-        $component = Livewire::test(Dashboard::class);
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadDashboardData');
         $timeline = $component->get('deploymentTimeline');
 
         $this->assertIsArray($timeline);
@@ -250,7 +257,8 @@ class DashboardTest extends TestCase
             'created_at' => now(),
         ]);
 
-        $component = Livewire::test(Dashboard::class);
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadDashboardData');
         $timeline = $component->get('deploymentTimeline');
 
         $this->assertCount(7, $timeline);
@@ -269,7 +277,8 @@ class DashboardTest extends TestCase
         SSLCertificate::factory()->count(1)->expired()->create(['server_id' => $this->server->id]);
         SSLCertificate::factory()->count(1)->failed()->create(['server_id' => $this->server->id]);
 
-        $component = Livewire::test(Dashboard::class);
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadDashboardData');
         $sslStats = $component->get('sslStats');
 
         $this->assertIsArray($sslStats);
@@ -305,7 +314,8 @@ class DashboardTest extends TestCase
             'server_id' => $this->server->id,
         ]);
 
-        $component = Livewire::test(Dashboard::class);
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadDashboardData');
         $healthStats = $component->get('healthCheckStats');
 
         $this->assertIsArray($healthStats);
@@ -339,7 +349,8 @@ class DashboardTest extends TestCase
             'created_at' => now()->subDay(),
         ]);
 
-        $component = Livewire::test(Dashboard::class);
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadDashboardData');
         $deploymentsToday = $component->get('deploymentsToday');
 
         $this->assertEquals(5, $deploymentsToday);
@@ -358,7 +369,8 @@ class DashboardTest extends TestCase
             'created_at' => now()->subMinutes(5),
         ]);
 
-        $component = Livewire::test(Dashboard::class);
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadDashboardData');
         $recentActivity = $component->get('recentActivity');
 
         $this->assertIsArray($recentActivity);
@@ -384,7 +396,8 @@ class DashboardTest extends TestCase
             'project_id' => $project->id,
         ]);
 
-        $component = Livewire::test(Dashboard::class);
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadDashboardData');
         $initialCount = count($component->get('recentActivity'));
 
         // Load more activity
@@ -411,7 +424,8 @@ class DashboardTest extends TestCase
             'recorded_at' => now(),
         ]);
 
-        $component = Livewire::test(Dashboard::class);
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadDashboardData');
         $serverHealth = $component->get('serverHealth');
 
         $this->assertIsArray($serverHealth);
@@ -446,7 +460,8 @@ class DashboardTest extends TestCase
             $this->markTestSkipped('Jobs table not available');
         }
 
-        $component = Livewire::test(Dashboard::class);
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadDashboardData');
         $queueStats = $component->get('queueStats');
 
         $this->assertIsArray($queueStats);
@@ -466,7 +481,8 @@ class DashboardTest extends TestCase
             'security_score' => 80,
         ]);
 
-        $component = Livewire::test(Dashboard::class);
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadDashboardData');
         $securityScore = $component->get('overallSecurityScore');
 
         $this->assertIsInt($securityScore);
@@ -483,7 +499,8 @@ class DashboardTest extends TestCase
         Deployment::factory()->count(3)->running()->create(['project_id' => $project->id]);
         Deployment::factory()->count(5)->success()->create(['project_id' => $project->id]);
 
-        $component = Livewire::test(Dashboard::class);
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadDashboardData');
         $activeDeployments = $component->get('activeDeployments');
 
         $this->assertEquals(5, $activeDeployments); // 2 pending + 3 running
@@ -544,7 +561,8 @@ class DashboardTest extends TestCase
         Project::query()->delete();
         Deployment::query()->delete();
 
-        $component = Livewire::test(Dashboard::class);
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadDashboardData');
 
         $stats = $component->get('stats');
         $this->assertEquals(0, $stats['total_servers']);
@@ -567,7 +585,8 @@ class DashboardTest extends TestCase
             'created_at' => now(),
         ]);
 
-        $component = Livewire::test(Dashboard::class);
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadDashboardData');
         $timeline = $component->get('deploymentTimeline');
 
         $today = end($timeline);
@@ -588,7 +607,8 @@ class DashboardTest extends TestCase
             // Redis might not be available, which is what we're testing
         }
 
-        $component = Livewire::test(Dashboard::class);
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadDashboardData');
 
         // Should still work and load data
         $stats = $component->get('stats');

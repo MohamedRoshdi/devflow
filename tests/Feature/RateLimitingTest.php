@@ -237,8 +237,11 @@ class RateLimitingTest extends TestCase
 
     public function test_rate_limit_headers_are_present(): void
     {
-        $server = Server::factory()->create();
-        $project = Project::factory()->create(['server_id' => $server->id]);
+        $server = Server::factory()->create(['user_id' => $this->user->id]);
+        $project = Project::factory()->create([
+            'server_id' => $server->id,
+            'user_id' => $this->user->id,
+        ]);
 
         $response = $this->getJson("/api/v1/projects/{$project->slug}", $this->apiHeaders());
         $response->assertStatus(200);

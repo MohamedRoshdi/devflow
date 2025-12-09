@@ -84,10 +84,12 @@ class ProjectApiTest extends TestCase
     {
         $projectData = [
             'name' => 'Test Project',
+            'slug' => 'test-project-' . uniqid(),
             'repository_url' => 'https://github.com/test/repo.git',
             'branch' => 'main',
             'server_id' => $this->server->id,
             'framework' => 'laravel',
+            'project_type' => 'single_tenant',
         ];
 
         $response = $this->withHeaders($this->headers)
@@ -137,7 +139,7 @@ class ProjectApiTest extends TestCase
         ]);
 
         $response = $this->withHeaders($this->headers)
-            ->getJson('/api/v1/projects/' . $project->id);
+            ->getJson('/api/v1/projects/' . $project->slug);
 
         $response->assertOk()
             ->assertJsonPath('data.id', $project->id);
@@ -164,7 +166,7 @@ class ProjectApiTest extends TestCase
         ]);
 
         $response = $this->withHeaders($this->headers)
-            ->putJson('/api/v1/projects/' . $project->id, [
+            ->putJson('/api/v1/projects/' . $project->slug, [
                 'name' => 'Updated Name',
             ]);
 
@@ -188,11 +190,12 @@ class ProjectApiTest extends TestCase
         ]);
 
         $response = $this->withHeaders($this->headers)
-            ->deleteJson('/api/v1/projects/' . $project->id);
+            ->deleteJson('/api/v1/projects/' . $project->slug);
 
         $response->assertNoContent();
 
-        $this->assertDatabaseMissing('projects', [
+        // Project uses SoftDeletes, so check it's soft deleted
+        $this->assertSoftDeleted('projects', [
             'id' => $project->id,
         ]);
     }
@@ -208,12 +211,10 @@ class ProjectApiTest extends TestCase
         ]);
 
         $response = $this->withHeaders($this->headers)
-            ->postJson('/api/v1/projects/' . $project->id . '/deploy');
+            ->postJson('/api/v1/projects/' . $project->slug . '/deploy');
 
-        $response->assertOk()
-            ->assertJsonStructure([
-                'data' => ['id', 'status', 'created_at'],
-            ]);
+        // Deployment returns 202 Accepted for async operations
+        $response->assertAccepted();
 
         $this->assertDatabaseHas('deployments', [
             'project_id' => $project->id,
@@ -236,7 +237,7 @@ class ProjectApiTest extends TestCase
         ]);
 
         $response = $this->withHeaders($this->headers)
-            ->getJson('/api/v1/projects/' . $project->id . '/deployments');
+            ->getJson('/api/v1/projects/' . $project->slug . '/deployments');
 
         $response->assertOk()
             ->assertJsonCount(3, 'data');

@@ -369,16 +369,34 @@ $this->assertSoftDeleted('table', ['id' => 1]);
 
 ## Summary
 
-Current test coverage:
+Current test coverage (as of December 2025):
 - ✅ 36+ Unit Tests (Services)
-- ✅ 50+ Feature Tests (Livewire Components)
+- ✅ 282 Feature Tests (Livewire Components, API, Authentication, Rate Limiting, Webhooks)
+- ✅ 69 API Tests (Projects, Servers, Deployments, Endpoints)
+- ✅ 20 Authentication Tests (Login, Registration, Password Reset)
+- ✅ 11 Webhook Tests (GitHub, GitLab, Bitbucket)
+- ✅ 10 Rate Limiting Tests
 - ✅ Test Traits and Helpers
 - ✅ Factory Enhancements
 - ✅ Mock SSH Connections
 
-**Total: 86+ comprehensive tests covering core functionality**
+**Total: 318+ comprehensive tests covering core functionality**
 
-Run all tests with:
+### Docker-Based Testing (PostgreSQL)
+```bash
+docker run --rm --network host \
+  -v $(pwd):/app -w /app \
+  -e APP_ENV=testing \
+  -e DB_CONNECTION=pgsql_testing \
+  -e DB_HOST=127.0.0.1 \
+  -e DB_PORT=5433 \
+  -e DB_DATABASE=devflow_test \
+  -e DB_USERNAME=devflow_test \
+  -e DB_PASSWORD=devflow_test_password \
+  devflow-test:latest php vendor/bin/phpunit --testsuite=Feature --no-coverage
+```
+
+### Run All Tests
 ```bash
 php artisan test --parallel
 ```

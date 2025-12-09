@@ -114,16 +114,16 @@ class ApiEndpointTest extends TestCase
     }
 
     /** @test */
-    public function it_allows_authenticated_users_to_update_any_project(): void
+    public function it_prevents_updating_other_users_project(): void
     {
-        // Note: Current policy allows any authenticated user to update any project
+        // Authorization policy restricts access to own resources only
         $otherProject = Project::factory()->create(['user_id' => $this->otherUser->id]);
 
         $response = $this->putJson("/api/v1/projects/{$otherProject->slug}", [
             'name' => 'Updated Project Name',
         ], $this->apiHeaders());
 
-        $response->assertStatus(200);
+        $response->assertStatus(403);
     }
 
     /** @test */
@@ -207,15 +207,15 @@ class ApiEndpointTest extends TestCase
     }
 
     /** @test */
-    public function it_allows_authenticated_users_to_delete_any_project(): void
+    public function it_prevents_deleting_other_users_project(): void
     {
-        // Note: Current policy allows any authenticated user to delete any project
+        // Authorization policy restricts access to own resources only
         $otherProject = Project::factory()->create(['user_id' => $this->otherUser->id]);
 
         $response = $this->deleteJson("/api/v1/projects/{$otherProject->slug}", [], $this->apiHeaders());
 
-        $response->assertStatus(204);
-        $this->assertSoftDeleted('projects', ['id' => $otherProject->id]);
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('projects', ['id' => $otherProject->id]);
     }
 
     /** @test */
@@ -258,16 +258,16 @@ class ApiEndpointTest extends TestCase
     }
 
     /** @test */
-    public function it_allows_authenticated_users_to_update_any_server(): void
+    public function it_prevents_updating_other_users_server(): void
     {
-        // Note: Current policy allows any authenticated user to update any server
+        // Authorization policy restricts access to own resources only
         $otherServer = Server::factory()->create(['user_id' => $this->otherUser->id]);
 
         $response = $this->putJson("/api/v1/servers/{$otherServer->id}", [
             'name' => 'Updated Server',
         ], $this->apiHeaders());
 
-        $response->assertStatus(200);
+        $response->assertStatus(403);
     }
 
     /** @test */
@@ -331,15 +331,15 @@ class ApiEndpointTest extends TestCase
     }
 
     /** @test */
-    public function it_allows_authenticated_users_to_delete_any_server_without_projects(): void
+    public function it_prevents_deleting_other_users_server(): void
     {
-        // Note: Current policy allows any authenticated user to delete any server
+        // Authorization policy restricts access to own resources only
         $otherServer = Server::factory()->create(['user_id' => $this->otherUser->id]);
 
         $response = $this->deleteJson("/api/v1/servers/{$otherServer->id}", [], $this->apiHeaders());
 
-        $response->assertStatus(204);
-        $this->assertSoftDeleted('servers', ['id' => $otherServer->id]);
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('servers', ['id' => $otherServer->id]);
     }
 
     /** @test */
@@ -534,10 +534,9 @@ class ApiEndpointTest extends TestCase
     }
 
     /** @test */
-    public function it_allows_authenticated_users_to_view_any_server_metrics_with_sanctum(): void
+    public function it_prevents_viewing_other_users_server_metrics(): void
     {
-        // Note: Server metrics use auth:sanctum (legacy routes), not api.auth
-        // We need to use actingAs() instead of API token
+        // Authorization policy restricts access to own resources only
         $otherServer = Server::factory()->create(['user_id' => $this->otherUser->id]);
 
         ServerMetric::factory()->count(3)->create([
@@ -547,7 +546,7 @@ class ApiEndpointTest extends TestCase
         $response = $this->actingAs($this->user)
             ->getJson("/api/servers/{$otherServer->id}/metrics");
 
-        $response->assertStatus(200);
+        $response->assertStatus(403);
     }
 
     /** @test */
@@ -591,9 +590,9 @@ class ApiEndpointTest extends TestCase
     }
 
     /** @test */
-    public function it_allows_authenticated_users_to_store_metrics_for_any_server_with_sanctum(): void
+    public function it_prevents_storing_metrics_for_other_users_server(): void
     {
-        // Note: Server metrics use auth:sanctum (legacy routes), not api.auth
+        // Authorization policy restricts access to own resources only
         $otherServer = Server::factory()->create(['user_id' => $this->otherUser->id]);
 
         $response = $this->actingAs($this->user)
@@ -603,7 +602,7 @@ class ApiEndpointTest extends TestCase
                 'disk_usage' => 75.8,
             ]);
 
-        $response->assertStatus(201);
+        $response->assertStatus(403);
     }
 
     /** @test */
@@ -679,9 +678,9 @@ class ApiEndpointTest extends TestCase
     }
 
     /** @test */
-    public function it_allows_authenticated_users_to_rollback_any_deployment(): void
+    public function it_prevents_rolling_back_other_users_deployment(): void
     {
-        // Note: Current policy allows any authenticated user to update any project
+        // Authorization policy restricts access to own resources only
         $otherProject = Project::factory()->create(['user_id' => $this->otherUser->id]);
         $deployment = Deployment::factory()->create([
             'project_id' => $otherProject->id,
@@ -692,7 +691,7 @@ class ApiEndpointTest extends TestCase
 
         $response = $this->postJson("/api/v1/deployments/{$deployment->id}/rollback", [], $this->apiHeaders());
 
-        $response->assertStatus(202);
+        $response->assertStatus(403);
     }
 
     /** @test */
