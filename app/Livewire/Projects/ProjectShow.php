@@ -60,22 +60,8 @@ class ProjectShow extends Component
 
     public function mount(Project $project)
     {
-        // Authorization: User must own the project or be a team member
-        $user = auth()->user();
-
-        if (! $user) {
-            abort(401);
-        }
-
-        // Check if user owns the project
-        if ($project->user_id !== $user->id) {
-            // Check if user is a team member with access
-            if ($project->team_id && $user->currentTeam && $user->currentTeam->id === $project->team_id) {
-                // Team member has access
-            } else {
-                abort(403);
-            }
-        }
+        // Use Policy for authorization
+        $this->authorize('view', $project);
 
         // Eager load domains to prevent N+1 queries
         $this->project = $project->load('domains');

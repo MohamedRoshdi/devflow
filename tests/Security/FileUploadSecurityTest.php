@@ -216,15 +216,13 @@ class FileUploadSecurityTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        $response = $this->post('/settings/ssh-keys', [
-            'name' => 'Test Key',
-            'public_key' => 'not-a-valid-ssh-key',
-        ]);
+        // SSH Key management uses Livewire - test the validation logic directly
+        $sshKeyService = app(\App\Services\SSHKeyService::class);
+        $result = $sshKeyService->importKey('not-a-valid-ssh-key', 'fake-private-key');
 
-        $this->assertTrue(
-            $response->status() === 422 ||
-            $response->status() === 302
-        );
+        // Invalid key format should fail
+        $this->assertFalse($result['success']);
+        $this->assertArrayHasKey('error', $result);
     }
 
     /** @test */
@@ -232,18 +230,16 @@ class FileUploadSecurityTest extends TestCase
     {
         $this->actingAs($this->user);
 
+        // SSH Key management uses Livewire - test the validation logic directly
+        $sshKeyService = app(\App\Services\SSHKeyService::class);
         $validRsaKey = 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDxyz test@example.com';
+        $validPrivateKey = "-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEA\n-----END RSA PRIVATE KEY-----";
 
-        $response = $this->post('/settings/ssh-keys', [
-            'name' => 'Test Key',
-            'public_key' => $validRsaKey,
-        ]);
+        $result = $sshKeyService->importKey($validRsaKey, $validPrivateKey);
 
-        $this->assertTrue(
-            $response->status() === 200 ||
-            $response->status() === 302 ||
-            $response->status() === 422 // If key format is more strictly validated
-        );
+        // Valid RSA key should be accepted
+        $this->assertTrue($result['success']);
+        $this->assertEquals('rsa', $result['type']);
     }
 
     /** @test */
@@ -251,18 +247,16 @@ class FileUploadSecurityTest extends TestCase
     {
         $this->actingAs($this->user);
 
+        // SSH Key management uses Livewire - test the validation logic directly
+        $sshKeyService = app(\App\Services\SSHKeyService::class);
         $validEd25519Key = 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI test@example.com';
+        $validPrivateKey = "-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXk\n-----END OPENSSH PRIVATE KEY-----";
 
-        $response = $this->post('/settings/ssh-keys', [
-            'name' => 'Test Key',
-            'public_key' => $validEd25519Key,
-        ]);
+        $result = $sshKeyService->importKey($validEd25519Key, $validPrivateKey);
 
-        $this->assertTrue(
-            $response->status() === 200 ||
-            $response->status() === 302 ||
-            $response->status() === 422
-        );
+        // Valid ed25519 key should be accepted
+        $this->assertTrue($result['success']);
+        $this->assertEquals('ed25519', $result['type']);
     }
 
     // ==================== Environment File Upload Tests ====================

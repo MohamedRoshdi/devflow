@@ -45,7 +45,8 @@ class ServerCreate extends Component
             'hostname' => 'nullable|string|max:255',
             'ip_address' => 'required|ip',
             'port' => 'required|integer|min:1|max:65535',
-            'username' => 'required|string|max:255',
+            // Username: alphanumeric, underscores, hyphens - no shell special chars
+            'username' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_\-]+$/'],
             'ssh_password' => 'nullable|string|required_if:auth_method,password',
             'ssh_key' => 'nullable|string|required_if:auth_method,key',
             'auth_method' => 'required|in:password,key',

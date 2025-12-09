@@ -148,7 +148,8 @@ class ProjectCreate extends Component
             'slug' => 'required|string|max:255|unique:projects,slug,NULL,id,deleted_at,NULL',
             'server_id' => 'required|exists:servers,id',
             'repository_url' => ['required', 'regex:/^(https?:\/\/|git@)[\w\-\.]+[\/:][\w\-\.]+\/[\w\-\.]+\.git$/'],
-            'branch' => 'required|string|max:255',
+            // Branch name: alphanumeric, hyphens, underscores, slashes, dots - no shell special chars
+            'branch' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_\-\.\/]+$/'],
         ]);
     }
 
@@ -228,7 +229,8 @@ class ProjectCreate extends Component
             'server_id' => 'required|exists:servers,id',
             // Support both HTTPS and SSH URLs
             'repository_url' => ['required', 'regex:/^(https?:\/\/|git@)[\w\-\.]+[\/:][\w\-\.]+\/[\w\-\.]+\.git$/'],
-            'branch' => 'required|string|max:255',
+            // Branch name: alphanumeric, hyphens, underscores, slashes, dots - no shell special chars
+            'branch' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_\-\.\/]+$/'],
             'framework' => 'nullable|string|max:255',
             'php_version' => 'nullable|string|max:255',
             'node_version' => 'nullable|string|max:255',
