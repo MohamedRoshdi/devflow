@@ -1,4 +1,4 @@
-<div class="space-y-6">
+<div class="space-y-6" wire:init="loadHealthData">
     <!-- Header -->
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
         <div class="bg-gradient-to-r from-emerald-500 to-teal-500 p-6">
@@ -37,24 +37,44 @@
         <!-- Stats Overview -->
         <div class="p-6 grid grid-cols-2 md:grid-cols-5 gap-4">
             <div class="text-center p-4 rounded-xl bg-gray-50 dark:bg-gray-700/50">
-                <div class="text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['total'] }}</div>
-                <div class="text-sm text-gray-500 dark:text-gray-400">Total Projects</div>
+                @if($isLoading)
+                    <div class="h-9 w-12 mx-auto bg-gray-200 dark:bg-gray-600 rounded animate-pulse"></div>
+                @else
+                    <div class="text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['total'] }}</div>
+                @endif
+                <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">Total Projects</div>
             </div>
             <div class="text-center p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20">
-                <div class="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{{ $stats['healthy'] }}</div>
-                <div class="text-sm text-emerald-600 dark:text-emerald-400">Healthy</div>
+                @if($isLoading)
+                    <div class="h-9 w-12 mx-auto bg-emerald-200 dark:bg-emerald-800 rounded animate-pulse"></div>
+                @else
+                    <div class="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{{ $stats['healthy'] }}</div>
+                @endif
+                <div class="text-sm text-emerald-600 dark:text-emerald-400 mt-1">Healthy</div>
             </div>
             <div class="text-center p-4 rounded-xl bg-amber-50 dark:bg-amber-900/20">
-                <div class="text-3xl font-bold text-amber-600 dark:text-amber-400">{{ $stats['warning'] }}</div>
-                <div class="text-sm text-amber-600 dark:text-amber-400">Warning</div>
+                @if($isLoading)
+                    <div class="h-9 w-12 mx-auto bg-amber-200 dark:bg-amber-800 rounded animate-pulse"></div>
+                @else
+                    <div class="text-3xl font-bold text-amber-600 dark:text-amber-400">{{ $stats['warning'] }}</div>
+                @endif
+                <div class="text-sm text-amber-600 dark:text-amber-400 mt-1">Warning</div>
             </div>
             <div class="text-center p-4 rounded-xl bg-red-50 dark:bg-red-900/20">
-                <div class="text-3xl font-bold text-red-600 dark:text-red-400">{{ $stats['critical'] }}</div>
-                <div class="text-sm text-red-600 dark:text-red-400">Critical</div>
+                @if($isLoading)
+                    <div class="h-9 w-12 mx-auto bg-red-200 dark:bg-red-800 rounded animate-pulse"></div>
+                @else
+                    <div class="text-3xl font-bold text-red-600 dark:text-red-400">{{ $stats['critical'] }}</div>
+                @endif
+                <div class="text-sm text-red-600 dark:text-red-400 mt-1">Critical</div>
             </div>
             <div class="text-center p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20">
-                <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">{{ $stats['avg_score'] }}%</div>
-                <div class="text-sm text-blue-600 dark:text-blue-400">Avg Score</div>
+                @if($isLoading)
+                    <div class="h-9 w-12 mx-auto bg-blue-200 dark:bg-blue-800 rounded animate-pulse"></div>
+                @else
+                    <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">{{ $stats['avg_score'] }}%</div>
+                @endif
+                <div class="text-sm text-blue-600 dark:text-blue-400 mt-1">Avg Score</div>
             </div>
         </div>
     </div>
@@ -63,19 +83,23 @@
     <div class="flex items-center gap-2 bg-white dark:bg-gray-800 p-2 rounded-xl shadow">
         @foreach(['all' => 'All', 'healthy' => 'Healthy', 'warning' => 'Warning', 'critical' => 'Critical'] as $key => $label)
             <button wire:click="$set('filterStatus', '{{ $key }}')"
+                    @if($isLoading) disabled @endif
                     class="px-4 py-2 rounded-lg font-medium text-sm transition
                         {{ $filterStatus === $key
                             ? 'bg-emerald-500 text-white'
-                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700' }}
+                        {{ $isLoading ? 'opacity-50 cursor-not-allowed' : '' }}">
                 {{ $label }}
-                @if($key === 'all')
-                    <span class="ml-1 px-1.5 py-0.5 text-xs rounded-full bg-white/20">{{ $stats['total'] }}</span>
-                @elseif($key === 'healthy')
-                    <span class="ml-1 px-1.5 py-0.5 text-xs rounded-full {{ $filterStatus === $key ? 'bg-white/20' : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400' }}">{{ $stats['healthy'] }}</span>
-                @elseif($key === 'warning')
-                    <span class="ml-1 px-1.5 py-0.5 text-xs rounded-full {{ $filterStatus === $key ? 'bg-white/20' : 'bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400' }}">{{ $stats['warning'] }}</span>
-                @elseif($key === 'critical')
-                    <span class="ml-1 px-1.5 py-0.5 text-xs rounded-full {{ $filterStatus === $key ? 'bg-white/20' : 'bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400' }}">{{ $stats['critical'] }}</span>
+                @if(!$isLoading)
+                    @if($key === 'all')
+                        <span class="ml-1 px-1.5 py-0.5 text-xs rounded-full bg-white/20">{{ $stats['total'] }}</span>
+                    @elseif($key === 'healthy')
+                        <span class="ml-1 px-1.5 py-0.5 text-xs rounded-full {{ $filterStatus === $key ? 'bg-white/20' : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400' }}">{{ $stats['healthy'] }}</span>
+                    @elseif($key === 'warning')
+                        <span class="ml-1 px-1.5 py-0.5 text-xs rounded-full {{ $filterStatus === $key ? 'bg-white/20' : 'bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400' }}">{{ $stats['warning'] }}</span>
+                    @elseif($key === 'critical')
+                        <span class="ml-1 px-1.5 py-0.5 text-xs rounded-full {{ $filterStatus === $key ? 'bg-white/20' : 'bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400' }}">{{ $stats['critical'] }}</span>
+                    @endif
                 @endif
             </button>
         @endforeach
@@ -83,13 +107,38 @@
 
     <!-- Loading State -->
     @if($isLoading)
-        <div class="flex items-center justify-center py-12">
-            <div class="text-center">
-                <svg class="w-12 h-12 animate-spin text-emerald-500 mx-auto" fill="none" viewBox="0 0 24 24">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            @for($i = 0; $i < 6; $i++)
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden animate-pulse">
+                    <div class="p-4 bg-gradient-to-r from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-full bg-white/30"></div>
+                            <div class="space-y-2">
+                                <div class="h-4 w-24 bg-white/30 rounded"></div>
+                                <div class="h-3 w-16 bg-white/20 rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 space-y-4">
+                        <div class="grid grid-cols-2 gap-3">
+                            @for($j = 0; $j < 4; $j++)
+                                <div class="p-3 rounded-lg bg-gray-100 dark:bg-gray-700">
+                                    <div class="h-3 w-12 bg-gray-200 dark:bg-gray-600 rounded mb-2"></div>
+                                    <div class="h-4 w-16 bg-gray-300 dark:bg-gray-500 rounded"></div>
+                                </div>
+                            @endfor
+                        </div>
+                    </div>
+                </div>
+            @endfor
+        </div>
+        <div class="text-center py-4">
+            <div class="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <p class="mt-4 text-gray-500 dark:text-gray-400">Loading health data...</p>
+                <span>Checking project health...</span>
             </div>
         </div>
     @else

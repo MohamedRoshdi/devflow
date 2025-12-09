@@ -23,9 +23,10 @@ class HealthDashboard extends Component
 
     public ?string $lastCheckedAt = null;
 
-    public function mount()
+    public function mount(): void
     {
-        $this->loadHealthData();
+        // Don't load data on mount - use wire:init for lazy loading
+        // This allows the page to render immediately with a loading state
     }
 
     public function loadHealthData()
