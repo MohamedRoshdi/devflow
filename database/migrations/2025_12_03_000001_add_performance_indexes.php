@@ -350,9 +350,9 @@ return new class extends Migration
      */
     private function indexExists(string $tableName, string $indexName): bool
     {
-        $connection = config('database.default');
+        $driver = Schema::getConnection()->getDriverName();
 
-        if ($connection === 'sqlite') {
+        if ($driver === 'sqlite') {
             // SQLite uses PRAGMA index_list
             $indexes = DB::select("PRAGMA index_list(`{$tableName}`)");
             foreach ($indexes as $index) {
@@ -362,6 +362,18 @@ return new class extends Migration
             }
 
             return false;
+        }
+
+        if ($driver === 'pgsql') {
+            // PostgreSQL uses pg_indexes
+            $query = 'SELECT COUNT(*) as count
+                      FROM pg_indexes
+                      WHERE tablename = ?
+                      AND indexname = ?';
+
+            $result = DB::select($query, [$tableName, $indexName]);
+
+            return $result[0]->count > 0;
         }
 
         // MySQL/MariaDB

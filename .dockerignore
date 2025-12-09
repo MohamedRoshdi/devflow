@@ -1,0 +1,10 @@
+node_modules
+vendor
+.git
+storage/framework/testing
+storage/logs/*
+storage/app/public/*
+bootstrap/cache/*
+.env
+.env.local
+.env.testing
