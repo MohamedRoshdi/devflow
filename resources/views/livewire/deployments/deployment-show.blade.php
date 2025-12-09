@@ -194,17 +194,45 @@
                     @php
                         $logs = $deployment->output_log ?? '';
                         $steps = [
-                            ['name' => 'Clone Repository', 'marker' => '=== Cloning Repository ===', 'complete_marker' => '✓ Repository cloned successfully'],
-                            ['name' => 'Record Commit Info', 'marker' => '=== Recording Commit Information ===', 'complete_marker' => '✓ Commit information recorded'],
-                            ['name' => 'Build Docker Image', 'marker' => '=== Building Docker Container ===', 'complete_marker' => '✓ Build successful'],
-                            ['name' => 'Start Container', 'marker' => '=== Starting Container ===', 'complete_marker' => 'Container started'],
+                            [
+                                'name' => 'Setup Repository',
+                                'markers' => ['=== Setting Up Repository ===', '=== Cloning Repository ==='],
+                                'complete_markers' => ['✓ Repository cloned successfully', '✓ Repository updated successfully']
+                            ],
+                            [
+                                'name' => 'Record Commit Info',
+                                'markers' => ['=== Recording Commit Information ==='],
+                                'complete_markers' => ['✓ Commit information recorded']
+                            ],
+                            [
+                                'name' => 'Build Docker Image',
+                                'markers' => ['=== Building Docker Container ==='],
+                                'complete_markers' => ['✓ Build successful']
+                            ],
+                            [
+                                'name' => 'Start Container',
+                                'markers' => ['=== Starting Container ==='],
+                                'complete_markers' => ['Container started successfully', 'Container started']
+                            ],
                         ];
                     @endphp
                     
                     @foreach($steps as $step)
                         @php
-                            $isActive = str_contains($logs, $step['marker']);
-                            $isComplete = str_contains($logs, $step['complete_marker']);
+                            $isActive = false;
+                            $isComplete = false;
+                            foreach ($step['markers'] as $marker) {
+                                if (str_contains($logs, $marker)) {
+                                    $isActive = true;
+                                    break;
+                                }
+                            }
+                            foreach ($step['complete_markers'] as $completeMarker) {
+                                if (str_contains($logs, $completeMarker)) {
+                                    $isComplete = true;
+                                    break;
+                                }
+                            }
                         @endphp
                         
                         <div class="flex items-center space-x-3">
