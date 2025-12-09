@@ -225,6 +225,24 @@ class DockerService
                 $cleanupProcess->setTimeout(180); // 3 minutes for complex projects
                 $cleanupProcess->run();
 
+                // Also remove any orphaned containers by name pattern (handles containers from failed deploys)
+                // This catches containers like ats-elasticsearch that might exist from previous runs
+                $orphanCleanupCommand = "docker ps -a --format '{{.Names}}' | grep -E '^{$project->slug}[-_]' | xargs -r docker rm -f 2>/dev/null; true";
+                $orphanCleanupCmd = $this->isLocalhost($server)
+                    ? $orphanCleanupCommand
+                    : $this->buildSSHCommand($server, $orphanCleanupCommand);
+                $orphanCleanupProcess = Process::fromShellCommandline($orphanCleanupCmd);
+                $orphanCleanupProcess->run();
+
+                // Parse docker-compose.yml to get explicit container_names and remove them if they exist
+                // This handles cases where container_name is set explicitly (e.g., ats-elasticsearch)
+                $parseContainerNamesCmd = "cd {$projectPath} && grep -E '^\\s+container_name:' docker-compose.yml 2>/dev/null | sed 's/.*container_name:\\s*[\"'\\'']\\?\\([^\"'\\''\n]*\\)[\"'\\'']\\?/\\1/' | xargs -r -I {} docker rm -f {} 2>/dev/null; true";
+                $parseCmd = $this->isLocalhost($server)
+                    ? $parseContainerNamesCmd
+                    : $this->buildSSHCommand($server, $parseContainerNamesCmd);
+                $parseProcess = Process::fromShellCommandline($parseCmd);
+                $parseProcess->run();
+
                 $startCommand = "cd {$projectPath} && docker compose up -d --remove-orphans";
 
                 $command = $this->isLocalhost($server)
