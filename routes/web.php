@@ -24,17 +24,23 @@ use App\Livewire\Teams\TeamList;
 use App\Livewire\Teams\TeamSettings;
 use Illuminate\Support\Facades\Route;
 
-// Public Home Page - Shows all projects
-Route::get('/', HomePublic::class)->name('home');
+// Public Pages - Rate limited to prevent abuse
+Route::middleware('throttle:public')->group(function () {
+    // Public Home Page - Shows all projects
+    Route::get('/', HomePublic::class)->name('home');
 
-// Public Project Detail Page
-Route::get('/project/{slug}', \App\Livewire\Home\ProjectDetail::class)->name('project.public');
+    // Public Project Detail Page
+    Route::get('/project/{slug}', \App\Livewire\Home\ProjectDetail::class)->name('project.public');
 
-// Team Invitation (requires auth to accept)
-Route::get('/invitations/{token}', [TeamInvitationController::class, 'show'])->name('invitations.show');
-Route::post('/invitations/{token}/accept', [TeamInvitationController::class, 'accept'])->name('invitations.accept')->middleware('auth');
+    // Team Invitation (requires auth to accept)
+    Route::get('/invitations/{token}', [TeamInvitationController::class, 'show'])->name('invitations.show');
+});
 
-Route::middleware('auth')->group(function () {
+Route::post('/invitations/{token}/accept', [TeamInvitationController::class, 'accept'])
+    ->name('invitations.accept')
+    ->middleware(['auth', 'throttle:web']);
+
+Route::middleware(['auth', 'throttle:web'])->group(function () {
     // Dashboard
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
 
@@ -144,8 +150,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings/system', \App\Livewire\Settings\SystemSettings::class)->name('settings.system');
 });
 
-// Webhook endpoints (public, no auth required)
-Route::post('/webhooks/github/{secret}', [App\Http\Controllers\WebhookController::class, 'handleGitHub'])->name('webhooks.github');
-Route::post('/webhooks/gitlab/{secret}', [App\Http\Controllers\WebhookController::class, 'handleGitLab'])->name('webhooks.gitlab');
+// Webhook endpoints (public, no auth required) - Protected with webhook rate limiting
+Route::middleware('throttle:webhooks')->group(function () {
+    Route::post('/webhooks/github/{secret}', [App\Http\Controllers\WebhookController::class, 'handleGitHub'])->name('webhooks.github');
+    Route::post('/webhooks/gitlab/{secret}', [App\Http\Controllers\WebhookController::class, 'handleGitLab'])->name('webhooks.gitlab');
+});
 
 require __DIR__.'/auth.php';

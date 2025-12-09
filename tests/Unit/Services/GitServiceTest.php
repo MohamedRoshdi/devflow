@@ -675,10 +675,9 @@ class GitServiceTest extends TestCase
             '*test -d*' => Process::result('exists'),
             '*safe.directory*' => Process::result(),
             '*fetch*' => Process::result(''),
-            '*origin/develop*' => Process::result('', exitCode: 128),
-            '*rev-list*HEAD*' => Process::result('10'),
-            '*HEAD*' => Process::result('abc|Author|email@test.com|1704067200|Fallback commit'),
             '*git log*' => Process::result('abc|Author|email@test.com|1704067200|Fallback commit'),
+            '*rev-list --count origin/develop*' => Process::result('', exitCode: 128),
+            '*rev-list*HEAD*' => Process::result('10'),
         ]);
 
         $result = $this->gitService->getLatestCommits($project);

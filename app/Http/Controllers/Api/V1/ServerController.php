@@ -42,14 +42,14 @@ class ServerController extends Controller
         }
 
         // Sorting
-        $sortBy = $request->get('sort_by', 'updated_at');
-        $sortOrder = $request->get('sort_order', 'desc');
+        $sortBy = $request->input('sort_by', 'updated_at');
+        $sortOrder = $request->input('sort_order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
         // Load project count
         $query->withCount('projects');
 
-        $perPage = min($request->get('per_page', 15), 100);
+        $perPage = min($request->input('per_page', 15), 100);
         $servers = $query->paginate($perPage);
 
         return new ServerCollection($servers);
@@ -132,7 +132,7 @@ class ServerController extends Controller
         $this->authorize('view', $server);
 
         // Get metrics based on time range
-        $range = $request->get('range', '1h'); // 1h, 24h, 7d, 30d
+        $range = $request->input('range', '1h'); // 1h, 24h, 7d, 30d
         $limit = match ($range) {
             '1h' => 60,
             '24h' => 288,

@@ -250,7 +250,7 @@ class ProjectSetupService
         // Check if DeployProjectJob exists
         if (class_exists(\App\Jobs\DeployProjectJob::class)) {
             $task->updateProgress(50, 'Queueing deployment job...');
-            \App\Jobs\DeployProjectJob::dispatch($project);
+            \App\Jobs\DeployProjectJob::dispatch($project)->afterCommit();
             $task->markAsCompleted('Initial deployment queued', [
                 'queued_at' => now()->toIso8601String(),
             ]);

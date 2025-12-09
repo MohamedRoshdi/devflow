@@ -29,8 +29,8 @@ class RenewSSL extends Command
         $renewAll = $this->option('all');
         $force = $this->option('force');
 
-        if ($domainName && is_string($domainName)) {
-            return $this->renewSingleDomain($domainName, is_bool($force) ? $force : false);
+        if ($domainName) {
+            return $this->renewSingleDomain($domainName, (bool) $force);
         }
 
         if ($renewAll) {

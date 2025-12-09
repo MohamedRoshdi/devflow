@@ -308,8 +308,8 @@ class SSHKeyService
     private function deployToRemoteServer(string $publicKey, Server $server): array
     {
         // Build SSH command to add key
-        $escapedKey = addslashes($publicKey);
-        $remoteCommand = "mkdir -p ~/.ssh && chmod 700 ~/.ssh && echo '{$escapedKey}' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys";
+        $escapedKey = escapeshellarg($publicKey);
+        $remoteCommand = "mkdir -p ~/.ssh && chmod 700 ~/.ssh && echo {$escapedKey} >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys";
 
         $sshCommand = $this->buildSSHCommand($server, $remoteCommand);
 
@@ -370,8 +370,8 @@ class SSHKeyService
      */
     private function removeFromRemoteServer(string $publicKey, Server $server): array
     {
-        $escapedKey = addslashes($publicKey);
-        $remoteCommand = "sed -i '\\|{$escapedKey}|d' ~/.ssh/authorized_keys";
+        $escapedKey = escapeshellarg($publicKey);
+        $remoteCommand = "grep -v {$escapedKey} ~/.ssh/authorized_keys > ~/.ssh/authorized_keys.tmp && mv ~/.ssh/authorized_keys.tmp ~/.ssh/authorized_keys";
 
         $sshCommand = $this->buildSSHCommand($server, $remoteCommand);
 
@@ -421,7 +421,7 @@ class SSHKeyService
         $sshOptions = [
             '-o StrictHostKeyChecking=no',
             '-o UserKnownHostsFile=/dev/null',
-            '-p '.$server->port,
+            '-p '.(int) $server->port,
         ];
 
         if ($server->ssh_key) {
@@ -429,15 +429,15 @@ class SSHKeyService
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
             file_put_contents($keyFile, $server->ssh_key);
             chmod($keyFile, 0600);
-            $sshOptions[] = '-i '.$keyFile;
+            $sshOptions[] = '-i '.escapeshellarg($keyFile);
         }
 
         return sprintf(
-            'ssh %s %s@%s "%s"',
+            'ssh %s %s@%s %s',
             implode(' ', $sshOptions),
-            $server->username,
-            $server->ip_address,
-            addslashes($remoteCommand)
+            escapeshellarg($server->username),
+            escapeshellarg($server->ip_address),
+            escapeshellarg($remoteCommand)
         );
     }
 }

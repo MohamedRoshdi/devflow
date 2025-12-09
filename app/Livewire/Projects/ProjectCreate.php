@@ -290,8 +290,16 @@ class ProjectCreate extends Component
         // Initialize and run project setup
         $hasAnySetup = array_filter($setupConfig);
         if (! empty($hasAnySetup)) {
-            app(ProjectSetupService::class)->initializeSetup($project, $setupConfig);
-            ProcessProjectSetupJob::dispatch($project);
+            try {
+                app(ProjectSetupService::class)->initializeSetup($project, $setupConfig);
+                ProcessProjectSetupJob::dispatch($project)->afterCommit();
+            } catch (\Exception $e) {
+                \Log::error('Failed to initialize project setup', [
+                    'project_id' => $project->id,
+                    'error' => $e->getMessage(),
+                ]);
+                // Continue even if setup initialization fails
+            }
         }
 
         $this->createdProjectId = $project->id;
@@ -316,12 +324,21 @@ class ProjectCreate extends Component
             return [];
         }
 
-        $project = Project::with('setupTasks')->find($this->createdProjectId);
-        if (! $project) {
+        try {
+            $project = Project::with('setupTasks')->find($this->createdProjectId);
+            if (! $project) {
+                return [];
+            }
+
+            return app(ProjectSetupService::class)->getSetupProgress($project);
+        } catch (\Exception $e) {
+            \Log::error('Failed to get setup progress', [
+                'project_id' => $this->createdProjectId,
+                'error' => $e->getMessage(),
+            ]);
+
             return [];
         }
-
-        return app(ProjectSetupService::class)->getSetupProgress($project);
     }
 
     /**

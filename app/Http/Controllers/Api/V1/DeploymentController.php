@@ -39,11 +39,11 @@ class DeploymentController extends Controller
         }
 
         // Sorting
-        $sortBy = $request->get('sort_by', 'created_at');
-        $sortOrder = $request->get('sort_order', 'desc');
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortOrder = $request->input('sort_order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
-        $perPage = min($request->get('per_page', 15), 100);
+        $perPage = min($request->input('per_page', 15), 100);
         $deployments = $query->paginate($perPage);
 
         return new DeploymentCollection($deployments);
@@ -91,9 +91,9 @@ class DeploymentController extends Controller
                 return $project->deployments()->create([
                     'user_id' => auth()->id(),
                     'server_id' => $project->server_id,
-                    'branch' => $request->get('branch', $project->branch),
-                    'commit_hash' => $request->get('commit_hash', 'HEAD'),
-                    'commit_message' => $request->get('commit_message'),
+                    'branch' => $request->input('branch', $project->branch),
+                    'commit_hash' => $request->input('commit_hash', 'HEAD'),
+                    'commit_message' => $request->input('commit_message'),
                     'triggered_by' => 'manual',
                     'status' => 'pending',
                     'started_at' => now(),

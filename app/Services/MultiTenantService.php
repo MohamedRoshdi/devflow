@@ -139,7 +139,8 @@ class MultiTenantService
         $projectPath = config('devflow.projects_path').'/'.$project->slug;
 
         // Set tenant environment variable
-        $envCommand = "cd {$projectPath} && docker-compose exec -T app php artisan tenant:switch {$tenant['id']}";
+        $escapedTenantId = escapeshellarg((string) $tenant['id']);
+        $envCommand = "cd {$projectPath} && docker-compose exec -T app php artisan tenant:switch {$escapedTenantId}";
         $result = Process::run($envCommand);
 
         if (! $result->successful()) {
@@ -154,12 +155,18 @@ class MultiTenantService
     {
         $projectPath = config('devflow.projects_path').'/'.$project->slug;
 
+        // Validate tenant ID to ensure it's safe for database name
+        $tenantId = (string) $tenant['id'];
+        if (! preg_match('/^[a-zA-Z0-9_]+$/', $tenantId)) {
+            throw new \Exception('Invalid tenant ID format');
+        }
+
         // Run tenant-specific migrations
-        $migrationCommand = "cd {$projectPath} && docker-compose exec -T app php artisan migrate --force --database=tenant_{$tenant['id']}";
+        $migrationCommand = "cd {$projectPath} && docker-compose exec -T app php artisan migrate --force --database=tenant_{$tenantId}";
         $result = Process::timeout(120)->run($migrationCommand);
 
         if (! $result->successful()) {
-            throw new \Exception("Migration failed for tenant {$tenant['id']}: ".$result->errorOutput());
+            throw new \Exception("Migration failed for tenant {$tenantId}: ".$result->errorOutput());
         }
     }
 
@@ -169,11 +176,12 @@ class MultiTenantService
     private function clearTenantCache(Project $project, array $tenant): void
     {
         $projectPath = config('devflow.projects_path').'/'.$project->slug;
+        $escapedTenantId = escapeshellarg((string) $tenant['id']);
 
         $commands = [
-            "cd {$projectPath} && docker-compose exec -T app php artisan cache:clear --tenant={$tenant['id']}",
-            "cd {$projectPath} && docker-compose exec -T app php artisan config:clear --tenant={$tenant['id']}",
-            "cd {$projectPath} && docker-compose exec -T app php artisan view:clear --tenant={$tenant['id']}",
+            "cd {$projectPath} && docker-compose exec -T app php artisan cache:clear --tenant={$escapedTenantId}",
+            "cd {$projectPath} && docker-compose exec -T app php artisan config:clear --tenant={$escapedTenantId}",
+            "cd {$projectPath} && docker-compose exec -T app php artisan view:clear --tenant={$escapedTenantId}",
         ];
 
         foreach ($commands as $command) {
@@ -182,7 +190,12 @@ class MultiTenantService
 
         // Clear Redis cache for tenant if applicable
         if ($tenant['redis_db'] ?? null) {
-            $redisCommand = "cd {$projectPath} && docker-compose exec -T redis redis-cli -n {$tenant['redis_db']} FLUSHDB";
+            // Validate redis_db is numeric
+            $redisDb = filter_var($tenant['redis_db'], FILTER_VALIDATE_INT);
+            if ($redisDb === false || $redisDb < 0 || $redisDb > 15) {
+                throw new \Exception('Invalid Redis database number');
+            }
+            $redisCommand = "cd {$projectPath} && docker-compose exec -T redis redis-cli -n {$redisDb} FLUSHDB";
             Process::run($redisCommand);
         }
     }
@@ -210,17 +223,23 @@ class MultiTenantService
     private function restartTenantServices(Project $project, array $tenant): void
     {
         $projectPath = config('devflow.projects_path').'/'.$project->slug;
+        $escapedTenantId = escapeshellarg((string) $tenant['id']);
 
         // If tenant has dedicated queue workers
         if ($tenant['has_dedicated_queue'] ?? false) {
-            $queueCommand = "cd {$projectPath} && docker-compose restart queue-tenant-{$tenant['id']}";
+            $queueCommand = "cd {$projectPath} && docker-compose restart queue-tenant-{$escapedTenantId}";
             Process::run($queueCommand);
         }
 
         // If tenant has dedicated services
         if ($tenant['services'] ?? null) {
             foreach ($tenant['services'] as $service) {
-                $serviceCommand = "cd {$projectPath} && docker-compose restart {$service}";
+                // Validate service name format
+                if (! preg_match('/^[a-zA-Z0-9_-]+$/', $service)) {
+                    throw new \Exception('Invalid service name format');
+                }
+                $escapedService = escapeshellarg($service);
+                $serviceCommand = "cd {$projectPath} && docker-compose restart {$escapedService}";
                 Process::run($serviceCommand);
             }
         }
@@ -270,7 +289,8 @@ class MultiTenantService
     {
         try {
             $projectPath = config('devflow.projects_path').'/'.$project->slug;
-            $command = "cd {$projectPath} && docker-compose exec -T app php artisan tenant:db:check {$tenant['id']}";
+            $escapedTenantId = escapeshellarg((string) $tenant['id']);
+            $command = "cd {$projectPath} && docker-compose exec -T app php artisan tenant:db:check {$escapedTenantId}";
             $result = Process::timeout(10)->run($command);
 
             return ['success' => $result->successful()];
@@ -403,18 +423,20 @@ class MultiTenantService
     private function initializeTenant(Project $project, string $tenantId, array $tenantData): void
     {
         $projectPath = config('devflow.projects_path').'/'.$project->slug;
+        $escapedTenantId = escapeshellarg($tenantId);
 
         // Run tenant migrations
-        Process::run("cd {$projectPath} && docker-compose exec -T app php artisan tenant:migrate {$tenantId}");
+        Process::run("cd {$projectPath} && docker-compose exec -T app php artisan tenant:migrate {$escapedTenantId}");
 
         // Seed initial data if needed
         if ($tenantData['seed_data'] ?? false) {
-            Process::run("cd {$projectPath} && docker-compose exec -T app php artisan tenant:seed {$tenantId}");
+            Process::run("cd {$projectPath} && docker-compose exec -T app php artisan tenant:seed {$escapedTenantId}");
         }
 
         // Configure tenant domain
         if ($tenantData['domain'] ?? null) {
-            Process::run("cd {$projectPath} && docker-compose exec -T app php artisan tenant:domain {$tenantId} {$tenantData['domain']}");
+            $escapedDomain = escapeshellarg($tenantData['domain']);
+            Process::run("cd {$projectPath} && docker-compose exec -T app php artisan tenant:domain {$escapedTenantId} {$escapedDomain}");
         }
     }
 
@@ -425,7 +447,9 @@ class MultiTenantService
     {
         try {
             $projectPath = config('devflow.projects_path').'/'.$project->slug;
-            $command = "cd {$projectPath} && docker-compose exec -T app php artisan tenant:status {$tenantId} {$status}";
+            $escapedTenantId = escapeshellarg($tenantId);
+            $escapedStatus = escapeshellarg($status);
+            $command = "cd {$projectPath} && docker-compose exec -T app php artisan tenant:status {$escapedTenantId} {$escapedStatus}";
 
             $result = Process::run($command);
 

@@ -15,8 +15,10 @@ class TenantFactory extends Factory
 
     public function definition(): array
     {
-        $subdomain = fake()->unique()->slug();
-        
+        // Generate a shorter subdomain to ensure database name doesn't exceed 191 chars
+        // tenant_ prefix = 7 chars, so subdomain should be max 184 chars
+        $subdomain = substr(fake()->unique()->slug(3), 0, 180);
+
         return [
             'project_id' => Project::factory(),
             'name' => fake()->company(),

@@ -36,21 +36,30 @@ class ProjectManagementTest extends TestCase
     {
         $this->actingAs($this->user);
 
+        $uniqueSlug = 'test-project-' . uniqid();
+
         // Project creation is done via Livewire component, not POST route
         Livewire::test(\App\Livewire\Projects\ProjectCreate::class)
             ->set('name', 'Test Project')
-            ->set('slug', 'test-project')
+            ->set('slug', $uniqueSlug)
             ->set('repository_url', 'https://github.com/test/repo.git')
             ->set('branch', 'main')
             ->set('framework', 'laravel')
             ->set('php_version', '8.4')
             ->set('server_id', $this->server->id)
+            // Disable all setup options to prevent job dispatch in tests
+            ->set('enableSsl', false)
+            ->set('enableWebhooks', false)
+            ->set('enableHealthChecks', false)
+            ->set('enableBackups', false)
+            ->set('enableNotifications', false)
+            ->set('enableAutoDeploy', false)
             ->call('createProject')
             ->assertHasNoErrors();
 
         $this->assertDatabaseHas('projects', [
             'name' => 'Test Project',
-            'slug' => 'test-project',
+            'slug' => $uniqueSlug,
             'user_id' => $this->user->id,
         ]);
     }
@@ -149,6 +158,9 @@ class ProjectManagementTest extends TestCase
     public function deployment_can_be_triggered()
     {
         $this->actingAs($this->user);
+
+        // Fake the queue to prevent actual job execution
+        \Queue::fake();
 
         $project = Project::factory()->create([
             'user_id' => $this->user->id,

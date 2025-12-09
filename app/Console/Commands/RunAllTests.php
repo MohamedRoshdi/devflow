@@ -38,7 +38,7 @@ class RunAllTests extends Command
         $suite = $this->option('suite');
 
         // Ensure output directory exists
-        $fullPath = base_path($outputPath);
+        $fullPath = base_path((string) $outputPath);
         if (! File::isDirectory($fullPath)) {
             File::makeDirectory($fullPath, 0755, true);
         }
@@ -184,7 +184,10 @@ class RunAllTests extends Command
         }
 
         // List failed tests
-        $allFailedTests = collect($results)->flatMap(fn ($r) => $r['failed_tests'])->filter()->values();
+        $allFailedTests = collect($results)->flatMap(
+            /** @return array<int, string> */
+            fn (array $r): array => $r['failed_tests']
+        )->filter()->values();
         if ($allFailedTests->isNotEmpty()) {
             $content .= "\n## Failed Tests\n\n";
             foreach ($allFailedTests as $test) {

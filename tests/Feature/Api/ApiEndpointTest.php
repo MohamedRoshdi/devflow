@@ -10,13 +10,11 @@ use App\Models\Project;
 use App\Models\Server;
 use App\Models\ServerMetric;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class ApiEndpointTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected User $user;
     protected User $otherUser;
@@ -413,6 +411,8 @@ class ApiEndpointTest extends TestCase
     /** @test */
     public function it_successfully_triggers_deployment_via_github_webhook(): void
     {
+        \Illuminate\Support\Facades\Queue::fake();
+
         $project = Project::factory()->create([
             'user_id' => $this->user->id,
             'auto_deploy' => true,
@@ -438,11 +438,15 @@ class ApiEndpointTest extends TestCase
             'commit_hash' => 'abc123def456',
             'branch' => 'main',
         ]);
+
+        \Illuminate\Support\Facades\Queue::assertPushed(\App\Jobs\DeployProjectJob::class);
     }
 
     /** @test */
     public function it_successfully_triggers_deployment_via_gitlab_webhook(): void
     {
+        \Illuminate\Support\Facades\Queue::fake();
+
         $project = Project::factory()->create([
             'user_id' => $this->user->id,
             'auto_deploy' => true,
@@ -469,11 +473,15 @@ class ApiEndpointTest extends TestCase
             'commit_hash' => 'xyz789abc123',
             'branch' => 'main',
         ]);
+
+        \Illuminate\Support\Facades\Queue::assertPushed(\App\Jobs\DeployProjectJob::class);
     }
 
     /** @test */
     public function it_successfully_triggers_deployment_via_bitbucket_webhook(): void
     {
+        \Illuminate\Support\Facades\Queue::fake();
+
         $project = Project::factory()->create([
             'user_id' => $this->user->id,
             'auto_deploy' => true,
@@ -507,6 +515,8 @@ class ApiEndpointTest extends TestCase
             'commit_hash' => 'aabbccddee',
             'branch' => 'develop',
         ]);
+
+        \Illuminate\Support\Facades\Queue::assertPushed(\App\Jobs\DeployProjectJob::class);
     }
 
     // ========================================

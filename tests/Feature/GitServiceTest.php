@@ -6,14 +6,11 @@ use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
 use App\Services\GitService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Process;
 use Tests\TestCase;
 
 class GitServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected User $user;
 
     protected Server $server;

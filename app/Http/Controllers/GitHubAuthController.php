@@ -36,7 +36,7 @@ class GitHubAuthController extends Controller
     public function callback(Request $request): RedirectResponse
     {
         // Verify state to prevent CSRF
-        $state = $request->get('state');
+        $state = $request->input('state');
         $sessionState = session('github_oauth_state');
 
         if ($state !== $sessionState) {
@@ -53,7 +53,7 @@ class GitHubAuthController extends Controller
         }
 
         // Exchange code for token
-        $code = $request->get('code');
+        $code = $request->input('code');
         if (! $code) {
             return redirect()->route('settings.github')
                 ->with('error', 'No authorization code received from GitHub.');

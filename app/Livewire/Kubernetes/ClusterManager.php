@@ -147,15 +147,27 @@ class ClusterManager extends Component
         try {
             $service = app(KubernetesService::class);
 
-            // Create temp kubeconfig file
+            // Create temp kubeconfig file with secure permissions
             $tempFile = tempnam(sys_get_temp_dir(), 'kubeconfig');
-            file_put_contents($tempFile, decrypt($cluster->kubeconfig));
+            if ($tempFile === false) {
+                throw new \RuntimeException('Failed to create temp file');
+            }
 
+            file_put_contents($tempFile, decrypt($cluster->kubeconfig));
+            chmod($tempFile, 0600);
+
+            // Validate the temp file path
+            if (! preg_match('/^[a-zA-Z0-9\/._-]+$/', $tempFile)) {
+                @unlink($tempFile);
+                throw new \RuntimeException('Invalid temp file path');
+            }
+
+            $escapedTempFile = escapeshellarg($tempFile);
             putenv("KUBECONFIG={$tempFile}");
 
-            $result = shell_exec('kubectl cluster-info 2>&1');
+            $result = shell_exec("kubectl cluster-info --kubeconfig={$escapedTempFile} 2>&1");
 
-            unlink($tempFile);
+            @unlink($tempFile);
 
             if (strpos($result, 'is running') !== false) {
                 $this->dispatch('notify', type: 'success', message: 'Connection successful!');
@@ -163,6 +175,9 @@ class ClusterManager extends Component
                 $this->dispatch('notify', type: 'error', message: 'Connection failed');
             }
         } catch (\Exception $e) {
+            if (isset($tempFile) && file_exists($tempFile)) {
+                @unlink($tempFile);
+            }
             $this->dispatch('notify', type: 'error', message: 'Connection test failed: '.$e->getMessage());
         }
     }
@@ -246,16 +261,33 @@ class ClusterManager extends Component
     {
         try {
             $tempFile = tempnam(sys_get_temp_dir(), 'kubeconfig_test');
-            file_put_contents($tempFile, $data['kubeconfig']);
+            if ($tempFile === false) {
+                return false;
+            }
 
+            file_put_contents($tempFile, $data['kubeconfig']);
+            chmod($tempFile, 0600);
+
+            // Validate the temp file path
+            if (! preg_match('/^[a-zA-Z0-9\/._-]+$/', $tempFile)) {
+                @unlink($tempFile);
+
+                return false;
+            }
+
+            $escapedTempFile = escapeshellarg($tempFile);
             putenv("KUBECONFIG={$tempFile}");
 
-            $result = shell_exec('kubectl cluster-info 2>&1');
+            $result = shell_exec("kubectl cluster-info --kubeconfig={$escapedTempFile} 2>&1");
 
-            unlink($tempFile);
+            @unlink($tempFile);
 
             return strpos($result, 'is running') !== false;
         } catch (\Exception $e) {
+            if (isset($tempFile) && file_exists($tempFile)) {
+                @unlink($tempFile);
+            }
+
             return false;
         }
     }

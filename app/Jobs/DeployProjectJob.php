@@ -194,12 +194,18 @@ class DeployProjectJob implements ShouldQueue
         if ($repoExists) {
             $addLog('Repository already exists, pulling latest changes...');
 
+            // Validate branch name format
+            if (! preg_match('/^[a-zA-Z0-9._\/-]+$/', $project->branch)) {
+                throw new \Exception('Invalid branch name format');
+            }
+
             // Run git operations via SSH as root (fixes permission issues)
+            $escapedBranch = escapeshellarg($project->branch);
             $gitCommand = "cd {$projectPath} && ".
                 "git config --global safe.directory '*' && ".
                 "chown -R root:root {$projectPath}/.git {$projectPath}/storage {$projectPath}/bootstrap 2>/dev/null || true && ".
-                "git fetch origin {$project->branch} && ".
-                "git reset --hard origin/{$project->branch} && ".
+                "git fetch origin {$escapedBranch} && ".
+                "git reset --hard origin/{$escapedBranch} && ".
                 "chown -R 1000:1000 {$projectPath}/storage {$projectPath}/bootstrap/cache && ".
                 "chmod -R 775 {$projectPath}/storage {$projectPath}/bootstrap/cache";
 
@@ -214,10 +220,17 @@ class DeployProjectJob implements ShouldQueue
             // Repository doesn't exist, clone it
             $addLog('Cloning repository...');
 
+            // Validate branch name format
+            if (! preg_match('/^[a-zA-Z0-9._\/-]+$/', $project->branch)) {
+                throw new \Exception('Invalid branch name format');
+            }
+
             // Run clone via SSH as root
+            $escapedBranch = escapeshellarg($project->branch);
+            $escapedRepoUrl = escapeshellarg($project->repository_url ?? '');
             $cloneCommand = "git config --global safe.directory '*' && ".
                 "rm -rf {$projectPath} 2>/dev/null || true && ".
-                "git clone --branch {$project->branch} {$project->repository_url} {$projectPath} && ".
+                "git clone --branch {$escapedBranch} {$escapedRepoUrl} {$projectPath} && ".
                 "chown -R 1000:1000 {$projectPath}/storage {$projectPath}/bootstrap/cache && ".
                 "chmod -R 775 {$projectPath}/storage {$projectPath}/bootstrap/cache";
 

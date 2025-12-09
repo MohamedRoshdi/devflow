@@ -440,7 +440,7 @@ class GitService
             $command = $this->buildSSHCommand($server, $checkCommand);
             $result = Process::run($command);
 
-            return str_contains($result->output(), 'exists');
+            return trim($result->output()) === 'exists';
         }
 
         // Local check

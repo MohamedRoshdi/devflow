@@ -50,7 +50,7 @@ class WorkflowIntegrationTest extends TestCase
         ]);
         $this->project = Project::factory()->create([
             'server_id' => $this->server->id,
-            'status' => 'active',
+            'status' => 'running',
         ]);
 
         $this->actingAs($this->user);

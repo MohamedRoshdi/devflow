@@ -98,7 +98,7 @@ class PipelineStageRun extends Model
         $this->update([
             'status' => 'success',
             'completed_at' => now(),
-            'duration_seconds' => $this->started_at ? now()->diffInSeconds($this->started_at) : 0,
+            'duration_seconds' => $this->started_at ? max(0, (int) now()->diffInSeconds($this->started_at, false)) : 0,
         ]);
     }
 
@@ -111,7 +111,7 @@ class PipelineStageRun extends Model
             'status' => 'failed',
             'error_message' => $error,
             'completed_at' => now(),
-            'duration_seconds' => $this->started_at ? now()->diffInSeconds($this->started_at) : 0,
+            'duration_seconds' => $this->started_at ? max(0, (int) now()->diffInSeconds($this->started_at, false)) : 0,
         ]);
     }
 

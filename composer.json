@@ -21,6 +21,7 @@
         "predis/predis": "^2.2",
         "pusher/pusher-php-server": "^7.2",
         "spatie/laravel-permission": "^6.0",
+        "symfony/http-foundation": "^7.3.7",
         "symfony/process": "^7.0"
     },
     "require-dev": {
