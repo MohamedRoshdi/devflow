@@ -246,8 +246,260 @@
             </div>
         </section>
 
+        <!-- All Features -->
+        <section id="features" class="py-24 bg-white dark:bg-slate-900">
+            <div class="mx-auto w-full max-w-[1560px] px-6 md:px-10 lg:px-16">
+                <div class="mx-auto max-w-3xl text-center mb-16">
+                    <h2 class="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-4xl">Complete Feature Set</h2>
+                    <p class="mt-4 text-lg text-slate-600 dark:text-slate-400">
+                        Everything you need for modern DevOps - from deployment to monitoring to security.
+                    </p>
+                </div>
+
+                <!-- Feature Categories -->
+                <div class="space-y-12">
+                    <!-- Core Features -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                            <span class="w-8 h-8 rounded-lg bg-blue-500 text-white flex items-center justify-center text-sm">1</span>
+                            Core Infrastructure
+                        </h3>
+                        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">Server Management</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">SSH connection, metrics, health checks</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">Project Management</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Laravel, Symfony, WordPress support</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">One-Click Deploy</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Git-based with instant rollback</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">Domain Management</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Multiple domains per project</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DevOps & CI/CD -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                            <span class="w-8 h-8 rounded-lg bg-purple-500 text-white flex items-center justify-center text-sm">2</span>
+                            DevOps & CI/CD
+                        </h3>
+                        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">CI/CD Pipelines</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Custom build stages and scripts</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">Docker Management</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Containers, compose, images</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">Kubernetes</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Cluster, pods, deployments</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">Deployment Scripts</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Custom pre/post deploy hooks</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                            <span class="w-8 h-8 rounded-lg bg-red-500 text-white flex items-center justify-center text-sm">3</span>
+                            Security & SSL
+                        </h3>
+                        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">SSL Certificates</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Auto-provision and renewal</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">Firewall (UFW)</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">IP rules, port management</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">Fail2ban</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Intrusion prevention system</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">SSH Keys</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Key management, rotation</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Monitoring & Logs -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                            <span class="w-8 h-8 rounded-lg bg-amber-500 text-white flex items-center justify-center text-sm">4</span>
+                            Monitoring & Logs
+                        </h3>
+                        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">Real-time Metrics</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">CPU, memory, disk, network</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">Log Aggregation</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Centralized log viewer</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">Health Checks</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">HTTP endpoints, uptime</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">Resource Alerts</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Threshold notifications</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Integrations & Notifications -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                            <span class="w-8 h-8 rounded-lg bg-green-500 text-white flex items-center justify-center text-sm">5</span>
+                            Integrations & Notifications
+                        </h3>
+                        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-slate-900 dark:text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">GitHub</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">OAuth, webhooks, repo sync</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><path d="M14.82 4.26a10.14 10.14 0 0 0-.53 1.1 14.66 14.66 0 0 0-4.58 0 10.14 10.14 0 0 0-.53-1.1 16 16 0 0 0-4.13 1.3 17.33 17.33 0 0 0-3 11.59 16.6 16.6 0 0 0 5.07 2.59A12.89 12.89 0 0 0 8.23 18a9.65 9.65 0 0 1-1.71-.83 3.39 3.39 0 0 0 .42-.33 11.66 11.66 0 0 0 10.12 0q.21.18.42.33a10.84 10.84 0 0 1-1.71.84 12.41 12.41 0 0 0 1.08 1.78 16.44 16.44 0 0 0 5.06-2.59 17.22 17.22 0 0 0-3-11.59 16.09 16.09 0 0 0-4.09-1.35zM8.68 14.81a1.94 1.94 0 0 1-1.8-2 1.93 1.93 0 0 1 1.8-2 1.93 1.93 0 0 1 1.8 2 1.93 1.93 0 0 1-1.8 2zm6.64 0a1.94 1.94 0 0 1-1.8-2 1.93 1.93 0 0 1 1.8-2 1.92 1.92 0 0 1 1.8 2 1.92 1.92 0 0 1-1.8 2z"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">Discord</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Webhook notifications</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-pink-500" fill="currentColor" viewBox="0 0 24 24"><path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">Slack</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Deployment alerts</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">Webhooks</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">GitLab, custom endpoints</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Team & Admin -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                            <span class="w-8 h-8 rounded-lg bg-slate-700 text-white flex items-center justify-center text-sm">6</span>
+                            Team & Administration
+                        </h3>
+                        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">Team Management</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Invite members, roles</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">Multi-Tenant</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">SaaS tenant management</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">Database Backups</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Scheduled, one-click restore</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    <span class="font-medium text-slate-900 dark:text-white">API Access</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">REST API, tokens</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @auth
+                <div class="mt-16 text-center">
+                    <a href="{{ route('docs.features') }}" class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full text-sm font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-500/25">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        View Complete Documentation
+                    </a>
+                </div>
+                @endauth
+            </div>
+        </section>
+
         <!-- Who Is It For -->
-        <section class="py-24 bg-white dark:bg-slate-900">
+        <section class="py-24 bg-slate-50 dark:bg-slate-800/50">
             <div class="mx-auto w-full max-w-[1560px] px-6 md:px-10 lg:px-16">
                 <div class="mx-auto max-w-3xl text-center mb-16">
                     <h2 class="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-4xl">Who is DevFlow Pro For?</h2>
