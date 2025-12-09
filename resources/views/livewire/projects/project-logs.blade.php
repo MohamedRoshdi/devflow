@@ -1,4 +1,4 @@
-<div class="bg-white dark:bg-gray-800 rounded-xl shadow dark:shadow-gray-900/40 overflow-hidden">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow dark:shadow-gray-900/40 overflow-hidden" wire:init="loadData">
     <div class="bg-gradient-to-r from-slate-900 via-indigo-900 to-blue-900 px-6 py-8 text-white">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div>
@@ -105,7 +105,7 @@
             </div>
         @endif
 
-        @if($loading)
+        @if($isLoading || $loading)
             <div class="bg-gray-900/90 text-green-400 rounded-xl p-6 font-mono text-sm h-96 flex items-center justify-center">
                 <div class="flex items-center gap-3 text-green-300">
                     <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

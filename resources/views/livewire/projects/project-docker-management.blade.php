@@ -8,7 +8,7 @@
     }
 </style>
 
-<div wire:key="docker-management-{{ $project->id }}" class="bg-white dark:bg-gray-800 rounded-lg shadow">
+<div wire:key="docker-management-{{ $project->id }}" wire:init="initDocker" class="bg-white dark:bg-gray-800 rounded-lg shadow">
     <div class="p-6 border-b border-gray-200 dark:border-gray-700 dark:border-gray-700">
         <div class="flex justify-between items-center">
             <h2 class="text-xl font-bold text-gray-900 dark:text-white">🐳 Docker Management</h2>
