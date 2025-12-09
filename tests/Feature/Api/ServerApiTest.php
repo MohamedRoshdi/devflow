@@ -1,0 +1,268 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Feature\Api;
+
+use App\Models\ApiToken;
+use App\Models\Server;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
+use Tests\TestCase;
+
+class ServerApiTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected User $user;
+    protected string $apiToken;
+    protected array $headers;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->user = User::factory()->create([
+            'email' => 'api@example.com',
+            'password' => Hash::make('password123'),
+        ]);
+
+        $this->apiToken = 'server-api-token-123';
+        ApiToken::factory()->create([
+            'user_id' => $this->user->id,
+            'token' => hash('sha256', $this->apiToken),
+            'expires_at' => now()->addDays(30),
+        ]);
+
+        $this->headers = [
+            'Authorization' => 'Bearer ' . $this->apiToken,
+            'Accept' => 'application/json',
+        ];
+    }
+
+    // ==================== List Servers ====================
+
+    /** @test */
+    public function it_can_list_all_servers(): void
+    {
+        Server::factory()->count(3)->create([
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->withHeaders($this->headers)
+            ->getJson('/api/v1/servers');
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => ['id', 'name', 'ip_address', 'status'],
+                ],
+            ]);
+    }
+
+    /** @test */
+    public function it_requires_authentication_to_list_servers(): void
+    {
+        $response = $this->getJson('/api/v1/servers');
+
+        $response->assertUnauthorized();
+    }
+
+    // ==================== Create Server ====================
+
+    /** @test */
+    public function it_can_create_a_server(): void
+    {
+        $serverData = [
+            'name' => 'Test Server',
+            'ip_address' => '192.168.1.100',
+            'ssh_user' => 'root',
+            'ssh_port' => 22,
+        ];
+
+        $response = $this->withHeaders($this->headers)
+            ->postJson('/api/v1/servers', $serverData);
+
+        $response->assertCreated()
+            ->assertJsonPath('data.name', 'Test Server');
+
+        $this->assertDatabaseHas('servers', [
+            'name' => 'Test Server',
+            'ip_address' => '192.168.1.100',
+        ]);
+    }
+
+    /** @test */
+    public function it_validates_required_fields_when_creating_server(): void
+    {
+        $response = $this->withHeaders($this->headers)
+            ->postJson('/api/v1/servers', []);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['name', 'ip_address']);
+    }
+
+    /** @test */
+    public function it_validates_ip_address_format(): void
+    {
+        $response = $this->withHeaders($this->headers)
+            ->postJson('/api/v1/servers', [
+                'name' => 'Test Server',
+                'ip_address' => 'not-an-ip',
+            ]);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['ip_address']);
+    }
+
+    /** @test */
+    public function it_validates_unique_ip_address(): void
+    {
+        Server::factory()->create([
+            'user_id' => $this->user->id,
+            'ip_address' => '192.168.1.100',
+        ]);
+
+        $response = $this->withHeaders($this->headers)
+            ->postJson('/api/v1/servers', [
+                'name' => 'Another Server',
+                'ip_address' => '192.168.1.100',
+            ]);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['ip_address']);
+    }
+
+    // ==================== Get Single Server ====================
+
+    /** @test */
+    public function it_can_get_a_single_server(): void
+    {
+        $server = Server::factory()->create([
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->withHeaders($this->headers)
+            ->getJson('/api/v1/servers/' . $server->id);
+
+        $response->assertOk()
+            ->assertJsonPath('data.id', $server->id);
+    }
+
+    /** @test */
+    public function it_returns_404_for_nonexistent_server(): void
+    {
+        $response = $this->withHeaders($this->headers)
+            ->getJson('/api/v1/servers/99999');
+
+        $response->assertNotFound();
+    }
+
+    // ==================== Update Server ====================
+
+    /** @test */
+    public function it_can_update_a_server(): void
+    {
+        $server = Server::factory()->create([
+            'user_id' => $this->user->id,
+            'name' => 'Original Name',
+        ]);
+
+        $response = $this->withHeaders($this->headers)
+            ->putJson('/api/v1/servers/' . $server->id, [
+                'name' => 'Updated Name',
+            ]);
+
+        $response->assertOk()
+            ->assertJsonPath('data.name', 'Updated Name');
+
+        $this->assertDatabaseHas('servers', [
+            'id' => $server->id,
+            'name' => 'Updated Name',
+        ]);
+    }
+
+    // ==================== Delete Server ====================
+
+    /** @test */
+    public function it_can_delete_a_server(): void
+    {
+        $server = Server::factory()->create([
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->withHeaders($this->headers)
+            ->deleteJson('/api/v1/servers/' . $server->id);
+
+        $response->assertNoContent();
+
+        $this->assertDatabaseMissing('servers', [
+            'id' => $server->id,
+        ]);
+    }
+
+    // ==================== Server Status ====================
+
+    /** @test */
+    public function it_can_get_server_status(): void
+    {
+        $server = Server::factory()->create([
+            'user_id' => $this->user->id,
+            'status' => 'online',
+        ]);
+
+        $response = $this->withHeaders($this->headers)
+            ->getJson('/api/v1/servers/' . $server->id . '/status');
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'data' => ['status', 'last_checked_at'],
+            ]);
+    }
+
+    // ==================== Server Metrics ====================
+
+    /** @test */
+    public function it_can_get_server_metrics(): void
+    {
+        $server = Server::factory()->create([
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->withHeaders($this->headers)
+            ->getJson('/api/v1/servers/' . $server->id . '/metrics');
+
+        $response->assertOk();
+    }
+
+    // ==================== Port Validation ====================
+
+    /** @test */
+    public function it_validates_ssh_port_range(): void
+    {
+        $response = $this->withHeaders($this->headers)
+            ->postJson('/api/v1/servers', [
+                'name' => 'Test Server',
+                'ip_address' => '192.168.1.101',
+                'ssh_port' => 70000, // Invalid port
+            ]);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['ssh_port']);
+    }
+
+    /** @test */
+    public function it_accepts_valid_ssh_port(): void
+    {
+        $response = $this->withHeaders($this->headers)
+            ->postJson('/api/v1/servers', [
+                'name' => 'Test Server',
+                'ip_address' => '192.168.1.102',
+                'ssh_port' => 2222,
+                'ssh_user' => 'admin',
+            ]);
+
+        $response->assertCreated();
+    }
+}

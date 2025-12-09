@@ -28,7 +28,6 @@ class ServerFactory extends Factory
             'port' => 22,
             'username' => 'root',
             'ssh_key' => null,
-            'ssh_password' => null,
             'status' => fake()->randomElement(['online', 'offline', 'maintenance']),
             'os' => fake()->randomElement(['Linux', 'Ubuntu', 'Debian', 'CentOS']),
             'cpu_cores' => fake()->numberBetween(1, 16),
@@ -70,7 +69,6 @@ class ServerFactory extends Factory
     public function withPassword(): static
     {
         return $this->state(fn (array $attributes) => [
-            'ssh_password' => 'test_password_123',
             'ssh_key' => null,
         ]);
     }
@@ -85,7 +83,6 @@ class ServerFactory extends Factory
 b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
 QyNTUxOQAAACBHK2rHd48lqfvvGlr+fVZnUfmv0tnFzWN7jAw7E7VUUQAAAJBMR1QOTERW
 -----END OPENSSH PRIVATE KEY-----',
-            'ssh_password' => null,
         ]);
     }
 

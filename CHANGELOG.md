@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.34.0] - 2025-12-09
+
+### Added - Comprehensive Test Suite Expansion
+- **19 new test files** added across all test categories
+- **Unit Tests**: Middleware tests, Event dispatching tests
+- **Feature Tests**: API tests (Project, Server), Authentication, Webhooks, Team management
+- **Security Tests**: Input validation, Session security, Authorization, File upload security
+- **Browser Tests**: Notification channel management tests
+- Total test files: 188 (up from 169)
+
+### Fixed - Critical Security Vulnerabilities (IMPORTANT!)
+- **IDOR Vulnerability Fixed**: `ProjectShow.php` - Added authorization check
+- **Privilege Escalation Fixed**: `ProjectEdit.php` - Added owner/team validation
+- **Unauthorized Delete Fixed**: `ProjectList.php` - Added ownership check for delete
+- **Server Access Fixed**: `ServerPolicy.php` - Changed from "allow all" to proper ownership-based auth
+
+### Fixed - Unit Test Issues
+- **DeploymentFailed Event**: Added `$error` property and constructor parameter
+- **Team Model**: `hasMember()` now includes owner check for proper authorization
+- **MiddlewareTest**: Fixed user resolver for proper authentication testing
+
+### Fixed - Feature Test Infrastructure
+- **ServerFactory**: Removed `ssh_password` field causing schema mismatch
+- **TestCase**: Changed `RefreshDatabase` to `DatabaseTransactions` (PostgreSQL deadlock fix)
+- Resolved database migration conflicts and race conditions
+
+### Security Test Coverage
+- XSS prevention tests
+- SQL injection prevention tests
+- Command injection prevention tests
+- CSRF protection tests
+- Session fixation/hijacking tests
+- File upload security tests (MIME spoofing, path traversal)
+- Authorization/IDOR tests
+- Mass assignment protection tests
+
+---
+
 ## [5.33.0] - 2025-12-09
 
 ### Added - Deploy Script Enhancements

@@ -111,7 +111,7 @@ class Team extends Model
 
     public function hasMember(User $user): bool
     {
-        return $this->members()->where('user_id', $user->id)->exists();
+        return $this->owner_id === $user->id || $this->members()->where('user_id', $user->id)->exists();
     }
 
     public function getMemberRole(User $user): ?string

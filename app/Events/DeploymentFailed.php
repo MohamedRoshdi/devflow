@@ -14,13 +14,15 @@ class DeploymentFailed implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public Deployment $deployment;
+    public string $error;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(Deployment $deployment)
+    public function __construct(Deployment $deployment, string $error = '')
     {
         $this->deployment = $deployment;
+        $this->error = $error;
     }
 
     /**

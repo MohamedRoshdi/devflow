@@ -25,10 +25,36 @@ class ProjectList extends Component
     {
         $project = Project::find($projectId);
 
-        if ($project) {
-            $project->delete();
-            session()->flash('message', 'Project deleted successfully');
+        if (! $project) {
+            session()->flash('error', 'Project not found');
+            return;
         }
+
+        // Authorization: Only project owner or team admin can delete
+        $user = auth()->user();
+
+        if (! $user) {
+            abort(401);
+        }
+
+        // Check if user owns the project
+        if ($project->user_id !== $user->id) {
+            // Check if user is a team owner/admin with access
+            if ($project->team_id && $user->currentTeam && $user->currentTeam->id === $project->team_id) {
+                // Team member - check if they are owner
+                $teamMember = $user->currentTeam->members()->where('user_id', $user->id)->first();
+                if (! $teamMember || $teamMember->pivot->role !== 'owner') {
+                    session()->flash('error', 'You do not have permission to delete this project');
+                    return;
+                }
+            } else {
+                session()->flash('error', 'You do not have permission to delete this project');
+                return;
+            }
+        }
+
+        $project->delete();
+        session()->flash('message', 'Project deleted successfully');
     }
 
     public function render()
