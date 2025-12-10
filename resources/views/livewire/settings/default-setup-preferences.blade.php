@@ -217,6 +217,25 @@
                         </button>
                     </div>
 
+                    {{-- Inline Help Toggle --}}
+                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-2 bg-teal-100 dark:bg-teal-900/30 rounded-lg">
+                                <svg class="w-5 h-5 text-teal-600 dark:text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-900 dark:text-white">Show Inline Help & Descriptions</label>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Display contextual help tips below buttons and controls</p>
+                            </div>
+                        </div>
+                        <button type="button" wire:click="$toggle('showInlineHelp')"
+                                class="relative inline-flex h-8 w-14 rounded-full transition-colors {{ $this->showInlineHelp ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600' }}">
+                            <span class="inline-block h-6 w-6 transform rounded-full bg-white transition-transform {{ $this->showInlineHelp ? 'translate-x-7' : 'translate-x-1' }} shadow-lg"></span>
+                        </button>
+                    </div>
+
                 </div>
             </div>
 

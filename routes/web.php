@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DocsController;
 use App\Http\Controllers\GitHubAuthController;
 use App\Http\Controllers\TeamInvitationController;
 use App\Livewire\Admin\SystemAdmin;
@@ -65,6 +66,23 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
     // Projects
     Route::get('/projects', ProjectList::class)->name('projects.index');
     Route::get('/projects/create', ProjectCreate::class)->name('projects.create');
+    Route::get('/projects/devflow', \App\Livewire\Projects\DevFlowSelfManagement::class)->name('projects.devflow');
+    Route::get('/projects/devflow/logs/{filename}', function (string $filename) {
+        // Security: Only allow laravel log files
+        if (!str_starts_with($filename, 'laravel') || !str_ends_with($filename, '.log')) {
+            abort(403, 'Invalid log file');
+        }
+
+        $logPath = storage_path('logs/' . basename($filename));
+
+        if (!file_exists($logPath)) {
+            abort(404, 'Log file not found');
+        }
+
+        return response()->download($logPath, $filename, [
+            'Content-Type' => 'text/plain',
+        ]);
+    })->name('projects.devflow.logs.download');
     Route::get('/projects/{project}', ProjectShow::class)->name('projects.show');
     Route::get('/projects/{project}/edit', \App\Livewire\Projects\ProjectEdit::class)->name('projects.edit');
     Route::get('/projects/{project}/configuration', \App\Livewire\Projects\ProjectConfiguration::class)->name('projects.configuration');
@@ -106,7 +124,7 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
     Route::get('/kubernetes', \App\Livewire\Kubernetes\ClusterManager::class)->name('kubernetes.index');
 
     // CI/CD Pipelines
-    Route::get('/pipelines', \App\Livewire\CICD\PipelineBuilder::class)->name('pipelines.index');
+    Route::get('/pipelines', fn() => \Livewire\Livewire::mount(\App\Livewire\CICD\PipelineBuilder::class))->name('pipelines.index');
     Route::get('/projects/{project}/pipeline', \App\Livewire\CICD\PipelineBuilder::class)->name('projects.pipeline');
 
     // Deployment Scripts
@@ -132,6 +150,10 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
     Route::get('/docs/api', \App\Livewire\Docs\ApiDocumentation::class)->name('docs.api');
     Route::get('/docs/features', \App\Livewire\Docs\FeaturesGuide::class)->name('docs.features');
 
+    // Inline Help Documentation
+    Route::get('/docs/search', [App\Http\Controllers\DocsController::class, 'search'])->name('docs.search');
+    Route::get('/docs/{category?}/{page?}', [App\Http\Controllers\DocsController::class, 'show'])->name('docs.show');
+
     // GitHub OAuth
     Route::get('/auth/github', [GitHubAuthController::class, 'redirect'])->name('github.redirect');
     Route::get('/auth/github/callback', [GitHubAuthController::class, 'callback'])->name('github.callback');
@@ -146,6 +168,9 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
 
     // System Status
     Route::get('/settings/system-status', \App\Livewire\Settings\SystemStatus::class)->name('settings.system-status');
+
+    // System Redeploy (Admin) - Legacy, redirect to DevFlow management
+    Route::get('/settings/redeploy', \App\Livewire\Settings\SystemRedeploy::class)->name('settings.redeploy');
 
     // System Settings (Admin)
     Route::get('/settings/system', \App\Livewire\Settings\SystemSettings::class)->name('settings.system');

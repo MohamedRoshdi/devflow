@@ -184,6 +184,7 @@
                             </div>
                             <p class="text-[11px] text-indigo-500 tracking-wide">Guided deployment workflow</p>
                         </button>
+                        <livewire:components.inline-help help-key="deploy-button" :collapsible="true" />
 
                         <a href="{{ route('projects.edit', $project) }}"
                            class="px-6 py-3 rounded-xl bg-white/10 border border-white/20 text-white font-semibold hover:bg-white/15 transition">
@@ -276,6 +277,7 @@
                         <span class="text-lg">🚀</span>
                         Deploy Latest Changes
                     </button>
+                    <livewire:components.inline-help help-key="deploy-button" :collapsible="true" />
                     <div class="text-xs text-amber-500 dark:text-amber-300 text-center">Automated Laravel optimizations run post-deploy.</div>
                 </div>
             </div>

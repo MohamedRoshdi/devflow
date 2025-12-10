@@ -1,0 +1,278 @@
+{
+    "audit_date": "2025-12-10 14:12:31",
+    "missing_in_ar": [],
+    "missing_in_en": [],
+    "unused_keys": [],
+    "missing_from_files": [],
+    "hardcoded_text_sample": [
+        {
+            "text": "DevFlow Pro",
+            "file": "layouts\/guest.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Logout",
+            "file": "layouts\/app.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Theme Toggle",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Skeleton Loaders",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Stats Cards",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Cards",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "List Items",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Table",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Text Lines",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Empty States",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Toast Notifications",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Keyboard Shortcuts",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Navigation",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Actions",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Animations",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Fade In",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Slide Up",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Scale In",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Success Toast",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Error Toast",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Warning Toast",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Info Toast",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Dashboard",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Servers",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Projects",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Command Palette",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "New Project",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Show Help",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "No projects yet",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "No servers configured",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "No deployments yet",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "No results found",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "No projects yet",
+            "file": "components\/ui-examples.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Team Invitation",
+            "file": "teams\/invitation.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Invitation Expired",
+            "file": "teams\/invitation.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Accept Invitation",
+            "file": "teams\/invitation.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Invited by:",
+            "file": "teams\/invitation.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Your role:",
+            "file": "teams\/invitation.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Expires:",
+            "file": "teams\/invitation.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Tenant Manager",
+            "file": "livewire\/multi-tenant\/tenant-manager.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Deploy to Tenants",
+            "file": "livewire\/multi-tenant\/tenant-manager.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Actions",
+            "file": "livewire\/multi-tenant\/tenant-manager.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Select Multi-Tenant Project",
+            "file": "livewire\/multi-tenant\/tenant-manager.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Tenant Name",
+            "file": "livewire\/multi-tenant\/tenant-manager.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Subdomain",
+            "file": "livewire\/multi-tenant\/tenant-manager.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Admin Email",
+            "file": "livewire\/multi-tenant\/tenant-manager.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Admin Password",
+            "file": "livewire\/multi-tenant\/tenant-manager.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Plan",
+            "file": "livewire\/multi-tenant\/tenant-manager.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Status",
+            "file": "livewire\/multi-tenant\/tenant-manager.blade.php",
+            "type": "hardcoded_english"
+        },
+        {
+            "text": "Deployment Type",
+            "file": "livewire\/multi-tenant\/tenant-manager.blade.php",
+            "type": "hardcoded_english"
+        }
+    ],
+    "statistics": {
+        "total_en_keys": 0,
+        "total_ar_keys": 0,
+        "missing_ar_count": 0,
+        "missing_en_count": 0,
+        "unused_keys_count": 0,
+        "missing_from_files_count": 0,
+        "coverage_percentage": 0,
+        "files_scanned": 337,
+        "blade_files": 91,
+        "php_files": 246,
+        "translation_calls_found": 0,
+        "unique_keys_in_code": 0,
+        "hardcoded_text_patterns": 1521
+    },
+    "recommendations": [
+        "Replace 1521 hardcoded text strings with translation functions",
+        "Improve Arabic translation coverage from 0% to 100%"
+    ]
+}

@@ -15,6 +15,8 @@ class ProjectList extends Component
 
     public string $statusFilter = '';
 
+    public string $serverFilter = '';
+
     #[On('project-created')]
     public function refreshProjects()
     {
@@ -75,11 +77,20 @@ class ProjectList extends Component
             ->when($this->statusFilter, function ($query) {
                 $query->where('status', $this->statusFilter);
             })
+            ->when($this->serverFilter, function ($query) {
+                $query->where('server_id', $this->serverFilter);
+            })
             ->latest()
             ->paginate(12);
 
+        // Get list of servers for the filter dropdown
+        $servers = \App\Models\Server::select(['id', 'name'])
+            ->orderBy('name')
+            ->get();
+
         return view('livewire.projects.project-list', [
             'projects' => $projects,
+            'servers' => $servers,
         ]);
     }
 }

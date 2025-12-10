@@ -1,0 +1,156 @@
+{
+    "analysis_date": "2025-12-10 14:14:04",
+    "summary": {
+        "total_hardcoded_strings": 1521,
+        "categorized_strings": 50,
+        "files_scanned": 337,
+        "blade_files": 91,
+        "php_files": 246
+    },
+    "categories_breakdown": {
+        "common": 31,
+        "auth": 2,
+        "projects": 7,
+        "servers": 2,
+        "deployments": 1,
+        "navigation": 2,
+        "validation": 0,
+        "buttons": 0,
+        "messages": 4,
+        "errors": 1
+    },
+    "sample_translations": {
+        "en": {
+            "common": {
+                "guest.devflow_pro": "DevFlow Pro",
+                "ui_examples.theme_toggle": "Theme Toggle",
+                "ui_examples.skeleton_loaders": "Skeleton Loaders",
+                "ui_examples.stats_cards": "Stats Cards",
+                "ui_examples.cards": "Cards",
+                "ui_examples.list_items": "List Items",
+                "ui_examples.table": "Table",
+                "ui_examples.text_lines": "Text Lines",
+                "ui_examples.empty_states": "Empty States",
+                "ui_examples.keyboard_shortcuts": "Keyboard Shortcuts"
+            },
+            "auth": {
+                "app.logout": "Logout",
+                "tenant_manager.admin_password": "Admin Password"
+            },
+            "projects": {
+                "ui_examples.projects": "Projects",
+                "ui_examples.new_project": "New Project",
+                "ui_examples.no_projects_yet": "No projects yet",
+                "ui_examples.no_deployments_yet": "No deployments yet",
+                "tenant_manager.select_multi_tenant_project": "Select Multi-Tenant Project",
+                "tenant_manager.deployment_type": "Deployment Type"
+            },
+            "servers": {
+                "ui_examples.servers": "Servers",
+                "ui_examples.no_servers_configured": "No servers configured"
+            },
+            "deployments": {
+                "tenant_manager.deploy_to_tenants": "Deploy to Tenants"
+            },
+            "navigation": {
+                "ui_examples.navigation": "Navigation",
+                "ui_examples.dashboard": "Dashboard"
+            },
+            "validation": [],
+            "buttons": [],
+            "messages": {
+                "ui_examples.toast_notifications": "Toast Notifications",
+                "ui_examples.success_toast": "Success Toast",
+                "ui_examples.warning_toast": "Warning Toast",
+                "ui_examples.info_toast": "Info Toast"
+            },
+            "errors": {
+                "ui_examples.error_toast": "Error Toast"
+            }
+        },
+        "ar": {
+            "common": {
+                "guest.devflow_pro": "[AR] DevFlow Pro",
+                "ui_examples.theme_toggle": "[AR] Theme Toggle",
+                "ui_examples.skeleton_loaders": "[AR] Skeleton Loaders",
+                "ui_examples.stats_cards": "[AR] Stats Cards",
+                "ui_examples.cards": "[AR] Cards",
+                "ui_examples.list_items": "[AR] List Items",
+                "ui_examples.table": "[AR] Table",
+                "ui_examples.text_lines": "[AR] Text Lines",
+                "ui_examples.empty_states": "[AR] Empty States",
+                "ui_examples.keyboard_shortcuts": "[AR] Keyboard Shortcuts"
+            },
+            "auth": {
+                "app.logout": "[AR] Logout",
+                "tenant_manager.admin_password": "[AR] Admin Password"
+            },
+            "projects": {
+                "ui_examples.projects": "[AR] Projects",
+                "ui_examples.new_project": "[AR] New Project",
+                "ui_examples.no_projects_yet": "[AR] No projects yet",
+                "ui_examples.no_deployments_yet": "[AR] No deployments yet",
+                "tenant_manager.select_multi_tenant_project": "[AR] Select Multi-Tenant Project",
+                "tenant_manager.deployment_type": "[AR] Deployment Type"
+            },
+            "servers": {
+                "ui_examples.servers": "[AR] Servers",
+                "ui_examples.no_servers_configured": "[AR] No servers configured"
+            },
+            "deployments": {
+                "tenant_manager.deploy_to_tenants": "[AR] Deploy to Tenants"
+            },
+            "navigation": {
+                "ui_examples.navigation": "[AR] Navigation",
+                "ui_examples.dashboard": "[AR] Dashboard"
+            },
+            "validation": [],
+            "buttons": [],
+            "messages": {
+                "ui_examples.toast_notifications": "[AR] Toast Notifications",
+                "ui_examples.success_toast": "[AR] Success Toast",
+                "ui_examples.warning_toast": "[AR] Warning Toast",
+                "ui_examples.info_toast": "[AR] Info Toast"
+            },
+            "errors": {
+                "ui_examples.error_toast": "[AR] Error Toast"
+            }
+        }
+    },
+    "priority_areas": {
+        "components\/ui-examples.blade.php": 31,
+        "livewire\/multi-tenant\/tenant-manager.blade.php": 11,
+        "teams\/invitation.blade.php": 6,
+        "layouts\/guest.blade.php": 1,
+        "layouts\/app.blade.php": 1
+    },
+    "implementation_steps": {
+        "1. Create language files": [
+            "Create lang\/en directory structure",
+            "Create lang\/ar directory structure",
+            "Organize translations by feature\/module"
+        ],
+        "2. Replace hardcoded text": [
+            "Start with high-traffic pages (auth, dashboard)",
+            "Replace text with __() function calls",
+            "Test each page after replacement"
+        ],
+        "3. Add Arabic translations": [
+            "Hire professional translator for accuracy",
+            "Review UI layout with RTL support",
+            "Test Arabic version thoroughly"
+        ],
+        "4. Implement language switcher": [
+            "Add language toggle in UI",
+            "Store user language preference",
+            "Apply language to all pages"
+        ]
+    },
+    "estimated_effort": {
+        "translation_file_creation": "2-4 hours",
+        "code_refactoring": "20-30 hours",
+        "arabic_translation": "10-15 hours",
+        "testing": "8-10 hours",
+        "total": "40-59 hours"
+    }
+}

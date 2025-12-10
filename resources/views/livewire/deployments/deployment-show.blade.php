@@ -6,10 +6,13 @@
         </div>
         <div class="flex space-x-3">
             @if(in_array($deployment->status, ['pending', 'running']))
-                <button wire:click="refresh" class="btn btn-sm btn-secondary">
-                    <span wire:loading.remove wire:target="refresh">🔄 Refresh</span>
-                    <span wire:loading wire:target="refresh">Refreshing...</span>
-                </button>
+                <div class="flex items-start space-x-2">
+                    <button wire:click="refresh" class="btn btn-sm btn-secondary">
+                        <span wire:loading.remove wire:target="refresh">🔄 Refresh</span>
+                        <span wire:loading wire:target="refresh">Refreshing...</span>
+                    </button>
+                    <livewire:inline-help help-key="deploy-button" />
+                </div>
             @endif
             <a href="{{ route('deployments.index') }}" class="btn btn-secondary">
                 Back to List

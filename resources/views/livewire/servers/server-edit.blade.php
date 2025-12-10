@@ -111,6 +111,7 @@
                         <span class="ml-2 text-gray-700 dark:text-gray-300">SSH Key</span>
                     </label>
                 </div>
+                <livewire:components.inline-help help-key="ssh-access-button" :collapsible="true" />
             </div>
 
             <!-- SSH Password -->
@@ -236,6 +237,7 @@
                         <span wire:loading wire:target="updateServer">Updating...</span>
                     </button>
                 </div>
+                <livewire:components.inline-help help-key="add-server-button" :collapsible="true" />
             </div>
         </form>
     </div>

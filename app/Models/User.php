@@ -21,6 +21,7 @@ class User extends Authenticatable
         'timezone',
         'last_login_at',
         'current_team_id',
+        'show_inline_help',
     ];
 
     protected $hidden = [
@@ -34,6 +35,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'last_login_at' => 'datetime',
             'password' => 'hashed',
+            'show_inline_help' => 'boolean',
         ];
     }
 

@@ -20,17 +20,17 @@
         <env name="APP_ENV" value="testing"/>
         <env name="APP_KEY" value="base64:I3WSB7wRH6xiI8KOmAZF3U8PA1M41PpGstglNw+PnJY="/>
         <env name="BCRYPT_ROUNDS" value="4"/>
-        <env name="CACHE_DRIVER" value="array"/>
+        <env name="CACHE_DRIVER" value="file"/>
         <env name="DB_CONNECTION" value="mysql"/>
-        <env name="DB_HOST" value="mysql"/>
-        <env name="DB_PORT" value="3306"/>
-        <env name="DB_DATABASE" value="devflow_dusk"/>
-        <env name="DB_USERNAME" value="devflow"/>
-        <env name="DB_PASSWORD" value="secret"/>
+        <env name="DB_HOST" value="127.0.0.1"/>
+        <env name="DB_PORT" value="3307"/>
+        <env name="DB_DATABASE" value="devflow_pro"/>
+        <env name="DB_USERNAME" value="root"/>
+        <env name="DB_PASSWORD" value="password"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
-        <env name="SESSION_DRIVER" value="array"/>
+        <env name="SESSION_DRIVER" value="file"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
-        <env name="DUSK_DRIVER_URL" value="http://selenium:4444"/>
+        <env name="APP_URL" value="http://127.0.0.1:9000"/>
     </php>
 </phpunit>

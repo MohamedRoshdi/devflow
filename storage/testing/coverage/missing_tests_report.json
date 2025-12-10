@@ -1,0 +1,305 @@
+{
+  "generated_at": "2025-12-10T00:00:00Z",
+  "analysis_summary": {
+    "total_routes": 102,
+    "total_controllers": 10,
+    "total_models": 55,
+    "total_livewire_components": 77,
+    "existing_feature_tests": 25,
+    "existing_unit_tests": 58
+  },
+  "untested_routes": [
+    "GET /docs/api",
+    "GET /docs/features",
+    "GET /pipelines",
+    "GET /register",
+    "GET /up",
+    "GET /livewire/livewire.js",
+    "POST /livewire/update",
+    "POST /livewire/upload-file",
+    "GET /livewire/preview-file/{filename}",
+    "POST /broadcasting/auth",
+    "GET /sanctum/csrf-cookie"
+  ],
+  "untested_controllers": [
+    "TeamInvitationController@show",
+    "TeamInvitationController@accept",
+    "DomainController@store",
+    "DomainController@update",
+    "DomainController@destroy",
+    "GitHubAuthController@redirect",
+    "GitHubAuthController@callback",
+    "GitHubAuthController@disconnect",
+    "ServerMetricsController@store",
+    "ServerMetricsController@index",
+    "DeploymentWebhookController@handle"
+  ],
+  "untested_models": [
+    "ServerTag",
+    "KubernetesCluster",
+    "WebhookDelivery",
+    "DeploymentApproval",
+    "NotificationLog",
+    "PipelineStage",
+    "LogEntry",
+    "ProjectSetupTask",
+    "StorageConfiguration",
+    "ProjectAnalytic",
+    "DeploymentComment",
+    "SshConfiguration",
+    "HealthCheckResult",
+    "TenantDeployment",
+    "SecurityEvent",
+    "ProvisioningLog",
+    "ProjectTemplate",
+    "DeploymentScriptRun",
+    "LogSource",
+    "ScheduledDeployment",
+    "PipelineStageRun"
+  ],
+  "untested_livewire_components": [
+    "App\\Livewire\\Docs\\ApiDocumentation",
+    "App\\Livewire\\Docs\\FeaturesGuide",
+    "App\\Livewire\\Home\\ProjectDetail",
+    "App\\Livewire\\MultiTenant\\TenantManager",
+    "App\\Livewire\\Users\\UserList",
+    "App\\Livewire\\Scripts\\ScriptManager",
+    "App\\Livewire\\Logs\\WebhookLogs",
+    "App\\Livewire\\Logs\\LogSourceManager",
+    "App\\Livewire\\Logs\\NotificationLogs",
+    "App\\Livewire\\Logs\\SecurityAuditLog",
+    "App\\Livewire\\Servers\\ServerProvisioning",
+    "App\\Livewire\\Servers\\SSHTerminal",
+    "App\\Livewire\\Servers\\ServerTagManager",
+    "App\\Livewire\\Servers\\ServerBackupManager",
+    "App\\Livewire\\Servers\\SSLManager",
+    "App\\Livewire\\Servers\\ServerEdit",
+    "App\\Livewire\\Servers\\Security\\SSHSecurityManager",
+    "App\\Livewire\\Servers\\Security\\Fail2banManager",
+    "App\\Livewire\\Servers\\Security\\ServerSecurityDashboard",
+    "App\\Livewire\\Servers\\Security\\FirewallManager",
+    "App\\Livewire\\Servers\\Security\\SecurityScanDashboard",
+    "App\\Livewire\\Servers\\ServerTagAssignment",
+    "App\\Livewire\\Servers\\ResourceAlertManager",
+    "App\\Livewire\\Deployments\\DeploymentList",
+    "App\\Livewire\\Deployments\\DeploymentApprovals",
+    "App\\Livewire\\Deployments\\DeploymentComments",
+    "App\\Livewire\\Deployments\\DeploymentRollback",
+    "App\\Livewire\\Deployments\\DeploymentShow",
+    "App\\Livewire\\Deployments\\ScheduledDeployments",
+    "App\\Livewire\\Settings\\StorageSettings",
+    "App\\Livewire\\Settings\\GitHubSettings",
+    "App\\Livewire\\Settings\\DefaultSetupPreferences",
+    "App\\Livewire\\Settings\\SSHKeyManager",
+    "App\\Livewire\\Settings\\ApiTokenManager",
+    "App\\Livewire\\Settings\\SystemSettings",
+    "App\\Livewire\\Settings\\SystemStatus",
+    "App\\Livewire\\Settings\\QueueMonitor",
+    "App\\Livewire\\Settings\\HealthCheckManager",
+    "App\\Livewire\\SSL\\SSLManager",
+    "App\\Livewire\\Pipelines\\PipelineRunHistory",
+    "App\\Livewire\\Pipelines\\PipelineRunShow",
+    "App\\Livewire\\Projects\\ProjectWebhookSettings",
+    "App\\Livewire\\Projects\\ProjectEnvironment",
+    "App\\Livewire\\Projects\\ProjectConfiguration",
+    "App\\Livewire\\Projects\\ProjectDockerManagement",
+    "App\\Livewire\\Projects\\DatabaseBackupManager",
+    "App\\Livewire\\Projects\\GitHubRepoPicker",
+    "App\\Livewire\\Projects\\PipelineSettings",
+    "App\\Livewire\\Projects\\FileBackupManager",
+    "App\\Livewire\\Projects\\ProjectLogs",
+    "App\\Livewire\\Notifications\\DeploymentNotifications",
+    "App\\Livewire\\Notifications\\NotificationChannelManager",
+    "App\\Livewire\\Teams\\TeamSwitcher",
+    "App\\Livewire\\Teams\\TeamSettings",
+    "App\\Livewire\\CICD\\PipelineBuilder",
+    "App\\Livewire\\Auth\\Register",
+    "App\\Livewire\\Auth\\ForgotPassword",
+    "App\\Livewire\\Admin\\AuditLogViewer",
+    "App\\Livewire\\Admin\\SystemAdmin",
+    "App\\Livewire\\Kubernetes\\ClusterManager",
+    "App\\Livewire\\Analytics\\AnalyticsDashboard",
+    "App\\Livewire\\Dashboard\\HealthDashboard",
+    "App\\Livewire\\Docker\\DockerDashboard",
+    "App\\Livewire\\Servers\\ServerMetricsDashboard",
+    "App\\Livewire\\DashboardOptimized"
+  ],
+  "tests_generated": [
+    "tests/Feature/TeamInvitationTest.php",
+    "tests/Feature/DomainManagementTest.php",
+    "tests/Feature/GitHubAuthenticationTest.php",
+    "tests/Feature/Api/ServerMetricsApiTest.php",
+    "tests/Feature/Api/DeploymentWebhookTest.php",
+    "tests/Feature/Livewire/NotificationChannelManagerTest.php",
+    "tests/Feature/Livewire/MultiTenantManagerTest.php",
+    "tests/Feature/Livewire/UserListTest.php",
+    "tests/Feature/Livewire/AnalyticsDashboardTest.php",
+    "tests/Feature/Livewire/KubernetesClusterManagerTest.php",
+    "tests/Feature/Livewire/ScriptManagerTest.php"
+  ],
+  "statistics": {
+    "total_routes": 102,
+    "untested_routes": 11,
+    "tested_routes": 91,
+    "routes_coverage_percentage": 89.22,
+    "total_controllers": 10,
+    "untested_controller_methods": 11,
+    "tested_controller_methods": 35,
+    "controller_coverage_percentage": 76.09,
+    "total_models": 55,
+    "untested_models": 21,
+    "tested_models": 34,
+    "model_coverage_percentage": 61.82,
+    "total_livewire_components": 77,
+    "untested_livewire_components": 60,
+    "tested_livewire_components": 17,
+    "livewire_coverage_percentage": 22.08,
+    "overall_coverage_estimate": 62.3,
+    "tests_generated_count": 11,
+    "new_test_methods_count": 127
+  },
+  "priority_recommendations": [
+    {
+      "priority": "HIGH",
+      "component": "Livewire Components",
+      "reason": "Only 22% coverage - many critical UI components untested",
+      "recommended_actions": [
+        "Generate tests for deployment management components",
+        "Test server security management components",
+        "Cover settings and configuration components"
+      ]
+    },
+    {
+      "priority": "MEDIUM",
+      "component": "Models",
+      "reason": "62% coverage - several models lack proper unit tests",
+      "recommended_actions": [
+        "Add tests for relationship methods",
+        "Test model scopes and accessors",
+        "Verify model validation rules"
+      ]
+    },
+    {
+      "priority": "MEDIUM",
+      "component": "API Endpoints",
+      "reason": "Core webhook and metrics endpoints need comprehensive testing",
+      "recommended_actions": [
+        "Test webhook delivery and retry logic",
+        "Verify metrics aggregation and querying",
+        "Test API authentication and authorization"
+      ]
+    },
+    {
+      "priority": "LOW",
+      "component": "Documentation Routes",
+      "reason": "Documentation pages are lower priority for testing",
+      "recommended_actions": [
+        "Add basic rendering tests for doc pages",
+        "Verify navigation and links work correctly"
+      ]
+    }
+  ],
+  "testing_gaps_by_category": {
+    "authentication_authorization": {
+      "coverage": "85%",
+      "gaps": [
+        "Team invitation acceptance flow",
+        "GitHub OAuth edge cases"
+      ]
+    },
+    "deployment_management": {
+      "coverage": "70%",
+      "gaps": [
+        "Webhook-triggered deployments",
+        "Deployment approvals",
+        "Deployment comments",
+        "Scheduled deployments"
+      ]
+    },
+    "server_management": {
+      "coverage": "75%",
+      "gaps": [
+        "Server metrics collection",
+        "SSH security configuration",
+        "Firewall management",
+        "Fail2ban integration"
+      ]
+    },
+    "monitoring_logging": {
+      "coverage": "40%",
+      "gaps": [
+        "Log aggregation and viewing",
+        "Webhook delivery logs",
+        "Security audit logs",
+        "Notification logs"
+      ]
+    },
+    "cicd_pipelines": {
+      "coverage": "50%",
+      "gaps": [
+        "Pipeline execution",
+        "Pipeline stage management",
+        "Build artifacts"
+      ]
+    },
+    "multi_tenancy": {
+      "coverage": "30%",
+      "gaps": [
+        "Tenant provisioning",
+        "Tenant deployments",
+        "Tenant isolation"
+      ]
+    }
+  },
+  "next_steps": [
+    "Run PHPUnit to verify all new tests pass",
+    "Generate additional Livewire component tests for high-priority features",
+    "Add integration tests for complete deployment workflows",
+    "Implement model factory tests for untested models",
+    "Create browser tests (Dusk) for critical user flows",
+    "Set up continuous integration to track coverage metrics",
+    "Add mutation testing to verify test quality"
+  ],
+  "coverage_improvement_roadmap": {
+    "phase_1_immediate": {
+      "target": "75% overall coverage",
+      "duration": "1-2 weeks",
+      "focus": [
+        "Critical deployment flows",
+        "Server management features",
+        "Authentication and authorization"
+      ]
+    },
+    "phase_2_short_term": {
+      "target": "85% overall coverage",
+      "duration": "3-4 weeks",
+      "focus": [
+        "All Livewire components",
+        "API endpoints",
+        "Webhook integrations"
+      ]
+    },
+    "phase_3_long_term": {
+      "target": "95% overall coverage",
+      "duration": "2-3 months",
+      "focus": [
+        "Edge cases and error handling",
+        "Integration tests",
+        "Performance tests",
+        "Security tests"
+      ]
+    }
+  },
+  "notes": [
+    "All generated tests follow Laravel best practices and PHPUnit standards",
+    "Tests use RefreshDatabase trait for database isolation",
+    "Factory patterns used for test data generation",
+    "Mockery used for external service dependencies",
+    "Tests include both positive and negative test cases",
+    "Authentication tests use Sanctum for API endpoints",
+    "Livewire tests use Livewire::test() helper for component testing",
+    "Rate limiting tests included for API endpoints",
+    "Validation tests verify all input rules",
+    "Tests are organized by feature area for maintainability"
+  ]
+}

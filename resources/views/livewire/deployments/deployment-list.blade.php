@@ -42,6 +42,10 @@
                 </div>
             </div>
 
+            <div class="mb-4">
+                <livewire:components.inline-help help-key="rollback-button" :collapsible="true" />
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Search</label>
@@ -187,13 +191,14 @@
                                             </div>
                                         </div>
 
-                                        <div class="flex items-end lg:items-center">
+                                        <div class="flex items-end lg:items-center gap-2">
                                             <a href="{{ route('deployments.show', $deployment) }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400 text-white rounded-lg font-semibold transition">
                                                 View Details
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H7" />
                                                 </svg>
                                             </a>
+                                            <livewire:components.inline-help help-key="view-logs-button" :collapsible="true" :key="'help-logs-'.$deployment->id" />
                                         </div>
                                     </div>
                                 </div>

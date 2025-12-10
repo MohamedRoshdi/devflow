@@ -235,6 +235,7 @@
                         <p class="text-sm text-gray-500 dark:text-gray-400">
                             Automatically deploy when changes are pushed to the repository
                         </p>
+                        <livewire:components.inline-help help-key="auto-deploy-toggle" :collapsible="true" />
                     </div>
                 </div>
             </div>

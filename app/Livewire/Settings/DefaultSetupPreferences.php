@@ -25,6 +25,8 @@ class DefaultSetupPreferences extends Component
 
     public bool $showWizardTips = true;
 
+    public bool $showInlineHelp = true;
+
     public bool $isSaving = false;
 
     public bool $saveSuccess = false;
@@ -41,6 +43,7 @@ class DefaultSetupPreferences extends Component
         $this->defaultEnableAutoDeploy = $settings->default_enable_auto_deploy;
         $this->theme = $settings->theme;
         $this->showWizardTips = $settings->show_wizard_tips;
+        $this->showInlineHelp = auth()->user()->show_inline_help ?? true;
     }
 
     public function save(): void
@@ -59,6 +62,11 @@ class DefaultSetupPreferences extends Component
                 'default_enable_auto_deploy' => $this->defaultEnableAutoDeploy,
                 'theme' => $this->theme,
                 'show_wizard_tips' => $this->showWizardTips,
+            ]);
+
+            // Update user's inline help preference
+            auth()->user()->update([
+                'show_inline_help' => $this->showInlineHelp,
             ]);
 
             $this->isSaving = false;

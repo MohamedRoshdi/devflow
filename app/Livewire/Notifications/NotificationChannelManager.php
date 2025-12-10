@@ -111,7 +111,9 @@ class NotificationChannelManager extends Component
 
     public function render(): \Illuminate\View\View
     {
-        return view('livewire.notifications.channel-manager');
+        return view('livewire.notifications.channel-manager', [
+            'channels' => $this->channels,
+        ]);
     }
 
     public function addChannel(): void

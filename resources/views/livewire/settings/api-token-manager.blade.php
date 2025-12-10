@@ -24,6 +24,8 @@
         </div>
     </div>
 
+    <livewire:components.inline-help help-key="api-token-generate" :collapsible="true" />
+
     <!-- API Tokens List -->
     @if($tokens->count() > 0)
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
@@ -172,6 +174,7 @@
                             <option value="90">90 days</option>
                             <option value="365">1 year</option>
                         </select>
+                        <livewire:components.inline-help help-key="api-token-expiration" :collapsible="true" />
                     </div>
                 </div>
 

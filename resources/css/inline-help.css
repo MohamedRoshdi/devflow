@@ -1,0 +1,400 @@
+/* Inline Help Component Styles */
+
+.inline-help {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: #6c757d;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.help-icon {
+    font-size: 1rem;
+    margin-right: 0.375rem;
+    display: inline-block;
+}
+
+.help-brief {
+    color: #495057;
+}
+
+.help-brief strong {
+    font-weight: 600;
+}
+
+.help-details {
+    margin-top: 0.5rem;
+}
+
+.help-item {
+    margin-bottom: 0.375rem;
+    padding-left: 0.5rem;
+    transition: padding-left 0.2s;
+}
+
+.help-item:hover {
+    padding-left: 0.75rem;
+}
+
+.help-item .fw-semibold {
+    color: #495057;
+}
+
+.help-links {
+    margin-top: 0.75rem;
+}
+
+.help-links a {
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+}
+
+.help-links a:hover {
+    text-decoration: underline;
+    transform: translateX(3px);
+}
+
+/* Collapsible Help */
+.help-toggle {
+    cursor: pointer;
+    user-select: none;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s;
+}
+
+.help-toggle:hover {
+    background-color: #f8f9fa;
+}
+
+.help-toggle:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+.help-title {
+    color: #495057;
+}
+
+.toggle-indicator {
+    font-size: 0.75rem;
+    color: #6c757d;
+    transition: transform 0.2s;
+}
+
+/* Feedback Buttons */
+.help-feedback {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.help-feedback .btn {
+    font-size: 1rem;
+    padding: 0.25rem 0.5rem;
+    transition: all 0.2s;
+    border-radius: 0.375rem;
+}
+
+.help-feedback .btn:hover:not(:disabled) {
+    transform: scale(1.1);
+}
+
+.help-feedback .btn:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+.help-feedback .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Related Help */
+.related-help {
+    border-radius: 0.25rem;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.related-item {
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    transition: padding-left 0.2s;
+}
+
+.related-item:hover {
+    padding-left: 0.25rem;
+}
+
+.related-item a {
+    transition: all 0.2s;
+}
+
+.related-item a:hover {
+    padding-left: 0.25rem;
+}
+
+/* Loading State */
+.help-loading {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.help-loading .spinner-border-sm {
+    width: 0.875rem;
+    height: 0.875rem;
+    border-width: 0.125rem;
+}
+
+/* Setting Item Hover Effect */
+.setting-item {
+    transition: all 0.2s;
+}
+
+.setting-item:hover .inline-help {
+    background-color: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Slide Down Animation */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 500px;
+    }
+}
+
+.animate-slideDown {
+    animation: slideDown 0.4s ease-out;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .inline-help {
+        font-size: 0.8125rem;
+    }
+
+    .help-item {
+        font-size: 0.8125rem;
+    }
+
+    .help-toggle {
+        padding: 0.375rem;
+    }
+
+    .help-feedback {
+        flex-wrap: wrap;
+    }
+
+    .help-feedback .btn {
+        font-size: 0.875rem;
+        padding: 0.25rem 0.375rem;
+    }
+}
+
+/* Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .inline-help {
+        font-size: 0.875rem;
+    }
+
+    .help-toggle {
+        padding: 0.5rem;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .inline-help {
+        color: #adb5bd;
+    }
+
+    .help-brief {
+        color: #ced4da;
+    }
+
+    .help-title {
+        color: #ced4da;
+    }
+
+    .help-item .fw-semibold {
+        color: #ced4da;
+    }
+
+    .help-toggle:hover {
+        background-color: #343a40;
+    }
+
+    .related-help {
+        background-color: #212529 !important;
+        border-color: #495057 !important;
+    }
+
+    .setting-item:hover .inline-help {
+        background-color: #343a40;
+    }
+
+    .help-feedback {
+        border-top-color: #495057;
+    }
+}
+
+/* Dark mode class support (Tailwind) */
+.dark .inline-help {
+    color: #adb5bd;
+}
+
+.dark .help-brief {
+    color: #ced4da;
+}
+
+.dark .help-title {
+    color: #ced4da;
+}
+
+.dark .help-item .fw-semibold {
+    color: #ced4da;
+}
+
+.dark .help-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark .related-help {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark .setting-item:hover .inline-help {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark .help-feedback {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Accessibility Improvements */
+.help-toggle:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+}
+
+.help-links a:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+}
+
+.help-feedback .btn:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .inline-help {
+        color: #000;
+    }
+
+    .help-brief {
+        color: #000;
+    }
+
+    .help-toggle:hover {
+        background-color: #e0e0e0;
+    }
+
+    .help-feedback {
+        border-top-color: #000;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .inline-help {
+        animation: none;
+    }
+
+    .related-help {
+        animation: none;
+    }
+
+    .help-item:hover {
+        padding-left: 0.5rem;
+    }
+
+    .help-links a:hover {
+        transform: none;
+    }
+
+    .help-feedback .btn:hover:not(:disabled) {
+        transform: none;
+    }
+
+    .toggle-indicator {
+        transition: none;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .inline-help {
+        color: #000;
+        font-size: 0.75rem;
+    }
+
+    .help-feedback {
+        display: none;
+    }
+
+    .help-toggle {
+        padding: 0;
+    }
+
+    .help-details {
+        display: block !important;
+    }
+
+    .toggle-indicator {
+        display: none;
+    }
+}

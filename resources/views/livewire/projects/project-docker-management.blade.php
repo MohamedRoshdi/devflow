@@ -11,7 +11,10 @@
 <div wire:key="docker-management-{{ $project->id }}" wire:init="initDocker" class="bg-white dark:bg-gray-800 rounded-lg shadow">
     <div class="p-6 border-b border-gray-200 dark:border-gray-700 dark:border-gray-700">
         <div class="flex justify-between items-center">
-            <h2 class="text-xl font-bold text-gray-900 dark:text-white">🐳 Docker Management</h2>
+            <div>
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white">🐳 Docker Management</h2>
+                <livewire:components.inline-help help-key="docker-resource-limits" :collapsible="true" />
+            </div>
             <button wire:click="$refresh" 
                     class="px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
                     wire:loading.attr="disabled">

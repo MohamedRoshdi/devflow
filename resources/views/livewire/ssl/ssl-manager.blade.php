@@ -90,6 +90,7 @@
                 @endif
             </div>
         </div>
+        <livewire:components.inline-help help-key="ssl-enabled-checkbox" :collapsible="true" />
     </div>
 
     {{-- Certificates Table --}}

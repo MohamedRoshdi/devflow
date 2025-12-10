@@ -1,3 +1,6 @@
+/* Inline Help System Styles */
+@import './inline-help.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

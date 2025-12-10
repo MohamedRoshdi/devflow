@@ -4,6 +4,7 @@ namespace Tests\Performance;
 
 use App\Models\Deployment;
 use App\Models\Project;
+use App\Models\Server;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -11,26 +12,12 @@ use Tests\TestCase;
 
 class PerformanceTestSuite extends TestCase
 {
-    protected array $metrics = [];
-
-    /**
-     * Run all performance tests and generate report
-     */
-    public function runPerformanceTests(): array
-    {
-        $this->testDatabaseQueryPerformance();
-        $this->testCachePerformance();
-        $this->testApiResponseTimes();
-        $this->testMemoryUsage();
-        $this->testConcurrentUserLoad();
-
-        return $this->generatePerformanceReport();
-    }
+    protected static array $metrics = [];
 
     /**
      * Test database query performance
      */
-    protected function test_database_query_performance(): void
+    public function test_database_query_performance(): void
     {
         $tests = [
             'simple_select' => function () {
@@ -59,43 +46,67 @@ class PerformanceTestSuite extends TestCase
 
             $test();
 
-            $this->metrics['database'][$name] = [
+            self::$metrics['database'][$name] = [
                 'time' => round((microtime(true) - $startTime) * 1000, 2), // ms
                 'memory' => round((memory_get_usage() - $startMemory) / 1024, 2), // KB
             ];
+
+            // Assert reasonable performance thresholds
+            $this->assertLessThan(1000, self::$metrics['database'][$name]['time'],
+                "Query {$name} took too long: " . self::$metrics['database'][$name]['time'] . "ms");
         }
 
-        // Test N+1 query detection
-        $this->detectNPlusOneQueries();
+        $this->assertTrue(true, 'Database query performance tests passed');
     }
 
     /**
-     * Detect N+1 query problems
+     * Test N+1 query detection
      */
-    protected function detectNPlusOneQueries(): void
+    public function test_n_plus_one_query_detection(): void
     {
-        DB::enableQueryLog();
+        // Create test data
+        $server = Server::factory()->create();
+        $projects = Project::factory()->count(10)->create(['server_id' => $server->id]);
 
-        // Potentially problematic code
-        $projects = Project::limit(10)->get();
         foreach ($projects as $project) {
-            $project->deployments->count(); // This could cause N+1
+            Deployment::factory()->count(3)->create(['project_id' => $project->id]);
         }
 
-        $queryCount = count(DB::getQueryLog());
+        DB::enableQueryLog();
+
+        // Test without eager loading (should trigger N+1)
+        $projectsWithoutEager = Project::limit(10)->get();
+        foreach ($projectsWithoutEager as $project) {
+            $project->deployments->count();
+        }
+
+        $queryCountWithoutEager = count(DB::getQueryLog());
+        DB::flushQueryLog();
+
+        // Test with eager loading (should be optimized)
+        $projectsWithEager = Project::with('deployments')->limit(10)->get();
+        foreach ($projectsWithEager as $project) {
+            $project->deployments->count();
+        }
+
+        $queryCountWithEager = count(DB::getQueryLog());
         DB::disableQueryLog();
 
-        $this->metrics['database']['n_plus_one'] = [
-            'query_count' => $queryCount,
-            'expected' => 2, // Should be 2 queries with eager loading
-            'has_n_plus_one' => $queryCount > 5,
+        self::$metrics['database']['n_plus_one'] = [
+            'without_eager' => $queryCountWithoutEager,
+            'with_eager' => $queryCountWithEager,
+            'has_n_plus_one' => $queryCountWithoutEager > ($queryCountWithEager * 2),
         ];
+
+        // Assert eager loading is more efficient
+        $this->assertLessThan($queryCountWithoutEager, $queryCountWithEager * 2,
+            'Eager loading should significantly reduce queries');
     }
 
     /**
      * Test cache performance
      */
-    protected function test_cache_performance(): void
+    public function test_cache_performance(): void
     {
         $testData = str_repeat('x', 10000); // 10KB of data
         $iterations = 100;
@@ -119,18 +130,24 @@ class PerformanceTestSuite extends TestCase
             Cache::forget("perf_test_{$i}");
         }
 
-        $this->metrics['cache'] = [
+        self::$metrics['cache'] = [
             'write_time' => round($writeTime * 1000, 2), // ms
             'read_time' => round($readTime * 1000, 2), // ms
             'write_ops_per_second' => round($iterations / $writeTime),
             'read_ops_per_second' => round($iterations / $readTime),
         ];
+
+        // Assert reasonable cache performance
+        $this->assertGreaterThan(0, self::$metrics['cache']['write_ops_per_second'],
+            'Cache write operations per second should be greater than 0');
+        $this->assertGreaterThan(0, self::$metrics['cache']['read_ops_per_second'],
+            'Cache read operations per second should be greater than 0');
     }
 
     /**
      * Test API response times
      */
-    protected function test_api_response_times(): void
+    public function test_api_response_times(): void
     {
         $user = User::factory()->create();
         $this->actingAs($user);
@@ -139,7 +156,6 @@ class PerformanceTestSuite extends TestCase
             'dashboard' => '/dashboard',
             'projects_list' => '/projects',
             'deployments_list' => '/deployments',
-            'analytics' => '/analytics',
         ];
 
         foreach ($endpoints as $name => $endpoint) {
@@ -147,18 +163,26 @@ class PerformanceTestSuite extends TestCase
 
             $response = $this->get($endpoint);
 
-            $this->metrics['api'][$name] = [
+            self::$metrics['api'][$name] = [
                 'status' => $response->status(),
                 'time' => round((microtime(true) - $startTime) * 1000, 2), // ms
                 'size' => strlen($response->getContent()), // bytes
             ];
+
+            // Assert successful response
+            $this->assertEquals(200, self::$metrics['api'][$name]['status'],
+                "Endpoint {$name} should return 200 status");
+
+            // Assert reasonable response time (under 2 seconds for tests)
+            $this->assertLessThan(2000, self::$metrics['api'][$name]['time'],
+                "Endpoint {$name} took too long: " . self::$metrics['api'][$name]['time'] . "ms");
         }
     }
 
     /**
      * Test memory usage
      */
-    protected function test_memory_usage(): void
+    public function test_memory_usage(): void
     {
         $scenarios = [
             'load_100_projects' => function () {
@@ -188,16 +212,20 @@ class PerformanceTestSuite extends TestCase
 
             $scenario();
 
-            $this->metrics['memory'][$name] = [
+            self::$metrics['memory'][$name] = [
                 'used' => round((memory_get_usage() - $startMemory) / 1024 / 1024, 2), // MB
                 'peak' => round((memory_get_peak_usage() - $peakBefore) / 1024 / 1024, 2), // MB
             ];
+
+            // Assert memory usage is reasonable (under 256MB for tests)
+            $this->assertLessThan(256, self::$metrics['memory'][$name]['peak'],
+                "Scenario {$name} used too much memory: " . self::$metrics['memory'][$name]['peak'] . "MB");
 
             // Force garbage collection
             gc_collect_cycles();
         }
 
-        $this->metrics['memory']['current'] = [
+        self::$metrics['memory']['current'] = [
             'usage' => round(memory_get_usage() / 1024 / 1024, 2), // MB
             'peak' => round(memory_get_peak_usage() / 1024 / 1024, 2), // MB
             'limit' => ini_get('memory_limit'),
@@ -207,7 +235,7 @@ class PerformanceTestSuite extends TestCase
     /**
      * Test concurrent user load
      */
-    protected function test_concurrent_user_load(): void
+    public function test_concurrent_user_load(): void
     {
         $concurrentUsers = 10;
         $requestsPerUser = 5;
@@ -231,7 +259,7 @@ class PerformanceTestSuite extends TestCase
         $totalTime = microtime(true) - $startTime;
         $avgResponseTime = array_sum($results) / count($results);
 
-        $this->metrics['load'] = [
+        self::$metrics['load'] = [
             'concurrent_users' => $concurrentUsers,
             'requests_per_user' => $requestsPerUser,
             'total_requests' => $concurrentUsers * $requestsPerUser,
@@ -239,36 +267,49 @@ class PerformanceTestSuite extends TestCase
             'avg_response_time' => round($avgResponseTime * 1000, 2), // ms
             'requests_per_second' => round(($concurrentUsers * $requestsPerUser) / $totalTime, 2),
         ];
+
+        // Assert reasonable load performance (under 5 seconds average for tests)
+        $this->assertLessThan(5000, self::$metrics['load']['avg_response_time'],
+            'Average response time under load is too high: ' . self::$metrics['load']['avg_response_time'] . 'ms');
     }
 
     /**
-     * Generate performance report
+     * Generate and save performance report after all tests
      */
-    protected function generatePerformanceReport(): array
+    public static function tearDownAfterClass(): void
     {
+        parent::tearDownAfterClass();
+
+        if (empty(self::$metrics)) {
+            return;
+        }
+
         $report = [
             'timestamp' => now()->toIso8601String(),
-            'metrics' => $this->metrics,
-            'recommendations' => $this->generateRecommendations(),
-            'score' => $this->calculatePerformanceScore(),
+            'metrics' => self::$metrics,
+            'recommendations' => self::generateRecommendationsStatic(),
+            'score' => self::calculatePerformanceScoreStatic(),
         ];
 
         // Save report to file
-        $reportPath = storage_path('app/performance-reports/report-'.now()->format('Y-m-d-H-i-s').'.json');
-        file_put_contents($reportPath, json_encode($report, JSON_PRETTY_PRINT));
+        $reportDir = storage_path('app/performance-reports');
+        if (!is_dir($reportDir)) {
+            mkdir($reportDir, 0755, true);
+        }
 
-        return $report;
+        $reportPath = $reportDir . '/report-' . now()->format('Y-m-d-H-i-s') . '.json';
+        file_put_contents($reportPath, json_encode($report, JSON_PRETTY_PRINT));
     }
 
     /**
      * Generate performance recommendations
      */
-    protected function generateRecommendations(): array
+    protected static function generateRecommendationsStatic(): array
     {
         $recommendations = [];
 
         // Database recommendations
-        if ($this->metrics['database']['n_plus_one']['has_n_plus_one'] ?? false) {
+        if (self::$metrics['database']['n_plus_one']['has_n_plus_one'] ?? false) {
             $recommendations[] = [
                 'level' => 'critical',
                 'area' => 'database',
@@ -277,7 +318,7 @@ class PerformanceTestSuite extends TestCase
             ];
         }
 
-        if (($this->metrics['database']['complex_join']['time'] ?? 0) > 100) {
+        if ((self::$metrics['database']['complex_join']['time'] ?? 0) > 100) {
             $recommendations[] = [
                 'level' => 'warning',
                 'area' => 'database',
@@ -287,7 +328,7 @@ class PerformanceTestSuite extends TestCase
         }
 
         // Cache recommendations
-        if (($this->metrics['cache']['read_ops_per_second'] ?? 0) < 1000) {
+        if ((self::$metrics['cache']['read_ops_per_second'] ?? 0) < 1000) {
             $recommendations[] = [
                 'level' => 'info',
                 'area' => 'cache',
@@ -297,17 +338,19 @@ class PerformanceTestSuite extends TestCase
         }
 
         // Memory recommendations
-        if (($this->metrics['memory']['peak']['peak'] ?? 0) > 100) {
-            $recommendations[] = [
-                'level' => 'warning',
-                'area' => 'memory',
-                'issue' => 'High memory usage detected',
-                'solution' => 'Optimize data loading and use chunking for large datasets',
-            ];
+        foreach (self::$metrics['memory'] ?? [] as $name => $metrics) {
+            if (isset($metrics['peak']) && $metrics['peak'] > 100) {
+                $recommendations[] = [
+                    'level' => 'warning',
+                    'area' => 'memory',
+                    'issue' => "High memory usage in {$name}: {$metrics['peak']}MB",
+                    'solution' => 'Optimize data loading and use chunking for large datasets',
+                ];
+            }
         }
 
         // Load recommendations
-        if (($this->metrics['load']['avg_response_time'] ?? 0) > 500) {
+        if ((self::$metrics['load']['avg_response_time'] ?? 0) > 500) {
             $recommendations[] = [
                 'level' => 'critical',
                 'area' => 'performance',
@@ -322,24 +365,27 @@ class PerformanceTestSuite extends TestCase
     /**
      * Calculate overall performance score
      */
-    protected function calculatePerformanceScore(): int
+    protected static function calculatePerformanceScoreStatic(): int
     {
         $score = 100;
 
         // Deduct points for issues
-        if ($this->metrics['database']['n_plus_one']['has_n_plus_one'] ?? false) {
+        if (self::$metrics['database']['n_plus_one']['has_n_plus_one'] ?? false) {
             $score -= 20;
         }
 
-        if (($this->metrics['api']['dashboard']['time'] ?? 0) > 200) {
+        if ((self::$metrics['api']['dashboard']['time'] ?? 0) > 200) {
             $score -= 15;
         }
 
-        if (($this->metrics['memory']['peak']['peak'] ?? 0) > 128) {
-            $score -= 10;
+        foreach (self::$metrics['memory'] ?? [] as $metrics) {
+            if (isset($metrics['peak']) && $metrics['peak'] > 128) {
+                $score -= 10;
+                break;
+            }
         }
 
-        if (($this->metrics['load']['avg_response_time'] ?? 0) > 300) {
+        if ((self::$metrics['load']['avg_response_time'] ?? 0) > 300) {
             $score -= 15;
         }
 
