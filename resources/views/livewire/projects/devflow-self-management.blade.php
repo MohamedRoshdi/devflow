@@ -162,16 +162,32 @@
 
     {{-- Deployment Progress --}}
     @if($isDeploying || $deploymentStatus)
-        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl overflow-hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl overflow-hidden"
+             @if($isDeploying && $deploymentStatus === 'running') wire:poll.500ms="pollDeploymentStep" @endif>
             <div class="p-6 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
                 <h3 class="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                    @if($isDeploying)
+                    @if($isDeploying && $deploymentStatus === 'running')
                         <svg class="w-5 h-5 text-emerald-500 animate-spin" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                         </svg>
+                    @elseif($deploymentStatus === 'success')
+                        <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    @elseif($deploymentStatus === 'failed')
+                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
                     @endif
                     Deployment Progress
+                    @if($deploymentStatus === 'success')
+                        <span class="ml-2 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">Complete</span>
+                    @elseif($deploymentStatus === 'failed')
+                        <span class="ml-2 px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400">Failed</span>
+                    @elseif($isDeploying)
+                        <span class="ml-2 px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400">Running Step {{ $currentStep + 1 }}/10</span>
+                    @endif
                 </h3>
                 <button wire:click="toggleDeployScript" class="text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
                     {{ $showDeployScript ? 'Hide Script' : 'Show Script' }}
@@ -212,9 +228,14 @@
 
                 {{-- Deployment Output --}}
                 @if($deploymentOutput)
-                    <div class="p-4 rounded-xl bg-slate-900 max-h-64 overflow-y-auto">
+                    <div class="p-4 rounded-xl bg-slate-900 max-h-64 overflow-y-auto" id="deployment-output">
                         <pre class="text-xs text-emerald-400 font-mono whitespace-pre-wrap">{{ $deploymentOutput }}</pre>
                     </div>
+                    <script>
+                        // Auto-scroll to bottom of deployment output
+                        const output = document.getElementById('deployment-output');
+                        if (output) output.scrollTop = output.scrollHeight;
+                    </script>
                 @endif
             </div>
         </div>

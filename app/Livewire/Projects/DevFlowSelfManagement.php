@@ -729,10 +729,11 @@ BASH;
 
     public function redeploy(): void
     {
+        // Initialize deployment - this triggers UI update showing steps
         $this->isDeploying = true;
-        $this->deploymentOutput = '';
+        $this->deploymentOutput = "Starting deployment...\n";
         $this->deploymentStatus = 'running';
-        $this->currentStep = 0;
+        $this->currentStep = -1;
 
         // Initialize deployment steps
         $this->deploymentSteps = [
@@ -748,110 +749,172 @@ BASH;
             ['name' => 'Go Live', 'status' => 'pending', 'output' => ''],
         ];
 
+        // Store start time in cache for duration calculation
+        Cache::put('devflow_deployment_start', microtime(true), 600);
+    }
+
+    /**
+     * This method is called by wire:poll when deployment is in progress
+     * Each call executes one step, allowing the UI to update between steps
+     */
+    public function pollDeploymentStep(): void
+    {
+        // Only run if deployment is active
+        if (!$this->isDeploying || $this->deploymentStatus !== 'running') {
+            return;
+        }
+
+        $this->currentStep++;
         $projectPath = base_path();
-        $startTime = microtime(true);
+
+        // Check if all steps are complete
+        if ($this->currentStep >= count($this->deploymentSteps)) {
+            $this->finishDeployment(true);
+            return;
+        }
+
+        // Mark current step as running
+        $this->deploymentSteps[$this->currentStep]['status'] = 'running';
+        $stepName = $this->deploymentSteps[$this->currentStep]['name'];
+        $this->deploymentOutput .= "\n[" . ($this->currentStep + 1) . "/10] {$stepName}...\n";
 
         try {
-            // Step 1: Maintenance Mode
-            $this->runDeploymentStep(0, function () {
-                Artisan::call('down', ['--refresh' => 15]);
-                return "Maintenance mode enabled (auto-refresh: 15s)";
-            });
+            $output = match($this->currentStep) {
+                0 => $this->stepMaintenanceMode(),
+                1 => $this->stepGitPull($projectPath),
+                2 => $this->stepComposerInstall($projectPath),
+                3 => $this->stepNpmInstall($projectPath),
+                4 => $this->stepNpmBuild($projectPath),
+                5 => $this->stepMigrations(),
+                6 => $this->stepClearCaches(),
+                7 => $this->stepRebuildCaches(),
+                8 => $this->stepRestartQueue(),
+                9 => $this->stepGoLive(),
+                default => "Unknown step",
+            };
 
-            // Step 2: Git Pull
-            $this->runDeploymentStep(1, function () use ($projectPath) {
-                if (!$this->isGitRepo) {
-                    return "Skipped - Not a Git repository";
-                }
-                $result = Process::timeout(120)->run("cd {$projectPath} && git fetch origin {$this->gitBranch} && git reset --hard origin/{$this->gitBranch}");
+            $this->deploymentSteps[$this->currentStep]['status'] = 'success';
+            $this->deploymentSteps[$this->currentStep]['output'] = $output;
+            $this->deploymentOutput .= "  ✓ {$output}\n";
+
+            // If this was the last step, finish deployment
+            if ($this->currentStep >= count($this->deploymentSteps) - 1) {
+                $this->finishDeployment(true);
+            }
+            // Otherwise, the next poll will execute the next step
+
+        } catch (\Exception $e) {
+            $this->deploymentSteps[$this->currentStep]['status'] = 'failed';
+            $this->deploymentSteps[$this->currentStep]['output'] = $e->getMessage();
+            $this->finishDeployment(false, $e->getMessage());
+        }
+    }
+
+    private function stepMaintenanceMode(): string
+    {
+        Artisan::call('down', ['--refresh' => 15]);
+        return "Maintenance mode enabled (auto-refresh: 15s)";
+    }
+
+    private function stepGitPull(string $projectPath): string
+    {
+        if (!$this->isGitRepo) {
+            return "Skipped - Not a Git repository";
+        }
+        $result = Process::timeout(120)->run("cd {$projectPath} && git fetch origin {$this->gitBranch} && git reset --hard origin/{$this->gitBranch}");
+        if (!$result->successful()) {
+            throw new \Exception($result->errorOutput());
+        }
+        return $result->output() ?: "Successfully pulled from origin/{$this->gitBranch}";
+    }
+
+    private function stepComposerInstall(string $projectPath): string
+    {
+        $result = Process::timeout(300)->run("cd {$projectPath} && composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev 2>&1");
+        if (!$result->successful()) {
+            throw new \Exception($result->errorOutput());
+        }
+        return "Dependencies installed successfully";
+    }
+
+    private function stepNpmInstall(string $projectPath): string
+    {
+        // Clean node_modules first to prevent corruption issues
+        Process::timeout(60)->run("cd {$projectPath} && rm -rf node_modules package-lock.json 2>&1");
+
+        // Fix ownership to www-data for production
+        Process::timeout(30)->run("chown -R www-data:www-data {$projectPath} 2>&1");
+
+        // Run npm as www-data user to avoid permission issues
+        $result = Process::timeout(300)->run("cd {$projectPath} && sudo -u www-data npm install 2>&1");
+        if (!$result->successful()) {
+            // Fallback to root if sudo fails (local dev)
+            $result = Process::timeout(300)->run("cd {$projectPath} && npm install 2>&1");
+            if (!$result->successful()) {
+                throw new \Exception($result->errorOutput() ?: $result->output());
+            }
+        }
+        return "Node dependencies installed (clean install)";
+    }
+
+    private function stepNpmBuild(string $projectPath): string
+    {
+        // Run vite build directly using npx or node_modules path
+        $result = Process::timeout(300)->run("cd {$projectPath} && sudo -u www-data ./node_modules/.bin/vite build 2>&1");
+        if (!$result->successful()) {
+            // Try with npx
+            $result = Process::timeout(300)->run("cd {$projectPath} && sudo -u www-data npx vite build 2>&1");
+            if (!$result->successful()) {
+                // Fallback to npm run build without sudo
+                $result = Process::timeout(300)->run("cd {$projectPath} && npm run build 2>&1");
                 if (!$result->successful()) {
-                    throw new \Exception($result->errorOutput());
+                    throw new \Exception($result->errorOutput() ?: $result->output());
                 }
-                return $result->output() ?: "Successfully pulled from origin/{$this->gitBranch}";
-            });
+            }
+        }
+        return "Frontend assets built successfully";
+    }
 
-            // Step 3: Composer Install
-            $this->runDeploymentStep(2, function () use ($projectPath) {
-                $result = Process::timeout(300)->run("cd {$projectPath} && composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev 2>&1");
-                if (!$result->successful()) {
-                    throw new \Exception($result->errorOutput());
-                }
-                return "Dependencies installed successfully";
-            });
+    private function stepMigrations(): string
+    {
+        Artisan::call('migrate', ['--force' => true]);
+        $output = Artisan::output();
+        return $output ?: "No pending migrations";
+    }
 
-            // Step 4: NPM Install (with cleanup and proper permissions for production)
-            $this->runDeploymentStep(3, function () use ($projectPath) {
-                // Clean node_modules first to prevent corruption issues
-                Process::timeout(60)->run("cd {$projectPath} && rm -rf node_modules package-lock.json 2>&1");
+    private function stepClearCaches(): string
+    {
+        Artisan::call('optimize:clear');
+        return "All caches cleared";
+    }
 
-                // Fix ownership to www-data for production
-                Process::timeout(30)->run("chown -R www-data:www-data {$projectPath} 2>&1");
+    private function stepRebuildCaches(): string
+    {
+        Artisan::call('config:cache');
+        Artisan::call('route:cache');
+        Artisan::call('view:cache');
+        Artisan::call('event:cache');
+        return "Config, route, view, and event caches rebuilt";
+    }
 
-                // Run npm as www-data user to avoid permission issues
-                $result = Process::timeout(300)->run("cd {$projectPath} && sudo -u www-data npm install 2>&1");
-                if (!$result->successful()) {
-                    // Fallback to root if sudo fails (local dev)
-                    $result = Process::timeout(300)->run("cd {$projectPath} && npm install 2>&1");
-                    if (!$result->successful()) {
-                        throw new \Exception($result->errorOutput() ?: $result->output());
-                    }
-                }
-                return "Node dependencies installed (clean install)";
-            });
+    private function stepRestartQueue(): string
+    {
+        Artisan::call('queue:restart');
+        return "Queue workers will restart on next job";
+    }
 
-            // Step 5: NPM Build
-            $this->runDeploymentStep(4, function () use ($projectPath) {
-                // Run vite build directly using npx or node_modules path
-                $result = Process::timeout(300)->run("cd {$projectPath} && sudo -u www-data ./node_modules/.bin/vite build 2>&1");
-                if (!$result->successful()) {
-                    // Try with npx
-                    $result = Process::timeout(300)->run("cd {$projectPath} && sudo -u www-data npx vite build 2>&1");
-                    if (!$result->successful()) {
-                        // Fallback to npm run build without sudo
-                        $result = Process::timeout(300)->run("cd {$projectPath} && npm run build 2>&1");
-                        if (!$result->successful()) {
-                            throw new \Exception($result->errorOutput() ?: $result->output());
-                        }
-                    }
-                }
-                return "Frontend assets built successfully";
-            });
+    private function stepGoLive(): string
+    {
+        Artisan::call('up');
+        return "Application is now live!";
+    }
 
-            // Step 6: Database Migrations
-            $this->runDeploymentStep(5, function () {
-                Artisan::call('migrate', ['--force' => true]);
-                $output = Artisan::output();
-                return $output ?: "No pending migrations";
-            });
+    private function finishDeployment(bool $success, string $errorMessage = ''): void
+    {
+        $startTime = Cache::get('devflow_deployment_start', microtime(true));
+        $duration = round(microtime(true) - $startTime, 2);
 
-            // Step 7: Clear Caches
-            $this->runDeploymentStep(6, function () {
-                Artisan::call('optimize:clear');
-                return "All caches cleared";
-            });
-
-            // Step 8: Rebuild Caches
-            $this->runDeploymentStep(7, function () {
-                Artisan::call('config:cache');
-                Artisan::call('route:cache');
-                Artisan::call('view:cache');
-                Artisan::call('event:cache');
-                return "Config, route, view, and event caches rebuilt";
-            });
-
-            // Step 9: Restart Queue
-            $this->runDeploymentStep(8, function () {
-                Artisan::call('queue:restart');
-                return "Queue workers will restart on next job";
-            });
-
-            // Step 10: Go Live
-            $this->runDeploymentStep(9, function () {
-                Artisan::call('up');
-                return "Application is now live!";
-            });
-
-            $duration = round(microtime(true) - $startTime, 2);
+        if ($success) {
             $this->deploymentOutput .= "\n========================================\n";
             $this->deploymentOutput .= "✅ DEPLOYMENT SUCCESSFUL\n";
             $this->deploymentOutput .= "Duration: {$duration} seconds\n";
@@ -863,18 +926,11 @@ BASH;
                 'user_id' => auth()->id(),
                 'duration' => $duration,
             ]);
-
-        } catch (\Exception $e) {
-            // Mark current step as failed
-            if (isset($this->deploymentSteps[$this->currentStep])) {
-                $this->deploymentSteps[$this->currentStep]['status'] = 'failed';
-                $this->deploymentSteps[$this->currentStep]['output'] = $e->getMessage();
-            }
-
+        } else {
             $this->deploymentOutput .= "\n========================================\n";
             $this->deploymentOutput .= "❌ DEPLOYMENT FAILED\n";
             $this->deploymentOutput .= "Step: " . ($this->deploymentSteps[$this->currentStep]['name'] ?? 'Unknown') . "\n";
-            $this->deploymentOutput .= "Error: " . $e->getMessage() . "\n";
+            $this->deploymentOutput .= "Error: " . $errorMessage . "\n";
             $this->deploymentOutput .= "========================================\n";
             $this->deploymentStatus = 'failed';
 
@@ -887,34 +943,15 @@ BASH;
             }
 
             Log::error('DevFlow self-deployment failed', [
-                'error' => $e->getMessage(),
+                'error' => $errorMessage,
                 'step' => $this->currentStep,
             ]);
-        } finally {
-            $this->isDeploying = false;
-            $this->loadSystemInfo();
-            $this->loadGitInfo();
         }
-    }
 
-    private function runDeploymentStep(int $stepIndex, callable $callback): void
-    {
-        $this->currentStep = $stepIndex;
-        $this->deploymentSteps[$stepIndex]['status'] = 'running';
-
-        $stepName = $this->deploymentSteps[$stepIndex]['name'];
-        $this->deploymentOutput .= "\n[" . ($stepIndex + 1) . "/10] {$stepName}...\n";
-
-        try {
-            $output = $callback();
-            $this->deploymentSteps[$stepIndex]['status'] = 'success';
-            $this->deploymentSteps[$stepIndex]['output'] = $output;
-            $this->deploymentOutput .= "  ✓ {$output}\n";
-        } catch (\Exception $e) {
-            $this->deploymentSteps[$stepIndex]['status'] = 'failed';
-            $this->deploymentSteps[$stepIndex]['output'] = $e->getMessage();
-            throw $e;
-        }
+        $this->isDeploying = false;
+        $this->loadSystemInfo();
+        $this->loadGitInfo();
+        Cache::forget('devflow_deployment_start');
     }
 
     private function formatBytes($bytes, $precision = 2): string
