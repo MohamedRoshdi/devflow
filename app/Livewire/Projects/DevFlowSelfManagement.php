@@ -811,9 +811,14 @@ BASH;
 
     private function stepRestartPhpFpm(): string
     {
+        $projectPath = base_path();
+
+        // Fix ownership for www-data
+        Process::timeout(60)->run("chown -R www-data:www-data {$projectPath}/storage {$projectPath}/bootstrap/cache {$projectPath}/public/build 2>&1 || true");
+
         // Restart PHP-FPM to clear opcache and apply changes
-        $result = Process::timeout(30)->run("systemctl restart php8.2-fpm 2>&1 || service php8.2-fpm restart 2>&1 || true");
-        return "PHP-FPM restarted - OPcache cleared";
+        Process::timeout(30)->run("systemctl restart php8.2-fpm 2>&1 || service php8.2-fpm restart 2>&1 || true");
+        return "PHP-FPM restarted - OPcache cleared, permissions fixed";
     }
 
     private function stepGitPull(string $projectPath): string
@@ -842,34 +847,24 @@ BASH;
         // Clean node_modules first to prevent corruption issues
         Process::timeout(60)->run("cd {$projectPath} && rm -rf node_modules package-lock.json 2>&1");
 
-        // Fix ownership to www-data for production
-        Process::timeout(30)->run("chown -R www-data:www-data {$projectPath} 2>&1");
-
-        // Run npm as www-data user to avoid permission issues
-        $result = Process::timeout(300)->run("cd {$projectPath} && sudo -u www-data npm install 2>&1");
+        // Run npm install as root (simpler, more reliable)
+        $result = Process::timeout(300)->run("cd {$projectPath} && npm install 2>&1");
         if (!$result->successful()) {
-            // Fallback to root if sudo fails (local dev)
-            $result = Process::timeout(300)->run("cd {$projectPath} && npm install 2>&1");
-            if (!$result->successful()) {
-                throw new \Exception($result->errorOutput() ?: $result->output());
-            }
+            throw new \Exception($result->errorOutput() ?: $result->output());
         }
-        return "Node dependencies installed (clean install)";
+        return "Node dependencies installed";
     }
 
     private function stepNpmBuild(string $projectPath): string
     {
-        // Run vite build directly using npx or node_modules path
-        $result = Process::timeout(300)->run("cd {$projectPath} && sudo -u www-data ./node_modules/.bin/vite build 2>&1");
+        // Run npm build with explicit PATH to find vite in node_modules/.bin
+        $nodePath = "{$projectPath}/node_modules/.bin";
+        $result = Process::timeout(300)->run("cd {$projectPath} && PATH=\"{$nodePath}:\$PATH\" npm run build 2>&1");
         if (!$result->successful()) {
-            // Try with npx
-            $result = Process::timeout(300)->run("cd {$projectPath} && sudo -u www-data npx vite build 2>&1");
+            // Try running vite directly with node
+            $result = Process::timeout(300)->run("cd {$projectPath} && /usr/bin/node ./node_modules/.bin/vite build 2>&1");
             if (!$result->successful()) {
-                // Fallback to npm run build without sudo
-                $result = Process::timeout(300)->run("cd {$projectPath} && npm run build 2>&1");
-                if (!$result->successful()) {
-                    throw new \Exception($result->errorOutput() ?: $result->output());
-                }
+                throw new \Exception($result->errorOutput() ?: $result->output());
             }
         }
         return "Frontend assets built successfully";
