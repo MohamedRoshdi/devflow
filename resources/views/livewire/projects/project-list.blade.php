@@ -98,9 +98,9 @@
                         </div>
                     </div>
                     <div class="flex items-center justify-between pt-4 border-t border-white/20">
-                        <span class="px-3 py-1 bg-green-500/30 backdrop-blur-sm rounded-full text-xs font-semibold text-white flex items-center">
-                            <span class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-                            Running
+                        <span class="px-3 py-1.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full text-xs font-semibold text-white flex items-center shadow-lg">
+                            <span class="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></span>
+                            Live
                         </span>
                         <span class="text-white/80 text-sm font-medium group-hover:text-white transition-colors">
                             Manage &rarr;
@@ -124,26 +124,35 @@
                     <div class="p-6">
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex-1">
-                                <a href="{{ route('projects.show', $project) }}" class="text-xl font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                                    {{ $project->name }}
-                                </a>
-                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ $project->slug }}</p>
-                            </div>
-                            <div class="p-2 rounded-lg
-                                @if($project->status === 'running') bg-gradient-to-br from-green-500 to-emerald-600
-                                @elseif($project->status === 'stopped') bg-gradient-to-br from-gray-400 to-gray-500
-                                @elseif($project->status === 'building') bg-gradient-to-br from-yellow-500 to-orange-500
-                                @else bg-gradient-to-br from-red-500 to-red-600
-                                @endif">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    @if($project->status === 'running')
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    @elseif($project->status === 'building')
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    @else
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                    @endif
-                                </svg>
+                                <div class="flex items-center gap-3 mb-1">
+                                    <a href="{{ route('projects.show', $project) }}" class="text-xl font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                                        {{ $project->name }}
+                                    </a>
+                                    <!-- Status Badge like DevFlow "Live" -->
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold flex items-center shadow-md
+                                        @if($project->status === 'running') bg-gradient-to-r from-green-500 to-emerald-500 text-white
+                                        @elseif($project->status === 'building') bg-gradient-to-r from-yellow-500 to-amber-500 text-white
+                                        @elseif($project->status === 'stopped') bg-gradient-to-r from-gray-400 to-gray-500 text-white
+                                        @else bg-gradient-to-r from-red-500 to-rose-500 text-white
+                                        @endif">
+                                        @if($project->status === 'running')
+                                            <span class="w-2 h-2 bg-white rounded-full mr-1.5 animate-pulse"></span>
+                                            Live
+                                        @elseif($project->status === 'building')
+                                            <svg class="w-3 h-3 mr-1.5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                            </svg>
+                                            Building
+                                        @elseif($project->status === 'stopped')
+                                            <span class="w-2 h-2 bg-white/70 rounded-full mr-1.5"></span>
+                                            Stopped
+                                        @else
+                                            <span class="w-2 h-2 bg-white rounded-full mr-1.5"></span>
+                                            {{ ucfirst($project->status ?? 'Unknown') }}
+                                        @endif
+                                    </span>
+                                </div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ $project->slug }}</p>
                             </div>
                         </div>
 
@@ -205,24 +214,8 @@
                         @endif
 
                         <div class="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700">
-                            <!-- Status Badge with Running indicator -->
-                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold flex items-center
-                                @if($project->status === 'running') bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400
-                                @elseif($project->status === 'stopped') bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400
-                                @elseif($project->status === 'building') bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400
-                                @else bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400
-                                @endif">
-                                @if($project->status === 'running')
-                                    <span class="w-2 h-2 bg-green-500 rounded-full mr-1.5 animate-pulse"></span>
-                                @elseif($project->status === 'building')
-                                    <span class="w-2 h-2 bg-yellow-500 rounded-full mr-1.5 animate-pulse"></span>
-                                @else
-                                    <span class="w-2 h-2 rounded-full mr-1.5
-                                        @if($project->status === 'stopped') bg-gray-400
-                                        @else bg-red-500
-                                        @endif"></span>
-                                @endif
-                                {{ ucfirst($project->status ?? 'Unknown') }}
+                            <span class="text-xs text-gray-500 dark:text-gray-400">
+                                {{ $project->last_deployed_at ? 'Deployed ' . $project->last_deployed_at->diffForHumans() : 'Never deployed' }}
                             </span>
                             <div class="flex space-x-2" onclick="event.stopPropagation()">
                                 <a href="{{ route('projects.show', $project) }}"
