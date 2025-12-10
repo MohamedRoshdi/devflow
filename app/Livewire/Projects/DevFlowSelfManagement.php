@@ -78,6 +78,25 @@ class DevFlowSelfManagement extends Component
     public string $currentAppDomain = '';
     public array $nginxSites = [];
 
+    // Reverb WebSocket
+    public array $reverbStatus = [];
+    public bool $reverbRunning = false;
+    public string $reverbOutput = '';
+
+    // Redis
+    public array $redisInfo = [];
+    public bool $redisConnected = false;
+
+    // Supervisor Processes
+    public array $supervisorProcesses = [];
+
+    // Scheduler
+    public array $schedulerStatus = [];
+    public string $lastSchedulerRun = '';
+
+    // Storage
+    public array $storageInfo = [];
+
     public function mount(): void
     {
         $this->loadSystemInfo();
@@ -89,6 +108,11 @@ class DevFlowSelfManagement extends Component
         $this->loadRecentLogs();
         $this->loadDomainInfo();
         $this->loadDeployScript();
+        $this->loadReverbStatus();
+        $this->loadRedisInfo();
+        $this->loadSupervisorProcesses();
+        $this->loadSchedulerStatus();
+        $this->loadStorageInfo();
     }
 
     private function loadSystemInfo(): void
@@ -896,6 +920,266 @@ BASH;
         $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
         $pow = min($pow, count($units) - 1);
         return round($bytes / (1024 ** $pow), $precision) . ' ' . $units[$pow];
+    }
+
+    // ===== REVERB WEBSOCKET METHODS =====
+
+    private function loadReverbStatus(): void
+    {
+        try {
+            // Check if reverb process is running
+            $result = Process::run("pgrep -f 'reverb:start' 2>/dev/null");
+            $this->reverbRunning = !empty(trim($result->output()));
+
+            // Get reverb config
+            $this->reverbStatus = [
+                'enabled' => config('broadcasting.default') === 'reverb',
+                'host' => config('reverb.servers.reverb.host', env('REVERB_HOST', 'localhost')),
+                'port' => config('reverb.servers.reverb.port', env('REVERB_PORT', 8080)),
+                'app_id' => env('REVERB_APP_ID', 'Not configured'),
+                'running' => $this->reverbRunning,
+            ];
+        } catch (\Exception $e) {
+            $this->reverbStatus = ['error' => $e->getMessage()];
+        }
+    }
+
+    public function startReverb(): void
+    {
+        try {
+            // Start reverb in background
+            Process::timeout(5)->run("cd " . base_path() . " && nohup php artisan reverb:start --host=0.0.0.0 --port=8080 > storage/logs/reverb.log 2>&1 &");
+            sleep(2);
+            $this->loadReverbStatus();
+            $this->reverbOutput = 'Reverb WebSocket server started successfully';
+            session()->flash('message', 'Reverb WebSocket server started');
+        } catch (\Exception $e) {
+            $this->reverbOutput = 'Error: ' . $e->getMessage();
+            session()->flash('error', 'Failed to start Reverb: ' . $e->getMessage());
+        }
+    }
+
+    public function stopReverb(): void
+    {
+        try {
+            Process::run("pkill -f 'reverb:start' 2>/dev/null");
+            sleep(1);
+            $this->loadReverbStatus();
+            $this->reverbOutput = 'Reverb WebSocket server stopped';
+            session()->flash('message', 'Reverb WebSocket server stopped');
+        } catch (\Exception $e) {
+            $this->reverbOutput = 'Error: ' . $e->getMessage();
+            session()->flash('error', 'Failed to stop Reverb: ' . $e->getMessage());
+        }
+    }
+
+    public function restartReverb(): void
+    {
+        $this->stopReverb();
+        sleep(1);
+        $this->startReverb();
+    }
+
+    // ===== REDIS METHODS =====
+
+    private function loadRedisInfo(): void
+    {
+        try {
+            if (config('database.redis.client') !== null) {
+                $redis = app('redis');
+                $info = $redis->info();
+
+                $this->redisConnected = true;
+                $this->redisInfo = [
+                    'version' => $info['redis_version'] ?? 'Unknown',
+                    'uptime_days' => round(($info['uptime_in_seconds'] ?? 0) / 86400, 1),
+                    'connected_clients' => $info['connected_clients'] ?? 0,
+                    'used_memory' => $info['used_memory_human'] ?? 'Unknown',
+                    'total_keys' => $this->getRedisKeyCount(),
+                    'host' => config('database.redis.default.host', '127.0.0.1'),
+                    'port' => config('database.redis.default.port', 6379),
+                ];
+            } else {
+                $this->redisConnected = false;
+                $this->redisInfo = ['status' => 'Redis not configured'];
+            }
+        } catch (\Exception $e) {
+            $this->redisConnected = false;
+            $this->redisInfo = ['error' => $e->getMessage()];
+        }
+    }
+
+    private function getRedisKeyCount(): int
+    {
+        try {
+            $result = Process::run("redis-cli DBSIZE 2>/dev/null");
+            if (preg_match('/(\d+)/', $result->output(), $matches)) {
+                return (int) $matches[1];
+            }
+            return 0;
+        } catch (\Exception $e) {
+            return 0;
+        }
+    }
+
+    public function flushRedis(): void
+    {
+        try {
+            $redis = app('redis');
+            $redis->flushdb();
+            $this->loadRedisInfo();
+            session()->flash('message', 'Redis cache flushed successfully');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to flush Redis: ' . $e->getMessage());
+        }
+    }
+
+    // ===== SUPERVISOR METHODS =====
+
+    private function loadSupervisorProcesses(): void
+    {
+        try {
+            $result = Process::run("supervisorctl status 2>/dev/null");
+            $output = trim($result->output());
+
+            $this->supervisorProcesses = [];
+            if (!empty($output) && !str_contains($output, 'error') && !str_contains($output, 'refused')) {
+                $lines = explode("\n", $output);
+                foreach ($lines as $line) {
+                    if (preg_match('/^(\S+)\s+(RUNNING|STOPPED|FATAL|STARTING|BACKOFF|STOPPING|EXITED|UNKNOWN)\s*(.*)$/', trim($line), $matches)) {
+                        $this->supervisorProcesses[] = [
+                            'name' => $matches[1],
+                            'status' => $matches[2],
+                            'info' => trim($matches[3] ?? ''),
+                        ];
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            $this->supervisorProcesses = [];
+        }
+    }
+
+    public function supervisorAction(string $action, string $process = 'all'): void
+    {
+        try {
+            $validActions = ['start', 'stop', 'restart', 'reread', 'update'];
+            if (!in_array($action, $validActions)) {
+                throw new \Exception('Invalid action');
+            }
+
+            $result = Process::run("supervisorctl {$action} {$process} 2>&1");
+            $this->loadSupervisorProcesses();
+
+            session()->flash('message', "Supervisor: {$action} {$process} - " . trim($result->output()));
+        } catch (\Exception $e) {
+            session()->flash('error', 'Supervisor error: ' . $e->getMessage());
+        }
+    }
+
+    // ===== SCHEDULER METHODS =====
+
+    private function loadSchedulerStatus(): void
+    {
+        try {
+            // Check crontab for Laravel scheduler
+            $result = Process::run("crontab -l 2>/dev/null | grep -c 'schedule:run'");
+            $cronConfigured = (int) trim($result->output()) > 0;
+
+            // Get scheduled tasks
+            $result = Process::run("cd " . base_path() . " && php artisan schedule:list 2>/dev/null");
+            $scheduleList = trim($result->output());
+
+            // Check last run
+            $cacheFile = storage_path('framework/schedule-*');
+            $lastRun = 'Unknown';
+            $files = glob($cacheFile);
+            if (!empty($files)) {
+                $lastRun = date('Y-m-d H:i:s', filemtime(end($files)));
+            }
+
+            $this->schedulerStatus = [
+                'cron_configured' => $cronConfigured,
+                'tasks' => $scheduleList ? explode("\n", $scheduleList) : [],
+            ];
+            $this->lastSchedulerRun = $lastRun;
+        } catch (\Exception $e) {
+            $this->schedulerStatus = ['error' => $e->getMessage()];
+        }
+    }
+
+    public function runScheduler(): void
+    {
+        try {
+            Artisan::call('schedule:run');
+            $output = Artisan::output();
+            $this->loadSchedulerStatus();
+            session()->flash('message', 'Scheduler executed: ' . ($output ?: 'No tasks due'));
+        } catch (\Exception $e) {
+            session()->flash('error', 'Scheduler error: ' . $e->getMessage());
+        }
+    }
+
+    // ===== STORAGE METHODS =====
+
+    private function loadStorageInfo(): void
+    {
+        $basePath = base_path();
+        $storagePath = storage_path();
+
+        $this->storageInfo = [
+            'disk_total' => disk_total_space($basePath),
+            'disk_free' => disk_free_space($basePath),
+            'disk_used' => disk_total_space($basePath) - disk_free_space($basePath),
+            'disk_percent' => round((1 - disk_free_space($basePath) / disk_total_space($basePath)) * 100, 1),
+            'storage_logs' => $this->getDirectorySize($storagePath . '/logs'),
+            'storage_cache' => $this->getDirectorySize($storagePath . '/framework/cache'),
+            'storage_sessions' => $this->getDirectorySize($storagePath . '/framework/sessions'),
+            'storage_views' => $this->getDirectorySize($storagePath . '/framework/views'),
+            'public_build' => $this->getDirectorySize(public_path('build')),
+            'vendor' => $this->getDirectorySize($basePath . '/vendor'),
+            'node_modules' => $this->getDirectorySize($basePath . '/node_modules'),
+        ];
+    }
+
+    private function getDirectorySize(string $path): int
+    {
+        if (!is_dir($path)) return 0;
+
+        $size = 0;
+        try {
+            $result = Process::timeout(10)->run("du -sb {$path} 2>/dev/null | cut -f1");
+            $size = (int) trim($result->output());
+        } catch (\Exception $e) {
+            $size = 0;
+        }
+        return $size;
+    }
+
+    public function cleanStorage(string $type): void
+    {
+        try {
+            $path = match($type) {
+                'logs' => storage_path('logs/*.log'),
+                'cache' => storage_path('framework/cache/data/*'),
+                'sessions' => storage_path('framework/sessions/*'),
+                'views' => storage_path('framework/views/*'),
+                default => throw new \Exception('Invalid storage type'),
+            };
+
+            // Keep .gitignore files
+            Process::run("find " . dirname($path) . " -type f ! -name '.gitignore' -delete 2>/dev/null");
+
+            // For logs, keep laravel.log but empty it
+            if ($type === 'logs') {
+                file_put_contents(storage_path('logs/laravel.log'), '');
+            }
+
+            $this->loadStorageInfo();
+            session()->flash('message', ucfirst($type) . ' cleaned successfully');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to clean ' . $type . ': ' . $e->getMessage());
+        }
     }
 
     public function render()

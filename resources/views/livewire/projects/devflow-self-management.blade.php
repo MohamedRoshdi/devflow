@@ -502,4 +502,299 @@
             </div>
         @endif
     </div>
+
+    <!-- Reverb WebSocket Management -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    <h3 class="text-lg font-bold text-white">Reverb WebSocket</h3>
+                </div>
+                <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $reverbRunning ? 'bg-green-500 text-white' : 'bg-gray-500 text-white' }}">
+                    {{ $reverbRunning ? 'Running' : 'Stopped' }}
+                </span>
+            </div>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center">
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Status</p>
+                    <p class="font-semibold {{ ($reverbStatus['enabled'] ?? false) ? 'text-green-600' : 'text-gray-600' }}">
+                        {{ ($reverbStatus['enabled'] ?? false) ? 'Enabled' : 'Disabled' }}
+                    </p>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center">
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Host</p>
+                    <p class="font-mono text-sm text-gray-900 dark:text-gray-100">{{ $reverbStatus['host'] ?? 'N/A' }}</p>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center">
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Port</p>
+                    <p class="font-mono text-sm text-gray-900 dark:text-gray-100">{{ $reverbStatus['port'] ?? 'N/A' }}</p>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center">
+                    <p class="text-xs text-gray-500 dark:text-gray-400">App ID</p>
+                    <p class="font-mono text-sm text-gray-900 dark:text-gray-100 truncate">{{ $reverbStatus['app_id'] ?? 'N/A' }}</p>
+                </div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                @if($reverbRunning)
+                    <button wire:click="stopReverb" wire:loading.attr="disabled" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors">
+                        <span wire:loading.remove wire:target="stopReverb">Stop Reverb</span>
+                        <span wire:loading wire:target="stopReverb">Stopping...</span>
+                    </button>
+                    <button wire:click="restartReverb" wire:loading.attr="disabled" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg text-sm font-medium transition-colors">
+                        <span wire:loading.remove wire:target="restartReverb">Restart</span>
+                        <span wire:loading wire:target="restartReverb">Restarting...</span>
+                    </button>
+                @else
+                    <button wire:click="startReverb" wire:loading.attr="disabled" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors">
+                        <span wire:loading.remove wire:target="startReverb">Start Reverb</span>
+                        <span wire:loading wire:target="startReverb">Starting...</span>
+                    </button>
+                @endif
+            </div>
+            @if($reverbOutput)
+                <div class="mt-4 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                    <p class="text-sm font-mono text-gray-700 dark:text-gray-300">{{ $reverbOutput }}</p>
+                </div>
+            @endif
+        </div>
+    </div>
+
+    <!-- Redis Management -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-gradient-to-r from-red-600 to-rose-600 px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
+                    </svg>
+                    <h3 class="text-lg font-bold text-white">Redis Cache</h3>
+                </div>
+                <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $redisConnected ? 'bg-green-500 text-white' : 'bg-red-500 text-white' }}">
+                    {{ $redisConnected ? 'Connected' : 'Disconnected' }}
+                </span>
+            </div>
+        </div>
+        <div class="p-6">
+            @if($redisConnected)
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center">
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Version</p>
+                        <p class="font-semibold text-gray-900 dark:text-gray-100">{{ $redisInfo['version'] ?? 'N/A' }}</p>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center">
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Memory Used</p>
+                        <p class="font-semibold text-gray-900 dark:text-gray-100">{{ $redisInfo['used_memory'] ?? 'N/A' }}</p>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center">
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Total Keys</p>
+                        <p class="font-semibold text-gray-900 dark:text-gray-100">{{ number_format($redisInfo['total_keys'] ?? 0) }}</p>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center">
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Uptime</p>
+                        <p class="font-semibold text-gray-900 dark:text-gray-100">{{ $redisInfo['uptime_days'] ?? 0 }} days</p>
+                    </div>
+                </div>
+                <button wire:click="flushRedis" wire:loading.attr="disabled" wire:confirm="Are you sure you want to flush all Redis cache?" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors">
+                    <span wire:loading.remove wire:target="flushRedis">Flush Redis Cache</span>
+                    <span wire:loading wire:target="flushRedis">Flushing...</span>
+                </button>
+            @else
+                <div class="text-center py-8">
+                    <p class="text-gray-500 dark:text-gray-400">{{ $redisInfo['error'] ?? $redisInfo['status'] ?? 'Redis not available' }}</p>
+                </div>
+            @endif
+        </div>
+    </div>
+
+    <!-- Supervisor Processes -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-gradient-to-r from-cyan-600 to-teal-600 px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
+                    </svg>
+                    <h3 class="text-lg font-bold text-white">Supervisor Processes</h3>
+                </div>
+                <div class="flex gap-2">
+                    <button wire:click="supervisorAction('reread')" class="px-3 py-1 bg-white/20 hover:bg-white/30 text-white rounded text-xs font-medium transition-colors">
+                        Reread
+                    </button>
+                    <button wire:click="supervisorAction('update')" class="px-3 py-1 bg-white/20 hover:bg-white/30 text-white rounded text-xs font-medium transition-colors">
+                        Update
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="p-6">
+            @if(count($supervisorProcesses) > 0)
+                <div class="space-y-3">
+                    @foreach($supervisorProcesses as $process)
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <span class="w-3 h-3 rounded-full {{ $process['status'] === 'RUNNING' ? 'bg-green-500 animate-pulse' : ($process['status'] === 'STOPPED' ? 'bg-gray-400' : 'bg-red-500') }}"></span>
+                                <div>
+                                    <p class="font-medium text-gray-900 dark:text-gray-100">{{ $process['name'] }}</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ $process['info'] }}</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                @if($process['status'] === 'RUNNING')
+                                    <button wire:click="supervisorAction('stop', '{{ $process['name'] }}')" class="px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded text-xs font-medium hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors">
+                                        Stop
+                                    </button>
+                                    <button wire:click="supervisorAction('restart', '{{ $process['name'] }}')" class="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 rounded text-xs font-medium hover:bg-yellow-200 dark:hover:bg-yellow-900/50 transition-colors">
+                                        Restart
+                                    </button>
+                                @else
+                                    <button wire:click="supervisorAction('start', '{{ $process['name'] }}')" class="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded text-xs font-medium hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors">
+                                        Start
+                                    </button>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="text-center py-8">
+                    <p class="text-gray-500 dark:text-gray-400">No supervisor processes found or supervisord not running</p>
+                </div>
+            @endif
+        </div>
+    </div>
+
+    <!-- Scheduler Status -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-gradient-to-r from-amber-600 to-orange-600 px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <h3 class="text-lg font-bold text-white">Task Scheduler</h3>
+                </div>
+                <span class="px-3 py-1 rounded-full text-xs font-semibold {{ ($schedulerStatus['cron_configured'] ?? false) ? 'bg-green-500 text-white' : 'bg-yellow-500 text-white' }}">
+                    {{ ($schedulerStatus['cron_configured'] ?? false) ? 'Cron Active' : 'Cron Not Configured' }}
+                </span>
+            </div>
+        </div>
+        <div class="p-6">
+            <div class="mb-4">
+                <p class="text-sm text-gray-500 dark:text-gray-400">Last Run: <span class="font-medium text-gray-900 dark:text-gray-100">{{ $lastSchedulerRun }}</span></p>
+            </div>
+            @if(!empty($schedulerStatus['tasks']))
+                <div class="mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg max-h-48 overflow-y-auto">
+                    <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">Scheduled Tasks:</p>
+                    @foreach($schedulerStatus['tasks'] as $task)
+                        @if(!empty(trim($task)))
+                            <p class="text-xs font-mono text-gray-700 dark:text-gray-300">{{ $task }}</p>
+                        @endif
+                    @endforeach
+                </div>
+            @endif
+            <button wire:click="runScheduler" wire:loading.attr="disabled" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-medium transition-colors">
+                <span wire:loading.remove wire:target="runScheduler">Run Scheduler Now</span>
+                <span wire:loading wire:target="runScheduler">Running...</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Storage Management -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-gradient-to-r from-slate-600 to-gray-700 px-6 py-4">
+            <div class="flex items-center space-x-3">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
+                </svg>
+                <h3 class="text-lg font-bold text-white">Storage & Disk Usage</h3>
+            </div>
+        </div>
+        <div class="p-6">
+            <!-- Disk Usage Bar -->
+            <div class="mb-6">
+                <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    <span>Disk Usage</span>
+                    <span>{{ $storageInfo['disk_percent'] ?? 0 }}% used</span>
+                </div>
+                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4">
+                    <div class="h-4 rounded-full transition-all duration-500 {{ ($storageInfo['disk_percent'] ?? 0) > 90 ? 'bg-red-500' : (($storageInfo['disk_percent'] ?? 0) > 70 ? 'bg-yellow-500' : 'bg-green-500') }}"
+                         style="width: {{ min($storageInfo['disk_percent'] ?? 0, 100) }}%"></div>
+                </div>
+                <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    <span>Used: {{ $this->formatBytes($storageInfo['disk_used'] ?? 0) }}</span>
+                    <span>Free: {{ $this->formatBytes($storageInfo['disk_free'] ?? 0) }}</span>
+                    <span>Total: {{ $this->formatBytes($storageInfo['disk_total'] ?? 0) }}</span>
+                </div>
+            </div>
+
+            <!-- Storage Breakdown -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Logs</p>
+                        <button wire:click="cleanStorage('logs')" wire:confirm="Clear all log files?" class="text-red-500 hover:text-red-700">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="font-semibold text-gray-900 dark:text-gray-100">{{ $this->formatBytes($storageInfo['storage_logs'] ?? 0) }}</p>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Cache</p>
+                        <button wire:click="cleanStorage('cache')" wire:confirm="Clear cache files?" class="text-red-500 hover:text-red-700">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="font-semibold text-gray-900 dark:text-gray-100">{{ $this->formatBytes($storageInfo['storage_cache'] ?? 0) }}</p>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Sessions</p>
+                        <button wire:click="cleanStorage('sessions')" wire:confirm="Clear all sessions? Users will be logged out." class="text-red-500 hover:text-red-700">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="font-semibold text-gray-900 dark:text-gray-100">{{ $this->formatBytes($storageInfo['storage_sessions'] ?? 0) }}</p>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Views Cache</p>
+                        <button wire:click="cleanStorage('views')" wire:confirm="Clear compiled views?" class="text-red-500 hover:text-red-700">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="font-semibold text-gray-900 dark:text-gray-100">{{ $this->formatBytes($storageInfo['storage_views'] ?? 0) }}</p>
+                </div>
+            </div>
+
+            <!-- Large Directories -->
+            <div class="grid grid-cols-3 gap-4">
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center">
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Vendor</p>
+                    <p class="font-semibold text-gray-900 dark:text-gray-100">{{ $this->formatBytes($storageInfo['vendor'] ?? 0) }}</p>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center">
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Node Modules</p>
+                    <p class="font-semibold text-gray-900 dark:text-gray-100">{{ $this->formatBytes($storageInfo['node_modules'] ?? 0) }}</p>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center">
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Build Assets</p>
+                    <p class="font-semibold text-gray-900 dark:text-gray-100">{{ $this->formatBytes($storageInfo['public_build'] ?? 0) }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
