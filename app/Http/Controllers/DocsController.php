@@ -73,6 +73,8 @@ class DocsController extends Controller
         $cacheKey = "docs.{$category}." . File::lastModified($filePath);
         $html = Cache::remember($cacheKey, now()->addHours(24), function () use ($filePath) {
             $markdown = File::get($filePath);
+            // Strip frontmatter before conversion
+            $markdown = preg_replace('/^---\s*\n.*?\n---\s*\n/s', '', $markdown);
             return $this->converter->convert($markdown)->getContent();
         });
 
