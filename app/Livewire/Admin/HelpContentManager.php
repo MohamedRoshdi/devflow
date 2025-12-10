@@ -69,13 +69,14 @@ class HelpContentManager extends Component
         'ar_details' => 'nullable|array',
     ];
 
-    public function __construct(
-        private readonly HelpContentService $helpContentService
-    ) {}
-
     public function mount(): void
     {
         // Initialize empty component
+    }
+
+    protected function getHelpContentService(): HelpContentService
+    {
+        return app(HelpContentService::class);
     }
 
     public function updatingSearch(): void
@@ -227,7 +228,7 @@ class HelpContentManager extends Component
             }
 
             // Clear cache
-            $this->helpContentService->clearCache();
+            $this->getHelpContentService()->clearCache();
 
             session()->flash('message', $message);
             $this->showCreateModal = false;
@@ -255,7 +256,7 @@ class HelpContentManager extends Component
             $helpContent->delete();
 
             // Clear cache
-            $this->helpContentService->clearCache();
+            $this->getHelpContentService()->clearCache();
 
             session()->flash('message', 'Help content deleted successfully!');
             $this->showDeleteModal = false;
@@ -273,7 +274,7 @@ class HelpContentManager extends Component
             $helpContent->update(['is_active' => !$helpContent->is_active]);
 
             // Clear cache
-            $this->helpContentService->clearCache();
+            $this->getHelpContentService()->clearCache();
 
             session()->flash('message', 'Help content status updated!');
         } catch (\Exception $e) {

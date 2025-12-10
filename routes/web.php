@@ -175,9 +175,6 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
     // System Status
     Route::get('/settings/system-status', \App\Livewire\Settings\SystemStatus::class)->name('settings.system-status');
 
-    // System Redeploy (Admin) - Legacy, redirect to DevFlow management
-    Route::get('/settings/redeploy', \App\Livewire\Settings\SystemRedeploy::class)->name('settings.redeploy');
-
     // System Settings (Admin)
     Route::get('/settings/system', \App\Livewire\Settings\SystemSettings::class)->name('settings.system');
 });
