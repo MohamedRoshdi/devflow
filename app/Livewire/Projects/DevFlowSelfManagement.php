@@ -813,12 +813,12 @@ BASH;
     {
         $projectPath = base_path();
 
-        // Fix ownership for www-data
+        $output = "$ chown -R www-data:www-data storage bootstrap/cache public/build\n";
         Process::timeout(60)->run("chown -R www-data:www-data {$projectPath}/storage {$projectPath}/bootstrap/cache {$projectPath}/public/build 2>&1 || true");
 
-        // Restart PHP-FPM to clear opcache and apply changes
+        $output .= "$ systemctl restart php8.2-fpm\n";
         Process::timeout(30)->run("systemctl restart php8.2-fpm 2>&1 || service php8.2-fpm restart 2>&1 || true");
-        return "PHP-FPM restarted - OPcache cleared, permissions fixed";
+        return $output . "PHP-FPM restarted - OPcache cleared, permissions fixed";
     }
 
     private function stepGitPull(string $projectPath): string
@@ -827,91 +827,102 @@ BASH;
             return "Skipped - Not a Git repository";
         }
 
-        // Fix .git permissions before pull (prevents "insufficient permission" errors)
+        $output = "$ chown -R www-data:www-data .git && chmod -R 775 .git\n";
         Process::timeout(30)->run("chown -R www-data:www-data {$projectPath}/.git && chmod -R 775 {$projectPath}/.git");
 
-        $result = Process::timeout(120)->run("cd {$projectPath} && git fetch origin {$this->gitBranch} && git reset --hard origin/{$this->gitBranch}");
+        $cmd = "git fetch origin {$this->gitBranch} && git reset --hard origin/{$this->gitBranch}";
+        $output .= "$ {$cmd}\n";
+        $result = Process::timeout(120)->run("cd {$projectPath} && {$cmd}");
         if (!$result->successful()) {
             throw new \Exception($result->errorOutput());
         }
-        return $result->output() ?: "Successfully pulled from origin/{$this->gitBranch}";
+        return $output . ($result->output() ?: "Successfully pulled");
     }
 
     private function stepComposerInstall(string $projectPath): string
     {
-        $result = Process::timeout(300)->run("cd {$projectPath} && composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev 2>&1");
+        $cmd = "composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev";
+        $output = "$ {$cmd}\n";
+        $result = Process::timeout(300)->run("cd {$projectPath} && {$cmd} 2>&1");
         if (!$result->successful()) {
             throw new \Exception($result->errorOutput());
         }
-        return "Dependencies installed successfully";
+        return $output . "Dependencies installed successfully";
     }
 
     private function stepNpmInstall(string $projectPath): string
     {
-        // Clean node_modules first to prevent corruption issues
+        $output = "$ rm -rf node_modules package-lock.json\n";
         Process::timeout(60)->run("cd {$projectPath} && rm -rf node_modules package-lock.json 2>&1");
 
-        // Run npm install as root (simpler, more reliable)
-        $result = Process::timeout(300)->run("cd {$projectPath} && npm install 2>&1");
+        $cmd = "npm install";
+        $output .= "$ {$cmd}\n";
+        $result = Process::timeout(300)->run("cd {$projectPath} && {$cmd} 2>&1");
         if (!$result->successful()) {
             throw new \Exception($result->errorOutput() ?: $result->output());
         }
-        return "Node dependencies installed";
+        return $output . "Node dependencies installed";
     }
 
     private function stepNpmBuild(string $projectPath): string
     {
-        // Run npm build with explicit PATH to find vite in node_modules/.bin
         $nodePath = "{$projectPath}/node_modules/.bin";
-        $result = Process::timeout(300)->run("cd {$projectPath} && PATH=\"{$nodePath}:\$PATH\" npm run build 2>&1");
+        $cmd = "npm run build";
+        $output = "$ PATH=\"node_modules/.bin:\$PATH\" {$cmd}\n";
+        $result = Process::timeout(300)->run("cd {$projectPath} && PATH=\"{$nodePath}:\$PATH\" {$cmd} 2>&1");
         if (!$result->successful()) {
-            // Try running vite directly with node
+            $output .= "$ node ./node_modules/.bin/vite build\n";
             $result = Process::timeout(300)->run("cd {$projectPath} && /usr/bin/node ./node_modules/.bin/vite build 2>&1");
             if (!$result->successful()) {
                 throw new \Exception($result->errorOutput() ?: $result->output());
             }
         }
-        return "Frontend assets built successfully";
+        return $output . "Frontend assets built successfully";
     }
 
     private function stepMigrations(): string
     {
+        $output = "$ php artisan migrate --force\n";
         Artisan::call('migrate', ['--force' => true]);
-        $output = Artisan::output();
-        return $output ?: "No pending migrations";
+        return $output . (Artisan::output() ?: "No pending migrations");
     }
 
     private function stepClearCaches(): string
     {
         $projectPath = base_path();
-
-        // Remove bootstrap cache files first (prevents "Target class does not exist" errors)
+        $output = "$ rm -rf bootstrap/cache/*.php\n";
         Process::timeout(30)->run("rm -rf {$projectPath}/bootstrap/cache/*.php");
 
-        // Regenerate autoload without dev dependencies (fixes Dusk ServiceProvider error)
+        $output .= "$ composer dump-autoload -o\n";
         Process::timeout(60)->run("cd {$projectPath} && composer dump-autoload -o 2>&1");
 
+        $output .= "$ php artisan optimize:clear\n";
         Artisan::call('optimize:clear');
 
-        // Re-discover packages after clearing (required before config:cache)
+        $output .= "$ php artisan package:discover\n";
         Artisan::call('package:discover');
 
-        return "All caches cleared, autoload regenerated, packages re-discovered";
+        return $output . "All caches cleared, packages re-discovered";
     }
 
     private function stepRebuildCaches(): string
     {
+        $output = "$ php artisan config:cache\n";
         Artisan::call('config:cache');
+        $output .= "$ php artisan route:cache\n";
         Artisan::call('route:cache');
+        $output .= "$ php artisan view:cache\n";
         Artisan::call('view:cache');
+        $output .= "$ php artisan event:cache\n";
         Artisan::call('event:cache');
-        return "Config, route, view, and event caches rebuilt";
+        return $output . "Caches rebuilt successfully";
     }
 
     private function stepRestartQueue(): string
     {
+        $output = "$ php artisan queue:restart\n";
         Artisan::call('queue:restart');
-        return "Queue workers will restart on next job";
+        return $output . "Queue workers will restart on next job";
     }
 
     public function closeDeployment(): void
