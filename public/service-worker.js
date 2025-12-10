@@ -1,52 +1,26 @@
+// DevFlow Pro Service Worker
 const CACHE_NAME = 'devflow-pro-v1';
-const urlsToCache = [
-  '/',
-  '/dashboard',
-  '/css/app.css',
-  '/js/app.js',
-  '/icon-192.png',
-  '/icon-512.png'
-];
 
-// Install service worker
+// Install event - minimal caching to prevent errors
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
-  );
+    event.waitUntil(self.skipWaiting());
 });
 
-// Fetch resources
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Cache hit - return response
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      }
-    )
-  );
-});
-
-// Update service worker
+// Activate event - clean old caches
 self.addEventListener('activate', event => {
-  const cacheWhitelist = [CACHE_NAME];
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
+    event.waitUntil(
+        caches.keys().then(cacheNames => {
+            return Promise.all(
+                cacheNames
+                    .filter(cacheName => cacheName !== CACHE_NAME)
+                    .map(cacheName => caches.delete(cacheName))
+            );
+        }).then(() => self.clients.claim())
+    );
 });
 
+// Fetch event - network only (no caching for now)
+self.addEventListener('fetch', event => {
+    // Just pass through to network, no caching
+    return;
+});
