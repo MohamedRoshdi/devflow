@@ -37,7 +37,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('help_content_id')->constrained()->onDelete('cascade');
             $table->string('locale', 5)->comment('Language code: en, ar, etc.');
-            $table->string('title');
             $table->text('brief');
             $table->json('details')->nullable();
             $table->timestamps();
@@ -53,6 +52,7 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
             $table->enum('interaction_type', ['view', 'helpful', 'not_helpful'])->comment('Type of interaction');
             $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
             $table->timestamps();
 
             $table->index(['help_content_id', 'interaction_type']);
@@ -64,6 +64,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('help_content_id')->constrained()->onDelete('cascade');
             $table->foreignId('related_help_content_id')->constrained('help_contents')->onDelete('cascade');
+            $table->unsignedTinyInteger('relevance_score')->default(50)->comment('Relevance score 1-100');
             $table->timestamps();
 
             $table->unique(['help_content_id', 'related_help_content_id'], 'help_related_unique');

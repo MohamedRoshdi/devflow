@@ -57,6 +57,13 @@
                                         </svg>
                                     </div>
                                     @break
+                                @case('email')
+                                    <div class="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                        </svg>
+                                    </div>
+                                    @break
                                 @default
                                     <div class="w-10 h-10 bg-gray-100 dark:bg-gray-900 rounded-lg flex items-center justify-center">
                                         <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,11 +170,11 @@
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Provider</label>
-                                    <div class="grid grid-cols-4 gap-3">
-                                        @foreach(['slack' => 'Slack', 'discord' => 'Discord', 'teams' => 'Teams', 'webhook' => 'Webhook'] as $value => $label)
+                                    <div class="grid grid-cols-5 gap-3">
+                                        @foreach(['slack' => 'Slack', 'discord' => 'Discord', 'teams' => 'Teams', 'email' => 'Email', 'webhook' => 'Webhook'] as $value => $label)
                                             <label class="flex flex-col items-center p-3 border rounded-lg cursor-pointer
                                                 {{ $provider === $value ? 'border-purple-500 bg-purple-50 dark:bg-purple-900' : 'border-gray-300 dark:border-gray-600' }}">
-                                                <input type="radio" wire:model="provider" value="{{ $value }}" class="sr-only">
+                                                <input type="radio" wire:model.live="provider" value="{{ $value }}" class="sr-only">
                                                 <span class="text-sm font-medium {{ $provider === $value ? 'text-purple-900 dark:text-purple-100' : 'text-gray-900 dark:text-gray-100' }}">
                                                     {{ $label }}
                                                 </span>
@@ -176,19 +183,28 @@
                                     </div>
                                 </div>
 
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Webhook URL</label>
-                                    <input type="url" wire:model="webhookUrl" placeholder="https://hooks.slack.com/services/..."
-                                           class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
-                                    @error('webhookUrl') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                                </div>
-
-                                @if($provider === 'webhook')
+                                @if($provider === 'email')
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Webhook Secret (optional)</label>
-                                        <input type="text" wire:model="webhookSecret" placeholder="Optional secret for HMAC validation"
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
+                                        <input type="email" wire:model="email" placeholder="notifications@example.com"
                                                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                        @error('email') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                                     </div>
+                                @else
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Webhook URL</label>
+                                        <input type="url" wire:model="webhookUrl" placeholder="https://hooks.slack.com/services/..."
+                                               class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                        @error('webhookUrl') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                    </div>
+
+                                    @if($provider === 'webhook')
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Webhook Secret (optional)</label>
+                                            <input type="text" wire:model="webhookSecret" placeholder="Optional secret for HMAC validation"
+                                                   class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                        </div>
+                                    @endif
                                 @endif
 
                                 <div>

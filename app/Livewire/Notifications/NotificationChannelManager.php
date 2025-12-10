@@ -30,13 +30,10 @@ class NotificationChannelManager extends Component
     #[Validate('nullable|exists:projects,id')]
     public ?int $projectId = null;
 
-    #[Validate('required_unless:provider,email|url')]
     public string $webhookUrl = '';
 
-    #[Validate('nullable|string')]
     public string $webhookSecret = '';
 
-    #[Validate('required_if:provider,email|email')]
     public string $email = '';
 
     public bool $enabled = true;
@@ -145,7 +142,24 @@ class NotificationChannelManager extends Component
 
     public function saveChannel(): void
     {
-        $this->validate();
+        // Custom validation based on provider
+        $rules = [
+            'name' => 'required|string|max:255',
+            'provider' => 'required|in:slack,discord,email,webhook,teams',
+            'projectId' => 'nullable|exists:projects,id',
+            'events' => 'required|array|min:1',
+        ];
+
+        if ($this->provider === 'email') {
+            $rules['email'] = 'required|email';
+        } else {
+            $rules['webhookUrl'] = 'required|url';
+            if ($this->provider === 'webhook') {
+                $rules['webhookSecret'] = 'nullable|string';
+            }
+        }
+
+        $this->validate($rules);
 
         // Build config based on type
         $config = match ($this->provider) {

@@ -3,6 +3,7 @@
 use App\Http\Controllers\DocsController;
 use App\Http\Controllers\GitHubAuthController;
 use App\Http\Controllers\TeamInvitationController;
+use App\Livewire\Admin\ProjectTemplateManager;
 use App\Livewire\Admin\SystemAdmin;
 use App\Livewire\Analytics\AnalyticsDashboard;
 use App\Livewire\Dashboard;
@@ -14,6 +15,7 @@ use App\Livewire\Home\HomePublic;
 use App\Livewire\Projects\ProjectCreate;
 use App\Livewire\Projects\ProjectList;
 use App\Livewire\Projects\ProjectShow;
+use App\Livewire\Servers\ProvisioningLogs;
 use App\Livewire\Servers\ServerCreate;
 use App\Livewire\Servers\ServerEdit;
 use App\Livewire\Servers\ServerList;
@@ -55,6 +57,7 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
     Route::get('/servers/{server}/ssl', \App\Livewire\Servers\SSLManager::class)->name('servers.ssl');
     Route::get('/servers/{server}/alerts', \App\Livewire\Servers\ResourceAlertManager::class)->name('servers.alerts');
     Route::get('/servers/{server}/backups', \App\Livewire\Servers\ServerBackupManager::class)->name('servers.backups');
+    Route::get('/servers/{server}/provisioning', ProvisioningLogs::class)->name('servers.provisioning');
 
     // Server Security Management
     Route::get('/servers/{server}/security', \App\Livewire\Servers\Security\ServerSecurityDashboard::class)->name('servers.security');
@@ -96,6 +99,7 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
 
     // Deployments
     Route::get('/deployments', DeploymentList::class)->name('deployments.index');
+    Route::get('/deployments/approvals', \App\Livewire\Deployments\DeploymentApprovals::class)->name('deployments.approvals');
     Route::get('/deployments/{deployment}', DeploymentShow::class)->name('deployments.show');
 
     // Analytics
@@ -117,6 +121,8 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
     // System Administration
     Route::get('/admin/system', SystemAdmin::class)->name('admin.system');
     Route::get('/admin/audit-logs', \App\Livewire\Admin\AuditLogViewer::class)->name('admin.audit-logs');
+    Route::get('/admin/help-content', \App\Livewire\Admin\HelpContentManager::class)->name('admin.help-content');
+    Route::get('/admin/templates', ProjectTemplateManager::class)->name('admin.templates');
 
     // ============ ADVANCED FEATURES ============
 
