@@ -7,6 +7,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.36.0] - 2025-12-11
+
+### Added - Inline Help System UI
+- **Help UI Components** - Complete context-sensitive help system
+  - `InlineHelpButton.php` - Livewire component for triggering help tooltips
+  - `InlineHelpPanel.php` - Livewire component for displaying help content
+  - `inline-help-button.blade.php` - Animated help icon button with gradient styling
+  - `inline-help-panel.blade.php` - Glass morphism panel with dark mode support
+- **Help Integration on 6 Pages** - Inline help added to key pages
+  - Dashboard, Server List, Project List, Project Show, Deployment List, Settings
+
+### Added - Documentation System
+- **DocsController** - Full documentation controller with markdown parsing
+  - `show()` - Display documentation pages by category
+  - `search()` - Full-text search across all documentation
+  - Uses League CommonMark for markdown rendering
+- **Documentation Views**
+  - `docs/layout.blade.php` - Base layout with sidebar navigation
+  - `docs/index.blade.php` - Documentation home page
+  - `docs/show.blade.php` - Individual documentation page display
+  - `docs/search.blade.php` - Search results page
+- **13 Documentation Categories** - Comprehensive guides created
+  - Deployments, Domains, SSL, Servers, Monitoring, Security
+  - Docker, Kubernetes, Pipelines, Teams, Database, Backups, Multi-tenancy
+
+### Added - DevFlow Self Management Console
+- **DevFlowSelfManagement.php** - Livewire component for managing DevFlow itself
+  - System status monitoring (app, database, redis, queue)
+  - Storage usage visualization
+  - Cache management (clear config, route, view, app caches)
+  - Deployment controls with real-time progress
+  - Log file viewer with download capability
+- **devflow-self-management.blade.php** - Modern animated UI
+  - Animated gradient backgrounds
+  - Hero header with status badges
+  - Quick action buttons
+  - System stats cards with glassmorphism
+
+### Added - Navigation Improvements
+- **DevFlow Pro (Self)** link added to Projects dropdown
+  - Located under new "System" section separator
+  - Indigo-colored gear icon for distinction
+- **All Documentation** link added to Settings dropdown
+  - Quick access to `/docs` documentation hub
+
+### Fixed - Light Mode Colors
+- Improved visibility for navigation elements in light mode
+  - System label: `gray-400` → `gray-600` (darker text)
+  - Border: `gray-100` → `gray-200` (more visible)
+  - Link text: `gray-700` → `gray-800` (bolder)
+  - Icon: `indigo-500` → `indigo-600` (richer color)
+
+### Fixed - HelpContentManager Constructor Error
+- Fixed `ArgumentCountError` in Livewire component
+  - Replaced constructor dependency injection with `app()` helper
+  - Livewire full-page components don't support constructor injection
+
+---
+
 ## [5.35.0] - 2025-12-10
 
 ### Added - Modern Error Pages
