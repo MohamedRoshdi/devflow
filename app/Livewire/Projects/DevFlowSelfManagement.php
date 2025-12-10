@@ -755,17 +755,16 @@ BASH;
                 return "Dependencies installed successfully";
             });
 
-            // Step 4: NPM Install
+            // Step 4: NPM Install (with cleanup to prevent ENOTEMPTY errors)
             $this->runDeploymentStep(3, function () use ($projectPath) {
-                $result = Process::timeout(300)->run("cd {$projectPath} && npm ci --prefer-offline 2>&1");
+                // Clean node_modules first to prevent corruption issues
+                Process::timeout(60)->run("cd {$projectPath} && rm -rf node_modules package-lock.json 2>&1");
+
+                $result = Process::timeout(300)->run("cd {$projectPath} && npm install 2>&1");
                 if (!$result->successful()) {
-                    // Fallback to npm install
-                    $result = Process::timeout(300)->run("cd {$projectPath} && npm install 2>&1");
-                    if (!$result->successful()) {
-                        throw new \Exception($result->errorOutput());
-                    }
+                    throw new \Exception($result->errorOutput() ?: $result->output());
                 }
-                return "Node dependencies installed";
+                return "Node dependencies installed (clean install)";
             });
 
             // Step 5: NPM Build
