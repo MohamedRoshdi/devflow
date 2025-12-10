@@ -735,9 +735,8 @@ BASH;
         $this->deploymentStatus = 'running';
         $this->currentStep = -1;
 
-        // Initialize deployment steps
+        // Initialize deployment steps (no maintenance mode - allow monitoring during deploy)
         $this->deploymentSteps = [
-            ['name' => 'Maintenance Mode', 'status' => 'pending', 'output' => ''],
             ['name' => 'Git Pull', 'status' => 'pending', 'output' => ''],
             ['name' => 'Composer Install', 'status' => 'pending', 'output' => ''],
             ['name' => 'NPM Install', 'status' => 'pending', 'output' => ''],
@@ -746,7 +745,7 @@ BASH;
             ['name' => 'Clear Caches', 'status' => 'pending', 'output' => ''],
             ['name' => 'Rebuild Caches', 'status' => 'pending', 'output' => ''],
             ['name' => 'Restart Queue', 'status' => 'pending', 'output' => ''],
-            ['name' => 'Go Live', 'status' => 'pending', 'output' => ''],
+            ['name' => 'Restart PHP-FPM', 'status' => 'pending', 'output' => ''],
         ];
 
         // Store start time in cache for duration calculation
@@ -776,20 +775,20 @@ BASH;
         // Mark current step as running
         $this->deploymentSteps[$this->currentStep]['status'] = 'running';
         $stepName = $this->deploymentSteps[$this->currentStep]['name'];
-        $this->deploymentOutput .= "\n[" . ($this->currentStep + 1) . "/10] {$stepName}...\n";
+        $totalSteps = count($this->deploymentSteps);
+        $this->deploymentOutput .= "\n[" . ($this->currentStep + 1) . "/{$totalSteps}] {$stepName}...\n";
 
         try {
             $output = match($this->currentStep) {
-                0 => $this->stepMaintenanceMode(),
-                1 => $this->stepGitPull($projectPath),
-                2 => $this->stepComposerInstall($projectPath),
-                3 => $this->stepNpmInstall($projectPath),
-                4 => $this->stepNpmBuild($projectPath),
-                5 => $this->stepMigrations(),
-                6 => $this->stepClearCaches(),
-                7 => $this->stepRebuildCaches(),
-                8 => $this->stepRestartQueue(),
-                9 => $this->stepGoLive(),
+                0 => $this->stepGitPull($projectPath),
+                1 => $this->stepComposerInstall($projectPath),
+                2 => $this->stepNpmInstall($projectPath),
+                3 => $this->stepNpmBuild($projectPath),
+                4 => $this->stepMigrations(),
+                5 => $this->stepClearCaches(),
+                6 => $this->stepRebuildCaches(),
+                7 => $this->stepRestartQueue(),
+                8 => $this->stepRestartPhpFpm(),
                 default => "Unknown step",
             };
 
@@ -810,10 +809,11 @@ BASH;
         }
     }
 
-    private function stepMaintenanceMode(): string
+    private function stepRestartPhpFpm(): string
     {
-        Artisan::call('down', ['--refresh' => 15]);
-        return "Maintenance mode enabled (auto-refresh: 15s)";
+        // Restart PHP-FPM to clear opcache and apply changes
+        $result = Process::timeout(30)->run("systemctl restart php8.2-fpm 2>&1 || service php8.2-fpm restart 2>&1 || true");
+        return "PHP-FPM restarted - OPcache cleared";
     }
 
     private function stepGitPull(string $projectPath): string
@@ -903,12 +903,6 @@ BASH;
         return "Queue workers will restart on next job";
     }
 
-    private function stepGoLive(): string
-    {
-        Artisan::call('up');
-        return "Application is now live!";
-    }
-
     private function finishDeployment(bool $success, string $errorMessage = ''): void
     {
         $startTime = Cache::get('devflow_deployment_start', microtime(true));
@@ -933,14 +927,6 @@ BASH;
             $this->deploymentOutput .= "Error: " . $errorMessage . "\n";
             $this->deploymentOutput .= "========================================\n";
             $this->deploymentStatus = 'failed';
-
-            // Try to bring the app back up
-            try {
-                Artisan::call('up');
-                $this->deploymentOutput .= "\n⚠️ Maintenance mode disabled after failure\n";
-            } catch (\Exception $upError) {
-                $this->deploymentOutput .= "\n⚠️ Warning: Could not disable maintenance mode\n";
-            }
 
             Log::error('DevFlow self-deployment failed', [
                 'error' => $errorMessage,
