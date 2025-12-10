@@ -189,9 +189,18 @@
                         <span class="ml-2 px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400">Running Step {{ $currentStep + 1 }}/10</span>
                     @endif
                 </h3>
-                <button wire:click="toggleDeployScript" class="text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
-                    {{ $showDeployScript ? 'Hide Script' : 'Show Script' }}
-                </button>
+                <div class="flex items-center gap-3">
+                    <button wire:click="toggleDeployScript" class="text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
+                        {{ $showDeployScript ? 'Hide Script' : 'Show Script' }}
+                    </button>
+                    @if(!$isDeploying || $deploymentStatus === 'success' || $deploymentStatus === 'failed')
+                        <button wire:click="closeDeployment" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors" title="Close">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    @endif
+                </div>
             </div>
             <div class="p-6">
                 {{-- Deployment Steps Grid --}}

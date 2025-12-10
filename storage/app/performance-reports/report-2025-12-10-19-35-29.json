@@ -1,0 +1,35 @@
+{
+    "timestamp": "2025-12-10T19:35:29+00:00",
+    "metrics": {
+        "database": {
+            "simple_select": {
+                "time": 4.69,
+                "memory": 575.17
+            },
+            "complex_join": {
+                "time": 2.95,
+                "memory": 96.52
+            },
+            "n_plus_one": {
+                "without_eager": 11,
+                "with_eager": 2,
+                "has_n_plus_one": true
+            }
+        }
+    },
+    "recommendations": [
+        {
+            "level": "critical",
+            "area": "database",
+            "issue": "N+1 query problem detected",
+            "solution": "Use eager loading with with() method"
+        },
+        {
+            "level": "info",
+            "area": "cache",
+            "issue": "Cache performance could be improved",
+            "solution": "Consider using Redis or Memcached instead of file cache"
+        }
+    ],
+    "score": 80
+}

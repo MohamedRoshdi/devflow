@@ -914,6 +914,18 @@ BASH;
         return "Queue workers will restart on next job";
     }
 
+    public function closeDeployment(): void
+    {
+        $this->isDeploying = false;
+        $this->deploymentStatus = null;
+        $this->deploymentOutput = '';
+        $this->currentStep = -1;
+        $this->deploymentSteps = array_map(function ($step) {
+            $step['status'] = 'pending';
+            return $step;
+        }, $this->deploymentSteps);
+    }
+
     private function finishDeployment(bool $success, string $errorMessage = ''): void
     {
         $startTime = Cache::get('devflow_deployment_start', microtime(true));
