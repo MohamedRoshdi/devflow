@@ -755,23 +755,36 @@ BASH;
                 return "Dependencies installed successfully";
             });
 
-            // Step 4: NPM Install (with cleanup to prevent ENOTEMPTY errors)
+            // Step 4: NPM Install (with cleanup and proper permissions for production)
             $this->runDeploymentStep(3, function () use ($projectPath) {
                 // Clean node_modules first to prevent corruption issues
                 Process::timeout(60)->run("cd {$projectPath} && rm -rf node_modules package-lock.json 2>&1");
 
-                $result = Process::timeout(300)->run("cd {$projectPath} && npm install 2>&1");
+                // Fix ownership to www-data for production
+                Process::timeout(30)->run("chown -R www-data:www-data {$projectPath} 2>&1");
+
+                // Run npm as www-data user to avoid permission issues
+                $result = Process::timeout(300)->run("cd {$projectPath} && sudo -u www-data npm install 2>&1");
                 if (!$result->successful()) {
-                    throw new \Exception($result->errorOutput() ?: $result->output());
+                    // Fallback to root if sudo fails (local dev)
+                    $result = Process::timeout(300)->run("cd {$projectPath} && npm install 2>&1");
+                    if (!$result->successful()) {
+                        throw new \Exception($result->errorOutput() ?: $result->output());
+                    }
                 }
                 return "Node dependencies installed (clean install)";
             });
 
             // Step 5: NPM Build
             $this->runDeploymentStep(4, function () use ($projectPath) {
-                $result = Process::timeout(300)->run("cd {$projectPath} && npm run build 2>&1");
+                // Run npm build as www-data user
+                $result = Process::timeout(300)->run("cd {$projectPath} && sudo -u www-data npm run build 2>&1");
                 if (!$result->successful()) {
-                    throw new \Exception($result->errorOutput());
+                    // Fallback to root if sudo fails (local dev)
+                    $result = Process::timeout(300)->run("cd {$projectPath} && npm run build 2>&1");
+                    if (!$result->successful()) {
+                        throw new \Exception($result->errorOutput() ?: $result->output());
+                    }
                 }
                 return "Frontend assets built successfully";
             });

@@ -46,3 +46,8 @@ user_response.txt
 
 # PostgreSQL test data
 postgres_test_data/
+
+# Local deploy scripts (machine-specific with server access)
+*.local.sh
+deploy.local.sh
+quick-deploy.local.sh
