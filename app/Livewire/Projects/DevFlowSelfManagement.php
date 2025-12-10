@@ -957,8 +957,11 @@ BASH;
     private function formatBytes($bytes, $precision = 2): string
     {
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];
-        $bytes = max($bytes, 0);
-        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $bytes = (float) max((float) $bytes, 0);
+        if ($bytes == 0) {
+            return '0 B';
+        }
+        $pow = floor(log($bytes) / log(1024));
         $pow = min($pow, count($units) - 1);
         return round($bytes / (1024 ** $pow), $precision) . ' ' . $units[$pow];
     }
