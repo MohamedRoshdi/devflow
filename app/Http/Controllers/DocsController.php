@@ -20,7 +20,7 @@ class DocsController extends Controller
 
     public function __construct()
     {
-        $this->middleware(['auth', 'throttle:web']);
+        // Middleware is defined in routes/web.php
 
         // Configure CommonMark with extensions
         $config = [
