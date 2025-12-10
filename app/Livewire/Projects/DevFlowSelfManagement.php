@@ -888,12 +888,15 @@ BASH;
         // Remove bootstrap cache files first (prevents "Target class does not exist" errors)
         Process::timeout(30)->run("rm -rf {$projectPath}/bootstrap/cache/*.php");
 
+        // Regenerate autoload without dev dependencies (fixes Dusk ServiceProvider error)
+        Process::timeout(60)->run("cd {$projectPath} && composer dump-autoload -o 2>&1");
+
         Artisan::call('optimize:clear');
 
         // Re-discover packages after clearing (required before config:cache)
         Artisan::call('package:discover');
 
-        return "All caches cleared, packages re-discovered";
+        return "All caches cleared, autoload regenerated, packages re-discovered";
     }
 
     private function stepRebuildCaches(): string
