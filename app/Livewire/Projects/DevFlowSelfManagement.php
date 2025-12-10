@@ -801,13 +801,17 @@ BASH;
 
             // Step 5: NPM Build
             $this->runDeploymentStep(4, function () use ($projectPath) {
-                // Run npm build as www-data user
-                $result = Process::timeout(300)->run("cd {$projectPath} && sudo -u www-data npm run build 2>&1");
+                // Run vite build directly using npx or node_modules path
+                $result = Process::timeout(300)->run("cd {$projectPath} && sudo -u www-data ./node_modules/.bin/vite build 2>&1");
                 if (!$result->successful()) {
-                    // Fallback to root if sudo fails (local dev)
-                    $result = Process::timeout(300)->run("cd {$projectPath} && npm run build 2>&1");
+                    // Try with npx
+                    $result = Process::timeout(300)->run("cd {$projectPath} && sudo -u www-data npx vite build 2>&1");
                     if (!$result->successful()) {
-                        throw new \Exception($result->errorOutput() ?: $result->output());
+                        // Fallback to npm run build without sudo
+                        $result = Process::timeout(300)->run("cd {$projectPath} && npm run build 2>&1");
+                        if (!$result->successful()) {
+                            throw new \Exception($result->errorOutput() ?: $result->output());
+                        }
                     }
                 }
                 return "Frontend assets built successfully";
