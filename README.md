@@ -5,7 +5,7 @@
 [![CI Status](https://github.com/yourusername/devflow-pro/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/devflow-pro/actions/workflows/ci.yml)
 [![Deploy Status](https://github.com/yourusername/devflow-pro/actions/workflows/deploy.yml/badge.svg)](https://github.com/yourusername/devflow-pro/actions/workflows/deploy.yml)
 [![Code Quality](https://github.com/yourusername/devflow-pro/actions/workflows/code-quality.yml/badge.svg)](https://github.com/yourusername/devflow-pro/actions/workflows/code-quality.yml)
-[![Version](https://img.shields.io/badge/version-5.32.0-blue.svg)](https://github.com/yourusername/devflow-pro)
+[![Version](https://img.shields.io/badge/version-5.35.0-blue.svg)](https://github.com/yourusername/devflow-pro)
 [![Tests](https://img.shields.io/badge/tests-4300%2B-brightgreen.svg)](TESTING.md)
 [![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](TESTING.md)
 [![Laravel](https://img.shields.io/badge/Laravel-12-red.svg)](https://laravel.com)
@@ -681,7 +681,20 @@ For simple static sites, select "Static Site" framework - no build process neede
 
 See [ROADMAP.md](ROADMAP.md) for the complete roadmap.
 
-### Recently Added (v3.1.0) ⭐ LATEST! November 29, 2025
+### Recently Added (v5.35.0) ⭐ LATEST! December 10, 2025
+- ✅ **🎨 Modern Error Pages** - Beautiful glass morphism design for all HTTP errors
+  - Custom 404, 500, 503, 403, 401, 419, 429 error pages
+  - Animated floating backgrounds with gradient blobs
+  - Responsive design, dark theme optimized
+- ✅ **⚡ Real-Time Deployment Progress** - Live step-by-step deployment tracking
+  - Polling-based execution showing each step as it runs
+  - Status badges (Running/Complete/Failed)
+- ✅ **📚 Inline Help System** - Contextual help throughout the application
+  - Database-backed help content with translations
+  - Analytics tracking for help effectiveness
+- ✅ **🐛 Bug Fixes** - TypeError in formatBytes, route naming, 503 handling
+
+### Previously Added (v3.1.0) November 29, 2025
 - ✅ **🔐 Server Security Management** - Comprehensive security suite
   - Security Dashboard with score (0-100) and risk assessment
   - UFW Firewall management (enable/disable, add/delete rules)
@@ -855,7 +868,7 @@ See [ROADMAP.md](ROADMAP.md) for the complete roadmap.
 
 ---
 
-## 📅 Latest Deployment (November 28, 2025)
+## 📅 Latest Deployment (December 10, 2025)
 
 ### 🚀 Production Environment Status
 
