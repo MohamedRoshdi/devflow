@@ -826,6 +826,10 @@ BASH;
         if (!$this->isGitRepo) {
             return "Skipped - Not a Git repository";
         }
+
+        // Fix .git permissions before pull (prevents "insufficient permission" errors)
+        Process::timeout(30)->run("chown -R www-data:www-data {$projectPath}/.git && chmod -R 775 {$projectPath}/.git");
+
         $result = Process::timeout(120)->run("cd {$projectPath} && git fetch origin {$this->gitBranch} && git reset --hard origin/{$this->gitBranch}");
         if (!$result->successful()) {
             throw new \Exception($result->errorOutput());
@@ -879,8 +883,17 @@ BASH;
 
     private function stepClearCaches(): string
     {
+        $projectPath = base_path();
+
+        // Remove bootstrap cache files first (prevents "Target class does not exist" errors)
+        Process::timeout(30)->run("rm -rf {$projectPath}/bootstrap/cache/*.php");
+
         Artisan::call('optimize:clear');
-        return "All caches cleared";
+
+        // Re-discover packages after clearing (required before config:cache)
+        Artisan::call('package:discover');
+
+        return "All caches cleared, packages re-discovered";
     }
 
     private function stepRebuildCaches(): string
