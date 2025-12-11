@@ -11,7 +11,7 @@
                         <span wire:loading.remove wire:target="refresh">🔄 Refresh</span>
                         <span wire:loading wire:target="refresh">Refreshing...</span>
                     </button>
-                    <livewire:inline-help help-key="deploy-button" />
+                    <livewire:components.inline-help help-key="deploy-button" />
                 </div>
             @endif
             <a href="{{ route('deployments.index') }}" class="btn btn-secondary">
