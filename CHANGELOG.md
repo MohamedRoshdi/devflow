@@ -94,6 +94,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Replaced constructor dependency injection with `app()` helper
   - Livewire full-page components don't support constructor injection
 
+### Fixed - DocsController Laravel 12 Compatibility
+- Removed deprecated `$this->middleware()` call from controller constructor
+  - Laravel 12 no longer supports middleware in controller constructors
+  - Middleware is now defined in routes/web.php
+
+### Fixed - Markdown Frontmatter Rendering
+- Strip YAML frontmatter before markdown conversion
+  - Prevents raw `---title: ...---` text from appearing in content
+  - Frontmatter now properly parsed for page title/description only
+
+### Added - Dashboard Docs Quick Link
+- Added "Docs" button to dashboard header
+  - Book icon with gray styling
+  - Quick access to documentation center from main dashboard
+
+### Added - Documentation Content Styling
+- Comprehensive CSS for markdown content rendering
+  - **Headers**: Proper sizing, colors, and spacing (H1, H2, H3)
+  - **Paragraphs**: Readable line height and gray text colors
+  - **Lists**: Bullet/numbered with proper indentation
+  - **Code**: Inline code with background, code blocks with dark theme
+  - **Links**: Blue with hover underline
+  - **Blockquotes**: Blue left border with light background
+  - **Dark mode**: All styles adapt automatically
+  - **Permalink anchors**: Hidden by default, visible on hover
+
 ---
 
 ## [5.35.0] - 2025-12-10
