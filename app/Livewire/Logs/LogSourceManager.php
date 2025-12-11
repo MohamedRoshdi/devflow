@@ -218,7 +218,7 @@ class LogSourceManager extends Component
         }
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.logs.log-source-manager')
             ->title("Log Sources - {$this->server->name} - DevFlow Pro");

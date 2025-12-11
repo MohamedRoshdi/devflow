@@ -170,7 +170,7 @@ class SSHSecurityManager extends Component
         }
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.servers.security.s-s-h-security-manager');
     }

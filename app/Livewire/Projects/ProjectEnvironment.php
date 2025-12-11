@@ -403,7 +403,7 @@ class ProjectEnvironment extends Component
         }
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.projects.project-environment', [
             'project' => $this->getProject(),

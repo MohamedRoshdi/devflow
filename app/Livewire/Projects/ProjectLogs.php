@@ -153,7 +153,7 @@ class ProjectLogs extends Component
         $this->loading = false;
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.projects.project-logs');
     }

@@ -260,7 +260,7 @@ class ServerShow extends Component
         ];
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         $projects = $this->server->projects()->latest()->take(5)->get();
         $deployments = $this->server->deployments()->latest()->take(5)->get();

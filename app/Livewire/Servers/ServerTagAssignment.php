@@ -62,7 +62,7 @@ class ServerTagAssignment extends Component
         $this->loadTags();
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.servers.server-tag-assignment');
     }

@@ -7,6 +7,16 @@ use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+/**
+ * Project List Component
+ *
+ * Displays a paginated list of projects with search and filter capabilities.
+ * Provides project management actions including deletion with proper authorization checks.
+ *
+ * @property string $search Search term for filtering projects by name or slug
+ * @property string $statusFilter Filter projects by status (active, inactive, etc.)
+ * @property string $serverFilter Filter projects by server ID
+ */
 class ProjectList extends Component
 {
     use WithPagination;
@@ -17,12 +27,26 @@ class ProjectList extends Component
 
     public string $serverFilter = '';
 
+    /**
+     * Refresh the project list when a new project is created
+     *
+     * @return void
+     */
     #[On('project-created')]
     public function refreshProjects()
     {
         $this->resetPage();
     }
 
+    /**
+     * Delete a project with proper authorization checks
+     *
+     * Only project owners and team owners can delete projects.
+     * Validates user permissions before deletion.
+     *
+     * @param int $projectId The ID of the project to delete
+     * @return void
+     */
     public function deleteProject(int $projectId): void
     {
         $project = Project::find($projectId);
@@ -59,7 +83,15 @@ class ProjectList extends Component
         session()->flash('message', 'Project deleted successfully');
     }
 
-    public function render()
+    /**
+     * Render the project list view with pagination
+     *
+     * Eager loads relationships and applies search/filter criteria.
+     * Returns paginated results with optimized queries.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function render(): \Illuminate\View\View
     {
         // Optimized: Eager load relationships and select specific columns to reduce memory
         $projects = Project::with([

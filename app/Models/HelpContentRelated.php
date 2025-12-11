@@ -18,7 +18,7 @@ class HelpContentRelated extends Model
     ];
 
     protected $casts = [
-        'relevance_score' => 'integer',
+        'relevance_score' => 'float',
     ];
 
     public function helpContent(): BelongsTo

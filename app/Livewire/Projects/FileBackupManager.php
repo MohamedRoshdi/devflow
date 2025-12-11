@@ -281,7 +281,7 @@ class FileBackupManager extends Component
         $this->project->update(['metadata' => $metadata]);
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.projects.file-backup-manager');
     }

@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Jobs\DeployProjectJob;
+use App\Livewire\Traits\CacheableStats;
 use App\Models\Deployment;
 use App\Models\HealthCheck;
 use App\Models\Project;
@@ -15,8 +16,43 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
+/**
+ * Dashboard Component
+ *
+ * Main dashboard component that displays system overview, server health metrics,
+ * deployment statistics, SSL certificate status, and recent activity feed.
+ * Features lazy loading for improved performance and user customization options.
+ *
+ * @property array<string, int> $stats System-wide statistics (servers, projects, deployments)
+ * @property \Illuminate\Database\Eloquent\Collection $recentDeployments Recent deployment records
+ * @property array<int, mixed> $serverMetrics Server performance metrics
+ * @property \Illuminate\Database\Eloquent\Collection $projects Recent projects
+ * @property array<string, mixed> $sslStats SSL certificate statistics
+ * @property array<string, mixed> $healthCheckStats Health check statistics
+ * @property array<int, array<string, mixed>> $recentActivity Recent system activity feed
+ * @property array<int, array<string, mixed>> $serverHealth Server health status and metrics
+ * @property int $deploymentsToday Number of deployments created today
+ * @property bool $showQuickActions Toggle for quick actions widget
+ * @property bool $showActivityFeed Toggle for activity feed widget
+ * @property bool $showServerHealth Toggle for server health widget
+ * @property array<string, int> $queueStats Queue statistics (pending, failed jobs)
+ * @property int $overallSecurityScore Calculated overall security score
+ * @property array<int, string> $collapsedSections List of collapsed widget sections
+ * @property int $activeDeployments Number of currently running deployments
+ * @property array<int, array<string, mixed>> $deploymentTimeline 7-day deployment timeline
+ * @property int $activityPerPage Number of activity items per page
+ * @property bool $loadingMoreActivity Loading state for activity feed pagination
+ * @property array<int, string> $widgetOrder Custom widget order for drag-and-drop
+ * @property bool $editMode Dashboard customization mode
+ * @property bool $isLoading Initial loading state
+ * @property bool $isNewUser Whether user is new to the system
+ * @property bool $hasCompletedOnboarding Whether user completed onboarding
+ * @property array<string, bool> $onboardingSteps Onboarding step completion status
+ */
 class Dashboard extends Component
 {
+    use CacheableStats;
+
     /** @var array<string, int> */
     public array $stats = [
         'total_servers' => 0,
@@ -200,23 +236,8 @@ class Dashboard extends Component
 
         // All resources are shared across all users
         // Cache for 60 seconds to improve performance
-        try {
-            $cachedStats = Cache::remember('dashboard_stats', 60, function () {
-                return [
-                    'total_servers' => Server::count(),
-                    'online_servers' => Server::where('status', 'online')->count(),
-                    'total_projects' => Project::count(),
-                    'running_projects' => Project::where('status', 'running')->count(),
-                    'total_deployments' => Deployment::count(),
-                    'successful_deployments' => Deployment::where('status', 'success')->count(),
-                    'failed_deployments' => Deployment::where('status', 'failed')->count(),
-                ];
-            });
-            // Merge with defaults to ensure all keys exist (handles corrupted cache data)
-            $this->stats = array_merge($defaultStats, is_array($cachedStats) ? $cachedStats : []);
-        } catch (\Exception $e) {
-            // If Redis is not available, fetch directly without caching
-            $this->stats = array_merge($defaultStats, [
+        $cachedStats = $this->cacheOrFallback('dashboard_stats', 60, function () {
+            return [
                 'total_servers' => Server::count(),
                 'online_servers' => Server::where('status', 'online')->count(),
                 'total_projects' => Project::count(),
@@ -224,8 +245,11 @@ class Dashboard extends Component
                 'total_deployments' => Deployment::count(),
                 'successful_deployments' => Deployment::where('status', 'success')->count(),
                 'failed_deployments' => Deployment::where('status', 'failed')->count(),
-            ]);
-        }
+            ];
+        });
+
+        // Merge with defaults to ensure all keys exist (handles corrupted cache data)
+        $this->stats = array_merge($defaultStats, is_array($cachedStats) ? $cachedStats : []);
     }
 
     public function loadRecentDeployments(): void
@@ -249,36 +273,11 @@ class Dashboard extends Component
     public function loadSSLStats(): void
     {
         // Cache for 5 minutes (300 seconds) - SSL data doesn't change frequently
-        try {
-            $this->sslStats = Cache::remember('dashboard_ssl_stats', 300, function () {
-                $now = now();
-                $expiringSoonDate = $now->copy()->addDays(7);
-
-                return [
-                    'total_certificates' => SSLCertificate::count(),
-                    'active_certificates' => SSLCertificate::where('status', 'issued')
-                        ->where('expires_at', '>', $now)
-                        ->count(),
-                    'expiring_soon' => SSLCertificate::where('expires_at', '<=', $expiringSoonDate)
-                        ->where('expires_at', '>', $now)
-                        ->count(),
-                    'expired' => SSLCertificate::where('expires_at', '<=', $now)->count(),
-                    'pending' => SSLCertificate::where('status', 'pending')->count(),
-                    'failed' => SSLCertificate::where('status', 'failed')->count(),
-                    'expiring_certificates' => SSLCertificate::where('expires_at', '<=', $expiringSoonDate)
-                        ->where('expires_at', '>', $now)
-                        ->with(['domain', 'server'])
-                        ->orderBy('expires_at', 'asc')
-                        ->take(5)
-                        ->get(),
-                ];
-            });
-        } catch (\Exception $e) {
-            // If Redis is not available, fetch directly without caching
+        $this->sslStats = $this->cacheOrFallback('dashboard_ssl_stats', 300, function () {
             $now = now();
             $expiringSoonDate = $now->copy()->addDays(7);
 
-            $this->sslStats = [
+            return [
                 'total_certificates' => SSLCertificate::count(),
                 'active_certificates' => SSLCertificate::where('status', 'issued')
                     ->where('expires_at', '>', $now)
@@ -296,30 +295,14 @@ class Dashboard extends Component
                     ->take(5)
                     ->get(),
             ];
-        }
+        });
     }
 
     public function loadHealthCheckStats(): void
     {
         // Cache for 2 minutes (120 seconds) - health checks update frequently
-        try {
-            $this->healthCheckStats = Cache::remember('dashboard_health_stats', 120, function () {
-                return [
-                    'total_checks' => HealthCheck::count(),
-                    'active_checks' => HealthCheck::where('is_active', true)->count(),
-                    'healthy' => HealthCheck::where('status', 'healthy')->count(),
-                    'degraded' => HealthCheck::where('status', 'degraded')->count(),
-                    'down' => HealthCheck::where('status', 'down')->count(),
-                    'down_checks' => HealthCheck::where('status', 'down')
-                        ->with(['project', 'server'])
-                        ->orderBy('last_failure_at', 'desc')
-                        ->take(5)
-                        ->get(),
-                ];
-            });
-        } catch (\Exception $e) {
-            // If Redis is not available, fetch directly without caching
-            $this->healthCheckStats = [
+        $this->healthCheckStats = $this->cacheOrFallback('dashboard_health_stats', 120, function () {
+            return [
                 'total_checks' => HealthCheck::count(),
                 'active_checks' => HealthCheck::where('is_active', true)->count(),
                 'healthy' => HealthCheck::where('status', 'healthy')->count(),
@@ -331,7 +314,7 @@ class Dashboard extends Component
                     ->take(5)
                     ->get(),
             ];
-        }
+        });
     }
 
     public function loadDeploymentsToday(): void
@@ -482,67 +465,12 @@ class Dashboard extends Component
         ];
 
         // Cache for 1 minute (60 seconds) - server metrics change frequently
-        try {
-            $cachedHealth = Cache::remember('dashboard_server_health', 60, function () {
-                $servers = Server::with(['latestMetric'])
-                    ->where('status', 'online')
-                    ->get();
-
-                return $servers->map(function ($server) {
-                    $latestMetric = $server->latestMetric;
-
-                    if (! $latestMetric) {
-                        return [
-                            'server_id' => $server->id,
-                            'server_name' => $server->name,
-                            'cpu_usage' => null,
-                            'memory_usage' => null,
-                            'disk_usage' => null,
-                            'load_average' => null,
-                            'status' => $server->status,
-                            'recorded_at' => null,
-                            'health_status' => 'unknown',
-                        ];
-                    }
-
-                    return [
-                        'server_id' => $server->id,
-                        'server_name' => $server->name,
-                        'cpu_usage' => (float) $latestMetric->cpu_usage,
-                        'memory_usage' => (float) $latestMetric->memory_usage,
-                        'memory_used_mb' => $latestMetric->memory_used_mb,
-                        'memory_total_mb' => $latestMetric->memory_total_mb,
-                        'disk_usage' => (float) $latestMetric->disk_usage,
-                        'disk_used_gb' => $latestMetric->disk_used_gb,
-                        'disk_total_gb' => $latestMetric->disk_total_gb,
-                        'load_average_1' => (float) $latestMetric->load_average_1,
-                        'load_average_5' => (float) $latestMetric->load_average_5,
-                        'load_average_15' => (float) $latestMetric->load_average_15,
-                        'network_in_bytes' => $latestMetric->network_in_bytes,
-                        'network_out_bytes' => $latestMetric->network_out_bytes,
-                        'status' => $server->status,
-                        'recorded_at' => $latestMetric->recorded_at,
-                        'health_status' => $this->getServerHealthStatus(
-                            $latestMetric->cpu_usage,
-                            $latestMetric->memory_usage,
-                            $latestMetric->disk_usage
-                        ),
-                    ];
-                })->all();
-            });
-
-            // Sanitize cached data to ensure all server entries have required keys
-            $this->serverHealth = is_array($cachedHealth) ? array_map(
-                fn ($server) => is_array($server) ? array_merge($defaultServerEntry, $server) : $defaultServerEntry,
-                $cachedHealth
-            ) : [];
-        } catch (\Exception $e) {
-            // If Redis is not available, fetch directly without caching
+        $cachedHealth = $this->cacheOrFallback('dashboard_server_health', 60, function () {
             $servers = Server::with(['latestMetric'])
                 ->where('status', 'online')
                 ->get();
 
-            $this->serverHealth = $servers->map(function ($server) {
+            return $servers->map(function ($server) {
                 $latestMetric = $server->latestMetric;
 
                 if (! $latestMetric) {
@@ -583,7 +511,13 @@ class Dashboard extends Component
                     ),
                 ];
             })->all();
-        }
+        });
+
+        // Sanitize cached data to ensure all server entries have required keys
+        $this->serverHealth = is_array($cachedHealth) ? array_map(
+            fn ($server) => is_array($server) ? array_merge($defaultServerEntry, $server) : $defaultServerEntry,
+            $cachedHealth
+        ) : [];
     }
 
     private function getServerHealthStatus(float $cpu, float $memory, float $disk): string
@@ -601,57 +535,24 @@ class Dashboard extends Component
     public function loadQueueStats(): void
     {
         // Cache for 30 seconds - queue stats change frequently
-        try {
-            $this->queueStats = Cache::remember('dashboard_queue_stats', 30, function () {
-                try {
-                    return [
-                        'pending' => DB::table('jobs')->count(),
-                        'failed' => DB::table('failed_jobs')->count(),
-                    ];
-                } catch (\Exception $e) {
-                    // If jobs table doesn't exist, set default values
-                    return [
-                        'pending' => 0,
-                        'failed' => 0,
-                    ];
-                }
-            });
-        } catch (\Exception $e) {
-            // If Redis is not available, fetch directly without caching
-            try {
-                $this->queueStats = [
-                    'pending' => DB::table('jobs')->count(),
-                    'failed' => DB::table('failed_jobs')->count(),
-                ];
-            } catch (\Exception $e) {
-                // If jobs table doesn't exist, set default values
-                $this->queueStats = [
-                    'pending' => 0,
-                    'failed' => 0,
-                ];
-            }
-        }
+        $this->queueStats = $this->cachedStats('dashboard_queue_stats', 30, function () {
+            return [
+                'pending' => DB::table('jobs')->count(),
+                'failed' => DB::table('failed_jobs')->count(),
+            ];
+        }, ['pending' => 0, 'failed' => 0]);
     }
 
     public function loadSecurityScore(): void
     {
         // Cache for 5 minutes (300 seconds) - security scores don't change frequently
-        try {
-            $this->overallSecurityScore = Cache::remember('dashboard_security_score', 300, function () {
-                $avgScore = Server::where('status', 'online')
-                    ->whereNotNull('security_score')
-                    ->avg('security_score');
-
-                return $avgScore ? (int) round($avgScore) : 85;
-            });
-        } catch (\Exception $e) {
-            // If Redis is not available, fetch directly without caching
+        $this->overallSecurityScore = $this->cacheOrFallback('dashboard_security_score', 300, function () {
             $avgScore = Server::where('status', 'online')
                 ->whereNotNull('security_score')
                 ->avg('security_score');
 
-            $this->overallSecurityScore = $avgScore ? (int) round($avgScore) : 85;
-        }
+            return $avgScore ? (int) round($avgScore) : 85;
+        });
     }
 
     public function loadActiveDeployments(): void
@@ -732,16 +633,14 @@ class Dashboard extends Component
      */
     public function clearDashboardCache(): void
     {
-        try {
-            Cache::forget('dashboard_stats');
-            Cache::forget('dashboard_ssl_stats');
-            Cache::forget('dashboard_health_stats');
-            Cache::forget('dashboard_server_health');
-            Cache::forget('dashboard_queue_stats');
-            Cache::forget('dashboard_security_score');
-        } catch (\Exception $e) {
-            // Silently fail if Redis is not available
-        }
+        $this->forgetCacheKeys([
+            'dashboard_stats',
+            'dashboard_ssl_stats',
+            'dashboard_health_stats',
+            'dashboard_server_health',
+            'dashboard_queue_stats',
+            'dashboard_security_score',
+        ]);
     }
 
     #[On('refresh-dashboard')]
@@ -767,12 +666,7 @@ class Dashboard extends Component
     public function onDeploymentCompleted(): void
     {
         // Clear relevant caches when deployment completes
-        try {
-            Cache::forget('dashboard_stats');
-            Cache::forget('dashboard_health_stats');
-        } catch (\Exception $e) {
-            // Silently fail if Redis is not available
-        }
+        $this->forgetCacheKeys(['dashboard_stats', 'dashboard_health_stats']);
 
         // Reload the affected data
         $this->loadStats();
@@ -971,10 +865,7 @@ class Dashboard extends Component
         ]);
     }
 
-    /**
-     * @return \Illuminate\Contracts\View\View
-     */
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.dashboard');
     }

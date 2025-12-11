@@ -92,7 +92,7 @@ class TeamSwitcher extends Component
         return $this->redirect(request()->url(), navigate: true);
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.teams.team-switcher');
     }

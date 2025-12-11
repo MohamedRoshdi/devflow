@@ -308,7 +308,7 @@ class ProjectShow extends Component
         }
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         $deployments = $this->project->deployments()
             ->with(['user', 'server'])

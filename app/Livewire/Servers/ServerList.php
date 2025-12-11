@@ -12,6 +12,24 @@ use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+/**
+ * Server List Component
+ *
+ * Manages server listing with advanced features including search, filtering,
+ * bulk operations, connectivity testing, and real-time status monitoring.
+ * Supports server tagging, health monitoring, and Docker installation.
+ *
+ * @property string $search Search term for filtering servers by name, hostname, or IP
+ * @property string $statusFilter Filter servers by status (online, offline, maintenance)
+ * @property array<int> $tagFilter Filter servers by tag IDs
+ * @property bool $isPingingAll Loading state for bulk ping operation
+ * @property array<int> $selectedServers Array of selected server IDs for bulk actions
+ * @property bool $selectAll Whether all servers on current page are selected
+ * @property bool $bulkActionInProgress Loading state for bulk operations
+ * @property array<int, mixed> $bulkActionResults Results from bulk operations
+ * @property bool $showResultsModal Toggle for bulk action results modal
+ * @property bool $isLoading Initial loading state
+ */
 class ServerList extends Component
 {
     use WithPagination;
@@ -51,6 +69,11 @@ class ServerList extends Component
 
     public bool $isLoading = true;
 
+    /**
+     * Initialize component on mount
+     *
+     * @return void
+     */
     public function mount(): void
     {
         // Don't ping on mount - use wire:init for lazy loading
@@ -58,6 +81,10 @@ class ServerList extends Component
 
     /**
      * Lazy load server data - called via wire:init
+     *
+     * Auto-pings all servers after initial page render for status updates.
+     *
+     * @return void
      */
     public function loadServerData(): void
     {
@@ -66,6 +93,11 @@ class ServerList extends Component
         $this->isLoading = false;
     }
 
+    /**
+     * Refresh server list when a new server is created
+     *
+     * @return void
+     */
     #[On('server-created')]
     public function refreshServers(): void
     {
@@ -92,6 +124,10 @@ class ServerList extends Component
 
     /**
      * Ping all servers to update their status (runs in background)
+     *
+     * Automatically runs after page load without user interaction.
+     *
+     * @return void
      */
     public function pingAllServersInBackground(): void
     {
@@ -109,6 +145,10 @@ class ServerList extends Component
 
     /**
      * Ping all servers (manual trigger with loading indicator)
+     *
+     * User-initiated action that displays loading state and result summary.
+     *
+     * @return void
      */
     public function pingAllServers(): void
     {
@@ -135,6 +175,11 @@ class ServerList extends Component
 
     /**
      * Ping single server
+     *
+     * Tests connectivity to a specific server and updates its status.
+     *
+     * @param int $serverId The ID of the server to ping
+     * @return void
      */
     public function pingServer(int $serverId): void
     {
@@ -164,6 +209,11 @@ class ServerList extends Component
 
     /**
      * Reboot a server
+     *
+     * Initiates a server reboot via SSH connection.
+     *
+     * @param int $serverId The ID of the server to reboot
+     * @return void
      */
     public function rebootServer(int $serverId): void
     {
@@ -186,6 +236,14 @@ class ServerList extends Component
         }
     }
 
+    /**
+     * Add the current VPS server to the server list
+     *
+     * Automatically detects current server IP and adds it to the system.
+     * Useful for self-hosted deployments.
+     *
+     * @return void
+     */
     public function addCurrentServer(): void
     {
         try {
@@ -234,6 +292,14 @@ class ServerList extends Component
         }
     }
 
+    /**
+     * Delete a server from the system
+     *
+     * Removes server and clears related caches.
+     *
+     * @param int $serverId The ID of the server to delete
+     * @return void
+     */
     public function deleteServer(int $serverId): void
     {
         $server = Server::find($serverId);
@@ -252,6 +318,13 @@ class ServerList extends Component
         session()->flash('message', 'Server deleted successfully');
     }
 
+    /**
+     * Get the current server's IP address
+     *
+     * Tries multiple methods to detect the server's public IP address.
+     *
+     * @return string The server IP address or '127.0.0.1' as fallback
+     */
     protected function getCurrentServerIP(): string
     {
         // Try multiple methods to get the server's IP
@@ -283,7 +356,10 @@ class ServerList extends Component
     }
 
     /**
-     * Toggle server selection
+     * Toggle server selection for bulk actions
+     *
+     * @param int $serverId The ID of the server to toggle
+     * @return void
      */
     public function toggleServerSelection(int $serverId): void
     {
@@ -301,6 +377,10 @@ class ServerList extends Component
 
     /**
      * Toggle select all servers on current page
+     *
+     * Selects or deselects all visible servers for bulk operations.
+     *
+     * @return void
      */
     public function toggleSelectAll(): void
     {
@@ -318,6 +398,10 @@ class ServerList extends Component
 
     /**
      * Clear all selections
+     *
+     * Resets selection state and closes results modal.
+     *
+     * @return void
      */
     public function clearSelection(): void
     {
@@ -329,6 +413,10 @@ class ServerList extends Component
 
     /**
      * Bulk ping selected servers
+     *
+     * Tests connectivity to all selected servers and displays results.
+     *
+     * @return void
      */
     public function bulkPing(): void
     {
@@ -359,6 +447,10 @@ class ServerList extends Component
 
     /**
      * Bulk reboot selected servers
+     *
+     * Initiates reboot on all selected servers simultaneously.
+     *
+     * @return void
      */
     public function bulkReboot(): void
     {
@@ -389,6 +481,10 @@ class ServerList extends Component
 
     /**
      * Bulk install Docker on selected servers
+     *
+     * Installs Docker and Docker Compose on all selected servers.
+     *
+     * @return void
      */
     public function bulkInstallDocker(): void
     {
@@ -419,6 +515,11 @@ class ServerList extends Component
 
     /**
      * Bulk restart service on selected servers
+     *
+     * Restarts a specific system service on all selected servers.
+     *
+     * @param string $service The service name to restart (e.g., 'nginx', 'mysql')
+     * @return void
      */
     public function bulkRestartService(string $service): void
     {
@@ -449,6 +550,10 @@ class ServerList extends Component
 
     /**
      * Close results modal
+     *
+     * Hides the bulk action results modal.
+     *
+     * @return void
      */
     public function closeResultsModal(): void
     {
@@ -457,6 +562,11 @@ class ServerList extends Component
 
     /**
      * Toggle tag filter
+     *
+     * Adds or removes a tag from the active filter list.
+     *
+     * @param int $tagId The ID of the tag to toggle
+     * @return void
      */
     public function toggleTagFilter(int $tagId): void
     {
@@ -522,6 +632,13 @@ class ServerList extends Component
         });
     }
 
+    /**
+     * Render the server list view with pagination
+     *
+     * Applies filters and returns paginated server results with tags.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
     public function render(): \Illuminate\Contracts\View\View
     {
         // Use cached serversQuery with pagination

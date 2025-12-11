@@ -223,7 +223,7 @@ class SSHTerminal extends Component
         ];
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.servers.s-s-h-terminal', [
             'quickCommands' => $this->getQuickCommands(),

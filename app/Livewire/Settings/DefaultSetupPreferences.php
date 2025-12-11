@@ -83,7 +83,7 @@ class DefaultSetupPreferences extends Component
         }
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.settings.default-setup-preferences');
     }

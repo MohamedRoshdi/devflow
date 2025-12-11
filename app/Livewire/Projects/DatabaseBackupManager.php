@@ -504,7 +504,7 @@ class DatabaseBackupManager extends Component
         return round($bytes, 2).' '.$units[$i];
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.projects.database-backup-manager', [
             'backups' => $this->backups,

@@ -199,7 +199,7 @@ class DeploymentApprovals extends Component
         unset($this->approvals, $this->pendingApprovals, $this->stats);
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.deployments.deployment-approvals');
     }

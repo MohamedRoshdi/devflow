@@ -117,7 +117,7 @@ class ProjectWebhookSettings extends Component
         };
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.projects.project-webhook-settings');
     }

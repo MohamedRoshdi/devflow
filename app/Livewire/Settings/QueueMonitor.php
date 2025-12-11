@@ -227,7 +227,7 @@ class QueueMonitor extends Component
         $this->loadStats();
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.settings.queue-monitor');
     }

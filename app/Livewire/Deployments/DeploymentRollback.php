@@ -218,7 +218,7 @@ class DeploymentRollback extends Component
     /**
      * @return \Illuminate\Contracts\View\View
      */
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.deployments.deployment-rollback');
     }

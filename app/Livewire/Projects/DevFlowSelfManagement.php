@@ -6,7 +6,6 @@ use Livewire\Component;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Artisan;
 
 class DevFlowSelfManagement extends Component
@@ -27,15 +26,6 @@ class DevFlowSelfManagement extends Component
     public string $gitSetupOutput = '';
     public bool $isSettingUpGit = false;
 
-    // Deployment
-    public bool $isDeploying = false;
-    public string $deploymentOutput = '';
-    public string $deploymentStatus = '';
-    public array $deploymentSteps = [];
-    public int $currentStep = 0;
-    public bool $showDeployScript = false;
-    public string $deployScript = '';
-
     // Configuration
     public bool $maintenanceMode = false;
     public bool $debugMode = false;
@@ -47,9 +37,6 @@ class DevFlowSelfManagement extends Component
     // Database
     public array $databaseInfo = [];
     public array $pendingMigrations = [];
-
-    // Cache
-    public array $cacheStats = [];
 
     // Environment Editor
     public bool $showEnvEditor = false;
@@ -63,11 +50,6 @@ class DevFlowSelfManagement extends Component
         'MAIL_MAILER', 'MAIL_HOST', 'MAIL_PORT', 'MAIL_FROM_ADDRESS',
         'BROADCAST_DRIVER', 'FILESYSTEM_DISK',
     ];
-
-    // Logs
-    public string $recentLogs = '';
-    public array $logFiles = [];
-    public string $selectedLogFile = '';
 
     // Queue Status
     public array $queueStatus = [];
@@ -83,19 +65,12 @@ class DevFlowSelfManagement extends Component
     public bool $reverbRunning = false;
     public string $reverbOutput = '';
 
-    // Redis
-    public array $redisInfo = [];
-    public bool $redisConnected = false;
-
     // Supervisor Processes
     public array $supervisorProcesses = [];
 
     // Scheduler
     public array $schedulerStatus = [];
     public string $lastSchedulerRun = '';
-
-    // Storage
-    public array $storageInfo = [];
 
     public function mount(): void
     {
@@ -105,14 +80,10 @@ class DevFlowSelfManagement extends Component
         $this->loadDatabaseInfo();
         $this->loadEnvVariables();
         $this->loadQueueStatus();
-        $this->loadRecentLogs();
         $this->loadDomainInfo();
-        $this->loadDeployScript();
         $this->loadReverbStatus();
-        $this->loadRedisInfo();
         $this->loadSupervisorProcesses();
         $this->loadSchedulerStatus();
-        $this->loadStorageInfo();
     }
 
     private function loadSystemInfo(): void
@@ -229,127 +200,6 @@ class DevFlowSelfManagement extends Component
         }
     }
 
-    private function loadRecentLogs(): void
-    {
-        try {
-            $logsPath = storage_path('logs');
-
-            // Get all log files
-            $this->logFiles = [];
-            $files = glob($logsPath . '/laravel*.log');
-
-            if ($files) {
-                // Sort by modification time (newest first)
-                usort($files, fn($a, $b) => filemtime($b) - filemtime($a));
-
-                foreach ($files as $file) {
-                    $filename = basename($file);
-                    $this->logFiles[] = [
-                        'name' => $filename,
-                        'path' => $file,
-                        'size' => $this->formatBytes(filesize($file)),
-                        'modified' => date('Y-m-d H:i:s', filemtime($file)),
-                    ];
-                }
-            }
-
-            // Select first log file by default
-            if (empty($this->selectedLogFile) && !empty($this->logFiles)) {
-                $this->selectedLogFile = $this->logFiles[0]['name'];
-            }
-
-            // Load selected log content
-            $this->loadLogContent();
-
-        } catch (\Exception $e) {
-            $this->recentLogs = 'Unable to load logs: ' . $e->getMessage();
-        }
-    }
-
-    private function loadLogContent(): void
-    {
-        if (empty($this->selectedLogFile)) {
-            $this->recentLogs = 'No log file selected';
-            return;
-        }
-
-        $logPath = storage_path('logs/' . $this->selectedLogFile);
-        if (file_exists($logPath)) {
-            $result = Process::run("tail -100 " . escapeshellarg($logPath));
-            $this->recentLogs = $result->output();
-        } else {
-            $this->recentLogs = 'Log file not found';
-        }
-    }
-
-    public function selectLogFile(string $filename): void
-    {
-        $this->selectedLogFile = $filename;
-        $this->loadLogContent();
-    }
-
-    public function clearLogFile(string $filename): void
-    {
-        $logPath = storage_path('logs/' . basename($filename));
-
-        if (file_exists($logPath) && str_starts_with(basename($filename), 'laravel')) {
-            try {
-                file_put_contents($logPath, '');
-                session()->flash('message', "Log file {$filename} cleared successfully!");
-                Log::info('DevFlow log file cleared', ['file' => $filename, 'user_id' => auth()->id()]);
-                $this->loadRecentLogs();
-            } catch (\Exception $e) {
-                session()->flash('error', 'Failed to clear log: ' . $e->getMessage());
-            }
-        } else {
-            session()->flash('error', 'Invalid log file');
-        }
-    }
-
-    public function deleteLogFile(string $filename): void
-    {
-        $logPath = storage_path('logs/' . basename($filename));
-
-        // Don't allow deleting the main laravel.log
-        if ($filename === 'laravel.log') {
-            session()->flash('error', 'Cannot delete the main log file. Use clear instead.');
-            return;
-        }
-
-        if (file_exists($logPath) && str_starts_with(basename($filename), 'laravel')) {
-            try {
-                unlink($logPath);
-                session()->flash('message', "Log file {$filename} deleted successfully!");
-                Log::info('DevFlow log file deleted', ['file' => $filename, 'user_id' => auth()->id()]);
-
-                // Reset selection if deleted file was selected
-                if ($this->selectedLogFile === $filename) {
-                    $this->selectedLogFile = '';
-                }
-                $this->loadRecentLogs();
-            } catch (\Exception $e) {
-                session()->flash('error', 'Failed to delete log: ' . $e->getMessage());
-            }
-        } else {
-            session()->flash('error', 'Invalid log file');
-        }
-    }
-
-    public function downloadLogFile(string $filename): \Symfony\Component\HttpFoundation\StreamedResponse
-    {
-        $logPath = storage_path('logs/' . basename($filename));
-
-        if (file_exists($logPath) && str_starts_with(basename($filename), 'laravel')) {
-            return response()->streamDownload(function () use ($logPath) {
-                echo file_get_contents($logPath);
-            }, $filename, [
-                'Content-Type' => 'text/plain',
-            ]);
-        }
-
-        abort(404, 'Log file not found');
-    }
-
     private function loadDomainInfo(): void
     {
         $this->currentAppUrl = config('app.url', 'Not set');
@@ -430,11 +280,6 @@ class DevFlowSelfManagement extends Component
         }
     }
 
-    public function refreshLogs(): void
-    {
-        $this->loadRecentLogs();
-    }
-
     public function toggleMaintenanceMode(): void
     {
         if ($this->maintenanceMode) {
@@ -445,45 +290,6 @@ class DevFlowSelfManagement extends Component
             Artisan::call('down', ['--refresh' => 15]);
             $this->maintenanceMode = true;
             session()->flash('message', 'Maintenance mode enabled. Site will show maintenance page.');
-        }
-    }
-
-    public function clearCache(string $type = 'all'): void
-    {
-        try {
-            switch ($type) {
-                case 'config':
-                    Artisan::call('config:clear');
-                    break;
-                case 'route':
-                    Artisan::call('route:clear');
-                    break;
-                case 'view':
-                    Artisan::call('view:clear');
-                    break;
-                case 'cache':
-                    Artisan::call('cache:clear');
-                    break;
-                case 'all':
-                default:
-                    Artisan::call('optimize:clear');
-                    break;
-            }
-            session()->flash('message', ucfirst($type) . ' cache cleared successfully!');
-        } catch (\Exception $e) {
-            session()->flash('error', 'Failed to clear cache: ' . $e->getMessage());
-        }
-    }
-
-    public function rebuildCache(): void
-    {
-        try {
-            Artisan::call('config:cache');
-            Artisan::call('route:cache');
-            Artisan::call('view:cache');
-            session()->flash('message', 'All caches rebuilt successfully!');
-        } catch (\Exception $e) {
-            session()->flash('error', 'Failed to rebuild cache: ' . $e->getMessage());
         }
     }
 
@@ -613,379 +419,6 @@ class DevFlowSelfManagement extends Component
         }
     }
 
-    private function loadDeployScript(): void
-    {
-        $scriptPath = base_path('deploy.sh');
-        if (file_exists($scriptPath)) {
-            $this->deployScript = file_get_contents($scriptPath);
-        } else {
-            // Default deployment script
-            $this->deployScript = $this->getDefaultDeployScript();
-        }
-    }
-
-    private function getDefaultDeployScript(): string
-    {
-        $branch = $this->gitBranch ?: 'master';
-        return <<<BASH
-#!/bin/bash
-# DevFlow Pro Deployment Script
-# Generated: $(date)
-
-set -e  # Exit on error
-
-# Configuration
-PROJECT_PATH="$(pwd)"
-BRANCH="{$branch}"
-
-echo "=========================================="
-echo "  DevFlow Pro Deployment"
-echo "  Started: \$(date)"
-echo "=========================================="
-
-# Step 1: Enable Maintenance Mode
-echo ""
-echo "[1/9] Enabling maintenance mode..."
-php artisan down --refresh=15 || true
-
-# Step 2: Git Pull
-echo ""
-echo "[2/9] Pulling latest changes from \$BRANCH..."
-git fetch origin \$BRANCH
-git reset --hard origin/\$BRANCH
-
-# Step 3: Composer Install
-echo ""
-echo "[3/9] Installing PHP dependencies..."
-composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
-
-# Step 4: NPM Install & Build
-echo ""
-echo "[4/9] Installing Node dependencies..."
-npm ci --prefer-offline
-
-echo ""
-echo "[5/9] Building frontend assets..."
-npm run build
-
-# Step 6: Database Migrations
-echo ""
-echo "[6/9] Running database migrations..."
-php artisan migrate --force
-
-# Step 7: Clear & Rebuild Caches
-echo ""
-echo "[7/9] Clearing old caches..."
-php artisan optimize:clear
-
-echo ""
-echo "[8/9] Rebuilding caches..."
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-php artisan event:cache
-
-# Step 8: Restart Queue Workers
-echo ""
-echo "[9/9] Restarting queue workers..."
-php artisan queue:restart
-
-# Step 9: Disable Maintenance Mode
-echo ""
-echo "Disabling maintenance mode..."
-php artisan up
-
-echo ""
-echo "=========================================="
-echo "  Deployment Complete!"
-echo "  Finished: \$(date)"
-echo "=========================================="
-BASH;
-    }
-
-    public function toggleDeployScript(): void
-    {
-        $this->showDeployScript = !$this->showDeployScript;
-    }
-
-    public function saveDeployScript(): void
-    {
-        try {
-            $scriptPath = base_path('deploy.sh');
-            file_put_contents($scriptPath, $this->deployScript);
-            chmod($scriptPath, 0755);
-            session()->flash('message', 'Deployment script saved successfully!');
-            Log::info('DevFlow deployment script updated', ['user_id' => auth()->id()]);
-        } catch (\Exception $e) {
-            session()->flash('error', 'Failed to save script: ' . $e->getMessage());
-        }
-    }
-
-    public function resetDeployScript(): void
-    {
-        $this->deployScript = $this->getDefaultDeployScript();
-        session()->flash('message', 'Deployment script reset to default');
-    }
-
-    public function redeploy(): void
-    {
-        // Initialize deployment - this triggers UI update showing steps
-        $this->isDeploying = true;
-        $this->deploymentOutput = "Starting deployment...\n";
-        $this->deploymentStatus = 'running';
-        $this->currentStep = -1;
-
-        // Initialize deployment steps (no maintenance mode - allow monitoring during deploy)
-        $this->deploymentSteps = [
-            ['name' => 'Git Pull', 'status' => 'pending', 'output' => ''],
-            ['name' => 'Composer Install', 'status' => 'pending', 'output' => ''],
-            ['name' => 'NPM Install', 'status' => 'pending', 'output' => ''],
-            ['name' => 'NPM Build', 'status' => 'pending', 'output' => ''],
-            ['name' => 'Database Migrations', 'status' => 'pending', 'output' => ''],
-            ['name' => 'Clear Caches', 'status' => 'pending', 'output' => ''],
-            ['name' => 'Rebuild Caches', 'status' => 'pending', 'output' => ''],
-            ['name' => 'Restart Queue', 'status' => 'pending', 'output' => ''],
-            ['name' => 'Restart PHP-FPM', 'status' => 'pending', 'output' => ''],
-        ];
-
-        // Store start time in cache for duration calculation
-        Cache::put('devflow_deployment_start', microtime(true), 600);
-    }
-
-    /**
-     * This method is called by wire:poll when deployment is in progress
-     * Each call executes one step, allowing the UI to update between steps
-     */
-    public function pollDeploymentStep(): void
-    {
-        // Only run if deployment is active
-        if (!$this->isDeploying || $this->deploymentStatus !== 'running') {
-            return;
-        }
-
-        $this->currentStep++;
-        $projectPath = base_path();
-
-        // Check if all steps are complete
-        if ($this->currentStep >= count($this->deploymentSteps)) {
-            $this->finishDeployment(true);
-            return;
-        }
-
-        // Mark current step as running
-        $this->deploymentSteps[$this->currentStep]['status'] = 'running';
-        $stepName = $this->deploymentSteps[$this->currentStep]['name'];
-        $totalSteps = count($this->deploymentSteps);
-        $this->deploymentOutput .= "\n[" . ($this->currentStep + 1) . "/{$totalSteps}] {$stepName}...\n";
-
-        try {
-            $output = match($this->currentStep) {
-                0 => $this->stepGitPull($projectPath),
-                1 => $this->stepComposerInstall($projectPath),
-                2 => $this->stepNpmInstall($projectPath),
-                3 => $this->stepNpmBuild($projectPath),
-                4 => $this->stepMigrations(),
-                5 => $this->stepClearCaches(),
-                6 => $this->stepRebuildCaches(),
-                7 => $this->stepRestartQueue(),
-                8 => $this->stepRestartPhpFpm(),
-                default => "Unknown step",
-            };
-
-            $this->deploymentSteps[$this->currentStep]['status'] = 'success';
-            $this->deploymentSteps[$this->currentStep]['output'] = $output;
-            $this->deploymentOutput .= "  ✓ {$output}\n";
-
-            // If this was the last step, finish deployment
-            if ($this->currentStep >= count($this->deploymentSteps) - 1) {
-                $this->finishDeployment(true);
-            }
-            // Otherwise, the next poll will execute the next step
-
-        } catch (\Exception $e) {
-            $this->deploymentSteps[$this->currentStep]['status'] = 'failed';
-            $this->deploymentSteps[$this->currentStep]['output'] = $e->getMessage();
-            $this->finishDeployment(false, $e->getMessage());
-        }
-    }
-
-    private function stepRestartPhpFpm(): string
-    {
-        $projectPath = base_path();
-
-        $output = "$ chown -R www-data:www-data storage bootstrap/cache public/build\n";
-        Process::timeout(60)->run("chown -R www-data:www-data {$projectPath}/storage {$projectPath}/bootstrap/cache {$projectPath}/public/build 2>&1 || true");
-
-        $output .= "$ systemctl restart php8.2-fpm\n";
-        Process::timeout(30)->run("systemctl restart php8.2-fpm 2>&1 || service php8.2-fpm restart 2>&1 || true");
-        return $output . "PHP-FPM restarted - OPcache cleared, permissions fixed";
-    }
-
-    private function stepGitPull(string $projectPath): string
-    {
-        if (!$this->isGitRepo) {
-            return "Skipped - Not a Git repository";
-        }
-
-        $output = "$ chown -R www-data:www-data .git && chmod -R 775 .git\n";
-        Process::timeout(30)->run("chown -R www-data:www-data {$projectPath}/.git && chmod -R 775 {$projectPath}/.git");
-
-        $cmd = "git fetch origin {$this->gitBranch} && git reset --hard origin/{$this->gitBranch}";
-        $output .= "$ {$cmd}\n";
-        $result = Process::timeout(120)->run("cd {$projectPath} && {$cmd}");
-        if (!$result->successful()) {
-            throw new \Exception($result->errorOutput());
-        }
-        return $output . ($result->output() ?: "Successfully pulled");
-    }
-
-    private function stepComposerInstall(string $projectPath): string
-    {
-        $cmd = "composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev";
-        $output = "$ {$cmd}\n";
-        $result = Process::timeout(300)->run("cd {$projectPath} && {$cmd} 2>&1");
-        if (!$result->successful()) {
-            throw new \Exception($result->errorOutput());
-        }
-        return $output . "Dependencies installed successfully";
-    }
-
-    private function stepNpmInstall(string $projectPath): string
-    {
-        $output = "$ rm -rf node_modules package-lock.json\n";
-        Process::timeout(60)->run("cd {$projectPath} && rm -rf node_modules package-lock.json 2>&1");
-
-        $cmd = "npm install";
-        $output .= "$ {$cmd}\n";
-        $result = Process::timeout(300)->run("cd {$projectPath} && {$cmd} 2>&1");
-        if (!$result->successful()) {
-            throw new \Exception($result->errorOutput() ?: $result->output());
-        }
-        return $output . "Node dependencies installed";
-    }
-
-    private function stepNpmBuild(string $projectPath): string
-    {
-        $nodePath = "{$projectPath}/node_modules/.bin";
-        $cmd = "npm run build";
-        $output = "$ PATH=\"node_modules/.bin:\$PATH\" {$cmd}\n";
-        $result = Process::timeout(300)->run("cd {$projectPath} && PATH=\"{$nodePath}:\$PATH\" {$cmd} 2>&1");
-        if (!$result->successful()) {
-            $output .= "$ node ./node_modules/.bin/vite build\n";
-            $result = Process::timeout(300)->run("cd {$projectPath} && /usr/bin/node ./node_modules/.bin/vite build 2>&1");
-            if (!$result->successful()) {
-                throw new \Exception($result->errorOutput() ?: $result->output());
-            }
-        }
-        return $output . "Frontend assets built successfully";
-    }
-
-    private function stepMigrations(): string
-    {
-        $output = "$ php artisan migrate --force\n";
-        Artisan::call('migrate', ['--force' => true]);
-        return $output . (Artisan::output() ?: "No pending migrations");
-    }
-
-    private function stepClearCaches(): string
-    {
-        $projectPath = base_path();
-        $output = "$ rm -rf bootstrap/cache/*.php\n";
-        Process::timeout(30)->run("rm -rf {$projectPath}/bootstrap/cache/*.php");
-
-        $output .= "$ composer dump-autoload -o\n";
-        Process::timeout(60)->run("cd {$projectPath} && composer dump-autoload -o 2>&1");
-
-        $output .= "$ php artisan optimize:clear\n";
-        Artisan::call('optimize:clear');
-
-        $output .= "$ php artisan package:discover\n";
-        Artisan::call('package:discover');
-
-        return $output . "All caches cleared, packages re-discovered";
-    }
-
-    private function stepRebuildCaches(): string
-    {
-        $output = "$ php artisan config:cache\n";
-        Artisan::call('config:cache');
-        $output .= "$ php artisan route:cache\n";
-        Artisan::call('route:cache');
-        $output .= "$ php artisan view:cache\n";
-        Artisan::call('view:cache');
-        $output .= "$ php artisan event:cache\n";
-        Artisan::call('event:cache');
-        return $output . "Caches rebuilt successfully";
-    }
-
-    private function stepRestartQueue(): string
-    {
-        $output = "$ php artisan queue:restart\n";
-        Artisan::call('queue:restart');
-        return $output . "Queue workers will restart on next job";
-    }
-
-    public function closeDeployment(): void
-    {
-        $this->isDeploying = false;
-        $this->deploymentStatus = null;
-        $this->deploymentOutput = '';
-        $this->currentStep = -1;
-        $this->deploymentSteps = array_map(function ($step) {
-            $step['status'] = 'pending';
-            return $step;
-        }, $this->deploymentSteps);
-    }
-
-    private function finishDeployment(bool $success, string $errorMessage = ''): void
-    {
-        $startTime = Cache::get('devflow_deployment_start', microtime(true));
-        $duration = round(microtime(true) - $startTime, 2);
-
-        if ($success) {
-            $this->deploymentOutput .= "\n========================================\n";
-            $this->deploymentOutput .= "✅ DEPLOYMENT SUCCESSFUL\n";
-            $this->deploymentOutput .= "Duration: {$duration} seconds\n";
-            $this->deploymentOutput .= "Completed: " . now()->format('Y-m-d H:i:s') . "\n";
-            $this->deploymentOutput .= "========================================\n";
-            $this->deploymentStatus = 'success';
-
-            Log::info('DevFlow self-deployment completed', [
-                'user_id' => auth()->id(),
-                'duration' => $duration,
-            ]);
-        } else {
-            $this->deploymentOutput .= "\n========================================\n";
-            $this->deploymentOutput .= "❌ DEPLOYMENT FAILED\n";
-            $this->deploymentOutput .= "Step: " . ($this->deploymentSteps[$this->currentStep]['name'] ?? 'Unknown') . "\n";
-            $this->deploymentOutput .= "Error: " . $errorMessage . "\n";
-            $this->deploymentOutput .= "========================================\n";
-            $this->deploymentStatus = 'failed';
-
-            Log::error('DevFlow self-deployment failed', [
-                'error' => $errorMessage,
-                'step' => $this->currentStep,
-            ]);
-        }
-
-        $this->isDeploying = false;
-        $this->loadSystemInfo();
-        $this->loadGitInfo();
-        Cache::forget('devflow_deployment_start');
-    }
-
-    private function formatBytes($bytes, $precision = 2): string
-    {
-        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
-        $bytes = (float) max((float) $bytes, 0);
-        if ($bytes == 0) {
-            return '0 B';
-        }
-        $pow = floor(log($bytes) / log(1024));
-        $pow = min($pow, count($units) - 1);
-        return round($bytes / (1024 ** $pow), $precision) . ' ' . $units[$pow];
-    }
-
     // ===== REVERB WEBSOCKET METHODS =====
 
     private function loadReverbStatus(): void
@@ -1042,60 +475,6 @@ BASH;
         $this->stopReverb();
         sleep(1);
         $this->startReverb();
-    }
-
-    // ===== REDIS METHODS =====
-
-    private function loadRedisInfo(): void
-    {
-        try {
-            if (config('database.redis.client') !== null) {
-                $redis = app('redis');
-                $info = $redis->info();
-
-                $this->redisConnected = true;
-                $this->redisInfo = [
-                    'version' => $info['redis_version'] ?? 'Unknown',
-                    'uptime_days' => round(($info['uptime_in_seconds'] ?? 0) / 86400, 1),
-                    'connected_clients' => $info['connected_clients'] ?? 0,
-                    'used_memory' => $info['used_memory_human'] ?? 'Unknown',
-                    'total_keys' => $this->getRedisKeyCount(),
-                    'host' => config('database.redis.default.host', '127.0.0.1'),
-                    'port' => config('database.redis.default.port', 6379),
-                ];
-            } else {
-                $this->redisConnected = false;
-                $this->redisInfo = ['status' => 'Redis not configured'];
-            }
-        } catch (\Exception $e) {
-            $this->redisConnected = false;
-            $this->redisInfo = ['error' => $e->getMessage()];
-        }
-    }
-
-    private function getRedisKeyCount(): int
-    {
-        try {
-            $result = Process::run("redis-cli DBSIZE 2>/dev/null");
-            if (preg_match('/(\d+)/', $result->output(), $matches)) {
-                return (int) $matches[1];
-            }
-            return 0;
-        } catch (\Exception $e) {
-            return 0;
-        }
-    }
-
-    public function flushRedis(): void
-    {
-        try {
-            $redis = app('redis');
-            $redis->flushdb();
-            $this->loadRedisInfo();
-            session()->flash('message', 'Redis cache flushed successfully');
-        } catch (\Exception $e) {
-            session()->flash('error', 'Failed to flush Redis: ' . $e->getMessage());
-        }
     }
 
     // ===== SUPERVISOR METHODS =====
@@ -1184,69 +563,19 @@ BASH;
         }
     }
 
-    // ===== STORAGE METHODS =====
-
-    private function loadStorageInfo(): void
+    private function formatBytes($bytes, $precision = 2): string
     {
-        $basePath = base_path();
-        $storagePath = storage_path();
-
-        $this->storageInfo = [
-            'disk_total' => disk_total_space($basePath),
-            'disk_free' => disk_free_space($basePath),
-            'disk_used' => disk_total_space($basePath) - disk_free_space($basePath),
-            'disk_percent' => round((1 - disk_free_space($basePath) / disk_total_space($basePath)) * 100, 1),
-            'storage_logs' => $this->getDirectorySize($storagePath . '/logs'),
-            'storage_cache' => $this->getDirectorySize($storagePath . '/framework/cache'),
-            'storage_sessions' => $this->getDirectorySize($storagePath . '/framework/sessions'),
-            'storage_views' => $this->getDirectorySize($storagePath . '/framework/views'),
-            'public_build' => $this->getDirectorySize(public_path('build')),
-            'vendor' => $this->getDirectorySize($basePath . '/vendor'),
-            'node_modules' => $this->getDirectorySize($basePath . '/node_modules'),
-        ];
-    }
-
-    private function getDirectorySize(string $path): int
-    {
-        if (!is_dir($path)) return 0;
-
-        $size = 0;
-        try {
-            $result = Process::timeout(10)->run("du -sb {$path} 2>/dev/null | cut -f1");
-            $size = (int) trim($result->output());
-        } catch (\Exception $e) {
-            $size = 0;
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $bytes = (float) max((float) $bytes, 0);
+        if ($bytes == 0) {
+            return '0 B';
         }
-        return $size;
+        $pow = floor(log($bytes) / log(1024));
+        $pow = min($pow, count($units) - 1);
+        return round($bytes / (1024 ** $pow), $precision) . ' ' . $units[$pow];
     }
 
-    public function cleanStorage(string $type): void
-    {
-        try {
-            $path = match($type) {
-                'logs' => storage_path('logs/*.log'),
-                'cache' => storage_path('framework/cache/data/*'),
-                'sessions' => storage_path('framework/sessions/*'),
-                'views' => storage_path('framework/views/*'),
-                default => throw new \Exception('Invalid storage type'),
-            };
-
-            // Keep .gitignore files
-            Process::run("find " . dirname($path) . " -type f ! -name '.gitignore' -delete 2>/dev/null");
-
-            // For logs, keep laravel.log but empty it
-            if ($type === 'logs') {
-                file_put_contents(storage_path('logs/laravel.log'), '');
-            }
-
-            $this->loadStorageInfo();
-            session()->flash('message', ucfirst($type) . ' cleaned successfully');
-        } catch (\Exception $e) {
-            session()->flash('error', 'Failed to clean ' . $type . ': ' . $e->getMessage());
-        }
-    }
-
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.projects.devflow-self-management');
     }

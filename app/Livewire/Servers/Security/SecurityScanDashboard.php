@@ -76,7 +76,7 @@ class SecurityScanDashboard extends Component
         return $this->server->latestSecurityScan;
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.servers.security.security-scan-dashboard');
     }

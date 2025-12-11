@@ -9,6 +9,18 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+/**
+ * Deployment List Component
+ *
+ * Displays a paginated list of deployments with advanced filtering options.
+ * Features search, status filtering, project filtering, and cached statistics.
+ * URL parameters are persisted for easy sharing and bookmarking.
+ *
+ * @property string $statusFilter Filter deployments by status (success, failed, running, pending)
+ * @property string $projectFilter Filter deployments by project ID
+ * @property string $search Search term for filtering by commit message or branch
+ * @property int $perPage Number of deployments per page (5-50)
+ */
 class DeploymentList extends Component
 {
     use WithPagination;
@@ -27,21 +39,44 @@ class DeploymentList extends Component
 
     protected string $paginationTheme = 'tailwind';
 
+    /**
+     * Reset pagination when status filter changes
+     *
+     * @return void
+     */
     public function updatedStatusFilter(): void
     {
         $this->resetPage();
     }
 
+    /**
+     * Reset pagination when project filter changes
+     *
+     * @return void
+     */
     public function updatedProjectFilter(): void
     {
         $this->resetPage();
     }
 
+    /**
+     * Reset pagination when search term changes
+     *
+     * @return void
+     */
     public function updatedSearch(): void
     {
         $this->resetPage();
     }
 
+    /**
+     * Validate and update per-page value
+     *
+     * Ensures the value is within acceptable range (5-50).
+     *
+     * @param mixed $value The new per-page value
+     * @return void
+     */
     public function updatedPerPage(mixed $value): void
     {
         $value = (int) $value;
@@ -55,7 +90,15 @@ class DeploymentList extends Component
         $this->resetPage();
     }
 
-    public function render()
+    /**
+     * Render the deployment list view with pagination and statistics
+     *
+     * Eager loads relationships, applies filters, and caches statistics.
+     * Returns paginated deployment results with project dropdown data.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function render(): \Illuminate\View\View
     {
         // Optimized: Cache stats for 2 minutes (works with all cache drivers)
         $stats = Cache::remember('deployment_stats', 120, function () {

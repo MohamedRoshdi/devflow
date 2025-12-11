@@ -102,7 +102,7 @@ class NotificationLogs extends Component
         ];
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         $logs = NotificationLog::query()
             ->with('channel')

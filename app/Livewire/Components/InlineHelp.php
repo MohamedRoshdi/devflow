@@ -109,7 +109,7 @@ class InlineHelp extends Component
         $this->render();
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         // Check if user wants to see inline help (default: true)
         if (auth()->check() && !auth()->user()->show_inline_help) {

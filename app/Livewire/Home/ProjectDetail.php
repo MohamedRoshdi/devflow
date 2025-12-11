@@ -32,7 +32,7 @@ class ProjectDetail extends Component
         }
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.home.project-detail')
             ->layout('layouts.marketing');

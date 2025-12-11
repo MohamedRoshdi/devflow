@@ -269,7 +269,7 @@ class ServerBackupManager extends Component
         $this->scheduleStorageDriver = 'local';
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         $backups = ServerBackup::where('server_id', $this->server->id)
             ->orderBy('created_at', 'desc')

@@ -87,7 +87,7 @@ class ServerSecurityDashboard extends Component
             ->get();
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.servers.security.server-security-dashboard');
     }

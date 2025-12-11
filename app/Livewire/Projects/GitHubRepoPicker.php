@@ -149,7 +149,7 @@ class GitHubRepoPicker extends Component
         }
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.projects.github-repo-picker');
     }

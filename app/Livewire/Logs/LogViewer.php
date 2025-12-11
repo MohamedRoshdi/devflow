@@ -247,7 +247,7 @@ class LogViewer extends Component
         unset($this->statistics);
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.logs.log-viewer')
             ->title('Logs - DevFlow Pro');

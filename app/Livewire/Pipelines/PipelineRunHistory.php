@@ -123,7 +123,7 @@ class PipelineRunHistory extends Component
         $this->refreshRuns();
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.pipelines.pipeline-run-history');
     }

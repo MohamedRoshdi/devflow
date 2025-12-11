@@ -464,7 +464,7 @@ class TeamSettings extends Component
         return in_array($role, ['owner', 'admin']);
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.teams.team-settings');
     }

@@ -92,7 +92,7 @@ class WebhookLogs extends Component
         ];
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         $deliveries = WebhookDelivery::query()
             ->with(['project', 'deployment'])

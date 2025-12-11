@@ -187,7 +187,7 @@ class AuditLogViewer extends Component
         $this->resetPage();
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.admin.audit-log-viewer');
     }

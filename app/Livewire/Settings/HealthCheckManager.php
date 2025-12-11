@@ -374,7 +374,7 @@ class HealthCheckManager extends Component
         $this->reset(['healthChecks', 'notificationChannels']);
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.settings.health-check-manager');
     }

@@ -184,110 +184,8 @@
         </div>
     @endif
 
-    {{-- Deployment Progress (Full Screen Overlay when deploying) --}}
-    @if($isDeploying || $deploymentStatus)
-        <div class="mb-8 bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-2xl overflow-hidden"
-             @if($isDeploying && $deploymentStatus === 'running') wire:poll.500ms="pollDeploymentStep" @endif>
-            {{-- Header --}}
-            <div class="p-5 border-b border-slate-700/50 flex items-center justify-between bg-gradient-to-r {{ $deploymentStatus === 'success' ? 'from-emerald-500/10 to-transparent' : ($deploymentStatus === 'failed' ? 'from-red-500/10 to-transparent' : 'from-blue-500/10 to-transparent') }}">
-                <div class="flex items-center gap-3">
-                    @if($isDeploying && $deploymentStatus === 'running')
-                        <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                            <svg class="w-5 h-5 text-blue-400 animate-spin" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                            </svg>
-                        </div>
-                    @elseif($deploymentStatus === 'success')
-                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-                            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                        </div>
-                    @elseif($deploymentStatus === 'failed')
-                        <div class="w-10 h-10 rounded-xl bg-red-500/20 flex items-center justify-center">
-                            <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                        </div>
-                    @endif
-                    <div>
-                        <h3 class="text-lg font-semibold text-white">Deployment Progress</h3>
-                        <p class="text-sm text-slate-400">
-                            @if($deploymentStatus === 'success')
-                                Completed successfully
-                            @elseif($deploymentStatus === 'failed')
-                                Failed - check logs below
-                            @elseif($isDeploying)
-                                Running step {{ $currentStep + 1 }} of {{ count($deploymentSteps) }}
-                            @endif
-                        </p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    @if(!$isDeploying || $deploymentStatus === 'success' || $deploymentStatus === 'failed')
-                        <button wire:click="closeDeployment" class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                        </button>
-                    @endif
-                </div>
-            </div>
-
-            <div class="p-5">
-                {{-- Progress Bar --}}
-                <div class="mb-6">
-                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
-                        @php
-                            $completedSteps = collect($deploymentSteps)->filter(fn($s) => $s['status'] === 'success')->count();
-                            $progress = count($deploymentSteps) > 0 ? ($completedSteps / count($deploymentSteps)) * 100 : 0;
-                        @endphp
-                        <div class="h-full rounded-full transition-all duration-500 {{ $deploymentStatus === 'failed' ? 'bg-red-500' : 'bg-gradient-to-r from-emerald-500 to-cyan-500' }}" style="width: {{ $progress }}%"></div>
-                    </div>
-                </div>
-
-                {{-- Steps Timeline --}}
-                <div class="space-y-2 mb-6">
-                    @foreach($deploymentSteps as $index => $step)
-                        <div class="flex items-center gap-3 p-3 rounded-xl transition-all {{ $step['status'] === 'running' ? 'bg-blue-500/10 border border-blue-500/30' : ($step['status'] === 'success' ? 'bg-emerald-500/5' : ($step['status'] === 'failed' ? 'bg-red-500/10 border border-red-500/30' : '')) }}">
-                            <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 {{ $step['status'] === 'success' ? 'bg-emerald-500/20' : ($step['status'] === 'running' ? 'bg-blue-500/20' : ($step['status'] === 'failed' ? 'bg-red-500/20' : 'bg-slate-800')) }}">
-                                @if($step['status'] === 'success')
-                                    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                @elseif($step['status'] === 'running')
-                                    <svg class="w-4 h-4 text-blue-400 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
-                                @elseif($step['status'] === 'failed')
-                                    <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                                @else
-                                    <span class="text-xs font-medium text-slate-500">{{ $index + 1 }}</span>
-                                @endif
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <span class="text-sm font-medium {{ $step['status'] === 'success' ? 'text-emerald-400' : ($step['status'] === 'running' ? 'text-blue-400' : ($step['status'] === 'failed' ? 'text-red-400' : 'text-slate-400')) }}">{{ $step['name'] }}</span>
-                            </div>
-                            @if($step['status'] === 'success')
-                                <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            @endif
-                        </div>
-                    @endforeach
-                </div>
-
-                {{-- Output Log --}}
-                @if($deploymentOutput)
-                    <div class="rounded-xl bg-slate-950 border border-slate-800 overflow-hidden">
-                        <div class="px-4 py-2 border-b border-slate-800 flex items-center justify-between">
-                            <span class="text-xs font-medium text-slate-400">Output Log</span>
-                            <span class="text-xs text-slate-500 font-mono">{{ now()->format('H:i:s') }}</span>
-                        </div>
-                        <div class="p-4 max-h-64 overflow-y-auto" id="deployment-output">
-                            <pre class="text-xs text-emerald-400 font-mono whitespace-pre-wrap leading-relaxed">{{ $deploymentOutput }}</pre>
-                        </div>
-                    </div>
-                    <script>const output = document.getElementById('deployment-output'); if (output) output.scrollTop = output.scrollHeight;</script>
-                @endif
-            </div>
-        </div>
-    @endif
+    {{-- Deployment Actions Component --}}
+    <livewire:projects.dev-flow.deployment-actions />
 
     {{-- Tab Navigation --}}
     <div class="mb-6">
@@ -376,56 +274,8 @@
             </div>
         </div>
 
-        {{-- Storage Usage --}}
-        <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-6 mb-6">
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-white">Storage Usage</h3>
-                        <p class="text-sm text-slate-400">{{ $storageInfo['used'] ?? '0 GB' }} of {{ $storageInfo['total'] ?? '0 GB' }} used</p>
-                    </div>
-                </div>
-            </div>
-            <div class="h-3 bg-slate-900 rounded-full overflow-hidden mb-4">
-                @php $storagePercent = $storageInfo['percent'] ?? 0; @endphp
-                <div class="h-full rounded-full transition-all duration-500 {{ $storagePercent > 90 ? 'bg-red-500' : ($storagePercent > 70 ? 'bg-amber-500' : 'bg-emerald-500') }}" style="width: {{ $storagePercent }}%"></div>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                @foreach(['logs' => 'Logs', 'cache' => 'Cache', 'sessions' => 'Sessions', 'views' => 'Views'] as $key => $label)
-                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900/50 border border-slate-800">
-                        <span class="text-sm text-slate-400">{{ $label }}</span>
-                        <button wire:click="cleanStorage('{{ $key }}')" class="text-xs text-slate-500 hover:text-red-400 transition-colors" title="Clean {{ $label }}">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                        </button>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-
-        {{-- Cache Management --}}
-        <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-6">
-            <div class="flex items-center gap-3 mb-6">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                </div>
-                <div>
-                    <h3 class="font-semibold text-white">Cache Management</h3>
-                    <p class="text-sm text-slate-400">Clear and rebuild application caches</p>
-                </div>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-                @foreach(['config' => 'Config', 'route' => 'Routes', 'view' => 'Views', 'event' => 'Events', 'all' => 'All'] as $type => $label)
-                    <button wire:click="clearCache('{{ $type }}')" wire:loading.attr="disabled"
-                        class="group p-4 rounded-xl bg-slate-900/50 border border-slate-700/50 hover:border-indigo-500/50 hover:bg-indigo-500/10 transition-all text-center">
-                        <span class="block text-sm font-medium text-white group-hover:text-indigo-400 transition-colors">{{ $label }}</span>
-                        <span class="block text-xs text-slate-500 mt-1">Clear</span>
-                    </button>
-                @endforeach
-            </div>
-        </div>
+        {{-- Cache & Storage Management Component --}}
+        <livewire:projects.dev-flow.cache-manager />
     </div>
 
     {{-- Services Tab --}}
@@ -495,68 +345,7 @@
 
     {{-- Logs Tab --}}
     <div x-show="activeTab === 'logs'" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
-        <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 overflow-hidden">
-            <div class="p-5 border-b border-slate-700/50 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-white">Application Logs</h3>
-                        <p class="text-sm text-slate-400">{{ count($logFiles ?? []) }} log files</p>
-                    </div>
-                </div>
-                <button wire:click="refreshLogs" class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                </button>
-            </div>
-
-            {{-- Log Files List --}}
-            <div class="grid lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-slate-700/50">
-                <div class="p-4 space-y-1 max-h-96 overflow-y-auto lg:col-span-1">
-                    @forelse($logFiles ?? [] as $log)
-                        <button wire:click="selectLogFile('{{ $log['name'] }}')"
-                            class="w-full flex items-center justify-between p-3 rounded-xl text-left transition-all {{ ($selectedLogFile ?? '') === $log['name'] ? 'bg-rose-500/20 border border-rose-500/30' : 'hover:bg-slate-700/50' }}">
-                            <div class="min-w-0">
-                                <span class="block text-sm font-medium text-white truncate">{{ $log['name'] }}</span>
-                                <span class="block text-xs text-slate-500">{{ $log['size'] ?? '0 KB' }}</span>
-                            </div>
-                        </button>
-                    @empty
-                        <p class="text-sm text-slate-500 text-center py-4">No log files</p>
-                    @endforelse
-                </div>
-
-                {{-- Log Content --}}
-                <div class="lg:col-span-3 p-4">
-                    @if($recentLogs ?? false)
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-sm font-medium text-slate-400">{{ $selectedLogFile ?? 'Select a log file' }}</span>
-                            <div class="flex items-center gap-2">
-                                @if($selectedLogFile)
-                                    <a href="{{ route('projects.devflow.logs.download', $selectedLogFile) }}" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all" title="Download">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                                    </a>
-                                    <button wire:click="clearLogFile('{{ $selectedLogFile }}')" wire:confirm="Clear this log file?" class="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all" title="Clear">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                    </button>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="rounded-xl bg-slate-950 border border-slate-800 p-4 max-h-80 overflow-y-auto font-mono text-xs">
-                            <pre class="text-slate-300 whitespace-pre-wrap leading-relaxed">{{ $recentLogs }}</pre>
-                        </div>
-                    @else
-                        <div class="flex items-center justify-center h-64 text-slate-500">
-                            <div class="text-center">
-                                <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                <p>Select a log file to view</p>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-            </div>
-        </div>
+        <livewire:projects.dev-flow.log-viewer />
     </div>
 
     {{-- Config Tab --}}

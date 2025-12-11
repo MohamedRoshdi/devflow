@@ -286,7 +286,7 @@ class ResourceAlertManager extends Component
         $this->discord_webhook = '';
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.servers.resource-alert-manager');
     }

@@ -238,7 +238,7 @@ class FirewallManager extends Component
         $this->ruleDescription = '';
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.servers.security.firewall-manager');
     }

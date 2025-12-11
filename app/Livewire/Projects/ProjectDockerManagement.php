@@ -250,7 +250,7 @@ class ProjectDockerManagement extends Component
     /**
      * @return \Illuminate\Contracts\View\View
      */
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         $project = $this->getProject();
 

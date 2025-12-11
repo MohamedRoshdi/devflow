@@ -116,7 +116,7 @@ class SystemSettings extends Component
         $this->dispatch('notification', type: 'success', message: 'Settings cache cleared');
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.settings.system-settings');
     }

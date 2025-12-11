@@ -183,7 +183,7 @@ class ServerProvisioning extends Component
         unset($this->latestLog);
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.servers.server-provisioning');
     }

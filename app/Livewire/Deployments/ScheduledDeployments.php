@@ -176,7 +176,7 @@ class ScheduledDeployments extends Component
         // Refresh the list when a deployment completes
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.deployments.scheduled-deployments');
     }

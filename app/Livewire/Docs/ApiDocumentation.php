@@ -30,7 +30,7 @@ class ApiDocumentation extends Component
         };
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.docs.api-documentation');
     }

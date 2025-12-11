@@ -207,7 +207,7 @@ class GitHubSettings extends Component
         return redirect()->route('github.disconnect');
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.settings.github-settings')
             ->layout('layouts.app');
