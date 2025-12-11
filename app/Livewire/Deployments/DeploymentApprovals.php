@@ -32,14 +32,10 @@ class DeploymentApprovals extends Component
 
     public bool $showRejectModal = false;
 
-    public function __construct(
-        private readonly DeploymentApprovalService $approvalService
-    ) {}
-
     #[Computed]
     public function pendingApprovals()
     {
-        return $this->approvalService->getPendingApprovals(auth()->user());
+        return app(DeploymentApprovalService::class)->getPendingApprovals(auth()->user());
     }
 
     #[Computed]
@@ -101,7 +97,7 @@ class DeploymentApprovals extends Component
     #[Computed]
     public function stats()
     {
-        return $this->approvalService->getApprovalStats(auth()->user());
+        return app(DeploymentApprovalService::class)->getApprovalStats(auth()->user());
     }
 
     public function openApproveModal(int $approvalId): void
@@ -126,7 +122,7 @@ class DeploymentApprovals extends Component
 
         try {
             $approval = DeploymentApproval::findOrFail($this->selectedApprovalId);
-            $this->approvalService->approve(
+            app(DeploymentApprovalService::class)->approve(
                 $approval,
                 auth()->user(),
                 $this->approvalNotes ?: null
@@ -156,7 +152,7 @@ class DeploymentApprovals extends Component
 
         try {
             $approval = DeploymentApproval::findOrFail($this->selectedApprovalId);
-            $this->approvalService->reject(
+            app(DeploymentApprovalService::class)->reject(
                 $approval,
                 auth()->user(),
                 $this->rejectionReason
