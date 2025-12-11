@@ -78,8 +78,8 @@ class ProjectShow extends Component
         // Use Policy for authorization
         $this->authorize('view', $project);
 
-        // Eager load domains to prevent N+1 queries
-        $this->project = $project->load('domains');
+        // Eager load domains and check for active deployments
+        $this->project = $project->load(['domains', 'activeDeployment']);
         $this->firstTab = request()->query('tab', 'overview');
         $this->activeTab = $this->firstTab;
         $this->selectedBranch = $project->branch;
@@ -358,6 +358,16 @@ class ProjectShow extends Component
     public function deploy()
     {
         try {
+            // Check if there's already an active deployment
+            $activeDeployment = $this->project->deployments()
+                ->whereIn('status', ['pending', 'running'])
+                ->first();
+
+            if ($activeDeployment) {
+                session()->flash('error', 'A deployment is already in progress. Please wait for it to complete or cancel it first.');
+                return $this->redirect(route('deployments.show', $activeDeployment), navigate: true);
+            }
+
             $deployment = Deployment::create([
                 'user_id' => auth()->id(),
                 'project_id' => $this->project->id,

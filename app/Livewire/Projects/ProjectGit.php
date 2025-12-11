@@ -66,6 +66,17 @@ class ProjectGit extends Component
     public function deployProject(): void
     {
         try {
+            // Check if there's already an active deployment
+            $activeDeployment = $this->project->deployments()
+                ->whereIn('status', ['pending', 'running'])
+                ->first();
+
+            if ($activeDeployment) {
+                $this->dispatch('notification', type: 'error', message: 'A deployment is already in progress. Please wait for it to complete.');
+                $this->redirect(route('deployments.show', $activeDeployment), navigate: true);
+                return;
+            }
+
             $deployment = \App\Models\Deployment::create([
                 'user_id' => auth()->id(),
                 'project_id' => $this->project->id,
