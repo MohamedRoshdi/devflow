@@ -7,6 +7,125 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.42.0] - 2025-12-11
+
+### Added
+- **Deployment Method Selection** - New feature for choosing deployment strategy
+  - Added `deployment_method` enum field to projects table (docker/standard)
+  - Beautiful UI with radio button cards in project creation wizard
+  - Docker option (🐳) - Uses docker-compose.yml from repository
+  - Standard Laravel option (🔧) - Traditional Nginx + PHP-FPM deployment
+  - Visual selection indicators with checkmarks and color themes
+  - Defaults to 'docker' as most common use case
+
+- **DevFlow Deployment Progress UI** - Real-time deployment step tracking
+  - Added `wire:poll.1s="pollDeploymentStep"` for automatic step execution
+  - Comprehensive deployment progress section with:
+    - Real-time step status display (pending/running/success/failed)
+    - Visual indicators (spinner, checkmark, error icons)
+    - Status badges with color coding
+    - Live console output display
+    - Step counter showing progress (e.g., "Step 3 of 9")
+  - Different visual states based on deployment status:
+    - ✅ Success: Green gradient with checkmark icon
+    - ❌ Failed: Red gradient with X icon
+    - 🔄 Running: Emerald gradient with spinner
+  - Close button to dismiss completed deployments
+  - Deployment remains visible after completion until manually closed
+
+- **Storage Permissions Fix Script** - Permanent solution for recurring permission issues
+  - Created `fix-storage.sh` executable script
+  - Automatically creates all required storage directories:
+    - storage/framework/{cache,sessions,views,testing}
+    - storage/logs
+    - storage/app/{public,backups}
+    - bootstrap/cache
+  - Sets proper permissions (775 for directories)
+  - Clears Laravel caches (view, config, route)
+  - Added proper `.gitignore` files in all storage directories
+  - Can be run anytime with `./fix-storage.sh`
+  - Fixes the recurring "file_put_contents failed" error permanently
+
+### Changed
+- **PHP & Node Version Fields** - Now context-aware based on deployment method
+  - Fields only show when "Standard Laravel" deployment is selected
+  - Hidden for Docker deployment (versions defined in docker-compose.yml)
+  - Replaced with informative blue info box for Docker explaining version source
+  - Updated Step 4 summary to conditionally show PHP/Node only for Standard deployment
+  - Improved framework dropdown layout with helper text
+
+- **DevFlow Deployment Steps** - Made npm operations non-critical
+  - `stepNpmInstall()` - Checks if package.json exists before running
+    - Skips with message if package.json not found
+    - Logs warning but continues on npm install errors
+    - Prevents deployment failure due to missing Node.js setup
+  - `stepNpmBuild()` - Checks if node_modules exists before running
+    - Skips with message if node_modules not found
+    - Attempts fallback command if first build fails
+    - Logs warning but continues on build errors
+    - Allows deployment to complete even if frontend assets fail
+
+- **Deployment Step Visibility** - Improved UX for deployment monitoring
+  - Changed UI condition from `@if($isDeploying && count($deploymentSteps) > 0)`
+  - To: `@if(count($deploymentSteps) > 0 && ($isDeploying || $deploymentStatus === 'success' || $deploymentStatus === 'failed'))`
+  - Steps now remain visible after deployment completes
+  - User can review all steps and close when ready
+  - Prevents premature hiding of deployment progress
+
+### Fixed
+- **DevFlow Deploy Now Button** - Button now properly executes all deployment steps
+  - Added polling mechanism to automatically advance through steps
+  - All 9 deployment steps now execute without stopping
+  - Fixed issue where steps would disappear after 2-3 steps
+  - Steps remain visible throughout entire deployment process
+
+- **Storage Permission Issues** - Permanent fix for recurring file write errors
+  - Fixed "file_put_contents(...): Failed to open stream: No such file or directory"
+  - Created missing storage directories with proper structure
+  - Added .gitignore files to ensure directories are tracked in git
+  - Set correct permissions (775) on all storage directories
+  - Includes automated fix script for future occurrences
+
+- **Production Cache Issues** - Resolved Dusk service provider conflicts
+  - Removed stale Laravel Dusk cache from production
+  - Added automatic cache clearing in deployment process
+  - Fixed "Class 'Laravel\Dusk\DuskServiceProvider' not found" errors
+  - Improved cache clearing in fix-storage.sh script
+
+### Technical Details
+
+**Database Migration**
+```php
+// 2025_12_11_171512_add_deployment_method_to_projects_table.php
+$table->enum('deployment_method', ['docker', 'standard'])
+    ->default('docker')
+    ->after('framework')
+    ->comment('Deployment method: docker or standard');
+```
+
+**Files Modified**
+- `app/Livewire/Projects/ProjectCreate.php` - Added deployment_method property and validation
+- `app/Livewire/Projects/DevFlowSelfManagement.php` - Made npm steps non-critical
+- `app/Models/Project.php` - Added deployment_method to fillable
+- `resources/views/livewire/projects/project-create.blade.php` - Added deployment method UI
+- `resources/views/livewire/projects/devflow-self-management.blade.php` - Added deployment progress UI
+
+**New Files**
+- `fix-storage.sh` - Automated storage permissions fix script
+- `storage/framework/cache/.gitignore` - Ensures cache directory is tracked
+- `storage/framework/sessions/.gitignore` - Ensures sessions directory is tracked
+- `storage/framework/views/.gitignore` - Ensures views directory is tracked
+- `storage/logs/.gitignore` - Ensures logs directory is tracked
+
+**Commits**
+- `e4e7253` - feat: add deployment method selection to project creation
+- `3905a0f` - fix: add polling and display for DevFlow deployment steps
+- `12a0cec` - feat: make npm steps non-critical in DevFlow deployment
+- `f6da707` - fix: conditionally show PHP/Node versions only for Standard deployment
+- `c27bec9` - fix: add permanent storage permission fix script
+
+---
+
 ## [5.41.0] - 2025-12-11
 
 ### Fixed - PHPStan Level 8 Compliance (63 warnings resolved)
