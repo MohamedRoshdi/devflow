@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.45.0] - 2025-12-11
+
+### Added
+- **5 New Authorization Policies** - Team, NotificationChannel, LogSource, ScheduledDeployment, PipelineConfig
+- **6 Reusable Livewire Traits** - WithServerFiltering, WithServerActions, WithBulkServerActions, WithBackupCreation, WithBackupRestoration, WithBackupScheduleManagement
+- **DeploymentStatusUpdatedListener** - New listener for deployment status audit logging
+- **Translation Infrastructure** - 112 translation keys in English and Arabic
+  - lang/en/ and lang/ar/ with status, labels, buttons, messages
+  - Full RTL support for Arabic
+
+### Changed
+- **ServerList.php Refactored** - 652 → 99 lines (85% reduction)
+- **DatabaseBackupManager.php Refactored** - 516 → 164 lines (68% reduction)
+- **Events Enhanced** - Added documentation and ShouldBroadcast to broadcast-only events
+- **deployment-approvals.blade.php** - 39 translation function calls implemented
+
+### Documentation
+- lang/README.md, USAGE_EXAMPLES.md, QUICK_REFERENCE.md for i18n
+
+---
+
 ## [5.44.0] - 2025-12-11
 
 ### Added

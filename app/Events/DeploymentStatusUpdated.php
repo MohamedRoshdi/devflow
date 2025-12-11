@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Events;
 
 use App\Models\Deployment;
@@ -9,6 +11,16 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Event fired when deployment status changes.
+ *
+ * This event broadcasts real-time deployment status updates to the frontend
+ * AND triggers server-side actions like audit logging and notifications.
+ *
+ * Status updates include progress changes, stage transitions, and completion states.
+ *
+ * This event has a server-side listener: DeploymentStatusUpdatedListener
+ */
 class DeploymentStatusUpdated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
@@ -21,6 +33,10 @@ class DeploymentStatusUpdated implements ShouldBroadcast
 
     /**
      * Create a new event instance.
+     *
+     * @param  Deployment  $deployment  The deployment instance
+     * @param  string  $message  Status update message
+     * @param  string  $type  Message type (success, error, warning, info)
      */
     public function __construct(Deployment $deployment, string $message, string $type = 'info')
     {

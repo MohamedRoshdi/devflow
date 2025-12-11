@@ -7,16 +7,16 @@
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        Deployment Approvals
+                        {{ __('messages.deployment_approvals_title') }}
                     </h1>
-                    <p class="text-white/80 mt-2 max-w-2xl">Review and approve pending deployments to production environments.</p>
+                    <p class="text-white/80 mt-2 max-w-2xl">{{ __('messages.deployment_approvals_description') }}</p>
                 </div>
                 <div class="flex items-center gap-3">
                     <a href="{{ route('deployments.index') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white/20 hover:bg-white/30 text-white rounded-full font-semibold transition">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
-                        Back to Deployments
+                        {{ __('buttons.back_to_deployments') }}
                     </a>
                 </div>
             </div>
@@ -26,19 +26,19 @@
             <!-- Stats -->
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
                 <div class="p-4 rounded-xl border border-amber-100 bg-amber-50 dark:border-amber-900/60 dark:bg-amber-900/20">
-                    <p class="text-xs uppercase font-semibold tracking-wide text-amber-700 dark:text-amber-300">Pending Approvals</p>
+                    <p class="text-xs uppercase font-semibold tracking-wide text-amber-700 dark:text-amber-300">{{ __('labels.pending_approvals') }}</p>
                     <p class="mt-2 text-2xl font-bold text-amber-900 dark:text-amber-100">{{ $this->stats['pending'] ?? 0 }}</p>
                 </div>
                 <div class="p-4 rounded-xl border border-emerald-100 bg-emerald-50 dark:border-emerald-900/60 dark:bg-emerald-900/20">
-                    <p class="text-xs uppercase font-semibold tracking-wide text-emerald-700 dark:text-emerald-300">Approved</p>
+                    <p class="text-xs uppercase font-semibold tracking-wide text-emerald-700 dark:text-emerald-300">{{ __('status.approved') }}</p>
                     <p class="mt-2 text-2xl font-bold text-emerald-900 dark:text-emerald-100">{{ $this->stats['approved'] ?? 0 }}</p>
                 </div>
                 <div class="p-4 rounded-xl border border-rose-100 bg-rose-50 dark:border-rose-900/60 dark:bg-rose-900/20">
-                    <p class="text-xs uppercase font-semibold tracking-wide text-rose-700 dark:text-rose-300">Rejected</p>
+                    <p class="text-xs uppercase font-semibold tracking-wide text-rose-700 dark:text-rose-300">{{ __('status.rejected') }}</p>
                     <p class="mt-2 text-2xl font-bold text-rose-900 dark:text-rose-100">{{ $this->stats['rejected'] ?? 0 }}</p>
                 </div>
                 <div class="p-4 rounded-xl border border-blue-100 bg-blue-50 dark:border-blue-900/60 dark:bg-blue-900/20">
-                    <p class="text-xs uppercase font-semibold tracking-wide text-blue-700 dark:text-blue-300">Expired</p>
+                    <p class="text-xs uppercase font-semibold tracking-wide text-blue-700 dark:text-blue-300">{{ __('status.expired') }}</p>
                     <p class="mt-2 text-2xl font-bold text-blue-900 dark:text-blue-100">{{ $this->stats['expired'] ?? 0 }}</p>
                 </div>
             </div>
@@ -46,31 +46,31 @@
             <!-- Filters -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Search</label>
+                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">{{ __('labels.search') }}</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M9.5 17a7.5 7.5 0 117.5-7.5 7.5 7.5 0 01-7.5 7.5z" />
                             </svg>
                         </span>
-                        <input type="text" placeholder="Project name or requester" wire:model.live.debounce.500ms="search"
+                        <input type="text" placeholder="{{ __('labels.search_placeholder') }}" wire:model.live.debounce.500ms="search"
                                class="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500" />
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Status</label>
+                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">{{ __('labels.status') }}</label>
                     <select wire:model.live="statusFilter" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
-                        <option value="expired">Expired</option>
-                        <option value="all">All statuses</option>
+                        <option value="pending">{{ __('status.pending') }}</option>
+                        <option value="approved">{{ __('status.approved') }}</option>
+                        <option value="rejected">{{ __('status.rejected') }}</option>
+                        <option value="expired">{{ __('status.expired') }}</option>
+                        <option value="all">{{ __('labels.all_statuses') }}</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Project</label>
+                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">{{ __('labels.project') }}</label>
                     <select wire:model.live="projectFilter" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">All projects</option>
+                        <option value="">{{ __('labels.all_projects') }}</option>
                         @foreach($this->projects as $project)
                             <option value="{{ $project->id }}">{{ $project->name }}</option>
                         @endforeach
@@ -116,7 +116,7 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                             </svg>
                                             <div>
-                                                <p class="text-sm text-gray-600 dark:text-gray-400">Requested by: <span class="font-semibold text-gray-900 dark:text-gray-100">{{ $approval->requester->name }}</span></p>
+                                                <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('labels.requested_by') }}: <span class="font-semibold text-gray-900 dark:text-gray-100">{{ $approval->requester->name }}</span></p>
                                                 <p class="text-xs text-gray-500 dark:text-gray-500">{{ $approval->requested_at->diffForHumans() }}</p>
                                             </div>
                                         </div>
@@ -126,9 +126,9 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                                             </svg>
                                             <div>
-                                                <p class="text-sm text-gray-600 dark:text-gray-400">Branch: <code class="text-xs font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">{{ $approval->deployment->branch }}</code></p>
+                                                <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('labels.branch') }}: <code class="text-xs font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">{{ $approval->deployment->branch }}</code></p>
                                                 @if($approval->deployment->commit_hash)
-                                                    <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">Commit: <code class="font-mono">{{ substr($approval->deployment->commit_hash, 0, 7) }}</code></p>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">{{ __('labels.commit') }}: <code class="font-mono">{{ substr($approval->deployment->commit_hash, 0, 7) }}</code></p>
                                                 @endif
                                             </div>
                                         </div>
@@ -139,7 +139,7 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
                                                 </svg>
                                                 <div class="flex-1">
-                                                    <p class="text-sm text-gray-600 dark:text-gray-400">Request Notes:</p>
+                                                    <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('labels.request_notes') }}:</p>
                                                     <p class="text-sm text-gray-700 dark:text-gray-300 mt-1 bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">{{ $approval->notes }}</p>
                                                 </div>
                                             </div>
@@ -151,7 +151,7 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
                                                 <div class="flex-1">
-                                                    <p class="text-sm text-gray-600 dark:text-gray-400">Approval Notes by {{ $approval->approver->name }}:</p>
+                                                    <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('labels.approval_notes') }} by {{ $approval->approver->name }}:</p>
                                                     <p class="text-sm text-gray-700 dark:text-gray-300 mt-1 bg-emerald-50 dark:bg-emerald-900/20 p-3 rounded-lg">{{ $approval->approval_notes }}</p>
                                                 </div>
                                             </div>
@@ -163,7 +163,7 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
                                                 <div class="flex-1">
-                                                    <p class="text-sm text-gray-600 dark:text-gray-400">Rejection Reason by {{ $approval->approver->name }}:</p>
+                                                    <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('labels.rejection_reason') }} by {{ $approval->approver->name }}:</p>
                                                     <p class="text-sm text-gray-700 dark:text-gray-300 mt-1 bg-rose-50 dark:bg-rose-900/20 p-3 rounded-lg">{{ $approval->rejection_reason }}</p>
                                                 </div>
                                             </div>
@@ -177,13 +177,13 @@
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                             </svg>
-                                            Approve
+                                            {{ __('buttons.approve') }}
                                         </button>
                                         <button wire:click="openRejectModal({{ $approval->id }})" class="flex-1 lg:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-700 hover:to-red-800 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                             </svg>
-                                            Reject
+                                            {{ __('buttons.reject') }}
                                         </button>
                                     </div>
                                 @endif
@@ -201,8 +201,8 @@
                     <svg class="mx-auto h-16 w-16 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <h3 class="mt-4 text-lg font-semibold text-gray-900 dark:text-gray-100">No approvals found</h3>
-                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">There are no deployment approvals matching your criteria.</p>
+                    <h3 class="mt-4 text-lg font-semibold text-gray-900 dark:text-gray-100">{{ __('messages.no_approvals_found') }}</h3>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">{{ __('messages.no_approvals_description') }}</p>
                 </div>
             @endif
         </div>
@@ -223,26 +223,26 @@
                                 </svg>
                             </div>
                             <div class="mt-0 ml-4 text-left">
-                                <h3 class="text-lg font-semibold leading-6 text-gray-900 dark:text-gray-100">Approve Deployment</h3>
+                                <h3 class="text-lg font-semibold leading-6 text-gray-900 dark:text-gray-100">{{ __('messages.approve_deployment_title') }}</h3>
                                 <div class="mt-2">
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">Are you sure you want to approve this deployment? This will trigger the deployment process.</p>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('messages.approve_deployment_confirmation') }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="px-6 pb-4">
-                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Approval Notes (Optional)</label>
-                        <textarea wire:model="approvalNotes" rows="3" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-200 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Add any notes about this approval..."></textarea>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ __('labels.approval_notes') }} ({{ __('messages.optional_field') }})</label>
+                        <textarea wire:model="approvalNotes" rows="3" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-200 focus:ring-emerald-500 focus:border-emerald-500" placeholder="{{ __('labels.approval_notes_placeholder') }}"></textarea>
                         @error('approvalNotes') <span class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 sm:flex sm:flex-row-reverse gap-3">
                         <button wire:click="approve" type="button" class="inline-flex justify-center w-full px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-emerald-600 to-green-700 hover:from-emerald-700 hover:to-green-800 rounded-xl shadow-sm sm:w-auto transition">
-                            Approve Deployment
+                            {{ __('buttons.approve_deployment') }}
                         </button>
                         <button @click="open = false" type="button" class="inline-flex justify-center w-full px-6 py-3 mt-3 text-sm font-semibold text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 sm:mt-0 sm:w-auto transition">
-                            Cancel
+                            {{ __('buttons.cancel') }}
                         </button>
                     </div>
                 </div>
@@ -265,26 +265,26 @@
                                 </svg>
                             </div>
                             <div class="mt-0 ml-4 text-left">
-                                <h3 class="text-lg font-semibold leading-6 text-gray-900 dark:text-gray-100">Reject Deployment</h3>
+                                <h3 class="text-lg font-semibold leading-6 text-gray-900 dark:text-gray-100">{{ __('messages.reject_deployment_title') }}</h3>
                                 <div class="mt-2">
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">Please provide a reason for rejecting this deployment request.</p>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('messages.reject_deployment_message') }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="px-6 pb-4">
-                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Rejection Reason <span class="text-rose-600">*</span></label>
-                        <textarea wire:model="rejectionReason" rows="3" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-200 focus:ring-rose-500 focus:border-rose-500" placeholder="Explain why this deployment is being rejected..."></textarea>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ __('labels.rejection_reason') }} <span class="text-rose-600">*</span></label>
+                        <textarea wire:model="rejectionReason" rows="3" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-200 focus:ring-rose-500 focus:border-rose-500" placeholder="{{ __('labels.rejection_reason_placeholder') }}"></textarea>
                         @error('rejectionReason') <span class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 sm:flex sm:flex-row-reverse gap-3">
                         <button wire:click="reject" type="button" class="inline-flex justify-center w-full px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-700 hover:to-red-800 rounded-xl shadow-sm sm:w-auto transition">
-                            Reject Deployment
+                            {{ __('buttons.reject_deployment') }}
                         </button>
                         <button @click="open = false" type="button" class="inline-flex justify-center w-full px-6 py-3 mt-3 text-sm font-semibold text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 sm:mt-0 sm:w-auto transition">
-                            Cancel
+                            {{ __('buttons.cancel') }}
                         </button>
                     </div>
                 </div>

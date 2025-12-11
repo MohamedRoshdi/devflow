@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Events;
 
 use App\Models\Project;
@@ -9,12 +11,25 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Broadcast-only event for real-time project setup progress updates.
+ *
+ * This event broadcasts project initialization progress to the frontend, including:
+ * - Setup task status changes
+ * - Progress percentage updates
+ * - Task-specific messages and errors
+ * - Overall setup completion status
+ *
+ * No server-side listener required - this event only broadcasts to frontend clients.
+ */
 class ProjectSetupUpdated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
      * Create a new event instance.
+     *
+     * @param  Project  $project  The project being set up
      */
     public function __construct(
         public Project $project
