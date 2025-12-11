@@ -27,6 +27,8 @@ class ServerShow extends Component
 
     public bool $isLoading = true;
 
+    public string $activeTab = 'overview';
+
     public function mount(Server $server)
     {
         $this->authorize('view', $server);
