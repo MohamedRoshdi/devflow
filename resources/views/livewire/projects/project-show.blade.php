@@ -563,6 +563,106 @@
                 @endif
             </div>
 
+            {{-- Domains Card --}}
+            <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 overflow-hidden">
+                <div class="bg-gradient-to-r from-purple-600 to-pink-600 p-6 border-b border-purple-500/30">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                            </svg>
+                            Domains
+                        </h2>
+                        <button wire:click="$dispatch('open-add-domain-modal')"
+                            class="px-4 py-2 rounded-lg text-sm font-medium bg-white/20 hover:bg-white/30 text-white transition-all">
+                            + Add
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6">
+                    @if($project->domains && $project->domains->count() > 0)
+                        <div class="space-y-3">
+                            @foreach($project->domains as $domain)
+                                @php
+                                    $isIpPort = str_contains($domain->domain, ':');
+                                    $protocol = $domain->ssl_enabled ? 'https' : 'http';
+                                    $url = $protocol . '://' . $domain->domain;
+                                @endphp
+                                <div class="p-4 bg-slate-900/50 rounded-xl border border-slate-700/30 hover:bg-slate-900/70 hover:border-purple-500/30 transition-all group">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <a href="{{ $url }}" target="_blank"
+                                                class="font-semibold text-purple-400 hover:text-purple-300 hover:underline flex items-center gap-2 group-hover:gap-3 transition-all">
+                                                {{ $domain->domain }}
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                                </svg>
+                                            </a>
+                                            <div class="flex items-center flex-wrap gap-2 mt-2">
+                                                @if($isIpPort)
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                        Direct Access
+                                                    </span>
+                                                @elseif($domain->ssl_enabled)
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                        SSL Active
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-700/50 text-slate-400 border border-slate-600/50">
+                                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                        No SSL
+                                                    </span>
+                                                @endif
+                                                @if($domain->is_primary)
+                                                    <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                                                        PRIMARY
+                                                    </span>
+                                                @endif
+                                                <span class="text-xs font-medium
+                                                    @if($domain->status === 'active') text-emerald-400
+                                                    @elseif($domain->status === 'pending') text-amber-400
+                                                    @elseif($domain->status === 'failed' || $domain->status === 'expired') text-red-400
+                                                    @else text-slate-400
+                                                    @endif">
+                                                    {{ ucfirst($domain->status) }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <a href="{{ $url }}" target="_blank"
+                                            class="p-2 text-slate-400 hover:text-purple-400 transition-colors">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-12">
+                            <svg class="mx-auto h-16 w-16 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                            </svg>
+                            <p class="mt-4 text-slate-400">No domains configured</p>
+                            <button wire:click="$dispatch('open-add-domain-modal')"
+                                class="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/20 text-purple-400 border border-purple-500/30 hover:bg-purple-500/30 transition-all">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Add First Domain
+                            </button>
+                        </div>
+                    @endif
+                </div>
+            </div>
         </div>
         @endif
 
