@@ -16,10 +16,12 @@ class DevFlowSelfManagement extends Component
     public bool $isDeploying = false;
     public string $deploymentOutput = '';
     public string $deploymentStatus = '';
+    /** @var array<int, array{name: string, status: string, output: string}> */
     public array $deploymentSteps = [];
     public int $currentStep = 0;
 
     // System Info
+    /** @var array<string, string> */
     public array $systemInfo = [];
 
     // Git Info
@@ -44,14 +46,18 @@ class DevFlowSelfManagement extends Component
     public string $sessionDriver = '';
 
     // Database
+    /** @var array<string, mixed> */
     public array $databaseInfo = [];
+    /** @var array<int, string> */
     public array $pendingMigrations = [];
 
     // Environment Editor
     public bool $showEnvEditor = false;
+    /** @var array<string, string> */
     public array $envVariables = [];
     public string $newEnvKey = '';
     public string $newEnvValue = '';
+    /** @var array<int, string> */
     public array $editableEnvKeys = [
         'APP_NAME', 'APP_ENV', 'APP_DEBUG', 'APP_URL',
         'DB_HOST', 'DB_PORT', 'DB_DATABASE',
@@ -61,35 +67,44 @@ class DevFlowSelfManagement extends Component
     ];
 
     // Queue Status
+    /** @var array<int, array{name: string, status: string, info: string}> */
     public array $queueStatus = [];
 
     // Domain Configuration
     public bool $showDomainEditor = false;
     public string $currentAppUrl = '';
     public string $currentAppDomain = '';
+    /** @var array<int, string> */
     public array $nginxSites = [];
 
     // Reverb WebSocket
+    /** @var array<string, mixed> */
     public array $reverbStatus = [];
     public bool $reverbRunning = false;
     public string $reverbOutput = '';
 
     // Supervisor Processes
+    /** @var array<int, array{name: string, status: string, info: string}> */
     public array $supervisorProcesses = [];
 
     // Scheduler
+    /** @var array<string, mixed> */
     public array $schedulerStatus = [];
     public string $lastSchedulerRun = '';
 
     // Git Tab State
+    /** @var array<int, array<string, mixed>> */
     public array $commits = [];
+    /** @var array<string, mixed> */
     public array $gitStatus = [];
+    /** @var array<string, mixed>|null */
     public ?array $currentCommit = null;
     public int $commitPage = 1;
     public int $commitPerPage = 15;
     public int $commitTotal = 0;
     public bool $gitLoading = false;
     public string $selectedBranch = '';
+    /** @var array<int, string> */
     public array $branches = [];
     public bool $pullingChanges = false;
 
