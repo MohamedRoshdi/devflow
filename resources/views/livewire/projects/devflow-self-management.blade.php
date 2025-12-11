@@ -1,4 +1,4 @@
-<div class="min-h-screen" x-data="{ activeTab: 'overview', showLogs: false }">
+<div class="min-h-screen" x-data="{ activeTab: 'overview', showLogs: false }" @if($isDeploying && $deploymentStatus === 'running') wire:poll.1s="pollDeploymentStep" @endif>
     {{-- Animated Background --}}
     <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
         <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-emerald-500/5 via-teal-500/5 to-cyan-500/5 rounded-full blur-3xl animate-pulse"></div>
@@ -98,6 +98,82 @@
                         </button>
                     </div>
                 </div>
+
+                {{-- Deployment Progress Section --}}
+                @if($isDeploying && count($deploymentSteps) > 0)
+                    <div class="mt-6 p-6 rounded-2xl bg-slate-800/50 border border-slate-700/30 backdrop-blur-sm">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-white animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-white">Deployment in Progress</h3>
+                                <p class="text-sm text-slate-400">Step {{ $currentStep + 1 }} of {{ count($deploymentSteps) }}</p>
+                            </div>
+                        </div>
+
+                        {{-- Deployment Steps --}}
+                        <div class="space-y-2">
+                            @foreach($deploymentSteps as $index => $step)
+                                <div class="flex items-center gap-3 p-3 rounded-lg {{ $step['status'] === 'running' ? 'bg-emerald-500/10 border border-emerald-500/30' : ($step['status'] === 'success' ? 'bg-slate-700/30' : 'bg-slate-800/30') }}">
+                                    {{-- Step Icon --}}
+                                    <div class="flex-shrink-0">
+                                        @if($step['status'] === 'success')
+                                            <svg class="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                            </svg>
+                                        @elseif($step['status'] === 'running')
+                                            <svg class="w-5 h-5 text-emerald-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                        @elseif($step['status'] === 'failed')
+                                            <svg class="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                            </svg>
+                                        @else
+                                            <svg class="w-5 h-5 text-slate-500" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                            </svg>
+                                        @endif
+                                    </div>
+
+                                    {{-- Step Name --}}
+                                    <div class="flex-1">
+                                        <span class="text-sm font-medium {{ $step['status'] === 'running' ? 'text-emerald-400' : ($step['status'] === 'success' ? 'text-white' : 'text-slate-400') }}">
+                                            {{ $step['name'] }}
+                                        </span>
+                                        @if($step['output'])
+                                            <p class="text-xs text-slate-500 mt-1 font-mono">{{ Str::limit($step['output'], 80) }}</p>
+                                        @endif
+                                    </div>
+
+                                    {{-- Step Status Badge --}}
+                                    <div>
+                                        @if($step['status'] === 'success')
+                                            <span class="px-2 py-0.5 rounded text-xs font-medium bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Done</span>
+                                        @elseif($step['status'] === 'running')
+                                            <span class="px-2 py-0.5 rounded text-xs font-medium bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse">Running</span>
+                                        @elseif($step['status'] === 'failed')
+                                            <span class="px-2 py-0.5 rounded text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30">Failed</span>
+                                        @else
+                                            <span class="px-2 py-0.5 rounded text-xs font-medium bg-slate-700/50 text-slate-400">Pending</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        {{-- Deployment Output --}}
+                        @if($deploymentOutput)
+                            <div class="mt-4 p-4 bg-slate-900/50 rounded-lg border border-slate-700/30 max-h-48 overflow-y-auto">
+                                <pre class="text-xs text-slate-300 font-mono whitespace-pre-wrap">{{ $deploymentOutput }}</pre>
+                            </div>
+                        @endif
+                    </div>
+                @endif
 
                 {{-- Git Status Bar --}}
                 @if($isGitRepo)
