@@ -158,7 +158,7 @@ class ProjectEdit extends Component
         ];
     }
 
-    public function updateProject(): RedirectResponse
+    public function updateProject()
     {
         $this->validate();
 

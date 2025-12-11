@@ -5,7 +5,7 @@
 [![CI Status](https://github.com/yourusername/devflow-pro/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/devflow-pro/actions/workflows/ci.yml)
 [![Deploy Status](https://github.com/yourusername/devflow-pro/actions/workflows/deploy.yml/badge.svg)](https://github.com/yourusername/devflow-pro/actions/workflows/deploy.yml)
 [![Code Quality](https://github.com/yourusername/devflow-pro/actions/workflows/code-quality.yml/badge.svg)](https://github.com/yourusername/devflow-pro/actions/workflows/code-quality.yml)
-[![Version](https://img.shields.io/badge/version-5.36.0-blue.svg)](https://github.com/yourusername/devflow-pro)
+[![Version](https://img.shields.io/badge/version-5.37.0-blue.svg)](https://github.com/yourusername/devflow-pro)
 [![Tests](https://img.shields.io/badge/tests-4300%2B-brightgreen.svg)](TESTING.md)
 [![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](TESTING.md)
 [![Laravel](https://img.shields.io/badge/Laravel-12-red.svg)](https://laravel.com)
@@ -61,6 +61,12 @@ DevFlow Pro is a **complete deployment management system** that makes it easy to
 - **Multiple Frameworks** - Laravel, Node.js, React, Vue, Next.js, Static sites
 - **Version Control** - Git integration (HTTPS & SSH)
 - **Branch Management** - Deploy from any branch
+- **Git Viewer Component** - Comprehensive Git management interface ⭐ NEW v5.37.0!
+  - Real-time sync status with update notifications
+  - Visual branch switcher with current branch highlighting
+  - Paginated commit history with author and timestamps
+  - One-click deploy when updates available
+  - Automatic refresh and error handling
 - **Git Commit Tracking** - View commit history and check for updates
 - **Update Notifications** - Get notified when new commits are available
 - **Modern Tabbed Interface** - Beautiful 5-tab navigation (Overview/Docker/Environment/Git/Deployments) ⭐ NEW v2.4!

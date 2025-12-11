@@ -7,6 +7,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.37.0] - 2025-12-11
+
+### Added - Git Viewer Component
+- **ProjectGit Livewire Component** - Comprehensive Git management interface
+  - `ProjectGit.php` - Livewire component for displaying Git data
+  - `project-git.blade.php` - Modern UI with animated loading states
+  - **Update Status Banner** - Real-time sync status with remote repository
+    - Shows current vs. latest commit comparison
+    - Displays number of commits behind
+    - One-click "Deploy Update" button when updates available
+  - **Branches Section** - Visual branch management
+    - Grid layout of all available branches
+    - Current branch highlighted with blue badge
+    - Main branches marked with purple badge
+    - Click to switch branches with confirmation
+    - Shows last commit date and committer for each branch
+  - **Commits History** - Paginated commit log
+    - Commit hash, message, author, and timestamp
+    - 10 commits per page with navigation
+    - Refresh button to fetch latest commits
+    - Human-readable timestamps (e.g., "2 hours ago")
+  - **Integration** - Replaced empty placeholder in Git tab
+    - Uses existing GitService for SSH-based Git operations
+    - Real-time data fetching from remote servers
+    - Error handling with retry functionality
+- **Git Tab Enhancement** - No longer shows empty placeholder
+  - DevFlow Pro projects: Shows self-management console
+  - All other projects: Shows comprehensive Git viewer
+  - Seamless integration with existing project tabs
+
+### Fixed - ProjectEdit Return Type Error
+- Fixed `500 Internal Server Error` when editing projects
+  - Removed incorrect `: RedirectResponse` return type from `updateProject()` method
+  - Issue: Livewire's `redirect()` returns `Redirector`, not `RedirectResponse`
+  - Location: `app/Livewire/Projects/ProjectEdit.php:161`
+  - Projects can now be edited without errors
+
+### Technical Details
+- **GitService Integration** - Leverages existing SSH-based Git operations
+  - `getLatestCommits()` - Fetch paginated commit history
+  - `getBranches()` - List all available branches
+  - `checkForUpdates()` - Compare local vs remote commits
+  - `switchBranch()` - Change project branch with automatic deployment
+- **Error Handling** - Graceful degradation for Git failures
+  - Shows loading spinner during data fetch
+  - Displays error message with retry button on failure
+  - Falls back to empty state if repository not cloned yet
+
+---
+
 ## [5.36.0] - 2025-12-11
 
 ### Added - Inline Help System UI
