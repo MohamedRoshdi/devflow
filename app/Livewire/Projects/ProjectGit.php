@@ -63,6 +63,30 @@ class ProjectGit extends Component
         }
     }
 
+    public function deployProject(): void
+    {
+        try {
+            $deployment = \App\Models\Deployment::create([
+                'user_id' => auth()->id(),
+                'project_id' => $this->project->id,
+                'server_id' => $this->project->server_id,
+                'branch' => $this->project->branch,
+                'status' => 'pending',
+                'triggered_by' => 'manual',
+                'started_at' => now(),
+            ]);
+
+            \App\Jobs\DeployProjectJob::dispatch($deployment);
+
+            $this->dispatch('notification', type: 'success', message: 'Deployment started successfully!');
+
+            // Redirect to deployment page
+            $this->redirect(route('deployments.show', $deployment), navigate: true);
+        } catch (\Exception $e) {
+            $this->dispatch('notification', type: 'error', message: 'Failed to start deployment: ' . $e->getMessage());
+        }
+    }
+
     public function switchBranch(string $branchName): void
     {
         try {
