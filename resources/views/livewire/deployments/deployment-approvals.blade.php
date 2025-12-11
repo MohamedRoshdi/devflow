@@ -27,19 +27,19 @@
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
                 <div class="p-4 rounded-xl border border-amber-100 bg-amber-50 dark:border-amber-900/60 dark:bg-amber-900/20">
                     <p class="text-xs uppercase font-semibold tracking-wide text-amber-700 dark:text-amber-300">Pending Approvals</p>
-                    <p class="mt-2 text-2xl font-bold text-amber-900 dark:text-amber-100">{{ $stats['pending'] ?? 0 }}</p>
+                    <p class="mt-2 text-2xl font-bold text-amber-900 dark:text-amber-100">{{ $this->stats['pending'] ?? 0 }}</p>
                 </div>
                 <div class="p-4 rounded-xl border border-emerald-100 bg-emerald-50 dark:border-emerald-900/60 dark:bg-emerald-900/20">
                     <p class="text-xs uppercase font-semibold tracking-wide text-emerald-700 dark:text-emerald-300">Approved</p>
-                    <p class="mt-2 text-2xl font-bold text-emerald-900 dark:text-emerald-100">{{ $stats['approved'] ?? 0 }}</p>
+                    <p class="mt-2 text-2xl font-bold text-emerald-900 dark:text-emerald-100">{{ $this->stats['approved'] ?? 0 }}</p>
                 </div>
                 <div class="p-4 rounded-xl border border-rose-100 bg-rose-50 dark:border-rose-900/60 dark:bg-rose-900/20">
                     <p class="text-xs uppercase font-semibold tracking-wide text-rose-700 dark:text-rose-300">Rejected</p>
-                    <p class="mt-2 text-2xl font-bold text-rose-900 dark:text-rose-100">{{ $stats['rejected'] ?? 0 }}</p>
+                    <p class="mt-2 text-2xl font-bold text-rose-900 dark:text-rose-100">{{ $this->stats['rejected'] ?? 0 }}</p>
                 </div>
                 <div class="p-4 rounded-xl border border-blue-100 bg-blue-50 dark:border-blue-900/60 dark:bg-blue-900/20">
                     <p class="text-xs uppercase font-semibold tracking-wide text-blue-700 dark:text-blue-300">Expired</p>
-                    <p class="mt-2 text-2xl font-bold text-blue-900 dark:text-blue-100">{{ $stats['expired'] ?? 0 }}</p>
+                    <p class="mt-2 text-2xl font-bold text-blue-900 dark:text-blue-100">{{ $this->stats['expired'] ?? 0 }}</p>
                 </div>
             </div>
 
@@ -71,7 +71,7 @@
                     <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Project</label>
                     <select wire:model.live="projectFilter" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500">
                         <option value="">All projects</option>
-                        @foreach($projects as $project)
+                        @foreach($this->projects as $project)
                             <option value="{{ $project->id }}">{{ $project->name }}</option>
                         @endforeach
                     </select>
@@ -79,9 +79,9 @@
             </div>
 
             <!-- Approvals List -->
-            @if($approvals->count())
+            @if($this->approvals->count())
                 <div class="space-y-4">
-                    @foreach($approvals as $approval)
+                    @foreach($this->approvals as $approval)
                         <div class="p-6 bg-white dark:bg-gray-900 rounded-xl border-2 transition-all duration-200 hover:shadow-lg @if($approval->status === 'pending') border-amber-200 dark:border-amber-800/50 @elseif($approval->status === 'approved') border-emerald-200 dark:border-emerald-800/50 @elseif($approval->status === 'rejected') border-rose-200 dark:border-rose-800/50 @else border-gray-200 dark:border-gray-700 @endif">
                             <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                                 <div class="flex-1 space-y-3">
@@ -194,7 +194,7 @@
 
                 <!-- Pagination -->
                 <div class="mt-6">
-                    {{ $approvals->links() }}
+                    {{ $this->approvals->links() }}
                 </div>
             @else
                 <div class="text-center py-16">
