@@ -25,6 +25,7 @@ class Project extends Model
         'repository_url',
         'branch',
         'framework',
+        'deployment_method',
         'project_type',
         'environment',
         'php_version',

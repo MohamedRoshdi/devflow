@@ -158,6 +158,67 @@
                         </div>
                     </div>
 
+                    <!-- Deployment Method Selection -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Deployment Method *</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Docker Option -->
+                            <label class="relative flex cursor-pointer rounded-lg border p-4 shadow-sm focus:outline-none {{ $deployment_method === 'docker' ? 'border-emerald-500 ring-2 ring-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500' }}">
+                                <input type="radio" wire:model.live="deployment_method" value="docker" class="sr-only">
+                                <div class="flex flex-1 items-start">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M13.983 11.078h2.119a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.185v1.888c0 .102.083.185.185.185m-2.954-5.43h2.118a.186.186 0 00.186-.186V3.574a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m0 2.716h2.118a.187.187 0 00.186-.186V6.29a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.887c0 .102.082.185.185.186m-2.93 0h2.12a.186.186 0 00.184-.186V6.29a.185.185 0 00-.185-.185H8.1a.185.185 0 00-.185.185v1.887c0 .102.083.185.185.186m-2.964 0h2.119a.186.186 0 00.185-.186V6.29a.185.185 0 00-.185-.185H5.136a.186.186 0 00-.186.185v1.887c0 .102.084.185.186.186m5.893 2.715h2.118a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m-2.93 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.083.185.185.185m-2.964 0h2.119a.185.185 0 00.185-.185V9.006a.185.185 0 00-.184-.186h-2.12a.186.186 0 00-.186.186v1.887c0 .102.084.185.186.185m-2.92 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.082.185.185.185M23.763 9.89c-.065-.051-.672-.51-1.954-.51-.338 0-.676.03-1.01.087-.239-1.316-.988-2.438-2.233-3.325l-.31-.216-.31.216c-.436.305-.802.67-1.085 1.084a3.97 3.97 0 00-.606 2.072c0 .524.09 1.031.267 1.508-1.271.73-2.62.658-2.668.658H.388l-.03.32a6.61 6.61 0 00.534 3.94l.05.104.024.049c.707 1.283 1.948 2.193 3.635 2.672.238.068.475.124.713.167l-.003.045c0 .001.002.004.004.006.17.017.344.025.52.033.168.008.334.014.501.014 1.95 0 3.726-.34 5.275-.897a13.63 13.63 0 003.74-2.252c2.028-1.896 3.162-4.196 3.275-6.643h.148c1.224 0 1.983-.418 2.317-.673a3.07 3.07 0 00.68-.847l.082-.165z"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="ml-3 flex-1">
+                                        <span class="block text-sm font-semibold {{ $deployment_method === 'docker' ? 'text-emerald-900 dark:text-emerald-100' : 'text-gray-900 dark:text-white' }}">
+                                            🐳 Docker
+                                        </span>
+                                        <span class="mt-1 flex items-center text-xs {{ $deployment_method === 'docker' ? 'text-emerald-700 dark:text-emerald-300' : 'text-gray-500 dark:text-gray-400' }}">
+                                            Uses docker-compose.yml from your repository
+                                        </span>
+                                    </div>
+                                </div>
+                                @if($deployment_method === 'docker')
+                                    <svg class="h-5 w-5 text-emerald-600 dark:text-emerald-400 absolute top-4 right-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                    </svg>
+                                @endif
+                            </label>
+
+                            <!-- Standard Laravel Option -->
+                            <label class="relative flex cursor-pointer rounded-lg border p-4 shadow-sm focus:outline-none {{ $deployment_method === 'standard' ? 'border-red-500 ring-2 ring-red-500 bg-red-50 dark:bg-red-900/20' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500' }}">
+                                <input type="radio" wire:model.live="deployment_method" value="standard" class="sr-only">
+                                <div class="flex flex-1 items-start">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M23.642 5.43a.364.364 0 01.014.1v5.149c0 .135-.073.26-.189.326l-4.323 2.49v4.934a.378.378 0 01-.188.326L9.93 23.949a.316.316 0 01-.066.027c-.008.002-.016.008-.024.01a.348.348 0 01-.192 0c-.011-.002-.02-.008-.03-.012-.02-.008-.042-.014-.062-.025L.533 18.755a.376.376 0 01-.189-.326V2.974c0-.033.005-.066.014-.098.003-.012.01-.02.014-.032a.369.369 0 01.023-.058c.004-.013.015-.022.023-.033l.033-.045c.012-.01.025-.018.037-.027.014-.012.027-.024.041-.034H.53L5.043.05a.375.375 0 01.375 0L9.93 2.647h.002c.015.01.027.021.04.033l.038.027c.013.014.02.03.033.045.008.011.02.021.025.033.01.02.017.038.024.058.003.011.01.021.013.032.01.031.014.064.014.098v9.652l3.76-2.164V5.527c0-.033.004-.066.013-.098.003-.01.01-.02.013-.032a.487.487 0 01.024-.059c.007-.012.018-.02.025-.033.012-.015.021-.03.033-.043.012-.012.025-.02.037-.028.014-.01.026-.023.041-.032h.001l4.513-2.598a.375.375 0 01.375 0l4.513 2.598c.016.01.027.021.042.031.012.01.025.018.036.028.013.014.022.03.034.044.008.012.019.021.024.033.011.02.018.04.024.06.006.01.012.021.015.032zm-.74 5.032V6.179l-1.578.908-2.182 1.256v4.283zm-4.51 7.75v-4.287l-2.147 1.225-6.126 3.498v4.325zM1.093 3.624v14.588l8.273 4.761v-4.325l-4.322-2.445-.002-.003H5.04c-.014-.01-.025-.021-.04-.031-.011-.01-.024-.018-.035-.027l-.001-.002c-.013-.012-.021-.025-.031-.04-.01-.011-.021-.022-.028-.036h-.002c-.008-.014-.013-.031-.02-.047-.006-.016-.014-.027-.018-.043a.49.49 0 01-.008-.057c-.002-.014-.006-.027-.006-.041V5.789L1.093 3.624zm4.513-.908L3.36 1.56.813 2.716l2.246 1.297zm.375 6.873l2.182-1.256V3.624l-1.578.908-2.182 1.256v4.283zm9.134-8.128L12.869 0l-2.246 1.297 2.246 1.297zm.376 6.873l2.182-1.256V3.624l-1.578.908-2.182 1.256v4.283zM9.93 16.044l5.91-3.373-2.182-1.256-4.323 2.49z"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="ml-3 flex-1">
+                                        <span class="block text-sm font-semibold {{ $deployment_method === 'standard' ? 'text-red-900 dark:text-red-100' : 'text-gray-900 dark:text-white' }}">
+                                            🔧 Standard Laravel
+                                        </span>
+                                        <span class="mt-1 flex items-center text-xs {{ $deployment_method === 'standard' ? 'text-red-700 dark:text-red-300' : 'text-gray-500 dark:text-gray-400' }}">
+                                            Traditional deployment (Nginx + PHP-FPM)
+                                        </span>
+                                    </div>
+                                </div>
+                                @if($deployment_method === 'standard')
+                                    <svg class="h-5 w-5 text-red-600 dark:text-red-400 absolute top-4 right-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                    </svg>
+                                @endif
+                            </label>
+                        </div>
+                        @error('deployment_method') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
                             <label for="framework" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Framework</label>
@@ -325,6 +386,7 @@
                                 <button type="button" wire:click="goToStep(2)" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Edit</button>
                             </div>
                             <div class="grid grid-cols-2 gap-2 text-sm">
+                                <div><span class="text-gray-500 dark:text-gray-400">Deployment:</span> <span class="text-gray-900 dark:text-white font-semibold">{{ $deployment_method === 'docker' ? '🐳 Docker' : '🔧 Standard Laravel' }}</span></div>
                                 <div><span class="text-gray-500 dark:text-gray-400">Framework:</span> <span class="text-gray-900 dark:text-white">{{ $framework ?: 'Not specified' }}</span></div>
                                 <div><span class="text-gray-500 dark:text-gray-400">PHP:</span> <span class="text-gray-900 dark:text-white">{{ $php_version }}</span></div>
                                 <div><span class="text-gray-500 dark:text-gray-400">Node:</span> <span class="text-gray-900 dark:text-white">{{ $node_version }}</span></div>

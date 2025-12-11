@@ -38,6 +38,8 @@ class ProjectCreate extends Component
     // Step 2: Framework & Build
     public string $framework = '';
 
+    public string $deployment_method = 'docker';
+
     public string $php_version = '8.3';
 
     public string $node_version = '20';
@@ -157,6 +159,7 @@ class ProjectCreate extends Component
     {
         $this->validate([
             'framework' => 'nullable|string|max:255',
+            'deployment_method' => 'required|in:docker,standard',
             'php_version' => 'nullable|string|max:255',
             'node_version' => 'nullable|string|max:255',
             'root_directory' => 'required|string|max:255',
@@ -232,6 +235,7 @@ class ProjectCreate extends Component
             // Branch name: alphanumeric, hyphens, underscores, slashes, dots - no shell special chars
             'branch' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_\-\.\/]+$/'],
             'framework' => 'nullable|string|max:255',
+            'deployment_method' => 'required|in:docker,standard',
             'php_version' => 'nullable|string|max:255',
             'node_version' => 'nullable|string|max:255',
             'root_directory' => 'required|string|max:255',
@@ -269,6 +273,7 @@ class ProjectCreate extends Component
             'repository_url' => $this->repository_url,
             'branch' => $this->branch,
             'framework' => $this->framework,
+            'deployment_method' => $this->deployment_method,
             'php_version' => $this->php_version,
             'node_version' => $this->node_version,
             'port' => $port,
