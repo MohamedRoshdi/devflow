@@ -7,6 +7,77 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.39.0] - 2025-12-11
+
+### Added - DevFlow Pro Self-Management Environment Editor
+- **Environment Editor Modal** - Full environment variable editing for DevFlow Pro itself
+  - Added "Edit" button to Environment section in Config tab
+  - Full-screen modal with individual edit controls for each variable
+  - Real-time saving with loading indicators
+  - Automatic config cache clearing after updates
+  - **Design Features:**
+    - Emerald gradient header with close button
+    - Individual Save button for each environment variable
+    - Reload Values button to refresh from .env file
+    - Warning notice about .env file changes and cache clearing
+    - Responsive modal with overflow scrolling
+    - Loading spinners on save actions
+
+- **Editable Environment Variables** - DevFlow Pro configuration management
+  - **Application Settings:**
+    - `APP_NAME` - Application name
+    - `APP_ENV` - Environment (local/development/staging/production)
+    - `APP_DEBUG` - Debug mode toggle
+    - `APP_URL` - Application URL
+  - **Database Configuration:**
+    - `DB_HOST` - Database host
+    - `DB_PORT` - Database port
+    - `DB_DATABASE` - Database name
+  - **System Services:**
+    - `CACHE_DRIVER` - Cache driver selection
+    - `QUEUE_CONNECTION` - Queue connection type
+    - `SESSION_DRIVER` - Session driver
+  - **Mail Configuration:**
+    - `MAIL_MAILER` - Mail service provider
+    - `MAIL_HOST` - Mail server host
+    - `MAIL_PORT` - Mail server port
+    - `MAIL_FROM_ADDRESS` - Default sender email
+  - **Additional Services:**
+    - `BROADCAST_DRIVER` - Broadcasting driver
+    - `FILESYSTEM_DISK` - Default filesystem disk
+
+### Improved - DevFlow Pro Self-Management UX
+- **Config Tab Enhancement**
+  - Changed Environment section from read-only to interactive
+  - Added edit button with emerald styling matching the theme
+  - Improved section header layout with space for action button
+  - Better visual hierarchy between read-only display and edit mode
+
+### Technical Details
+- **Component**: `app/Livewire/Projects/DevFlowSelfManagement.php`
+  - Already had backend logic for environment editing (lines 264-303)
+  - `toggleEnvEditor()` method to show/hide modal
+  - `updateEnvVariable()` method writes directly to .env file
+  - `loadEnvVariables()` method refreshes values from file
+  - Automatic `config:clear` after each variable update
+- **View**: `resources/views/livewire/projects/devflow-self-management.blade.php`
+  - Added Edit button to Environment section (line 632-638)
+  - Added full environment editor modal (lines 687-767)
+  - Modal uses Livewire wire:click and wire:model.defer
+  - Individual save buttons for granular control
+- **Security**: Only non-sensitive variables are shown (passwords, secrets, keys excluded)
+- **User Feedback**: Success/error messages via session flash
+- **Performance**: Uses wire:loading states for better UX
+
+### Fixed - DevFlow Pro Environment Management
+- **Missing UI for Environment Editing** - Previously unusable feature
+  - Backend logic existed but no UI to access it
+  - Users couldn't edit DevFlow Pro's own environment variables
+  - Config tab showed read-only display only
+  - Solution: Added Edit button and modal interface
+
+---
+
 ## [5.38.0] - 2025-12-11
 
 ### Added - Deployment Locking & Active Deployment Banner
