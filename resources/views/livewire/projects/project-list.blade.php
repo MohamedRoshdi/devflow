@@ -323,7 +323,6 @@
                                 <button wire:click="deleteProject({{ $project->id }})"
                                         wire:confirm="Are you sure you want to delete this project?"
                                         wire:loading.attr="disabled"
-                                        :disabled="$wire.isDeleting"
                                         class="text-red-400 hover:text-red-300 text-sm font-medium transition-colors disabled:opacity-50">
                                     <span wire:loading.remove wire:target="deleteProject({{ $project->id }})">Delete</span>
                                     <span wire:loading wire:target="deleteProject({{ $project->id }})">Deleting...</span>
