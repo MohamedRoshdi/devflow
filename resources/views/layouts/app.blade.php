@@ -343,6 +343,10 @@
                                class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('settings.preferences') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
                                 Preferences
                             </a>
+                            <a href="{{ route('settings.roles-permissions') }}"
+                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('settings.roles-permissions') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
+                                Roles & Permissions
+                            </a>
                             <div class="border-t border-slate-700 my-1"></div>
                             <a href="{{ route('admin.system') }}"
                                class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('admin.system') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">

@@ -151,6 +151,7 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
     Route::get('/settings/queue-monitor', \App\Livewire\Settings\QueueMonitor::class)->name('settings.queue-monitor');
     Route::get('/settings/preferences', \App\Livewire\Settings\DefaultSetupPreferences::class)->name('settings.preferences');
     Route::get('/settings/storage', \App\Livewire\Settings\StorageSettings::class)->name('settings.storage');
+    Route::get('/settings/roles-permissions', \App\Livewire\Settings\RolesPermissions::class)->name('settings.roles-permissions');
 
     // Documentation
     Route::get('/docs/api', \App\Livewire\Docs\ApiDocumentation::class)->name('docs.api');
