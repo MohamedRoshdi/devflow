@@ -7,6 +7,92 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.40.0] - 2025-12-11
+
+### Security - Critical Vulnerability Fixes
+- **DomainController Authorization** - Added proper authorization checks
+  - `store()` method now validates project update permissions
+  - `update()` method validates domain update permissions via DomainPolicy
+  - `destroy()` method validates domain delete permissions
+  - Prevents unauthorized domain management operations
+
+- **SQL Injection Prevention** - DeploymentController input validation
+  - Added comprehensive validation for all filter parameters
+  - Status values restricted to valid enums: `pending`, `running`, `success`, `failed`, `rolled_back`
+  - Branch names validated with string type and max length
+  - Triggered_by restricted to: `manual`, `webhook`, `scheduled`, `rollback`
+  - Sort parameters whitelisted to prevent arbitrary column access
+  - Per-page parameter validated with min/max constraints
+
+- **API Token Security** - ServerMetricsController enhanced validation
+  - Added token ability check for `server:report-metrics` permission
+  - Prevents unauthorized metric submission
+  - Comprehensive error messages for insufficient permissions
+  - Documentation for automated metric collection best practices
+
+- **Shell Injection Prevention** - DockerService hardening
+  - Created `getValidatedSlug()` helper with defense-in-depth validation
+  - Runtime validation using `/^[a-z0-9-]+$/` regex pattern
+  - Directory traversal prevention (blocks `..` and `/` characters)
+  - Updated `buildContainer()` to use validated slugs
+  - Helper available for all 50+ project slug usages
+
+- **Docker Registry Login Security** - Credential protection
+  - Removed password from command line echo
+  - Now uses `Process::setInput()` for secure stdin password passing
+  - Added `escapeshellarg()` for registry and username parameters
+  - Prevents password exposure in process lists and shell history
+
+### Security - Authorization Improvements
+- **ProjectList Authorization** - Policy-based approach
+  - Replaced manual authorization checks with ProjectPolicy
+  - Added `AuthorizesRequests` trait to component
+  - Simplified `deleteProject()` method using `$this->authorize()`
+  - More consistent with Laravel authorization patterns
+  - Better maintainability and security auditing
+
+### Performance - Query Optimization
+- **ProjectList N+1 Query Fix** - Eliminated redundant database queries
+  - Converted servers list to cached computed property
+  - Added 5-minute cache lifetime (300 seconds)
+  - Prevents repeated server queries on every component render
+  - Reduced database load and improved page response time
+
+- **Dashboard Query Optimization** - Verified existing optimizations
+  - Confirmed all Project queries use eager loading
+  - All queries include `with(['server', 'user'])` relationships
+  - No N+1 query issues detected
+
+### Fixed - Code Quality Issues
+- **Dashboard Null Safety** - Prevented potential null pointer errors
+  - Added null-safe operator for `$project->server?->name` access
+  - Fallback to "Unknown Server" when server relationship missing
+  - Fixed in `loadRecentActivity()` method (2 locations)
+  - Prevents crashes when projects have no associated server
+
+### Changed - Code Structure
+- **DockerService Validation** - Added helper method for slug validation
+  - New `getValidatedSlug()` protected method with comprehensive checks
+  - Validates slug format matches `/^[a-z0-9-]+$/` pattern
+  - Prevents directory traversal attempts
+  - Throws `InvalidArgumentException` for invalid slugs
+  - Comprehensive PHPDoc documentation
+
+### Technical Debt
+- **Test Coverage Analysis** - 203 total test files verified
+  - Comprehensive coverage for all fixed components
+  - Browser, Feature, and Unit tests all present
+  - Identified gap: DomainPolicy lacks dedicated unit tests (has integration tests)
+  - All other policies (Server, Project, Deployment) have full test coverage
+
+### Developer Notes
+- All changes maintain backward compatibility
+- Follows Laravel 12 and PHP 8.4 best practices
+- PHPStan Level 8 compliance maintained
+- Security fixes follow OWASP top 10 guidelines
+
+---
+
 ## [5.39.0] - 2025-12-11
 
 ### Added - DevFlow Pro Self-Management Environment Editor
