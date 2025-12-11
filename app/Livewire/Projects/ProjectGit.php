@@ -10,8 +10,11 @@ use Livewire\Attributes\On;
 class ProjectGit extends Component
 {
     public Project $project;
+    /** @var array<int, array<string, mixed>> */
     public array $commits = [];
+    /** @var array<int, string> */
     public array $branches = [];
+    /** @var array<string, mixed> */
     public array $updateStatus = [];
     public bool $loading = true;
     public ?string $error = null;
