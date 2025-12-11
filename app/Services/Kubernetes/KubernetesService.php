@@ -403,31 +403,47 @@ class KubernetesService
      */
     public function getPodStatus(Project $project): array
     {
-        $command = sprintf(
-            '%s get pods -n %s -l app=%s -o json',
-            $this->kubectlPath,
-            $project->slug,
-            $project->slug
-        );
+        try {
+            $command = sprintf(
+                '%s get pods -n %s -l app=%s -o json',
+                $this->kubectlPath,
+                $project->slug,
+                $project->slug
+            );
 
-        $result = Process::run($command);
+            $result = Process::run($command);
 
-        if (! $result->successful()) {
+            if (! $result->successful()) {
+                \Log::warning('Failed to get pod status', [
+                    'project_id' => $project->id,
+                    'project_slug' => $project->slug,
+                    'error' => $result->errorOutput(),
+                ]);
+
+                return [];
+            }
+
+            $pods = json_decode($result->output(), true);
+
+            return array_map(function ($pod) {
+                return [
+                    'name' => $pod['metadata']['name'],
+                    'status' => $pod['status']['phase'],
+                    'ready' => $this->isPodReady($pod),
+                    'restarts' => array_sum(array_column($pod['status']['containerStatuses'] ?? [], 'restartCount')),
+                    'age' => $this->calculateAge($pod['metadata']['creationTimestamp']),
+                    'node' => $pod['spec']['nodeName'] ?? 'unknown',
+                ];
+            }, $pods['items'] ?? []);
+        } catch (\Exception $e) {
+            \Log::error('Failed to get pod status', [
+                'project_id' => $project->id,
+                'project_slug' => $project->slug,
+                'error' => $e->getMessage(),
+            ]);
+
             return [];
         }
-
-        $pods = json_decode($result->output(), true);
-
-        return array_map(function ($pod) {
-            return [
-                'name' => $pod['metadata']['name'],
-                'status' => $pod['status']['phase'],
-                'ready' => $this->isPodReady($pod),
-                'restarts' => array_sum(array_column($pod['status']['containerStatuses'] ?? [], 'restartCount')),
-                'age' => $this->calculateAge($pod['metadata']['creationTimestamp']),
-                'node' => $pod['spec']['nodeName'] ?? 'unknown',
-            ];
-        }, $pods['items'] ?? []);
     }
 
     /**
@@ -435,49 +451,65 @@ class KubernetesService
      */
     public function getServiceEndpoints(Project $project): array
     {
-        $command = sprintf(
-            '%s get service %s-service -n %s -o json',
-            $this->kubectlPath,
-            $project->slug,
-            $project->slug
-        );
+        try {
+            $command = sprintf(
+                '%s get service %s-service -n %s -o json',
+                $this->kubectlPath,
+                $project->slug,
+                $project->slug
+            );
 
-        $result = Process::run($command);
+            $result = Process::run($command);
 
-        if (! $result->successful()) {
+            if (! $result->successful()) {
+                \Log::warning('Failed to get service endpoints', [
+                    'project_id' => $project->id,
+                    'project_slug' => $project->slug,
+                    'error' => $result->errorOutput(),
+                ]);
+
+                return [];
+            }
+
+            $service = json_decode($result->output(), true);
+
+            $endpoints = [];
+
+            // Get external endpoints
+            if (isset($service['status']['loadBalancer']['ingress'])) {
+                foreach ($service['status']['loadBalancer']['ingress'] as $ingress) {
+                    $endpoints[] = $ingress['ip'] ?? $ingress['hostname'];
+                }
+            }
+
+            // Get ingress endpoints
+            $ingressCommand = sprintf(
+                '%s get ingress %s-ingress -n %s -o json',
+                $this->kubectlPath,
+                $project->slug,
+                $project->slug
+            );
+
+            $ingressResult = Process::run($ingressCommand);
+
+            if ($ingressResult->successful()) {
+                $ingress = json_decode($ingressResult->output(), true);
+
+                foreach ($ingress['spec']['rules'] ?? [] as $rule) {
+                    $endpoints[] = 'https://'.$rule['host'];
+                }
+            }
+
+            return $endpoints;
+        } catch (\Exception $e) {
+            \Log::error('Failed to get service endpoints', [
+                'project_id' => $project->id,
+                'project_slug' => $project->slug,
+                'error' => $e->getMessage(),
+            ]);
+
             return [];
         }
-
-        $service = json_decode($result->output(), true);
-
-        $endpoints = [];
-
-        // Get external endpoints
-        if (isset($service['status']['loadBalancer']['ingress'])) {
-            foreach ($service['status']['loadBalancer']['ingress'] as $ingress) {
-                $endpoints[] = $ingress['ip'] ?? $ingress['hostname'];
-            }
-        }
-
-        // Get ingress endpoints
-        $ingressCommand = sprintf(
-            '%s get ingress %s-ingress -n %s -o json',
-            $this->kubectlPath,
-            $project->slug,
-            $project->slug
-        );
-
-        $ingressResult = Process::run($ingressCommand);
-
-        if ($ingressResult->successful()) {
-            $ingress = json_decode($ingressResult->output(), true);
-
-            foreach ($ingress['spec']['rules'] ?? [] as $rule) {
-                $endpoints[] = 'https://'.$rule['host'];
-            }
-        }
-
-        return $endpoints;
     }
 
     /**

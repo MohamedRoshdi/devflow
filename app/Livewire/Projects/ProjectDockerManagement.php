@@ -68,7 +68,7 @@ class ProjectDockerManagement extends Component
 
     protected function getProject(): Project
     {
-        return Project::findOrFail($this->projectId);
+        return Project::with(['server'])->findOrFail($this->projectId);
     }
 
     public function loadDockerInfo(): void

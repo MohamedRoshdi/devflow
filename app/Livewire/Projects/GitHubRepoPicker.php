@@ -54,7 +54,7 @@ class GitHubRepoPicker extends Component
             return collect();
         }
 
-        return GitHubRepository::where('github_connection_id', $this->connection->id)
+        return GitHubRepository::with(['connection'])->where('github_connection_id', $this->connection->id)
             ->when($this->search, fn ($q) => $q->where(fn ($query) => $query->where('name', 'like', "%{$this->search}%")
                 ->orWhere('description', 'like', "%{$this->search}%")
                 ->orWhere('full_name', 'like', "%{$this->search}%")
@@ -92,7 +92,7 @@ class GitHubRepoPicker extends Component
             $this->selectedRepoId = $repoId;
             $this->loadingBranches = true;
 
-            $repository = GitHubRepository::findOrFail($repoId);
+            $repository = GitHubRepository::with(['connection'])->findOrFail($repoId);
 
             // Load branches from GitHub
             $branches = $this->gitHubService->listBranches($this->connection, $repository->full_name);
@@ -129,7 +129,7 @@ class GitHubRepoPicker extends Component
         }
 
         try {
-            $repository = GitHubRepository::findOrFail($this->selectedRepoId);
+            $repository = GitHubRepository::with(['connection'])->findOrFail($this->selectedRepoId);
 
             // Set the modelable properties
             $this->repositoryUrl = $repository->clone_url;

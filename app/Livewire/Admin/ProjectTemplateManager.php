@@ -94,6 +94,16 @@ class ProjectTemplateManager extends Component
 
     public string $frameworkFilter = 'all';
 
+    public function mount(): void
+    {
+        // Only super-admin and admin users can manage project templates
+        abort_unless(
+            auth()->user()->hasRole(['super-admin', 'admin']),
+            403,
+            'You do not have permission to manage project templates.'
+        );
+    }
+
     #[Computed]
     public function templates()
     {

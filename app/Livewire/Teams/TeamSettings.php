@@ -7,10 +7,11 @@ namespace App\Livewire\Teams;
 use App\Models\Team;
 use App\Models\TeamInvitation;
 use App\Models\User;
+use App\Rules\DescriptionRule;
+use App\Rules\NameRule;
 use App\Services\TeamService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -23,22 +24,17 @@ class TeamSettings extends Component
     public string $activeTab = 'general';
 
     // General settings
-    #[Validate('required|string|max:255')]
     public string $name = '';
 
-    #[Validate('nullable|string|max:500')]
     public string $description = '';
 
-    #[Validate('nullable|image|max:2048')]
     public mixed $avatar = null;
 
     // Invitation
     public bool $showInviteModal = false;
 
-    #[Validate('required|email')]
     public string $inviteEmail = '';
 
-    #[Validate('required|in:admin,member,viewer')]
     public string $inviteRole = 'member';
 
     // Transfer ownership
@@ -137,8 +133,8 @@ class TeamSettings extends Component
         }
 
         $this->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:500',
+            'name' => NameRule::rules(required: true, maxLength: 255),
+            'description' => DescriptionRule::rules(required: false, maxLength: 500),
         ]);
 
         try {

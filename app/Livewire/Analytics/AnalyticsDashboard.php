@@ -17,6 +17,16 @@ class AnalyticsDashboard extends Component
 
     public string $selectedProject = '';
 
+    public function mount(): void
+    {
+        // Check if user has permission to view analytics
+        abort_unless(
+            auth()->user()->can('view-analytics'),
+            403,
+            'You do not have permission to view analytics.'
+        );
+    }
+
     public function render(): View
     {
         // All projects are shared across all users

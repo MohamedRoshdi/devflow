@@ -7,6 +7,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.43.0] - 2025-12-11
+
+### Added
+- **Comprehensive Model Tests** - 192 new unit tests for models
+  - AlertModelsTest.php (61 tests) - AlertHistory, ResourceAlert
+  - DeploymentModelsTest.php (21 tests) - DeploymentApproval, DeploymentComment
+  - SecurityModelsTest.php (23 tests) - FirewallRule, SecurityEvent
+  - HelpSystemModelsTest.php (32 tests) - HelpContent, translations, interactions
+  - PipelineModelsTest.php (46 tests) - PipelineStage, PipelineStageRun
+  - TenantModelsTest.php (9 tests) - TenantDeployment
+
+- **Reusable Validation Rules** - DRY validation infrastructure
+  - 8 Rule classes: NameRule, DescriptionRule, SlugRule, UrlRule, PathRule, EmailRule, IpAddressRule, PortRule
+  - 7 Form Requests: StoreProject, UpdateProject, StoreServer, UpdateServer, StoreTeam, UpdateTeam, StoreProjectTemplate
+  - HasCommonValidation trait with 17 helper methods
+  - ~200 lines of duplicate validation code eliminated
+
+- **New Model Factories**
+  - HelpContentTranslationFactory.php
+  - HelpInteractionFactory.php
+  - FirewallRuleFactory.php
+
+### Changed
+- **Eager Loading Optimization** - 21 queries optimized across 8 Livewire components
+  - ProjectList, FileBackupManager, DatabaseBackupManager
+  - ProjectEnvironment, GitHubRepoPicker, ProjectLogs
+  - ProjectDockerManagement, ProjectWebhookSettings
+
+- **N+1 Query Fixes** - Team and backup components optimized
+  - TeamList.php - Added members eager loading
+  - TeamSwitcher.php - Fixed role retrieval from loaded collection
+  - FileBackupManager.php - Recursive parent chain loading
+
+### Security
+- **Authorization Checks** - Added to 6 Livewire components
+  - AuditLogViewer - view-audit-logs permission / super-admin role
+  - HelpContentManager - admin role required
+  - ProjectTemplateManager - admin role required
+  - AnalyticsDashboard - view-analytics permission
+  - PipelineBuilder - create/edit-pipelines permission
+  - HealthDashboard - view-health-checks permission
+
+### Fixed
+- **KubernetesService Logging** - Added proper error logging to getPodStatus() and getServiceEndpoints()
+
+---
+
 ## [5.42.0] - 2025-12-11
 
 ### Added

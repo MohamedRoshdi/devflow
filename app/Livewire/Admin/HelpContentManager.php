@@ -71,7 +71,12 @@ class HelpContentManager extends Component
 
     public function mount(): void
     {
-        // Initialize empty component
+        // Only super-admin and admin users can manage help content
+        abort_unless(
+            auth()->user()->hasRole(['super-admin', 'admin']),
+            403,
+            'You do not have permission to manage help content.'
+        );
     }
 
     protected function getHelpContentService(): HelpContentService

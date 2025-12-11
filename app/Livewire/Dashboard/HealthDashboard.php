@@ -25,6 +25,13 @@ class HealthDashboard extends Component
 
     public function mount(): void
     {
+        // Check if user has permission to view health checks
+        abort_unless(
+            auth()->user()->can('view-health-checks'),
+            403,
+            'You do not have permission to view health dashboard.'
+        );
+
         // Don't load data on mount - use wire:init for lazy loading
         // This allows the page to render immediately with a loading state
     }

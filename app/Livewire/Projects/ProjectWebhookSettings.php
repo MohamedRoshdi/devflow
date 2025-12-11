@@ -101,7 +101,7 @@ class ProjectWebhookSettings extends Component
     public function recentDeliveries()
     {
         return WebhookDelivery::where('project_id', $this->project->id)
-            ->with('deployment')
+            ->with(['deployment', 'project'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
     }

@@ -91,6 +91,7 @@ class DatabaseBackupManager extends Component
     public function backups()
     {
         return DatabaseBackup::where('project_id', $this->project->id)
+            ->with(['project'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
     }
@@ -99,7 +100,7 @@ class DatabaseBackupManager extends Component
     public function schedules()
     {
         return BackupSchedule::where('project_id', $this->project->id)
-            ->with('server')
+            ->with(['server', 'project'])
             ->orderBy('created_at', 'desc')
             ->get();
     }
@@ -255,7 +256,7 @@ class DatabaseBackupManager extends Component
     public function toggleSchedule(int $scheduleId): void
     {
         try {
-            $schedule = BackupSchedule::findOrFail($scheduleId);
+            $schedule = BackupSchedule::with(['project', 'server'])->findOrFail($scheduleId);
 
             if ($schedule->project_id !== $this->project->id) {
                 throw new \Exception('Unauthorized');
@@ -291,7 +292,7 @@ class DatabaseBackupManager extends Component
         }
 
         try {
-            $backup = DatabaseBackup::findOrFail($this->backupIdToDelete);
+            $backup = DatabaseBackup::with(['project'])->findOrFail($this->backupIdToDelete);
 
             if ($backup->project_id !== $this->project->id) {
                 throw new \Exception('Unauthorized');
@@ -330,7 +331,7 @@ class DatabaseBackupManager extends Component
         }
 
         try {
-            $backup = DatabaseBackup::findOrFail($this->backupIdToRestore);
+            $backup = DatabaseBackup::with(['project'])->findOrFail($this->backupIdToRestore);
 
             if ($backup->project_id !== $this->project->id) {
                 throw new \Exception('Unauthorized');
@@ -375,7 +376,7 @@ class DatabaseBackupManager extends Component
         $this->isVerifying = true;
 
         try {
-            $backup = DatabaseBackup::findOrFail($this->backupIdToVerify);
+            $backup = DatabaseBackup::with(['project'])->findOrFail($this->backupIdToVerify);
 
             if ($backup->project_id !== $this->project->id) {
                 throw new \Exception('Unauthorized');
@@ -418,7 +419,7 @@ class DatabaseBackupManager extends Component
     public function downloadBackup(int $backupId): StreamedResponse
     {
         try {
-            $backup = DatabaseBackup::findOrFail($backupId);
+            $backup = DatabaseBackup::with(['project'])->findOrFail($backupId);
 
             if ($backup->project_id !== $this->project->id) {
                 throw new \Exception('Unauthorized');
@@ -446,7 +447,7 @@ class DatabaseBackupManager extends Component
     public function deleteSchedule(int $scheduleId): void
     {
         try {
-            $schedule = BackupSchedule::findOrFail($scheduleId);
+            $schedule = BackupSchedule::with(['project', 'server'])->findOrFail($scheduleId);
 
             if ($schedule->project_id !== $this->project->id) {
                 throw new \Exception('Unauthorized');

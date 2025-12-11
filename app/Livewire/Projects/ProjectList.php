@@ -52,7 +52,7 @@ class ProjectList extends Component
      */
     public function deleteProject(int $projectId): void
     {
-        $project = Project::find($projectId);
+        $project = Project::with(['server', 'user', 'domains'])->find($projectId);
 
         if (! $project) {
             session()->flash('error', 'Project not found');

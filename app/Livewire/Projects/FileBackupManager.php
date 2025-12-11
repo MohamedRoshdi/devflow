@@ -58,34 +58,46 @@ class FileBackupManager extends Component
     #[Computed]
     public function backups()
     {
-        return FileBackup::forProject($this->project->id)
+        $backups = FileBackup::forProject($this->project->id)
             ->when($this->searchTerm, fn ($q) => $q->where('filename', 'like', "%{$this->searchTerm}%"))
             ->when($this->filterType !== 'all', fn ($q) => $q->where('type', $this->filterType))
             ->when($this->filterStatus !== 'all', fn ($q) => $q->where('status', $this->filterStatus))
             ->with(['parentBackup', 'childBackups'])
             ->latest()
-            ->get()
-            ->map(function (FileBackup $backup) {
-                return [
-                    'id' => $backup->id,
-                    'filename' => $backup->filename,
-                    'type' => $backup->type,
-                    'type_color' => $backup->type_color,
-                    'status' => $backup->status,
-                    'status_color' => $backup->status_color,
-                    'size' => $backup->formatted_size,
-                    'files_count' => number_format($backup->files_count),
-                    'duration' => $backup->formatted_duration ?? '-',
-                    'checksum' => $backup->checksum ? substr($backup->checksum, 0, 8).'...' : '-',
-                    'created_at' => $backup->created_at?->format('Y-m-d H:i:s') ?? '-',
-                    'created_at_human' => $backup->created_at?->diffForHumans() ?? '-',
-                    'parent_backup_id' => $backup->parent_backup_id,
-                    'has_children' => $backup->childBackups->isNotEmpty(),
-                    'incremental_depth' => $backup->getIncrementalDepth(),
-                    'storage_disk' => $backup->storage_disk,
-                    'error_message' => $backup->error_message,
-                ];
-            });
+            ->get();
+
+        // Recursively load all parent backups in the chain to avoid N+1 in getIncrementalDepth()
+        $backups->each(function (FileBackup $backup) {
+            $current = $backup;
+            while ($current->parentBackup !== null) {
+                $current = $current->parentBackup;
+                if ($current->parent_backup_id && ! $current->relationLoaded('parentBackup')) {
+                    $current->load('parentBackup');
+                }
+            }
+        });
+
+        return $backups->map(function (FileBackup $backup) {
+            return [
+                'id' => $backup->id,
+                'filename' => $backup->filename,
+                'type' => $backup->type,
+                'type_color' => $backup->type_color,
+                'status' => $backup->status,
+                'status_color' => $backup->status_color,
+                'size' => $backup->formatted_size,
+                'files_count' => number_format($backup->files_count),
+                'duration' => $backup->formatted_duration ?? '-',
+                'checksum' => $backup->checksum ? substr($backup->checksum, 0, 8).'...' : '-',
+                'created_at' => $backup->created_at?->format('Y-m-d H:i:s') ?? '-',
+                'created_at_human' => $backup->created_at?->diffForHumans() ?? '-',
+                'parent_backup_id' => $backup->parent_backup_id,
+                'has_children' => $backup->childBackups->isNotEmpty(),
+                'incremental_depth' => $backup->getIncrementalDepth(),
+                'storage_disk' => $backup->storage_disk,
+                'error_message' => $backup->error_message,
+            ];
+        });
     }
 
     #[Computed]
@@ -215,7 +227,7 @@ class FileBackupManager extends Component
     public function deleteBackup(int $backupId, FileBackupService $backupService): void
     {
         try {
-            $backup = FileBackup::findOrFail($backupId);
+            $backup = FileBackup::with('childBackups')->findOrFail($backupId);
 
             if ($backup->childBackups->isNotEmpty()) {
                 $this->dispatch('notification',

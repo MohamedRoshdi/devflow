@@ -42,17 +42,21 @@ class TeamList extends Component
 
         return $user->teams()
             ->withCount('members')
-            ->with(['owner'])
+            ->with(['owner', 'members'])
             ->latest()
             ->get()
             ->map(function (Team $team) use ($user) {
+                // Get role from loaded members relationship to avoid N+1
+                $member = $team->members->firstWhere('id', $user->id);
+                $role = $member?->pivot?->role;
+
                 return [
                     'id' => $team->id,
                     'name' => $team->name,
                     'description' => $team->description,
                     'avatar_url' => $team->avatar_url,
                     'members_count' => $team->members_count,
-                    'role' => $team->getMemberRole($user),
+                    'role' => $role,
                     'is_owner' => $team->isOwner($user),
                     'is_current' => $user->current_team_id === $team->id,
                 ];

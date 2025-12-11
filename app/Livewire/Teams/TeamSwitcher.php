@@ -27,11 +27,18 @@ class TeamSwitcher extends Component
             return null;
         }
 
+        // Eager load members to avoid N+1
+        $team->load('members');
+
+        // Get role from loaded members relationship to avoid N+1
+        $member = $team->members->firstWhere('id', $user->id);
+        $role = $member?->pivot?->role;
+
         return [
             'id' => $team->id,
             'name' => $team->name,
             'avatar_url' => $team->avatar_url,
-            'role' => $team->getMemberRole($user),
+            'role' => $role,
         ];
     }
 
@@ -45,13 +52,18 @@ class TeamSwitcher extends Component
 
         return $user->teams()
             ->where('id', '!=', $user->current_team_id)
+            ->with('members')
             ->get()
             ->map(function (Team $team) use ($user) {
+                // Get role from loaded members relationship to avoid N+1
+                $member = $team->members->firstWhere('id', $user->id);
+                $role = $member?->pivot?->role;
+
                 return [
                     'id' => $team->id,
                     'name' => $team->name,
                     'avatar_url' => $team->avatar_url,
-                    'role' => $team->getMemberRole($user),
+                    'role' => $role,
                 ];
             });
     }
