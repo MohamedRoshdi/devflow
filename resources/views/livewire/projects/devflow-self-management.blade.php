@@ -619,14 +619,23 @@
         <div class="grid lg:grid-cols-2 gap-6">
             {{-- Environment Variables --}}
             <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-6">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-white">Environment</h3>
+                            <p class="text-sm text-slate-400">Application configuration</p>
+                        </div>
                     </div>
-                    <div>
-                        <h3 class="font-semibold text-white">Environment</h3>
-                        <p class="text-sm text-slate-400">Application configuration</p>
-                    </div>
+                    <button wire:click="toggleEnvEditor"
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm bg-emerald-600 hover:bg-emerald-700 text-white transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                        Edit
+                    </button>
                 </div>
                 <div class="space-y-3">
                     @foreach($envVariables ?? [] as $key => $value)
@@ -674,4 +683,86 @@
             </div>
         </div>
     </div>
+
+    {{-- Environment Editor Modal --}}
+    @if($showEnvEditor)
+        <div class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" wire:click="toggleEnvEditor">
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden" wire:click.stop>
+                <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-6 border-b border-emerald-700">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-white">Edit Environment Variables</h3>
+                            <p class="text-emerald-100 text-sm mt-1">Update DevFlow Pro configuration</p>
+                        </div>
+                        <button wire:click="toggleEnvEditor"
+                            class="p-2 rounded-lg bg-white/20 hover:bg-white/30 text-white transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
+                    <div class="space-y-4">
+                        @foreach($envVariables ?? [] as $key => $value)
+                            <div class="p-4 rounded-xl bg-slate-900/50 border border-slate-700">
+                                <label class="block text-sm font-medium text-slate-300 mb-2">{{ $key }}</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="text"
+                                        wire:model.defer="envVariables.{{ $key }}"
+                                        class="flex-1 px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white font-mono text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                                    <button wire:click="updateEnvVariable('{{ $key }}', $wire.envVariables.{{ $key }})"
+                                        wire:loading.attr="disabled"
+                                        class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium transition-colors flex items-center gap-2">
+                                        <svg wire:loading.remove wire:target="updateEnvVariable('{{ $key }}', $wire.envVariables.{{ $key }})" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        <svg wire:loading wire:target="updateEnvVariable('{{ $key }}', $wire.envVariables.{{ $key }})" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                        </svg>
+                                        <span wire:loading.remove wire:target="updateEnvVariable('{{ $key }}', $wire.envVariables.{{ $key }})">Save</span>
+                                        <span wire:loading wire:target="updateEnvVariable('{{ $key }}', $wire.envVariables.{{ $key }})">Saving...</span>
+                                    </button>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    {{-- Warning Notice --}}
+                    <div class="mt-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                            <div class="text-sm text-amber-200">
+                                <p class="font-semibold mb-1">Important Notice</p>
+                                <ul class="list-disc list-inside space-y-1 text-amber-300">
+                                    <li>Changes will be written directly to the .env file</li>
+                                    <li>Configuration cache will be cleared automatically</li>
+                                    <li>You may need to restart PHP-FPM or queue workers for changes to take full effect</li>
+                                    <li>Only non-sensitive variables are shown here</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 border-t border-slate-700 flex items-center justify-between bg-slate-800/50">
+                    <button wire:click="loadEnvVariables"
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm bg-slate-700 hover:bg-slate-600 text-white transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        Reload Values
+                    </button>
+                    <button wire:click="toggleEnvEditor"
+                        class="inline-flex items-center gap-2 px-6 py-2 rounded-lg font-medium text-sm bg-slate-700 hover:bg-slate-600 text-white transition-colors">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
