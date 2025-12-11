@@ -112,7 +112,8 @@ class InlineHelp extends Component
     public function render(): \Illuminate\View\View
     {
         // Check if user wants to see inline help (default: true)
-        if (auth()->check() && !auth()->user()->show_inline_help) {
+        $user = auth()->user();
+        if (auth()->check() && $user && !$user->show_inline_help) {
             return view('livewire.components.inline-help-hidden');
         }
 

@@ -65,9 +65,12 @@ class DefaultSetupPreferences extends Component
             ]);
 
             // Update user's inline help preference
-            auth()->user()->update([
-                'show_inline_help' => $this->showInlineHelp,
-            ]);
+            $user = auth()->user();
+            if ($user) {
+                $user->update([
+                    'show_inline_help' => $this->showInlineHelp,
+                ]);
+            }
 
             $this->isSaving = false;
             $this->saveSuccess = true;

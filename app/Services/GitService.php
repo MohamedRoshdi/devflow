@@ -504,7 +504,7 @@ class GitService
             $lines = array_filter(explode("\n", trim($result->output())));
 
             foreach ($lines as $line) {
-                if (empty($line) || str_contains($line, 'HEAD ->')) {
+                if (str_contains($line, 'HEAD ->')) {
                     continue;
                 }
 
@@ -671,7 +671,7 @@ class GitService
             $lines = array_filter(explode("\n", trim($result->output())));
 
             foreach ($lines as $line) {
-                if (empty($line) || str_contains($line, 'HEAD ->')) {
+                if (str_contains($line, 'HEAD ->')) {
                     continue;
                 }
 

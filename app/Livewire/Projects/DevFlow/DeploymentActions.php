@@ -47,7 +47,8 @@ class DeploymentActions extends Component
     {
         $scriptPath = base_path('deploy.sh');
         if (file_exists($scriptPath)) {
-            $this->deployScript = file_get_contents($scriptPath);
+            $content = file_get_contents($scriptPath);
+            $this->deployScript = $content !== false ? $content : $this->getDefaultDeployScript();
         } else {
             $this->deployScript = $this->getDefaultDeployScript();
         }
@@ -193,8 +194,11 @@ BASH;
             return;
         }
 
-        $this->deploymentSteps[$this->currentStep]['status'] = 'running';
-        $stepName = $this->deploymentSteps[$this->currentStep]['name'];
+        $currentStep = $this->deploymentSteps[$this->currentStep];
+        $currentStep['status'] = 'running';
+        $this->deploymentSteps[$this->currentStep] = $currentStep;
+
+        $stepName = $currentStep['name'];
         $totalSteps = count($this->deploymentSteps);
         $this->deploymentOutput .= "\n[" . ($this->currentStep + 1) . "/{$totalSteps}] {$stepName}...\n";
 
@@ -212,8 +216,9 @@ BASH;
                 default => "Unknown step",
             };
 
-            $this->deploymentSteps[$this->currentStep]['status'] = 'success';
-            $this->deploymentSteps[$this->currentStep]['output'] = $output;
+            $currentStep['status'] = 'success';
+            $currentStep['output'] = $output;
+            $this->deploymentSteps[$this->currentStep] = $currentStep;
             $this->deploymentOutput .= "  ✓ {$output}\n";
 
             if ($this->currentStep >= count($this->deploymentSteps) - 1) {
@@ -221,8 +226,9 @@ BASH;
             }
 
         } catch (\Exception $e) {
-            $this->deploymentSteps[$this->currentStep]['status'] = 'failed';
-            $this->deploymentSteps[$this->currentStep]['output'] = $e->getMessage();
+            $currentStep['status'] = 'failed';
+            $currentStep['output'] = $e->getMessage();
+            $this->deploymentSteps[$this->currentStep] = $currentStep;
             $this->finishDeployment(false, $e->getMessage());
         }
     }

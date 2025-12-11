@@ -79,7 +79,7 @@ class RolesPermissions extends Component
 
         $this->editingRoleId = $roleId;
         $this->roleName = $role->name;
-        $this->roleGuardName = $role->guard_name;
+        $this->roleGuardName = $role->guard_name ?? 'web';
         $this->selectedPermissions = $role->permissions->pluck('name')->toArray();
 
         $this->showEditModal = true;

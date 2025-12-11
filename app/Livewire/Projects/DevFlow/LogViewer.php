@@ -154,7 +154,8 @@ class LogViewer extends Component
         }
         $pow = floor(log($bytes) / log(1024));
         $pow = min($pow, count($units) - 1);
-        return round($bytes / (1024 ** $pow), $precision) . ' ' . $units[$pow];
+        $powInt = (int) $pow;
+        return round($bytes / (1024 ** $powInt), $precision) . ' ' . $units[$powInt];
     }
 
     public function render(): \Illuminate\View\View

@@ -39,11 +39,14 @@ class CacheManager extends Component
         $basePath = base_path();
         $storagePath = storage_path();
 
+        $diskTotal = disk_total_space($basePath) ?: 0;
+        $diskFree = disk_free_space($basePath) ?: 0;
+
         $this->storageInfo = [
-            'disk_total' => disk_total_space($basePath),
-            'disk_free' => disk_free_space($basePath),
-            'disk_used' => disk_total_space($basePath) - disk_free_space($basePath),
-            'disk_percent' => round((1 - disk_free_space($basePath) / disk_total_space($basePath)) * 100, 1),
+            'disk_total' => $diskTotal,
+            'disk_free' => $diskFree,
+            'disk_used' => $diskTotal - $diskFree,
+            'disk_percent' => $diskTotal > 0 ? round((1 - $diskFree / $diskTotal) * 100, 1) : 0,
             'storage_logs' => $this->getDirectorySize($storagePath . '/logs'),
             'storage_cache' => $this->getDirectorySize($storagePath . '/framework/cache'),
             'storage_sessions' => $this->getDirectorySize($storagePath . '/framework/sessions'),

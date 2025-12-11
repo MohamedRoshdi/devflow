@@ -125,17 +125,20 @@ class DevFlowSelfManagement extends Component
 
     private function loadSystemInfo(): void
     {
+        $diskFree = disk_free_space(base_path());
+        $diskTotal = disk_total_space(base_path());
+
         $this->systemInfo = [
             'php_version' => PHP_VERSION,
             'laravel_version' => app()->version(),
             'server_software' => $_SERVER['SERVER_SOFTWARE'] ?? 'CLI',
             'document_root' => base_path(),
             'storage_path' => storage_path(),
-            'disk_free' => $this->formatBytes(disk_free_space(base_path())),
-            'disk_total' => $this->formatBytes(disk_total_space(base_path())),
-            'memory_limit' => ini_get('memory_limit'),
-            'max_execution_time' => ini_get('max_execution_time') . 's',
-            'upload_max_filesize' => ini_get('upload_max_filesize'),
+            'disk_free' => $this->formatBytes($diskFree !== false ? $diskFree : 0),
+            'disk_total' => $this->formatBytes($diskTotal !== false ? $diskTotal : 0),
+            'memory_limit' => (string) ini_get('memory_limit'),
+            'max_execution_time' => (string) ini_get('max_execution_time') . 's',
+            'upload_max_filesize' => (string) ini_get('upload_max_filesize'),
         ];
     }
 
@@ -240,7 +243,8 @@ class DevFlowSelfManagement extends Component
     private function loadDomainInfo(): void
     {
         $this->currentAppUrl = config('app.url', 'Not set');
-        $this->currentAppDomain = parse_url($this->currentAppUrl, PHP_URL_HOST) ?? 'localhost';
+        $parsedHost = parse_url($this->currentAppUrl, PHP_URL_HOST);
+        $this->currentAppDomain = ($parsedHost !== false && $parsedHost !== null) ? $parsedHost : 'localhost';
 
         // Try to list nginx sites
         try {
@@ -269,7 +273,8 @@ class DevFlowSelfManagement extends Component
         try {
             $this->updateEnvVariable('APP_URL', $url);
             $this->currentAppUrl = $url;
-            $this->currentAppDomain = parse_url($url, PHP_URL_HOST) ?? 'localhost';
+            $parsedHost = parse_url($url, PHP_URL_HOST);
+            $this->currentAppDomain = ($parsedHost !== false && $parsedHost !== null) ? $parsedHost : 'localhost';
             session()->flash('message', 'APP_URL updated successfully! You may need to update your Nginx configuration.');
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to update APP_URL: ' . $e->getMessage());
@@ -609,7 +614,8 @@ class DevFlowSelfManagement extends Component
         }
         $pow = floor(log($bytes) / log(1024));
         $pow = min($pow, count($units) - 1);
-        return round($bytes / (1024 ** $pow), $precision) . ' ' . $units[$pow];
+        $powInt = (int) $pow;
+        return round($bytes / (1024 ** $powInt), $precision) . ' ' . $units[$powInt];
     }
 
     // ===== DEPLOYMENT METHODS =====
@@ -651,8 +657,11 @@ class DevFlowSelfManagement extends Component
             return;
         }
 
-        $this->deploymentSteps[$this->currentStep]['status'] = 'running';
-        $stepName = $this->deploymentSteps[$this->currentStep]['name'];
+        $currentStep = $this->deploymentSteps[$this->currentStep];
+        $currentStep['status'] = 'running';
+        $this->deploymentSteps[$this->currentStep] = $currentStep;
+
+        $stepName = $currentStep['name'];
         $totalSteps = count($this->deploymentSteps);
         $this->deploymentOutput .= "\n[" . ($this->currentStep + 1) . "/{$totalSteps}] {$stepName}...\n";
 
@@ -670,8 +679,9 @@ class DevFlowSelfManagement extends Component
                 default => "Unknown step",
             };
 
-            $this->deploymentSteps[$this->currentStep]['status'] = 'success';
-            $this->deploymentSteps[$this->currentStep]['output'] = $output;
+            $currentStep['status'] = 'success';
+            $currentStep['output'] = $output;
+            $this->deploymentSteps[$this->currentStep] = $currentStep;
             $this->deploymentOutput .= "  ✓ {$output}\n";
 
             if ($this->currentStep >= count($this->deploymentSteps) - 1) {
@@ -679,8 +689,9 @@ class DevFlowSelfManagement extends Component
             }
 
         } catch (\Exception $e) {
-            $this->deploymentSteps[$this->currentStep]['status'] = 'failed';
-            $this->deploymentSteps[$this->currentStep]['output'] = $e->getMessage();
+            $currentStep['status'] = 'failed';
+            $currentStep['output'] = $e->getMessage();
+            $this->deploymentSteps[$this->currentStep] = $currentStep;
             $this->finishDeployment(false, $e->getMessage());
         }
     }
