@@ -7,6 +7,78 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.38.0] - 2025-12-11
+
+### Added - Deployment Locking & Active Deployment Banner
+- **Deployment Locking System** - Prevents concurrent deployments
+  - Check for active deployments before creating new ones
+  - Queries for deployments with 'pending' or 'running' status
+  - Automatic redirect to active deployment if one exists
+  - User-friendly error messages when deployment already in progress
+  - **ProjectShow Component** - Added active deployment check in `deploy()` method
+  - **ProjectGit Component** - Added active deployment check in `deployProject()` method
+  - Prevents "job attempted too many times" queue errors
+  - Ensures only one deployment runs per project at a time
+
+- **Active Deployment Banner** - Visual indicator on project page
+  - Prominent banner displayed at top of project page
+  - Only shows when deployment is pending or running
+  - **Design Features:**
+    - Gradient background with glassmorphism effects
+    - Animated pulsing deployment icon
+    - Real-time status badge (Running/Pending)
+    - Shows time since deployment started
+    - Displays branch being deployed
+    - Clickable to view live deployment progress
+  - **User Experience:**
+    - Immediate visibility when entering project page
+    - No need to click deploy button to discover active deployment
+    - Clear call-to-action to view progress
+    - Responsive design for mobile and desktop
+
+- **Project Model Enhancement**
+  - Added `activeDeployment()` relationship to Project model
+  - Returns first deployment with 'pending' or 'running' status
+  - Eager loaded in ProjectShow component for performance
+  - Enables real-time active deployment detection
+
+### Fixed - Deployment Flow Issues
+- **Multiple Concurrent Deployments** - Resolved queue job failures
+  - Previous issue: Multiple deployments queuing simultaneously
+  - Error: "App\Jobs\DeployProjectJob has been attempted too many times"
+  - Solution: Deployment locking checks before job dispatch
+  - Impact: Smoother deployment experience, fewer failed jobs
+
+- **Deploy Button Behavior** - Improved user feedback
+  - "Deploy Now" button now properly redirects to deployment page
+  - Uses Livewire's `$this->redirect()` with `navigate: true`
+  - "Deploy Update" button in Git viewer includes deployment check
+  - Both buttons disabled when active deployment exists
+
+### Technical Details
+- **Database Query Optimization**
+  ```php
+  $activeDeployment = $this->project->deployments()
+      ->whereIn('status', ['pending', 'running'])
+      ->first();
+  ```
+- **Relationship Definition**
+  ```php
+  public function activeDeployment()
+  {
+      return $this->hasOne(Deployment::class)
+          ->whereIn('status', ['pending', 'running'])
+          ->latest();
+  }
+  ```
+- **Banner Location**: `resources/views/livewire/projects/project-show.blade.php:18-87`
+- **Modified Components**:
+  - `app/Models/Project.php` - Added activeDeployment relationship
+  - `app/Livewire/Projects/ProjectShow.php` - Added deployment locking
+  - `app/Livewire/Projects/ProjectGit.php` - Added deployment locking
+
+---
+
 ## [5.37.0] - 2025-12-11
 
 ### Added - Git Viewer Component

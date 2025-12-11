@@ -129,6 +129,13 @@ class Project extends Model
         return $this->hasOne(Deployment::class)->latestOfMany();
     }
 
+    public function activeDeployment()
+    {
+        return $this->hasOne(Deployment::class)
+            ->whereIn('status', ['pending', 'running'])
+            ->latest();
+    }
+
     public function domains()
     {
         return $this->hasMany(Domain::class);
