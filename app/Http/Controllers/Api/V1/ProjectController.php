@@ -64,6 +64,8 @@ class ProjectController extends Controller
      */
     public function store(StoreProjectRequest $request): JsonResponse
     {
+        $this->authorize('create', Project::class);
+
         $data = $request->validated();
         $data['user_id'] = auth()->id();
 

@@ -296,26 +296,63 @@ class DatabaseBackupService
     /**
      * Restore database from backup
      */
-    public function restoreBackup(DatabaseBackup $backup): void
+    public function restoreBackup(DatabaseBackup $backup, bool $verifyIntegrity = true): void
     {
         if ($backup->status !== 'completed') {
             throw new \RuntimeException('Cannot restore incomplete backup');
         }
 
         $server = $backup->server;
-        $localPath = $this->downloadBackup($backup);
 
         try {
+            Log::info('Starting database restore', [
+                'backup_id' => $backup->id,
+                'database' => $backup->database_name,
+                'database_type' => $backup->database_type,
+            ]);
+
+            // Download backup file
+            $localPath = $this->downloadBackup($backup);
+
+            // Verify integrity before restore if requested
+            if ($verifyIntegrity && $backup->checksum) {
+                $currentChecksum = $this->calculateChecksum($localPath);
+
+                if ($currentChecksum !== $backup->checksum) {
+                    throw new \RuntimeException('Backup integrity check failed: checksum mismatch. The backup file may be corrupted.');
+                }
+
+                Log::info('Backup integrity verified', [
+                    'backup_id' => $backup->id,
+                    'checksum' => $currentChecksum,
+                ]);
+            }
+
+            // Decrypt if encrypted
+            if (str_ends_with($backup->file_name ?? '', '.enc')) {
+                Log::info('Decrypting backup', ['backup_id' => $backup->id]);
+                $localPath = $this->decryptBackup($localPath);
+            }
+
             // Upload to server if remote
-            $remotePath = '/tmp/'.($backup->file_name ?? 'backup.sql');
+            $remotePath = '/tmp/restore_'.uniqid().'_'.($backup->file_name ?? 'backup.sql.gz');
 
             if (! $this->isLocalhost($server->ip_address ?? '127.0.0.1')) {
+                Log::info('Uploading backup to remote server', [
+                    'backup_id' => $backup->id,
+                    'remote_path' => $remotePath,
+                ]);
                 $this->uploadFile($server, $localPath, $remotePath);
             } else {
                 $remotePath = $localPath;
             }
 
             // Restore based on database type
+            Log::info('Restoring database', [
+                'backup_id' => $backup->id,
+                'type' => $backup->database_type,
+            ]);
+
             match ($backup->database_type) {
                 'mysql' => $this->restoreMySQL($server, $backup->database_name ?? 'default', $remotePath),
                 'postgresql' => $this->restorePostgreSQL($server, $backup->database_name ?? 'default', $remotePath),
@@ -327,7 +364,12 @@ class DatabaseBackupService
                 $this->executeSSHCommand($server, "rm -f {$remotePath}");
             }
 
-            Log::info('Database restored from backup', [
+            // Cleanup local temp file if downloaded from S3
+            if ($backup->storage_disk === 's3' && file_exists($localPath)) {
+                @unlink($localPath);
+            }
+
+            Log::info('Database restored from backup successfully', [
                 'backup_id' => $backup->id,
                 'database' => $backup->database_name,
             ]);
@@ -335,7 +377,9 @@ class DatabaseBackupService
         } catch (\Exception $e) {
             Log::error('Database restore failed', [
                 'backup_id' => $backup->id,
+                'database' => $backup->database_name,
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
             throw $e;
         }
@@ -817,6 +861,67 @@ class DatabaseBackupService
         @unlink($filePath);
 
         return $encryptedPath;
+    }
+
+    /**
+     * Decrypt backup file
+     */
+    protected function decryptBackup(string $encryptedPath): string
+    {
+        if (! file_exists($encryptedPath)) {
+            throw new \RuntimeException("Encrypted backup file not found: {$encryptedPath}");
+        }
+
+        $key = config('app.key');
+        $decryptedPath = preg_replace('/\.enc$/', '', $encryptedPath);
+
+        if ($decryptedPath === $encryptedPath) {
+            $decryptedPath = $encryptedPath.'.decrypted';
+        }
+
+        $inputFile = fopen($encryptedPath, 'rb');
+        if ($inputFile === false) {
+            throw new \RuntimeException("Failed to open encrypted backup file: {$encryptedPath}");
+        }
+
+        $outputFile = fopen($decryptedPath, 'wb');
+        if ($outputFile === false) {
+            fclose($inputFile);
+            throw new \RuntimeException("Failed to create decrypted backup file: {$decryptedPath}");
+        }
+
+        // Read IV from the beginning of the file
+        $iv = fread($inputFile, 16);
+        if (strlen($iv) !== 16) {
+            fclose($inputFile);
+            fclose($outputFile);
+            throw new \RuntimeException('Invalid encrypted backup file: IV not found');
+        }
+
+        while (! feof($inputFile)) {
+            $chunk = fread($inputFile, 8192);
+            if ($chunk === false || $chunk === '') {
+                break;
+            }
+
+            $decrypted = openssl_decrypt($chunk, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+            if ($decrypted === false) {
+                fclose($inputFile);
+                fclose($outputFile);
+                @unlink($decryptedPath);
+                throw new \RuntimeException('Failed to decrypt backup file. The encryption key may be incorrect.');
+            }
+
+            fwrite($outputFile, $decrypted);
+        }
+
+        fclose($inputFile);
+        fclose($outputFile);
+
+        // Remove encrypted file
+        @unlink($encryptedPath);
+
+        return $decryptedPath;
     }
 
     /**

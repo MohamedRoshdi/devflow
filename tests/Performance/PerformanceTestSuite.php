@@ -15,6 +15,24 @@ class PerformanceTestSuite extends TestCase
     protected static array $metrics = [];
 
     /**
+     * Run all performance tests and return results
+     *
+     * @return array{metrics: array, recommendations: array, score: int}
+     */
+    public function runPerformanceTests(): array
+    {
+        $this->test_database_query_performance();
+        $this->test_cache_performance();
+        $this->test_memory_usage();
+
+        return [
+            'metrics' => self::$metrics,
+            'recommendations' => self::generateRecommendationsStatic(),
+            'score' => self::calculatePerformanceScoreStatic(),
+        ];
+    }
+
+    /**
      * Test database query performance
      */
     public function test_database_query_performance(): void

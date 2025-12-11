@@ -113,9 +113,7 @@ class InfrastructureModelsTest extends TestCase
             'ssl_expires_at' => now()->addDays(60),
         ]);
 
-        // FIXME: Model bug - sslExpiresSoon() implementation issue with date comparison
-        // Expected false for 60 days in future, but returns true
-        $this->markTestSkipped('Domain::sslExpiresSoon() has implementation bug - needs model fix');
+        $this->assertFalse($domain->sslExpiresSoon());
     }
 
     /** @test */
@@ -176,8 +174,7 @@ class InfrastructureModelsTest extends TestCase
             'ssl_expires_at' => now()->addDays(90),
         ]);
 
-        // Returns yellow due to sslExpiresSoon() bug - it incorrectly returns true for future dates
-        $this->assertEquals('yellow', $domain->status_color);
+        $this->assertEquals('green', $domain->status_color);
     }
 
     /** @test */
@@ -276,8 +273,7 @@ class InfrastructureModelsTest extends TestCase
         ]);
 
         $this->assertTrue($cert->isExpiringSoon(30));
-        // Bug in isExpiringSoon() - diffInDays returns absolute value, so this returns true instead of false
-        $this->assertTrue($cert->isExpiringSoon(7));
+        $this->assertFalse($cert->isExpiringSoon(7));
     }
 
     /** @test */
@@ -332,9 +328,7 @@ class InfrastructureModelsTest extends TestCase
             'expires_at' => now()->addDays(45),
         ]);
 
-        // Bug: diffInDays returns negative value when expires_at > now
-        // Should be 45, but returns approximately -45
-        $this->assertEqualsWithDelta(-45, $cert->daysUntilExpiry(), 1);
+        $this->assertEqualsWithDelta(45, $cert->daysUntilExpiry(), 1);
     }
 
     /** @test */
@@ -367,8 +361,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals('bg-yellow-500/20 text-yellow-400 border-yellow-500/30', $expiringSoonCert->getStatusBadgeClass());
 
         $issuedCert = SSLCertificate::factory()->create(['status' => 'issued', 'expires_at' => now()->addDays(60)]);
-        // Bug: isExpiringSoon() returns true for future dates, so shows yellow instead of green
-        $this->assertEquals('bg-yellow-500/20 text-yellow-400 border-yellow-500/30', $issuedCert->getStatusBadgeClass());
+        $this->assertEquals('bg-green-500/20 text-green-400 border-green-500/30', $issuedCert->getStatusBadgeClass());
     }
 
     /** @test */
@@ -381,8 +374,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertStringContainsString('Expiring', $expiringSoonCert->getStatusLabel());
 
         $issuedCert = SSLCertificate::factory()->create(['status' => 'issued', 'expires_at' => now()->addDays(60)]);
-        // Bug: daysUntilExpiry returns negative value, so shows "Expiring (-59d)" or similar
-        $this->assertStringContainsString('Expiring', $issuedCert->getStatusLabel());
+        $this->assertEquals('Active', $issuedCert->getStatusLabel());
     }
 
     // ========================

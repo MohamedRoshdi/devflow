@@ -58,6 +58,21 @@ class ProjectShow extends Component
 
     public string $activeTab = 'overview';
 
+    public bool $showBranchSelector = false;
+
+    public string $branchSearch = '';
+
+    /** @var array<int, array<string, mixed>> */
+    public array $availableBranches = [];
+
+    public bool $branchesLoading = false;
+
+    public bool $branchSwitching = false;
+
+    public string $selectedBranch = '';
+
+    public bool $showBranchConfirmModal = false;
+
     public function mount(Project $project)
     {
         // Use Policy for authorization
@@ -67,6 +82,7 @@ class ProjectShow extends Component
         $this->project = $project->load('domains');
         $this->firstTab = request()->query('tab', 'overview');
         $this->activeTab = $this->firstTab;
+        $this->selectedBranch = $project->branch;
     }
 
     public function setActiveTab(string $tab): void
@@ -246,6 +262,97 @@ class ProjectShow extends Component
     public function setAutoRefreshInterval(int $seconds): void
     {
         $this->autoRefreshInterval = max(10, min(300, $seconds)); // Between 10s and 5min
+    }
+
+    public function toggleBranchSelector(): void
+    {
+        $this->showBranchSelector = ! $this->showBranchSelector;
+
+        if ($this->showBranchSelector && empty($this->availableBranches)) {
+            $this->loadBranches();
+        }
+    }
+
+    public function loadBranches(): void
+    {
+        $this->branchesLoading = true;
+
+        try {
+            $gitService = app(GitService::class);
+            $result = $gitService->getBranches($this->project);
+
+            if ($result['success']) {
+                $this->availableBranches = $result['branches'];
+            } else {
+                $this->availableBranches = [];
+                session()->flash('error', 'Failed to load branches: '.($result['error'] ?? 'Unknown error'));
+            }
+        } catch (\Exception $e) {
+            $this->availableBranches = [];
+            session()->flash('error', 'Failed to load branches: '.$e->getMessage());
+        } finally {
+            $this->branchesLoading = false;
+        }
+    }
+
+    public function getFilteredBranchesProperty(): array
+    {
+        if (empty($this->branchSearch)) {
+            return $this->availableBranches;
+        }
+
+        return array_filter($this->availableBranches, function ($branch) {
+            return str_contains(strtolower($branch['name']), strtolower($this->branchSearch));
+        });
+    }
+
+    public function selectBranchForSwitch(string $branchName): void
+    {
+        $this->selectedBranch = $branchName;
+        $this->showBranchConfirmModal = true;
+    }
+
+    public function cancelBranchSwitch(): void
+    {
+        $this->showBranchConfirmModal = false;
+        $this->selectedBranch = $this->project->branch;
+    }
+
+    public function confirmBranchSwitch(): void
+    {
+        if ($this->selectedBranch === $this->project->branch) {
+            $this->showBranchConfirmModal = false;
+
+            return;
+        }
+
+        $this->branchSwitching = true;
+
+        try {
+            $gitService = app(GitService::class);
+            $result = $gitService->switchBranch($this->project, $this->selectedBranch);
+
+            if ($result['success']) {
+                $this->project->refresh();
+                session()->flash('message', $result['message']);
+
+                // Refresh git data after branch switch
+                $this->gitLoaded = false;
+                $this->updateStatusLoaded = false;
+                $this->showBranchConfirmModal = false;
+                $this->showBranchSelector = false;
+
+                // Check for updates on new branch
+                $this->checkForUpdates();
+                $this->prepareGitTab();
+            } else {
+                session()->flash('error', 'Failed to switch branch: '.($result['error'] ?? 'Unknown error'));
+            }
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to switch branch: '.$e->getMessage());
+        } finally {
+            $this->branchSwitching = false;
+        }
     }
 
     public function deploy()

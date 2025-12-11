@@ -7,9 +7,18 @@ use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
+use App\Services\GitService;
 
 class DevFlowSelfManagement extends Component
 {
+    // Deployment state
+    public bool $isDeploying = false;
+    public string $deploymentOutput = '';
+    public string $deploymentStatus = '';
+    public array $deploymentSteps = [];
+    public int $currentStep = 0;
+
     // System Info
     public array $systemInfo = [];
 
@@ -72,6 +81,18 @@ class DevFlowSelfManagement extends Component
     public array $schedulerStatus = [];
     public string $lastSchedulerRun = '';
 
+    // Git Tab State
+    public array $commits = [];
+    public array $gitStatus = [];
+    public ?array $currentCommit = null;
+    public int $commitPage = 1;
+    public int $commitPerPage = 15;
+    public int $commitTotal = 0;
+    public bool $gitLoading = false;
+    public string $selectedBranch = '';
+    public array $branches = [];
+    public bool $pullingChanges = false;
+
     public function mount(): void
     {
         $this->loadSystemInfo();
@@ -84,6 +105,7 @@ class DevFlowSelfManagement extends Component
         $this->loadReverbStatus();
         $this->loadSupervisorProcesses();
         $this->loadSchedulerStatus();
+        $this->selectedBranch = $this->gitBranch;
     }
 
     private function loadSystemInfo(): void
@@ -431,9 +453,9 @@ class DevFlowSelfManagement extends Component
             // Get reverb config
             $this->reverbStatus = [
                 'enabled' => config('broadcasting.default') === 'reverb',
-                'host' => config('reverb.servers.reverb.host', env('REVERB_HOST', 'localhost')),
-                'port' => config('reverb.servers.reverb.port', env('REVERB_PORT', 8080)),
-                'app_id' => env('REVERB_APP_ID', 'Not configured'),
+                'host' => config('reverb.servers.reverb.host', config('reverb.host', 'localhost')),
+                'port' => config('reverb.servers.reverb.port', config('reverb.port', 8080)),
+                'app_id' => config('reverb.apps.0.app_id', 'Not configured'),
                 'running' => $this->reverbRunning,
             ];
         } catch (\Exception $e) {
@@ -573,6 +595,543 @@ class DevFlowSelfManagement extends Component
         $pow = floor(log($bytes) / log(1024));
         $pow = min($pow, count($units) - 1);
         return round($bytes / (1024 ** $pow), $precision) . ' ' . $units[$pow];
+    }
+
+    // ===== DEPLOYMENT METHODS =====
+
+    public function redeploy(): void
+    {
+        $this->isDeploying = true;
+        $this->deploymentOutput = "Starting deployment...\n";
+        $this->deploymentStatus = 'running';
+        $this->currentStep = -1;
+
+        $this->deploymentSteps = [
+            ['name' => 'Git Pull', 'status' => 'pending', 'output' => ''],
+            ['name' => 'Composer Install', 'status' => 'pending', 'output' => ''],
+            ['name' => 'NPM Install', 'status' => 'pending', 'output' => ''],
+            ['name' => 'NPM Build', 'status' => 'pending', 'output' => ''],
+            ['name' => 'Database Migrations', 'status' => 'pending', 'output' => ''],
+            ['name' => 'Clear Caches', 'status' => 'pending', 'output' => ''],
+            ['name' => 'Rebuild Caches', 'status' => 'pending', 'output' => ''],
+            ['name' => 'Restart Queue', 'status' => 'pending', 'output' => ''],
+            ['name' => 'Restart PHP-FPM', 'status' => 'pending', 'output' => ''],
+        ];
+
+        Cache::put('devflow_deployment_start', microtime(true), 600);
+        $this->dispatch('deployment-started');
+    }
+
+    public function pollDeploymentStep(): void
+    {
+        if (!$this->isDeploying || $this->deploymentStatus !== 'running') {
+            return;
+        }
+
+        $this->currentStep++;
+        $projectPath = base_path();
+
+        if ($this->currentStep >= count($this->deploymentSteps)) {
+            $this->finishDeployment(true);
+            return;
+        }
+
+        $this->deploymentSteps[$this->currentStep]['status'] = 'running';
+        $stepName = $this->deploymentSteps[$this->currentStep]['name'];
+        $totalSteps = count($this->deploymentSteps);
+        $this->deploymentOutput .= "\n[" . ($this->currentStep + 1) . "/{$totalSteps}] {$stepName}...\n";
+
+        try {
+            $output = match($this->currentStep) {
+                0 => $this->stepGitPull($projectPath),
+                1 => $this->stepComposerInstall($projectPath),
+                2 => $this->stepNpmInstall($projectPath),
+                3 => $this->stepNpmBuild($projectPath),
+                4 => $this->stepMigrations(),
+                5 => $this->stepClearCaches(),
+                6 => $this->stepRebuildCaches(),
+                7 => $this->stepRestartQueue(),
+                8 => $this->stepRestartPhpFpm(),
+                default => "Unknown step",
+            };
+
+            $this->deploymentSteps[$this->currentStep]['status'] = 'success';
+            $this->deploymentSteps[$this->currentStep]['output'] = $output;
+            $this->deploymentOutput .= "  ✓ {$output}\n";
+
+            if ($this->currentStep >= count($this->deploymentSteps) - 1) {
+                $this->finishDeployment(true);
+            }
+
+        } catch (\Exception $e) {
+            $this->deploymentSteps[$this->currentStep]['status'] = 'failed';
+            $this->deploymentSteps[$this->currentStep]['output'] = $e->getMessage();
+            $this->finishDeployment(false, $e->getMessage());
+        }
+    }
+
+    private function stepGitPull(string $projectPath): string
+    {
+        if (!$this->isGitRepo) {
+            return "Skipped - Not a Git repository";
+        }
+
+        $output = "$ chown -R www-data:www-data .git && chmod -R 775 .git\n";
+        Process::timeout(30)->run("chown -R www-data:www-data {$projectPath}/.git && chmod -R 775 {$projectPath}/.git");
+
+        $cmd = "git fetch origin {$this->gitBranch} && git reset --hard origin/{$this->gitBranch}";
+        $output .= "$ {$cmd}\n";
+        $result = Process::timeout(120)->run("cd {$projectPath} && {$cmd}");
+        if (!$result->successful()) {
+            throw new \Exception($result->errorOutput());
+        }
+        return $output . ($result->output() ?: "Successfully pulled");
+    }
+
+    private function stepComposerInstall(string $projectPath): string
+    {
+        $cmd = "composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev";
+        $output = "$ {$cmd}\n";
+        $result = Process::timeout(300)->run("cd {$projectPath} && {$cmd} 2>&1");
+        if (!$result->successful()) {
+            throw new \Exception($result->errorOutput());
+        }
+        return $output . "Dependencies installed successfully";
+    }
+
+    private function stepNpmInstall(string $projectPath): string
+    {
+        $output = "$ rm -rf node_modules package-lock.json\n";
+        Process::timeout(60)->run("cd {$projectPath} && rm -rf node_modules package-lock.json 2>&1");
+
+        $cmd = "npm install";
+        $output .= "$ {$cmd}\n";
+        $result = Process::timeout(300)->run("cd {$projectPath} && {$cmd} 2>&1");
+        if (!$result->successful()) {
+            throw new \Exception($result->errorOutput() ?: $result->output());
+        }
+        return $output . "Node dependencies installed";
+    }
+
+    private function stepNpmBuild(string $projectPath): string
+    {
+        $nodePath = "{$projectPath}/node_modules/.bin";
+        $cmd = "npm run build";
+        $output = "$ PATH=\"node_modules/.bin:\$PATH\" {$cmd}\n";
+        $result = Process::timeout(300)->run("cd {$projectPath} && PATH=\"{$nodePath}:\$PATH\" {$cmd} 2>&1");
+        if (!$result->successful()) {
+            $output .= "$ node ./node_modules/.bin/vite build\n";
+            $result = Process::timeout(300)->run("cd {$projectPath} && /usr/bin/node ./node_modules/.bin/vite build 2>&1");
+            if (!$result->successful()) {
+                throw new \Exception($result->errorOutput() ?: $result->output());
+            }
+        }
+        return $output . "Frontend assets built successfully";
+    }
+
+    private function stepMigrations(): string
+    {
+        $output = "$ php artisan migrate --force\n";
+        Artisan::call('migrate', ['--force' => true]);
+        return $output . (Artisan::output() ?: "No pending migrations");
+    }
+
+    private function stepClearCaches(): string
+    {
+        $projectPath = base_path();
+        $output = "$ rm -rf bootstrap/cache/*.php\n";
+        Process::timeout(30)->run("rm -rf {$projectPath}/bootstrap/cache/*.php");
+
+        $output .= "$ composer dump-autoload -o\n";
+        Process::timeout(60)->run("cd {$projectPath} && composer dump-autoload -o 2>&1");
+
+        $output .= "$ php artisan optimize:clear\n";
+        Artisan::call('optimize:clear');
+
+        $output .= "$ php artisan package:discover\n";
+        Artisan::call('package:discover');
+
+        return $output . "All caches cleared, packages re-discovered";
+    }
+
+    private function stepRebuildCaches(): string
+    {
+        $output = "$ php artisan config:cache\n";
+        Artisan::call('config:cache');
+        $output .= "$ php artisan route:cache\n";
+        Artisan::call('route:cache');
+        $output .= "$ php artisan view:cache\n";
+        Artisan::call('view:cache');
+        $output .= "$ php artisan event:cache\n";
+        Artisan::call('event:cache');
+        return $output . "Caches rebuilt successfully";
+    }
+
+    private function stepRestartQueue(): string
+    {
+        $output = "$ php artisan queue:restart\n";
+        Artisan::call('queue:restart');
+        return $output . "Queue workers will restart on next job";
+    }
+
+    private function stepRestartPhpFpm(): string
+    {
+        $projectPath = base_path();
+
+        $output = "$ chown -R www-data:www-data storage bootstrap/cache public/build\n";
+        Process::timeout(60)->run("chown -R www-data:www-data {$projectPath}/storage {$projectPath}/bootstrap/cache {$projectPath}/public/build 2>&1 || true");
+
+        $output .= "$ systemctl restart php8.2-fpm\n";
+        Process::timeout(30)->run("systemctl restart php8.2-fpm 2>&1 || service php8.2-fpm restart 2>&1 || true");
+        return $output . "PHP-FPM restarted - OPcache cleared, permissions fixed";
+    }
+
+    private function finishDeployment(bool $success, string $errorMessage = ''): void
+    {
+        $startTime = Cache::get('devflow_deployment_start', microtime(true));
+        $duration = round(microtime(true) - $startTime, 2);
+
+        if ($success) {
+            $this->deploymentOutput .= "\n========================================\n";
+            $this->deploymentOutput .= "✅ DEPLOYMENT SUCCESSFUL\n";
+            $this->deploymentOutput .= "Duration: {$duration} seconds\n";
+            $this->deploymentOutput .= "Completed: " . now()->format('Y-m-d H:i:s') . "\n";
+            $this->deploymentOutput .= "========================================\n";
+            $this->deploymentStatus = 'success';
+
+            Log::info('DevFlow self-deployment completed', [
+                'user_id' => auth()->id(),
+                'duration' => $duration,
+            ]);
+        } else {
+            $this->deploymentOutput .= "\n========================================\n";
+            $this->deploymentOutput .= "❌ DEPLOYMENT FAILED\n";
+            $this->deploymentOutput .= "Step: " . ($this->deploymentSteps[$this->currentStep]['name'] ?? 'Unknown') . "\n";
+            $this->deploymentOutput .= "Error: " . $errorMessage . "\n";
+            $this->deploymentOutput .= "========================================\n";
+            $this->deploymentStatus = 'failed';
+
+            Log::error('DevFlow self-deployment failed', [
+                'error' => $errorMessage,
+                'step' => $this->currentStep,
+            ]);
+        }
+
+        $this->isDeploying = false;
+        $this->loadGitInfo();
+        Cache::forget('devflow_deployment_start');
+        $this->dispatch('deployment-completed');
+    }
+
+    public function closeDeployment(): void
+    {
+        $this->isDeploying = false;
+        $this->deploymentStatus = '';
+        $this->deploymentOutput = '';
+        $this->currentStep = -1;
+        $this->deploymentSteps = array_map(function ($step) {
+            $step['status'] = 'pending';
+            return $step;
+        }, $this->deploymentSteps);
+    }
+
+    // ===== CACHE MANAGEMENT METHODS =====
+
+    public function clearCache(string $type = 'all'): void
+    {
+        try {
+            switch ($type) {
+                case 'config':
+                    Artisan::call('config:clear');
+                    session()->flash('message', 'Configuration cache cleared!');
+                    break;
+                case 'route':
+                    Artisan::call('route:clear');
+                    session()->flash('message', 'Route cache cleared!');
+                    break;
+                case 'view':
+                    Artisan::call('view:clear');
+                    session()->flash('message', 'View cache cleared!');
+                    break;
+                case 'event':
+                    Artisan::call('event:clear');
+                    session()->flash('message', 'Event cache cleared!');
+                    break;
+                case 'app':
+                    Artisan::call('cache:clear');
+                    session()->flash('message', 'Application cache cleared!');
+                    break;
+                case 'all':
+                default:
+                    Artisan::call('optimize:clear');
+                    session()->flash('message', 'All caches cleared successfully!');
+                    break;
+            }
+
+            Log::info('DevFlow cache cleared', [
+                'type' => $type,
+                'user_id' => auth()->id(),
+            ]);
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to clear cache: ' . $e->getMessage());
+        }
+    }
+
+    // ===== GIT TAB METHODS =====
+
+    public function loadGitTab(): void
+    {
+        if (!$this->isGitRepo) {
+            return;
+        }
+
+        $this->gitLoading = true;
+
+        try {
+            $this->loadGitCommits();
+            $this->loadGitStatusInfo();
+            $this->loadBranches();
+            $this->loadCurrentCommit();
+        } catch (\Exception $e) {
+            Log::error('Failed to load Git tab: ' . $e->getMessage());
+        } finally {
+            $this->gitLoading = false;
+        }
+    }
+
+    private function loadGitCommits(): void
+    {
+        $projectPath = base_path();
+        $skip = max(0, ($this->commitPage - 1) * $this->commitPerPage);
+
+        // Configure safe directory first
+        Process::run("git config --global --add safe.directory {$projectPath} 2>&1 || true");
+
+        // Get total commit count
+        $countResult = Process::timeout(15)->run("cd {$projectPath} && git rev-list --count HEAD 2>&1");
+        $this->commitTotal = $countResult->successful() ? (int) trim($countResult->output()) : 0;
+
+        // Get commit history
+        $logCommand = "cd {$projectPath} && git log --pretty=format:'%H|%an|%ae|%at|%s' --skip={$skip} -n {$this->commitPerPage} 2>&1";
+        $logResult = Process::timeout(20)->run($logCommand);
+
+        $this->commits = [];
+        if ($logResult->successful()) {
+            $lines = explode("\n", trim($logResult->output()));
+
+            foreach ($lines as $line) {
+                if (empty($line)) continue;
+
+                $parts = explode('|', $line, 5);
+                if (count($parts) === 5) {
+                    [$hash, $author, $email, $timestamp, $message] = $parts;
+
+                    $this->commits[] = [
+                        'hash' => $hash,
+                        'short_hash' => substr($hash, 0, 7),
+                        'author' => $author,
+                        'email' => $email,
+                        'timestamp' => (int) $timestamp,
+                        'date' => date('Y-m-d H:i:s', $timestamp),
+                        'message' => $message,
+                    ];
+                }
+            }
+        }
+    }
+
+    private function loadGitStatusInfo(): void
+    {
+        $projectPath = base_path();
+
+        // Get git status
+        $statusResult = Process::run("cd {$projectPath} && git status --porcelain 2>&1");
+
+        $this->gitStatus = [
+            'clean' => $statusResult->successful() && empty(trim($statusResult->output())),
+            'modified' => [],
+            'staged' => [],
+            'untracked' => [],
+        ];
+
+        if ($statusResult->successful() && !empty(trim($statusResult->output()))) {
+            $lines = explode("\n", trim($statusResult->output()));
+
+            foreach ($lines as $line) {
+                if (empty($line)) continue;
+
+                $status = substr($line, 0, 2);
+                $file = trim(substr($line, 3));
+
+                if ($status === '??') {
+                    $this->gitStatus['untracked'][] = $file;
+                } elseif (trim($status[0]) !== '') {
+                    $this->gitStatus['staged'][] = $file;
+                } elseif (trim($status[1]) !== '') {
+                    $this->gitStatus['modified'][] = $file;
+                }
+            }
+        }
+    }
+
+    private function loadBranches(): void
+    {
+        $projectPath = base_path();
+
+        // Get all branches
+        $branchResult = Process::run("cd {$projectPath} && git branch -a 2>&1");
+
+        $this->branches = [];
+        if ($branchResult->successful()) {
+            $lines = explode("\n", trim($branchResult->output()));
+
+            foreach ($lines as $line) {
+                $line = trim($line);
+                if (empty($line)) continue;
+
+                // Remove leading * and spaces
+                $branch = preg_replace('/^\*?\s+/', '', $line);
+
+                // Skip remote HEAD references
+                if (str_contains($branch, 'remotes/origin/HEAD')) continue;
+
+                // Clean up remote branch names
+                $branch = str_replace('remotes/origin/', '', $branch);
+
+                if (!in_array($branch, $this->branches)) {
+                    $this->branches[] = $branch;
+                }
+            }
+        }
+    }
+
+    private function loadCurrentCommit(): void
+    {
+        $projectPath = base_path();
+
+        $result = Process::run("cd {$projectPath} && git log -1 --pretty=format:'%H|%an|%ae|%at|%s' 2>&1");
+
+        if ($result->successful() && !empty(trim($result->output()))) {
+            $parts = explode('|', trim($result->output()), 5);
+            if (count($parts) === 5) {
+                [$hash, $author, $email, $timestamp, $message] = $parts;
+
+                $this->currentCommit = [
+                    'hash' => $hash,
+                    'short_hash' => substr($hash, 0, 7),
+                    'author' => $author,
+                    'email' => $email,
+                    'timestamp' => (int) $timestamp,
+                    'date' => date('Y-m-d H:i:s', $timestamp),
+                    'message' => $message,
+                ];
+            }
+        }
+    }
+
+    public function refreshGitTab(): void
+    {
+        $this->loadGitInfo();
+        $this->loadGitTab();
+        session()->flash('message', 'Git information refreshed successfully!');
+    }
+
+    public function pullLatestChanges(): void
+    {
+        if (!$this->isGitRepo) {
+            session()->flash('error', 'Not a Git repository');
+            return;
+        }
+
+        $this->pullingChanges = true;
+
+        try {
+            $projectPath = base_path();
+
+            // Fetch and pull
+            $fetchResult = Process::timeout(60)->run("cd {$projectPath} && git fetch origin {$this->gitBranch} 2>&1");
+
+            if (!$fetchResult->successful()) {
+                throw new \Exception('Failed to fetch: ' . $fetchResult->errorOutput());
+            }
+
+            $pullResult = Process::timeout(60)->run("cd {$projectPath} && git pull origin {$this->gitBranch} 2>&1");
+
+            if (!$pullResult->successful()) {
+                throw new \Exception('Failed to pull: ' . $pullResult->errorOutput());
+            }
+
+            $this->loadGitInfo();
+            $this->loadGitTab();
+
+            session()->flash('message', 'Successfully pulled latest changes from ' . $this->gitBranch);
+
+            Log::info('DevFlow Git pull completed', [
+                'user_id' => auth()->id(),
+                'branch' => $this->gitBranch,
+            ]);
+
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to pull changes: ' . $e->getMessage());
+        } finally {
+            $this->pullingChanges = false;
+        }
+    }
+
+    public function switchBranch(string $branch): void
+    {
+        if (!$this->isGitRepo || empty($branch)) {
+            session()->flash('error', 'Invalid branch selection');
+            return;
+        }
+
+        try {
+            $projectPath = base_path();
+
+            // Checkout branch
+            $checkoutResult = Process::timeout(30)->run("cd {$projectPath} && git checkout {$branch} 2>&1");
+
+            if (!$checkoutResult->successful()) {
+                throw new \Exception('Failed to switch branch: ' . $checkoutResult->errorOutput());
+            }
+
+            $this->selectedBranch = $branch;
+            $this->gitBranch = $branch;
+            $this->loadGitInfo();
+            $this->loadGitTab();
+
+            session()->flash('message', "Successfully switched to branch: {$branch}");
+
+            Log::info('DevFlow Git branch switched', [
+                'user_id' => auth()->id(),
+                'branch' => $branch,
+            ]);
+
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to switch branch: ' . $e->getMessage());
+        }
+    }
+
+    public function previousCommitPage(): void
+    {
+        if ($this->commitPage > 1) {
+            $this->commitPage--;
+            $this->loadGitCommits();
+        }
+    }
+
+    public function nextCommitPage(): void
+    {
+        $maxPages = max(1, (int) ceil($this->commitTotal / $this->commitPerPage));
+        if ($this->commitPage < $maxPages) {
+            $this->commitPage++;
+            $this->loadGitCommits();
+        }
+    }
+
+    public function getCommitPagesProperty(): int
+    {
+        return max(1, (int) ceil($this->commitTotal / $this->commitPerPage));
     }
 
     public function render(): \Illuminate\View\View

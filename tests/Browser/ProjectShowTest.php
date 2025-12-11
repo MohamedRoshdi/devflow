@@ -100,10 +100,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_project_show_page_loads_successfully(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -118,10 +114,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_project_name_is_displayed_prominently(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -136,10 +128,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_project_status_indicator_is_visible(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -154,10 +142,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_deploy_button_is_visible(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -172,10 +156,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_start_stop_buttons_visible_based_on_status(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -196,10 +176,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_edit_project_button_is_present(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -215,10 +191,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_overview_tab_active_by_default(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -233,10 +205,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_git_tab_is_accessible(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -253,10 +221,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_deployments_tab_is_accessible(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -273,10 +237,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_docker_tab_is_accessible(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -293,10 +253,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_domain_list_is_displayed(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -316,10 +272,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_recent_deployments_shown(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -341,10 +293,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_git_commits_display_when_git_tab_active(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -360,10 +308,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_repository_url_is_shown(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -383,10 +327,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_branch_name_is_displayed(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -402,10 +342,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_last_deployment_info_visible_if_exists(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -426,10 +362,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_quick_deploy_modal_opens(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -445,10 +377,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_project_health_status_shown_in_stats(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -463,10 +391,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_environment_indicator_is_displayed(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -486,10 +410,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_navigation_breadcrumbs_are_present(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -504,10 +424,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_auto_refresh_toggle_functionality_exists(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -523,10 +439,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_refresh_git_data_button_present_on_git_tab(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -542,10 +454,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_update_available_indicator_shows_when_updates_exist(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -560,10 +468,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_docker_status_shown_on_docker_tab(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -579,10 +483,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_flash_messages_display_correctly(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -596,10 +496,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_project_slug_displayed_in_info_section(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -615,10 +511,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_server_information_is_displayed(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -638,10 +530,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_framework_badge_is_displayed(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -660,10 +548,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_live_url_displayed_when_project_running(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -685,10 +569,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_environment_tab_is_accessible(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -705,10 +585,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_logs_tab_is_accessible(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -725,10 +601,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_webhooks_tab_is_accessible(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -745,10 +617,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_quick_stats_cards_display_deployment_count(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -764,10 +632,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_hero_section_with_gradient_displayed(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -782,10 +646,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_status_badge_shows_appropriate_color_for_running_status(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -804,10 +664,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_page_scrolls_smoothly(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -825,10 +681,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_mobile_responsive_layout(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->resize(375, 667)
@@ -844,10 +696,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_tablet_responsive_layout(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->resize(768, 1024)
@@ -863,10 +711,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_desktop_responsive_layout(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->resize(1920, 1080)
@@ -882,10 +726,6 @@ class ProjectShowTest extends DuskTestCase
      */
     public function test_tab_navigation_works_with_wire_loading_indicators(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))

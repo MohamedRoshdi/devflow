@@ -231,10 +231,10 @@ class FileBackupService
     /**
      * Restore files from backup
      */
-    public function restoreBackup(FileBackup $backup, bool $overwrite = false, ?string $targetPath = null): bool
+    public function restoreBackup(FileBackup $backup, bool $overwrite = false, ?string $targetPath = null, bool $verifyIntegrity = true): bool
     {
         if (! $backup->isCompleted()) {
-            throw new \InvalidArgumentException('Cannot restore incomplete backup');
+            throw new \InvalidArgumentException('Cannot restore incomplete backup. Status: '.$backup->status);
         }
 
         $project = $backup->project;
@@ -242,8 +242,9 @@ class FileBackupService
         $targetPath = $targetPath ?? $backup->source_path;
 
         try {
-            Log::info('Starting backup restore', [
+            Log::info('Starting file backup restore', [
                 'backup_id' => $backup->id,
+                'backup_type' => $backup->type,
                 'project' => $project->slug,
                 'target_path' => $targetPath,
                 'overwrite' => $overwrite,
@@ -252,35 +253,104 @@ class FileBackupService
             // Get the backup chain (for incremental backups)
             $backupChain = $backup->getBackupChain();
 
-            // Download and extract each backup in order
+            Log::info('Backup chain determined', [
+                'backup_id' => $backup->id,
+                'chain_length' => count($backupChain),
+                'chain_ids' => array_map(fn ($b) => $b->id, $backupChain),
+            ]);
+
+            // Verify all backups in chain are completed
             foreach ($backupChain as $chainBackup) {
+                if (! $chainBackup->isCompleted()) {
+                    throw new \RuntimeException("Backup #{$chainBackup->id} in chain is not completed. Cannot restore.");
+                }
+            }
+
+            // Download and extract each backup in order
+            foreach ($backupChain as $index => $chainBackup) {
+                Log::info('Processing backup in chain', [
+                    'chain_index' => $index + 1,
+                    'total_backups' => count($backupChain),
+                    'backup_id' => $chainBackup->id,
+                    'backup_type' => $chainBackup->type,
+                ]);
+
+                // Download backup
                 $localPath = $this->downloadBackupToLocal($chainBackup);
 
+                // Verify integrity if requested
+                if ($verifyIntegrity && $chainBackup->checksum) {
+                    Log::info('Verifying backup integrity', ['backup_id' => $chainBackup->id]);
+
+                    $currentChecksum = hash_file('sha256', $localPath);
+                    if ($currentChecksum !== $chainBackup->checksum) {
+                        @unlink($localPath);
+                        throw new \RuntimeException("Backup #{$chainBackup->id} integrity check failed: checksum mismatch. The backup file may be corrupted.");
+                    }
+
+                    Log::info('Backup integrity verified', [
+                        'backup_id' => $chainBackup->id,
+                        'checksum' => $currentChecksum,
+                    ]);
+                }
+
                 // Upload to server
-                $remoteTempPath = "/tmp/restore_{$chainBackup->id}.tar.gz";
+                $remoteTempPath = "/tmp/restore_".uniqid()."_{$chainBackup->id}.tar.gz";
+                Log::info('Uploading backup to server', [
+                    'backup_id' => $chainBackup->id,
+                    'remote_path' => $remoteTempPath,
+                ]);
+
                 $this->uploadFileToServer($server, $localPath, $remoteTempPath);
 
                 // Extract on server
+                Log::info('Extracting backup on server', [
+                    'backup_id' => $chainBackup->id,
+                    'target_path' => $targetPath,
+                    'overwrite' => $overwrite,
+                ]);
+
                 $this->extractTarArchive($server, $remoteTempPath, $targetPath, $overwrite);
 
                 // Cleanup
                 @unlink($localPath);
                 $this->cleanupRemoteTempFile($server, $remoteTempPath);
+
+                Log::info('Backup extracted successfully', [
+                    'backup_id' => $chainBackup->id,
+                    'chain_progress' => ($index + 1).' of '.count($backupChain),
+                ]);
             }
 
-            Log::info('Backup restore completed', [
+            // Set proper permissions on restored files
+            try {
+                $permissionsCommand = "sudo chown -R www-data:www-data {$targetPath} && sudo chmod -R 755 {$targetPath}";
+                $this->executeSSHCommand($server, $permissionsCommand, 60);
+
+                Log::info('Permissions set on restored files', ['target_path' => $targetPath]);
+            } catch (\Exception $e) {
+                Log::warning('Failed to set permissions on restored files', [
+                    'target_path' => $targetPath,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+
+            Log::info('File backup restore completed successfully', [
                 'backup_id' => $backup->id,
                 'project' => $project->slug,
                 'backups_restored' => count($backupChain),
+                'target_path' => $targetPath,
             ]);
 
             return true;
 
         } catch (\Exception $e) {
-            Log::error('Backup restore failed', [
+            Log::error('File backup restore failed', [
                 'backup_id' => $backup->id,
                 'project' => $project->slug,
+                'target_path' => $targetPath,
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             throw $e;

@@ -61,7 +61,7 @@ class Domain extends Model
             return false;
         }
 
-        return $this->ssl_expires_at->diffInDays(now()) <= 30;
+        return $this->ssl_expires_at->isBetween(now(), now()->addDays(30));
     }
 
     public function sslIsExpired(): bool

@@ -264,28 +264,60 @@ return $freshBackup;
     /**
      * Restore a backup
      */
-    public function restoreBackup(ServerBackup $backup): bool
+    public function restoreBackup(ServerBackup $backup, bool $verifyIntegrity = true): bool
     {
         if (! $backup->isCompleted()) {
-            throw new \RuntimeException('Cannot restore incomplete backup');
+            throw new \RuntimeException('Cannot restore incomplete backup. Status: '.$backup->status);
         }
 
         try {
             $server = $backup->server;
 
-            if ($backup->type === 'full') {
-                return $this->restoreFullBackup($backup, $server);
-            } elseif ($backup->type === 'incremental') {
-                return $this->restoreIncrementalBackup($backup, $server);
-            } elseif ($backup->type === 'snapshot') {
-                return $this->restoreSnapshot($backup, $server);
+            Log::info('Starting server backup restore', [
+                'backup_id' => $backup->id,
+                'backup_type' => $backup->type,
+                'server_id' => $server->id,
+                'server_name' => $server->name,
+            ]);
+
+            // Verify backup file exists before attempting restore
+            if ($backup->type !== 'snapshot') {
+                $backupPath = storage_path($backup->storage_path);
+
+                if (! file_exists($backupPath)) {
+                    throw new \RuntimeException("Backup file not found at: {$backupPath}");
+                }
+
+                Log::info('Backup file verified', [
+                    'backup_id' => $backup->id,
+                    'file_path' => $backupPath,
+                    'file_size' => filesize($backupPath),
+                ]);
             }
 
-            throw new \RuntimeException('Unknown backup type');
-        } catch (\Exception $e) {
-            Log::error('Backup restoration failed', [
+            // Restore based on backup type
+            $result = match ($backup->type) {
+                'full' => $this->restoreFullBackup($backup, $server, $verifyIntegrity),
+                'incremental' => $this->restoreIncrementalBackup($backup, $server),
+                'snapshot' => $this->restoreSnapshot($backup, $server),
+                default => throw new \RuntimeException("Unknown backup type: {$backup->type}"),
+            };
+
+            Log::info('Server backup restore completed successfully', [
                 'backup_id' => $backup->id,
+                'backup_type' => $backup->type,
+                'server_id' => $server->id,
+            ]);
+
+            return $result;
+
+        } catch (\Exception $e) {
+            Log::error('Server backup restoration failed', [
+                'backup_id' => $backup->id,
+                'backup_type' => $backup->type,
+                'server_id' => $backup->server_id,
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             throw $e;
@@ -565,25 +597,87 @@ BASH;
         rmdir($path);
     }
 
-    private function restoreFullBackup(ServerBackup $backup, Server $server): bool
+    private function restoreFullBackup(ServerBackup $backup, Server $server, bool $verifyIntegrity = true): bool
     {
         $localPath = storage_path($backup->storage_path);
 
         if (! file_exists($localPath)) {
-            throw new \RuntimeException('Backup file not found');
+            throw new \RuntimeException("Backup file not found at: {$localPath}");
+        }
+
+        // Verify integrity if requested
+        if ($verifyIntegrity && $backup->size_bytes) {
+            $actualSize = filesize($localPath);
+            if ($actualSize !== $backup->size_bytes) {
+                throw new \RuntimeException("Backup file size mismatch. Expected: {$backup->size_bytes}, Got: {$actualSize}");
+            }
+
+            Log::info('Backup file size verified', [
+                'backup_id' => $backup->id,
+                'size' => $actualSize,
+            ]);
         }
 
         // Upload backup to server
-        $remoteBackupPath = '/tmp/restore_'.basename($backup->storage_path);
+        $remoteBackupPath = '/tmp/restore_'.uniqid().'_'.basename($backup->storage_path);
+
+        Log::info('Uploading backup to server', [
+            'backup_id' => $backup->id,
+            'remote_path' => $remoteBackupPath,
+        ]);
+
         $this->uploadBackupFile($server, $localPath, $remoteBackupPath);
 
-        // Extract backup
-        $this->executeRemoteCommand($server, "sudo tar -xzf {$remoteBackupPath} -C / --overwrite", true);
+        // Verify upload
+        $remoteFileCheck = $this->executeRemoteCommand($server, "test -f {$remoteBackupPath} && echo 'exists'", true);
+        if (trim($remoteFileCheck) !== 'exists') {
+            throw new \RuntimeException('Backup file upload verification failed');
+        }
 
-        // Cleanup
+        Log::info('Backup uploaded successfully, starting extraction', [
+            'backup_id' => $backup->id,
+        ]);
+
+        // Extract backup (extract to root with absolute paths preserved)
+        try {
+            $extractCommand = "sudo tar -xzf {$remoteBackupPath} -C / --overwrite 2>&1";
+            $output = $this->executeRemoteCommand($server, $extractCommand, false);
+
+            Log::info('Backup extraction completed', [
+                'backup_id' => $backup->id,
+                'output' => $output,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Backup extraction failed', [
+                'backup_id' => $backup->id,
+                'error' => $e->getMessage(),
+            ]);
+            throw new \RuntimeException('Failed to extract backup: '.$e->getMessage());
+        }
+
+        // Cleanup remote backup file
         $this->cleanupRemoteFile($server, $remoteBackupPath);
 
-        Log::info('Full backup restored', ['backup_id' => $backup->id]);
+        // Restart services to apply restored configurations
+        try {
+            Log::info('Restarting services after restore', ['backup_id' => $backup->id]);
+
+            // Restart common services that might be affected
+            $this->executeRemoteCommand($server, 'sudo systemctl restart nginx', true);
+            $this->executeRemoteCommand($server, 'sudo systemctl restart php*-fpm', true);
+
+            Log::info('Services restarted successfully', ['backup_id' => $backup->id]);
+        } catch (\Exception $e) {
+            Log::warning('Failed to restart some services', [
+                'backup_id' => $backup->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        Log::info('Full server backup restored successfully', [
+            'backup_id' => $backup->id,
+            'server_id' => $server->id,
+        ]);
 
         return true;
     }
@@ -593,29 +687,127 @@ BASH;
         $localPath = storage_path($backup->storage_path);
 
         if (! is_dir($localPath)) {
-            throw new \RuntimeException('Backup directory not found');
+            throw new \RuntimeException("Backup directory not found at: {$localPath}");
         }
 
-        // Use rsync to restore
-        $rsyncCommand = $this->buildRsyncCommand($server, $localPath.'/', $server->username.'@'.$server->ip_address.':/');
+        Log::info('Starting incremental backup restore', [
+            'backup_id' => $backup->id,
+            'local_path' => $localPath,
+        ]);
+
+        // Build rsync command to push from local to remote server
+        $sshCommand = "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p {$server->port}";
+
+        if ($server->ssh_password) {
+            $sshCommand = 'sshpass -p '.escapeshellarg($server->ssh_password).' '.$sshCommand;
+        } elseif ($server->ssh_key) {
+            $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
+            file_put_contents($keyFile, $server->ssh_key);
+            chmod($keyFile, 0600);
+            $sshCommand .= " -i {$keyFile}";
+        }
+
+        // Rsync from local to remote (push mode)
+        $rsyncCommand = sprintf(
+            'rsync -avz --delete -e "%s" %s/ %s@%s:/',
+            $sshCommand,
+            escapeshellarg(rtrim($localPath, '/')),
+            $server->username,
+            $server->ip_address
+        );
+
+        Log::info('Executing rsync restore', [
+            'backup_id' => $backup->id,
+            'command' => $rsyncCommand,
+        ]);
 
         $process = Process::fromShellCommandline($rsyncCommand);
         $process->setTimeout(3600);
         $process->run();
 
         if (! $process->isSuccessful()) {
-            throw new \RuntimeException('Failed to restore incremental backup');
+            throw new \RuntimeException('Failed to restore incremental backup: '.$process->getErrorOutput());
         }
 
-        Log::info('Incremental backup restored', ['backup_id' => $backup->id]);
+        Log::info('Incremental backup restored successfully', [
+            'backup_id' => $backup->id,
+            'output' => $process->getOutput(),
+        ]);
+
+        // Restart services
+        try {
+            $this->executeRemoteCommand($server, 'sudo systemctl restart nginx', true);
+            $this->executeRemoteCommand($server, 'sudo systemctl restart php*-fpm', true);
+        } catch (\Exception $e) {
+            Log::warning('Failed to restart services after incremental restore', [
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         return true;
     }
 
     private function restoreSnapshot(ServerBackup $backup, Server $server): bool
     {
-        // This is a placeholder - snapshot restoration depends on the infrastructure
-        throw new \RuntimeException('Snapshot restoration must be performed manually through your cloud provider or LVM tools');
+        // LVM snapshot restoration
+        if (str_starts_with($backup->storage_path, 'lvm://')) {
+            $snapshotName = str_replace('lvm://', '', $backup->storage_path);
+
+            Log::info('Attempting LVM snapshot restoration', [
+                'backup_id' => $backup->id,
+                'snapshot_name' => $snapshotName,
+            ]);
+
+            // Check if snapshot exists
+            $snapshotCheck = $this->executeRemoteCommand($server, "sudo lvdisplay /dev/mapper/{$snapshotName} 2>&1", true);
+
+            if (strpos($snapshotCheck, 'not found') !== false) {
+                throw new \RuntimeException("LVM snapshot '{$snapshotName}' not found on server");
+            }
+
+            // Provide instructions for manual restoration
+            $instructions = <<<INSTRUCTIONS
+
+LVM Snapshot Restoration Instructions:
+======================================
+
+The snapshot '{$snapshotName}' exists on the server but must be restored manually.
+
+To restore this snapshot, SSH into the server and execute:
+
+1. Stop all services:
+   sudo systemctl stop nginx php*-fpm mysql
+
+2. Merge the snapshot (this will restore the original volume):
+   sudo lvconvert --merge /dev/mapper/{$snapshotName}
+
+3. Reboot the server to complete the merge:
+   sudo reboot
+
+4. After reboot, verify services are running:
+   sudo systemctl status nginx php*-fpm mysql
+
+WARNING: This operation will replace all data on the root volume with the snapshot data.
+Make sure you have a current backup before proceeding.
+
+INSTRUCTIONS;
+
+            Log::warning('LVM snapshot requires manual restoration', [
+                'backup_id' => $backup->id,
+                'snapshot_name' => $snapshotName,
+                'instructions' => $instructions,
+            ]);
+
+            throw new \RuntimeException("LVM snapshot restoration must be performed manually:\n\n{$instructions}");
+        }
+
+        // Cloud provider snapshots
+        throw new \RuntimeException(
+            'Snapshot restoration for cloud providers must be performed through '.
+            'your cloud provider\'s management console (AWS, DigitalOcean, Vultr, etc.). '.
+            'This typically involves: 1) Creating a new server from the snapshot, '.
+            '2) Testing the restored server, 3) Updating DNS to point to the new server.'
+        );
     }
 
     private function uploadBackupFile(Server $server, string $localPath, string $remotePath): void

@@ -69,7 +69,7 @@ class SSLCertificate extends Model
             return false;
         }
 
-        return $this->expires_at->diffInDays(now()) <= $days;
+        return $this->expires_at->isBetween(now(), now()->addDays($days));
     }
 
     public function needsRenewal(int $days = 30): bool
@@ -95,7 +95,7 @@ class SSLCertificate extends Model
             return 0;
         }
 
-        return (int) $this->expires_at->diffInDays(now());
+        return (int) now()->diffInDays($this->expires_at, false);
     }
 
     public function getStatusBadgeClass(): string

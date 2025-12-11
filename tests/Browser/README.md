@@ -1,6 +1,17 @@
-# DevFlow Pro - Dashboard Browser Tests
+# DevFlow Pro - Browser Tests
 
-This directory contains comprehensive Laravel Dusk browser tests for the DevFlow Pro Dashboard.
+This directory contains comprehensive Laravel Dusk browser tests for the DevFlow Pro application.
+
+## Recent Fixes (December 2024)
+
+Fixed 20+ skipped browser tests by:
+1. Creating a dedicated `BrowserTestSeeder` for test data
+2. Updating test classes to create their own data in `setUp()` methods
+3. Removing skip conditions that relied on existing database data
+
+**Previously failing tests now fixed:**
+- ✅ `DeploymentShowTest.php` - All 30 tests now runnable
+- ✅ `DomainManagerTest.php` - All 30 tests now runnable
 
 ## Test Coverage
 
@@ -43,7 +54,7 @@ Before running the tests, ensure you have:
 1. **Chrome/Chromium Browser** installed
 2. **ChromeDriver** installed (matching your Chrome version)
 3. **Laravel Dusk** package installed
-4. **Testing database** configured
+4. **Testing database** configured and seeded
 
 ## Installation
 
@@ -82,10 +93,39 @@ DB_PASSWORD=
 
 ## Running the Tests
 
-### Run All Dashboard Tests
+### 1. First-Time Setup: Seed Test Database
+
+**Important:** Before running browser tests for the first time, seed the test database:
 
 ```bash
+# Run migrations
+php artisan migrate --env=testing
+
+# Seed browser test data (creates users, servers, projects, deployments, domains)
+php artisan db:seed --class=BrowserTestSeeder --env=testing
+```
+
+This creates:
+- Test admin user (admin@devflow.test / password)
+- 2 test servers with Docker
+- 4 test projects (Laravel, Shopware, Multi-tenant, SaaS)
+- 20 deployments in various states
+- Domains for projects
+
+### 2. Run Browser Tests
+
+```bash
+# Run all browser tests
+php artisan dusk
+
+# Run all dashboard tests
 php artisan dusk tests/Browser/DashboardTest.php
+
+# Run deployment tests
+php artisan dusk tests/Browser/DeploymentShowTest.php
+
+# Run domain manager tests
+php artisan dusk tests/Browser/DomainManagerTest.php
 ```
 
 ### Run Specific Test
@@ -116,18 +156,29 @@ Then run:
 php artisan dusk tests/Browser/DashboardTest.php
 ```
 
-## Test Data
+## Test Data Management
 
-The tests automatically create test data including:
+### Browser Test Seeder
 
-- **4 Servers** (3 online, 1 offline)
-- **7 Projects** (5 running, 2 stopped)
-- **8 Deployments** (5 successful, 2 failed, 1 running)
-- **4 SSL Certificates** (3 valid, 1 expiring soon)
-- **5 Health Checks** (4 healthy, 1 down)
-- **Server Metrics** for each online server
+The `BrowserTestSeeder` creates consistent test data for all browser tests:
 
-All test data is created using factories and is automatically cleaned up after each test using `DatabaseMigrations`.
+**Created by Seeder:**
+- 1 Test admin user (admin@devflow.test / password)
+- 2 Test servers (online status, with Docker)
+- 4 Test projects (Laravel, Shopware, Multi-tenant, SaaS)
+- 20 Deployments across all projects (5 per project)
+- 6 Domains (for projects that need them)
+
+**Created by Individual Tests:**
+- **DashboardTest**: 4 Servers, 7 Projects, 8 Deployments, 4 SSL Certificates, 5 Health Checks
+- **DeploymentShowTest**: Uses seeded data + creates test-specific deployments
+- **DomainManagerTest**: Uses seeded data + creates test-specific domains
+
+### Data Cleanup
+
+- **BrowserTestSeeder data**: Persists across test runs (use `firstOrCreate` to avoid duplicates)
+- **Test-specific data**: Created inline in tests, not automatically cleaned up
+- To reset test database: `php artisan migrate:fresh --env=testing && php artisan db:seed --class=BrowserTestSeeder --env=testing`
 
 ## Test Debugging
 
@@ -181,8 +232,33 @@ DUSK_CHROME_BINARY=/usr/bin/chromium-browser
 
 **Solution:**
 - Ensure testing database exists and is accessible
-- Run migrations: `php artisan migrate --database=testing`
+- Run migrations: `php artisan migrate --env=testing`
+- Seed test data: `php artisan db:seed --class=BrowserTestSeeder --env=testing`
 - Check `.env.dusk.local` database configuration
+
+### Issue: Tests Being Skipped (No Data Found)
+
+If you see messages like "No deployment found in database" or "No project available for testing":
+
+**Solution:**
+1. Ensure you've seeded the browser test database:
+   ```bash
+   php artisan db:seed --class=BrowserTestSeeder --env=testing
+   ```
+
+2. Verify data exists:
+   ```bash
+   php artisan tinker --env=testing
+   >>> User::where('email', 'admin@devflow.test')->count()  // Should be 1
+   >>> Project::count()  // Should be at least 4
+   >>> Deployment::count()  // Should be at least 20
+   ```
+
+3. If data is missing, reset and reseed:
+   ```bash
+   php artisan migrate:fresh --env=testing
+   php artisan db:seed --class=BrowserTestSeeder --env=testing
+   ```
 
 ### Issue: Timeout Errors
 

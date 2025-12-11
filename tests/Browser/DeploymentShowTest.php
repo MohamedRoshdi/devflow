@@ -31,7 +31,55 @@ class DeploymentShowTest extends DuskTestCase
                 'email_verified_at' => now(),
             ]
         );
-        $this->deployment = Deployment::first();
+
+        // Create test data instead of relying on existing data
+        $server = Server::firstOrCreate(
+            ['hostname' => 'test-deployment.example.com'],
+            [
+                'user_id' => $this->user->id,
+                'name' => 'Test Deployment Server',
+                'ip_address' => '192.168.1.200',
+                'port' => 22,
+                'username' => 'root',
+                'status' => 'online',
+            ]
+        );
+
+        $project = Project::firstOrCreate(
+            ['slug' => 'test-deployment-project'],
+            [
+                'user_id' => $this->user->id,
+                'server_id' => $server->id,
+                'name' => 'Test Deployment Project',
+                'framework' => 'laravel',
+                'status' => 'running',
+                'repository_url' => 'https://github.com/test/deployment-project.git',
+                'branch' => 'main',
+                'root_directory' => '/var/www/deployment-project',
+                'php_version' => '8.4',
+                'environment' => 'production',
+            ]
+        );
+
+        // Get or create a deployment for tests that need existing deployment
+        $this->deployment = Deployment::firstOrCreate(
+            [
+                'project_id' => $project->id,
+                'commit_hash' => 'abc123def456',
+            ],
+            [
+                'user_id' => $this->user->id,
+                'server_id' => $server->id,
+                'branch' => 'main',
+                'commit_message' => 'Test deployment commit',
+                'status' => 'success',
+                'triggered_by' => 'manual',
+                'started_at' => now()->subHours(1),
+                'completed_at' => now()->subMinutes(55),
+                'duration_seconds' => 300,
+                'output_log' => "=== Starting Deployment ===\n✓ Deployment completed\n",
+            ]
+        );
     }
 
     /**
@@ -39,12 +87,6 @@ class DeploymentShowTest extends DuskTestCase
      */
     public function test_deployment_show_page_loads_successfully(): void
     {
-        if (! $this->deployment) {
-            $this->markTestSkipped('No deployment found in database');
-
-            return;
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/deployments/'.$this->deployment->id)
@@ -58,12 +100,6 @@ class DeploymentShowTest extends DuskTestCase
      */
     public function test_deployment_status_displayed(): void
     {
-        if (! $this->deployment) {
-            $this->markTestSkipped('No deployment found in database');
-
-            return;
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/deployments/'.$this->deployment->id)
@@ -136,12 +172,6 @@ class DeploymentShowTest extends DuskTestCase
      */
     public function test_live_logs_section_displayed(): void
     {
-        if (! $this->deployment) {
-            $this->markTestSkipped('No deployment found in database');
-
-            return;
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/deployments/'.$this->deployment->id)
@@ -156,12 +186,6 @@ class DeploymentShowTest extends DuskTestCase
      */
     public function test_commit_hash_displayed(): void
     {
-        if (! $this->deployment) {
-            $this->markTestSkipped('No deployment found in database');
-
-            return;
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/deployments/'.$this->deployment->id)
@@ -229,12 +253,6 @@ class DeploymentShowTest extends DuskTestCase
      */
     public function test_duration_shown(): void
     {
-        if (! $this->deployment) {
-            $this->markTestSkipped('No deployment found in database');
-
-            return;
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/deployments/'.$this->deployment->id)
@@ -303,12 +321,6 @@ class DeploymentShowTest extends DuskTestCase
      */
     public function test_project_name_linked(): void
     {
-        if (! $this->deployment) {
-            $this->markTestSkipped('No deployment found in database');
-
-            return;
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/deployments/'.$this->deployment->id)
@@ -324,12 +336,6 @@ class DeploymentShowTest extends DuskTestCase
      */
     public function test_server_name_displayed(): void
     {
-        if (! $this->deployment) {
-            $this->markTestSkipped('No deployment found in database');
-
-            return;
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/deployments/'.$this->deployment->id)
@@ -485,12 +491,6 @@ class DeploymentShowTest extends DuskTestCase
      */
     public function test_back_to_list_button_works(): void
     {
-        if (! $this->deployment) {
-            $this->markTestSkipped('No deployment found in database');
-
-            return;
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/deployments/'.$this->deployment->id)
@@ -707,12 +707,6 @@ class DeploymentShowTest extends DuskTestCase
      */
     public function test_deployment_details_card_displayed(): void
     {
-        if (! $this->deployment) {
-            $this->markTestSkipped('No deployment found in database');
-
-            return;
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/deployments/'.$this->deployment->id)

@@ -9,6 +9,24 @@ use Illuminate\Support\Facades\Process;
 class GitService
 {
     /**
+     * Cache of temporary SSH key files per server ID
+     * @var array<int, string>
+     */
+    protected array $sshKeyFiles = [];
+
+    /**
+     * Cleanup temporary SSH key files on destruction
+     */
+    public function __destruct()
+    {
+        foreach ($this->sshKeyFiles as $keyFile) {
+            if (file_exists($keyFile)) {
+                @unlink($keyFile);
+            }
+        }
+    }
+
+    /**
      * Check if server is localhost
      * Note: Even for localhost, we use SSH to run commands as root for git operations
      * since the web server runs as www-data which doesn't have SSH keys for GitHub
@@ -22,6 +40,9 @@ class GitService
 
     /**
      * Build SSH command for remote execution
+     *
+     * Security: Temp files are cached per server and cleaned up in __destruct()
+     * Additionally, a shutdown function provides cleanup on unexpected termination
      */
     protected function buildSSHCommand(Server $server, string $remoteCommand): string
     {
@@ -32,11 +53,33 @@ class GitService
         ];
 
         if ($server->ssh_key) {
-            // Save SSH key to temp file
-            $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
-            file_put_contents($keyFile, $server->ssh_key);
-            chmod($keyFile, 0600);
-            $sshOptions[] = '-i '.$keyFile;
+            // Reuse cached temp file if available for this server
+            if (!isset($this->sshKeyFiles[$server->id])) {
+                // Create temporary SSH key file
+                $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
+                if ($keyFile === false) {
+                    throw new \RuntimeException('Failed to create temporary SSH key file');
+                }
+
+                // Security: Set restrictive permissions before writing sensitive data
+                chmod($keyFile, 0600);
+
+                // Write SSH key content
+                file_put_contents($keyFile, $server->ssh_key);
+
+                // Cache the key file path
+                $this->sshKeyFiles[$server->id] = $keyFile;
+
+                // Security: Register shutdown function as additional cleanup protection
+                // This ensures cleanup even if the process is terminated unexpectedly
+                register_shutdown_function(function () use ($keyFile) {
+                    if (file_exists($keyFile)) {
+                        @unlink($keyFile);
+                    }
+                });
+            }
+
+            $sshOptions[] = '-i '.$this->sshKeyFiles[$server->id];
         }
 
         // Escape the command for safe SSH execution
@@ -415,6 +458,352 @@ class GitService
                 'success' => true,
                 'commits' => $commits,
                 'count' => count($commits),
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Get all available branches from a local repository (for DevFlow self-management)
+     */
+    public function getLocalBranches(string $projectPath = null): array
+    {
+        try {
+            $projectPath = $projectPath ?? base_path();
+
+            // Check if repository exists
+            if (! is_dir("{$projectPath}/.git")) {
+                return [
+                    'success' => false,
+                    'error' => 'Not a Git repository.',
+                ];
+            }
+
+            // Fetch all branches from remote
+            $fetchResult = Process::timeout(30)->run("cd {$projectPath} && git fetch --all --prune 2>&1");
+
+            // Get all remote branches
+            $result = Process::timeout(15)->run("cd {$projectPath} && git branch -r --format='%(refname:short)|%(committerdate:relative)|%(committername)' 2>&1");
+
+            if (! $result->successful()) {
+                return [
+                    'success' => false,
+                    'error' => 'Failed to fetch branches: '.$result->errorOutput(),
+                ];
+            }
+
+            // Get current branch
+            $currentBranchResult = Process::timeout(10)->run("cd {$projectPath} && git branch --show-current 2>&1");
+            $currentBranch = $currentBranchResult->successful() ? trim($currentBranchResult->output()) : 'main';
+
+            $branches = [];
+            $lines = array_filter(explode("\n", trim($result->output())));
+
+            foreach ($lines as $line) {
+                if (empty($line) || str_contains($line, 'HEAD ->')) {
+                    continue;
+                }
+
+                $parts = explode('|', $line, 3);
+                $branchName = str_replace('origin/', '', trim($parts[0] ?? ''));
+
+                if (empty($branchName)) {
+                    continue;
+                }
+
+                $branches[] = [
+                    'name' => $branchName,
+                    'full_name' => trim($parts[0] ?? ''),
+                    'last_commit_date' => trim($parts[1] ?? 'unknown'),
+                    'last_committer' => trim($parts[2] ?? 'unknown'),
+                    'is_current' => $branchName === $currentBranch,
+                    'is_main' => in_array($branchName, ['main', 'master', 'production']),
+                ];
+            }
+
+            // Sort branches: current first, then main branches, then alphabetically
+            usort($branches, function ($a, $b) {
+                if ($a['is_current']) {
+                    return -1;
+                }
+                if ($b['is_current']) {
+                    return 1;
+                }
+                if ($a['is_main'] && ! $b['is_main']) {
+                    return -1;
+                }
+                if ($b['is_main'] && ! $a['is_main']) {
+                    return 1;
+                }
+
+                return strcmp($a['name'], $b['name']);
+            });
+
+            return [
+                'success' => true,
+                'branches' => $branches,
+                'current_branch' => $currentBranch,
+                'total' => count($branches),
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Switch to a different branch in local repository (for DevFlow self-management)
+     */
+    public function switchLocalBranch(string $branchName, string $projectPath = null): array
+    {
+        try {
+            $projectPath = $projectPath ?? base_path();
+
+            // Check if repository exists
+            if (! is_dir("{$projectPath}/.git")) {
+                return [
+                    'success' => false,
+                    'error' => 'Not a Git repository.',
+                ];
+            }
+
+            // Fetch the branch
+            $fetchResult = Process::timeout(30)->run("cd {$projectPath} && git fetch origin {$branchName} 2>&1");
+
+            if (! $fetchResult->successful()) {
+                \Log::warning("Git fetch failed for branch {$branchName}: ".$fetchResult->errorOutput());
+            }
+
+            // Check if there are local changes
+            $statusResult = Process::timeout(10)->run("cd {$projectPath} && git status --porcelain 2>&1");
+            $hasChanges = ! empty(trim($statusResult->output()));
+
+            if ($hasChanges) {
+                // Stash local changes
+                Process::timeout(15)->run("cd {$projectPath} && git stash save 'DevFlow auto-stash before branch switch' 2>&1");
+            }
+
+            // Switch to the branch (checkout and reset to remote)
+            $switchResult = Process::timeout(30)->run("cd {$projectPath} && git checkout {$branchName} 2>&1 && git reset --hard origin/{$branchName} 2>&1");
+
+            if (! $switchResult->successful()) {
+                return [
+                    'success' => false,
+                    'error' => 'Failed to switch branch: '.$switchResult->errorOutput(),
+                ];
+            }
+
+            return [
+                'success' => true,
+                'message' => "Successfully switched to branch: {$branchName}",
+                'branch' => $branchName,
+                'had_local_changes' => $hasChanges,
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Get all available branches from the repository
+     */
+    public function getBranches(Project $project): array
+    {
+        try {
+            $server = $project->server;
+            $projectPath = "/var/www/{$project->slug}";
+
+            // Check if repository exists
+            if (! $this->isRepositoryCloned($projectPath, $server)) {
+                return [
+                    'success' => false,
+                    'error' => 'Repository not cloned yet.',
+                ];
+            }
+
+            // Configure safe directory first
+            $safeConfigCommand = "git config --global --add safe.directory {$projectPath} 2>&1 || true";
+            $command = $this->isLocalhost($server)
+                ? $safeConfigCommand
+                : $this->buildSSHCommand($server, $safeConfigCommand);
+            Process::run($command);
+
+            // Fetch all branches from remote
+            $fetchCommand = "cd {$projectPath} && timeout 30 git fetch --all --prune 2>&1";
+            $command = $this->isLocalhost($server)
+                ? $fetchCommand
+                : $this->buildSSHCommand($server, $fetchCommand);
+            Process::timeout(35)->run($command);
+
+            // Get all remote branches
+            $branchesCommand = "cd {$projectPath} && timeout 10 git branch -r --format='%(refname:short)|%(committerdate:relative)|%(committername)' 2>&1";
+            $command = $this->isLocalhost($server)
+                ? $branchesCommand
+                : $this->buildSSHCommand($server, $branchesCommand);
+
+            $result = Process::timeout(15)->run($command);
+
+            if (! $result->successful()) {
+                return [
+                    'success' => false,
+                    'error' => 'Failed to fetch branches: '.$result->errorOutput(),
+                ];
+            }
+
+            // Get current branch
+            $currentBranchCommand = "cd {$projectPath} && git branch --show-current 2>&1";
+            $command = $this->isLocalhost($server)
+                ? $currentBranchCommand
+                : $this->buildSSHCommand($server, $currentBranchCommand);
+            $currentBranchResult = Process::timeout(10)->run($command);
+            $currentBranch = $currentBranchResult->successful() ? trim($currentBranchResult->output()) : $project->branch;
+
+            $branches = [];
+            $lines = array_filter(explode("\n", trim($result->output())));
+
+            foreach ($lines as $line) {
+                if (empty($line) || str_contains($line, 'HEAD ->')) {
+                    continue;
+                }
+
+                $parts = explode('|', $line, 3);
+                $branchName = str_replace('origin/', '', trim($parts[0] ?? ''));
+
+                if (empty($branchName)) {
+                    continue;
+                }
+
+                $branches[] = [
+                    'name' => $branchName,
+                    'full_name' => trim($parts[0] ?? ''),
+                    'last_commit_date' => trim($parts[1] ?? 'unknown'),
+                    'last_committer' => trim($parts[2] ?? 'unknown'),
+                    'is_current' => $branchName === $currentBranch,
+                    'is_main' => in_array($branchName, ['main', 'master', 'production']),
+                ];
+            }
+
+            // Sort branches: current first, then main branches, then alphabetically
+            usort($branches, function ($a, $b) {
+                if ($a['is_current']) {
+                    return -1;
+                }
+                if ($b['is_current']) {
+                    return 1;
+                }
+                if ($a['is_main'] && ! $b['is_main']) {
+                    return -1;
+                }
+                if ($b['is_main'] && ! $a['is_main']) {
+                    return 1;
+                }
+
+                return strcmp($a['name'], $b['name']);
+            });
+
+            return [
+                'success' => true,
+                'branches' => $branches,
+                'current_branch' => $currentBranch,
+                'total' => count($branches),
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Switch to a different branch
+     */
+    public function switchBranch(Project $project, string $branchName): array
+    {
+        try {
+            $server = $project->server;
+            $projectPath = "/var/www/{$project->slug}";
+
+            // Check if repository exists
+            if (! $this->isRepositoryCloned($projectPath, $server)) {
+                return [
+                    'success' => false,
+                    'error' => 'Repository not cloned yet.',
+                ];
+            }
+
+            // Configure safe directory first
+            $safeConfigCommand = "git config --global --add safe.directory {$projectPath} 2>&1 || true";
+            $command = $this->isLocalhost($server)
+                ? $safeConfigCommand
+                : $this->buildSSHCommand($server, $safeConfigCommand);
+            Process::run($command);
+
+            // Fetch the branch
+            $fetchCommand = "cd {$projectPath} && timeout 30 git fetch origin {$branchName} 2>&1";
+            $command = $this->isLocalhost($server)
+                ? $fetchCommand
+                : $this->buildSSHCommand($server, $fetchCommand);
+
+            $fetchResult = Process::timeout(35)->run($command);
+
+            if (! $fetchResult->successful()) {
+                \Log::warning("Git fetch failed for branch {$branchName}: ".$fetchResult->errorOutput());
+            }
+
+            // Check if there are local changes
+            $statusCommand = "cd {$projectPath} && git status --porcelain 2>&1";
+            $command = $this->isLocalhost($server)
+                ? $statusCommand
+                : $this->buildSSHCommand($server, $statusCommand);
+            $statusResult = Process::timeout(10)->run($command);
+            $hasChanges = ! empty(trim($statusResult->output()));
+
+            if ($hasChanges) {
+                // Stash local changes
+                $stashCommand = "cd {$projectPath} && git stash save 'DevFlow auto-stash before branch switch' 2>&1";
+                $command = $this->isLocalhost($server)
+                    ? $stashCommand
+                    : $this->buildSSHCommand($server, $stashCommand);
+                Process::timeout(15)->run($command);
+            }
+
+            // Switch to the branch (checkout and reset to remote)
+            $switchCommand = "cd {$projectPath} && git checkout {$branchName} 2>&1 && git reset --hard origin/{$branchName} 2>&1";
+            $command = $this->isLocalhost($server)
+                ? $switchCommand
+                : $this->buildSSHCommand($server, $switchCommand);
+
+            $switchResult = Process::timeout(30)->run($command);
+
+            if (! $switchResult->successful()) {
+                return [
+                    'success' => false,
+                    'error' => 'Failed to switch branch: '.$switchResult->errorOutput(),
+                ];
+            }
+
+            // Update project branch in database
+            $project->update(['branch' => $branchName]);
+
+            // Get the new commit info
+            $commitInfo = $this->getCurrentCommit($project);
+
+            return [
+                'success' => true,
+                'message' => "Successfully switched to branch: {$branchName}",
+                'branch' => $branchName,
+                'commit_info' => $commitInfo,
+                'had_local_changes' => $hasChanges,
             ];
         } catch (\Exception $e) {
             return [

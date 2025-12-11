@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\StoreDeploymentRequest;
 use App\Http\Resources\DeploymentCollection;
 use App\Http\Resources\DeploymentResource;
+use App\Jobs\DeployProjectJob;
 use App\Models\Deployment;
 use App\Models\Project;
 use Illuminate\Http\JsonResponse;
@@ -64,15 +66,11 @@ class DeploymentController extends Controller
     /**
      * Create a new deployment for a project.
      */
-    public function store(Request $request, Project $project): JsonResponse
+    public function store(StoreDeploymentRequest $request, Project $project): JsonResponse
     {
         $this->authorize('update', $project);
 
-        $request->validate([
-            'branch' => 'sometimes|string|max:100',
-            'commit_hash' => 'sometimes|string|max:40',
-            'commit_message' => 'sometimes|string|max:500',
-        ]);
+        $validated = $request->validated();
 
         // Check if there's already a running deployment
         $runningDeployment = $project->deployments()
@@ -87,17 +85,17 @@ class DeploymentController extends Controller
         }
 
         try {
-            $deployment = DB::transaction(function () use ($project, $request) {
+            $deployment = DB::transaction(function () use ($project, $validated) {
                 return $project->deployments()->create([
                     'user_id' => auth()->id(),
                     'server_id' => $project->server_id,
-                    'branch' => $request->input('branch', $project->branch),
-                    'commit_hash' => $request->input('commit_hash', 'HEAD'),
-                    'commit_message' => $request->input('commit_message'),
+                    'branch' => $validated['branch'] ?? $project->branch,
+                    'commit_hash' => $validated['commit_hash'] ?? 'HEAD',
+                    'commit_message' => $validated['commit_message'] ?? null,
                     'triggered_by' => 'manual',
                     'status' => 'pending',
                     'started_at' => now(),
-                    'environment_snapshot' => [
+                    'environment_snapshot' => $validated['environment_snapshot'] ?? [
                         'php_version' => $project->php_version,
                         'node_version' => $project->node_version,
                         'framework' => $project->framework,
@@ -105,8 +103,8 @@ class DeploymentController extends Controller
                 ]);
             });
 
-            // Dispatch deployment job (you'll need to create this)
-            // DeployProjectJob::dispatch($deployment);
+            // Dispatch deployment job to queue
+            DeployProjectJob::dispatch($deployment);
 
             $deployment->load(['project', 'server', 'user']);
 
@@ -174,8 +172,8 @@ class DeploymentController extends Controller
                 ]);
             });
 
-            // Dispatch rollback deployment job
-            // DeployProjectJob::dispatch($rollbackDeployment);
+            // Dispatch rollback deployment job to queue
+            DeployProjectJob::dispatch($rollbackDeployment);
 
             $rollbackDeployment->load(['project', 'server', 'user', 'rollbackOf']);
 

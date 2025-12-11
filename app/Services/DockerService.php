@@ -8,6 +8,24 @@ use Symfony\Component\Process\Process;
 
 class DockerService
 {
+    /**
+     * Cache of temporary SSH key files per server ID
+     * @var array<int, string>
+     */
+    protected array $sshKeyFiles = [];
+
+    /**
+     * Cleanup temporary SSH key files on destruction
+     */
+    public function __destruct()
+    {
+        foreach ($this->sshKeyFiles as $keyFile) {
+            if (file_exists($keyFile)) {
+                @unlink($keyFile);
+            }
+        }
+    }
+
     public function checkDockerInstallation(Server $server): array
     {
         try {
@@ -723,6 +741,12 @@ class DockerService
         return "{$project->slug}-app";
     }
 
+    /**
+     * Build SSH command for remote execution
+     *
+     * Security: Temp files are cached per server and cleaned up in __destruct()
+     * Additionally, a shutdown function provides cleanup on unexpected termination
+     */
     protected function buildSSHCommand(Server $server, string $remoteCommand): string
     {
         $sshOptions = [
@@ -732,11 +756,33 @@ class DockerService
         ];
 
         if ($server->ssh_key) {
-            // Save SSH key to temp file
-            $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
-            file_put_contents($keyFile, $server->ssh_key);
-            chmod($keyFile, 0600);
-            $sshOptions[] = '-i '.$keyFile;
+            // Reuse cached temp file if available for this server
+            if (!isset($this->sshKeyFiles[$server->id])) {
+                // Create temporary SSH key file
+                $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
+                if ($keyFile === false) {
+                    throw new \RuntimeException('Failed to create temporary SSH key file');
+                }
+
+                // Security: Set restrictive permissions before writing sensitive data
+                chmod($keyFile, 0600);
+
+                // Write SSH key content
+                file_put_contents($keyFile, $server->ssh_key);
+
+                // Cache the key file path
+                $this->sshKeyFiles[$server->id] = $keyFile;
+
+                // Security: Register shutdown function as additional cleanup protection
+                // This ensures cleanup even if the process is terminated unexpectedly
+                register_shutdown_function(function () use ($keyFile) {
+                    if (file_exists($keyFile)) {
+                        @unlink($keyFile);
+                    }
+                });
+            }
+
+            $sshOptions[] = '-i '.$this->sshKeyFiles[$server->id];
         }
 
         return sprintf(
@@ -1545,11 +1591,15 @@ DOCKERFILE;
         try {
             $server = $project->server;
 
+            // Security fix: Escape the command parameter to prevent command injection
+            // Use escapeshellarg() to safely wrap the command for shell execution
+            $escapedCommand = escapeshellarg($command);
+
             $execCommand = sprintf(
-                'docker exec %s %s %s',
+                'docker exec %s %s sh -c %s',
                 $interactive ? '-it' : '',
                 $project->slug,
-                $command
+                $escapedCommand
             );
 
             $cmd = $this->isLocalhost($server)

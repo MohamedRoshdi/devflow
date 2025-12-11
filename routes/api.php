@@ -23,13 +23,17 @@ Route::prefix('v1')->name('api.v1.')->middleware(['api.auth', 'throttle:api'])->
     Route::apiResource('servers', ServerController::class);
     Route::get('servers/{server}/metrics', [ServerController::class, 'metrics'])->name('servers.metrics');
 
-    // Deployments - Deployment-specific rate limit
-    Route::middleware('throttle:deployments')->withoutMiddleware('throttle:api')->group(function () {
-        Route::get('projects/{project:slug}/deployments', [DeploymentController::class, 'index'])->name('projects.deployments.index')->withoutMiddleware('throttle:deployments')->middleware('throttle:api');
-        Route::post('projects/{project:slug}/deployments', [DeploymentController::class, 'store'])->name('projects.deployments.store');
-        Route::get('deployments/{deployment}', [DeploymentController::class, 'show'])->name('deployments.show')->withoutMiddleware('throttle:deployments')->middleware('throttle:api');
-        Route::post('deployments/{deployment}/rollback', [DeploymentController::class, 'rollback'])->name('deployments.rollback');
-    });
+    // Deployments - Read operations use standard API rate limit, write operations use deployment-specific rate limit
+    Route::get('projects/{project:slug}/deployments', [DeploymentController::class, 'index'])->name('projects.deployments.index');
+    Route::post('projects/{project:slug}/deployments', [DeploymentController::class, 'store'])
+        ->middleware('throttle:deployments')
+        ->withoutMiddleware('throttle:api')
+        ->name('projects.deployments.store');
+    Route::get('deployments/{deployment}', [DeploymentController::class, 'show'])->name('deployments.show');
+    Route::post('deployments/{deployment}/rollback', [DeploymentController::class, 'rollback'])
+        ->middleware('throttle:deployments')
+        ->withoutMiddleware('throttle:api')
+        ->name('deployments.rollback');
 });
 
 // Legacy routes (auth:sanctum) - Protected with API rate limiting

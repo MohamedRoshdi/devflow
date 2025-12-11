@@ -216,7 +216,7 @@ class DeploymentRollback extends Component
     }
 
     /**
-     * @return \Illuminate\Contracts\View\View
+     * @return \Illuminate\View\View
      */
     public function render(): \Illuminate\View\View
     {

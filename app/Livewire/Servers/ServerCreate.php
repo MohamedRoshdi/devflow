@@ -36,7 +36,7 @@ class ServerCreate extends Component
     public string $location_name = '';
 
     /**
-     * @return array<string, string>
+     * @return array<string, array<int, string>|string>
      */
     public function rules(): array
     {

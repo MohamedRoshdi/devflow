@@ -196,18 +196,6 @@ class CacheManager extends Component
         }
     }
 
-    private function formatBytes($bytes, $precision = 2): string
-    {
-        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
-        $bytes = (float) max((float) $bytes, 0);
-        if ($bytes == 0) {
-            return '0 B';
-        }
-        $pow = floor(log($bytes) / log(1024));
-        $pow = min($pow, count($units) - 1);
-        return round($bytes / (1024 ** $pow), $precision) . ' ' . $units[$pow];
-    }
-
     public function render(): \Illuminate\View\View
     {
         return view('livewire.projects.devflow.cache-manager');

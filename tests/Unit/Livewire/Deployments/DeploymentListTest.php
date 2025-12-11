@@ -1,0 +1,630 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Unit\Livewire\Deployments;
+
+use App\Livewire\Deployments\DeploymentList;
+use App\Models\Deployment;
+use App\Models\Project;
+use App\Models\Server;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
+use Livewire\Livewire;
+use Tests\TestCase;
+
+class DeploymentListTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected User $user;
+
+    protected Server $server;
+
+    protected Project $project;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->user = User::factory()->create();
+        $this->server = Server::factory()->create(['status' => 'online']);
+        $this->project = Project::factory()->create([
+            'user_id' => $this->user->id,
+            'server_id' => $this->server->id,
+        ]);
+
+        Cache::flush();
+    }
+
+    /** @test */
+    public function component_renders_successfully(): void
+    {
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->assertStatus(200)
+            ->assertViewIs('livewire.deployments.deployment-list');
+    }
+
+    /** @test */
+    public function component_displays_deployments(): void
+    {
+        $deployment = Deployment::factory()->create([
+            'user_id' => $this->user->id,
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+            'commit_message' => 'Fix critical bug',
+            'status' => 'success',
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->assertSee('Fix critical bug');
+    }
+
+    /** @test */
+    public function component_displays_multiple_deployments(): void
+    {
+        Deployment::factory()->create([
+            'user_id' => $this->user->id,
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+            'commit_message' => 'First deployment',
+        ]);
+
+        Deployment::factory()->create([
+            'user_id' => $this->user->id,
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+            'commit_message' => 'Second deployment',
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->assertSee('First deployment')
+            ->assertSee('Second deployment');
+    }
+
+    /** @test */
+    public function search_filters_deployments_by_commit_message(): void
+    {
+        Deployment::factory()->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+            'commit_message' => 'Add new feature',
+        ]);
+
+        Deployment::factory()->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+            'commit_message' => 'Fix bug',
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->set('search', 'feature')
+            ->assertSee('Add new feature')
+            ->assertDontSee('Fix bug');
+    }
+
+    /** @test */
+    public function search_filters_deployments_by_branch(): void
+    {
+        Deployment::factory()->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+            'branch' => 'main',
+            'commit_message' => 'Main branch deployment',
+        ]);
+
+        Deployment::factory()->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+            'branch' => 'develop',
+            'commit_message' => 'Develop branch deployment',
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->set('search', 'develop')
+            ->assertSee('Develop branch deployment')
+            ->assertDontSee('Main branch deployment');
+    }
+
+    /** @test */
+    public function search_filters_deployments_by_project_name(): void
+    {
+        $project1 = Project::factory()->create([
+            'user_id' => $this->user->id,
+            'server_id' => $this->server->id,
+            'name' => 'Laravel Application',
+        ]);
+
+        $project2 = Project::factory()->create([
+            'user_id' => $this->user->id,
+            'server_id' => $this->server->id,
+            'name' => 'React Application',
+        ]);
+
+        Deployment::factory()->create([
+            'project_id' => $project1->id,
+            'server_id' => $this->server->id,
+            'commit_message' => 'Deployment 1',
+        ]);
+
+        Deployment::factory()->create([
+            'project_id' => $project2->id,
+            'server_id' => $this->server->id,
+            'commit_message' => 'Deployment 2',
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->set('search', 'Laravel')
+            ->assertSee('Deployment 1')
+            ->assertDontSee('Deployment 2');
+    }
+
+    /** @test */
+    public function status_filter_works_correctly(): void
+    {
+        Deployment::factory()->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+            'status' => 'success',
+            'commit_message' => 'Successful deployment',
+        ]);
+
+        Deployment::factory()->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+            'status' => 'failed',
+            'commit_message' => 'Failed deployment',
+        ]);
+
+        Deployment::factory()->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+            'status' => 'running',
+            'commit_message' => 'Running deployment',
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->set('statusFilter', 'success')
+            ->assertSee('Successful deployment')
+            ->assertDontSee('Failed deployment')
+            ->assertDontSee('Running deployment');
+    }
+
+    /** @test */
+    public function project_filter_works_correctly(): void
+    {
+        $project1 = Project::factory()->create([
+            'user_id' => $this->user->id,
+            'server_id' => $this->server->id,
+        ]);
+
+        $project2 = Project::factory()->create([
+            'user_id' => $this->user->id,
+            'server_id' => $this->server->id,
+        ]);
+
+        Deployment::factory()->create([
+            'project_id' => $project1->id,
+            'server_id' => $this->server->id,
+            'commit_message' => 'Project 1 deployment',
+        ]);
+
+        Deployment::factory()->create([
+            'project_id' => $project2->id,
+            'server_id' => $this->server->id,
+            'commit_message' => 'Project 2 deployment',
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->set('projectFilter', (string) $project1->id)
+            ->assertSee('Project 1 deployment')
+            ->assertDontSee('Project 2 deployment');
+    }
+
+    /** @test */
+    public function multiple_filters_can_be_applied_simultaneously(): void
+    {
+        $project1 = Project::factory()->create([
+            'user_id' => $this->user->id,
+            'server_id' => $this->server->id,
+            'name' => 'Project Alpha',
+        ]);
+
+        Deployment::factory()->create([
+            'project_id' => $project1->id,
+            'server_id' => $this->server->id,
+            'status' => 'success',
+            'branch' => 'main',
+            'commit_message' => 'Main success',
+        ]);
+
+        Deployment::factory()->create([
+            'project_id' => $project1->id,
+            'server_id' => $this->server->id,
+            'status' => 'failed',
+            'branch' => 'main',
+            'commit_message' => 'Main failure',
+        ]);
+
+        Deployment::factory()->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+            'status' => 'success',
+            'branch' => 'develop',
+            'commit_message' => 'Develop success',
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->set('projectFilter', (string) $project1->id)
+            ->set('statusFilter', 'success')
+            ->set('search', 'main')
+            ->assertSee('Main success')
+            ->assertDontSee('Main failure')
+            ->assertDontSee('Develop success');
+    }
+
+    /** @test */
+    public function per_page_can_be_changed(): void
+    {
+        Deployment::factory()->count(20)->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->set('perPage', 25)
+            ->assertViewHas('deployments', function ($deployments) {
+                return $deployments->perPage() === 25;
+            });
+    }
+
+    /** @test */
+    public function per_page_is_validated_to_minimum(): void
+    {
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->set('perPage', 3)
+            ->assertSet('perPage', 15); // Reset to default
+    }
+
+    /** @test */
+    public function per_page_is_validated_to_maximum(): void
+    {
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->set('perPage', 100)
+            ->assertSet('perPage', 15); // Reset to default
+    }
+
+    /** @test */
+    public function per_page_accepts_valid_values(): void
+    {
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->set('perPage', 20)
+            ->assertSet('perPage', 20);
+    }
+
+    /** @test */
+    public function changing_status_filter_resets_pagination(): void
+    {
+        Deployment::factory()->count(20)->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->set('statusFilter', 'success')
+            ->assertSet('paginators.page', 1);
+    }
+
+    /** @test */
+    public function changing_project_filter_resets_pagination(): void
+    {
+        Deployment::factory()->count(20)->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->set('projectFilter', (string) $this->project->id)
+            ->assertSet('paginators.page', 1);
+    }
+
+    /** @test */
+    public function changing_search_resets_pagination(): void
+    {
+        Deployment::factory()->count(20)->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->set('search', 'test')
+            ->assertSet('paginators.page', 1);
+    }
+
+    /** @test */
+    public function changing_per_page_resets_pagination(): void
+    {
+        Deployment::factory()->count(20)->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->set('perPage', 20)
+            ->assertSet('paginators.page', 1);
+    }
+
+    /** @test */
+    public function component_caches_deployment_statistics(): void
+    {
+        Deployment::factory()->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+            'status' => 'success',
+        ]);
+
+        Deployment::factory()->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+            'status' => 'failed',
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->assertViewHas('stats', function ($stats) {
+                return $stats['total'] === 2 &&
+                       $stats['success'] === 1 &&
+                       $stats['failed'] === 1;
+            });
+
+        $this->assertTrue(Cache::has('deployment_stats'));
+    }
+
+    /** @test */
+    public function component_caches_projects_dropdown_list(): void
+    {
+        Project::factory()->count(3)->create([
+            'user_id' => $this->user->id,
+            'server_id' => $this->server->id,
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->assertViewHas('projects', function ($projects) {
+                return $projects->count() === 4; // 3 created + 1 in setUp
+            });
+
+        $this->assertTrue(Cache::has('projects_dropdown_list'));
+    }
+
+    /** @test */
+    public function component_eager_loads_relationships(): void
+    {
+        Deployment::factory()->create([
+            'user_id' => $this->user->id,
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->assertViewHas('deployments', function ($deployments) {
+                $deployment = $deployments->first();
+
+                return $deployment->relationLoaded('project') &&
+                       $deployment->relationLoaded('server') &&
+                       $deployment->relationLoaded('user');
+            });
+    }
+
+    /** @test */
+    public function component_only_selects_necessary_columns(): void
+    {
+        Deployment::factory()->create([
+            'user_id' => $this->user->id,
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->assertViewHas('deployments', function ($deployments) {
+                $deployment = $deployments->first();
+                $attributes = array_keys($deployment->getAttributes());
+
+                return in_array('id', $attributes) &&
+                       in_array('status', $attributes) &&
+                       in_array('commit_message', $attributes) &&
+                       in_array('branch', $attributes);
+            });
+    }
+
+    /** @test */
+    public function deployments_are_ordered_by_latest_first(): void
+    {
+        $oldDeployment = Deployment::factory()->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+            'commit_message' => 'Old deployment',
+            'created_at' => now()->subDays(5),
+        ]);
+
+        $newDeployment = Deployment::factory()->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+            'commit_message' => 'New deployment',
+            'created_at' => now(),
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->assertViewHas('deployments', function ($deployments) use ($newDeployment) {
+                return $deployments->first()->id === $newDeployment->id;
+            });
+    }
+
+    /** @test */
+    public function pagination_works_correctly(): void
+    {
+        Deployment::factory()->count(20)->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->assertViewHas('deployments', function ($deployments) {
+                return $deployments->count() === 15; // Default per page
+            });
+    }
+
+    /** @test */
+    public function url_parameters_are_persisted(): void
+    {
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->set('statusFilter', 'success')
+            ->set('projectFilter', (string) $this->project->id)
+            ->set('search', 'test')
+            ->set('perPage', 20)
+            ->assertPropertyWired('statusFilter')
+            ->assertPropertyWired('projectFilter')
+            ->assertPropertyWired('search')
+            ->assertPropertyWired('perPage');
+    }
+
+    /** @test */
+    public function empty_filters_show_all_deployments(): void
+    {
+        Deployment::factory()->count(3)->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->set('statusFilter', '')
+            ->set('projectFilter', '')
+            ->set('search', '')
+            ->assertViewHas('deployments', function ($deployments) {
+                return $deployments->count() === 3;
+            });
+    }
+
+    /** @test */
+    public function component_displays_all_deployment_statuses(): void
+    {
+        Deployment::factory()->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+            'status' => 'pending',
+        ]);
+
+        Deployment::factory()->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+            'status' => 'running',
+        ]);
+
+        Deployment::factory()->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+            'status' => 'success',
+        ]);
+
+        Deployment::factory()->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+            'status' => 'failed',
+        ]);
+
+        $component = Livewire::actingAs($this->user)
+            ->test(DeploymentList::class);
+
+        foreach (['pending', 'running', 'success', 'failed'] as $status) {
+            $component->set('statusFilter', $status)
+                ->assertViewHas('deployments', function ($deployments) use ($status) {
+                    return $deployments->count() === 1 &&
+                           $deployments->first()->status === $status;
+                });
+        }
+    }
+
+    /** @test */
+    public function unauthenticated_user_is_redirected(): void
+    {
+        Livewire::test(DeploymentList::class)
+            ->assertUnauthorized();
+    }
+
+    /** @test */
+    public function statistics_show_correct_counts_for_each_status(): void
+    {
+        Deployment::factory()->count(5)->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+            'status' => 'success',
+        ]);
+
+        Deployment::factory()->count(3)->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+            'status' => 'failed',
+        ]);
+
+        Deployment::factory()->count(2)->create([
+            'project_id' => $this->project->id,
+            'server_id' => $this->server->id,
+            'status' => 'running',
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->assertViewHas('stats', function ($stats) {
+                return $stats['total'] === 10 &&
+                       $stats['success'] === 5 &&
+                       $stats['failed'] === 3 &&
+                       $stats['running'] === 2;
+            });
+    }
+
+    /** @test */
+    public function projects_dropdown_is_ordered_alphabetically(): void
+    {
+        Project::factory()->create([
+            'user_id' => $this->user->id,
+            'server_id' => $this->server->id,
+            'name' => 'Zebra Project',
+        ]);
+
+        Project::factory()->create([
+            'user_id' => $this->user->id,
+            'server_id' => $this->server->id,
+            'name' => 'Alpha Project',
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(DeploymentList::class)
+            ->assertViewHas('projects', function ($projects) {
+                return $projects->first()->name === 'Alpha Project';
+            });
+    }
+}

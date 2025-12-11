@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\StoreServerMetricRequest;
 use App\Models\Server;
 use App\Models\ServerMetric;
-use Illuminate\Http\Request;
 
 class ServerMetricsController extends Controller
 {
@@ -23,19 +23,11 @@ class ServerMetricsController extends Controller
         ]);
     }
 
-    public function store(Request $request, Server $server)
+    public function store(StoreServerMetricRequest $request, Server $server)
     {
         $this->authorize('update', $server);
 
-        $validated = $request->validate([
-            'cpu_usage' => 'required|numeric|min:0|max:100',
-            'memory_usage' => 'required|numeric|min:0|max:100',
-            'disk_usage' => 'required|numeric|min:0|max:100',
-            'network_in' => 'nullable|integer|min:0',
-            'network_out' => 'nullable|integer|min:0',
-            'load_average' => 'nullable|numeric|min:0',
-            'active_connections' => 'nullable|integer|min:0',
-        ]);
+        $validated = $request->validated();
 
         $metric = ServerMetric::create([
             'server_id' => $server->id,

@@ -99,6 +99,8 @@ parameters:
         # Factory classes that don't exist yet
         - '#PHPDoc tag @use has invalid type Database\\Factories\\.*#'
         - '#Type Database\\Factories\\.* in generic type .* is not subtype of template type TFactory#'
+        # Test classes called from app
+        - '#Call to an undefined method Tests\\Performance\\PerformanceTestSuite::runPerformanceTests#'
         # Mockery in tests
         - '#Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage::.*#'
         - path: tests/*

@@ -115,10 +115,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_project_show_page_with_domains_section_loads(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -133,10 +129,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_domain_list_is_displayed(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -158,10 +150,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_add_domain_button_is_visible(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -176,10 +164,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_domain_count_is_displayed_correctly(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -196,10 +180,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_primary_domain_indicator_is_shown(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -219,10 +199,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_ssl_status_indicator_is_visible(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -247,10 +223,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_domain_status_is_displayed(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -270,10 +242,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_domain_links_are_clickable(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -295,10 +263,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_external_link_icon_is_present(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -346,10 +310,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_ssl_certificate_expiry_info_is_shown(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -370,10 +330,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_domain_hover_states_work_correctly(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -393,10 +349,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_multiple_domains_are_displayed_correctly(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -416,10 +368,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_domain_section_has_proper_heading(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -434,10 +382,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_domain_status_colors_are_appropriate(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -457,10 +401,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_dns_configuration_status_is_visible(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -481,10 +421,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_domain_card_layout_is_properly_structured(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -503,10 +439,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_ssl_lock_icon_displayed_for_secure_domains(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -526,10 +458,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_domain_section_is_responsive_on_mobile(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->resize(375, 667)
@@ -545,10 +473,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_domain_section_is_responsive_on_tablet(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->resize(768, 1024)
@@ -564,10 +488,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_primary_domain_badge_is_blue_colored(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -587,10 +507,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_domain_display_includes_protocol_indicator(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -640,10 +556,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_domain_cards_have_rounded_corners(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -662,10 +574,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_domain_section_has_proper_spacing(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -684,10 +592,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_domain_statistics_displayed_in_overview(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -703,10 +607,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_domain_globe_icon_visible_in_stats_card(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -721,10 +621,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_domain_badges_display_correctly(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -746,10 +642,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_domain_information_is_properly_formatted(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))
@@ -770,10 +662,6 @@ class DomainManagerTest extends DuskTestCase
      */
     public function test_dark_mode_styling_is_applied_correctly(): void
     {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
             $browser->visit(route('projects.show', $this->project))

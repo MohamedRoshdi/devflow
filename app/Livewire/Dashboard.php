@@ -174,13 +174,37 @@ class Dashboard extends Component
 
     /**
      * Load onboarding status to determine if user needs guidance
+     * Cached for 5 minutes to improve performance
      */
     public function loadOnboardingStatus(): void
     {
-        $serverCount = Server::count();
-        $projectCount = Project::count();
-        $deploymentCount = Deployment::count();
-        $domainCount = \App\Models\Domain::count();
+        // Cache for 5 minutes (300 seconds) - onboarding status doesn't change frequently
+        $onboardingData = $this->cacheOrFallback('dashboard_onboarding_status', 300, function () {
+            // Execute all count queries in a single optimized batch using DB facade
+            // This reduces 4 separate queries to 1 query with UNION ALL
+            $counts = DB::select("
+                SELECT
+                    (SELECT COUNT(*) FROM servers) as server_count,
+                    (SELECT COUNT(*) FROM projects) as project_count,
+                    (SELECT COUNT(*) FROM deployments) as deployment_count,
+                    (SELECT COUNT(*) FROM domains) as domain_count
+            ");
+
+            $result = $counts[0];
+
+            return [
+                'server_count' => (int) $result->server_count,
+                'project_count' => (int) $result->project_count,
+                'deployment_count' => (int) $result->deployment_count,
+                'domain_count' => (int) $result->domain_count,
+            ];
+        });
+
+        // Extract counts with safe defaults
+        $serverCount = $onboardingData['server_count'] ?? 0;
+        $projectCount = $onboardingData['project_count'] ?? 0;
+        $deploymentCount = $onboardingData['deployment_count'] ?? 0;
+        $domainCount = $onboardingData['domain_count'] ?? 0;
 
         // Check individual steps
         $this->onboardingSteps = [
@@ -195,6 +219,16 @@ class Dashboard extends Component
 
         // Onboarding is complete if all steps are done
         $this->hasCompletedOnboarding = ! in_array(false, $this->onboardingSteps, true);
+    }
+
+    /**
+     * Manually refresh onboarding status cache
+     * Useful when user completes an onboarding step
+     */
+    public function refreshOnboardingStatus(): void
+    {
+        $this->forgetCacheKeys(['dashboard_onboarding_status']);
+        $this->loadOnboardingStatus();
     }
 
     /**
@@ -640,6 +674,7 @@ class Dashboard extends Component
             'dashboard_server_health',
             'dashboard_queue_stats',
             'dashboard_security_score',
+            'dashboard_onboarding_status',
         ]);
     }
 
@@ -660,18 +695,20 @@ class Dashboard extends Component
         $this->loadQueueStats();
         $this->loadSecurityScore();
         $this->loadActiveDeployments();
+        $this->loadOnboardingStatus();
     }
 
     #[On('deployment-completed')]
     public function onDeploymentCompleted(): void
     {
         // Clear relevant caches when deployment completes
-        $this->forgetCacheKeys(['dashboard_stats', 'dashboard_health_stats']);
+        $this->forgetCacheKeys(['dashboard_stats', 'dashboard_health_stats', 'dashboard_onboarding_status']);
 
         // Reload the affected data
         $this->loadStats();
         $this->loadHealthCheckStats();
         $this->loadActiveDeployments();
+        $this->loadOnboardingStatus();
     }
 
     public function clearAllCaches(): void

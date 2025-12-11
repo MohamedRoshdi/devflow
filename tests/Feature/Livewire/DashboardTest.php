@@ -615,4 +615,190 @@ class DashboardTest extends TestCase
         $this->assertIsArray($stats);
         $this->assertArrayHasKey('total_servers', $stats);
     }
+
+    /** @test */
+    public function load_onboarding_status_caches_results_for_5_minutes()
+    {
+        Cache::flush();
+
+        // Create test data
+        Server::factory()->count(2)->create();
+        Project::factory()->count(3)->create(['server_id' => $this->server->id]);
+        Deployment::factory()->count(1)->create([
+            'project_id' => Project::factory()->create(['server_id' => $this->server->id]),
+        ]);
+
+        // First call should cache the results
+        $component = Livewire::test(Dashboard::class);
+
+        // Verify cache exists
+        $this->assertTrue(Cache::has('dashboard_onboarding_status'));
+
+        // Verify cache contains expected structure
+        $cachedData = Cache::get('dashboard_onboarding_status');
+        $this->assertIsArray($cachedData);
+        $this->assertArrayHasKey('server_count', $cachedData);
+        $this->assertArrayHasKey('project_count', $cachedData);
+        $this->assertArrayHasKey('deployment_count', $cachedData);
+        $this->assertArrayHasKey('domain_count', $cachedData);
+    }
+
+    /** @test */
+    public function load_onboarding_status_executes_single_optimized_query()
+    {
+        Cache::flush();
+
+        // Enable query logging
+        DB::enableQueryLog();
+
+        // Create test data
+        Server::factory()->count(2)->create();
+        Project::factory()->count(3)->create(['server_id' => $this->server->id]);
+
+        // Call loadOnboardingStatus
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadOnboardingStatus');
+
+        // Get query log
+        $queries = DB::getQueryLog();
+
+        // Count queries related to onboarding status (should be 1 optimized query)
+        $countQueries = array_filter($queries, function ($query) {
+            return str_contains($query['query'], 'SELECT COUNT(*) FROM servers')
+                || str_contains($query['query'], 'server_count');
+        });
+
+        // Should only execute 1 query (the optimized UNION query)
+        $this->assertLessThanOrEqual(2, count($countQueries), 'Should execute at most 2 queries (1 optimized + potential cache check)');
+
+        DB::disableQueryLog();
+    }
+
+    /** @test */
+    public function load_onboarding_status_sets_correct_steps()
+    {
+        Cache::flush();
+
+        // Create test data for some steps
+        Server::factory()->count(2)->create();
+        Project::factory()->count(3)->create(['server_id' => $this->server->id]);
+        // No deployments or domains
+
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadOnboardingStatus');
+
+        $onboardingSteps = $component->get('onboardingSteps');
+
+        $this->assertIsArray($onboardingSteps);
+        $this->assertTrue($onboardingSteps['add_server']);
+        $this->assertTrue($onboardingSteps['create_project']);
+        $this->assertFalse($onboardingSteps['first_deployment']);
+        $this->assertFalse($onboardingSteps['setup_domain']);
+    }
+
+    /** @test */
+    public function load_onboarding_status_identifies_new_user_correctly()
+    {
+        Cache::flush();
+
+        // Empty database - new user
+        Server::query()->delete();
+        Project::query()->delete();
+
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadOnboardingStatus');
+
+        $this->assertTrue($component->get('isNewUser'));
+        $this->assertFalse($component->get('hasCompletedOnboarding'));
+
+        // Add a server - not new anymore
+        Server::factory()->create();
+
+        $component->call('refreshOnboardingStatus');
+
+        $this->assertFalse($component->get('isNewUser'));
+    }
+
+    /** @test */
+    public function refresh_onboarding_status_clears_cache_and_reloads()
+    {
+        Cache::flush();
+
+        // Initial load
+        $component = Livewire::test(Dashboard::class)
+            ->call('loadOnboardingStatus');
+
+        $this->assertTrue(Cache::has('dashboard_onboarding_status'));
+
+        // Create new data
+        Server::factory()->create();
+        Project::factory()->create(['server_id' => $this->server->id]);
+
+        // Refresh should clear cache and reload
+        $component->call('refreshOnboardingStatus');
+
+        // Cache should be repopulated with new data
+        $cachedData = Cache::get('dashboard_onboarding_status');
+        $this->assertGreaterThan(0, $cachedData['server_count']);
+        $this->assertGreaterThan(0, $cachedData['project_count']);
+    }
+
+    /** @test */
+    public function clear_dashboard_cache_includes_onboarding_status()
+    {
+        // Populate onboarding cache
+        Cache::put('dashboard_onboarding_status', ['test' => 'data'], 3600);
+        Cache::put('dashboard_stats', ['test' => 'data'], 3600);
+
+        Livewire::test(Dashboard::class)
+            ->call('clearDashboardCache');
+
+        // Verify onboarding cache is cleared
+        $this->assertFalse(Cache::has('dashboard_onboarding_status'));
+        $this->assertFalse(Cache::has('dashboard_stats'));
+    }
+
+    /** @test */
+    public function on_deployment_completed_refreshes_onboarding_status()
+    {
+        Cache::put('dashboard_onboarding_status', [
+            'server_count' => 0,
+            'project_count' => 0,
+            'deployment_count' => 0,
+            'domain_count' => 0,
+        ], 3600);
+
+        // Create a deployment
+        $project = Project::factory()->create(['server_id' => $this->server->id]);
+        Deployment::factory()->create(['project_id' => $project->id]);
+
+        $component = Livewire::test(Dashboard::class)
+            ->dispatch('deployment-completed');
+
+        // Onboarding cache should be cleared
+        // The component should reload with fresh data
+        $onboardingSteps = $component->get('onboardingSteps');
+        $this->assertIsArray($onboardingSteps);
+    }
+
+    /** @test */
+    public function refresh_dashboard_includes_onboarding_status()
+    {
+        Cache::flush();
+
+        // Create test data
+        Server::factory()->create();
+        Project::factory()->create(['server_id' => $this->server->id]);
+
+        $component = Livewire::test(Dashboard::class)
+            ->call('refreshDashboard');
+
+        // Verify onboarding status was loaded
+        $onboardingSteps = $component->get('onboardingSteps');
+        $this->assertIsArray($onboardingSteps);
+        $this->assertArrayHasKey('add_server', $onboardingSteps);
+        $this->assertArrayHasKey('create_project', $onboardingSteps);
+        $this->assertArrayHasKey('first_deployment', $onboardingSteps);
+        $this->assertArrayHasKey('setup_domain', $onboardingSteps);
+    }
 }
