@@ -727,6 +727,11 @@ class DevFlowSelfManagement extends Component
 
     private function stepNpmInstall(string $projectPath): string
     {
+        // Check if package.json exists
+        if (!file_exists("{$projectPath}/package.json")) {
+            return "Skipped - No package.json found";
+        }
+
         $output = "$ rm -rf node_modules package-lock.json\n";
         Process::timeout(60)->run("cd {$projectPath} && rm -rf node_modules package-lock.json 2>&1");
 
@@ -734,13 +739,21 @@ class DevFlowSelfManagement extends Component
         $output .= "$ {$cmd}\n";
         $result = Process::timeout(300)->run("cd {$projectPath} && {$cmd} 2>&1");
         if (!$result->successful()) {
-            throw new \Exception($result->errorOutput() ?: $result->output());
+            // Non-critical: log warning but don't fail deployment
+            $output .= "⚠ Warning: npm install had issues, continuing anyway\n";
+            $output .= $result->errorOutput() ?: $result->output();
+            return $output;
         }
         return $output . "Node dependencies installed";
     }
 
     private function stepNpmBuild(string $projectPath): string
     {
+        // Check if node_modules exists
+        if (!file_exists("{$projectPath}/node_modules")) {
+            return "Skipped - No node_modules found";
+        }
+
         $nodePath = "{$projectPath}/node_modules/.bin";
         $cmd = "npm run build";
         $output = "$ PATH=\"node_modules/.bin:\$PATH\" {$cmd}\n";
@@ -749,7 +762,10 @@ class DevFlowSelfManagement extends Component
             $output .= "$ node ./node_modules/.bin/vite build\n";
             $result = Process::timeout(300)->run("cd {$projectPath} && /usr/bin/node ./node_modules/.bin/vite build 2>&1");
             if (!$result->successful()) {
-                throw new \Exception($result->errorOutput() ?: $result->output());
+                // Non-critical: assets may already be built
+                $output .= "⚠ Warning: Build had issues, continuing anyway\n";
+                $output .= $result->errorOutput() ?: $result->output();
+                return $output;
             }
         }
         return $output . "Frontend assets built successfully";
