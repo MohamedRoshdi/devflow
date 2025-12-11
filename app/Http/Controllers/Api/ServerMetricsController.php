@@ -23,9 +23,33 @@ class ServerMetricsController extends Controller
         ]);
     }
 
+    /**
+     * Store server metrics.
+     *
+     * This endpoint is designed for automated metric collection from servers.
+     * Authentication should be done via API tokens (Sanctum) with 'server:report-metrics' ability.
+     *
+     * @param StoreServerMetricRequest $request
+     * @param Server $server
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(StoreServerMetricRequest $request, Server $server)
     {
+        // Verify the authenticated user has permission to update this server
         $this->authorize('update', $server);
+
+        // Additional security: Check if using API token (recommended for automated metric collection)
+        if ($request->user() && $request->user()->currentAccessToken()) {
+            $token = $request->user()->currentAccessToken();
+            // Verify token has the required ability for metric reporting
+            if (! $token->can('server:report-metrics')) {
+                return response()->json([
+                    'message' => 'This API token does not have permission to report server metrics.',
+                    'error' => 'insufficient_token_permissions',
+                    'required_ability' => 'server:report-metrics',
+                ], 403);
+            }
+        }
 
         $validated = $request->validated();
 

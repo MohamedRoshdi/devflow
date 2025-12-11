@@ -17,6 +17,8 @@ class DomainController extends Controller
      */
     public function store(StoreDomainRequest $request, Project $project): RedirectResponse
     {
+        $this->authorize('update', $project);
+
         $validated = $request->validated();
 
         $validated['project_id'] = $project->id;
@@ -33,6 +35,8 @@ class DomainController extends Controller
      */
     public function update(UpdateDomainRequest $request, Project $project, Domain $domain): RedirectResponse
     {
+        $this->authorize('update', $domain);
+
         $validated = $request->validated();
 
         $domain->update($validated);
@@ -46,6 +50,8 @@ class DomainController extends Controller
      */
     public function destroy(Project $project, Domain $domain): RedirectResponse
     {
+        $this->authorize('delete', $domain);
+
         $domain->delete();
 
         return redirect()->route('projects.show', $project)

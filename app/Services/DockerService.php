@@ -26,6 +26,37 @@ class DockerService
         }
     }
 
+    /**
+     * Validate and sanitize project slug for shell commands
+     *
+     * Project slugs are validated at input with regex: /^[a-z0-9-]+$/
+     * This method provides defense-in-depth validation before shell command usage.
+     *
+     * @param Project $project
+     * @return string Validated slug safe for shell commands
+     * @throws \InvalidArgumentException if slug contains unsafe characters
+     */
+    protected function getValidatedSlug(Project $project): string
+    {
+        $slug = $project->slug;
+
+        // Validate slug format (lowercase alphanumeric and hyphens only)
+        if (!preg_match('/^[a-z0-9-]+$/', $slug)) {
+            throw new \InvalidArgumentException(
+                "Project slug '{$slug}' contains invalid characters. Only lowercase letters, numbers, and hyphens are allowed."
+            );
+        }
+
+        // Additional safety: prevent directory traversal attempts
+        if (str_contains($slug, '..') || str_contains($slug, '/')) {
+            throw new \InvalidArgumentException(
+                "Project slug '{$slug}' contains path traversal characters."
+            );
+        }
+
+        return $slug;
+    }
+
     public function checkDockerInstallation(Server $server): array
     {
         try {
@@ -112,7 +143,8 @@ class DockerService
     {
         try {
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $slug = $this->getValidatedSlug($project); // Validate slug before use
+            $projectPath = "/var/www/{$slug}";
 
             // Check if project uses docker-compose
             $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
@@ -167,14 +199,14 @@ class DockerService
                 $buildCommand = sprintf(
                     'cd %s && docker build --no-cache --pull -t %s .',
                     $projectPath,
-                    $project->slug
+                    $slug
                 );
             } elseif ($dockerfileType === 'Dockerfile.production') {
                 // Use project's Dockerfile.production
                 $buildCommand = sprintf(
                     'cd %s && docker build --no-cache --pull -f Dockerfile.production -t %s .',
                     $projectPath,
-                    $project->slug
+                    $slug
                 );
             } else {
                 // Generate Dockerfile if project doesn't have one
@@ -183,7 +215,7 @@ class DockerService
                     "cd %s && echo '%s' > Dockerfile && docker build --no-cache --pull -t %s .",
                     $projectPath,
                     addslashes($dockerfile),
-                    $project->slug
+                    $slug
                 );
             }
 
@@ -1738,15 +1770,18 @@ DOCKERFILE;
 
     /**
      * Login to Docker registry
+     *
+     * Uses --password-stdin for secure password handling to avoid exposing
+     * credentials in process lists or shell history.
      */
     public function registryLogin(Server $server, string $registry, string $username, string $password): array
     {
         try {
+            // Use --password-stdin without echoing password in command line
             $loginCommand = sprintf(
-                "echo '%s' | docker login %s -u %s --password-stdin",
-                $password,
-                $registry,
-                $username
+                "docker login %s -u %s --password-stdin",
+                escapeshellarg($registry),
+                escapeshellarg($username)
             );
 
             $command = $this->isLocalhost($server)
@@ -1754,6 +1789,8 @@ DOCKERFILE;
                 : $this->buildSSHCommand($server, $loginCommand);
 
             $process = Process::fromShellCommandline($command);
+            // Pass password via stdin input instead of echoing it in the command
+            $process->setInput($password);
             $process->run();
 
             return [

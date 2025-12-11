@@ -24,28 +24,38 @@ class DeploymentController extends Controller
     {
         $this->authorize('view', $project);
 
+        // Validate filter and sort parameters
+        $validated = $request->validate([
+            'status' => 'sometimes|in:pending,running,success,failed,rolled_back',
+            'branch' => 'sometimes|string|max:100',
+            'triggered_by' => 'sometimes|in:manual,webhook,scheduled,rollback',
+            'sort_by' => 'sometimes|in:id,created_at,started_at,completed_at,status,branch',
+            'sort_order' => 'sometimes|in:asc,desc',
+            'per_page' => 'sometimes|integer|min:1|max:100',
+        ]);
+
         $query = $project->deployments()
             ->with(['user', 'server']);
 
         // Filtering
-        if ($request->has('status')) {
-            $query->where('status', $request->status);
+        if (isset($validated['status'])) {
+            $query->where('status', $validated['status']);
         }
 
-        if ($request->has('branch')) {
-            $query->where('branch', $request->branch);
+        if (isset($validated['branch'])) {
+            $query->where('branch', $validated['branch']);
         }
 
-        if ($request->has('triggered_by')) {
-            $query->where('triggered_by', $request->triggered_by);
+        if (isset($validated['triggered_by'])) {
+            $query->where('triggered_by', $validated['triggered_by']);
         }
 
         // Sorting
-        $sortBy = $request->input('sort_by', 'created_at');
-        $sortOrder = $request->input('sort_order', 'desc');
+        $sortBy = $validated['sort_by'] ?? 'created_at';
+        $sortOrder = $validated['sort_order'] ?? 'desc';
         $query->orderBy($sortBy, $sortOrder);
 
-        $perPage = min($request->input('per_page', 15), 100);
+        $perPage = $validated['per_page'] ?? 15;
         $deployments = $query->paginate($perPage);
 
         return new DeploymentCollection($deployments);

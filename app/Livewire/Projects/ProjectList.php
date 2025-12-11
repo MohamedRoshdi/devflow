@@ -3,7 +3,9 @@
 namespace App\Livewire\Projects;
 
 use App\Models\Project;
-use Livewire\Attributes\On;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Cache;
+use Livewire\Attributes\{Computed, On};
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -19,6 +21,7 @@ use Livewire\WithPagination;
  */
 class ProjectList extends Component
 {
+    use AuthorizesRequests;
     use WithPagination;
 
     public string $search = '';
@@ -41,8 +44,8 @@ class ProjectList extends Component
     /**
      * Delete a project with proper authorization checks
      *
-     * Only project owners and team owners can delete projects.
-     * Validates user permissions before deletion.
+     * Only project owners can delete projects.
+     * Validates user permissions via ProjectPolicy before deletion.
      *
      * @param int $projectId The ID of the project to delete
      * @return void
@@ -56,31 +59,25 @@ class ProjectList extends Component
             return;
         }
 
-        // Authorization: Only project owner or team admin can delete
-        $user = auth()->user();
-
-        if (! $user) {
-            abort(401);
-        }
-
-        // Check if user owns the project
-        if ($project->user_id !== $user->id) {
-            // Check if user is a team owner/admin with access
-            if ($project->team_id && $user->currentTeam && $user->currentTeam->id === $project->team_id) {
-                // Team member - check if they are owner
-                $teamMember = $user->currentTeam->members()->where('user_id', $user->id)->first();
-                if (! $teamMember || $teamMember->pivot->role !== 'owner') {
-                    session()->flash('error', 'You do not have permission to delete this project');
-                    return;
-                }
-            } else {
-                session()->flash('error', 'You do not have permission to delete this project');
-                return;
-            }
-        }
+        $this->authorize('delete', $project);
 
         $project->delete();
         session()->flash('message', 'Project deleted successfully');
+    }
+
+    /**
+     * Get list of servers for the filter dropdown (cached for 5 minutes)
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    #[Computed]
+    public function servers()
+    {
+        return Cache::remember('servers_list', 300, function () {
+            return \App\Models\Server::select(['id', 'name'])
+                ->orderBy('name')
+                ->get();
+        });
     }
 
     /**
@@ -115,14 +112,8 @@ class ProjectList extends Component
             ->latest()
             ->paginate(12);
 
-        // Get list of servers for the filter dropdown
-        $servers = \App\Models\Server::select(['id', 'name'])
-            ->orderBy('name')
-            ->get();
-
         return view('livewire.projects.project-list', [
             'projects' => $projects,
-            'servers' => $servers,
         ]);
     }
 }
