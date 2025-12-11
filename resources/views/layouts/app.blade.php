@@ -35,6 +35,21 @@
     <!-- Alpine.js x-cloak directive style -->
     <style>
         [x-cloak] { display: none !important; }
+
+        /* Custom scrollbar for sidebar */
+        .sidebar-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar-scroll::-webkit-scrollbar-track {
+            background: rgb(15 23 42); /* slate-900 */
+        }
+        .sidebar-scroll::-webkit-scrollbar-thumb {
+            background: rgb(51 65 85); /* slate-700 */
+            border-radius: 3px;
+        }
+        .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgb(71 85 105); /* slate-600 */
+        }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
@@ -47,10 +62,10 @@
 
         <!-- Sidebar -->
         <aside :class="sidebarCollapsed ? 'w-16' : 'w-64'"
-               class="fixed inset-y-0 left-0 z-50 bg-slate-900 border-r border-slate-800 transition-all duration-300 hidden md:block">
+               class="fixed inset-y-0 left-0 z-50 bg-slate-900 border-r border-slate-800 transition-all duration-300 hidden md:block flex flex-col">
 
             <!-- Logo Section -->
-            <div class="flex items-center justify-between h-16 px-4 border-b border-slate-800">
+            <div class="flex items-center justify-between h-16 px-4 border-b border-slate-800 flex-shrink-0">
                 <a href="{{ route('dashboard') }}" class="flex items-center gap-3 overflow-hidden">
                     <div class="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-lg flex items-center justify-center">
                         <span class="text-white font-bold text-lg">D</span>
@@ -68,19 +83,12 @@
             </div>
 
             <!-- Navigation -->
-            <nav class="flex-1 overflow-y-auto py-4 px-2 space-y-1">
+            <nav class="flex-1 overflow-y-auto py-4 px-2 space-y-1 sidebar-scroll">
                 <!-- Main Section -->
                 <div class="space-y-1">
                     <div x-show="!sidebarCollapsed" class="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
                         Main
                     </div>
-                    <a href="{{ route('home') }}"
-                       class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('home') ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                        </svg>
-                        <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Home</span>
-                    </a>
                     <a href="{{ route('dashboard') }}"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('dashboard') ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
                         <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,20 +96,20 @@
                         </svg>
                         <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Dashboard</span>
                     </a>
+                    <a href="{{ route('home') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('home') ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                        <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Home</span>
+                    </a>
                 </div>
 
-                <!-- Infrastructure Section -->
+                <!-- Projects & Infrastructure Section -->
                 <div class="space-y-1 pt-4">
                     <div x-show="!sidebarCollapsed" class="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                        Infrastructure
+                        Projects & Infrastructure
                     </div>
-                    <a href="{{ route('servers.index') }}"
-                       class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('servers.*') ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/>
-                        </svg>
-                        <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Servers</span>
-                    </a>
 
                     <!-- Projects with Dropdown -->
                     <div x-data="{ open: {{ request()->routeIs('projects.*') ? 'true' : 'false' }} }">
@@ -150,30 +158,75 @@
                             </a>
                             <a href="{{ route('deployments.approvals') }}"
                                class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('deployments.approvals') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-                                Approvals
+                                Deployment Approvals
+                            </a>
+                        </div>
+                    </div>
+
+                    <a href="{{ route('servers.index') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('servers.*') ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/>
+                        </svg>
+                        <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Servers</span>
+                    </a>
+                </div>
+
+                <!-- Documentation Section (PROMINENT) -->
+                <div class="space-y-1 pt-4 border-t border-slate-700/50 mt-4">
+                    <div x-show="!sidebarCollapsed" class="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                        Documentation
+                    </div>
+
+                    <!-- Documentation with Dropdown and Highlight -->
+                    <div x-data="{ open: {{ request()->routeIs('docs.*') ? 'true' : 'false' }} }" class="bg-blue-500/5 rounded-lg">
+                        <button @click="open = !open"
+                                class="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('docs.*') ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-blue-400 hover:bg-slate-800 hover:text-white' }}">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                </svg>
+                                <span x-show="!sidebarCollapsed" class="whitespace-nowrap font-semibold">Documentation</span>
+                            </div>
+                            <svg x-show="!sidebarCollapsed" class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                        <div x-show="open && !sidebarCollapsed" x-collapse class="ml-8 space-y-1 mt-1 pb-2">
+                            <a href="{{ route('docs.show') }}"
+                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('docs.show') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
+                                All Documentation
+                            </a>
+                            <a href="{{ route('docs.features') }}"
+                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('docs.features') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
+                                Features Guide
+                            </a>
+                            <a href="{{ route('docs.api') }}"
+                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('docs.api') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
+                                API Documentation
                             </a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Monitoring Section -->
-                <div class="space-y-1 pt-4">
+                <!-- Monitoring & Health Section -->
+                <div class="space-y-1 pt-4 border-t border-slate-700/50 mt-4">
                     <div x-show="!sidebarCollapsed" class="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                        Monitoring
+                        Monitoring & Health
                     </div>
-                    <a href="{{ route('analytics') }}"
-                       class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('analytics') ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                        </svg>
-                        <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Analytics</span>
-                    </a>
                     <a href="{{ route('health.dashboard') }}"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('health.*') ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
                         <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                         </svg>
                         <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Health</span>
+                    </a>
+                    <a href="{{ route('analytics') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('analytics') ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Analytics</span>
                     </a>
 
                     <!-- Logs with Dropdown -->
@@ -211,10 +264,10 @@
                     </div>
                 </div>
 
-                <!-- DevOps Section -->
+                <!-- DevOps Tools Section -->
                 <div class="space-y-1 pt-4">
                     <div x-show="!sidebarCollapsed" class="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                        DevOps
+                        DevOps Tools
                     </div>
                     <a href="{{ route('kubernetes.index') }}"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('kubernetes.*') ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
@@ -237,6 +290,20 @@
                         </svg>
                         <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Scripts</span>
                     </a>
+                </div>
+
+                <!-- System & Admin Section -->
+                <div class="space-y-1 pt-4 pb-4">
+                    <div x-show="!sidebarCollapsed" class="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                        System & Admin
+                    </div>
+                    <a href="{{ route('users.index') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('users.*') ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                        <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Users</span>
+                    </a>
                     <a href="{{ route('notifications.index') }}"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('notifications.*') ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
                         <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -251,25 +318,11 @@
                         </svg>
                         <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Multi-Tenant</span>
                     </a>
-                </div>
-
-                <!-- System Section -->
-                <div class="space-y-1 pt-4 pb-4">
-                    <div x-show="!sidebarCollapsed" class="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                        System
-                    </div>
-                    <a href="{{ route('users.index') }}"
-                       class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('users.*') ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                        </svg>
-                        <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Users</span>
-                    </a>
 
                     <!-- Settings with Dropdown -->
-                    <div x-data="{ open: {{ request()->routeIs(['admin.*', 'settings.*', 'docs.*', 'teams.*']) ? 'true' : 'false' }} }">
+                    <div x-data="{ open: {{ request()->routeIs(['admin.*', 'settings.*', 'teams.*']) ? 'true' : 'false' }} }">
                         <button @click="open = !open"
-                                class="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs(['admin.*', 'settings.*', 'docs.*', 'teams.*']) ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                                class="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs(['admin.*', 'settings.*', 'teams.*']) ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
                             <div class="flex items-center gap-3">
                                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
@@ -314,19 +367,6 @@
                             <a href="{{ route('settings.system') }}"
                                class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('settings.system') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
                                 System Settings
-                            </a>
-                            <div class="border-t border-slate-700 my-1"></div>
-                            <a href="{{ route('docs.show') }}"
-                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('docs.show') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-                                Documentation
-                            </a>
-                            <a href="{{ route('docs.features') }}"
-                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('docs.features') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-                                Features Guide
-                            </a>
-                            <a href="{{ route('docs.api') }}"
-                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('docs.api') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-                                API Docs
                             </a>
                         </div>
                     </div>
