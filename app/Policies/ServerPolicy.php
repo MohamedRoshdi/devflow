@@ -19,6 +19,11 @@ class ServerPolicy
 
     public function view(User $user, Server $server): bool
     {
+        // Admins can view all servers
+        if ($user->hasRole('admin')) {
+            return true;
+        }
+
         // User must own the server or be a team member
         if ($server->user_id === $user->id) {
             return true;
@@ -39,6 +44,11 @@ class ServerPolicy
 
     public function update(User $user, Server $server): bool
     {
+        // Admins can update all servers
+        if ($user->hasRole('admin')) {
+            return true;
+        }
+
         // User must own the server or be a team member
         if ($server->user_id === $user->id) {
             return true;
@@ -54,6 +64,11 @@ class ServerPolicy
 
     public function delete(User $user, Server $server): bool
     {
+        // Admins can delete all servers
+        if ($user->hasRole('admin')) {
+            return true;
+        }
+
         // Only owner can delete
         return $server->user_id === $user->id;
     }
