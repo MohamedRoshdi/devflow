@@ -219,32 +219,50 @@
                         @error('deployment_method') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div>
-                            <label for="framework" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Framework</label>
-                            <select wire:model="framework" id="framework" class="input">
-                                @foreach($this->frameworks as $value => $label)
-                                    <option value="{{ $value }}">{{ $label }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <label for="php_version" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">PHP Version</label>
-                            <select wire:model="php_version" id="php_version" class="input">
-                                @foreach($this->phpVersions as $value => $label)
-                                    <option value="{{ $value }}">{{ $label }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <label for="node_version" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Node Version</label>
-                            <select wire:model="node_version" id="node_version" class="input">
-                                <option value="20">20 (LTS)</option>
-                                <option value="18">18 (LTS)</option>
-                                <option value="16">16</option>
-                            </select>
-                        </div>
+                    <!-- Framework Selection (always visible) -->
+                    <div>
+                        <label for="framework" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Framework</label>
+                        <select wire:model="framework" id="framework" class="input">
+                            @foreach($this->frameworks as $value => $label)
+                                <option value="{{ $value }}">{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Select the framework/technology your project uses</p>
                     </div>
+
+                    <!-- PHP & Node Versions (only for Standard Laravel deployment) -->
+                    @if($deployment_method === 'standard')
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="php_version" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">PHP Version *</label>
+                                <select wire:model="php_version" id="php_version" class="input">
+                                    @foreach($this->phpVersions as $value => $label)
+                                        <option value="{{ $value }}">{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label for="node_version" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Node Version</label>
+                                <select wire:model="node_version" id="node_version" class="input">
+                                    <option value="20">20 (LTS)</option>
+                                    <option value="18">18 (LTS)</option>
+                                    <option value="16">16</option>
+                                </select>
+                            </div>
+                        </div>
+                    @else
+                        <div class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                            <div class="flex items-start">
+                                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                <div>
+                                    <p class="text-sm font-medium text-blue-900 dark:text-blue-100">Docker Deployment Selected</p>
+                                    <p class="text-sm text-blue-700 dark:text-blue-300 mt-1">PHP and Node versions will be defined in your <code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-800 rounded text-xs">docker-compose.yml</code> file.</p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
 
                     <div>
                         <label for="root_directory" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Root Directory *</label>
@@ -388,8 +406,10 @@
                             <div class="grid grid-cols-2 gap-2 text-sm">
                                 <div><span class="text-gray-500 dark:text-gray-400">Deployment:</span> <span class="text-gray-900 dark:text-white font-semibold">{{ $deployment_method === 'docker' ? '🐳 Docker' : '🔧 Standard Laravel' }}</span></div>
                                 <div><span class="text-gray-500 dark:text-gray-400">Framework:</span> <span class="text-gray-900 dark:text-white">{{ $framework ?: 'Not specified' }}</span></div>
-                                <div><span class="text-gray-500 dark:text-gray-400">PHP:</span> <span class="text-gray-900 dark:text-white">{{ $php_version }}</span></div>
-                                <div><span class="text-gray-500 dark:text-gray-400">Node:</span> <span class="text-gray-900 dark:text-white">{{ $node_version }}</span></div>
+                                @if($deployment_method === 'standard')
+                                    <div><span class="text-gray-500 dark:text-gray-400">PHP:</span> <span class="text-gray-900 dark:text-white">{{ $php_version }}</span></div>
+                                    <div><span class="text-gray-500 dark:text-gray-400">Node:</span> <span class="text-gray-900 dark:text-white">{{ $node_version }}</span></div>
+                                @endif
                                 <div><span class="text-gray-500 dark:text-gray-400">Root:</span> <span class="text-gray-900 dark:text-white">{{ $root_directory }}</span></div>
                             </div>
                         </div>
