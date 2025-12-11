@@ -68,7 +68,7 @@ class ProjectList extends Component
     /**
      * Get list of servers for the filter dropdown (cached for 5 minutes)
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Server>
      */
     #[Computed]
     public function servers()

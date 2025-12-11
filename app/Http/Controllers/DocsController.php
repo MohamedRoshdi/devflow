@@ -74,7 +74,7 @@ class DocsController extends Controller
         $html = Cache::remember($cacheKey, now()->addHours(24), function () use ($filePath) {
             $markdown = File::get($filePath);
             // Strip frontmatter before conversion
-            $markdown = preg_replace('/^---\s*\n.*?\n---\s*\n/s', '', $markdown);
+            $markdown = preg_replace('/^---\s*\n.*?\n---\s*\n/s', '', $markdown) ?? $markdown;
             return $this->converter->convert($markdown)->getContent();
         });
 
@@ -240,7 +240,7 @@ class DocsController extends Controller
         $content = File::get($filePath);
 
         // Remove frontmatter
-        $content = preg_replace('/^---\s*\n.*?\n---\s*\n/s', '', $content);
+        $content = preg_replace('/^---\s*\n.*?\n---\s*\n/s', '', $content) ?? $content;
 
         $toc = [];
         $lines = explode("\n", $content);
@@ -286,7 +286,7 @@ class DocsController extends Controller
             $category = $file->getFilenameWithoutExtension();
 
             // Remove frontmatter
-            $content = preg_replace('/^---\s*\n.*?\n---\s*\n/s', '', $content);
+            $content = preg_replace('/^---\s*\n.*?\n---\s*\n/s', '', $content) ?? $content;
 
             // Search in content
             if (stripos($content, $query) !== false) {
@@ -321,11 +321,11 @@ class DocsController extends Controller
             return substr(strip_tags($content), 0, $contextLength) . '...';
         }
 
-        $start = max(0, $pos - $contextLength / 2);
+        $start = max(0, (int) ($pos - $contextLength / 2));
         $excerpt = substr($content, $start, $contextLength);
 
         // Highlight the query
-        $excerpt = preg_replace('/(' . preg_quote($query, '/') . ')/i', '<mark>$1</mark>', $excerpt);
+        $excerpt = preg_replace('/(' . preg_quote($query, '/') . ')/i', '<mark>$1</mark>', $excerpt) ?? $excerpt;
 
         return ($start > 0 ? '...' : '') . strip_tags($excerpt, '<mark>') . '...';
     }

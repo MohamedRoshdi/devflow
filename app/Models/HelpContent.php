@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\App;
@@ -30,16 +31,25 @@ class HelpContent extends Model
 
     // Relationships
 
+    /**
+     * @return HasMany<HelpContentTranslation, $this>
+     */
     public function translations(): HasMany
     {
         return $this->hasMany(HelpContentTranslation::class);
     }
 
+    /**
+     * @return HasMany<HelpInteraction, $this>
+     */
     public function interactions(): HasMany
     {
         return $this->hasMany(HelpInteraction::class);
     }
 
+    /**
+     * @return HasMany<HelpContentRelated, $this>
+     */
     public function relatedContents(): HasMany
     {
         return $this->hasMany(HelpContentRelated::class);
@@ -47,17 +57,29 @@ class HelpContent extends Model
 
     // Scopes
 
-    public function scopeActive($query)
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<HelpContent> $query
+     * @return \Illuminate\Database\Eloquent\Builder<HelpContent>
+     */
+    public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);
     }
 
-    public function scopeByCategory($query, string $category)
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<HelpContent> $query
+     * @return \Illuminate\Database\Eloquent\Builder<HelpContent>
+     */
+    public function scopeByCategory(Builder $query, string $category): Builder
     {
         return $query->where('category', $category);
     }
 
-    public function scopeSearch($query, string $search)
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<HelpContent> $query
+     * @return \Illuminate\Database\Eloquent\Builder<HelpContent>
+     */
+    public function scopeSearch(Builder $query, string $search): Builder
     {
         return $query->where(function ($q) use ($search) {
             $q->where('title', 'like', "%{$search}%")

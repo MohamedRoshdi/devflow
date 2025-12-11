@@ -21,11 +21,17 @@ class HelpContentRelated extends Model
         'relevance_score' => 'float',
     ];
 
+    /**
+     * @return BelongsTo<HelpContent, $this>
+     */
     public function helpContent(): BelongsTo
     {
         return $this->belongsTo(HelpContent::class);
     }
 
+    /**
+     * @return BelongsTo<HelpContent, $this>
+     */
     public function relatedHelpContent(): BelongsTo
     {
         return $this->belongsTo(HelpContent::class, 'related_help_content_id');

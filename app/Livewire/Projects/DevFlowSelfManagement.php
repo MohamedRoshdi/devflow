@@ -585,7 +585,7 @@ class DevFlowSelfManagement extends Component
         }
     }
 
-    private function formatBytes($bytes, $precision = 2): string
+    private function formatBytes(int|float $bytes, int $precision = 2): string
     {
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];
         $bytes = (float) max((float) $bytes, 0);

@@ -10,6 +10,7 @@ class LogViewer extends Component
 {
     // Log state
     public string $recentLogs = '';
+    /** @var array<int, array{name: string, path: string, size: string, modified: string}> */
     public array $logFiles = [];
     public string $selectedLogFile = '';
 
@@ -144,7 +145,7 @@ class LogViewer extends Component
         abort(404, 'Log file not found');
     }
 
-    private function formatBytes($bytes, $precision = 2): string
+    private function formatBytes(int|float $bytes, int $precision = 2): string
     {
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];
         $bytes = (float) max((float) $bytes, 0);

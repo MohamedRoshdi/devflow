@@ -20,6 +20,9 @@ class HelpContentTranslation extends Model
         'details' => 'array',
     ];
 
+    /**
+     * @return BelongsTo<HelpContent, $this>
+     */
     public function helpContent(): BelongsTo
     {
         return $this->belongsTo(HelpContent::class);

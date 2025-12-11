@@ -9,16 +9,16 @@ use Illuminate\Support\Facades\Log;
 
 class CacheManager extends Component
 {
-    // Cache stats
+    /** @var array<string, mixed> */
     public array $cacheStats = [];
 
     // Cache driver info
     public string $cacheDriver = '';
 
-    // Storage info
+    /** @var array<string, int|float|string> */
     public array $storageInfo = [];
 
-    // Redis info
+    /** @var array<string, mixed> */
     public array $redisInfo = [];
     public bool $redisConnected = false;
 

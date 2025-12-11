@@ -14,6 +14,7 @@ class DeploymentActions extends Component
     public bool $isDeploying = false;
     public string $deploymentOutput = '';
     public string $deploymentStatus = '';
+    /** @var array<int, array{name: string, status: string, output: string}> */
     public array $deploymentSteps = [];
     public int $currentStep = 0;
 

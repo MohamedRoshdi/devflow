@@ -24,9 +24,9 @@ use Livewire\Component;
  * Features lazy loading for improved performance and user customization options.
  *
  * @property array<string, int> $stats System-wide statistics (servers, projects, deployments)
- * @property \Illuminate\Database\Eloquent\Collection $recentDeployments Recent deployment records
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Deployment> $recentDeployments Recent deployment records
  * @property array<int, mixed> $serverMetrics Server performance metrics
- * @property \Illuminate\Database\Eloquent\Collection $projects Recent projects
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Project> $projects Recent projects
  * @property array<string, mixed> $sslStats SSL certificate statistics
  * @property array<string, mixed> $healthCheckStats Health check statistics
  * @property array<int, array<string, mixed>> $recentActivity Recent system activity feed

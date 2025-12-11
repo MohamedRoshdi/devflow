@@ -17,11 +17,17 @@ class HelpInteraction extends Model
         'user_agent',
     ];
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return BelongsTo<HelpContent, $this>
+     */
     public function helpContent(): BelongsTo
     {
         return $this->belongsTo(HelpContent::class);

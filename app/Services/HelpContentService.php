@@ -22,6 +22,9 @@ class HelpContentService
         );
     }
 
+    /**
+     * @return Collection<int, HelpContent>
+     */
     public function getByCategory(string $category): Collection
     {
         return Cache::remember(
@@ -34,6 +37,9 @@ class HelpContentService
         );
     }
 
+    /**
+     * @return Collection<int, HelpContent>
+     */
     public function search(string $query): Collection
     {
         return HelpContent::active()
@@ -100,6 +106,9 @@ class HelpContentService
         ]);
     }
 
+    /**
+     * @return Collection<int, HelpContent>
+     */
     public function getPopularHelp(int $limit = 10): Collection
     {
         return Cache::remember(
@@ -112,6 +121,9 @@ class HelpContentService
         );
     }
 
+    /**
+     * @return Collection<int, HelpContent>
+     */
     public function getMostHelpful(int $limit = 10): Collection
     {
         return Cache::remember(
@@ -125,6 +137,9 @@ class HelpContentService
         );
     }
 
+    /**
+     * @return Collection<int, HelpContent>
+     */
     public function getRelatedHelp(string $key, int $limit = 5): Collection
     {
         $helpContent = $this->getByKey($key);
