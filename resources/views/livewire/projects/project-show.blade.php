@@ -740,10 +740,31 @@
                                         </svg>
                                     </dt>
                                     <dd class="flex-1">
-                                        <span class="font-semibold text-gray-900 dark:text-white block">Branch</span>
-                                        <span class="inline-flex items-center gap-2 text-xs font-mono px-2 py-1 bg-purple-100 dark:bg-purple-900/40 rounded-full text-purple-700 dark:text-purple-200">
-                                            {{ $project->branch }}
-                                        </span>
+                                        <div class="flex items-center justify-between gap-2 mb-1">
+                                            <span class="font-semibold text-gray-900 dark:text-white">Branch</span>
+                                            <button wire:click="toggleBranchSelector"
+                                                    wire:loading.attr="disabled"
+                                                    class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/30 rounded-md transition-colors">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12M8 12h12M8 17h12M3 7h.01M3 12h.01M3 17h.01" />
+                                                </svg>
+                                                Switch
+                                            </button>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="inline-flex items-center gap-1.5 text-xs font-mono px-2 py-1 bg-purple-100 dark:bg-purple-900/40 rounded-full text-purple-700 dark:text-purple-200">
+                                                @if(in_array($project->branch, ['main', 'master', 'production']))
+                                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                    </svg>
+                                                @else
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v4a1 1 0 001 1h3v8l7-12h3a1 1 0 001-1V7a1 1 0 00-1-1H4a1 1 0 00-1 1z" />
+                                                    </svg>
+                                                @endif
+                                                {{ $project->branch }}
+                                            </span>
+                                        </div>
                                     </dd>
                                 </div>
                                 <div class="flex items-start gap-2">
@@ -875,14 +896,14 @@
                                     @endforeach
                                 </select>
                                 <div class="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
-                                    <button wire:click="firstCommitPage" wire:loading.attr="disabled" @disabled($commitPage <= 1)
+                                    <button wire:click="firstCommitPage" wire:loading.attr="disabled" :disabled="$wire.commitPage <= 1"
                                             class="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition disabled:opacity-40 disabled:cursor-not-allowed">« First</button>
-                                    <button wire:click="previousCommitPage" wire:loading.attr="disabled" @disabled($commitPage <= 1)
+                                    <button wire:click="previousCommitPage" wire:loading.attr="disabled" :disabled="$wire.commitPage <= 1"
                                             class="px-2.5 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition disabled:opacity-40 disabled:cursor-not-allowed">‹ Prev</button>
                                     <span>Page <span class="font-semibold text-gray-900 dark:text-white">{{ $commitPage }}</span> of <span class="font-semibold text-gray-900 dark:text-white">{{ $commitPages }}</span></span>
-                                    <button wire:click="nextCommitPage" wire:loading.attr="disabled" @disabled($commitPage >= $commitPages)
+                                    <button wire:click="nextCommitPage" wire:loading.attr="disabled" :disabled="$wire.commitPage >= $wire.commitPages"
                                             class="px-2.5 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition disabled:opacity-40 disabled:cursor-not-allowed">Next ›</button>
-                                    <button wire:click="lastCommitPage" wire:loading.attr="disabled" @disabled($commitPage >= $commitPages)
+                                    <button wire:click="lastCommitPage" wire:loading.attr="disabled" :disabled="$wire.commitPage >= $wire.commitPages"
                                             class="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition disabled:opacity-40 disabled:cursor-not-allowed">Last »</button>
                                 </div>
                             </div>
@@ -992,13 +1013,13 @@
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-gray-500 dark:text-gray-400">
                             <span>Page {{ $commitPage }} of {{ $commitPages }}</span>
                             <div class="flex items-center gap-2">
-                                <button wire:click="firstCommitPage" wire:loading.attr="disabled" @disabled($commitPage <= 1)
+                                <button wire:click="firstCommitPage" wire:loading.attr="disabled" :disabled="$wire.commitPage <= 1"
                                         class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition disabled:opacity-40 disabled:cursor-not-allowed">First</button>
-                                <button wire:click="previousCommitPage" wire:loading.attr="disabled" @disabled($commitPage <= 1)
+                                <button wire:click="previousCommitPage" wire:loading.attr="disabled" :disabled="$wire.commitPage <= 1"
                                         class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition disabled:opacity-40 disabled:cursor-not-allowed">Previous</button>
-                                <button wire:click="nextCommitPage" wire:loading.attr="disabled" @disabled($commitPage >= $commitPages)
+                                <button wire:click="nextCommitPage" wire:loading.attr="disabled" :disabled="$wire.commitPage >= $wire.commitPages"
                                         class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition disabled:opacity-40 disabled:cursor-not-allowed">Next</button>
-                                <button wire:click="lastCommitPage" wire:loading.attr="disabled" @disabled($commitPage >= $commitPages)
+                                <button wire:click="lastCommitPage" wire:loading.attr="disabled" :disabled="$wire.commitPage >= $wire.commitPages"
                                         class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition disabled:opacity-40 disabled:cursor-not-allowed">Last</button>
                             </div>
                         </div>
@@ -1121,6 +1142,211 @@
         <!-- End of Webhooks Tab -->
     </div>
     <!-- End of Tab Content Container -->
+
+    <!-- Branch Selector Modal -->
+    @if($showBranchSelector)
+        <div class="fixed inset-0 z-50 overflow-y-auto" x-transition>
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" wire:click="toggleBranchSelector"></div>
+                <div class="relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-2xl w-full max-w-2xl overflow-hidden">
+                    <!-- Header -->
+                    <div class="p-6 border-b border-slate-200 dark:border-slate-700/50 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-purple-500 dark:bg-purple-600 flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12M8 12h12M8 17h12M3 7h.01M3 12h.01M3 17h.01" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Switch Branch</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-0.5">Select a branch to switch to</p>
+                                </div>
+                            </div>
+                            <button wire:click="toggleBranchSelector" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="p-4 border-b border-slate-200 dark:border-slate-700/50">
+                        <div class="relative">
+                            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            <input type="text"
+                                   wire:model.live="branchSearch"
+                                   placeholder="Search branches..."
+                                   class="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
+                        </div>
+                    </div>
+
+                    <!-- Branch List -->
+                    <div class="p-4 max-h-96 overflow-y-auto">
+                        @if($branchesLoading)
+                            <div class="flex items-center justify-center py-12">
+                                <svg class="w-8 h-8 animate-spin text-purple-500" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                </svg>
+                            </div>
+                        @elseif(empty($filteredBranches))
+                            <div class="text-center py-12">
+                                <svg class="w-12 h-12 mx-auto text-gray-300 dark:text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 12h.01M12 12h.01M12 12h.01M12 20h.01M12 4h.01" />
+                                </svg>
+                                <p class="text-gray-500 dark:text-gray-400">No branches found</p>
+                            </div>
+                        @else
+                            <div class="space-y-2">
+                                @foreach($filteredBranches as $branch)
+                                    <button wire:click="selectBranchForSwitch('{{ $branch['name'] }}')"
+                                            class="w-full flex items-center justify-between p-4 rounded-xl border {{ $branch['is_current'] ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-500/30' : 'bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 hover:border-purple-200 dark:hover:border-purple-500/30 hover:bg-purple-50 dark:hover:bg-purple-900/10' }} transition-all group">
+                                        <div class="flex items-center gap-3 flex-1 min-w-0">
+                                            @if($branch['is_main'])
+                                                <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
+                                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </div>
+                                            @else
+                                                <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center">
+                                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v4a1 1 0 001 1h3v8l7-12h3a1 1 0 001-1V7a1 1 0 00-1-1H4a1 1 0 00-1 1z" />
+                                                    </svg>
+                                                </div>
+                                            @endif
+                                            <div class="flex-1 text-left min-w-0">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="font-semibold text-gray-900 dark:text-white truncate">{{ $branch['name'] }}</span>
+                                                    @if($branch['is_current'])
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30">
+                                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                            </svg>
+                                                            Current
+                                                        </span>
+                                                    @endif
+                                                    @if($branch['is_main'])
+                                                        <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
+                                                            Main
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                                <div class="flex items-center gap-3 mt-1 text-xs text-gray-600 dark:text-gray-400">
+                                                    <span class="flex items-center gap-1">
+                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                        {{ $branch['last_commit_date'] }}
+                                                    </span>
+                                                    <span class="flex items-center gap-1 truncate">
+                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                        </svg>
+                                                        <span class="truncate">{{ $branch['last_committer'] }}</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @if(!$branch['is_current'])
+                                            <svg class="flex-shrink-0 w-5 h-5 text-gray-400 group-hover:text-purple-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                            </svg>
+                                        @endif
+                                    </button>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="p-4 border-t border-slate-200 dark:border-slate-700/50 bg-gray-50 dark:bg-slate-800/50">
+                        <button wire:click="loadBranches"
+                                wire:loading.attr="disabled"
+                                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors">
+                            <svg wire:loading.remove wire:target="loadBranches" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v6h6M20 20v-6h-6M5.63 18.37A9 9 0 1118.37 5.63L19 6M5 19l.63-.63" />
+                            </svg>
+                            <svg wire:loading wire:target="loadBranches" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+                            <span wire:loading.remove wire:target="loadBranches">Refresh Branches</span>
+                            <span wire:loading wire:target="loadBranches">Refreshing...</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Branch Switch Confirmation Modal -->
+    @if($showBranchConfirmModal)
+        <div class="fixed inset-0 z-50 overflow-y-auto" x-transition>
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" wire:click="cancelBranchSwitch"></div>
+                <div class="relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-2xl w-full max-w-md overflow-hidden">
+                    <!-- Header -->
+                    <div class="p-6 border-b border-slate-200 dark:border-slate-700/50">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Confirm Branch Switch</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mt-0.5">This action will switch your deployed branch</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="p-6 space-y-4">
+                        <div class="p-4 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-500/30">
+                            <p class="text-sm text-amber-800 dark:text-amber-200">
+                                <strong class="font-semibold">Warning:</strong> Switching branches will reset your deployment to the selected branch. Any uncommitted local changes will be stashed.
+                            </p>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700">
+                            <div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Current Branch</div>
+                                <div class="font-mono font-semibold text-gray-900 dark:text-white">{{ $project->branch }}</div>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                            <div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">New Branch</div>
+                                <div class="font-mono font-semibold text-purple-600 dark:text-purple-400">{{ $selectedBranch }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="p-6 border-t border-slate-200 dark:border-slate-700/50 bg-gray-50 dark:bg-slate-800/50">
+                        <div class="flex gap-3">
+                            <button wire:click="cancelBranchSwitch"
+                                    class="flex-1 px-4 py-3 rounded-xl bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-slate-600 border border-gray-200 dark:border-slate-600 transition-colors">
+                                Cancel
+                            </button>
+                            <button wire:click="confirmBranchSwitch"
+                                    wire:loading.attr="disabled"
+                                    class="flex-1 px-4 py-3 rounded-xl bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white font-medium transition-colors disabled:opacity-50">
+                                <span wire:loading.remove wire:target="confirmBranchSwitch">Switch Branch</span>
+                                <span wire:loading wire:target="confirmBranchSwitch">Switching...</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <!-- Deploy Modal -->
     @if($showDeployModal)
