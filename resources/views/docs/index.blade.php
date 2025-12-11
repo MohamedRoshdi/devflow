@@ -1,23 +1,37 @@
-@extends('docs.layout', ['title' => 'Documentation'])
+@extends('layouts.app')
 
 @section('content')
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-8">
-    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-        DevFlow Pro Documentation
-    </h1>
-    <p class="text-xl text-gray-600 dark:text-gray-400 mb-12">
-        Learn how to deploy, manage, and monitor your applications with DevFlow Pro.
-    </p>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Hero Header -->
+    <div class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-8 mb-8 border border-slate-700/50">
+        <div class="absolute inset-0 bg-grid-pattern opacity-5"></div>
+        <div class="relative flex items-center justify-between">
+            <div>
+                <h1 class="text-4xl font-bold text-white mb-2">
+                    DevFlow Pro Documentation
+                </h1>
+                <p class="text-xl text-slate-300">
+                    Learn how to deploy, manage, and monitor your applications with DevFlow Pro.
+                </p>
+            </div>
+            <div class="p-4 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl">
+                <svg class="w-12 h-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+            </div>
+        </div>
+    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Documentation Categories Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         @foreach($categories as $category)
         <a
             href="{{ route('docs.show', ['category' => $category['slug']]) }}"
-            class="group block p-6 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+            class="group block p-6 bg-slate-900 rounded-xl border border-slate-700/50 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10"
         >
             <div class="flex items-center mb-3">
-                <div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center mr-3">
-                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center mr-3">
+                    <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         @php
                             $icons = [
                                 'rocket-launch' => 'M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z',
@@ -39,50 +53,55 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $iconPath }}" />
                     </svg>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                <h3 class="text-lg font-semibold text-white group-hover:text-blue-400 transition-colors">
                     {{ $category['title'] }}
                 </h3>
             </div>
-            <p class="text-sm text-gray-600 dark:text-gray-400">
+            <p class="text-sm text-slate-400">
                 {{ $category['description'] }}
             </p>
         </a>
         @endforeach
     </div>
 
-    <!-- Quick Start -->
-    <div class="mt-12 border-t border-gray-200 dark:border-gray-700 pt-8">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            Quick Start Guide
-        </h2>
-        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6">
-            <ol class="space-y-3">
-                <li class="flex items-start">
-                    <span class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold mr-3">1</span>
-                    <div>
-                        <strong class="text-gray-900 dark:text-white">Add your server</strong>
-                        <span class="text-gray-600 dark:text-gray-400"> - Connect DevFlow to your VPS via SSH</span>
+    <!-- Quick Start Guide -->
+    <div class="bg-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-500/10 to-purple-500/10 px-8 py-6 border-b border-slate-700/50">
+            <h2 class="text-2xl font-bold text-white flex items-center">
+                <svg class="w-6 h-6 mr-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                Quick Start Guide
+            </h2>
+        </div>
+        <div class="p-8">
+            <ol class="space-y-4">
+                <li class="flex items-start group">
+                    <span class="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center text-sm font-bold mr-4 shadow-lg shadow-blue-500/50">1</span>
+                    <div class="flex-1">
+                        <strong class="text-white text-lg block mb-1">Add your server</strong>
+                        <span class="text-slate-400">Connect DevFlow to your VPS via SSH and start managing your infrastructure</span>
                     </div>
                 </li>
-                <li class="flex items-start">
-                    <span class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold mr-3">2</span>
-                    <div>
-                        <strong class="text-gray-900 dark:text-white">Create a project</strong>
-                        <span class="text-gray-600 dark:text-gray-400"> - Link your Git repository</span>
+                <li class="flex items-start group">
+                    <span class="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 text-white flex items-center justify-center text-sm font-bold mr-4 shadow-lg shadow-purple-500/50">2</span>
+                    <div class="flex-1">
+                        <strong class="text-white text-lg block mb-1">Create a project</strong>
+                        <span class="text-slate-400">Link your Git repository and configure your project settings</span>
                     </div>
                 </li>
-                <li class="flex items-start">
-                    <span class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold mr-3">3</span>
-                    <div>
-                        <strong class="text-gray-900 dark:text-white">Deploy your application</strong>
-                        <span class="text-gray-600 dark:text-gray-400"> - Click deploy and watch it go live</span>
+                <li class="flex items-start group">
+                    <span class="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-pink-600 text-white flex items-center justify-center text-sm font-bold mr-4 shadow-lg shadow-pink-500/50">3</span>
+                    <div class="flex-1">
+                        <strong class="text-white text-lg block mb-1">Deploy your application</strong>
+                        <span class="text-slate-400">Click deploy and watch your application go live with automatic builds</span>
                     </div>
                 </li>
-                <li class="flex items-start">
-                    <span class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold mr-3">4</span>
-                    <div>
-                        <strong class="text-gray-900 dark:text-white">Add your domain</strong>
-                        <span class="text-gray-600 dark:text-gray-400"> - Automatic SSL included</span>
+                <li class="flex items-start group">
+                    <span class="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-cyan-600 text-white flex items-center justify-center text-sm font-bold mr-4 shadow-lg shadow-cyan-500/50">4</span>
+                    <div class="flex-1">
+                        <strong class="text-white text-lg block mb-1">Add your domain</strong>
+                        <span class="text-slate-400">Configure your custom domain with automatic SSL certificate provisioning</span>
                     </div>
                 </li>
             </ol>
