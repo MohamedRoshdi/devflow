@@ -211,6 +211,7 @@ class DeploymentApprovalService
             'pending' => (clone $query)->where('status', 'pending')->count(),
             'approved' => (clone $query)->where('status', 'approved')->count(),
             'rejected' => (clone $query)->where('status', 'rejected')->count(),
+            'expired' => (clone $query)->where('status', 'expired')->count(),
             'total' => $query->count(),
         ];
     }
