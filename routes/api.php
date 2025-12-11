@@ -26,7 +26,7 @@ Route::prefix('v1')->name('api.v1.')->middleware(['api.auth', 'throttle:api'])->
     // Deployments - Read operations use standard API rate limit, write operations use deployment-specific rate limit
     Route::get('projects/{project:slug}/deployments', [DeploymentController::class, 'index'])->name('projects.deployments.index');
     Route::post('projects/{project:slug}/deployments', [DeploymentController::class, 'store'])
-        ->middleware('throttle:deployments')
+        ->middleware('throttle:deployment-store')
         ->withoutMiddleware('throttle:api')
         ->name('projects.deployments.store');
     Route::get('deployments/{deployment}', [DeploymentController::class, 'show'])->name('deployments.show');

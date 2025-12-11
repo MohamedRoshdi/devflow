@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.44.0] - 2025-12-11
+
+### Added
+- **DomainController Tests** - 45 comprehensive tests for domain CRUD operations
+- **GitManager Component** - Extracted git operations (441 lines)
+- **SystemInfo Component** - Extracted system configuration (285 lines)
+- **ServiceManager Component** - Extracted service management (238 lines)
+
+### Changed
+- **DevFlowSelfManagement Refactored** - Reduced from 1,183 to 83 lines (93% reduction)
+- **API Rate Limiting** - Added throttle middleware to 5 POST endpoints
+  - /api/projects/{project}/deploy - 6 req/min
+  - /api/projects/{project}/deployments - 10 req/min
+  - /api/deployments/{deployment}/rollback - 6 req/min
+  - /api/servers/{server}/metrics - 60 req/min
+  - /api/webhooks/deploy/{token} - 30 req/min
+
+### Fixed
+- **Console.log Conditional** - JavaScript logging now only in development mode
+
+---
+
 ## [5.43.0] - 2025-12-11
 
 ### Added

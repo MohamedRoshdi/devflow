@@ -6,6 +6,16 @@ import Chart from 'chart.js/auto';
 // Livewire v3 includes Alpine.js - don't import it separately!
 // Alpine is available via Livewire's bundle
 
+// Debug mode flag - only log in development
+const DEBUG = import.meta.env.DEV || false;
+
+// Debug logger function - conditionally logs based on environment
+function debugLog(...args) {
+    if (DEBUG) {
+        console.log(...args);
+    }
+}
+
 // Make Sortable and Chart.js available globally
 window.Sortable = Sortable;
 window.Chart = Chart;
@@ -120,33 +130,33 @@ document.addEventListener('DOMContentLoaded', () => {
     // Wait for Echo to be initialized
     setTimeout(() => {
         if (window.Echo) {
-            console.log('Connecting to WebSocket channel: dashboard');
+            debugLog('Connecting to WebSocket channel: dashboard');
 
             // Listen on public dashboard channel for deployment updates
             window.Echo.channel('dashboard')
                 .listen('DeploymentStarted', (e) => {
-                    console.log('DeploymentStarted event received:', e);
+                    debugLog('DeploymentStarted event received:', e);
                     showToast(`Deployment started for ${e.project_name}`, 'info');
                     if (window.Livewire) {
                         Livewire.dispatch('refresh-dashboard');
                     }
                 })
                 .listen('DeploymentCompleted', (e) => {
-                    console.log('DeploymentCompleted event received:', e);
+                    debugLog('DeploymentCompleted event received:', e);
                     showToast(`Deployment completed for ${e.project_name}`, 'success');
                     if (window.Livewire) {
                         Livewire.dispatch('deployment-completed');
                     }
                 })
                 .listen('DeploymentFailed', (e) => {
-                    console.log('DeploymentFailed event received:', e);
+                    debugLog('DeploymentFailed event received:', e);
                     showToast(`Deployment failed for ${e.project_name}: ${e.error_message || 'Unknown error'}`, 'error');
                     if (window.Livewire) {
                         Livewire.dispatch('refresh-dashboard');
                     }
                 })
                 .listen('DashboardUpdated', (e) => {
-                    console.log('DashboardUpdated event received:', e);
+                    debugLog('DashboardUpdated event received:', e);
                     if (window.Livewire) {
                         Livewire.dispatch('refresh-dashboard');
                     }
@@ -160,10 +170,10 @@ if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/service-worker.js')
             .then(registration => {
-                console.log('SW registered:', registration);
+                debugLog('SW registered:', registration);
             })
             .catch(error => {
-                console.log('SW registration failed:', error);
+                debugLog('SW registration failed:', error);
             });
     });
 }
@@ -179,7 +189,7 @@ window.trackLocation = function() {
                 };
             },
             (error) => {
-                console.error('Error getting location:', error);
+                debugLog('Error getting location:', error);
             }
         );
     }

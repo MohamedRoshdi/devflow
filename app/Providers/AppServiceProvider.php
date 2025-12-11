@@ -73,11 +73,11 @@ class AppServiceProvider extends ServiceProvider
                 });
         });
 
-        // Deployment Actions - 10 deployments per minute per project (prevent deployment spam)
+        // Deployment Actions - 6 deployments per minute per project (prevent deployment spam)
         RateLimiter::for('deployments', function (Request $request) {
             $projectId = $request->route('project')?->id ?? $request->route('project');
 
-            return Limit::perMinute(10)->by($projectId ?: $request->ip())
+            return Limit::perMinute(6)->by($projectId ?: $request->ip())
                 ->response(function (Request $request, array $headers) {
                     return response()->json([
                         'message' => 'Too many deployment requests. Please wait before triggering another deployment.',
@@ -86,9 +86,22 @@ class AppServiceProvider extends ServiceProvider
                 });
         });
 
-        // Server Operations - 20 requests per minute (prevent server command spam)
+        // Deployment Store - 10 requests per minute per project for creating deployments
+        RateLimiter::for('deployment-store', function (Request $request) {
+            $projectId = $request->route('project')?->id ?? $request->route('project');
+
+            return Limit::perMinute(10)->by($projectId ?: $request->ip())
+                ->response(function (Request $request, array $headers) {
+                    return response()->json([
+                        'message' => 'Too many deployment creation requests. Please wait before creating another deployment.',
+                        'retry_after' => $headers['Retry-After'] ?? 60,
+                    ], 429);
+                });
+        });
+
+        // Server Operations - 60 requests per minute for metrics (allow frequent monitoring)
         RateLimiter::for('server-operations', function (Request $request) {
-            return Limit::perMinute(20)->by($request->user()?->id ?: $request->ip())
+            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip())
                 ->response(function (Request $request, array $headers) {
                     return response()->json([
                         'message' => 'Too many server operations. Please slow down.',
