@@ -1,8 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="bg-slate-900 rounded-2xl shadow-xl border border-slate-700/50 overflow-hidden">
+<div class="bg-slate-900 rounded-2xl shadow-xl border border-slate-700/50 overflow-hidden">
     <!-- Hero Header -->
     <div class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-8 py-6 border-b border-slate-700/50">
         <div class="absolute inset-0 bg-grid-pattern opacity-5"></div>
@@ -222,7 +221,6 @@
             </svg>
         </a>
         @endif
-    </div>
     </div>
 </div>
 @endsection

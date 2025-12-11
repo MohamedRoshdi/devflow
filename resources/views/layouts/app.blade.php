@@ -96,20 +96,22 @@
                         </svg>
                         <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Dashboard</span>
                     </a>
-                    <a href="{{ route('home') }}"
-                       class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('home') ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                        </svg>
-                        <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Home</span>
-                    </a>
                 </div>
 
-                <!-- Projects & Infrastructure Section -->
+                <!-- Infrastructure Section -->
                 <div class="space-y-1 pt-4">
                     <div x-show="!sidebarCollapsed" class="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                        Projects & Infrastructure
+                        Infrastructure
                     </div>
+
+                    <!-- Servers -->
+                    <a href="{{ route('servers.index') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('servers.*') ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/>
+                        </svg>
+                        <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Servers</span>
+                    </a>
 
                     <!-- Projects with Dropdown -->
                     <div x-data="{ open: {{ request()->routeIs('projects.*') ? 'true' : 'false' }} }">
@@ -162,14 +164,6 @@
                             </a>
                         </div>
                     </div>
-
-                    <a href="{{ route('servers.index') }}"
-                       class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('servers.*') ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/>
-                        </svg>
-                        <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Servers</span>
-                    </a>
                 </div>
 
                 <!-- Documentation Section (PROMINENT) -->
@@ -335,6 +329,11 @@
                             </svg>
                         </button>
                         <div x-show="open && !sidebarCollapsed" x-collapse class="ml-8 space-y-1 mt-1">
+                            <!-- Priority Items -->
+                            <a href="{{ route('settings.roles-permissions') }}"
+                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('settings.roles-permissions') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
+                                Roles & Permissions
+                            </a>
                             <a href="{{ route('teams.index') }}"
                                class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('teams.*') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
                                 Teams
@@ -343,15 +342,28 @@
                                class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('settings.preferences') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
                                 Preferences
                             </a>
-                            <a href="{{ route('settings.roles-permissions') }}"
-                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('settings.roles-permissions') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-                                Roles & Permissions
-                            </a>
-                            <div class="border-t border-slate-700 my-1"></div>
+
+                            <!-- System Management -->
+                            <div class="border-t border-slate-700 my-2"></div>
                             <a href="{{ route('admin.system') }}"
                                class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('admin.system') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
                                 System Admin
                             </a>
+                            <a href="{{ route('settings.system') }}"
+                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('settings.system') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
+                                System Settings
+                            </a>
+                            <a href="{{ route('settings.system-status') }}"
+                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('settings.system-status') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
+                                System Status
+                            </a>
+                            <a href="{{ route('settings.queue-monitor') }}"
+                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('settings.queue-monitor') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
+                                Queue Monitor
+                            </a>
+
+                            <!-- Content Management -->
+                            <div class="border-t border-slate-700 my-2"></div>
                             <a href="{{ route('admin.help-content') }}"
                                class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('admin.help-content') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
                                 Help Content
@@ -359,18 +371,6 @@
                             <a href="{{ route('admin.templates') }}"
                                class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('admin.templates') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
                                 Templates
-                            </a>
-                            <a href="{{ route('settings.queue-monitor') }}"
-                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('settings.queue-monitor') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-                                Queue Monitor
-                            </a>
-                            <a href="{{ route('settings.system-status') }}"
-                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('settings.system-status') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-                                System Status
-                            </a>
-                            <a href="{{ route('settings.system') }}"
-                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('settings.system') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-                                System Settings
                             </a>
                         </div>
                     </div>
@@ -517,7 +517,7 @@
         <main :class="sidebarCollapsed ? 'md:ml-16' : 'md:ml-64'"
               class="transition-all duration-300 pt-16 md:pt-20 min-h-screen">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                {{ $slot }}
+                @yield('content', $slot ?? '')
             </div>
         </main>
     </div>
@@ -527,7 +527,7 @@
     <!-- Guest Layout (login/register pages) -->
     <main class="py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {{ $slot }}
+            @yield('content', $slot ?? '')
         </div>
     </main>
     @endguest

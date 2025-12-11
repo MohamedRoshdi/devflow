@@ -1,8 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Hero Header -->
+<!-- Hero Header -->
     <div class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-8 mb-8 border border-slate-700/50">
         <div class="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div class="relative flex items-center justify-between">
@@ -107,5 +106,4 @@
             </ol>
         </div>
     </div>
-</div>
 @endsection
