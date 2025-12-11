@@ -563,39 +563,39 @@
                 @endif
             </div>
 
-            {{-- Additional content sections can be added here --}}
-            @include('livewire.projects.partials.overview-content')
         </div>
         @endif
 
         {{-- Docker Tab --}}
         @if($activeTab === 'docker')
-            @include('livewire.projects.partials.docker-content')
+            @livewire('projects.project-docker-management', ['project' => $project], key('docker-' . $project->id))
         @endif
 
         {{-- Environment Tab --}}
         @if($activeTab === 'environment')
-            @include('livewire.projects.partials.environment-content')
+            @livewire('projects.project-environment', ['project' => $project], key('env-' . $project->id))
         @endif
 
         {{-- Git Tab --}}
         @if($activeTab === 'git')
-            @include('livewire.projects.partials.git-content')
+            @livewire('projects.dev-flow-self-management', ['project' => $project], key('git-' . $project->id))
         @endif
 
         {{-- Logs Tab --}}
         @if($activeTab === 'logs')
-            @include('livewire.projects.partials.logs-content')
+            <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-8">
+                <p class="text-slate-400 text-center">Logs viewer coming soon...</p>
+            </div>
         @endif
 
         {{-- Deployments Tab --}}
         @if($activeTab === 'deployments')
-            @include('livewire.projects.partials.deployments-content')
+            @livewire('deployments.deployment-list', ['project' => $project], key('deployments-' . $project->id))
         @endif
 
         {{-- Webhooks Tab --}}
         @if($activeTab === 'webhooks')
-            @include('livewire.projects.partials.webhooks-content')
+            @livewire('projects.project-webhook-settings', ['project' => $project], key('webhooks-' . $project->id))
         @endif
     </div>
 
@@ -699,8 +699,81 @@
         </div>
     @endif
 
-    {{-- Deploy Modal (kept from original) --}}
+    {{-- Deploy Modal --}}
     @if($showDeployModal)
-        @include('livewire.projects.partials.deploy-modal')
+        <div class="fixed inset-0 z-50 overflow-y-auto" x-transition>
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" wire:click="$set('showDeployModal', false)"></div>
+                <div class="relative bg-slate-900 rounded-2xl border border-slate-700/50 shadow-2xl w-full max-w-lg overflow-hidden">
+                    <div class="p-6 border-b border-slate-700/50 bg-gradient-to-r from-blue-900/30 to-indigo-900/30">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+                                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                                Deploy Project
+                            </h3>
+                            <button wire:click="$set('showDeployModal', false)" class="text-slate-400 hover:text-white transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="text-sm text-slate-400 mt-2">This will deploy the latest changes from the <span class="font-mono text-blue-400">{{ $project->branch }}</span> branch.</p>
+                    </div>
+
+                    <div class="p-6 space-y-4">
+                        <div class="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                            <h4 class="text-sm font-semibold text-blue-300 mb-2">Deployment will:</h4>
+                            <ul class="text-sm text-blue-200 space-y-1">
+                                <li class="flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Pull latest code from repository
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Build Docker containers
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Apply environment variables
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Start the application
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <button wire:click="$set('showDeployModal', false)"
+                                class="flex-1 px-4 py-3 rounded-xl bg-slate-800 text-slate-300 font-medium hover:bg-slate-700 transition-all">
+                                Cancel
+                            </button>
+                            <button wire:click="deploy"
+                                wire:loading.attr="disabled"
+                                class="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium hover:from-blue-700 hover:to-indigo-700 transition-all disabled:opacity-50">
+                                <span wire:loading.remove wire:target="deploy">Deploy Now</span>
+                                <span wire:loading wire:target="deploy" class="flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                    </svg>
+                                    Deploying...
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     @endif
 </div>
