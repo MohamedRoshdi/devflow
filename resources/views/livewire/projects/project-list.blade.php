@@ -107,7 +107,7 @@
                     <select wire:model.live="serverFilter"
                             class="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-600/50 rounded-xl text-white focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all">
                         <option value="">All Servers</option>
-                        @foreach($servers as $server)
+                        @foreach($this->servers as $server)
                             <option value="{{ $server->id }}">{{ $server->name }}</option>
                         @endforeach
                     </select>
