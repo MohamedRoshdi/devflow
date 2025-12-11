@@ -372,7 +372,7 @@ class ProjectShow extends Component
 
             $this->showDeployModal = false;
 
-            return redirect()->route('deployments.show', $deployment);
+            $this->redirect(route('deployments.show', $deployment), navigate: true);
 
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to start deployment: '.$e->getMessage());
