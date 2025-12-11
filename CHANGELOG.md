@@ -7,6 +7,124 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.41.0] - 2025-12-11
+
+### Fixed - PHPStan Level 8 Compliance (63 warnings resolved)
+
+#### Type Hinting Improvements (23 fixes)
+- **CacheManager, DeploymentActions, LogViewer** - Added comprehensive array type hints
+  - Added `@var array<string, mixed>` for cache statistics arrays
+  - Added `@var array<int, string>` for deployment step arrays
+  - Added `@var array<string, int|float|string>` for storage information
+  - Improves IDE autocomplete and static analysis accuracy
+
+- **DevFlowSelfManagement** - Documented complex array structures
+  - Added `@var array<int, array{name: string, status: string, output: string}>` for deployment steps
+  - Added `@var array<string, string>` for system info and environment variables
+  - Added `@var array<string, mixed>` for database info
+  - Added `@var array<int, string>` for pending migrations
+
+- **ProjectGit** - Git operation array types
+  - Added `@var array<int, array<string, mixed>>` for commit arrays
+  - Added `@var array<int, string>` for branch lists
+  - Added `@var array<string, mixed>` for update status
+
+#### Generic Type Parameters (16 fixes)
+- **Dashboard** - Added collection generic types
+  - `@property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Deployment> $recentDeployments`
+  - `@property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Project> $projects`
+  - Provides type safety for collection operations
+
+- **ProjectList** - Added servers() return type
+  - `@return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Server>`
+  - Ensures proper type inference for cached server list
+
+- **HelpContent Models** - Eloquent relationship generics
+  - `@return HasMany<HelpContentTranslation, $this>` for translations()
+  - `@return HasMany<HelpInteraction, $this>` for interactions()
+  - `@return BelongsTo<User, $this>` for user relationships
+  - `@param Builder<HelpContent> $query` for scope methods
+
+- **HelpContentService** - Service method return types
+  - `@return Collection<int, HelpContent>` for all query methods
+  - Includes getByCategory(), search(), and getPopular()
+
+#### Parameter Type Fixes (7 fixes)
+- **LogViewer, DevFlowSelfManagement** - formatBytes() method
+  - Changed parameter type from implicit to `int|float $bytes, int $precision = 2`
+  - Accepts both integer and float byte values
+
+- **HelpContent** - Scope method parameters
+  - Added `Builder $query` type hint to all scope methods
+  - Added `string` type hints for scopeByCategory() and scopeSearch()
+
+#### Argument Type Safety (20+ fixes)
+- **InlineHelp** - Null safety for auth()->user()
+  - Store user in variable before accessing properties
+  - Added null check: `$user = auth()->user(); if ($user && !$user->show_inline_help)`
+  - Prevents null pointer exceptions
+
+- **CacheManager** - Handle disk_free_space() false returns
+  - Added null coalescing: `$diskFree = disk_free_space($path) ?: 0`
+  - Prevents false values in array assignments
+  - Same fix for disk_total_space()
+
+- **DeploymentActions** - file_get_contents() error handling
+  - Check for false: `$content = file_get_contents($path); $this->deployScript = $content !== false ? $content : $default`
+  - Fixed array offset access by using temporary variables
+  - Pattern: `$currentStep = $this->deploymentSteps[$index]; $currentStep['status'] = 'running'; $this->deploymentSteps[$index] = $currentStep`
+
+- **LogViewer** - Float to int conversion for array keys
+  - Cast float to int: `$powInt = (int) $pow; return $units[$powInt]`
+  - Prevents invalid array key type errors
+
+- **DevFlowSelfManagement** - Multiple type safety improvements
+  - parse_url() null handling: `$parsedHost = parse_url($url, PHP_URL_HOST); $domain = ($parsedHost !== false && $parsedHost !== null) ? $parsedHost : 'localhost'`
+  - ini_get() type casting: `'memory_limit' => (string) ini_get('memory_limit')`
+  - Same array offset fix pattern as DeploymentActions
+
+- **DefaultSetupPreferences** - User update null safety
+  - Store user before update: `$user = auth()->user(); if ($user) { $user->update([...]); }`
+  - Prevents calling update() on null
+
+- **RolesPermissions** - Null coalescing for Role properties
+  - `$this->roleGuardName = $role->guard_name ?? 'web'`
+  - Handles null guard_name gracefully
+
+- **GitService** - Remove redundant empty() checks
+  - Removed `empty($line)` check after array_filter()
+  - array_filter() already removes empty values
+
+### Fixed - Production Bug Fixes
+- **Dashboard 500 Error** - Deployed null safety fixes for server relationships
+  - Fixed "Attempt to read property 'name' on null" error on production
+  - Updated production code and cleared all caches
+  - Dashboard now properly handles missing server relationships
+
+- **ProjectList 500 Error** - Livewire 3 computed property access
+  - Fixed "Undefined variable $servers" in project-list.blade.php
+  - Changed `@foreach($servers as $server)` to `@foreach($this->servers as $server)`
+  - Livewire 3 requires `$this->` prefix for computed properties
+
+- **Database Cleanup** - Removed orphaned projects after server recreation
+  - Deleted 3 projects with invalid server_id references
+  - Provides clean slate for fresh project setup
+
+### Technical Details
+- All fixes maintain backward compatibility
+- Follows Laravel 12 and PHP 8.4 best practices
+- PHPStan Level 8 now reports 0 errors (down from 63)
+- Improved IDE autocomplete and type inference
+- Better code maintainability and debugging experience
+
+### Developer Notes
+- Type hints improve static analysis accuracy
+- Generic types provide better collection type safety
+- Union types (int|float, string|false) properly handled
+- All changes verified with PHPStan Level 8 analysis
+
+---
+
 ## [5.40.0] - 2025-12-11
 
 ### Security - Critical Vulnerability Fixes

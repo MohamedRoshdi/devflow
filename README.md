@@ -5,7 +5,7 @@
 [![CI Status](https://github.com/yourusername/devflow-pro/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/devflow-pro/actions/workflows/ci.yml)
 [![Deploy Status](https://github.com/yourusername/devflow-pro/actions/workflows/deploy.yml/badge.svg)](https://github.com/yourusername/devflow-pro/actions/workflows/deploy.yml)
 [![Code Quality](https://github.com/yourusername/devflow-pro/actions/workflows/code-quality.yml/badge.svg)](https://github.com/yourusername/devflow-pro/actions/workflows/code-quality.yml)
-[![Version](https://img.shields.io/badge/version-5.40.0-blue.svg)](https://github.com/yourusername/devflow-pro)
+[![Version](https://img.shields.io/badge/version-5.41.0-blue.svg)](https://github.com/yourusername/devflow-pro)
 [![Tests](https://img.shields.io/badge/tests-4300%2B-brightgreen.svg)](TESTING.md)
 [![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](TESTING.md)
 [![Laravel](https://img.shields.io/badge/Laravel-12-red.svg)](https://laravel.com)
