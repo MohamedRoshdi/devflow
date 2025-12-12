@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.46.1] - 2025-12-12
+
+### Fixed
+- **Production Deployment Fix** - Resolved 500 error caused by cached dev dependencies
+  - Cleared stale bootstrap cache containing `laravel/dusk` service provider
+  - Regenerated autoload files with `--no-dev` flag
+  - Rebuilt config, route, and view caches
+
+### Technical Details
+- Issue: `Class "Laravel\Dusk\DuskServiceProvider" not found` in production
+- Root cause: `bootstrap/cache/packages.php` included dev-only packages
+- Solution: Clear cache and run `composer dump-autoload -o --no-dev`
+
+---
+
 ## [5.45.0] - 2025-12-11
 
 ### Added

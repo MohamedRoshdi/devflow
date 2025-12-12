@@ -5,7 +5,7 @@
 [![CI Status](https://github.com/yourusername/devflow-pro/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/devflow-pro/actions/workflows/ci.yml)
 [![Deploy Status](https://github.com/yourusername/devflow-pro/actions/workflows/deploy.yml/badge.svg)](https://github.com/yourusername/devflow-pro/actions/workflows/deploy.yml)
 [![Code Quality](https://github.com/yourusername/devflow-pro/actions/workflows/code-quality.yml/badge.svg)](https://github.com/yourusername/devflow-pro/actions/workflows/code-quality.yml)
-[![Version](https://img.shields.io/badge/version-5.45.0-blue.svg)](https://github.com/yourusername/devflow-pro)
+[![Version](https://img.shields.io/badge/version-5.46.1-blue.svg)](https://github.com/yourusername/devflow-pro)
 [![Tests](https://img.shields.io/badge/tests-4550%2B-brightgreen.svg)](TESTING.md)
 [![i18n](https://img.shields.io/badge/i18n-EN%20|%20AR-green.svg)](lang/README.md)
 [![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](TESTING.md)
