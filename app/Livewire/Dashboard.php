@@ -349,7 +349,7 @@ class Dashboard extends Component
                 'pending' => SSLCertificate::where('status', 'pending')->count(),
                 'failed' => SSLCertificate::where('status', 'failed')->count(),
                 'expiring_certificates' => SSLCertificate::query()
-                    ->select(['id', 'domain_id', 'server_id', 'expires_at', 'status', 'issuer'])
+                    ->select(['id', 'domain_id', 'server_id', 'expires_at', 'status', 'provider'])
                     ->where('expires_at', '<=', $expiringSoonDate)
                     ->where('expires_at', '>', $now)
                     ->with([
