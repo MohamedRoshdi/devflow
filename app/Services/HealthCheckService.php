@@ -41,6 +41,16 @@ class HealthCheckService
     {
         $startTime = microtime(true);
 
+        // Validate URL before making request
+        if (empty($check->target_url)) {
+            return [
+                'status' => 'failure',
+                'response_time' => 0,
+                'status_code' => 0,
+                'error' => 'No target URL configured for health check',
+            ];
+        }
+
         try {
             $response = Http::timeout($check->timeout_seconds)
                 ->get($check->target_url);
