@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
+use App\Helpers\SecurityHelper;
 use App\Models\Project;
 use App\Models\Server;
 use Illuminate\Support\Facades\Process;
@@ -24,18 +27,6 @@ class GitService
                 @unlink($keyFile);
             }
         }
-    }
-
-    /**
-     * Check if server is localhost
-     * Note: Even for localhost, we use SSH to run commands as root for git operations
-     * since the web server runs as www-data which doesn't have SSH keys for GitHub
-     */
-    protected function isLocalhost(Server $server): bool
-    {
-        // Always return false to use SSH - this ensures git commands run as root
-        // which has the SSH keys configured for GitHub access
-        return false;
     }
 
     /**
@@ -82,15 +73,15 @@ class GitService
             $sshOptions[] = '-i '.$this->sshKeyFiles[$server->id];
         }
 
-        // Escape the command for safe SSH execution
-        // Use single quotes and escape any single quotes in the command
-        $escapedCommand = str_replace("'", "'\\''", $remoteCommand);
+        // Security fix: Use escapeshellarg for proper shell escaping instead of manual string replacement
+        // escapeshellarg wraps the string in single quotes and escapes any existing single quotes
+        $escapedCommand = escapeshellarg($remoteCommand);
 
         return sprintf(
-            "ssh %s %s@%s '%s'",
+            "ssh %s %s@%s %s",
             implode(' ', $sshOptions),
-            $server->username,
-            $server->ip_address,
+            escapeshellarg($server->username),
+            escapeshellarg($server->ip_address),
             $escapedCommand
         );
     }
@@ -118,16 +109,12 @@ class GitService
 
             // Configure safe directory first
             $safeConfigCommand = "git config --global --add safe.directory {$projectPath} 2>&1 || true";
-            $command = $this->isLocalhost($server)
-                ? $safeConfigCommand
-                : $this->buildSSHCommand($server, $safeConfigCommand);
+            $command = $this->buildSSHCommand($server, $safeConfigCommand);
             Process::run($command);
 
             // Fetch latest commits from remote with timeout
             $fetchCommand = "cd {$projectPath} && timeout 30 git fetch origin {$project->branch} 2>&1 || echo 'fetch-failed'";
-            $command = $this->isLocalhost($server)
-                ? $fetchCommand
-                : $this->buildSSHCommand($server, $fetchCommand);
+            $command = $this->buildSSHCommand($server, $fetchCommand);
 
             $fetchResult = Process::timeout(35)->run($command);
 
@@ -138,24 +125,18 @@ class GitService
 
             // Determine total commits for pagination (falls back to local HEAD if remote not available)
             $countCommand = "cd {$projectPath} && timeout 10 git rev-list --count origin/{$project->branch} 2>&1";
-            $command = $this->isLocalhost($server)
-                ? $countCommand
-                : $this->buildSSHCommand($server, $countCommand);
+            $command = $this->buildSSHCommand($server, $countCommand);
             $countResult = Process::timeout(15)->run($command);
             if (! $countResult->successful()) {
                 $countCommand = "cd {$projectPath} && timeout 10 git rev-list --count HEAD 2>&1";
-                $command = $this->isLocalhost($server)
-                    ? $countCommand
-                    : $this->buildSSHCommand($server, $countCommand);
+                $command = $this->buildSSHCommand($server, $countCommand);
                 $countResult = Process::timeout(15)->run($command);
             }
             $totalCommits = $countResult->successful() ? (int) trim($countResult->output()) : 0;
 
             // Get commit history (even if fetch failed, show what we have)
             $logCommand = "cd {$projectPath} && timeout 15 git log origin/{$project->branch} --pretty=format:'%H|%an|%ae|%at|%s' --skip={$skip} -n {$perPage} 2>&1 || timeout 15 git log HEAD --pretty=format:'%H|%an|%ae|%at|%s' --skip={$skip} -n {$perPage}";
-            $command = $this->isLocalhost($server)
-                ? $logCommand
-                : $this->buildSSHCommand($server, $logCommand);
+            $command = $this->buildSSHCommand($server, $logCommand);
 
             $logResult = Process::timeout(20)->run($command);
 
@@ -216,9 +197,7 @@ class GitService
             }
 
             $gitCommand = "cd {$projectPath} && git log -1 --pretty=format:'%H|%an|%at|%s'";
-            $command = $this->isLocalhost($server)
-                ? $gitCommand
-                : $this->buildSSHCommand($server, $gitCommand);
+            $command = $this->buildSSHCommand($server, $gitCommand);
 
             $result = Process::timeout(15)->run($command);
 
@@ -265,16 +244,12 @@ class GitService
 
             // Configure safe directory first
             $safeConfigCommand = "git config --global --add safe.directory {$projectPath} 2>&1 || true";
-            $command = $this->isLocalhost($server)
-                ? $safeConfigCommand
-                : $this->buildSSHCommand($server, $safeConfigCommand);
+            $command = $this->buildSSHCommand($server, $safeConfigCommand);
             Process::run($command);
 
             // Fetch latest from remote with timeout
             $fetchCommand = "cd {$projectPath} && timeout 30 git fetch origin {$project->branch} 2>&1 || echo 'fetch-failed'";
-            $command = $this->isLocalhost($server)
-                ? $fetchCommand
-                : $this->buildSSHCommand($server, $fetchCommand);
+            $command = $this->buildSSHCommand($server, $fetchCommand);
 
             $fetchResult = Process::timeout(35)->run($command);
 
@@ -285,9 +260,7 @@ class GitService
 
             // Get current local commit
             $localCommand = "cd {$projectPath} && timeout 10 git rev-parse HEAD 2>&1";
-            $command = $this->isLocalhost($server)
-                ? $localCommand
-                : $this->buildSSHCommand($server, $localCommand);
+            $command = $this->buildSSHCommand($server, $localCommand);
 
             $localResult = Process::timeout(15)->run($command);
 
@@ -302,9 +275,7 @@ class GitService
 
             // Get latest remote commit
             $remoteGitCommand = "cd {$projectPath} && timeout 10 git rev-parse origin/{$project->branch} 2>&1";
-            $command = $this->isLocalhost($server)
-                ? $remoteGitCommand
-                : $this->buildSSHCommand($server, $remoteGitCommand);
+            $command = $this->buildSSHCommand($server, $remoteGitCommand);
 
             $remoteResult = Process::timeout(15)->run($command);
 
@@ -319,24 +290,18 @@ class GitService
 
             // Count commits behind
             $behindGitCommand = "cd {$projectPath} && timeout 10 git rev-list --count HEAD..origin/{$project->branch} 2>&1";
-            $command = $this->isLocalhost($server)
-                ? $behindGitCommand
-                : $this->buildSSHCommand($server, $behindGitCommand);
+            $command = $this->buildSSHCommand($server, $behindGitCommand);
 
             $behindResult = Process::timeout(15)->run($command);
             $commitsBehind = $behindResult->successful() ? (int) trim($behindResult->output()) : 0;
 
             // Gather additional metadata for richer UI
             $localMetaCommand = "cd {$projectPath} && timeout 10 git show -s --format='%H|%an|%at|%s' {$localCommit}";
-            $command = $this->isLocalhost($server)
-                ? $localMetaCommand
-                : $this->buildSSHCommand($server, $localMetaCommand);
+            $command = $this->buildSSHCommand($server, $localMetaCommand);
             $localMetaResult = Process::timeout(15)->run($command);
 
             $remoteMetaCommand = "cd {$projectPath} && timeout 10 git show -s --format='%H|%an|%at|%s' {$remoteCommit}";
-            $command = $this->isLocalhost($server)
-                ? $remoteMetaCommand
-                : $this->buildSSHCommand($server, $remoteMetaCommand);
+            $command = $this->buildSSHCommand($server, $remoteMetaCommand);
             $remoteMetaResult = Process::timeout(15)->run($command);
 
             $localMeta = null;
@@ -421,9 +386,7 @@ class GitService
             }
 
             $gitCommand = "cd {$projectPath} && git log {$fromCommit}..{$toCommit} --pretty=format:'%H|%an|%at|%s'";
-            $command = $this->isLocalhost($server)
-                ? $gitCommand
-                : $this->buildSSHCommand($server, $gitCommand);
+            $command = $this->buildSSHCommand($server, $gitCommand);
 
             $result = Process::timeout(15)->run($command);
 
@@ -565,6 +528,10 @@ class GitService
         try {
             $projectPath = $projectPath ?? base_path();
 
+            // Security: Validate branch name before using in shell commands
+            $validatedBranchName = SecurityHelper::sanitizeBranchName($branchName);
+            $escapedBranchName = escapeshellarg($validatedBranchName);
+
             // Check if repository exists
             if (! is_dir("{$projectPath}/.git")) {
                 return [
@@ -573,11 +540,11 @@ class GitService
                 ];
             }
 
-            // Fetch the branch
-            $fetchResult = Process::timeout(30)->run("cd {$projectPath} && git fetch origin {$branchName} 2>&1");
+            // Fetch the branch (use validated branch name)
+            $fetchResult = Process::timeout(30)->run("cd {$projectPath} && git fetch origin {$escapedBranchName} 2>&1");
 
             if (! $fetchResult->successful()) {
-                \Log::warning("Git fetch failed for branch {$branchName}: ".$fetchResult->errorOutput());
+                \Log::warning("Git fetch failed for branch {$validatedBranchName}: ".$fetchResult->errorOutput());
             }
 
             // Check if there are local changes
@@ -589,8 +556,8 @@ class GitService
                 Process::timeout(15)->run("cd {$projectPath} && git stash save 'DevFlow auto-stash before branch switch' 2>&1");
             }
 
-            // Switch to the branch (checkout and reset to remote)
-            $switchResult = Process::timeout(30)->run("cd {$projectPath} && git checkout {$branchName} 2>&1 && git reset --hard origin/{$branchName} 2>&1");
+            // Switch to the branch (checkout and reset to remote) - use validated branch name
+            $switchResult = Process::timeout(30)->run("cd {$projectPath} && git checkout {$escapedBranchName} 2>&1 && git reset --hard origin/{$escapedBranchName} 2>&1");
 
             if (! $switchResult->successful()) {
                 return [
@@ -601,8 +568,8 @@ class GitService
 
             return [
                 'success' => true,
-                'message' => "Successfully switched to branch: {$branchName}",
-                'branch' => $branchName,
+                'message' => "Successfully switched to branch: {$validatedBranchName}",
+                'branch' => $validatedBranchName,
                 'had_local_changes' => $hasChanges,
             ];
         } catch (\Exception $e) {
@@ -632,23 +599,17 @@ class GitService
 
             // Configure safe directory first
             $safeConfigCommand = "git config --global --add safe.directory {$projectPath} 2>&1 || true";
-            $command = $this->isLocalhost($server)
-                ? $safeConfigCommand
-                : $this->buildSSHCommand($server, $safeConfigCommand);
+            $command = $this->buildSSHCommand($server, $safeConfigCommand);
             Process::run($command);
 
             // Fetch all branches from remote
             $fetchCommand = "cd {$projectPath} && timeout 30 git fetch --all --prune 2>&1";
-            $command = $this->isLocalhost($server)
-                ? $fetchCommand
-                : $this->buildSSHCommand($server, $fetchCommand);
+            $command = $this->buildSSHCommand($server, $fetchCommand);
             Process::timeout(35)->run($command);
 
             // Get all remote branches
             $branchesCommand = "cd {$projectPath} && timeout 10 git branch -r --format='%(refname:short)|%(committerdate:relative)|%(committername)' 2>&1";
-            $command = $this->isLocalhost($server)
-                ? $branchesCommand
-                : $this->buildSSHCommand($server, $branchesCommand);
+            $command = $this->buildSSHCommand($server, $branchesCommand);
 
             $result = Process::timeout(15)->run($command);
 
@@ -661,9 +622,7 @@ class GitService
 
             // Get current branch
             $currentBranchCommand = "cd {$projectPath} && git branch --show-current 2>&1";
-            $command = $this->isLocalhost($server)
-                ? $currentBranchCommand
-                : $this->buildSSHCommand($server, $currentBranchCommand);
+            $command = $this->buildSSHCommand($server, $currentBranchCommand);
             $currentBranchResult = Process::timeout(10)->run($command);
             $currentBranch = $currentBranchResult->successful() ? trim($currentBranchResult->output()) : $project->branch;
 
@@ -731,6 +690,11 @@ class GitService
     {
         try {
             $server = $project->server;
+
+            // Security: Validate branch name before using in shell commands
+            $validatedBranchName = SecurityHelper::sanitizeBranchName($branchName);
+            $escapedBranchName = escapeshellarg($validatedBranchName);
+
             $projectPath = "/var/www/{$project->slug}";
 
             // Check if repository exists
@@ -743,45 +707,35 @@ class GitService
 
             // Configure safe directory first
             $safeConfigCommand = "git config --global --add safe.directory {$projectPath} 2>&1 || true";
-            $command = $this->isLocalhost($server)
-                ? $safeConfigCommand
-                : $this->buildSSHCommand($server, $safeConfigCommand);
+            $command = $this->buildSSHCommand($server, $safeConfigCommand);
             Process::run($command);
 
-            // Fetch the branch
-            $fetchCommand = "cd {$projectPath} && timeout 30 git fetch origin {$branchName} 2>&1";
-            $command = $this->isLocalhost($server)
-                ? $fetchCommand
-                : $this->buildSSHCommand($server, $fetchCommand);
+            // Fetch the branch (use validated branch name)
+            $fetchCommand = "cd {$projectPath} && timeout 30 git fetch origin {$escapedBranchName} 2>&1";
+            $command = $this->buildSSHCommand($server, $fetchCommand);
 
             $fetchResult = Process::timeout(35)->run($command);
 
             if (! $fetchResult->successful()) {
-                \Log::warning("Git fetch failed for branch {$branchName}: ".$fetchResult->errorOutput());
+                \Log::warning("Git fetch failed for branch {$validatedBranchName}: ".$fetchResult->errorOutput());
             }
 
             // Check if there are local changes
             $statusCommand = "cd {$projectPath} && git status --porcelain 2>&1";
-            $command = $this->isLocalhost($server)
-                ? $statusCommand
-                : $this->buildSSHCommand($server, $statusCommand);
+            $command = $this->buildSSHCommand($server, $statusCommand);
             $statusResult = Process::timeout(10)->run($command);
             $hasChanges = ! empty(trim($statusResult->output()));
 
             if ($hasChanges) {
                 // Stash local changes
                 $stashCommand = "cd {$projectPath} && git stash save 'DevFlow auto-stash before branch switch' 2>&1";
-                $command = $this->isLocalhost($server)
-                    ? $stashCommand
-                    : $this->buildSSHCommand($server, $stashCommand);
+                $command = $this->buildSSHCommand($server, $stashCommand);
                 Process::timeout(15)->run($command);
             }
 
-            // Switch to the branch (checkout and reset to remote)
-            $switchCommand = "cd {$projectPath} && git checkout {$branchName} 2>&1 && git reset --hard origin/{$branchName} 2>&1";
-            $command = $this->isLocalhost($server)
-                ? $switchCommand
-                : $this->buildSSHCommand($server, $switchCommand);
+            // Switch to the branch (checkout and reset to remote) - use validated branch name
+            $switchCommand = "cd {$projectPath} && git checkout {$escapedBranchName} 2>&1 && git reset --hard origin/{$escapedBranchName} 2>&1";
+            $command = $this->buildSSHCommand($server, $switchCommand);
 
             $switchResult = Process::timeout(30)->run($command);
 
@@ -792,16 +746,16 @@ class GitService
                 ];
             }
 
-            // Update project branch in database
-            $project->update(['branch' => $branchName]);
+            // Update project branch in database (use validated branch name)
+            $project->update(['branch' => $validatedBranchName]);
 
             // Get the new commit info
             $commitInfo = $this->getCurrentCommit($project);
 
             return [
                 'success' => true,
-                'message' => "Successfully switched to branch: {$branchName}",
-                'branch' => $branchName,
+                'message' => "Successfully switched to branch: {$validatedBranchName}",
+                'branch' => $validatedBranchName,
                 'commit_info' => $commitInfo,
                 'had_local_changes' => $hasChanges,
             ];
@@ -823,16 +777,11 @@ class GitService
             return is_dir("{$projectPath}/.git");
         }
 
-        // Check via SSH if remote
-        if (! $this->isLocalhost($server)) {
-            $checkCommand = "test -d {$projectPath}/.git && echo 'exists' || echo 'not-exists'";
-            $command = $this->buildSSHCommand($server, $checkCommand);
-            $result = Process::run($command);
+        // Check via SSH
+        $checkCommand = "test -d {$projectPath}/.git && echo 'exists' || echo 'not-exists'";
+        $command = $this->buildSSHCommand($server, $checkCommand);
+        $result = Process::run($command);
 
-            return trim($result->output()) === 'exists';
-        }
-
-        // Local check
-        return is_dir("{$projectPath}/.git");
+        return trim($result->output()) === 'exists';
     }
 }

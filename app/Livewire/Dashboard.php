@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire;
 
 use App\Jobs\DeployProjectJob;
@@ -10,6 +12,7 @@ use App\Models\Project;
 use App\Models\Server;
 use App\Models\SSLCertificate;
 use App\Models\UserSettings;
+use Illuminate\Contracts\Console\Kernel as Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -143,6 +146,17 @@ class Dashboard extends Component
         'first_deployment' => false,
         'setup_domain' => false,
     ];
+
+    // Injected services
+    protected Artisan $artisan;
+
+    /**
+     * Boot method for Livewire 3 dependency injection
+     */
+    public function boot(Artisan $artisan): void
+    {
+        $this->artisan = $artisan;
+    }
 
     public function mount(): void
     {
@@ -289,7 +303,13 @@ class Dashboard extends Component
     public function loadRecentDeployments(): void
     {
         // All deployments are shared
-        $this->recentDeployments = Deployment::with(['project', 'server'])
+        // Add select to limit columns and prevent loading unnecessary data
+        $this->recentDeployments = Deployment::query()
+            ->select(['id', 'project_id', 'server_id', 'status', 'created_at', 'commit_hash', 'commit_message', 'branch', 'triggered_by'])
+            ->with([
+                'project:id,name,slug',
+                'server:id,name,status'
+            ])
             ->latest()
             ->take(10)
             ->get();
@@ -298,7 +318,13 @@ class Dashboard extends Component
     public function loadProjects(): void
     {
         // All projects are shared
-        $this->projects = Project::with(['server', 'domains'])
+        // Limit columns and only load primary domain
+        $this->projects = Project::query()
+            ->select(['id', 'name', 'slug', 'status', 'server_id', 'updated_at', 'framework'])
+            ->with([
+                'server:id,name,status',
+                'domains' => fn($q) => $q->where('is_primary', true)->limit(1)->select('id', 'project_id', 'domain', 'subdomain', 'full_domain')
+            ])
             ->latest()
             ->take(6)
             ->get();
@@ -322,9 +348,14 @@ class Dashboard extends Component
                 'expired' => SSLCertificate::where('expires_at', '<=', $now)->count(),
                 'pending' => SSLCertificate::where('status', 'pending')->count(),
                 'failed' => SSLCertificate::where('status', 'failed')->count(),
-                'expiring_certificates' => SSLCertificate::where('expires_at', '<=', $expiringSoonDate)
+                'expiring_certificates' => SSLCertificate::query()
+                    ->select(['id', 'domain_id', 'server_id', 'expires_at', 'status', 'issuer'])
+                    ->where('expires_at', '<=', $expiringSoonDate)
                     ->where('expires_at', '>', $now)
-                    ->with(['domain', 'server'])
+                    ->with([
+                        'domain:id,domain,subdomain,full_domain',
+                        'server:id,name'
+                    ])
                     ->orderBy('expires_at', 'asc')
                     ->take(5)
                     ->get(),
@@ -342,8 +373,13 @@ class Dashboard extends Component
                 'healthy' => HealthCheck::where('status', 'healthy')->count(),
                 'degraded' => HealthCheck::where('status', 'degraded')->count(),
                 'down' => HealthCheck::where('status', 'down')->count(),
-                'down_checks' => HealthCheck::where('status', 'down')
-                    ->with(['project', 'server'])
+                'down_checks' => HealthCheck::query()
+                    ->select(['id', 'project_id', 'server_id', 'status', 'last_failure_at', 'url'])
+                    ->where('status', 'down')
+                    ->with([
+                        'project:id,name',
+                        'server:id,name'
+                    ])
                     ->orderBy('last_failure_at', 'desc')
                     ->take(5)
                     ->get(),
@@ -362,8 +398,13 @@ class Dashboard extends Component
         $deploymentsLimit = 4;
         $projectsLimit = 1;
 
-        // Get recent deployments
-        $recentDeployments = Deployment::with(['project', 'user'])
+        // Get recent deployments - limit columns
+        $recentDeployments = Deployment::query()
+            ->select(['id', 'project_id', 'user_id', 'branch', 'status', 'triggered_by', 'created_at'])
+            ->with([
+                'project:id,name',
+                'user:id,name'
+            ])
             ->latest()
             ->take($deploymentsLimit)
             ->get()
@@ -380,8 +421,13 @@ class Dashboard extends Component
                 ];
             });
 
-        // Get recent project creations
-        $recentProjects = Project::with(['user', 'server'])
+        // Get recent project creations - limit columns
+        $recentProjects = Project::query()
+            ->select(['id', 'name', 'framework', 'status', 'user_id', 'server_id', 'created_at'])
+            ->with([
+                'user:id,name',
+                'server:id,name'
+            ])
             ->latest()
             ->take($projectsLimit)
             ->get()
@@ -429,8 +475,13 @@ class Dashboard extends Component
         $deploymentsToLoad = (int) ceil($itemsToLoad * 0.8); // 80% deployments
         $projectsToLoad = (int) ceil($itemsToLoad * 0.2); // 20% projects
 
-        // Get more recent deployments (skip already loaded)
-        $recentDeployments = Deployment::with(['project', 'user'])
+        // Get more recent deployments (skip already loaded) - limit columns
+        $recentDeployments = Deployment::query()
+            ->select(['id', 'project_id', 'user_id', 'branch', 'status', 'triggered_by', 'created_at'])
+            ->with([
+                'project:id,name',
+                'user:id,name'
+            ])
             ->latest()
             ->skip($currentCount)
             ->take($deploymentsToLoad)
@@ -448,12 +499,17 @@ class Dashboard extends Component
                 ];
             });
 
-        // Get more recent project creations (skip already loaded)
+        // Get more recent project creations (skip already loaded) - limit columns
         $currentProjectsCount = collect($this->recentActivity)
             ->where('type', 'project_created')
             ->count();
 
-        $recentProjects = Project::with(['user', 'server'])
+        $recentProjects = Project::query()
+            ->select(['id', 'name', 'framework', 'status', 'user_id', 'server_id', 'created_at'])
+            ->with([
+                'user:id,name',
+                'server:id,name'
+            ])
             ->latest()
             ->skip($currentProjectsCount)
             ->take($projectsToLoad)
@@ -714,18 +770,27 @@ class Dashboard extends Component
     public function clearAllCaches(): void
     {
         try {
-            \Artisan::call('cache:clear');
-            \Artisan::call('config:clear');
-            \Artisan::call('route:clear');
-            \Artisan::call('view:clear');
+            // Use CacheManagementService for centralized cache clearing
+            $cacheService = app(\App\Services\CacheManagementService::class);
+            $result = $cacheService->clearAllCachesComplete();
 
             // Also clear dashboard-specific caches
             $this->clearDashboardCache();
 
-            $this->dispatch('notification', [
-                'type' => 'success',
-                'message' => 'All caches cleared successfully!',
-            ]);
+            $clearedCount = count($result['cleared']);
+            $failedCount = count($result['failed']);
+
+            if ($failedCount === 0) {
+                $this->dispatch('notification', [
+                    'type' => 'success',
+                    'message' => "All caches cleared successfully! ({$clearedCount} caches cleared)",
+                ]);
+            } else {
+                $this->dispatch('notification', [
+                    'type' => 'warning',
+                    'message' => "Partially cleared: {$clearedCount} caches cleared, {$failedCount} failed",
+                ]);
+            }
         } catch (\Exception $e) {
             $this->dispatch('notification', [
                 'type' => 'error',

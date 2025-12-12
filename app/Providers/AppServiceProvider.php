@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Contracts\AuditServiceInterface;
+use App\Contracts\NotificationServiceInterface;
+use App\Services\AuditService;
+use App\Services\NotificationService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -12,7 +16,9 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        // Bind service interfaces to concrete implementations
+        $this->app->bind(AuditServiceInterface::class, AuditService::class);
+        $this->app->bind(NotificationServiceInterface::class, NotificationService::class);
     }
 
     public function boot(): void

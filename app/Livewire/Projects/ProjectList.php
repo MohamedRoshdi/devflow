@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Projects;
 
 use App\Models\Project;
+use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\{Computed, On};
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -29,6 +31,17 @@ class ProjectList extends Component
     public string $statusFilter = '';
 
     public string $serverFilter = '';
+
+    // Injected services
+    protected CacheRepository $cache;
+
+    /**
+     * Boot method for Livewire 3 dependency injection
+     */
+    public function boot(CacheRepository $cache): void
+    {
+        $this->cache = $cache;
+    }
 
     /**
      * Refresh the project list when a new project is created
@@ -73,7 +86,7 @@ class ProjectList extends Component
     #[Computed]
     public function servers()
     {
-        return Cache::remember('servers_list', 300, function () {
+        return $this->cache->remember('servers_list', 300, function () {
             return \App\Models\Server::select(['id', 'name'])
                 ->orderBy('name')
                 ->get();

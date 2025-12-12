@@ -1,9 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -99,100 +105,157 @@ class Project extends Model
         return 'slug';
     }
 
-    public function template()
+    /**
+     * @return BelongsTo<ProjectTemplate, $this>
+     */
+    public function template(): BelongsTo
     {
         return $this->belongsTo(ProjectTemplate::class, 'template_id');
     }
 
     // Relationships
-    public function user()
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function team()
+    /**
+     * @return BelongsTo<Team, $this>
+     */
+    public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
     }
 
-    public function server()
+    /**
+     * @return BelongsTo<Server, $this>
+     */
+    public function server(): BelongsTo
     {
         return $this->belongsTo(Server::class);
     }
 
-    public function deployments()
+    /**
+     * @return HasMany<Deployment, $this>
+     */
+    public function deployments(): HasMany
     {
         return $this->hasMany(Deployment::class);
     }
 
-    public function latestDeployment()
+    /**
+     * @return HasOne<Deployment, $this>
+     */
+    public function latestDeployment(): HasOne
     {
         return $this->hasOne(Deployment::class)->latestOfMany();
     }
 
-    public function activeDeployment()
+    /**
+     * @return HasOne<Deployment, $this>
+     */
+    public function activeDeployment(): HasOne
     {
         return $this->hasOne(Deployment::class)
             ->whereIn('status', ['pending', 'running'])
             ->latest();
     }
 
-    public function domains()
+    /**
+     * @return HasMany<Domain, $this>
+     */
+    public function domains(): HasMany
     {
         return $this->hasMany(Domain::class);
     }
 
-    public function analytics()
+    /**
+     * @return HasMany<ProjectAnalytic, $this>
+     */
+    public function analytics(): HasMany
     {
         return $this->hasMany(ProjectAnalytic::class);
     }
 
-    public function tenants()
+    /**
+     * @return HasMany<Tenant, $this>
+     */
+    public function tenants(): HasMany
     {
         return $this->hasMany(Tenant::class);
     }
 
-    public function pipelines()
+    /**
+     * @return HasMany<Pipeline, $this>
+     */
+    public function pipelines(): HasMany
     {
         return $this->hasMany(Pipeline::class);
     }
 
-    public function storageConfigurations()
+    /**
+     * @return HasMany<StorageConfiguration, $this>
+     */
+    public function storageConfigurations(): HasMany
     {
         return $this->hasMany(StorageConfiguration::class);
     }
 
-    public function webhookDeliveries()
+    /**
+     * @return HasMany<WebhookDelivery, $this>
+     */
+    public function webhookDeliveries(): HasMany
     {
         return $this->hasMany(WebhookDelivery::class);
     }
 
-    public function databaseBackups()
+    /**
+     * @return HasMany<DatabaseBackup, $this>
+     */
+    public function databaseBackups(): HasMany
     {
         return $this->hasMany(DatabaseBackup::class);
     }
 
-    public function backupSchedules()
+    /**
+     * @return HasMany<BackupSchedule, $this>
+     */
+    public function backupSchedules(): HasMany
     {
         return $this->hasMany(BackupSchedule::class);
     }
 
-    public function fileBackups()
+    /**
+     * @return HasMany<FileBackup, $this>
+     */
+    public function fileBackups(): HasMany
     {
         return $this->hasMany(FileBackup::class);
     }
 
-    public function setupTasks()
+    /**
+     * @return HasMany<ProjectSetupTask, $this>
+     */
+    public function setupTasks(): HasMany
     {
         return $this->hasMany(ProjectSetupTask::class);
     }
 
-    public function pipelineStages()
+    /**
+     * @return HasMany<PipelineStage, $this>
+     */
+    public function pipelineStages(): HasMany
     {
         return $this->hasMany(PipelineStage::class);
     }
 
-    public function pipelineConfig()
+    /**
+     * @return HasOne<PipelineConfig, $this>
+     */
+    public function pipelineConfig(): HasOne
     {
         return $this->hasOne(PipelineConfig::class);
     }
@@ -220,6 +283,14 @@ class Project extends Model
 
     public function getSetupProgressAttribute(): int
     {
+        // Use loaded relationship if available to prevent N+1 queries
+        if (! $this->relationLoaded('setupTasks')) {
+            // If relationship not loaded, use a single query
+            $avgProgress = $this->setupTasks()->avg('progress');
+
+            return $avgProgress ? (int) round($avgProgress) : 0;
+        }
+
         $tasks = $this->setupTasks;
         if ($tasks->isEmpty()) {
             return 0;
@@ -256,17 +327,18 @@ class Project extends Model
         };
     }
 
-    public function getLatestDeployment()
-    {
-        return $this->deployments()->latest()->first();
-    }
-
-    public function notificationChannels()
+    /**
+     * @return HasMany<NotificationChannel, $this>
+     */
+    public function notificationChannels(): HasMany
     {
         return $this->hasMany(NotificationChannel::class);
     }
 
-    public function auditLogs()
+    /**
+     * @return MorphMany<AuditLog, $this>
+     */
+    public function auditLogs(): MorphMany
     {
         return $this->morphMany(AuditLog::class, 'auditable');
     }

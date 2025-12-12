@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Dashboard;
 
 use App\Models\Project;
 use App\Models\Server;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Contracts\Cache\Repository as CacheRepository;
+use Illuminate\Http\Client\Factory as HttpClient;
 use Illuminate\Support\Facades\Process;
 use Livewire\Component;
 
@@ -22,6 +24,21 @@ class HealthDashboard extends Component
     public string $filterStatus = 'all';
 
     public ?string $lastCheckedAt = null;
+
+    // Injected services
+    protected CacheRepository $cache;
+    protected HttpClient $http;
+
+    /**
+     * Boot method for Livewire 3 dependency injection
+     */
+    public function boot(
+        CacheRepository $cache,
+        HttpClient $http
+    ): void {
+        $this->cache = $cache;
+        $this->http = $http;
+    }
 
     public function mount(): void
     {
@@ -51,19 +68,20 @@ class HealthDashboard extends Component
     protected function loadProjectsHealth()
     {
         // All projects are shared across all users
-        // Eager load only the latest deployment to avoid N+1 queries
-        $projects = Project::with([
-            'server',
-            'domains',
-            'deployments' => function ($query) {
-                $query->latest()->limit(1);
-            },
-        ])->get();
+        // Use latestDeployment relationship instead of deployments closure
+        $projects = Project::query()
+            ->select(['id', 'name', 'slug', 'status', 'server_id', 'health_check_url'])
+            ->with([
+                'server:id,name',
+                'domains:id,project_id,domain,subdomain,full_domain',
+                'latestDeployment:id,project_id,status,created_at'
+            ])
+            ->get();
 
         $this->projectsHealth = $projects->map(function ($project) {
             $cacheKey = "project_health_{$project->id}";
 
-            return Cache::remember($cacheKey, 60, function () use ($project) {
+            return $this->cache->remember($cacheKey, 60, function () use ($project) {
                 return $this->checkProjectHealth($project);
             });
         })->toArray();
@@ -78,7 +96,7 @@ class HealthDashboard extends Component
         $this->serversHealth = $servers->map(function ($server) {
             $cacheKey = "server_health_{$server->id}";
 
-            return Cache::remember($cacheKey, 60, function () use ($server) {
+            return $this->cache->remember($cacheKey, 60, function () use ($server) {
                 return $this->checkServerHealth($server);
             });
         })->toArray();
@@ -100,8 +118,8 @@ class HealthDashboard extends Component
             'issues' => [],
         ];
 
-        // Check last deployment (already eager loaded)
-        $lastDeployment = $project->deployments->first();
+        // Check last deployment (using latestDeployment relationship)
+        $lastDeployment = $project->latestDeployment;
         if ($lastDeployment) {
             $health['last_deployment'] = $lastDeployment->created_at->diffForHumans();
             $health['last_deployment_status'] = $lastDeployment->status;
@@ -197,7 +215,7 @@ class HealthDashboard extends Component
     {
         try {
             $startTime = microtime(true);
-            $response = Http::timeout(10)->get($url);
+            $response = $this->http->timeout(10)->get($url);
             $responseTime = round((microtime(true) - $startTime) * 1000); // ms
 
             return [
@@ -305,10 +323,10 @@ class HealthDashboard extends Component
     {
         // Clear cache for all projects and servers
         foreach ($this->projectsHealth as $project) {
-            Cache::forget("project_health_{$project['id']}");
+            $this->cache->forget("project_health_{$project['id']}");
         }
         foreach ($this->serversHealth as $server) {
-            Cache::forget("server_health_{$server['id']}");
+            $this->cache->forget("server_health_{$server['id']}");
         }
 
         $this->loadHealthData();

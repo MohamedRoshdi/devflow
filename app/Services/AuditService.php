@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Contracts\AuditServiceInterface;
 use App\Models\AuditLog;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Request;
 
-class AuditService
+class AuditService implements AuditServiceInterface
 {
     /**
      * Log an action on a model

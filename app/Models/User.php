@@ -1,8 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -40,60 +46,93 @@ class User extends Authenticatable
     }
 
     // Relationships
-    public function projects()
+    /**
+     * @return HasMany<Project, $this>
+     */
+    public function projects(): HasMany
     {
         return $this->hasMany(Project::class);
     }
 
-    public function servers()
+    /**
+     * @return HasMany<Server, $this>
+     */
+    public function servers(): HasMany
     {
         return $this->hasMany(Server::class);
     }
 
-    public function deployments()
+    /**
+     * @return HasMany<Deployment, $this>
+     */
+    public function deployments(): HasMany
     {
         return $this->hasMany(Deployment::class);
     }
 
-    public function sshKeys()
+    /**
+     * @return HasMany<SSHKey, $this>
+     */
+    public function sshKeys(): HasMany
     {
         return $this->hasMany(SSHKey::class);
     }
 
-    public function serverTags()
+    /**
+     * @return HasMany<ServerTag, $this>
+     */
+    public function serverTags(): HasMany
     {
         return $this->hasMany(ServerTag::class);
     }
 
-    public function apiTokens()
+    /**
+     * @return HasMany<ApiToken, $this>
+     */
+    public function apiTokens(): HasMany
     {
         return $this->hasMany(ApiToken::class);
     }
 
     // Team relationships
-    public function teams()
+    /**
+     * @return BelongsToMany<Team, $this>
+     */
+    public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class, 'team_members')
             ->withPivot(['role', 'permissions', 'invited_by', 'joined_at'])
             ->withTimestamps();
     }
 
-    public function ownedTeams()
+    /**
+     * @return HasMany<Team, $this>
+     */
+    public function ownedTeams(): HasMany
     {
         return $this->hasMany(Team::class, 'owner_id');
     }
 
-    public function currentTeam()
+    /**
+     * @return BelongsTo<Team, $this>
+     */
+    public function currentTeam(): BelongsTo
     {
         return $this->belongsTo(Team::class, 'current_team_id');
     }
 
-    public function teamInvitations()
+    /**
+     * @return HasMany<TeamInvitation, $this>
+     */
+    public function teamInvitations(): HasMany
     {
         return $this->hasMany(TeamInvitation::class, 'invited_by');
     }
 
-    public function settings()
+    /**
+     * @return HasOne<UserSettings, $this>
+     */
+    public function settings(): HasOne
     {
         return $this->hasOne(UserSettings::class);
     }
@@ -107,22 +146,34 @@ class User extends Authenticatable
     }
 
     // Collaboration relationships
-    public function requestedApprovals()
+    /**
+     * @return HasMany<DeploymentApproval, $this>
+     */
+    public function requestedApprovals(): HasMany
     {
         return $this->hasMany(DeploymentApproval::class, 'requested_by');
     }
 
-    public function approvedDeployments()
+    /**
+     * @return HasMany<DeploymentApproval, $this>
+     */
+    public function approvedDeployments(): HasMany
     {
         return $this->hasMany(DeploymentApproval::class, 'approved_by');
     }
 
-    public function deploymentComments()
+    /**
+     * @return HasMany<DeploymentComment, $this>
+     */
+    public function deploymentComments(): HasMany
     {
         return $this->hasMany(DeploymentComment::class);
     }
 
-    public function auditLogs()
+    /**
+     * @return HasMany<AuditLog, $this>
+     */
+    public function auditLogs(): HasMany
     {
         return $this->hasMany(AuditLog::class);
     }

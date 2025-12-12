@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -157,7 +159,10 @@ class Deployment extends Model
     // Approval helpers
     public function requiresApproval(): bool
     {
-        return $this->project && $this->project->requires_approval;
+        // Use loaded relationship if available, otherwise fetch only the field we need
+        return $this->relationLoaded('project')
+            ? ($this->project?->requires_approval ?? false)
+            : $this->project()->value('requires_approval') ?? false;
     }
 
     public function isApproved(): bool

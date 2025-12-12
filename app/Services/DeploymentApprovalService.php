@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Contracts\AuditServiceInterface;
+use App\Contracts\NotificationServiceInterface;
 use App\Models\Deployment;
 use App\Models\DeploymentApproval;
 use App\Models\User;
@@ -13,8 +15,8 @@ use Illuminate\Support\Facades\DB;
 class DeploymentApprovalService
 {
     public function __construct(
-        private readonly AuditService $auditService,
-        private readonly NotificationService $notificationService
+        private readonly AuditServiceInterface $auditService,
+        private readonly NotificationServiceInterface $notificationService
     ) {}
 
     /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Contracts\NotificationServiceInterface;
 use App\Models\Deployment;
 use App\Models\HealthCheck;
 use App\Models\HealthCheckResult;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
 
-class NotificationService
+class NotificationService implements NotificationServiceInterface
 {
     public function sendEmail(string $email, string $subject, string $message): bool
     {

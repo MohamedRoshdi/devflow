@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.47.0] - 2025-12-13
+
+### Added
+- **5 New Database Migrations** - Enhanced schema for better performance
+  - `2025_12_12_000001_add_performance_indexes.php` - Performance indexes on frequently queried columns
+  - `2025_12_12_000002_add_missing_project_columns.php` - Missing project columns from CLAUDE.md spec
+  - `2025_12_12_000003_add_missing_domain_columns.php` - Missing domain columns
+  - `2025_12_12_000004_add_missing_server_columns.php` - Missing server columns
+  - `2025_12_12_000005_create_storage_usage_table.php` - New storage_usage analytics table
+
+- **7 New Service Classes** - Clean architecture implementation
+  - `ProjectManagerService.php` - Central orchestrator for project operations
+  - `DeploymentService.php` - Deployment lifecycle management
+  - `DomainService.php` - Domain health checks, DNS/SSL verification
+  - `LogManagerService.php` - Centralized log aggregation and analysis
+  - `CacheManagementService.php` - Unified cache operations
+  - `MetricsCollectionService.php` - Server metrics collection
+  - `ProjectHealthService.php` - Project health monitoring
+
+- **Service Contracts/Interfaces** - `app/Contracts/` directory with interfaces
+- **Helper Functions** - `app/Helpers/` directory with reusable utilities
+
+### Fixed
+- **Security Vulnerabilities** - Fixed command injection in DockerService, GitService, ServerConnectivityService
+  - Input sanitization using `escapeshellarg()` for all user-provided values
+  - Command argument validation before execution
+- **N+1 Query Issues** - Added eager loading in Dashboard, ProjectList, DeploymentList, ServerList components
+- **PHPStan Level 8 Compliance** - Added return types across 50+ files
+  - Fixed nullable property access issues
+  - Added proper type annotations to Models, Services, and Livewire components
+- **Dependency Injection** - Fixed DI patterns in Livewire components using `mount()` method
+
+### Changed
+- **Dead Code Removal** - Removed duplicate `getLatestDeployment()` from Project model
+- **Strict Types** - Added `declare(strict_types=1)` to all PHP files
+- **Service Extraction** - Extracted business logic from Livewire components into dedicated services
+
+### Documentation
+- `SERVICE_EXTRACTION_SUMMARY.md` - Summary of service extraction work
+- `SERVICES_QUICK_REFERENCE.md` - Quick reference for new services
+- `SERVICE_REFACTORING_INDEX.md` - Index of refactoring changes
+- `HEALTHDASHBOARD_REFACTOR.md` - HealthDashboard component refactoring details
+
+---
+
 ## [5.46.3] - 2025-12-12
 
 ### Changed

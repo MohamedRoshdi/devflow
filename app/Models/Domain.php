@@ -1,11 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property array<string, mixed>|null $metadata
+ */
 class Domain extends Model
 {
     /** @use HasFactory<\Database\Factories\DomainFactory> */
@@ -42,9 +48,9 @@ class Domain extends Model
 
     // Relationships
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Project, $this>
+     * @return BelongsTo<Project, $this>
      */
-    public function project()
+    public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }

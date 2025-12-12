@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Projects;
 
 use App\Models\Deployment;
@@ -73,13 +75,31 @@ class ProjectShow extends Component
 
     public bool $showBranchConfirmModal = false;
 
+    // Injected services
+    protected GitService $gitService;
+    protected DockerService $dockerService;
+
+    /**
+     * Boot method for Livewire 3 dependency injection
+     */
+    public function boot(
+        GitService $gitService,
+        DockerService $dockerService
+    ): void {
+        $this->gitService = $gitService;
+        $this->dockerService = $dockerService;
+    }
+
     public function mount(Project $project)
     {
         // Use Policy for authorization
         $this->authorize('view', $project);
 
-        // Eager load domains and check for active deployments
-        $this->project = $project->load(['domains', 'activeDeployment']);
+        // Eager load only necessary relationships with limited columns
+        $this->project = $project->load([
+            'domains:id,project_id,domain,subdomain,full_domain,ssl_enabled,is_primary',
+            'activeDeployment:id,project_id,status,created_at'
+        ]);
         $this->firstTab = request()->query('tab', 'overview');
         $this->activeTab = $this->firstTab;
         $this->selectedBranch = $project->branch;
@@ -113,8 +133,7 @@ class ProjectShow extends Component
         $this->commitsLoading = true;
 
         try {
-            $gitService = app(GitService::class);
-            $result = $gitService->getLatestCommits($this->project, $this->commitPerPage, $this->commitPage);
+            $result = $this->gitService->getLatestCommits($this->project, $this->commitPerPage, $this->commitPage);
 
             if ($result['success']) {
                 $this->commits = $result['commits'];
@@ -126,7 +145,7 @@ class ProjectShow extends Component
             }
 
             if (! $this->updateStatusLoaded) {
-                $updateResult = $gitService->checkForUpdates($this->project);
+                $updateResult = $this->gitService->checkForUpdates($this->project);
                 if ($updateResult['success']) {
                     $this->updateStatus = $updateResult;
                     $this->updateStatusLoaded = true;
@@ -151,8 +170,7 @@ class ProjectShow extends Component
         $this->commitsLoading = true;
 
         try {
-            $gitService = app(GitService::class);
-            $result = $gitService->getLatestCommits($this->project, $this->commitPerPage, $this->commitPage);
+            $result = $this->gitService->getLatestCommits($this->project, $this->commitPerPage, $this->commitPage);
 
             if ($result['success']) {
                 $this->commits = $result['commits'];
@@ -219,8 +237,7 @@ class ProjectShow extends Component
         try {
             $this->checkingForUpdates = true;
 
-            $gitService = app(GitService::class);
-            $result = $gitService->checkForUpdates($this->project);
+            $result = $this->gitService->checkForUpdates($this->project);
 
             if ($result['success']) {
                 $this->updateStatus = $result;
@@ -278,8 +295,7 @@ class ProjectShow extends Component
         $this->branchesLoading = true;
 
         try {
-            $gitService = app(GitService::class);
-            $result = $gitService->getBranches($this->project);
+            $result = $this->gitService->getBranches($this->project);
 
             if ($result['success']) {
                 $this->availableBranches = $result['branches'];
@@ -329,8 +345,7 @@ class ProjectShow extends Component
         $this->branchSwitching = true;
 
         try {
-            $gitService = app(GitService::class);
-            $result = $gitService->switchBranch($this->project, $this->selectedBranch);
+            $result = $this->gitService->switchBranch($this->project, $this->selectedBranch);
 
             if ($result['success']) {
                 $this->project->refresh();
@@ -392,8 +407,7 @@ class ProjectShow extends Component
     public function startProject()
     {
         try {
-            $dockerService = app(DockerService::class);
-            $result = $dockerService->startContainer($this->project);
+            $result = $this->dockerService->startContainer($this->project);
 
             if ($result['success']) {
                 $this->project->update(['status' => 'running']);
@@ -410,8 +424,7 @@ class ProjectShow extends Component
     public function stopProject()
     {
         try {
-            $dockerService = app(DockerService::class);
-            $result = $dockerService->stopContainer($this->project);
+            $result = $this->dockerService->stopContainer($this->project);
 
             if ($result['success']) {
                 $this->project->update(['status' => 'stopped']);
@@ -427,8 +440,13 @@ class ProjectShow extends Component
 
     public function render(): \Illuminate\View\View
     {
+        // Limit columns loaded for deployments to prevent loading all columns
         $deployments = $this->project->deployments()
-            ->with(['user', 'server'])
+            ->select(['id', 'project_id', 'user_id', 'server_id', 'status', 'branch', 'commit_hash', 'commit_message', 'created_at', 'started_at', 'completed_at', 'triggered_by'])
+            ->with([
+                'user:id,name',
+                'server:id,name'
+            ])
             ->latest()
             ->paginate($this->deploymentsPerPage, ['*'], 'deploymentsPage');
 

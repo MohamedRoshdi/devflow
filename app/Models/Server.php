@@ -1,9 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -76,107 +82,164 @@ class Server extends Model
     }
 
     // Relationships
-    public function user()
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function team()
+    /**
+     * @return BelongsTo<Team, $this>
+     */
+    public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
     }
 
-    public function projects()
+    /**
+     * @return HasMany<Project, $this>
+     */
+    public function projects(): HasMany
     {
         return $this->hasMany(Project::class);
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Deployment, $this>
+     * @return HasMany<Deployment, $this>
      */
-    public function deployments()
+    public function deployments(): HasMany
     {
         return $this->hasMany(Deployment::class);
     }
 
-    public function metrics()
+    /**
+     * @return HasMany<ServerMetric, $this>
+     */
+    public function metrics(): HasMany
     {
         return $this->hasMany(ServerMetric::class);
     }
 
-    public function sshKeys()
+    /**
+     * @return BelongsToMany<SSHKey, $this>
+     */
+    public function sshKeys(): BelongsToMany
     {
         return $this->belongsToMany(SSHKey::class, 'server_ssh_key')
             ->withPivot('deployed_at')
             ->withTimestamps();
     }
 
-    public function tags()
+    /**
+     * @return BelongsToMany<ServerTag, $this>
+     */
+    public function tags(): BelongsToMany
     {
         return $this->belongsToMany(ServerTag::class, 'server_tag_pivot', 'server_id', 'tag_id');
     }
 
-    public function sslCertificates()
+    /**
+     * @return HasMany<SSLCertificate, $this>
+     */
+    public function sslCertificates(): HasMany
     {
         return $this->hasMany(SSLCertificate::class);
     }
 
-    public function resourceAlerts()
+    /**
+     * @return HasMany<ResourceAlert, $this>
+     */
+    public function resourceAlerts(): HasMany
     {
         return $this->hasMany(ResourceAlert::class);
     }
 
-    public function alertHistory()
+    /**
+     * @return HasMany<AlertHistory, $this>
+     */
+    public function alertHistory(): HasMany
     {
         return $this->hasMany(AlertHistory::class);
     }
 
-    public function backups()
+    /**
+     * @return HasMany<ServerBackup, $this>
+     */
+    public function backups(): HasMany
     {
         return $this->hasMany(ServerBackup::class);
     }
 
-    public function backupSchedules()
+    /**
+     * @return HasMany<ServerBackupSchedule, $this>
+     */
+    public function backupSchedules(): HasMany
     {
         return $this->hasMany(ServerBackupSchedule::class);
     }
 
-    public function firewallRules()
+    /**
+     * @return HasMany<FirewallRule, $this>
+     */
+    public function firewallRules(): HasMany
     {
         return $this->hasMany(FirewallRule::class);
     }
 
-    public function securityEvents()
+    /**
+     * @return HasMany<SecurityEvent, $this>
+     */
+    public function securityEvents(): HasMany
     {
         return $this->hasMany(SecurityEvent::class);
     }
 
-    public function sshConfiguration()
+    /**
+     * @return HasOne<SshConfiguration, $this>
+     */
+    public function sshConfiguration(): HasOne
     {
         return $this->hasOne(SshConfiguration::class);
     }
 
-    public function securityScans()
+    /**
+     * @return HasMany<SecurityScan, $this>
+     */
+    public function securityScans(): HasMany
     {
         return $this->hasMany(SecurityScan::class);
     }
 
-    public function latestSecurityScan()
+    /**
+     * @return HasOne<SecurityScan, $this>
+     */
+    public function latestSecurityScan(): HasOne
     {
         return $this->hasOne(SecurityScan::class)->latestOfMany();
     }
 
-    public function latestMetric()
+    /**
+     * @return HasOne<ServerMetric, $this>
+     */
+    public function latestMetric(): HasOne
     {
         return $this->hasOne(ServerMetric::class)->latestOfMany('recorded_at');
     }
 
-    public function provisioningLogs()
+    /**
+     * @return HasMany<ProvisioningLog, $this>
+     */
+    public function provisioningLogs(): HasMany
     {
         return $this->hasMany(ProvisioningLog::class);
     }
 
-    public function latestProvisioningLog()
+    /**
+     * @return HasOne<ProvisioningLog, $this>
+     */
+    public function latestProvisioningLog(): HasOne
     {
         return $this->hasOne(ProvisioningLog::class)->latestOfMany();
     }

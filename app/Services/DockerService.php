@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Models\Project;
@@ -144,6 +146,7 @@ class DockerService
         try {
             $server = $project->server;
             $slug = $this->getValidatedSlug($project); // Validate slug before use
+            $escapedSlug = escapeshellarg($slug); // Additional shell escaping
             $projectPath = "/var/www/{$slug}";
 
             // Check if project uses docker-compose
@@ -251,7 +254,8 @@ class DockerService
     {
         try {
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $slug = $this->getValidatedSlug($project); // Validate slug before use
+            $projectPath = "/var/www/{$slug}";
 
             // Check if project uses docker-compose
             $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
@@ -277,7 +281,10 @@ class DockerService
 
                 // Also remove any orphaned containers by name pattern (handles containers from failed deploys)
                 // This catches containers like ats-elasticsearch that might exist from previous runs
-                $orphanCleanupCommand = "docker ps -a --format '{{.Names}}' | grep -E '^{$project->slug}[-_]' | xargs -r docker rm -f 2>/dev/null; true";
+                // Security fix: Escape the slug for use in grep pattern to prevent command injection
+                $validatedSlug = $this->getValidatedSlug($project);
+                $escapedSlugForGrep = preg_quote($validatedSlug, '/');
+                $orphanCleanupCommand = "docker ps -a --format '{{.Names}}' | grep -E '^{$escapedSlugForGrep}[-_]' | xargs -r docker rm -f 2>/dev/null; true";
                 $orphanCleanupCmd = $this->isLocalhost($server)
                     ? $orphanCleanupCommand
                     : $this->buildSSHCommand($server, $orphanCleanupCommand);
@@ -335,13 +342,15 @@ class DockerService
             // Build environment variables string
             $envVars = $this->buildEnvironmentVariables($project);
 
+            $validatedSlug = $this->getValidatedSlug($project);
+            $escapedSlug = escapeshellarg($validatedSlug);
             $startCommand = sprintf(
                 'docker run -d --name %s -p %d:%d%s %s',
-                $project->slug,
+                $escapedSlug,
                 $port,
                 $containerPort,
                 $envVars,
-                $project->slug
+                $escapedSlug
             );
 
             $command = $this->isLocalhost($server)
@@ -407,12 +416,14 @@ class DockerService
     {
         try {
             $server = $project->server;
+            $slug = $this->getValidatedSlug($project); // Validate slug before use
+            $escapedSlug = escapeshellarg($slug);
 
             // Stop and remove any existing container with this name
             $cleanupCommand = sprintf(
                 'docker stop %s 2>/dev/null || true && docker rm -f %s 2>/dev/null || true',
-                $project->slug,
-                $project->slug
+                $escapedSlug,
+                $escapedSlug
             );
 
             $command = $this->isLocalhost($server)
@@ -459,7 +470,8 @@ class DockerService
     {
         try {
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $slug = $this->getValidatedSlug($project); // Validate slug before use
+            $projectPath = "/var/www/{$slug}";
 
             // Check if project uses docker-compose
             $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
@@ -494,10 +506,12 @@ class DockerService
             // Standalone container mode
             // Stop and force remove the container to avoid "name already in use" errors
             // Using -f flag to force removal even if container is running
+            $validatedSlug = $this->getValidatedSlug($project);
+            $escapedSlug = escapeshellarg($validatedSlug);
             $stopAndRemoveCommand = sprintf(
                 'docker stop %s 2>/dev/null || true && docker rm -f %s 2>/dev/null || true',
-                $project->slug,
-                $project->slug
+                $escapedSlug,
+                $escapedSlug
             );
 
             $command = $this->isLocalhost($server)
@@ -523,7 +537,8 @@ class DockerService
     {
         try {
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $slug = $this->getValidatedSlug($project); // Validate slug before use
+            $projectPath = "/var/www/{$slug}";
 
             // Check if project uses docker-compose
             $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
@@ -555,7 +570,9 @@ class DockerService
             }
 
             // Standalone container mode
-            $logsCommand = "docker logs --tail {$lines} ".$project->slug;
+            $validatedSlug = $this->getValidatedSlug($project);
+            $escapedSlug = escapeshellarg($validatedSlug);
+            $logsCommand = "docker logs --tail {$lines} ".$escapedSlug;
             $command = $this->isLocalhost($server)
                 ? $logsCommand
                 : $this->buildSSHCommand($server, $logsCommand);
@@ -580,11 +597,13 @@ class DockerService
     {
         try {
             $server = $project->server;
+            $slug = $this->getValidatedSlug($project); // Validate slug before use
 
             $containerPath = '/var/www/storage/logs/laravel.log';
-            $hostPath = "/var/www/{$project->slug}/storage/logs/laravel.log";
+            $hostPath = "/var/www/{$slug}/storage/logs/laravel.log";
 
-            $dockerCommand = "docker exec {$project->slug} sh -c 'if [ -f {$containerPath} ]; then tail -n {$lines} {$containerPath}; else echo \"Laravel log not found inside container\"; fi'";
+            $escapedSlug = escapeshellarg($slug);
+            $dockerCommand = "docker exec {$escapedSlug} sh -c 'if [ -f {$containerPath} ]; then tail -n {$lines} {$containerPath}; else echo \"Laravel log not found inside container\"; fi'";
             $command = $this->isLocalhost($server)
                 ? $dockerCommand
                 : $this->buildSSHCommand($server, $dockerCommand);
@@ -626,14 +645,15 @@ class DockerService
     {
         try {
             $server = $project->server;
-            $hostPath = "/var/www/{$project->slug}/storage/logs/laravel.log";
+            $slug = $this->getValidatedSlug($project); // Validate slug before use
+            $hostPath = "/var/www/{$slug}/storage/logs/laravel.log";
 
             // Use sudo for non-root users to handle permission issues
             $sudo = strtolower($server->username) === 'root' ? '' : 'sudo ';
 
             // Clear logs using truncate command - don't change ownership, just truncate
             // The file keeps its current ownership so the container can still write to it
-            $hostCommand = "if [ -f {$hostPath} ]; then {$sudo}truncate -s 0 {$hostPath} && echo 'cleared'; elif [ -d /var/www/{$project->slug}/storage/logs ]; then {$sudo}touch {$hostPath} && {$sudo}chmod 666 {$hostPath} && echo 'created'; else echo 'not_found'; fi";
+            $hostCommand = "if [ -f {$hostPath} ]; then {$sudo}truncate -s 0 {$hostPath} && echo 'cleared'; elif [ -d /var/www/{$slug}/storage/logs ]; then {$sudo}touch {$hostPath} && {$sudo}chmod 666 {$hostPath} && echo 'created'; else echo 'not_found'; fi";
             $command = $this->isLocalhost($server)
                 ? $hostCommand
                 : $this->buildSSHCommand($server, $hostCommand);
@@ -653,7 +673,7 @@ class DockerService
             if ($output === 'not_found') {
                 return [
                     'success' => false,
-                    'error' => "Log directory not found at /var/www/{$project->slug}/storage/logs",
+                    'error' => "Log directory not found at /var/www/{$slug}/storage/logs",
                 ];
             }
 
@@ -676,7 +696,8 @@ class DockerService
     {
         try {
             $server = $project->server;
-            $hostPath = "/var/www/{$project->slug}/storage/logs/laravel.log";
+            $slug = $this->getValidatedSlug($project); // Validate slug before use
+            $hostPath = "/var/www/{$slug}/storage/logs/laravel.log";
 
             // Use sudo for non-root users
             $sudo = strtolower($server->username) === 'root' ? '' : 'sudo ';
@@ -704,7 +725,7 @@ class DockerService
                 return [
                     'success' => true,
                     'content' => $output,
-                    'filename' => $project->slug.'-laravel-'.now()->format('Y-m-d-His').'.log',
+                    'filename' => $slug.'-laravel-'.now()->format('Y-m-d-His').'.log',
                 ];
             }
 
@@ -726,7 +747,8 @@ class DockerService
     public function usesDockerCompose(Project $project): bool
     {
         $server = $project->server;
-        $projectPath = "/var/www/{$project->slug}";
+        $slug = $this->getValidatedSlug($project); // Validate slug before use
+        $projectPath = "/var/www/{$slug}";
 
         $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
         $command = $this->isLocalhost($server)
@@ -746,16 +768,18 @@ class DockerService
     public function getAppContainerName(Project $project): string
     {
         $server = $project->server;
+        $slug = $this->getValidatedSlug($project); // Validate slug before use
 
         // Try common naming patterns
         $patterns = [
-            "{$project->slug}-app",    // docker-compose v2 naming
-            "{$project->slug}_app_1",  // docker-compose v1 naming
-            'app',                     // generic app service
+            "{$slug}-app",    // docker-compose v2 naming
+            "{$slug}_app_1",  // docker-compose v1 naming
+            'app',            // generic app service
         ];
 
         foreach ($patterns as $pattern) {
-            $checkCmd = "docker ps --filter 'name={$pattern}' --format '{{.Names}}' | head -1";
+            $escapedPattern = escapeshellarg($pattern);
+            $checkCmd = "docker ps --filter 'name={$escapedPattern}' --format '{{.Names}}' | head -1";
             $command = $this->isLocalhost($server)
                 ? $checkCmd
                 : $this->buildSSHCommand($server, $checkCmd);
@@ -770,7 +794,7 @@ class DockerService
         }
 
         // Fallback to slug-app pattern
-        return "{$project->slug}-app";
+        return "{$slug}-app";
     }
 
     /**
@@ -961,10 +985,12 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
+            $slug = $this->getValidatedSlug($project); // Validate slug before use
+            $escapedSlug = escapeshellarg($slug);
 
             $statsCommand = sprintf(
                 "docker stats --no-stream --format '{{json .}}' %s",
-                $project->slug
+                $escapedSlug
             );
 
             $command = $this->isLocalhost($server)
@@ -996,10 +1022,12 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
+            $slug = $this->getValidatedSlug($project); // Validate slug before use
+            $escapedSlug = escapeshellarg($slug);
 
             $inspectCommand = sprintf(
                 "docker inspect --format='{{json .HostConfig}}' %s",
-                $project->slug
+                $escapedSlug
             );
 
             $command = $this->isLocalhost($server)
@@ -1033,6 +1061,8 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
+            $slug = $this->getValidatedSlug($project); // Validate slug before use
+            $escapedSlug = escapeshellarg($slug);
 
             $updateCommand = 'docker update';
             if ($memoryMB !== null) {
@@ -1041,7 +1071,7 @@ DOCKERFILE;
             if ($cpuShares !== null) {
                 $updateCommand .= " --cpu-shares={$cpuShares}";
             }
-            $updateCommand .= ' '.$project->slug;
+            $updateCommand .= ' '.$escapedSlug;
 
             $command = $this->isLocalhost($server)
                 ? $updateCommand
@@ -1274,7 +1304,10 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            $connectCommand = "docker network connect {$networkName} {$project->slug}";
+            $slug = $this->getValidatedSlug($project); // Validate slug before use
+            $escapedSlug = escapeshellarg($slug);
+            $escapedNetwork = escapeshellarg($networkName);
+            $connectCommand = "docker network connect {$escapedNetwork} {$escapedSlug}";
 
             $command = $this->isLocalhost($server)
                 ? $connectCommand
@@ -1299,7 +1332,10 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            $disconnectCommand = "docker network disconnect {$networkName} {$project->slug}";
+            $slug = $this->getValidatedSlug($project); // Validate slug before use
+            $escapedSlug = escapeshellarg($slug);
+            $escapedNetwork = escapeshellarg($networkName);
+            $disconnectCommand = "docker network disconnect {$escapedNetwork} {$escapedSlug}";
 
             $command = $this->isLocalhost($server)
                 ? $disconnectCommand
@@ -1404,10 +1440,12 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
+            $slug = $this->getValidatedSlug($project); // Validate slug before use
+            $escapedSlug = escapeshellarg($slug);
 
             $statusCommand = sprintf(
                 "docker ps -a --filter name=%s --format '{{json .}}'",
-                $project->slug
+                $escapedSlug
             );
 
             $command = $this->isLocalhost($server)
@@ -1529,7 +1567,8 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $slug = $this->getValidatedSlug($project); // Validate slug before use
+            $projectPath = "/var/www/{$slug}";
 
             $composeCommand = "cd {$projectPath} && docker-compose up -d --build";
 
@@ -1557,7 +1596,8 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $slug = $this->getValidatedSlug($project); // Validate slug before use
+            $projectPath = "/var/www/{$slug}";
 
             $composeCommand = "cd {$projectPath} && docker-compose down";
 
@@ -1584,7 +1624,8 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $slug = $this->getValidatedSlug($project); // Validate slug before use
+            $projectPath = "/var/www/{$slug}";
 
             $composeCommand = "cd {$projectPath} && docker-compose ps --format json";
 
@@ -1659,8 +1700,10 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
+            $slug = $this->getValidatedSlug($project); // Validate slug before use
+            $escapedSlug = escapeshellarg($slug);
 
-            $psCommand = "docker top {$project->slug}";
+            $psCommand = "docker top {$escapedSlug}";
 
             $command = $this->isLocalhost($server)
                 ? $psCommand
@@ -1689,9 +1732,12 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            $backupName = $backupName ?? "{$project->slug}-backup-".date('Y-m-d-H-i-s');
+            $slug = $this->getValidatedSlug($project); // Validate slug before use
+            $backupName = $backupName ?? "{$slug}-backup-".date('Y-m-d-H-i-s');
 
-            $commitCommand = "docker commit {$project->slug} {$backupName}";
+            $escapedSlug = escapeshellarg($slug);
+            $escapedBackupName = escapeshellarg($backupName);
+            $commitCommand = "docker commit {$escapedSlug} {$escapedBackupName}";
 
             $command = $this->isLocalhost($server)
                 ? $commitCommand
