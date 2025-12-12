@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.46.3] - 2025-12-12
+
+### Changed
+- **File Permissions Normalized** - Standardized file permissions in storage directory
+  - Changed from 755 to 644 for testing, documentation, and translation files
+  - Improved security posture by removing unnecessary execute permissions
+
+---
+
 ## [5.46.2] - 2025-12-12
 
 ### Fixed
