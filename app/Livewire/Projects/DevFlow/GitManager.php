@@ -43,6 +43,11 @@ class GitManager extends Component
     {
         $this->loadGitInfo();
         $this->selectedBranch = $this->gitBranch;
+
+        // Load full git data if repo exists
+        if ($this->isGitRepo) {
+            $this->loadGitTab();
+        }
     }
 
     public function loadGitInfo(): void
