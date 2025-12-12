@@ -374,7 +374,7 @@ class Dashboard extends Component
                 'degraded' => HealthCheck::where('status', 'degraded')->count(),
                 'down' => HealthCheck::where('status', 'down')->count(),
                 'down_checks' => HealthCheck::query()
-                    ->select(['id', 'project_id', 'server_id', 'status', 'last_failure_at', 'url'])
+                    ->select(['id', 'project_id', 'server_id', 'status', 'last_failure_at', 'target_url'])
                     ->where('status', 'down')
                     ->with([
                         'project:id,name',
