@@ -119,7 +119,7 @@ class DockerService
 
             $command = $this->buildSSHCommand($server, $script);
             $process = Process::fromShellCommandline($command);
-            $process->setTimeout(300); // 5 minutes
+            $process->setTimeout(config('devflow.timeouts.docker_install', 300));
             $process->run();
 
             if ($process->isSuccessful()) {
@@ -169,7 +169,7 @@ class DockerService
                     : $this->buildSSHCommand($server, $buildCommand);
 
                 $process = Process::fromShellCommandline($command);
-                $process->setTimeout(1200); // 20 minutes for compose builds
+                $process->setTimeout(config('devflow.timeouts.docker_compose_build', 1200));
                 $process->run();
 
                 if ($process->isSuccessful()) {
@@ -227,7 +227,7 @@ class DockerService
                 : $this->buildSSHCommand($server, $buildCommand);
 
             $process = Process::fromShellCommandline($command);
-            $process->setTimeout(600); // 10 minutes
+            $process->setTimeout(config('devflow.timeouts.docker_build', 600));
             $process->run();
 
             if ($process->isSuccessful()) {
@@ -276,7 +276,7 @@ class DockerService
                     ? $cleanupCommand
                     : $this->buildSSHCommand($server, $cleanupCommand);
                 $cleanupProcess = Process::fromShellCommandline($cleanupCmd);
-                $cleanupProcess->setTimeout(180); // 3 minutes for complex projects
+                $cleanupProcess->setTimeout(config('devflow.timeouts.docker_compose_cleanup', 180));
                 $cleanupProcess->run();
 
                 // Also remove any orphaned containers by name pattern (handles containers from failed deploys)
@@ -307,7 +307,7 @@ class DockerService
                     : $this->buildSSHCommand($server, $startCommand);
 
                 $process = Process::fromShellCommandline($command);
-                $process->setTimeout(300); // 5 minutes for compose
+                $process->setTimeout(config('devflow.timeouts.docker_compose_start', 300));
                 $process->run();
 
                 if ($process->isSuccessful()) {
@@ -493,7 +493,7 @@ class DockerService
                     : $this->buildSSHCommand($server, $stopCommand);
 
                 $process = Process::fromShellCommandline($command);
-                $process->setTimeout(180); // 3 minutes for complex projects
+                $process->setTimeout(config('devflow.timeouts.docker_compose_cleanup', 180));
                 $process->run();
 
                 return [
@@ -709,7 +709,7 @@ class DockerService
                 : $this->buildSSHCommand($server, $hostCommand);
 
             $process = Process::fromShellCommandline($command);
-            $process->setTimeout(120); // 2 minute timeout for large files
+            $process->setTimeout(config('devflow.timeouts.log_download', 120));
             $process->run();
 
             $output = $process->getOutput();
@@ -1544,7 +1544,7 @@ DOCKERFILE;
                 : $this->buildSSHCommand($server, $pullCommand);
 
             $process = Process::fromShellCommandline($command);
-            $process->setTimeout(600); // 10 minutes for large images
+            $process->setTimeout(config('devflow.timeouts.docker_pull', 600));
             $process->run();
 
             return [
@@ -1577,7 +1577,7 @@ DOCKERFILE;
                 : $this->buildSSHCommand($server, $composeCommand);
 
             $process = Process::fromShellCommandline($command);
-            $process->setTimeout(1200); // 20 minutes
+            $process->setTimeout(config('devflow.timeouts.docker_compose_build', 1200));
             $process->run();
 
             return [
@@ -1680,7 +1680,7 @@ DOCKERFILE;
                 : $this->buildSSHCommand($server, $execCommand);
 
             $process = Process::fromShellCommandline($cmd);
-            $process->setTimeout(300); // 5 minutes
+            $process->setTimeout(config('devflow.timeouts.command_exec', 300));
             $process->run();
 
             return [
@@ -1773,7 +1773,7 @@ DOCKERFILE;
                 : $this->buildSSHCommand($server, $saveCommand);
 
             $process = Process::fromShellCommandline($command);
-            $process->setTimeout(600); // 10 minutes
+            $process->setTimeout(config('devflow.timeouts.backup', 1800));
             $process->run();
 
             return [
@@ -1798,7 +1798,7 @@ DOCKERFILE;
                 : $this->buildSSHCommand($server, $loadCommand);
 
             $process = Process::fromShellCommandline($command);
-            $process->setTimeout(600); // 10 minutes
+            $process->setTimeout(config('devflow.timeouts.backup', 1800));
             $process->run();
 
             return [
@@ -1861,7 +1861,7 @@ DOCKERFILE;
                 : $this->buildSSHCommand($server, $pushCommand);
 
             $process = Process::fromShellCommandline($command);
-            $process->setTimeout(600); // 10 minutes
+            $process->setTimeout(config('devflow.timeouts.docker_pull', 600));
             $process->run();
 
             return [
@@ -1947,7 +1947,7 @@ DOCKERFILE;
                 : $this->buildSSHCommand($server, $pruneCommand);
 
             $process = Process::fromShellCommandline($command);
-            $process->setTimeout(300); // 5 minutes
+            $process->setTimeout(config('devflow.timeouts.system_prune', 300));
             $process->run();
 
             return [

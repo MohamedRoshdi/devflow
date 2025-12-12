@@ -66,8 +66,21 @@
                     <livewire:components.inline-help help-key="rollback-button" :collapsible="true" />
                 </div>
 
+                {{-- Loading State --}}
+                <div wire:loading.delay class="mb-8">
+                    <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 backdrop-blur-sm">
+                        <div class="flex items-center gap-3">
+                            <svg class="animate-spin h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <p class="text-blue-400 font-medium">Loading deployments...</p>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- Premium Filter Section with Glassmorphism --}}
-                <div class="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-lg">
+                <div class="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-lg" wire:loading.remove>
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
                         <div>
                             <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Search</label>
@@ -113,7 +126,7 @@
 
                 @if($deployments->count())
                     {{-- Timeline with Enhanced Glassmorphism Cards --}}
-                    <div class="relative pl-8">
+                    <div class="relative pl-8" wire:loading.remove>
                         {{-- Premium Timeline Line with Gradient --}}
                         <span class="absolute left-3 top-0 bottom-0 w-0.5 bg-gradient-to-b from-indigo-400/40 via-purple-400/40 to-blue-400/40 shadow-lg"></span>
 
@@ -260,20 +273,48 @@
                     </div>
 
                     {{-- Pagination --}}
-                    <div class="pt-8">
+                    <div class="pt-8" wire:loading.remove>
                         {{ $deployments->onEachSide(1)->links() }}
                     </div>
+                @elseif($search || $projectFilter || $statusFilter)
+                    {{-- No Results State (filters applied) --}}
+                    <div class="text-center py-24 bg-slate-800/30 backdrop-blur-sm rounded-2xl border border-slate-700/50" wire:loading.remove>
+                        <div class="relative inline-block">
+                            <svg class="mx-auto h-24 w-24 text-slate-600 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            <div class="absolute inset-0 blur-2xl bg-slate-500/20 rounded-full"></div>
+                        </div>
+                        <p class="mt-6 text-slate-300 text-xl font-semibold">No deployments found for the selected filters.</p>
+                        <p class="text-sm text-slate-500 mt-3 mb-6">Adjust your filters or trigger a new deployment to see it here.</p>
+                        <button wire:click="$set('search', ''); $set('projectFilter', ''); $set('statusFilter', '')"
+                           class="group inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-white overflow-hidden transition-all duration-300 hover:-translate-y-0.5 bg-slate-700/50 backdrop-blur-sm border border-slate-600/50 hover:border-slate-500/50">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                            <span>Clear All Filters</span>
+                        </button>
+                    </div>
                 @else
-                    {{-- Empty State --}}
-                    <div class="text-center py-24 bg-slate-800/30 backdrop-blur-sm rounded-2xl border border-slate-700/50">
+                    {{-- Empty State (no deployments at all) --}}
+                    <div class="text-center py-24 bg-slate-800/30 backdrop-blur-sm rounded-2xl border border-slate-700/50" wire:loading.remove>
                         <div class="relative inline-block">
                             <svg class="mx-auto h-24 w-24 text-slate-600 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                             </svg>
                             <div class="absolute inset-0 blur-2xl bg-slate-500/20 rounded-full"></div>
                         </div>
-                        <p class="mt-6 text-slate-300 text-xl font-semibold">No deployments found for the selected filters.</p>
-                        <p class="text-sm text-slate-500 mt-3">Adjust your filters or trigger a new deployment to see it here.</p>
+                        <p class="mt-6 text-slate-300 text-xl font-semibold">No deployments yet</p>
+                        <p class="text-sm text-slate-500 mt-3 mb-6">Start deploying your projects to see deployment history here.</p>
+                        <a href="{{ route('projects.index') }}"
+                           class="group inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-white overflow-hidden transition-all duration-300 hover:-translate-y-0.5"
+                           style="background: linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%);">
+                            <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                            <svg class="w-4 h-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            <span class="relative z-10">View Projects</span>
+                        </a>
                     </div>
                 @endif
             </div>

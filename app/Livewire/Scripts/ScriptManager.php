@@ -72,7 +72,7 @@ class ScriptManager extends Component
 
         return view('livewire.scripts.script-manager', [
             'scripts' => DeploymentScript::paginate(10),
-            'projects' => Project::all(),
+            'projects' => Project::select('id', 'name', 'slug')->orderBy('name')->get(),
             'templates' => $scriptService->getAvailableTemplates(),
         ]);
     }

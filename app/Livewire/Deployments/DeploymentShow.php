@@ -21,7 +21,9 @@ class DeploymentShow extends Component
 
     public function mount(Deployment $deployment): void
     {
-        // All deployments are shared across all users
+        // Authorization check - only allow viewing deployments for projects the user has access to
+        $this->authorize('view', $deployment);
+
         $this->deployment = $deployment;
         $this->analyzeProgress();
 
@@ -40,7 +42,7 @@ class DeploymentShow extends Component
             $lines = explode("\n", $this->deployment->output_log);
             foreach ($lines as $line) {
                 $this->liveLogs[] = [
-                    'line' => $line,
+                    'line' => strip_tags($line),
                     'level' => $this->detectLogLevel($line),
                     'timestamp' => now()->toIso8601String(),
                 ];
@@ -83,8 +85,8 @@ class DeploymentShow extends Component
     public function onLogUpdated(array $event): void
     {
         $this->liveLogs[] = [
-            'line' => $event['line'],
-            'level' => $event['level'],
+            'line' => strip_tags($event['line']),
+            'level' => in_array($event['level'], ['error', 'warning', 'info'], true) ? $event['level'] : 'info',
             'timestamp' => $event['timestamp'],
         ];
 

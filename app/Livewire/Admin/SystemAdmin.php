@@ -53,15 +53,27 @@ class SystemAdmin extends Component
     public function loadBackupStats(): void
     {
         try {
+            // Get server configuration from config or Server model
+            $serverConfig = config('devflow.system_admin.primary_server');
+            $backupLogPath = config('devflow.system_admin.paths.backup_log');
+            $backupDir = config('devflow.system_admin.paths.backup_dir');
+
+            // Validate configuration
+            if (empty($serverConfig['ip_address'])) {
+                throw new \RuntimeException('Primary server IP not configured. Set DEVFLOW_PRIMARY_SERVER_IP in .env');
+            }
+
+            $sshHost = escapeshellarg($serverConfig['username'].'@'.$serverConfig['ip_address']);
+
             // Get backup statistics via SSH
-            $result = Process::timeout(10)->run('ssh root@31.220.90.121 "tail -30 /opt/backups/databases/backup.log"');
+            $result = Process::timeout(10)->run("ssh {$sshHost} \"tail -30 {$backupLogPath}\"");
 
             if ($result->successful()) {
                 $this->backupLogs = array_values(array_filter(explode("\n", $result->output())));
             }
 
             // Get backup sizes
-            $sizeResult = Process::timeout(10)->run('ssh root@31.220.90.121 "du -sh /opt/backups/databases/* 2>/dev/null"');
+            $sizeResult = Process::timeout(10)->run("ssh {$sshHost} \"du -sh {$backupDir}/* 2>/dev/null\"");
 
             if ($sizeResult->successful()) {
                 $lines = explode("\n", trim($sizeResult->output()));
@@ -83,8 +95,18 @@ class SystemAdmin extends Component
     public function loadSystemMetrics(): void
     {
         try {
+            // Get server configuration
+            $serverConfig = config('devflow.system_admin.primary_server');
+            $monitorLogPath = config('devflow.system_admin.paths.monitor_log');
+
+            if (empty($serverConfig['ip_address'])) {
+                throw new \RuntimeException('Primary server IP not configured');
+            }
+
+            $sshHost = escapeshellarg($serverConfig['username'].'@'.$serverConfig['ip_address']);
+
             // Get monitoring logs
-            $result = Process::timeout(10)->run('ssh root@31.220.90.121 "tail -50 /var/log/devflow-monitor.log"');
+            $result = Process::timeout(10)->run("ssh {$sshHost} \"tail -50 {$monitorLogPath}\"");
 
             if ($result->successful()) {
                 $this->monitoringLogs = array_values(array_filter(explode("\n", $result->output())));
@@ -105,7 +127,17 @@ class SystemAdmin extends Component
     public function loadRecentAlerts(): void
     {
         try {
-            $result = Process::timeout(10)->run('ssh root@31.220.90.121 "grep -i \"WARNING\\|ERROR\\|CRITICAL\" /var/log/devflow-monitor.log | tail -10"');
+            $serverConfig = config('devflow.system_admin.primary_server');
+            $monitorLogPath = config('devflow.system_admin.paths.monitor_log');
+
+            if (empty($serverConfig['ip_address'])) {
+                $this->recentAlerts = [];
+                return;
+            }
+
+            $sshHost = escapeshellarg($serverConfig['username'].'@'.$serverConfig['ip_address']);
+
+            $result = Process::timeout(10)->run("ssh {$sshHost} \"grep -i \\\"WARNING\\\\|ERROR\\\\|CRITICAL\\\" {$monitorLogPath} | tail -10\"");
 
             if ($result->successful()) {
                 $lines = array_filter(explode("\n", $result->output()));
@@ -125,7 +157,17 @@ class SystemAdmin extends Component
     public function runBackupNow(): void
     {
         try {
-            $result = Process::timeout(120)->run('ssh root@31.220.90.121 "/opt/scripts/backup-databases.sh"');
+            $serverConfig = config('devflow.system_admin.primary_server');
+            $backupScript = config('devflow.system_admin.scripts.backup');
+
+            if (empty($serverConfig['ip_address'])) {
+                session()->flash('error', 'Primary server not configured');
+                return;
+            }
+
+            $sshHost = escapeshellarg($serverConfig['username'].'@'.$serverConfig['ip_address']);
+
+            $result = Process::timeout(120)->run("ssh {$sshHost} \"{$backupScript}\"");
 
             if ($result->successful()) {
                 session()->flash('message', 'Backup started successfully! Check logs for progress.');
@@ -141,7 +183,17 @@ class SystemAdmin extends Component
     public function runOptimizationNow(): void
     {
         try {
-            $result = Process::timeout(300)->run('ssh root@31.220.90.121 "/opt/scripts/optimize-databases.sh"');
+            $serverConfig = config('devflow.system_admin.primary_server');
+            $optimizeScript = config('devflow.system_admin.scripts.optimize');
+
+            if (empty($serverConfig['ip_address'])) {
+                session()->flash('error', 'Primary server not configured');
+                return;
+            }
+
+            $sshHost = escapeshellarg($serverConfig['username'].'@'.$serverConfig['ip_address']);
+
+            $result = Process::timeout(300)->run("ssh {$sshHost} \"{$optimizeScript}\"");
 
             if ($result->successful()) {
                 session()->flash('message', 'Database optimization started! This may take several minutes.');
@@ -164,7 +216,17 @@ class SystemAdmin extends Component
         $this->activeTab = 'monitoring-logs';
 
         try {
-            $result = Process::timeout(10)->run('ssh root@31.220.90.121 "tail -100 /var/log/devflow-monitor.log"');
+            $serverConfig = config('devflow.system_admin.primary_server');
+            $monitorLogPath = config('devflow.system_admin.paths.monitor_log');
+
+            if (empty($serverConfig['ip_address'])) {
+                $this->monitoringLogs = ['Error: Primary server not configured'];
+                return;
+            }
+
+            $sshHost = escapeshellarg($serverConfig['username'].'@'.$serverConfig['ip_address']);
+
+            $result = Process::timeout(10)->run("ssh {$sshHost} \"tail -100 {$monitorLogPath}\"");
 
             if ($result->successful()) {
                 $this->monitoringLogs = array_values(array_filter(explode("\n", $result->output())));
@@ -179,7 +241,17 @@ class SystemAdmin extends Component
         $this->activeTab = 'optimization-logs';
 
         try {
-            $result = Process::timeout(10)->run('ssh root@31.220.90.121 "cat /var/log/devflow-db-optimization.log"');
+            $serverConfig = config('devflow.system_admin.primary_server');
+            $optimizationLogPath = config('devflow.system_admin.paths.optimization_log');
+
+            if (empty($serverConfig['ip_address'])) {
+                $this->optimizationLogs = ['Error: Primary server not configured'];
+                return;
+            }
+
+            $sshHost = escapeshellarg($serverConfig['username'].'@'.$serverConfig['ip_address']);
+
+            $result = Process::timeout(10)->run("ssh {$sshHost} \"cat {$optimizationLogPath}\"");
 
             if ($result->successful()) {
                 $this->optimizationLogs = array_values(array_filter(explode("\n", $result->output())));

@@ -103,16 +103,19 @@ class DeploymentList extends Component
     public function render(): \Illuminate\View\View
     {
         // Optimized: Cache stats for 2 minutes (works with all cache drivers)
-        $stats = Cache::remember('deployment_stats', 120, function () {
+        // Filter stats by user's projects only
+        $userProjectIds = auth()->user()->projects()->pluck('id');
+        $stats = Cache::remember('deployment_stats_user_'.auth()->id(), 120, function () use ($userProjectIds) {
             return [
-                'total' => Deployment::count(),
-                'success' => Deployment::where('status', 'success')->count(),
-                'failed' => Deployment::where('status', 'failed')->count(),
-                'running' => Deployment::where('status', 'running')->count(),
+                'total' => Deployment::whereIn('project_id', $userProjectIds)->count(),
+                'success' => Deployment::whereIn('project_id', $userProjectIds)->where('status', 'success')->count(),
+                'failed' => Deployment::whereIn('project_id', $userProjectIds)->where('status', 'failed')->count(),
+                'running' => Deployment::whereIn('project_id', $userProjectIds)->where('status', 'running')->count(),
             ];
         });
 
         // Optimized: Eager load with specific columns
+        // Filter deployments to only show those for user's projects
         $deployments = Deployment::with([
             'project:id,name,slug',
             'server:id,name',
@@ -123,6 +126,7 @@ class DeploymentList extends Component
                 'commit_message', 'commit_hash', 'started_at', 'completed_at',
                 'triggered_by', 'created_at', 'updated_at',
             ])
+            ->whereHas('project', fn ($query) => $query->where('user_id', auth()->id()))
             ->when($this->statusFilter, fn ($query) => $query->where('status', $this->statusFilter))
             ->when($this->projectFilter, fn ($query) => $query->where('project_id', $this->projectFilter))
             ->when($this->search, function ($query) {
@@ -135,9 +139,11 @@ class DeploymentList extends Component
             ->latest()
             ->paginate($this->perPage);
 
-        // Optimized: Cache projects list for 10 minutes
-        $projects = Cache::remember('projects_dropdown_list', 600, function () {
-            return Project::orderBy('name')->get(['id', 'name']);
+        // Optimized: Cache projects list for 10 minutes (filtered by user)
+        $projects = Cache::remember('projects_dropdown_list_user_'.auth()->id(), 600, function () {
+            return Project::where('user_id', auth()->id())
+                ->orderBy('name')
+                ->get(['id', 'name']);
         });
 
         return view('livewire.deployments.deployment-list', [

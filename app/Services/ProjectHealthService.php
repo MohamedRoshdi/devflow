@@ -92,7 +92,7 @@ class ProjectHealthService
 
         try {
             $startTime = microtime(true);
-            $response = Http::timeout(10)->get($url);
+            $response = Http::timeout(config('devflow.timeouts.health_check', 10))->get($url);
             $responseTime = round((microtime(true) - $startTime) * 1000); // ms
 
             $status = $response->successful() ? 'healthy' : 'unhealthy';
@@ -150,6 +150,20 @@ class ProjectHealthService
 
         $domain = $project->domains->first();
 
+        // Check cache first to avoid frequent SSL checks
+        $cacheKey = "ssl_health_{$domain->id}";
+        $cacheDuration = config('devflow.cache.ssl_certificate', 3600);
+
+        return Cache::remember($cacheKey, $cacheDuration, function () use ($domain) {
+            return $this->performSSLCheck($domain);
+        });
+    }
+
+    /**
+     * Perform actual SSL certificate check
+     */
+    private function performSSLCheck($domain): array
+    {
         try {
             $streamContext = stream_context_create([
                 'ssl' => [
@@ -159,11 +173,12 @@ class ProjectHealthService
                 ],
             ]);
 
+            $timeout = config('devflow.timeouts.ssl_check', 30);
             $client = @stream_socket_client(
                 "ssl://{$domain->full_domain}:443",
                 $errno,
                 $errstr,
-                30,
+                $timeout,
                 STREAM_CLIENT_CONNECT,
                 $streamContext
             );
@@ -186,11 +201,12 @@ class ProjectHealthService
             $expiresAt = $cert['validTo_time_t'] ?? null;
             $daysRemaining = $expiresAt ? floor(($expiresAt - time()) / 86400) : null;
 
+            $expiryWarningDays = config('devflow.health_check.ssl_expiry_warning_days', 7);
             $status = 'valid';
             if ($daysRemaining !== null) {
                 if ($daysRemaining <= 0) {
                     $status = 'expired';
-                } elseif ($daysRemaining <= 7) {
+                } elseif ($daysRemaining <= $expiryWarningDays) {
                     $status = 'expiring_soon';
                 }
             }
@@ -278,11 +294,13 @@ class ProjectHealthService
             // Use the server's latest metric if available
             if ($server->latestMetric) {
                 $diskUsage = (float) $server->latestMetric->disk_usage;
+                $diskCritical = config('devflow.health_check.disk_critical_threshold', 90);
+                $diskWarning = config('devflow.health_check.disk_warning_threshold', 75);
                 $status = 'healthy';
 
-                if ($diskUsage > 90) {
+                if ($diskUsage > $diskCritical) {
                     $status = 'critical';
-                } elseif ($diskUsage > 75) {
+                } elseif ($diskUsage > $diskWarning) {
                     $status = 'warning';
                 }
 
@@ -526,10 +544,17 @@ class ProjectHealthService
         $memoryUsage = (float) $server->latestMetric->memory_usage;
         $diskUsage = (float) $server->latestMetric->disk_usage;
 
+        $cpuCritical = config('devflow.health_check.cpu_critical_threshold', 90);
+        $cpuWarning = config('devflow.health_check.cpu_warning_threshold', 75);
+        $memoryCritical = config('devflow.health_check.memory_critical_threshold', 90);
+        $memoryWarning = config('devflow.health_check.memory_warning_threshold', 75);
+        $diskCritical = config('devflow.health_check.disk_critical_threshold', 90);
+        $diskWarning = config('devflow.health_check.disk_warning_threshold', 75);
+
         $status = 'healthy';
-        if ($cpuUsage > 90 || $memoryUsage > 90 || $diskUsage > 90) {
+        if ($cpuUsage > $cpuCritical || $memoryUsage > $memoryCritical || $diskUsage > $diskCritical) {
             $status = 'critical';
-        } elseif ($cpuUsage > 75 || $memoryUsage > 75 || $diskUsage > 75) {
+        } elseif ($cpuUsage > $cpuWarning || $memoryUsage > $memoryWarning || $diskUsage > $diskWarning) {
             $status = 'warning';
         }
 
@@ -632,8 +657,10 @@ class ProjectHealthService
      */
     public function invalidateAllProjectCaches(): void
     {
-        Project::all()->each(function (Project $project) {
-            $this->invalidateProjectCache($project);
+        Project::chunk(100, function ($projects) {
+            foreach ($projects as $project) {
+                $this->invalidateProjectCache($project);
+            }
         });
     }
 }

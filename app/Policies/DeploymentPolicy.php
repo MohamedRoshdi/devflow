@@ -8,8 +8,8 @@ use App\Models\User;
 /**
  * Deployment Policy
  *
- * All deployments are shared across all authenticated users.
- * Any authenticated user can view any deployment.
+ * Controls access to deployments based on project ownership.
+ * Users can only access deployments for projects they own.
  */
 class DeploymentPolicy
 {
@@ -20,8 +20,8 @@ class DeploymentPolicy
 
     public function view(User $user, Deployment $deployment): bool
     {
-        // All authenticated users can view any deployment
-        return true;
+        // Users can only view deployments for their own projects
+        return $deployment->project && $deployment->project->user_id === $user->id;
     }
 
     public function create(User $user): bool
@@ -31,13 +31,13 @@ class DeploymentPolicy
 
     public function cancel(User $user, Deployment $deployment): bool
     {
-        // All authenticated users can cancel any deployment
-        return true;
+        // Users can only cancel deployments for their own projects
+        return $deployment->project && $deployment->project->user_id === $user->id;
     }
 
     public function rollback(User $user, Deployment $deployment): bool
     {
-        // All authenticated users can rollback any deployment
-        return true;
+        // Users can only rollback deployments for their own projects
+        return $deployment->project && $deployment->project->user_id === $user->id;
     }
 }

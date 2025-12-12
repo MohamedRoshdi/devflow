@@ -8,11 +8,16 @@ use App\Http\Controllers\Controller;
 use App\Jobs\DeployProjectJob;
 use App\Models\Deployment;
 use App\Models\Project;
+use App\Services\WebhookService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class DeploymentWebhookController extends Controller
 {
+    public function __construct(
+        private readonly WebhookService $webhookService
+    ) {}
+
     public function handle(Request $request, string $token)
     {
         // Find project by webhook secret
@@ -24,6 +29,16 @@ class DeploymentWebhookController extends Controller
 
         if (! $project->auto_deploy) {
             return response()->json(['error' => 'Auto-deploy is not enabled'], 403);
+        }
+
+        // Verify HMAC signature (GitHub style)
+        $payload = $request->getContent();
+        $signature = $request->header('X-Hub-Signature-256') ?? '';
+
+        // Verify signature if provided (GitHub webhooks)
+        if ($signature && ! $this->webhookService->verifyGitHubSignature($payload, $signature, $project->webhook_secret ?? '')) {
+            Log::warning("Webhook signature verification failed for project: {$project->slug}");
+            return response()->json(['error' => 'Invalid signature'], 401);
         }
 
         Log::info('Webhook received', [

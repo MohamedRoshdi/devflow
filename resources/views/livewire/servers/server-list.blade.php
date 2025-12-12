@@ -336,9 +336,22 @@
         </div>
     </div>
 
+    {{-- Loading State --}}
+    <div wire:loading.delay class="mb-8">
+        <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 backdrop-blur-sm">
+            <div class="flex items-center gap-3">
+                <svg class="animate-spin h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <p class="text-blue-400 font-medium">Loading servers...</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Select All Checkbox -->
     @if($servers->count() > 0)
-        <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 shadow-xl p-4 mb-4">
+        <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 shadow-xl p-4 mb-4" wire:loading.remove>
             <label class="flex items-center cursor-pointer">
                 <input type="checkbox"
                        wire:model.live="selectAll"
@@ -351,7 +364,7 @@
 
     <!-- Servers Grid -->
     @if($servers->count() > 0)
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6" wire:loading.remove>
             @foreach($servers as $server)
                 <div class="group relative bg-slate-800/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-slate-700/50 shadow-xl hover:shadow-2xl hover:border-slate-600/50 transform hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300"
                      :class="{ 'ring-4 ring-blue-500/50': {{ in_array($server->id, $selectedServers) ? 'true' : 'false' }} }">
@@ -499,7 +512,7 @@
                                     <span wire:loading wire:target="pingServer({{ $server->id }})">Pinging...</span>
                                 </button>
                                 <button wire:click="rebootServer({{ $server->id }})"
-                                        wire:confirm="Are you sure you want to reboot this server? All running services will be interrupted."
+                                        wire:confirm="Are you sure you want to reboot '{{ $server->name }}'? All running services will be temporarily interrupted during the reboot process."
                                         wire:loading.attr="disabled"
                                         wire:loading.class="opacity-50"
                                         wire:target="rebootServer({{ $server->id }})"
@@ -526,13 +539,19 @@
                                 @endcan
                                 @can('delete', $server)
                                 <button wire:click="deleteServer({{ $server->id }})"
-                                        wire:confirm="Are you sure you want to delete this server?"
+                                        wire:confirm="Are you sure you want to delete '{{ $server->name }}'? This action cannot be undone and will remove all associated projects, configurations, and metrics."
                                         wire:loading.attr="disabled"
                                         wire:loading.class="opacity-50"
                                         wire:target="deleteServer({{ $server->id }})"
-                                        class="text-red-400 hover:text-red-300 text-sm font-medium transition-colors">
+                                        class="text-red-400 hover:text-red-300 text-sm font-medium transition-colors inline-flex items-center">
                                     <span wire:loading.remove wire:target="deleteServer({{ $server->id }})">Delete</span>
-                                    <span wire:loading wire:target="deleteServer({{ $server->id }})">Deleting...</span>
+                                    <span wire:loading wire:target="deleteServer({{ $server->id }})" class="inline-flex items-center gap-1">
+                                        <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Deleting...
+                                    </span>
                                 </button>
                                 @endcan
                             </div>
@@ -542,11 +561,33 @@
             @endforeach
         </div>
 
-        <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 shadow-xl p-4">
+        <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 shadow-xl p-4" wire:loading.remove>
             {{ $servers->links() }}
         </div>
+    @elseif($search || $statusFilter || !empty($tagFilter))
+        {{-- No Results State (filters applied) --}}
+        <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 shadow-xl text-center py-16" wire:loading.remove>
+            <div class="relative inline-flex items-center justify-center w-20 h-20 mb-6">
+                <div class="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-full blur-xl"></div>
+                <div class="relative p-4 bg-slate-700/50 rounded-2xl">
+                    <svg class="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">No Servers Found</h3>
+            <p class="text-slate-400 mb-6 max-w-md mx-auto">No servers match your current filters. Try adjusting your search criteria or clear the filters.</p>
+            <button wire:click="$set('search', ''); $set('statusFilter', ''); $set('tagFilter', [])"
+               class="group inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-white overflow-hidden transition-all duration-300 hover:-translate-y-0.5 bg-slate-700/50 backdrop-blur-sm border border-slate-600/50 hover:border-slate-500/50">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+                <span>Clear All Filters</span>
+            </button>
+        </div>
     @else
-        <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 shadow-xl text-center py-16">
+        {{-- Empty State (no servers at all) --}}
+        <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 shadow-xl text-center py-16" wire:loading.remove>
             <div class="relative inline-flex items-center justify-center w-20 h-20 mb-6">
                 <div class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 rounded-full blur-xl"></div>
                 <div class="relative p-4 bg-slate-700/50 rounded-2xl">

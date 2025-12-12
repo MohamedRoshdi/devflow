@@ -45,10 +45,16 @@ class ProjectController extends Controller
             });
         }
 
-        // Sorting
+        // Sorting with allowlist
+        $allowedSortColumns = ['id', 'name', 'slug', 'status', 'framework', 'created_at', 'updated_at', 'last_deployment_at'];
         $sortBy = $request->input('sort_by', 'updated_at');
         $sortOrder = $request->input('sort_order', 'desc');
-        $query->orderBy($sortBy, $sortOrder);
+
+        if (in_array($sortBy, $allowedSortColumns, true)) {
+            $query->orderBy($sortBy, $sortOrder);
+        } else {
+            $query->orderBy('updated_at', 'desc');
+        }
 
         // Load deployment count
         $query->withCount('deployments');
@@ -141,6 +147,13 @@ class ProjectController extends Controller
     {
         $this->authorize('update', $project);
 
+        // Validate git parameters
+        $validated = $request->validate([
+            'branch' => ['nullable', 'string', 'regex:/^[a-zA-Z0-9_\-\/]+$/', 'max:100'],
+            'commit_hash' => ['nullable', 'string', 'regex:/^[a-f0-9]{40}$|^HEAD$/i', 'max:40'],
+            'commit_message' => ['nullable', 'string', 'max:1000'],
+        ]);
+
         // Check if there's already a running deployment
         $runningDeployment = $project->deployments()
             ->where('status', 'running')
@@ -154,13 +167,13 @@ class ProjectController extends Controller
         }
 
         try {
-            $deployment = DB::transaction(function () use ($project, $request) {
+            $deployment = DB::transaction(function () use ($project, $validated) {
                 return $project->deployments()->create([
                     'user_id' => auth()->id(),
                     'server_id' => $project->server_id,
-                    'branch' => $request->input('branch', $project->branch),
-                    'commit_hash' => $request->input('commit_hash', 'HEAD'),
-                    'commit_message' => $request->input('commit_message'),
+                    'branch' => $validated['branch'] ?? $project->branch,
+                    'commit_hash' => $validated['commit_hash'] ?? 'HEAD',
+                    'commit_message' => isset($validated['commit_message']) ? strip_tags($validated['commit_message']) : null,
                     'triggered_by' => 'manual',
                     'status' => 'pending',
                     'started_at' => now(),

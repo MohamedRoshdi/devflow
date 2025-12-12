@@ -210,7 +210,7 @@
                 <h2 class="text-xl font-bold text-white">Commit Information</h2>
             </div>
             <div class="p-6">
-                <p class="text-white leading-relaxed">{{ $deployment->commit_message ?? 'No commit message available' }}</p>
+                <p class="text-white leading-relaxed">{{ e($deployment->commit_message ?? 'No commit message available') }}</p>
             </div>
         </div>
     </div>
@@ -401,7 +401,7 @@
 
                                     <!-- Log Line -->
                                     <div class="flex-1 @if($log['level'] === 'error') text-red-400 font-semibold @elseif($log['level'] === 'warning') text-yellow-400 @else text-gray-300 @endif">
-                                        {{ $log['line'] }}
+                                        {{ e($log['line']) }}
                                     </div>
                                 </div>
                             @endforeach
@@ -424,7 +424,7 @@
 
                                     <!-- Log Line -->
                                     <div class="flex-1 @if($level === 'error') text-red-400 font-semibold @elseif($level === 'warning') text-yellow-400 @else text-gray-300 @endif">
-                                        {{ $line }}
+                                        {{ e($line) }}
                                     </div>
                                 </div>
                             @endforeach
@@ -481,7 +481,7 @@
             </div>
             <div class="p-6">
                 <div class="bg-red-950/50 text-red-200 p-4 rounded-xl font-mono text-sm overflow-x-auto max-h-96 overflow-y-auto border border-red-500/30">
-                    <pre>{{ $deployment->error_log }}</pre>
+                    <pre>{{ e($deployment->error_log) }}</pre>
                 </div>
             </div>
         </div>

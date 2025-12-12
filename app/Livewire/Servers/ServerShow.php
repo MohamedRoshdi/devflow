@@ -98,6 +98,8 @@ class ServerShow extends Component
 
     public function pingServer()
     {
+        $this->authorize('update', $this->server);
+
         $connectivityService = app(ServerConnectivityService::class);
         $result = $connectivityService->testConnection($this->server);
 
@@ -137,6 +139,8 @@ class ServerShow extends Component
 
     public function checkDockerStatus()
     {
+        $this->authorize('update', $this->server);
+
         try {
             $dockerService = app(DockerService::class);
             $dockerCheck = $dockerService->checkDockerInstallation($this->server);
@@ -163,6 +167,8 @@ class ServerShow extends Component
 
     public function installDocker()
     {
+        $this->authorize('update', $this->server);
+
         try {
             // Check if already installing
             $cacheKey = "docker_install_{$this->server->id}";
@@ -206,6 +212,8 @@ class ServerShow extends Component
 
     public function rebootServer()
     {
+        $this->authorize('update', $this->server);
+
         try {
             $connectivityService = app(ServerConnectivityService::class);
             $result = $connectivityService->rebootServer($this->server);
@@ -223,6 +231,8 @@ class ServerShow extends Component
 
     public function restartService(string $service)
     {
+        $this->authorize('update', $this->server);
+
         try {
             $connectivityService = app(ServerConnectivityService::class);
             $result = $connectivityService->restartService($this->server, $service);

@@ -31,7 +31,7 @@ class AnalyticsDashboard extends Component
     public function render(): View
     {
         // All projects are shared across all users
-        $projects = Project::all();
+        $projects = Project::select('id', 'name', 'slug', 'status', 'storage_used_mb')->orderBy('name')->get();
 
         $dateFrom = $this->getDateFrom();
 

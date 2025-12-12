@@ -75,7 +75,7 @@ class ClusterManager extends Component
     {
         return view('livewire.kubernetes.cluster-manager', [
             'clusters' => KubernetesCluster::paginate(10),
-            'projects' => Project::all(),
+            'projects' => Project::select('id', 'name', 'slug', 'framework')->orderBy('name')->get(),
         ]);
     }
 

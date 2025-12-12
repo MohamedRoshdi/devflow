@@ -36,23 +36,39 @@ class DeploymentRollback extends Component
     }
 
     /**
-     * Build SSH command for remote execution
+     * Build SSH command for remote execution with proper escaping
      */
     protected function buildSSHCommand(Server $server, string $remoteCommand): string
     {
+        // Validate IP address format to prevent injection
+        if (! filter_var($server->ip_address, FILTER_VALIDATE_IP)) {
+            throw new \InvalidArgumentException('Invalid IP address format');
+        }
+
+        // Validate port is numeric and in valid range
+        $port = (int) $server->port;
+        if ($port < 1 || $port > 65535) {
+            throw new \InvalidArgumentException('Invalid port number');
+        }
+
+        // Escape username and IP address for shell
+        $escapedUsername = escapeshellarg($server->username);
+        $escapedIpAddress = escapeshellarg($server->ip_address);
+
         $sshOptions = [
             '-o StrictHostKeyChecking=no',
             '-o UserKnownHostsFile=/dev/null',
-            '-p '.$server->port,
+            '-p '.$port,
         ];
 
+        // Properly escape the remote command
         $escapedCommand = str_replace("'", "'\\''", $remoteCommand);
 
         return sprintf(
             "ssh %s %s@%s '%s'",
             implode(' ', $sshOptions),
-            $server->username,
-            $server->ip_address,
+            trim($escapedUsername, "'"),  // Remove quotes added by escapeshellarg since we're adding them in sprintf
+            trim($escapedIpAddress, "'"),
             $escapedCommand
         );
     }

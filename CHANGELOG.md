@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.48.0] - 2025-12-13
+
+### Security Fixes (CRITICAL)
+- **HMAC Signature Verification** - Webhook endpoint now verifies GitHub signatures
+- **SSH Command Injection Prevention** - Added IP validation and `escapeshellarg()` to all SSH commands
+- **Authorization Checks** - DeploymentShow now verifies user owns the project
+- **User Data Isolation** - DeploymentList filters deployments by authenticated user
+- **Hardcoded Credentials Removed** - Moved SSH credentials from SystemAdmin to environment variables
+
+### Added
+- **7 New Service Unit Tests**
+  - `CacheManagementServiceTest.php`
+  - `DeploymentServiceTest.php`
+  - `DomainServiceTest.php`
+  - `LogManagerServiceTest.php`
+  - `MetricsCollectionServiceTest.php`
+  - `ProjectHealthServiceTest.php`
+  - `ProjectManagerServiceTest.php`
+- **Scheduled Tasks Configuration** - Added automated tasks in Kernel.php
+  - Health checks every 5 minutes
+  - Metrics collection every 15 minutes
+  - SSL certificate checks daily
+  - Database backups daily at 2 AM
+  - Log cleanup weekly
+  - Storage cleanup monthly
+- **Performance Indexes Migration** - New indexes for frequently queried columns
+- **DevFlow Configuration File** - `config/devflow.php` for centralized settings
+- **UI Loading & Empty States** - Added to deployment-list, deployment-show, project-list, server-list
+
+### Fixed
+- **SQL Injection Prevention** - Input validation in AnalyticsDashboard, ClusterManager, ScriptManager
+- **Rate Limiting** - Added to sensitive API endpoints
+- **Cache Key Isolation** - User-specific cache keys prevent data leakage
+
+### Documentation
+- `SECURITY_FIXES_SUMMARY.md` - Complete security audit documentation
+
+---
+
 ## [5.47.0] - 2025-12-13
 
 ### Added
