@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.46.2] - 2025-12-12
+
+### Fixed
+- **Deploy Tab Empty State** - Added complete default UI for deployment tab
+  - Deploy Now button with gradient styling
+  - Deployment steps preview grid (Git Pull, Composer, NPM Build, etc.)
+  - Git repository status, deploy script info, and server info cards
+  - Pre-deployment warning notes
+- **Git Tab Commits Empty** - Fixed Recent Commits not loading on mount
+  - Added `loadGitTab()` call when component mounts with valid git repo
+
+---
+
 ## [5.46.1] - 2025-12-12
 
 ### Fixed
