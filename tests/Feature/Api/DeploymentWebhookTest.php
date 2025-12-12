@@ -15,15 +15,15 @@ class DeploymentWebhookTest extends TestCase
     use RefreshDatabase;
 
     private Project $project;
-    private string $webhookToken;
+    private string $webhookSecret;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->webhookToken = Str::random(32);
+        $this->webhookSecret = Str::random(32);
         $this->project = Project::factory()->create([
-            'webhook_token' => $this->webhookToken,
+            'webhook_secret' => $this->webhookSecret,
             'auto_deploy' => true,
         ]);
     }
@@ -43,7 +43,7 @@ class DeploymentWebhookTest extends TestCase
             ],
         ];
 
-        $response = $this->postJson("/api/webhooks/deploy/{$this->webhookToken}", $payload);
+        $response = $this->postJson("/api/webhooks/deploy/{$this->webhookSecret}", $payload);
 
         $response->assertOk();
         $response->assertJson([
@@ -76,7 +76,7 @@ class DeploymentWebhookTest extends TestCase
             ],
         ];
 
-        $response = $this->postJson("/api/webhooks/deploy/{$this->webhookToken}", $payload);
+        $response = $this->postJson("/api/webhooks/deploy/{$this->webhookSecret}", $payload);
 
         $response->assertOk();
         $response->assertJson([
@@ -100,7 +100,7 @@ class DeploymentWebhookTest extends TestCase
             ],
         ];
 
-        $response = $this->postJson("/api/webhooks/deploy/{$this->webhookToken}", $payload);
+        $response = $this->postJson("/api/webhooks/deploy/{$this->webhookSecret}", $payload);
 
         $response->assertStatus(403);
     }
@@ -116,7 +116,7 @@ class DeploymentWebhookTest extends TestCase
 
         // Make multiple requests
         for ($i = 0; $i < 100; $i++) {
-            $response = $this->postJson("/api/webhooks/deploy/{$this->webhookToken}", $payload);
+            $response = $this->postJson("/api/webhooks/deploy/{$this->webhookSecret}", $payload);
 
             if ($response->status() === 429) {
                 $this->assertEquals(429, $response->status());
@@ -142,7 +142,7 @@ class DeploymentWebhookTest extends TestCase
             ],
         ];
 
-        $response = $this->postJson("/api/webhooks/deploy/{$this->webhookToken}", $payload);
+        $response = $this->postJson("/api/webhooks/deploy/{$this->webhookSecret}", $payload);
 
         $response->assertOk();
 
@@ -166,7 +166,7 @@ class DeploymentWebhookTest extends TestCase
             ],
         ];
 
-        $response = $this->postJson("/api/webhooks/deploy/{$this->webhookToken}", $payload);
+        $response = $this->postJson("/api/webhooks/deploy/{$this->webhookSecret}", $payload);
 
         $response->assertOk();
     }
@@ -186,7 +186,7 @@ class DeploymentWebhookTest extends TestCase
             ],
         ];
 
-        $response = $this->postJson("/api/webhooks/deploy/{$this->webhookToken}", $payload);
+        $response = $this->postJson("/api/webhooks/deploy/{$this->webhookSecret}", $payload);
 
         $response->assertOk();
     }
@@ -206,7 +206,7 @@ class DeploymentWebhookTest extends TestCase
             ],
         ];
 
-        $response = $this->postJson("/api/webhooks/deploy/{$this->webhookToken}", $payload);
+        $response = $this->postJson("/api/webhooks/deploy/{$this->webhookSecret}", $payload);
 
         $response->assertStatus(409); // Conflict
     }
@@ -220,7 +220,7 @@ class DeploymentWebhookTest extends TestCase
             ],
         ];
 
-        $response = $this->postJson("/api/webhooks/deploy/{$this->webhookToken}", $payload);
+        $response = $this->postJson("/api/webhooks/deploy/{$this->webhookSecret}", $payload);
 
         $response->assertOk();
 

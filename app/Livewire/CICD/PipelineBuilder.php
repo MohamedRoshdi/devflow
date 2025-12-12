@@ -56,8 +56,9 @@ class PipelineBuilder extends Component
     public function mount(?Project $project = null): void
     {
         // Check if user has permission to manage pipelines
+        $user = auth()->user();
         abort_unless(
-            auth()->user()->can('create-pipelines') || auth()->user()->can('edit-pipelines'),
+            $user && ($user->can('create-pipelines') || $user->can('edit-pipelines')),
             403,
             'You do not have permission to manage pipelines.'
         );

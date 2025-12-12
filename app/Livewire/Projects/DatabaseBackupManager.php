@@ -70,7 +70,7 @@ class DatabaseBackupManager extends Component
     /**
      * Get paginated backups for current project
      *
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, DatabaseBackup>
      */
     #[Computed]
     public function backups()

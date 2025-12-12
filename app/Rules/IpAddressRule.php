@@ -49,7 +49,7 @@ class IpAddressRule implements ValidationRule
             return;
         }
 
-        $flags = null;
+        $flags = 0;
         if ($this->ipv4Only) {
             $flags = FILTER_FLAG_IPV4;
         } elseif ($this->ipv6Only) {

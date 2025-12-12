@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Security;
 
+use App\Livewire\Auth\Login;
+use App\Livewire\Auth\Register;
 use App\Models\ApiToken;
 use App\Models\Deployment;
 use App\Models\Project;
@@ -15,6 +17,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Session;
 use Laravel\Sanctum\Sanctum;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class PenetrationTest extends TestCase
@@ -565,14 +568,15 @@ class PenetrationTest extends TestCase
     {
         Sanctum::actingAs($this->user);
 
+        // Clear any existing rate limit state for this user
         RateLimiter::clear('api:' . $this->user->id);
 
         $attempts = 0;
         $rateLimited = false;
+        $lastSuccessfulAttempt = 0;
 
-        // TODO: Enable API rate limiting in RouteServiceProvider or API routes
-        // Current behavior: No rate limiting applied to API routes
-        for ($i = 0; $i < 100; $i++) {
+        // API rate limit is 60 requests per minute - test up to 65 requests
+        for ($i = 0; $i < 65; $i++) {
             $response = $this->getJson('/api/v1/projects');
             $attempts++;
 
@@ -580,12 +584,24 @@ class PenetrationTest extends TestCase
                 $rateLimited = true;
                 break;
             }
+
+            $lastSuccessfulAttempt = $attempts;
         }
 
-        // Mark test as passing with warning if rate limiting is not yet implemented
-        if (!$rateLimited) {
-            $this->markTestIncomplete('Rate limiting not yet implemented on API endpoints - should be added for production');
-        }
+        // Verify rate limiting was triggered
+        $this->assertTrue($rateLimited, 'API rate limiting should be triggered after exceeding limit');
+
+        // Verify we got close to the expected limit (60 requests per minute)
+        $this->assertGreaterThanOrEqual(60, $lastSuccessfulAttempt, 'Should allow at least 60 requests before rate limiting');
+        $this->assertLessThanOrEqual(61, $lastSuccessfulAttempt, 'Should rate limit by 61st request');
+
+        // Verify the 429 response is properly formatted
+        $response = $this->getJson('/api/v1/projects');
+        $response->assertStatus(429);
+        $response->assertJsonStructure([
+            'message',
+            'retry_after',
+        ]);
     }
 
     /** @test */
@@ -626,21 +642,17 @@ class PenetrationTest extends TestCase
         Session::regenerate();
         $initialSessionId = Session::getId();
 
-        $response = $this->post('/login', [
-            'email' => $this->user->email,
-            'password' => 'password123',
-        ]);
+        // Test using Livewire component directly
+        \Livewire\Livewire::test(\App\Livewire\Auth\Login::class)
+            ->set('email', $this->user->email)
+            ->set('password', 'password123')
+            ->call('login')
+            ->assertRedirect('/dashboard');
 
         $newSessionId = Session::getId();
 
-        // TODO: Ensure session regeneration happens on login
-        // Session ID should change after successful authentication
-        // If this fails, add Session::regenerate() in login controller
-        if ($initialSessionId === $newSessionId) {
-            $this->markTestIncomplete('Session regeneration not happening on login - should be implemented to prevent session fixation');
-        } else {
-            $this->assertNotEquals($initialSessionId, $newSessionId, 'Session ID should change after login');
-        }
+        // Session ID should change after successful authentication to prevent session fixation
+        $this->assertNotEquals($initialSessionId, $newSessionId, 'Session ID should change after login to prevent session fixation attacks');
     }
 
     /** @test */
@@ -675,68 +687,80 @@ class PenetrationTest extends TestCase
     /** @test */
     public function it_enforces_password_complexity_requirements(): void
     {
-        // TODO: Add password complexity validation rules (min length, special chars, etc.)
-        // Currently basic Laravel password rules may not enforce strong complexity
+        // Test weak passwords that should be rejected
         $weakPasswords = [
-            'password',
-            '123456',
-            'qwerty',
-            'abc123',
-            'test',
+            'password',      // Missing uppercase, numbers, symbols
+            '123456',        // Missing letters, symbols
+            'qwerty',        // Missing uppercase, numbers, symbols
+            'abc123',        // Missing uppercase, symbols
+            'test',          // Too short, missing uppercase, numbers, symbols
+            'Password',      // Missing numbers, symbols
+            'Password1',     // Missing symbols
+            'password1!',    // Missing uppercase
+            'PASSWORD1!',    // Missing lowercase
         ];
 
-        $hasPasswordValidation = false;
-
+        // Test that weak passwords are rejected
         foreach ($weakPasswords as $password) {
-            $response = $this->post('/register', [
-                'name' => 'Test User',
-                'email' => 'test-' . uniqid() . '@example.com',
-                'password' => $password,
-                'password_confirmation' => $password,
-            ]);
-
-            // Check if password validation is working
-            if ($response->status() === 302 && session()->has('errors')) {
-                $errors = session()->get('errors');
-                if ($errors && $errors->has('password')) {
-                    $hasPasswordValidation = true;
-                }
-            }
+            Livewire::test(Register::class)
+                ->set('name', 'Test User')
+                ->set('email', 'test-' . uniqid() . '@example.com')
+                ->set('password', $password)
+                ->set('password_confirmation', $password)
+                ->call('register')
+                ->assertHasErrors('password');
         }
 
-        // If no password validation detected, mark incomplete
-        if (!$hasPasswordValidation) {
-            $this->markTestIncomplete('Password complexity validation not enforced - should use Laravel Password rules');
-        } else {
-            $this->assertTrue(true, 'Password validation is working');
-        }
+        // Test that a strong password is accepted
+        $strongPassword = 'SecureP@ssw0rd!2024';
+
+        Livewire::test(Register::class)
+            ->set('name', 'Test User')
+            ->set('email', 'secure-' . uniqid() . '@example.com')
+            ->set('password', $strongPassword)
+            ->set('password_confirmation', $strongPassword)
+            ->call('register')
+            ->assertHasNoErrors('password');
+
+        // Verify the user was actually created with strong password
+        $this->assertDatabaseHas('users', [
+            'email' => User::where('name', 'Test User')
+                ->where('email', 'like', 'secure-%')
+                ->latest()
+                ->first()
+                ->email ?? null,
+        ]);
     }
 
     /** @test */
     public function it_implements_brute_force_protection(): void
     {
-        RateLimiter::clear('login:' . $this->user->email);
+        // Clear any existing rate limiting for this user
+        $throttleKey = strtolower($this->user->email).'|'.'127.0.0.1';
+        RateLimiter::clear($throttleKey);
 
-        $rateLimited = false;
-
-        // TODO: Implement login rate limiting (e.g., using RateLimiter in login controller)
-        for ($i = 0; $i < 10; $i++) {
-            $response = $this->post('/login', [
-                'email' => $this->user->email,
-                'password' => 'wrong-password',
-            ]);
-
-            if ($response->status() === 429) {
-                $rateLimited = true;
-                break;
-            }
+        // Make 5 failed login attempts (the limit is 5 per minute)
+        for ($i = 0; $i < 5; $i++) {
+            Livewire::test(Login::class)
+                ->set('email', $this->user->email)
+                ->set('password', 'wrong-password')
+                ->call('login')
+                ->assertHasErrors(['email']);
         }
 
-        if (!$rateLimited) {
-            $this->markTestIncomplete('Brute force protection not implemented - should add rate limiting to login endpoint');
-        } else {
-            $this->assertEquals(429, $response->status(), 'Login should be rate limited after multiple attempts');
-        }
+        // 6th attempt should be rate limited and show the rate limit error message
+        Livewire::test(Login::class)
+            ->set('email', $this->user->email)
+            ->set('password', 'wrong-password')
+            ->call('login')
+            ->assertHasErrors(['email'])
+            ->assertSee('Too many login attempts');
+
+        // Verify the throttle key is based on email + IP combination
+        $this->assertTrue(
+            RateLimiter::tooManyAttempts($throttleKey, 5),
+            'Rate limiter should track attempts by email and IP address combination'
+        );
     }
 
     /** @test */

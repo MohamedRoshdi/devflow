@@ -1,6 +1,45 @@
 version: '3.8'
 
 services:
+  # MySQL Database for Testing (Performance Optimized)
+  mysql_test:
+    image: mysql:8.0
+    container_name: devflow_mysql_test
+    restart: unless-stopped
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: devflow_test
+      MYSQL_USER: devflow_test
+      MYSQL_PASSWORD: devflow_test_password
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      # Performance optimizations for testing (NOT for production)
+      - --innodb_buffer_pool_size=512M
+      - --innodb_flush_log_at_trx_commit=2
+      - --innodb_flush_method=O_DIRECT
+      - --innodb_log_file_size=128M
+      - --innodb_log_buffer_size=32M
+      - --max_connections=200
+      - --sync_binlog=0
+      - --innodb_doublewrite=0
+      - --innodb_use_native_aio=1
+      - --innodb_stats_on_metadata=0
+      - --innodb_file_per_table=1
+      - --skip-log-bin
+    volumes:
+      - mysql_test_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - devflow_test_network
+
   # PostgreSQL Database for Testing
   postgres_test:
     image: postgres:16-alpine
@@ -41,6 +80,8 @@ services:
       - devflow_test_network
 
 volumes:
+  mysql_test_data:
+    driver: local
   postgres_test_data:
     driver: local
 

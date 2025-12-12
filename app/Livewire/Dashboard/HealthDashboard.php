@@ -26,8 +26,9 @@ class HealthDashboard extends Component
     public function mount(): void
     {
         // Check if user has permission to view health checks
+        $user = auth()->user();
         abort_unless(
-            auth()->user()->can('view-health-checks'),
+            $user && $user->can('view-health-checks'),
             403,
             'You do not have permission to view health dashboard.'
         );

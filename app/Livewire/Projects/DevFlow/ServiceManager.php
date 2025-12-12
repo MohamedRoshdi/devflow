@@ -193,9 +193,9 @@ class ServiceManager extends Component
             $cacheFile = storage_path('framework/schedule-*');
             $lastRun = 'Unknown';
             $files = glob($cacheFile);
-            if (!empty($files) && is_array($files)) {
+            if ($files !== false && !empty($files)) {
                 $lastFile = end($files);
-                if ($lastFile !== false && file_exists($lastFile)) {
+                if (file_exists($lastFile)) {
                     $lastRun = date('Y-m-d H:i:s', filemtime($lastFile));
                 }
             }

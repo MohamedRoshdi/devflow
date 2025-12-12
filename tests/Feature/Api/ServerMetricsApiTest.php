@@ -23,12 +23,14 @@ class ServerMetricsApiTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create();
-        $this->server = Server::factory()->create();
+        $this->server = Server::factory()->create([
+            'user_id' => $this->user->id,
+        ]);
     }
 
     public function test_authenticated_user_can_store_server_metrics(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['server:report-metrics']);
 
         $metricsData = [
             'cpu_usage' => 45.5,
@@ -182,7 +184,7 @@ class ServerMetricsApiTest extends TestCase
 
     public function test_metrics_can_include_optional_fields(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['server:report-metrics']);
 
         $metricsData = [
             'cpu_usage' => 45.5,

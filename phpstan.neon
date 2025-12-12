@@ -39,6 +39,8 @@ parameters:
         - '#Unreachable statement#'
         - '#always false#'
         - '#always true#'
+        # Unused traits (utility traits for future use)
+        - '#Trait App\\Traits\\HasCommonValidation is used zero times#'
         # Test classes
         - '#Class Tests\\.*constructor invoked with#'
         - '#on an unknown class#'

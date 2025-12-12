@@ -1,3 +1,4 @@
+<div>
 <div class="relative min-h-screen">
     {{-- Animated Background Orbs --}}
     <div class="fixed inset-0 overflow-hidden pointer-events-none">
@@ -333,3 +334,4 @@
         background-size: 24px 24px;
     }
 </style>
+</div>

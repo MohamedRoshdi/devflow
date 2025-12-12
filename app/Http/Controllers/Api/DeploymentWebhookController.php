@@ -13,8 +13,8 @@ class DeploymentWebhookController extends Controller
 {
     public function handle(Request $request, string $token)
     {
-        // Find project by webhook token
-        $project = Project::where('slug', $token)->first();
+        // Find project by webhook secret
+        $project = Project::where('webhook_secret', $token)->first();
 
         if (! $project) {
             return response()->json(['error' => 'Invalid webhook token'], 404);
@@ -32,12 +32,31 @@ class DeploymentWebhookController extends Controller
         // Parse webhook payload (GitHub, GitLab, Bitbucket formats)
         $commitData = $this->parseWebhookPayload($request);
 
+        // Check if branch matches
+        $branch = $commitData['branch'] ?? null;
+        if ($branch && $branch !== $project->branch) {
+            return response()->json([
+                'message' => 'Branch does not match, deployment skipped',
+            ], 200);
+        }
+
+        // Check if there's already a running deployment
+        $runningDeployment = Deployment::where('project_id', $project->id)
+            ->where('status', 'running')
+            ->exists();
+
+        if ($runningDeployment) {
+            return response()->json([
+                'error' => 'A deployment is already in progress',
+            ], 409);
+        }
+
         // Create deployment
         $deployment = Deployment::create([
             'user_id' => $project->user_id,
             'project_id' => $project->id,
             'server_id' => $project->server_id,
-            'branch' => $commitData['branch'] ?? $project->branch,
+            'branch' => $branch ?? $project->branch,
             'commit_hash' => $commitData['commit_hash'] ?? null,
             'commit_message' => $commitData['commit_message'] ?? null,
             'status' => 'pending',
@@ -66,6 +85,15 @@ class DeploymentWebhookController extends Controller
             ];
         }
 
+        // GitLab (alternative format - has 'project' key)
+        if (isset($payload['project']) && isset($payload['checkout_sha'])) {
+            return [
+                'branch' => str_replace('refs/heads/', '', $payload['ref'] ?? ''),
+                'commit_hash' => $payload['checkout_sha'],
+                'commit_message' => $payload['commits'][0]['message'] ?? null,
+            ];
+        }
+
         // Bitbucket
         if (isset($payload['push']['changes'])) {
             $change = $payload['push']['changes'][0];
@@ -81,7 +109,7 @@ class DeploymentWebhookController extends Controller
         if (isset($payload['ref'])) {
             return [
                 'branch' => str_replace('refs/heads/', '', $payload['ref']),
-                'commit_hash' => $payload['after'] ?? null,
+                'commit_hash' => $payload['head_commit']['id'] ?? $payload['after'] ?? null,
                 'commit_message' => $payload['head_commit']['message'] ?? null,
             ];
         }

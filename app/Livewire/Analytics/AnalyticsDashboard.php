@@ -20,8 +20,9 @@ class AnalyticsDashboard extends Component
     public function mount(): void
     {
         // Check if user has permission to view analytics
+        $user = auth()->user();
         abort_unless(
-            auth()->user()->can('view-analytics'),
+            $user && $user->can('view-analytics'),
             403,
             'You do not have permission to view analytics.'
         );

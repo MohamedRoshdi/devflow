@@ -54,8 +54,9 @@ class AuditLogViewer extends Component
     public function mount(): void
     {
         // Only users with view-audit-logs permission or super-admin role can access
+        $user = auth()->user();
         abort_unless(
-            auth()->user()->can('view-audit-logs') || auth()->user()->hasRole('super-admin'),
+            $user && ($user->can('view-audit-logs') || $user->hasRole('super-admin')),
             403,
             'You do not have permission to view audit logs.'
         );
