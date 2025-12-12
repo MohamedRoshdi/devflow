@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.48.1] - 2025-12-13
+
+### Fixed
+- **Domain Model** - Added `full_domain` accessor (computes `subdomain.domain`)
+- **Dashboard Queries** - Fixed column mismatches:
+  - Replaced `issuer` with `provider` in SSL certificates query
+  - Replaced `url` with `target_url` in health checks query
+  - Removed `full_domain` from eager loading selects (now an accessor)
+- **HealthCheckService** - Added null URL validation to prevent TypeError
+- **Dashboard Metrics** - Cast CPU/memory/disk values to float for `getServerHealthStatus()`
+- **Migration** - Removed Doctrine DBAL dependency, using native `SHOW INDEX` query
+
+---
+
 ## [5.48.0] - 2025-12-13
 
 ### Security Fixes (CRITICAL)
