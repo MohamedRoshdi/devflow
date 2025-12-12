@@ -595,9 +595,9 @@ class Dashboard extends Component
                     'status' => $server->status,
                     'recorded_at' => $latestMetric->recorded_at,
                     'health_status' => $this->getServerHealthStatus(
-                        $latestMetric->cpu_usage,
-                        $latestMetric->memory_usage,
-                        $latestMetric->disk_usage
+                        (float) $latestMetric->cpu_usage,
+                        (float) $latestMetric->memory_usage,
+                        (float) $latestMetric->disk_usage
                     ),
                 ];
             })->all();
