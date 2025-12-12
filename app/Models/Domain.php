@@ -17,6 +17,13 @@ class Domain extends Model
     /** @use HasFactory<\Database\Factories\DomainFactory> */
     use HasFactory, SoftDeletes;
 
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var list<string>
+     */
+    protected $appends = ['full_domain'];
+
     protected $fillable = [
         'project_id',
         'domain',
@@ -104,5 +111,17 @@ class Domain extends Model
             'pending' => 'yellow',
             default => 'gray',
         };
+    }
+
+    /**
+     * Get the full domain (subdomain + domain).
+     */
+    public function getFullDomainAttribute(): string
+    {
+        if ($this->subdomain) {
+            return "{$this->subdomain}.{$this->domain}";
+        }
+
+        return $this->domain ?? '';
     }
 }

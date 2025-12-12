@@ -73,7 +73,7 @@ class HealthDashboard extends Component
             ->select(['id', 'name', 'slug', 'status', 'server_id', 'health_check_url'])
             ->with([
                 'server:id,name',
-                'domains:id,project_id,domain,subdomain,full_domain',
+                'domains:id,project_id,domain,subdomain',
                 'latestDeployment:id,project_id,status,created_at'
             ])
             ->get();

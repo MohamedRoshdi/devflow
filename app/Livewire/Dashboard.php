@@ -323,7 +323,7 @@ class Dashboard extends Component
             ->select(['id', 'name', 'slug', 'status', 'server_id', 'updated_at', 'framework'])
             ->with([
                 'server:id,name,status',
-                'domains' => fn($q) => $q->where('is_primary', true)->limit(1)->select('id', 'project_id', 'domain', 'subdomain', 'full_domain')
+                'domains' => fn($q) => $q->where('is_primary', true)->limit(1)->select('id', 'project_id', 'domain', 'subdomain')
             ])
             ->latest()
             ->take(6)
@@ -353,7 +353,7 @@ class Dashboard extends Component
                     ->where('expires_at', '<=', $expiringSoonDate)
                     ->where('expires_at', '>', $now)
                     ->with([
-                        'domain:id,domain,subdomain,full_domain',
+                        'domain:id,domain,subdomain',
                         'server:id,name'
                     ])
                     ->orderBy('expires_at', 'asc')

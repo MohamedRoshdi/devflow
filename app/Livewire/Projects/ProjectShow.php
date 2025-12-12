@@ -97,7 +97,7 @@ class ProjectShow extends Component
 
         // Eager load only necessary relationships with limited columns
         $this->project = $project->load([
-            'domains:id,project_id,domain,subdomain,full_domain,ssl_enabled,is_primary',
+            'domains:id,project_id,domain,subdomain,ssl_enabled,is_primary',
             'activeDeployment:id,project_id,status,created_at'
         ]);
         $this->firstTab = request()->query('tab', 'overview');
