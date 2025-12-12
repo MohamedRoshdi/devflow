@@ -96,6 +96,25 @@ This document contains all pending tasks, improvements, and feature requests for
 
 ## High Priority (Week 3-4)
 
+### Security Improvements
+
+- [ ] **Add rate limiting to API resource routes**
+  - File: `routes/api.php`
+  - Issue: Projects, servers, deployments routes missing throttle middleware
+  - Routes needing throttle:
+    - `Route::apiResource('projects', ...)`
+    - `Route::post('projects/{project:slug}/deploy', ...)`
+    - `Route::apiResource('servers', ...)`
+    - `Route::get('servers/{server}/metrics', ...)`
+
+- [ ] **Audit 9 raw SQL queries for injection**
+  - Files: Various services using `DB::raw`, `DB::select`, `DB::statement`
+  - Task: Review and parameterize all raw queries
+
+- [ ] **Add file upload validation**
+  - Issue: File storage operations should validate file types/sizes
+  - Task: Ensure all file uploads use proper validation rules
+
 ### Missing Features
 
 - [ ] **Implement Docker Registry Credentials Management**
