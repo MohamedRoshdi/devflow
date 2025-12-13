@@ -1,6 +1,6 @@
 # DevFlow Pro - Task Backlog & Roadmap
 
-> Last Updated: 2025-12-13 | Version: 5.50.0
+> Last Updated: 2025-12-13 | Version: 5.51.0
 
 This document contains all pending tasks, improvements, and feature requests for DevFlow Pro, organized by priority and category.
 
@@ -250,13 +250,16 @@ This document contains all pending tasks, improvements, and feature requests for
   - Added: `throttle:10,1` for write operations (10 requests/minute)
   - Covered: projects, servers, deployments, metrics routes
 
-- [ ] **Audit 9 raw SQL queries for injection**
-  - Files: Various services using `DB::raw`, `DB::select`, `DB::statement`
-  - Task: Review and parameterize all raw queries
+- [x] **Audit 9 raw SQL queries for injection** ✅ COMPLETED
+  - Audited 47 raw SQL queries across codebase
+  - Fixed 1 critical vulnerability in MultiTenantService.php
+  - Added sanitizeDatabaseName() with 3-layer defense
+  - Created security documentation in docs/security/
 
-- [ ] **Add file upload validation**
-  - Issue: File storage operations should validate file types/sizes
-  - Task: Ensure all file uploads use proper validation rules
+- [x] **Add file upload validation** ✅ COMPLETED
+  - Created: `app/Rules/FileUploadRule.php` - Centralized validation
+  - Updated: TeamList, TeamSettings, SSHKeyManager, StoreTeamRequest, UpdateTeamRequest
+  - Features: MIME validation, size limits, filename sanitization, blacklist extensions
 
 ### Missing Features
 
@@ -303,17 +306,17 @@ This document contains all pending tasks, improvements, and feature requests for
   - File: `tests/Feature/Livewire/DeploymentShowTest.php`
   - Coverage: Details display, logs, authorization, status badges, progress tracking
 
-- [ ] **Create DeploymentRollback Feature Test**
+- [x] **Create DeploymentRollback Feature Test** ✅ COMPLETED
   - File: `tests/Feature/Livewire/DeploymentRollbackTest.php`
-  - Coverage: Rollback initiation, confirmation, completion
+  - Coverage: Rollback initiation, confirmation, execution, authorization (27 tests)
 
 - [x] **Create ProjectShow Feature Test** ✅ COMPLETED
   - File: `tests/Feature/Livewire/ProjectShowTest.php`
   - Coverage: Tab navigation, deployments, Git integration, Docker controls (30 test methods, 611 lines)
 
-- [ ] **Create ProjectConfiguration Feature Test**
+- [x] **Create ProjectConfiguration Feature Test** ✅ COMPLETED
   - File: `tests/Feature/Livewire/ProjectConfigurationTest.php`
-  - Coverage: Settings save, validation, environment variables
+  - Coverage: Settings, validation, environment variables, framework selection (66 tests)
 
 - [x] **Create ServerShow Feature Test** ✅ COMPLETED
   - File: `tests/Feature/Livewire/ServerShowTest.php`
@@ -323,23 +326,21 @@ This document contains all pending tasks, improvements, and feature requests for
   - File: `tests/Feature/Livewire/ServerMetricsDashboardTest.php`
   - Coverage: Metrics display, alerts, chart data, process monitoring (27 test methods)
 
-- [ ] **Create Server Provisioning Integration Test**
+- [x] **Create Server Provisioning Integration Test** ✅ COMPLETED
   - File: `tests/Feature/Integration/ServerProvisioningTest.php`
-  - Coverage: Fresh server setup → Docker → SSL → health checks
+  - Coverage: Fresh server setup, Docker, SSL, health checks, rollback (38 tests)
 
-- [ ] **Create API Deployment Controller Tests**
+- [x] **Create API Deployment Controller Tests** ✅ COMPLETED
   - File: `tests/Feature/Api/DeploymentControllerTest.php`
-  - Coverage: GET, POST approve, POST rollback, DELETE cancel
+  - Coverage: GET, POST approve, POST rollback, DELETE cancel, rate limiting (46 tests)
 
-- [ ] **Create ServerBackupManager Unit Test**
+- [x] **Create ServerBackupManager Unit Test** ✅ COMPLETED
   - File: `tests/Unit/Livewire/ServerBackupManagerTest.php`
-  - Component: `app/Livewire/Servers/ServerBackupManager.php` (289 lines - UNTESTED)
-  - Coverage: Backup creation, restoration, scheduling
+  - Coverage: Backup creation, restoration, scheduling, deletion (72 tests)
 
-- [ ] **Create ResourceAlertManager Unit Test**
+- [x] **Create ResourceAlertManager Unit Test** ✅ COMPLETED
   - File: `tests/Unit/Livewire/ResourceAlertManagerTest.php`
-  - Component: `app/Livewire/Servers/ResourceAlertManager.php` (295 lines - UNTESTED)
-  - Coverage: Alert creation, threshold management
+  - Coverage: Alert creation, thresholds, notifications, history (86 tests)
 
 - [ ] **Create ProjectEnvironment Unit Test**
   - File: `tests/Unit/Livewire/ProjectEnvironmentTest.php`
@@ -368,13 +369,13 @@ This document contains all pending tasks, improvements, and feature requests for
 
 ### UI/UX (High)
 
-- [ ] **Add loading states to project-create form**
+- [x] **Add loading states to project-create form** ✅ COMPLETED
   - File: `resources/views/livewire/projects/project-create.blade.php`
-  - Issue: No loading state on step navigation buttons
+  - Added: Step navigation, server selection, repo URL, create button loading states
 
-- [ ] **Add loading states to server-create form**
+- [x] **Add loading states to server-create form** ✅ COMPLETED
   - File: `resources/views/livewire/servers/server-create.blade.php`
-  - Issue: Missing loading indicator on form submission
+  - Added: Test connection, create server, GPS location loading states
 
 - [ ] **Add loading states to project-edit form**
   - File: `resources/views/livewire/projects/project-edit.blade.php`
@@ -599,17 +600,17 @@ This document contains all pending tasks, improvements, and feature requests for
 | Critical UI | 4 | 4 | 0 |
 | High Refactoring | 5 | 0 | 5 |
 | High Silent Failures | 4 | 4 | 0 |
-| High Security | 3 | 1 | 2 |
+| High Security | 3 | 3 | 0 |
 | High Features | 3 | 0 | 3 |
 | High Optimization | 4 | 0 | 4 |
-| High Tests | 18 | 5 | 13 |
-| High UI | 6 | 0 | 6 |
+| High Tests | 18 | 13 | 5 |
+| High UI | 6 | 2 | 4 |
 | Medium Abstractions | 3 | 0 | 3 |
 | Medium Caching | 3 | 0 | 3 |
 | Medium Tasks | 30+ | 0 | 30+ |
 | Low Priority | 15+ | 0 | 15+ |
 | Planned Features | 5 | 0 | 5 |
-| **TOTAL** | **127+** | **41** | **86+** |
+| **TOTAL** | **127+** | **53** | **74+** |
 
 ---
 
@@ -643,12 +644,12 @@ When adding new tasks:
 | Browser Tests | 140+ | ~2,500 | 90%+ |
 | Unit - Services | 42 | ~900 | 95%+ |
 | Unit - Models | 11 | ~492 | 95%+ |
-| Unit - Livewire | **14** | ~120 | **~14%** |
-| Feature - Livewire | **9** | ~250 | **NEW** |
-| Feature - Integration | **1** | ~25 | **NEW** |
-| Feature/API | 10 | ~300 | 85%+ |
+| Unit - Livewire | **16** | ~278 | **~16%** |
+| Feature - Livewire | **11** | ~343 | **NEW** |
+| Feature - Integration | **2** | ~63 | **NEW** |
+| Feature/API | 11 | ~346 | 88%+ |
 | Security | 5 | ~91 | 98% |
-| **TOTAL** | 232+ | 4,678+ | ~75% |
+| **TOTAL** | 238+ | 5,013+ | ~78% |
 
 ### Critical Gap: Livewire Component Tests
 

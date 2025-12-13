@@ -17,6 +17,9 @@
                 ] as $step => $info)
                     <div class="flex items-center gap-2">
                         <button wire:click="goToStep({{ $step }})"
+                                wire:loading.attr="disabled"
+                                wire:loading.class="opacity-50"
+                                wire:target="goToStep,nextStep,previousStep"
                                 class="flex flex-col items-center gap-1.5 min-w-[60px] touch-manipulation active:scale-95
                                     {{ $currentStep >= $step ? 'cursor-pointer' : 'cursor-not-allowed' }}">
                             <div class="flex items-center justify-center w-11 h-11 rounded-full transition-all
@@ -51,6 +54,9 @@
             ] as $step => $info)
                 <div class="flex items-center {{ $step < 4 ? 'flex-1' : '' }}">
                     <button wire:click="goToStep({{ $step }})"
+                            wire:loading.attr="disabled"
+                            wire:loading.class="opacity-50"
+                            wire:target="goToStep,nextStep,previousStep"
                             class="flex items-center justify-center w-10 h-10 rounded-full transition-all
                                 {{ $currentStep == $step ? 'bg-blue-600 text-white' : ($currentStep > $step ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400') }}
                                 {{ $currentStep >= $step ? 'cursor-pointer hover:scale-105' : 'cursor-not-allowed' }}">
@@ -100,6 +106,9 @@
                             @foreach($templates as $template)
                                 <button type="button"
                                     wire:click="selectTemplate({{ $template->id }})"
+                                    wire:loading.attr="disabled"
+                                    wire:loading.class="opacity-50 cursor-not-allowed"
+                                    wire:target="selectTemplate"
                                     class="p-3 rounded-lg border-2 text-center transition-all
                                         {{ $selectedTemplateId == $template->id
                                             ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
@@ -109,7 +118,12 @@
                             @endforeach
                         </div>
                         @if($selectedTemplateId)
-                            <button type="button" wire:click="clearTemplate" class="mt-2 text-xs text-blue-600 dark:text-blue-400 hover:underline">
+                            <button type="button"
+                                wire:click="clearTemplate"
+                                wire:loading.attr="disabled"
+                                wire:loading.class="opacity-50 cursor-not-allowed"
+                                wire:target="clearTemplate"
+                                class="mt-2 text-xs text-blue-600 dark:text-blue-400 hover:underline">
                                 Clear template selection
                             </button>
                         @endif
@@ -136,7 +150,13 @@
                     <!-- Server Selection -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Server *</label>
-                        <div class="space-y-2 max-h-64 overflow-y-auto">
+                        <div class="space-y-2 max-h-64 overflow-y-auto relative">
+                            <div wire:loading wire:target="server_id" class="absolute inset-0 bg-white/50 dark:bg-gray-800/50 flex items-center justify-center z-10 rounded-lg">
+                                <svg class="animate-spin h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </div>
                             @forelse($servers as $server)
                                 <label class="flex items-center p-3 border rounded-lg cursor-pointer transition-all
                                     {{ $server_id == $server->id ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30' : 'border-gray-200 dark:border-gray-700 hover:border-blue-300' }}">
@@ -164,11 +184,19 @@
 
                     <!-- Repository -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="md:col-span-2">
+                        <div class="md:col-span-2 relative">
                             <label for="repository_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Repository URL *</label>
-                            <input wire:model="repository_url" id="repository_url" type="text"
-                                   placeholder="https://github.com/user/repo.git"
-                                   class="input @error('repository_url') border-red-500 @enderror">
+                            <div class="relative">
+                                <input wire:model="repository_url" id="repository_url" type="text"
+                                       placeholder="https://github.com/user/repo.git"
+                                       class="input @error('repository_url') border-red-500 @enderror">
+                                <div wire:loading wire:target="repository_url" class="absolute right-3 top-1/2 -translate-y-1/2">
+                                    <svg class="animate-spin h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                </div>
+                            </div>
                             @error('repository_url') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                         </div>
                         <div>
@@ -422,7 +450,14 @@
                         <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                             <div class="flex justify-between items-center mb-2">
                                 <h4 class="font-medium text-gray-900 dark:text-white">Basic Information</h4>
-                                <button type="button" wire:click="goToStep(1)" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Edit</button>
+                                <button type="button"
+                                        wire:click="goToStep(1)"
+                                        wire:loading.attr="disabled"
+                                        wire:loading.class="opacity-50 cursor-not-allowed"
+                                        wire:target="goToStep"
+                                        class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                                    Edit
+                                </button>
                             </div>
                             <div class="grid grid-cols-2 gap-2 text-sm">
                                 <div><span class="text-gray-500 dark:text-gray-400">Name:</span> <span class="text-gray-900 dark:text-white">{{ $name }}</span></div>
@@ -437,7 +472,14 @@
                         <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                             <div class="flex justify-between items-center mb-2">
                                 <h4 class="font-medium text-gray-900 dark:text-white">Framework & Build</h4>
-                                <button type="button" wire:click="goToStep(2)" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Edit</button>
+                                <button type="button"
+                                        wire:click="goToStep(2)"
+                                        wire:loading.attr="disabled"
+                                        wire:loading.class="opacity-50 cursor-not-allowed"
+                                        wire:target="goToStep"
+                                        class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                                    Edit
+                                </button>
                             </div>
                             <div class="grid grid-cols-2 gap-2 text-sm">
                                 <div><span class="text-gray-500 dark:text-gray-400">Deployment:</span> <span class="text-gray-900 dark:text-white font-semibold">{{ $deployment_method === 'docker' ? '🐳 Docker' : '🔧 Standard Laravel' }}</span></div>
@@ -454,7 +496,14 @@
                         <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                             <div class="flex justify-between items-center mb-2">
                                 <h4 class="font-medium text-gray-900 dark:text-white">Auto-Setup Features</h4>
-                                <button type="button" wire:click="goToStep(3)" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Edit</button>
+                                <button type="button"
+                                        wire:click="goToStep(3)"
+                                        wire:loading.attr="disabled"
+                                        wire:loading.class="opacity-50 cursor-not-allowed"
+                                        wire:target="goToStep"
+                                        class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                                    Edit
+                                </button>
                             </div>
                             <div class="flex flex-wrap gap-2">
                                 @if($enableSsl)
@@ -488,9 +537,19 @@
             <div class="flex items-center justify-between pt-6 mt-6 border-t border-gray-200 dark:border-gray-700">
                 <div>
                     @if ($currentStep > 1)
-                        <button type="button" wire:click="previousStep" class="btn btn-secondary">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button type="button"
+                                wire:click="previousStep"
+                                wire:loading.attr="disabled"
+                                wire:target="previousStep,nextStep,createProject"
+                                wire:loading.class="opacity-50 cursor-not-allowed"
+                                class="btn btn-secondary">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                 wire:loading.remove wire:target="previousStep">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                            <svg wire:loading wire:target="previousStep" class="animate-spin h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
                             Previous
                         </button>
@@ -501,17 +560,44 @@
 
                 <div>
                     @if ($currentStep < $totalSteps)
-                        <button type="button" wire:click="nextStep" class="btn btn-primary">
-                            Next
-                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button type="button"
+                                wire:click="nextStep"
+                                wire:loading.attr="disabled"
+                                wire:target="previousStep,nextStep,createProject"
+                                wire:loading.class="opacity-50 cursor-not-allowed"
+                                class="btn btn-primary">
+                            <span wire:loading.remove wire:target="nextStep">Next</span>
+                            <span wire:loading wire:target="nextStep" class="flex items-center">
+                                <svg class="animate-spin h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Loading...
+                            </span>
+                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                 wire:loading.remove wire:target="nextStep">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                             </svg>
                         </button>
                     @else
-                        <button type="submit" wire:loading.attr="disabled" wire:target="createProject"
-                                class="btn btn-primary bg-green-600 hover:bg-green-700 disabled:opacity-50">
-                            <span wire:loading.remove wire:target="createProject">Create Project</span>
-                            <span wire:loading wire:target="createProject">Creating...</span>
+                        <button type="submit"
+                                wire:loading.attr="disabled"
+                                wire:target="createProject"
+                                wire:loading.class="opacity-50 cursor-not-allowed"
+                                class="btn btn-primary bg-green-600 hover:bg-green-700">
+                            <span wire:loading.remove wire:target="createProject" class="flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Create Project
+                            </span>
+                            <span wire:loading wire:target="createProject" class="flex items-center">
+                                <svg class="animate-spin h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Creating Project...
+                            </span>
                         </button>
                     @endif
                 </div>
@@ -567,8 +653,20 @@
 
                 <div class="flex justify-end">
                     <button wire:click="closeProgressAndRedirect"
+                            wire:loading.attr="disabled"
+                            wire:loading.class="opacity-50 cursor-not-allowed"
+                            wire:target="closeProgressAndRedirect"
                             class="btn btn-primary {{ ($progress['status'] ?? '') !== 'completed' && ($progress['status'] ?? '') !== 'failed' ? 'opacity-50' : '' }}">
-                        {{ ($progress['status'] ?? '') === 'completed' || ($progress['status'] ?? '') === 'failed' ? 'View Project' : 'Continue Anyway' }}
+                        <span wire:loading.remove wire:target="closeProgressAndRedirect">
+                            {{ ($progress['status'] ?? '') === 'completed' || ($progress['status'] ?? '') === 'failed' ? 'View Project' : 'Continue Anyway' }}
+                        </span>
+                        <span wire:loading wire:target="closeProgressAndRedirect" class="flex items-center">
+                            <svg class="animate-spin h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Loading...
+                        </span>
                     </button>
                 </div>
             </div>

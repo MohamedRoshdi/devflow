@@ -165,7 +165,10 @@ class MultiTenantService
      */
     protected function createTenantDatabase(Tenant $tenant): void
     {
-        DB::statement("CREATE DATABASE IF NOT EXISTS `{$tenant->database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+        // Validate database name to prevent SQL injection
+        $databaseName = $this->sanitizeDatabaseName($tenant->database);
+
+        DB::statement("CREATE DATABASE IF NOT EXISTS `{$databaseName}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
     }
 
     /**
@@ -173,7 +176,36 @@ class MultiTenantService
      */
     protected function dropTenantDatabase(Tenant $tenant): void
     {
-        DB::statement("DROP DATABASE IF EXISTS `{$tenant->database}`");
+        // Validate database name to prevent SQL injection
+        $databaseName = $this->sanitizeDatabaseName($tenant->database);
+
+        DB::statement("DROP DATABASE IF EXISTS `{$databaseName}`");
+    }
+
+    /**
+     * Sanitize database name to prevent SQL injection
+     * Only allows alphanumeric characters, underscores, and hyphens
+     */
+    protected function sanitizeDatabaseName(string $databaseName): string
+    {
+        // Remove any characters that are not alphanumeric, underscore, or hyphen
+        $sanitized = preg_replace('/[^a-zA-Z0-9_\-]/', '', $databaseName);
+
+        if ($sanitized === null || $sanitized === '') {
+            throw new \InvalidArgumentException('Invalid database name: Database name must contain only alphanumeric characters, underscores, and hyphens');
+        }
+
+        // Ensure database name doesn't start with a number (MySQL requirement)
+        if (is_numeric($sanitized[0])) {
+            throw new \InvalidArgumentException('Invalid database name: Database name cannot start with a number');
+        }
+
+        // Limit length to MySQL's maximum database name length (64 characters)
+        if (strlen($sanitized) > 64) {
+            throw new \InvalidArgumentException('Invalid database name: Database name cannot exceed 64 characters');
+        }
+
+        return $sanitized;
     }
 
     /**

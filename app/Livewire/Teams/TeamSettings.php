@@ -8,6 +8,7 @@ use App\Models\Team;
 use App\Models\TeamInvitation;
 use App\Models\User;
 use App\Rules\DescriptionRule;
+use App\Rules\FileUploadRule;
 use App\Rules\NameRule;
 use App\Services\TeamService;
 use Illuminate\Support\Facades\Auth;
@@ -132,6 +133,23 @@ class TeamSettings extends Component
             return;
         }
 
+        // Validate file upload separately with enhanced rules
+        if ($this->avatar) {
+            $this->validate([
+                'avatar' => FileUploadRule::avatarRules(required: false),
+            ], FileUploadRule::messages(), FileUploadRule::attributes());
+
+            // Additional security check for suspicious filenames
+            $originalName = $this->avatar->getClientOriginalName();
+            if (FileUploadRule::isSuspiciousFilename($originalName)) {
+                $this->dispatch('notification', [
+                    'type' => 'error',
+                    'message' => 'Invalid filename detected. Please rename the file.',
+                ]);
+                return;
+            }
+        }
+
         $this->validate([
             'name' => NameRule::rules(required: true, maxLength: 255),
             'description' => DescriptionRule::rules(required: false, maxLength: 500),
@@ -143,9 +161,10 @@ class TeamSettings extends Component
                 'description' => $this->description,
             ];
 
-            // Handle avatar upload
+            // Handle avatar upload with sanitized filename
             if ($this->avatar) {
-                $data['avatar'] = $this->avatar->store('teams', 'public');
+                $sanitizedFilename = FileUploadRule::sanitizeFilename($this->avatar->getClientOriginalName());
+                $data['avatar'] = $this->avatar->storeAs('teams', $sanitizedFilename, 'public');
             }
 
             $this->team->update($data);

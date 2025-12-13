@@ -6,6 +6,7 @@ namespace App\Livewire\Settings;
 
 use App\Models\Server;
 use App\Models\SSHKey;
+use App\Rules\FileUploadRule;
 use App\Services\SSHKeyService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
@@ -154,17 +155,33 @@ class SSHKeyManager extends Component
     {
         $this->validate([
             'importKeyName' => 'required|string|max:100',
-            'importPublicKey' => 'required|string',
-            'importPrivateKey' => 'required|string',
-        ]);
+            'importPublicKey' => FileUploadRule::sshKeyRules(required: true),
+            'importPrivateKey' => FileUploadRule::sshKeyRules(required: true),
+        ], FileUploadRule::messages());
 
         try {
             $sshKeyService = app(SSHKeyService::class);
 
+            // Additional validation for SSH key format
+            $publicKey = trim($this->importPublicKey);
+            $privateKey = trim($this->importPrivateKey);
+
+            // Validate public key format
+            if (!preg_match('/^(ssh-rsa|ssh-ed25519|ecdsa-sha2-nistp\d+)\s+/', $publicKey)) {
+                session()->flash('error', 'Invalid public key format. Must start with ssh-rsa, ssh-ed25519, or ecdsa-sha2-nistp*');
+                return;
+            }
+
+            // Validate private key format
+            if (!str_contains($privateKey, '-----BEGIN') || !str_contains($privateKey, 'PRIVATE KEY-----')) {
+                session()->flash('error', 'Invalid private key format. Must be a valid PEM-formatted private key.');
+                return;
+            }
+
             // Validate and import key
             $result = $sshKeyService->importKey(
-                $this->importPublicKey,
-                $this->importPrivateKey
+                $publicKey,
+                $privateKey
             );
 
             if (! $result['success']) {

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Livewire\Teams;
 
 use App\Models\Team;
+use App\Rules\FileUploadRule;
 use App\Services\TeamService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -24,7 +26,6 @@ class TeamList extends Component
     #[Validate('nullable|string|max:500')]
     public string $description = '';
 
-    #[Validate('nullable|image|max:2048')]
     public mixed $avatar = null;
 
     private function teamService(): TeamService
@@ -77,6 +78,23 @@ class TeamList extends Component
 
     public function createTeam()
     {
+        // Validate file upload separately with enhanced rules
+        if ($this->avatar) {
+            $this->validate([
+                'avatar' => FileUploadRule::avatarRules(required: false),
+            ], FileUploadRule::messages(), FileUploadRule::attributes());
+
+            // Additional security check for suspicious filenames
+            $originalName = $this->avatar->getClientOriginalName();
+            if (FileUploadRule::isSuspiciousFilename($originalName)) {
+                $this->dispatch('notification', [
+                    'type' => 'error',
+                    'message' => 'Invalid filename detected. Please rename the file.',
+                ]);
+                return;
+            }
+        }
+
         $this->validate();
 
         try {
@@ -85,9 +103,10 @@ class TeamList extends Component
                 'description' => $this->description,
             ];
 
-            // Handle avatar upload
+            // Handle avatar upload with sanitized filename
             if ($this->avatar) {
-                $data['avatar'] = $this->avatar->store('teams', 'public');
+                $sanitizedFilename = FileUploadRule::sanitizeFilename($this->avatar->getClientOriginalName());
+                $data['avatar'] = $this->avatar->storeAs('teams', $sanitizedFilename, 'public');
             }
 
             $team = $this->teamService()->createTeam(Auth::user(), $data);

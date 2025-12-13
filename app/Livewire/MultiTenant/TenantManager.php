@@ -57,6 +57,7 @@ class TenantManager extends Component
         'selectedProject' => 'required|exists:projects,id',
         'tenantName' => 'required|string|max:255',
         'subdomain' => 'required|string|max:63|regex:/^[a-z0-9-]+$/',
+        'database' => 'nullable|string|max:64|regex:/^[a-zA-Z][a-zA-Z0-9_\-]*$/',
         'adminEmail' => 'required|email',
         'adminPassword' => 'required|min:8',
         'plan' => 'required|in:basic,pro,enterprise',

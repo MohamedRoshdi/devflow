@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests;
 
 use App\Rules\DescriptionRule;
+use App\Rules\FileUploadRule;
 use App\Rules\NameRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -31,7 +32,7 @@ class UpdateTeamRequest extends FormRequest
         return [
             'name' => NameRule::rules(required: true, maxLength: 255),
             'description' => DescriptionRule::rules(required: false, maxLength: 500),
-            'avatar' => 'nullable|image|max:2048',
+            'avatar' => FileUploadRule::avatarRules(required: false),
         ];
     }
 
@@ -54,9 +55,10 @@ class UpdateTeamRequest extends FormRequest
      */
     public function messages(): array
     {
-        return [
+        return array_merge(FileUploadRule::messages(), [
             'avatar.image' => 'The avatar must be an image file.',
             'avatar.max' => 'The avatar size must not exceed 2MB.',
-        ];
+            'avatar.mimes' => 'The avatar must be a file of type: jpeg, jpg, png, gif, webp.',
+        ]);
     }
 }

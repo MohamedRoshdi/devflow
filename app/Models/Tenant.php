@@ -67,6 +67,32 @@ class Tenant extends Model
     ];
 
     /**
+     * Set the database attribute with validation
+     *
+     * @param  string  $value
+     * @throws \InvalidArgumentException
+     */
+    public function setDatabaseAttribute(string $value): void
+    {
+        // Validate database name to prevent SQL injection
+        $sanitized = preg_replace('/[^a-zA-Z0-9_\-]/', '', $value);
+
+        if ($sanitized === null || $sanitized === '') {
+            throw new \InvalidArgumentException('Invalid database name: Database name must contain only alphanumeric characters, underscores, and hyphens');
+        }
+
+        if (is_numeric($sanitized[0])) {
+            throw new \InvalidArgumentException('Invalid database name: Database name cannot start with a number');
+        }
+
+        if (strlen($sanitized) > 64) {
+            throw new \InvalidArgumentException('Invalid database name: Database name cannot exceed 64 characters');
+        }
+
+        $this->attributes['database'] = $sanitized;
+    }
+
+    /**
      * @param  string|null  $value
      */
     public function setAdminPasswordAttribute($value): void

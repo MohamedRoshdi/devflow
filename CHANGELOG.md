@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.51.0] - 2025-12-13
+
+### Added
+- **6 New Test Files (~335 test methods)**
+  - `tests/Feature/Livewire/DeploymentRollbackTest.php` - Rollback workflow (27 tests)
+  - `tests/Feature/Livewire/ProjectConfigurationTest.php` - Settings & validation (66 tests)
+  - `tests/Feature/Integration/ServerProvisioningTest.php` - Server setup workflow (38 tests)
+  - `tests/Feature/Api/DeploymentControllerTest.php` - API endpoints & rate limiting (46 tests)
+  - `tests/Unit/Livewire/ServerBackupManagerTest.php` - Backup operations (72 tests)
+  - `tests/Unit/Livewire/ResourceAlertManagerTest.php` - Alert management (86 tests)
+
+- **FileUploadRule Class** - Centralized file upload validation
+  - `app/Rules/FileUploadRule.php` - MIME validation, size limits, filename sanitization
+  - Blacklist for dangerous extensions (php, exe, sh, etc.)
+
+- **Security Documentation** - `docs/security/` directory with audit reports
+
+### Security
+- **SQL Injection Audit** - Audited 47 raw SQL queries, fixed 1 critical vulnerability
+  - `MultiTenantService.php` - Added `sanitizeDatabaseName()` with 3-layer defense
+  - `Tenant.php` - Added database name mutator validation
+
+- **File Upload Hardening** - Updated TeamList, TeamSettings, SSHKeyManager, request classes
+
+### Improved
+- **Loading States UI**
+  - `project-create.blade.php` - Step navigation, server selection, create button
+  - `server-create.blade.php` - Test connection, create server, GPS location
+
+### Documentation
+- Updated `TASKS.md` - 53/127+ tasks completed (~42%), test coverage ~78%
+
+---
+
 ## [5.50.0] - 2025-12-13
 
 ### Added
