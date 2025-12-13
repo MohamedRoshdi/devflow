@@ -35,7 +35,9 @@
                        type="text"
                        required
                        placeholder="Production Server 1"
-                       class="input @error('name') border-red-500 @enderror">
+                       wire:loading.attr="disabled"
+                       wire:target="updateServer,testConnection"
+                       class="input @error('name') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
                 @error('name')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
@@ -50,7 +52,9 @@
                            type="text"
                            required
                            placeholder="192.168.1.100"
-                           class="input @error('ip_address') border-red-500 @enderror">
+                           wire:loading.attr="disabled"
+                           wire:target="updateServer,testConnection"
+                           class="input @error('ip_address') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
                     @error('ip_address')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
@@ -63,7 +67,9 @@
                            id="hostname"
                            type="text"
                            placeholder="server1.example.com"
-                           class="input @error('hostname') border-red-500 @enderror">
+                           wire:loading.attr="disabled"
+                           wire:target="updateServer,testConnection"
+                           class="input @error('hostname') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
                     @error('hostname')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
@@ -78,7 +84,9 @@
                            id="port"
                            type="number"
                            required
-                           class="input @error('port') border-red-500 @enderror">
+                           wire:loading.attr="disabled"
+                           wire:target="updateServer,testConnection"
+                           class="input @error('port') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
                     @error('port')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
@@ -91,7 +99,9 @@
                            id="username"
                            type="text"
                            required
-                           class="input @error('username') border-red-500 @enderror">
+                           wire:loading.attr="disabled"
+                           wire:target="updateServer,testConnection"
+                           class="input @error('username') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
                     @error('username')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
@@ -102,12 +112,22 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Authentication Method</label>
                 <div class="flex space-x-4">
-                    <label class="inline-flex items-center">
-                        <input type="radio" wire:model.live="auth_method" value="password" class="form-radio text-blue-600 dark:bg-gray-700 dark:border-gray-600">
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="radio"
+                               wire:model.live="auth_method"
+                               value="password"
+                               wire:loading.attr="disabled"
+                               wire:target="updateServer,testConnection"
+                               class="form-radio text-blue-600 dark:bg-gray-700 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
                         <span class="ml-2 text-gray-700 dark:text-gray-300">Password</span>
                     </label>
-                    <label class="inline-flex items-center">
-                        <input type="radio" wire:model.live="auth_method" value="key" class="form-radio text-blue-600 dark:bg-gray-700 dark:border-gray-600">
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="radio"
+                               wire:model.live="auth_method"
+                               value="key"
+                               wire:loading.attr="disabled"
+                               wire:target="updateServer,testConnection"
+                               class="form-radio text-blue-600 dark:bg-gray-700 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
                         <span class="ml-2 text-gray-700 dark:text-gray-300">SSH Key</span>
                     </label>
                 </div>
@@ -125,7 +145,9 @@
                        id="ssh_password"
                        type="password"
                        placeholder="Enter new SSH password or leave blank"
-                       class="input @error('ssh_password') border-red-500 @enderror">
+                       wire:loading.attr="disabled"
+                       wire:target="updateServer,testConnection"
+                       class="input @error('ssh_password') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
                 @error('ssh_password')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
@@ -143,7 +165,9 @@
                           id="ssh_key"
                           rows="6"
                           placeholder="-----BEGIN OPENSSH PRIVATE KEY-----"
-                          class="input @error('ssh_key') border-red-500 @enderror"></textarea>
+                          wire:loading.attr="disabled"
+                          wire:target="updateServer,testConnection"
+                          class="input @error('ssh_key') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed"></textarea>
                 @error('ssh_key')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
@@ -162,7 +186,9 @@
                                type="number"
                                step="any"
                                placeholder="0.0"
-                               class="input">
+                               wire:loading.attr="disabled"
+                               wire:target="updateServer,testConnection"
+                               class="input disabled:opacity-50 disabled:cursor-not-allowed">
                     </div>
 
                     <div>
@@ -172,7 +198,9 @@
                                type="number"
                                step="any"
                                placeholder="0.0"
-                               class="input">
+                               wire:loading.attr="disabled"
+                               wire:target="updateServer,testConnection"
+                               class="input disabled:opacity-50 disabled:cursor-not-allowed">
                     </div>
 
                     <div>
@@ -181,7 +209,9 @@
                                id="location_name"
                                type="text"
                                placeholder="New York, USA"
-                               class="input">
+                               wire:loading.attr="disabled"
+                               wire:target="updateServer,testConnection"
+                               class="input disabled:opacity-50 disabled:cursor-not-allowed">
                     </div>
                 </div>
             </div>
@@ -217,24 +247,52 @@
 
             <!-- Actions -->
             <div class="flex items-center justify-between pt-6 border-t">
-                <a href="{{ route('servers.show', $server) }}" class="btn btn-secondary">
+                <a href="{{ route('servers.show', $server) }}"
+                   class="btn btn-secondary"
+                   wire:loading.class="opacity-50 pointer-events-none"
+                   wire:target="updateServer,testConnection">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
                     Cancel
                 </a>
-                <div class="space-x-4">
+                <div class="flex items-center space-x-4">
                     <button type="button"
                             wire:click="testConnection"
                             wire:loading.attr="disabled"
-                            wire:target="testConnection"
-                            class="btn btn-secondary disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span wire:loading.remove wire:target="testConnection">Test Connection</span>
-                        <span wire:loading wire:target="testConnection">Testing...</span>
+                            wire:target="testConnection,updateServer"
+                            class="btn btn-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-opacity inline-flex items-center">
+                        <span wire:loading.remove wire:target="testConnection" class="inline-flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/>
+                            </svg>
+                            Test Connection
+                        </span>
+                        <span wire:loading wire:target="testConnection" class="inline-flex items-center">
+                            <svg class="animate-spin h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Testing Connection...
+                        </span>
                     </button>
                     <button type="submit"
                             wire:loading.attr="disabled"
-                            wire:target="updateServer"
-                            class="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span wire:loading.remove wire:target="updateServer">Update Server</span>
-                        <span wire:loading wire:target="updateServer">Updating...</span>
+                            wire:target="updateServer,testConnection"
+                            class="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed transition-opacity inline-flex items-center">
+                        <span wire:loading.remove wire:target="updateServer" class="inline-flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Update Server
+                        </span>
+                        <span wire:loading wire:target="updateServer" class="inline-flex items-center">
+                            <svg class="animate-spin h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Updating Server...
+                        </span>
                     </button>
                 </div>
                 <livewire:components.inline-help help-key="add-server-button" :collapsible="true" />

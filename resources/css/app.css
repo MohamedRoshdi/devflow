@@ -365,3 +365,17 @@
     animation: scaleIn 0.2s ease-out;
 }
 
+/* Shimmer Animation for Progress Bars */
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.animate-shimmer {
+    animation: shimmer 2s infinite;
+}
+

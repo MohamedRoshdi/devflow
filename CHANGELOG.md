@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.52.0] - 2025-12-13
+
+### Added
+- **5 New Unit Test Files (~292 test methods)**
+  - `tests/Unit/Livewire/ProjectEnvironmentTest.php` - Env vars, .env parsing (54 tests)
+  - `tests/Unit/Livewire/StorageSettingsTest.php` - S3, GCS, FTP, SFTP (80+ tests)
+  - `tests/Unit/Livewire/ProjectTemplateManagerTest.php` - Template CRUD (71 tests)
+  - `tests/Unit/Livewire/ClusterManagerTest.php` - K8s clusters (39 tests)
+  - `tests/Unit/Livewire/PipelineBuilderTest.php` - CI/CD pipelines (48 tests)
+
+- **Docker Registry Credentials Management**
+  - `app/Models/DockerRegistry.php` - Multi-registry support with encryption
+  - `database/migrations/2025_12_13_000002_create_docker_registries_table.php`
+  - Supports: Docker Hub, GitHub, GitLab, AWS ECR, Google GCR, Azure ACR, Custom
+  - Automatic Kubernetes secret creation for private registries
+
+- **2 New Factories**
+  - `database/factories/DockerRegistryFactory.php`
+  - `database/factories/KubernetesClusterFactory.php`
+
+### Improved
+- **UI Loading States**
+  - `project-edit.blade.php` - All inputs, selects, update button
+  - `server-edit.blade.php` - Test connection, update, all inputs
+
+- **Accessibility (WCAG AA)**
+  - `deployment-list.blade.php` - Status badges now use solid colors (4.5:1+ contrast)
+
+- **Server Provisioning UX**
+  - Added progress bar with percentage, step counter, ETA, current task display
+  - Auto-polling every 5 seconds during provisioning
+
+### Documentation
+- Updated `TASKS.md` - 63/127+ tasks completed (~50%)
+- Test coverage improved to ~80% (5,343+ tests)
+
+---
+
 ## [5.51.0] - 2025-12-13
 
 ### Added

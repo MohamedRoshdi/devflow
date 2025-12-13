@@ -181,12 +181,12 @@
                                                 {{-- Status Badge & Metadata --}}
                                                 <div class="flex flex-wrap items-center gap-3">
                                                     <span @class([
-                                                        'inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider shadow-xl backdrop-blur-sm border transition-all duration-300 hover:scale-105',
-                                                        'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-emerald-500/50 border-emerald-400/30' => $deployment->status === 'success',
-                                                        'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-amber-500/50 border-amber-400/30' => $deployment->status === 'running',
-                                                        'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-red-500/50 border-red-400/30' => $deployment->status === 'failed',
-                                                        'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-blue-500/50 border-blue-400/30' => $deployment->status === 'pending',
-                                                        'bg-gradient-to-r from-slate-500 to-slate-600 text-white shadow-slate-500/50 border-slate-400/30' => ! in_array($deployment->status, ['success', 'failed', 'running', 'pending']),
+                                                        'inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider shadow-xl border-2 transition-all duration-300 hover:scale-105',
+                                                        'bg-emerald-600 text-white shadow-emerald-600/40 border-emerald-500' => $deployment->status === 'success',
+                                                        'bg-amber-600 text-white shadow-amber-600/40 border-amber-500' => $deployment->status === 'running',
+                                                        'bg-red-600 text-white shadow-red-600/40 border-red-500' => $deployment->status === 'failed',
+                                                        'bg-blue-600 text-white shadow-blue-600/40 border-blue-500' => $deployment->status === 'pending',
+                                                        'bg-slate-700 text-white shadow-slate-700/40 border-slate-600' => ! in_array($deployment->status, ['success', 'failed', 'running', 'pending']),
                                                     ]) role="status" aria-live="polite" aria-label="Deployment status: {{ ucfirst($deployment->status) }}" @if($deployment->status === 'success') title="Deployment completed successfully"
                                                     @elseif($deployment->status === 'running') title="Deployment currently in progress"
                                                     @elseif($deployment->status === 'failed') title="Deployment failed"

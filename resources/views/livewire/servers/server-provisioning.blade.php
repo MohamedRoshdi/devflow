@@ -1,4 +1,4 @@
-<div class="space-y-6">
+<div class="space-y-6" @if($server->provision_status === 'provisioning') wire:poll.5s="refreshServerStatus" @endif>
     {{-- Provisioning Status --}}
     <div class="bg-gray-800 border border-gray-700 rounded-lg p-6">
         <div class="flex items-center justify-between mb-4">
@@ -24,6 +24,57 @@
         @if($server->provisioned_at)
             <div class="text-sm text-gray-400 mb-4">
                 <p>Provisioned: {{ $server->provisioned_at->diffForHumans() }}</p>
+            </div>
+        @endif
+
+        {{-- Progress Indicator - Only show during provisioning --}}
+        @if($server->provision_status === 'provisioning' && $this->provisioningProgress['total_steps'] > 0)
+            <div class="mb-6 p-4 bg-gray-900 border border-blue-500/30 rounded-lg space-y-3">
+                {{-- Progress Bar --}}
+                <div class="relative">
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-blue-400 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span class="text-sm font-medium text-white">Provisioning Progress</span>
+                            @if($this->provisioningProgress['current_task'])
+                                <span class="text-xs text-blue-300">
+                                    {{ str_replace('_', ' ', ucfirst($this->provisioningProgress['current_task'])) }}
+                                </span>
+                            @endif
+                        </div>
+                        <span class="text-sm font-bold text-blue-400">
+                            {{ $this->provisioningProgress['percentage'] }}%
+                        </span>
+                    </div>
+
+                    <div class="relative h-3 bg-gray-700 dark:bg-gray-800 rounded-full overflow-hidden shadow-inner">
+                        <div class="absolute inset-0 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 rounded-full transition-all duration-500 ease-out shadow-lg"
+                             style="width: {{ $this->provisioningProgress['percentage'] }}%">
+                            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 animate-shimmer"></div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Step Counter and Estimated Time --}}
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-gray-300 font-medium">
+                        <svg class="w-3 h-3 inline-block mr-1 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                        </svg>
+                        Step {{ $this->provisioningProgress['current_step'] }} of {{ $this->provisioningProgress['total_steps'] }}
+                    </span>
+                    @if($this->provisioningProgress['estimated_time_remaining'])
+                        <span class="text-gray-300 font-medium">
+                            <svg class="w-3 h-3 inline-block mr-1 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            ~{{ gmdate('i:s', $this->provisioningProgress['estimated_time_remaining']) }} remaining
+                        </span>
+                    @endif
+                </div>
             </div>
         @endif
 

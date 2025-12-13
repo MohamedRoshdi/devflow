@@ -72,6 +72,50 @@ class ServerProvisioning extends Component
         return $this->server->latestProvisioningLog;
     }
 
+    #[Computed]
+    public function provisioningProgress(): array
+    {
+        if ($this->server->provision_status !== 'provisioning') {
+            return [
+                'percentage' => $this->server->provision_status === 'completed' ? 100 : 0,
+                'current_step' => 0,
+                'total_steps' => 0,
+                'current_task' => null,
+                'estimated_time_remaining' => null,
+            ];
+        }
+
+        $logs = $this->provisioningLogs;
+        $totalSteps = $logs->count();
+        $completedSteps = $logs->where('status', 'completed')->count();
+        $failedSteps = $logs->where('status', 'failed')->count();
+        $runningLog = $logs->where('status', 'running')->first();
+
+        $currentStep = $completedSteps + $failedSteps + ($runningLog ? 1 : 0);
+        $percentage = $totalSteps > 0 ? (int) round(($completedSteps / $totalSteps) * 100) : 0;
+
+        // Calculate estimated time remaining
+        $estimatedTimeRemaining = null;
+        if ($completedSteps > 0 && $runningLog) {
+            $avgDuration = $logs->where('status', 'completed')
+                ->where('duration_seconds', '>', 0)
+                ->avg('duration_seconds');
+
+            if ($avgDuration) {
+                $remainingSteps = $totalSteps - $currentStep;
+                $estimatedTimeRemaining = (int) round($avgDuration * $remainingSteps);
+            }
+        }
+
+        return [
+            'percentage' => min($percentage, 100),
+            'current_step' => $currentStep,
+            'total_steps' => $totalSteps,
+            'current_task' => $runningLog?->task,
+            'estimated_time_remaining' => $estimatedTimeRemaining,
+        ];
+    }
+
     public function openProvisioningModal(): void
     {
         $this->showProvisioningModal = true;
@@ -181,6 +225,7 @@ class ServerProvisioning extends Component
         $this->server->refresh();
         unset($this->provisioningLogs);
         unset($this->latestLog);
+        unset($this->provisioningProgress);
     }
 
     public function render(): \Illuminate\View\View

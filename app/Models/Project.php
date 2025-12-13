@@ -342,4 +342,22 @@ class Project extends Model
     {
         return $this->morphMany(AuditLog::class, 'auditable');
     }
+
+    /**
+     * @return HasMany<DockerRegistry, $this>
+     */
+    public function dockerRegistries(): HasMany
+    {
+        return $this->hasMany(DockerRegistry::class);
+    }
+
+    /**
+     * @return HasOne<DockerRegistry, $this>
+     */
+    public function defaultDockerRegistry(): HasOne
+    {
+        return $this->hasOne(DockerRegistry::class)
+            ->where('is_default', true)
+            ->where('status', 'active');
+    }
 }
