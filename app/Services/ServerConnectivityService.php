@@ -49,8 +49,10 @@ class ServerConnectivityService
             ];
 
         } catch (\Exception $e) {
-            Log::error('Server connectivity test failed', [
+            Log::error('ServerConnectivityService: Connection test failed', [
                 'server_id' => $server->id,
+                'ip' => $server->ip_address,
+                'port' => $server->port,
                 'error' => $e->getMessage(),
             ]);
 
@@ -116,8 +118,10 @@ class ServerConnectivityService
             return $info;
 
         } catch (\Exception $e) {
-            Log::error('Failed to get server info', [
+            Log::error('ServerConnectivityService: Failed to get server info', [
                 'server_id' => $server->id,
+                'ip' => $server->ip_address,
+                'port' => $server->port,
                 'error' => $e->getMessage(),
             ]);
 
@@ -174,7 +178,10 @@ class ServerConnectivityService
                 return true;
             }
         } catch (\Exception $e) {
-            // Ignore
+            // Ignore - external API call failure is non-critical for localhost detection
+            Log::debug('ServerConnectivityService: Could not fetch public IP for localhost check', [
+                'error' => $e->getMessage(),
+            ]);
         }
 
         return false;
@@ -193,6 +200,10 @@ class ServerConnectivityService
                 'disk_gb' => $this->executeLocal('df -BG / | tail -1 | awk \'{print $2}\' | sed \'s/G//\''),
             ];
         } catch (\Exception $e) {
+            Log::error('ServerConnectivityService: Failed to get local server info', [
+                'error' => $e->getMessage(),
+            ]);
+
             return [];
         }
     }
@@ -238,7 +249,11 @@ class ServerConnectivityService
                 'last_ping_at' => now(),
             ]);
 
-            Log::info('Server reboot initiated', ['server_id' => $server->id]);
+            Log::info('ServerConnectivityService: Server reboot initiated', [
+                'server_id' => $server->id,
+                'ip' => $server->ip_address,
+                'port' => $server->port,
+            ]);
 
             return [
                 'success' => true,
@@ -246,8 +261,10 @@ class ServerConnectivityService
             ];
 
         } catch (\Exception $e) {
-            Log::error('Server reboot failed', [
+            Log::error('ServerConnectivityService: Server reboot failed', [
                 'server_id' => $server->id,
+                'ip' => $server->ip_address,
+                'port' => $server->port,
                 'error' => $e->getMessage(),
             ]);
 
@@ -291,7 +308,12 @@ class ServerConnectivityService
             $process->run();
 
             if ($process->isSuccessful()) {
-                Log::info('Service restarted', ['server_id' => $server->id, 'service' => $service]);
+                Log::info('ServerConnectivityService: Service restarted', [
+                    'server_id' => $server->id,
+                    'ip' => $server->ip_address,
+                    'port' => $server->port,
+                    'service' => $service,
+                ]);
 
                 return [
                     'success' => true,
@@ -305,6 +327,14 @@ class ServerConnectivityService
             ];
 
         } catch (\Exception $e) {
+            Log::error('ServerConnectivityService: Failed to restart service', [
+                'server_id' => $server->id,
+                'ip' => $server->ip_address,
+                'port' => $server->port,
+                'service' => $service,
+                'error' => $e->getMessage(),
+            ]);
+
             return [
                 'success' => false,
                 'message' => 'Failed to restart service: '.$e->getMessage(),
@@ -333,6 +363,13 @@ class ServerConnectivityService
             return ['success' => false, 'uptime' => null];
 
         } catch (\Exception $e) {
+            Log::warning('ServerConnectivityService: Failed to get uptime', [
+                'server_id' => $server->id,
+                'ip' => $server->ip_address,
+                'port' => $server->port,
+                'error' => $e->getMessage(),
+            ]);
+
             return ['success' => false, 'uptime' => null];
         }
     }
@@ -358,6 +395,13 @@ class ServerConnectivityService
             return ['success' => false, 'usage' => null];
 
         } catch (\Exception $e) {
+            Log::warning('ServerConnectivityService: Failed to get disk usage', [
+                'server_id' => $server->id,
+                'ip' => $server->ip_address,
+                'port' => $server->port,
+                'error' => $e->getMessage(),
+            ]);
+
             return ['success' => false, 'usage' => null];
         }
     }
@@ -383,6 +427,13 @@ class ServerConnectivityService
             return ['success' => false, 'usage' => null];
 
         } catch (\Exception $e) {
+            Log::warning('ServerConnectivityService: Failed to get memory usage', [
+                'server_id' => $server->id,
+                'ip' => $server->ip_address,
+                'port' => $server->port,
+                'error' => $e->getMessage(),
+            ]);
+
             return ['success' => false, 'usage' => null];
         }
     }
@@ -423,6 +474,13 @@ class ServerConnectivityService
             ];
 
         } catch (\Exception $e) {
+            Log::error('ServerConnectivityService: Failed to clear system cache', [
+                'server_id' => $server->id,
+                'ip' => $server->ip_address,
+                'port' => $server->port,
+                'error' => $e->getMessage(),
+            ]);
+
             return [
                 'success' => false,
                 'message' => 'Failed to clear cache: '.$e->getMessage(),

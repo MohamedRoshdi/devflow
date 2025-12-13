@@ -586,8 +586,10 @@ class DomainService
             return $ips;
 
         } catch (\Exception $e) {
-            Log::warning('DNS lookup failed', [
+            Log::error('DomainService: DNS lookup failed', [
                 'domain' => $domain,
+                'operation' => 'perform_dns_lookup',
+                'method' => 'dns_get_record',
                 'error' => $e->getMessage(),
             ]);
 
@@ -609,11 +611,22 @@ class DomainService
             $process->run();
 
             if (!$process->isSuccessful()) {
+                Log::error('DomainService: DNS lookup with dig failed', [
+                    'domain' => $domain,
+                    'operation' => 'perform_dns_lookup_dig',
+                    'error' => $process->getErrorOutput(),
+                    'exit_code' => $process->getExitCode(),
+                ]);
                 return [];
             }
 
             $output = trim($process->getOutput());
             if (empty($output)) {
+                Log::warning('DomainService: DNS lookup returned empty result', [
+                    'domain' => $domain,
+                    'operation' => 'perform_dns_lookup_dig',
+                    'message' => 'No DNS records found',
+                ]);
                 return [];
             }
 
@@ -623,8 +636,10 @@ class DomainService
             );
 
         } catch (\Exception $e) {
-            Log::warning('DNS lookup with dig failed', [
+            Log::error('DomainService: DNS lookup with dig exception', [
                 'domain' => $domain,
+                'operation' => 'perform_dns_lookup_dig',
+                'method' => 'Process::run',
                 'error' => $e->getMessage(),
             ]);
 

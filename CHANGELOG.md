@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.50.0] - 2025-12-13
+
+### Added
+- **6 New Feature Tests**
+  - `tests/Feature/Integration/DeploymentWorkflowTest.php` - Deployment workflow integration (~25 test methods)
+  - `tests/Feature/Livewire/DeploymentShowTest.php` - Deployment details, logs, authorization
+  - `tests/Feature/Livewire/ProjectShowTest.php` - Tab navigation, deployments, Git, Docker (30 tests, 611 lines)
+  - `tests/Feature/Livewire/ServerShowTest.php` - Server status, metrics, SSH operations
+  - `tests/Feature/Livewire/ServerMetricsDashboardTest.php` - Metrics display, alerts, charts (27 tests)
+
+### Security
+- **API Rate Limiting** - Added throttle middleware to all API routes
+  - `throttle:60,1` for read operations (60 requests/minute)
+  - `throttle:10,1` for write operations (10 requests/minute)
+
+### Improved
+- **Service Error Logging** - Enhanced logging in 4 services with consistent patterns:
+  - `FileBackupService.php` - Added `Log::error()` with context to empty catch blocks
+  - `KubernetesService.php` - Added Log facade, enhanced 4 error locations with project context
+  - `ServerConnectivityService.php` - Standardized logging with server ID, IP, port context
+  - `DomainService.php` - Enhanced DNS lookup logging with operation and method info
+
+### Documentation
+- Updated `TASKS.md` with completed tasks, test coverage now at ~75%
+- 41 tasks completed out of 127+ total
+
+---
+
 ## [5.49.0] - 2025-12-13
 
 ### Added

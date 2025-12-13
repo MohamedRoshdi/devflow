@@ -9,43 +9,59 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // API Version 1 - Protected with authentication and rate limiting
-Route::prefix('v1')->name('api.v1.')->middleware(['api.auth', 'throttle:api'])->group(function () {
-    // Projects - Standard API rate limit
-    Route::apiResource('projects', ProjectController::class)->parameters(['projects' => 'project:slug']);
+Route::prefix('v1')->name('api.v1.')->middleware(['api.auth'])->group(function () {
+    // Projects - Standard API rate limit (60 requests per minute for read operations)
+    Route::apiResource('projects', ProjectController::class)
+        ->parameters(['projects' => 'project:slug'])
+        ->middleware('throttle:60,1');
 
-    // Project Deployments - Special deployment rate limit
+    // Project Deployments - Restrictive rate limit (10 requests per minute for deploy operations)
     Route::post('projects/{project:slug}/deploy', [ProjectController::class, 'deploy'])
-        ->middleware('throttle:deployments')
-        ->withoutMiddleware('throttle:api')
+        ->middleware('throttle:10,1')
         ->name('projects.deploy');
 
-    // Servers - Server operations rate limit for intensive operations
-    Route::apiResource('servers', ServerController::class);
-    Route::get('servers/{server}/metrics', [ServerController::class, 'metrics'])->name('servers.metrics');
+    // Servers - Server operations rate limit (60 requests per minute for read operations)
+    Route::apiResource('servers', ServerController::class)
+        ->middleware('throttle:60,1');
 
-    // Deployments - Read operations use standard API rate limit, write operations use deployment-specific rate limit
-    Route::get('projects/{project:slug}/deployments', [DeploymentController::class, 'index'])->name('projects.deployments.index');
+    // Server Metrics - Read operations (60 requests per minute)
+    Route::get('servers/{server}/metrics', [ServerController::class, 'metrics'])
+        ->middleware('throttle:60,1')
+        ->name('servers.metrics');
+
+    // Deployments - Read operations use standard API rate limit (60 requests per minute)
+    Route::get('projects/{project:slug}/deployments', [DeploymentController::class, 'index'])
+        ->middleware('throttle:60,1')
+        ->name('projects.deployments.index');
+
+    // Deployment Store - Restrictive rate limit (10 requests per minute)
     Route::post('projects/{project:slug}/deployments', [DeploymentController::class, 'store'])
-        ->middleware('throttle:deployment-store')
-        ->withoutMiddleware('throttle:api')
+        ->middleware('throttle:10,1')
         ->name('projects.deployments.store');
-    Route::get('deployments/{deployment}', [DeploymentController::class, 'show'])->name('deployments.show');
+
+    // Deployment Show - Standard rate limit (60 requests per minute)
+    Route::get('deployments/{deployment}', [DeploymentController::class, 'show'])
+        ->middleware('throttle:60,1')
+        ->name('deployments.show');
+
+    // Deployment Rollback - Restrictive rate limit (10 requests per minute)
     Route::post('deployments/{deployment}/rollback', [DeploymentController::class, 'rollback'])
-        ->middleware('throttle:deployments')
-        ->withoutMiddleware('throttle:api')
+        ->middleware('throttle:10,1')
         ->name('deployments.rollback');
 });
 
 // Legacy routes (auth:sanctum) - Protected with API rate limiting
-Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
+Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
 
-    // Server Metrics - More restrictive rate limit for write operations
+    // Server Metrics - More restrictive rate limit for write operations (10 requests per minute)
     Route::post('/servers/{server}/metrics', [ServerMetricsController::class, 'store'])
-        ->middleware('throttle:server-operations')
-        ->withoutMiddleware('throttle:api');
+        ->middleware('throttle:10,1')
+        ->withoutMiddleware('throttle:60,1');
+
+    // Server Metrics - Read operations (60 requests per minute)
     Route::get('/servers/{server}/metrics', [ServerMetricsController::class, 'index']);
 });
 

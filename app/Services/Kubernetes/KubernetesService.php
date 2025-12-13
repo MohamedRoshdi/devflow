@@ -6,6 +6,7 @@ namespace App\Services\Kubernetes;
 
 use App\Models\KubernetesCluster;
 use App\Models\Project;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
 
 class KubernetesService
@@ -416,9 +417,10 @@ class KubernetesService
             $result = Process::run($command);
 
             if (! $result->successful()) {
-                \Log::warning('Failed to get pod status', [
+                Log::warning('KubernetesService: Failed to get pod status', [
                     'project_id' => $project->id,
                     'project_slug' => $project->slug,
+                    'namespace' => $project->slug,
                     'error' => $result->errorOutput(),
                 ]);
 
@@ -438,10 +440,12 @@ class KubernetesService
                 ];
             }, $pods['items'] ?? []);
         } catch (\Exception $e) {
-            \Log::error('Failed to get pod status', [
+            Log::error('KubernetesService: Failed to get pod status', [
                 'project_id' => $project->id,
                 'project_slug' => $project->slug,
+                'namespace' => $project->slug,
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return [];
@@ -464,9 +468,11 @@ class KubernetesService
             $result = Process::run($command);
 
             if (! $result->successful()) {
-                \Log::warning('Failed to get service endpoints', [
+                Log::warning('KubernetesService: Failed to get service endpoints', [
                     'project_id' => $project->id,
                     'project_slug' => $project->slug,
+                    'namespace' => $project->slug,
+                    'service_name' => $project->slug . '-service',
                     'error' => $result->errorOutput(),
                 ]);
 
@@ -504,10 +510,13 @@ class KubernetesService
 
             return $endpoints;
         } catch (\Exception $e) {
-            \Log::error('Failed to get service endpoints', [
+            Log::error('KubernetesService: Failed to get service endpoints', [
                 'project_id' => $project->id,
                 'project_slug' => $project->slug,
+                'namespace' => $project->slug,
+                'service_name' => $project->slug . '-service',
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return [];

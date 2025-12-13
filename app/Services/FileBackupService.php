@@ -800,7 +800,10 @@ class FileBackupService
                 return true;
             }
         } catch (\Exception $e) {
-            // Ignore
+            Log::error('FileBackupService: Failed to fetch public IP for localhost check', [
+                'ip' => $ip,
+                'error' => $e->getMessage(),
+            ]);
         }
 
         return false;
