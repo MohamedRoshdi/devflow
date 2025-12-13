@@ -120,7 +120,7 @@ class HealthDashboard extends Component
 
         // Check last deployment (using latestDeployment relationship)
         $lastDeployment = $project->latestDeployment;
-        if ($lastDeployment) {
+        if ($lastDeployment && $lastDeployment->created_at) {
             $health['last_deployment'] = $lastDeployment->created_at->diffForHumans();
             $health['last_deployment_status'] = $lastDeployment->status;
 
@@ -237,21 +237,40 @@ class HealthDashboard extends Component
         $sshOptions = "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=5 -p {$server->port}";
         $sshCommand = "ssh {$sshOptions} {$server->username}@{$server->ip_address}";
 
-        // Get CPU usage
-        $cpuResult = Process::timeout(10)->run("{$sshCommand} 'top -bn1 | grep \"Cpu(s)\" | awk \"{print \\$2}\" | cut -d\".\" -f1'");
-        $cpuUsage = $cpuResult->successful() ? (int) trim($cpuResult->output()) : null;
+        // Combine all metrics into a single SSH call
+        // Using echo with delimiters to separate different metric outputs
+        $combinedCommand = $sshCommand . " 'echo \"CPU:\$(top -bn1 | grep \"Cpu(s)\" | awk \"{print \\$2}\" | cut -d\".\" -f1)\" && " .
+            "echo \"RAM:\$(free | grep Mem | awk \"{print \\$3/\\$2 * 100.0}\")\" && " .
+            "echo \"DISK:\$(df -h / | tail -1 | awk \"{print \\$5}\" | tr -d \"%\")\" && " .
+            "echo \"UPTIME:\$(uptime -p)\"'";
 
-        // Get RAM usage
-        $ramResult = Process::timeout(10)->run("{$sshCommand} 'free | grep Mem | awk \"{print \\$3/\\$2 * 100.0}\"'");
-        $ramUsage = $ramResult->successful() ? round((float) trim($ramResult->output())) : null;
+        $result = Process::timeout(10)->run($combinedCommand);
 
-        // Get disk usage
-        $diskResult = Process::timeout(10)->run("{$sshCommand} 'df -h / | tail -1 | awk \"{print \\$5}\" | tr -d \"%\"'");
-        $diskUsage = $diskResult->successful() ? (int) trim($diskResult->output()) : null;
+        $cpuUsage = null;
+        $ramUsage = null;
+        $diskUsage = null;
+        $uptime = null;
 
-        // Get uptime
-        $uptimeResult = Process::timeout(10)->run("{$sshCommand} 'uptime -p'");
-        $uptime = $uptimeResult->successful() ? trim($uptimeResult->output()) : null;
+        if ($result->successful()) {
+            $output = $result->output();
+            $lines = explode("\n", trim($output));
+
+            foreach ($lines as $line) {
+                if (str_starts_with($line, 'CPU:')) {
+                    $value = trim(substr($line, 4));
+                    $cpuUsage = $value !== '' ? (int) $value : null;
+                } elseif (str_starts_with($line, 'RAM:')) {
+                    $value = trim(substr($line, 4));
+                    $ramUsage = $value !== '' ? (int) round((float) $value) : null;
+                } elseif (str_starts_with($line, 'DISK:')) {
+                    $value = trim(substr($line, 5));
+                    $diskUsage = $value !== '' ? (int) $value : null;
+                } elseif (str_starts_with($line, 'UPTIME:')) {
+                    $value = trim(substr($line, 7));
+                    $uptime = $value !== '' ? $value : null;
+                }
+            }
+        }
 
         return [
             'cpu_usage' => $cpuUsage,
@@ -354,20 +373,42 @@ class HealthDashboard extends Component
     public function getOverallStats(): array
     {
         $total = count($this->projectsHealth);
-        $healthy = count(array_filter($this->projectsHealth, fn ($p) => $p['health_score'] >= 80));
-        $warning = count(array_filter($this->projectsHealth, fn ($p) => $p['health_score'] >= 50 && $p['health_score'] < 80));
-        $critical = count(array_filter($this->projectsHealth, fn ($p) => $p['health_score'] < 50));
 
-        $avgScore = $total > 0
-            ? round(array_sum(array_column($this->projectsHealth, 'health_score')) / $total)
-            : 0;
+        if ($total === 0) {
+            return [
+                'total' => 0,
+                'healthy' => 0,
+                'warning' => 0,
+                'critical' => 0,
+                'avg_score' => 0,
+            ];
+        }
+
+        // Single iteration to count statuses and sum scores
+        $healthy = 0;
+        $warning = 0;
+        $critical = 0;
+        $totalScore = 0;
+
+        foreach ($this->projectsHealth as $project) {
+            $score = $project['health_score'];
+            $totalScore += $score;
+
+            if ($score >= 80) {
+                $healthy++;
+            } elseif ($score >= 50) {
+                $warning++;
+            } else {
+                $critical++;
+            }
+        }
 
         return [
             'total' => $total,
             'healthy' => $healthy,
             'warning' => $warning,
             'critical' => $critical,
-            'avg_score' => $avgScore,
+            'avg_score' => (int) round($totalScore / $total),
         ];
     }
 

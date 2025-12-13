@@ -102,15 +102,35 @@ class DeploymentList extends Component
      */
     public function render(): \Illuminate\View\View
     {
+        $userId = auth()->id();
+        assert($userId !== null, 'User must be authenticated');
+
+        // Optimized: Cache user project IDs to avoid N+1 query during render
+        $userProjectIds = Cache::remember('user_project_ids_'.$userId, 300, function () {
+            $user = auth()->user();
+            assert($user !== null, 'User must be authenticated');
+
+            return $user->projects()->pluck('id')->toArray();
+        });
+
         // Optimized: Cache stats for 2 minutes (works with all cache drivers)
         // Filter stats by user's projects only
-        $userProjectIds = auth()->user()->projects()->pluck('id');
-        $stats = Cache::remember('deployment_stats_user_'.auth()->id(), 120, function () use ($userProjectIds) {
+        // Single query using conditional aggregation instead of 4 separate COUNT queries
+        $stats = Cache::remember('deployment_stats_user_'.$userId, 120, function () use ($userProjectIds) {
+            $result = Deployment::whereIn('project_id', $userProjectIds)
+                ->selectRaw('
+                    COUNT(*) as total,
+                    SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as success,
+                    SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as failed,
+                    SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as running
+                ', ['success', 'failed', 'running'])
+                ->first();
+
             return [
-                'total' => Deployment::whereIn('project_id', $userProjectIds)->count(),
-                'success' => Deployment::whereIn('project_id', $userProjectIds)->where('status', 'success')->count(),
-                'failed' => Deployment::whereIn('project_id', $userProjectIds)->where('status', 'failed')->count(),
-                'running' => Deployment::whereIn('project_id', $userProjectIds)->where('status', 'running')->count(),
+                'total' => (int) ($result?->total ?? 0),
+                'success' => (int) ($result?->success ?? 0),
+                'failed' => (int) ($result?->failed ?? 0),
+                'running' => (int) ($result?->running ?? 0),
             ];
         });
 
@@ -126,7 +146,7 @@ class DeploymentList extends Component
                 'commit_message', 'commit_hash', 'started_at', 'completed_at',
                 'triggered_by', 'created_at', 'updated_at',
             ])
-            ->whereHas('project', fn ($query) => $query->where('user_id', auth()->id()))
+            ->whereHas('project', fn ($query) => $query->where('user_id', $userId))
             ->when($this->statusFilter, fn ($query) => $query->where('status', $this->statusFilter))
             ->when($this->projectFilter, fn ($query) => $query->where('project_id', $this->projectFilter))
             ->when($this->search, function ($query) {
@@ -140,8 +160,8 @@ class DeploymentList extends Component
             ->paginate($this->perPage);
 
         // Optimized: Cache projects list for 10 minutes (filtered by user)
-        $projects = Cache::remember('projects_dropdown_list_user_'.auth()->id(), 600, function () {
-            return Project::where('user_id', auth()->id())
+        $projects = Cache::remember('projects_dropdown_list_user_'.$userId, 600, function () use ($userId) {
+            return Project::where('user_id', $userId)
                 ->orderBy('name')
                 ->get(['id', 'name']);
         });

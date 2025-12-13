@@ -21,7 +21,8 @@ class ServerTagAssignment extends Component
 
     public function mount(Server $server): void
     {
-        $this->server = $server;
+        // Eager load tags to avoid N+1 query
+        $this->server = $server->load('tags:id');
         $this->loadTags();
     }
 
@@ -33,8 +34,8 @@ class ServerTagAssignment extends Component
             ->get()
             ->toArray();
 
-        // Get currently selected tags for this server
-        $this->selectedTags = $this->server->tags()->pluck('server_tags.id')->toArray();
+        // Get currently selected tags for this server (already loaded via eager loading)
+        $this->selectedTags = $this->server->tags->pluck('id')->toArray();
     }
 
     public function toggleTag(int $tagId): void

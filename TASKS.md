@@ -1,6 +1,6 @@
 # DevFlow Pro - Task Backlog & Roadmap
 
-> Last Updated: 2025-12-13 | Version: 5.48.1
+> Last Updated: 2025-12-13 | Version: 5.49.0
 
 This document contains all pending tasks, improvements, and feature requests for DevFlow Pro, organized by priority and category.
 
@@ -13,6 +13,7 @@ This document contains all pending tasks, improvements, and feature requests for
 - [Medium Priority (Week 5-6)](#medium-priority-week-5-6)
 - [Low Priority (Backlog)](#low-priority-backlog)
 - [Planned Features (Future Releases)](#planned-features-future-releases)
+- [Test Coverage Report](#test-coverage-report)
 
 ---
 
@@ -20,53 +21,122 @@ This document contains all pending tasks, improvements, and feature requests for
 
 ### Missing Features
 
-- [ ] **Implement GitLab Pipeline Trigger**
-  - File: `app/Services/CICD/PipelineService.php:643`
-  - Status: Stub method exists, no implementation
-  - Task: Add HTTP request to GitLab API to trigger pipelines
+- [x] **Implement GitLab Pipeline Trigger** ✅ COMPLETED
+  - File: `app/Services/CICD/PipelineService.php:689-771`
+  - Implemented: Full GitLab API integration with error handling and logging
 
-- [ ] **Implement Jenkins Build Trigger**
-  - File: `app/Services/CICD/PipelineService.php:647`
-  - Status: Stub method exists, no implementation
-  - Task: Implement Jenkins API integration to trigger builds
+- [x] **Implement Jenkins Build Trigger** ✅ COMPLETED
+  - File: `app/Services/CICD/PipelineService.php:776-906`
+  - Implemented: Jenkins API with queue polling for build numbers
 
-- [ ] **Implement Bitbucket Pipelines Config Generator**
-  - File: `app/Services/CICD/PipelineService.php:52`
-  - Status: Returns empty array
-  - Task: Implement Bitbucket Pipelines YAML generation
+- [x] **Implement Bitbucket Pipelines Config Generator** ✅ COMPLETED
+  - File: `app/Services/CICD/PipelineService.php:627-757`
+  - Implemented: Full Bitbucket Pipelines YAML generation with services
+
+- [x] **Implement Jenkins Config Generator** ✅ COMPLETED (BONUS)
+  - File: `app/Services/CICD/PipelineService.php:762-937`
+  - Implemented: Jenkinsfile content generation
+
+- [x] **Implement Custom Pipeline Config Generator** ✅ COMPLETED (BONUS)
+  - File: `app/Services/CICD/PipelineService.php:942-1013`
+  - Implemented: Custom pipeline configuration with stages
+
+- [x] **Create services.php config file** ✅ COMPLETED (BONUS)
+  - File: `config/services.php`
+  - Added: GitHub, GitLab, Bitbucket, Jenkins, Docker Registry configurations
+
+### Missing Navigation Links (Critical)
+
+- [x] **Add SSH Terminal to sidebar navigation** ✅ COMPLETED
+  - Added: Route `/terminal` with SSHTerminalSelector component
+  - Added: Route `/servers/{server}/terminal` for server-specific access
+  - Added: SSH Terminal link in DevOps Tools sidebar section
+  - Created: `app/Livewire/Servers/SSHTerminalSelector.php` with server selection UI
+  - Created: `resources/views/livewire/servers/s-s-h-terminal-selector.blade.php`
+
+- [x] **Add Log Sources Manager to navigation** ✅ COMPLETED
+  - Route: `/servers/{server}/log-sources`
+  - Added: Quick action button on server detail page
+  - File: `resources/views/livewire/servers/server-show.blade.php:98-104`
+
+- [x] **Create route for ScheduledDeployments** ✅ COMPLETED
+  - Route: `/deployments/scheduled`
+  - Added: Route in `routes/web.php:103`
+  - Added: Navigation link in sidebar Deployments dropdown
+  - File: `resources/views/layouts/app.blade.php:165-168`
+
+- [x] **Improve Security Scan Dashboard accessibility** ✅ COMPLETED
+  - Already accessible via Security link on server detail page
+  - Security dashboard links to Security Scan
+  - Route: `/servers/{server}/security` → `/servers/{server}/security/scan`
+
+### Service Stub Implementations (Critical)
+
+- [x] **Complete MetricsCollectionService implementations** ✅ COMPLETED
+  - File: `app/Services/MetricsCollectionService.php`
+  - Fixed: All methods now return concrete types (float/int) instead of null
+  - Added: Proper Log facade usage, error handling with context
+  - Methods fixed: `getCpuUsage()`, `getMemoryUsage()`, `getDiskUsage()`, `getNetworkStats()`, `getLoadAverage()`
+
+- [x] **Fix ServerMetricsService null handling** ✅ COMPLETED
+  - File: `app/Services/ServerMetricsService.php`
+  - Fixed: `collectMetrics()` now returns `ServerMetric` (non-nullable)
+  - Fixed: `getLatestMetrics()` now returns `ServerMetric` with fallback
+  - Added: `createFallbackMetrics()` method for zero-value defaults
+  - Updated: `CollectServerMetrics.php`, `ResourceAlertService.php`, `ServerMetricsDashboard.php`
+
+- [x] **Implement QueueMonitorService features** ✅ COMPLETED
+  - File: `app/Services/QueueMonitorService.php`
+  - Added: Proper error logging to all catch blocks
+  - Added: 6 new methods: `getQueueHealth()`, `getQueueSize()`, `purgeQueue()`, `getAverageProcessingTime()`, `getStuckJobs()`, `clearMonitoringCache()`
+  - Enhanced: Processing rate with throughput metrics
 
 ### Code Optimization (Quick Wins)
 
-- [ ] **Fix 4 separate COUNT queries in DeploymentList**
-  - File: `app/Livewire/Deployments/DeploymentList.php:107-115`
-  - Issue: 4 separate count queries instead of 1
-  - Fix: Use single query with GROUP BY or selectRaw with CASE statements
-  ```php
-  // Current: 4 queries
-  // Target: 1 query with SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END)
-  ```
+- [x] **Fix 4 separate COUNT queries in DeploymentList** ✅ COMPLETED
+  - File: `app/Livewire/Deployments/DeploymentList.php:116-135`
+  - Fixed: Single query using `selectRaw()` with conditional aggregation
+  - Used: `SUM(CASE WHEN status = ? THEN 1 ELSE 0 END)` pattern
+  - Result: 75% reduction in database queries
 
-- [ ] **Combine SSH commands in HealthDashboard**
-  - File: `app/Livewire/Dashboard/HealthDashboard.php:235-262`
-  - Issue: 4 sequential SSH commands for metrics
-  - Fix: Combine into single SSH call with piped commands
+- [x] **Combine SSH commands in HealthDashboard** ✅ COMPLETED
+  - File: `app/Livewire/Dashboard/HealthDashboard.php:235-281`
+  - Fixed: Combined 4 SSH commands into 1 with delimiter-based output
+  - Result: 75% reduction in SSH connections
 
-- [ ] **Fix triple array iteration in getOverallStats**
-  - File: `app/Livewire/Dashboard/HealthDashboard.php:354-372`
-  - Issue: Iterates same array 3 times
-  - Fix: Single pass with counters
+- [x] **Fix triple array iteration in getOverallStats** ✅ COMPLETED
+  - File: `app/Livewire/Dashboard/HealthDashboard.php:354-394`
+  - Fixed: Single foreach loop with counters for healthy/warning/critical
+  - Also fixed: Bonus PHPStan issue with `$lastDeployment->created_at` null check
+
+### N+1 Query Issues (Critical)
+
+- [x] **Fix N+1 in DeploymentList user projects query** ✅ COMPLETED
+  - File: `app/Livewire/Deployments/DeploymentList.php:107`
+  - Fixed: Added caching for user project IDs (5-minute TTL)
+  - Fixed: Extracted `$userId` with null assertion for PHPStan compliance
+
+- [x] **Fix N+1 in HealthCheckManager notification channels** ✅ COMPLETED
+  - File: `app/Livewire/Settings/HealthCheckManager.php:173`
+  - Fixed: Added `with('notificationChannels:id')` eager loading in `editCheck()`
+  - Optimized: Only loads `id` column from relationship
+
+- [x] **Fix N+1 in ServerTagAssignment** ✅ COMPLETED
+  - File: `app/Livewire/Servers/ServerTagAssignment.php:37`
+  - Fixed: Eager load tags in `mount()` using `$server->load('tags:id')`
+  - Changed: Query to collection access (`tags->pluck()` instead of `tags()->pluck()`)
 
 ### Test Coverage (Critical)
 
-- [ ] **Create DeploymentList Feature Test**
+- [x] **Create DeploymentList Feature Test** ✅ COMPLETED
   - File: `tests/Feature/Livewire/DeploymentListTest.php`
   - Coverage: List display, filtering, pagination, trigger deployment
 
-- [ ] **Create ProjectCreate Feature Test**
+- [x] **Create ProjectCreate Feature Test** ✅ COMPLETED
   - File: `tests/Feature/Livewire/ProjectCreateTest.php`
   - Coverage: Multi-step wizard, validation, server selection
 
-- [ ] **Create ServerCreate Feature Test**
+- [x] **Create ServerCreate Feature Test** ✅ COMPLETED
   - File: `tests/Feature/Livewire/ServerCreateTest.php`
   - Coverage: Form validation, SSH testing, Docker detection
 
@@ -74,27 +144,107 @@ This document contains all pending tasks, improvements, and feature requests for
   - File: `tests/Feature/Integration/DeploymentWorkflowTest.php`
   - Coverage: Git push → webhook → deployment → verification
 
+- [x] **Create Dashboard Unit Test** ✅ COMPLETED
+  - File: `tests/Unit/Livewire/DashboardTest.php`
+  - Component: `app/Livewire/Dashboard.php` (974 lines)
+  - Coverage: Stats loading, project listing, quick actions
+
+- [x] **Create TeamSettings Unit Test** ✅ COMPLETED
+  - File: `tests/Unit/Livewire/TeamSettingsTest.php`
+  - Component: `app/Livewire/Teams/TeamSettings.php` (467 lines)
+  - Coverage: Team update, member management, invitations
+
+- [x] **Create DeploymentApprovals Unit Test** ✅ COMPLETED
+  - File: `tests/Unit/Livewire/DeploymentApprovalsTest.php`
+  - Component: `app/Livewire/Deployments/DeploymentApprovals.php`
+  - Coverage: Approve/reject flow, modal interactions
+
+- [x] **Create ScheduledDeployments Unit Test** ✅ COMPLETED
+  - File: `tests/Unit/Livewire/Deployments/ScheduledDeploymentsTest.php`
+  - Component: `app/Livewire/Deployments/ScheduledDeployments.php`
+  - Coverage: Schedule creation, editing, deletion
+
 ### UI/UX (Critical)
 
-- [ ] **Add ARIA labels to deployment status badges**
+- [x] **Add ARIA labels to deployment status badges** ✅ COMPLETED
   - File: `resources/views/livewire/deployments/deployment-list.blade.php`
-  - Issue: Timeline dots and status badges lack screen reader support
+  - Added: `role="status"`, `aria-label` attributes to status badges and timeline
 
-- [ ] **Add ARIA labels to project card icons**
+- [x] **Add ARIA labels to project card icons** ✅ COMPLETED
   - File: `resources/views/livewire/projects/project-list.blade.php`
-  - Issue: Icons have no alt text or aria-labels
+  - Added: `aria-label` to project cards, icons, and action buttons
 
-- [ ] **Add ARIA labels to server status indicators**
+- [x] **Add ARIA labels to server status indicators** ✅ COMPLETED
   - File: `resources/views/livewire/servers/server-list.blade.php`
-  - Issue: Status indicators missing accessibility attributes
+  - Added: `role="status"`, `aria-label` to status indicators
 
-- [ ] **Fix multi-step indicator on mobile**
+- [x] **Fix multi-step indicator on mobile** ✅ COMPLETED
   - File: `resources/views/livewire/projects/project-create.blade.php`
-  - Issue: Step indicator breaks on mobile screens
+  - Fixed: Responsive step indicator with mobile-friendly layout
 
 ---
 
 ## High Priority (Week 3-4)
+
+### Large Component Refactoring (High Priority)
+
+- [ ] **Refactor Dashboard.php - TOO LARGE**
+  - File: `app/Livewire/Dashboard.php` (974 lines)
+  - Issue: Single component handling multiple concerns
+  - Task: Split into:
+    - `DashboardStats.php` - Statistics cards
+    - `DashboardProjects.php` - Project listing
+    - `DashboardQuickActions.php` - Action buttons
+    - `DashboardRecentActivity.php` - Activity feed
+
+- [ ] **Refactor TeamSettings.php**
+  - File: `app/Livewire/Teams/TeamSettings.php` (467 lines)
+  - Issue: Multiple concerns mixed (settings, members, invitations)
+  - Task: Extract into:
+    - `TeamGeneralSettings.php` - Basic team settings
+    - `TeamMemberManager.php` - Member management
+    - `TeamInvitations.php` - Invitation handling
+
+- [ ] **Refactor ProjectShow.php**
+  - File: `app/Livewire/Projects/ProjectShow.php` (459 lines)
+  - Issue: Too many responsibilities
+  - Task: Use Livewire child components for each tab
+
+- [ ] **Refactor ProjectCreate.php**
+  - File: `app/Livewire/Projects/ProjectCreate.php` (449 lines)
+  - Issue: Complex multi-step form handling
+  - Task: Extract step components or use form wizard trait
+
+- [ ] **Refactor GitManager.php**
+  - File: `app/Livewire/Projects/DevFlow/GitManager.php` (446 lines)
+  - Issue: Git operations could be abstracted
+  - Task: Extract `GitOperationsService` for reusability
+
+### Silent Failure Logging Issues (High Priority)
+
+- [ ] **Add logging to FileBackupService failures**
+  - File: `app/Services/FileBackupService.php`
+  - Lines: 509, 513
+  - Issue: Empty catch blocks return empty arrays silently
+  - Task: Add `Log::error()` with context
+
+- [ ] **Add logging to KubernetesService failures**
+  - File: `app/Services/Kubernetes/KubernetesService.php`
+  - Lines: 425, 447, 473, 513
+  - Issue: Silent failures on API errors
+  - Task: Add proper exception logging
+
+- [ ] **Add logging to ServerConnectivityService failures**
+  - File: `app/Services/ServerConnectivityService.php`
+  - Lines: 124, 150, 196
+  - Issue: Connection failures logged inconsistently
+  - Task: Standardize error logging
+
+- [ ] **Add logging to DomainService failures**
+  - File: `app/Services/DomainService.php`
+  - Lines: 594, 612, 617, 631
+  - Issue: DNS and domain operations fail silently
+  - Task: Add error context to logs
 
 ### Security Improvements
 
@@ -188,6 +338,41 @@ This document contains all pending tasks, improvements, and feature requests for
   - File: `tests/Feature/Api/DeploymentControllerTest.php`
   - Coverage: GET, POST approve, POST rollback, DELETE cancel
 
+- [ ] **Create ServerBackupManager Unit Test**
+  - File: `tests/Unit/Livewire/ServerBackupManagerTest.php`
+  - Component: `app/Livewire/Servers/ServerBackupManager.php` (289 lines - UNTESTED)
+  - Coverage: Backup creation, restoration, scheduling
+
+- [ ] **Create ResourceAlertManager Unit Test**
+  - File: `tests/Unit/Livewire/ResourceAlertManagerTest.php`
+  - Component: `app/Livewire/Servers/ResourceAlertManager.php` (295 lines - UNTESTED)
+  - Coverage: Alert creation, threshold management
+
+- [ ] **Create ProjectEnvironment Unit Test**
+  - File: `tests/Unit/Livewire/ProjectEnvironmentTest.php`
+  - Component: `app/Livewire/Projects/ProjectEnvironment.php` (414 lines - UNTESTED)
+  - Coverage: Environment variable management
+
+- [ ] **Create StorageSettings Unit Test**
+  - File: `tests/Unit/Livewire/StorageSettingsTest.php`
+  - Component: `app/Livewire/Settings/StorageSettings.php` (364 lines - UNTESTED)
+  - Coverage: Storage configuration, driver selection
+
+- [ ] **Create ProjectTemplateManager Unit Test**
+  - File: `tests/Unit/Livewire/ProjectTemplateManagerTest.php`
+  - Component: `app/Livewire/Admin/ProjectTemplateManager.php` (396 lines - UNTESTED)
+  - Coverage: Template CRUD operations
+
+- [ ] **Create ClusterManager Unit Test**
+  - File: `tests/Unit/Livewire/ClusterManagerTest.php`
+  - Component: `app/Livewire/Kubernetes/ClusterManager.php` (296 lines - UNTESTED)
+  - Coverage: Cluster listing, pod management
+
+- [ ] **Create PipelineBuilder Unit Test**
+  - File: `tests/Unit/Livewire/PipelineBuilderTest.php`
+  - Component: `app/Livewire/CICD/PipelineBuilder.php` (348 lines - UNTESTED)
+  - Coverage: Pipeline creation, stage management
+
 ### UI/UX (High)
 
 - [ ] **Add loading states to project-create form**
@@ -217,6 +402,38 @@ This document contains all pending tasks, improvements, and feature requests for
 ---
 
 ## Medium Priority (Week 5-6)
+
+### Code Abstraction Opportunities
+
+- [ ] **Create WithModalManagement trait**
+  - Issue: Multiple components use `showCreateModal`, `showEditModal`, `showDeleteModal` pattern
+  - Task: Create reusable trait with common modal state management
+  - Affected Components: 15+ components
+
+- [ ] **Create WithFormValidation trait for Create/Edit pairs**
+  - Issue: `ProjectCreate.php` and `ProjectEdit.php` share validation logic
+  - Issue: `ServerCreate.php` and `ServerEdit.php` share validation logic
+  - Task: Extract common validation patterns
+
+- [ ] **Abstract deployment filtering logic**
+  - Issue: `DeploymentList.php` and `DeploymentShow.php` both handle filtering
+  - Task: Create `WithDeploymentFiltering` trait
+
+### Caching Strategy Improvements
+
+- [ ] **Add caching to ClusterManager**
+  - File: `app/Livewire/Kubernetes/ClusterManager.php:77`
+  - Issue: No pagination caching, frequent API calls
+  - Task: Cache cluster list for 60 seconds
+
+- [ ] **Add caching to HelpContentManager**
+  - File: `app/Livewire/Admin/HelpContentManager.php:116`
+  - Issue: Frequent database hits for help content
+  - Task: Cache help content for 5 minutes
+
+- [ ] **Improve cache invalidation strategy**
+  - Issue: Some caches not properly invalidated on updates
+  - Task: Implement event-based cache invalidation
 
 ### Database Optimization
 
@@ -380,17 +597,25 @@ This document contains all pending tasks, improvements, and feature requests for
 
 | Category | Total | Completed | Remaining |
 |----------|-------|-----------|-----------|
-| Critical Features | 3 | 0 | 3 |
-| Critical Optimization | 3 | 0 | 3 |
-| Critical Tests | 4 | 0 | 4 |
-| Critical UI | 4 | 0 | 4 |
+| Critical Features | 6 | 6 | 0 |
+| Critical Navigation | 4 | 4 | 0 |
+| Critical Service Stubs | 3 | 3 | 0 |
+| Critical Optimization | 6 | 3 | 3 |
+| Critical N+1 Queries | 3 | 3 | 0 |
+| Critical Tests | 8 | 7 | 1 |
+| Critical UI | 4 | 4 | 0 |
+| High Refactoring | 5 | 0 | 5 |
+| High Silent Failures | 4 | 0 | 4 |
 | High Features | 3 | 0 | 3 |
 | High Optimization | 4 | 0 | 4 |
-| High Tests | 10 | 0 | 10 |
+| High Tests | 18 | 0 | 18 |
 | High UI | 6 | 0 | 6 |
+| Medium Abstractions | 3 | 0 | 3 |
+| Medium Caching | 3 | 0 | 3 |
 | Medium Tasks | 30+ | 0 | 30+ |
 | Low Priority | 15+ | 0 | 15+ |
 | Planned Features | 5 | 0 | 5 |
+| **TOTAL** | **127+** | **30** | **97+** |
 
 ---
 
@@ -412,6 +637,92 @@ When adding new tasks:
 2. Include file path and line numbers where applicable
 3. Describe the issue and proposed solution
 4. Update statistics table
+
+---
+
+## Test Coverage Report
+
+### Current Test Coverage Status
+
+| Category | Files | Tests | Coverage |
+|----------|-------|-------|----------|
+| Browser Tests | 140+ | ~2,500 | 90%+ |
+| Unit - Services | 42 | ~900 | 95%+ |
+| Unit - Models | 11 | ~492 | 95%+ |
+| Unit - Livewire | **14** | ~120 | **~14%** |
+| Feature/API | 10 | ~300 | 85%+ |
+| Security | 5 | ~91 | 98% |
+| **TOTAL** | 222+ | 4,403+ | ~72% |
+
+### Critical Gap: Livewire Component Tests
+
+**14 out of 100+ Livewire components have unit tests (~14% coverage)**
+
+#### Untested Large Components (400+ lines):
+
+| Component | Lines | Priority | Status |
+|-----------|-------|----------|--------|
+| `Dashboard.php` | 974 | ⚠️ CRITICAL | ✅ TESTED |
+| `TeamSettings.php` | 467 | ⚠️ CRITICAL | ✅ TESTED |
+| `ProjectShow.php` | 459 | HIGH | Pending |
+| `ProjectCreate.php` | 449 | HIGH | ✅ TESTED |
+| `GitManager.php` | 446 | HIGH | Pending |
+| `ProjectEnvironment.php` | 414 | HIGH | Pending |
+| `ProjectTemplateManager.php` | 396 | MEDIUM | Pending |
+| `HealthCheckManager.php` | 381 | MEDIUM | Pending |
+| `StorageSettings.php` | 364 | MEDIUM | Pending |
+| `PipelineBuilder.php` | 348 | MEDIUM | Pending |
+
+#### Untested Critical Features:
+
+| Feature | Component | Risk | Status |
+|---------|-----------|------|--------|
+| Deployment Approvals | `DeploymentApprovals.php` | HIGH | ✅ TESTED |
+| Scheduled Deployments | `ScheduledDeployments.php` | HIGH | ✅ TESTED |
+| Deployment Comments | `DeploymentComments.php` | MEDIUM | Pending |
+| Server Backups | `ServerBackupManager.php` | HIGH | Pending |
+| Resource Alerts | `ResourceAlertManager.php` | HIGH | Pending |
+| Kubernetes Management | `ClusterManager.php` | MEDIUM | Pending |
+| System Admin | `SystemAdmin.php` | MEDIUM | Pending |
+
+### Test Files Location
+
+```
+tests/
+├── Browser/           # 140+ files - E2E tests
+├── Feature/
+│   ├── Api/          # 7 files - API tests
+│   ├── Livewire/     # 3 files - NEW: Feature tests for Livewire
+│   └── Integration/  # Workflow tests
+├── Unit/
+│   ├── Livewire/     # 14 files - Improved from 7
+│   ├── Models/       # 11 files - Good coverage
+│   └── Services/     # 42 files - Good coverage
+└── Security/         # 5 files - Good coverage
+```
+
+### Recommended Test Creation Order
+
+1. **Week 1-2 (Critical):** ✅ COMPLETED
+   - `DashboardTest.php` ✅
+   - `TeamSettingsTest.php` ✅
+   - `DeploymentListTest.php` ✅
+   - `ProjectCreateTest.php` ✅
+   - `ServerCreateTest.php` ✅
+   - `DeploymentApprovalsTest.php` ✅
+   - `ScheduledDeploymentsTest.php` ✅
+
+2. **Week 3-4 (High):**
+   - `ServerBackupManagerTest.php`
+   - `ProjectShowTest.php`
+   - `ProjectEnvironmentTest.php`
+   - `ResourceAlertManagerTest.php`
+
+3. **Week 5-6 (Medium):**
+   - `PipelineBuilderTest.php`
+   - `ClusterManagerTest.php`
+   - `HealthCheckManagerTest.php`
+   - Remaining components
 
 ---
 

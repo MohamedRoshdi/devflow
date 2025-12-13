@@ -58,6 +58,10 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
     Route::get('/servers/{server}/alerts', \App\Livewire\Servers\ResourceAlertManager::class)->name('servers.alerts');
     Route::get('/servers/{server}/backups', \App\Livewire\Servers\ServerBackupManager::class)->name('servers.backups');
     Route::get('/servers/{server}/provisioning', ProvisioningLogs::class)->name('servers.provisioning');
+    Route::get('/servers/{server}/terminal', \App\Livewire\Servers\SSHTerminal::class)->name('servers.terminal');
+
+    // SSH Terminal (Standalone)
+    Route::get('/terminal', \App\Livewire\Servers\SSHTerminalSelector::class)->name('terminal');
 
     // Server Security Management
     Route::get('/servers/{server}/security', \App\Livewire\Servers\Security\ServerSecurityDashboard::class)->name('servers.security');
@@ -100,6 +104,7 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
     // Deployments
     Route::get('/deployments', DeploymentList::class)->name('deployments.index');
     Route::get('/deployments/approvals', \App\Livewire\Deployments\DeploymentApprovals::class)->name('deployments.approvals');
+    Route::get('/deployments/scheduled', \App\Livewire\Deployments\ScheduledDeployments::class)->name('deployments.scheduled');
     Route::get('/deployments/{deployment}', DeploymentShow::class)->name('deployments.show');
 
     // Analytics

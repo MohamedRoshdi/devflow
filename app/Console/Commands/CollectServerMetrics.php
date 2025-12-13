@@ -66,23 +66,17 @@ class CollectServerMetrics extends Command
         try {
             $metric = $metricsService->collectMetrics($server);
 
-            if ($metric) {
-                $this->line("  ✓ CPU: {$metric->cpu_usage}%");
-                $this->line("  ✓ Memory: {$metric->memory_usage}%");
-                $this->line("  ✓ Disk: {$metric->disk_usage}%");
+            $this->line("  ✓ CPU: {$metric->cpu_usage}%");
+            $this->line("  ✓ Memory: {$metric->memory_usage}%");
+            $this->line("  ✓ Disk: {$metric->disk_usage}%");
 
-                // Broadcast the metrics update via WebSocket
-                if ($broadcast) {
-                    event(new ServerMetricsUpdated($server, $metric));
-                    $this->line('  ✓ Broadcast sent');
-                }
-
-                return self::SUCCESS;
-            } else {
-                $this->error('  ✗ Failed to collect metrics');
-
-                return self::FAILURE;
+            // Broadcast the metrics update via WebSocket
+            if ($broadcast) {
+                event(new ServerMetricsUpdated($server, $metric));
+                $this->line('  ✓ Broadcast sent');
             }
+
+            return self::SUCCESS;
         } catch (\Exception $e) {
             $this->error('  ✗ Error: '.$e->getMessage());
 

@@ -17,8 +17,8 @@
                     <div class="flex items-start gap-4">
                         {{-- Animated Logo --}}
                         <div class="relative">
-                            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-400 via-indigo-500 to-purple-600 flex items-center justify-center shadow-xl shadow-indigo-500/30 transform hover:scale-105 transition-transform">
-                                <svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-400 via-indigo-500 to-purple-600 flex items-center justify-center shadow-xl shadow-indigo-500/30 transform hover:scale-105 transition-transform" aria-hidden="true">
+                                <svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="Server icon">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"></path>
                                 </svg>
                             </div>
@@ -41,20 +41,20 @@
                                     $maintenanceCount = $servers->where('status', 'maintenance')->count();
                                 @endphp
                                 @if($onlineCount > 0)
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" role="status" aria-label="{{ $onlineCount }} servers online">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true"></span>
                                     {{ $onlineCount }} Online
                                 </span>
                                 @endif
                                 @if($offlineCount > 0)
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30" role="status" aria-label="{{ $offlineCount }} servers offline">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-red-400" aria-hidden="true"></span>
                                     {{ $offlineCount }} Offline
                                 </span>
                                 @endif
                                 @if($maintenanceCount > 0)
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-amber-500/20 text-amber-400 border border-amber-500/30" role="status" aria-label="{{ $maintenanceCount }} servers in maintenance mode">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                                     </svg>
                                     {{ $maintenanceCount }} Maintenance
@@ -70,17 +70,18 @@
                                 wire:loading.attr="disabled"
                                 wire:loading.class="opacity-50 cursor-not-allowed"
                                 wire:target="pingAllServers"
+                                aria-label="Ping all servers to check connectivity"
                                 class="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white overflow-hidden transition-all duration-300 hover:-translate-y-0.5 disabled:hover:translate-y-0"
                                 style="background: linear-gradient(135deg, #10b981 0%, #14b8a6 50%, #06b6d4 100%);">
-                            <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                            <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" aria-hidden="true"></div>
                             <span wire:loading.remove wire:target="pingAllServers" class="relative z-10 inline-flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v6h6M20 20v-6h-6M5.63 18.37A9 9 0 1118.37 5.63L19 6M5 19l.63-.63"></path>
                                 </svg>
                                 Ping All
                             </span>
-                            <span wire:loading wire:target="pingAllServers" class="relative z-10 inline-flex items-center gap-2">
-                                <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                            <span wire:loading wire:target="pingAllServers" class="relative z-10 inline-flex items-center gap-2" role="status" aria-live="polite">
+                                <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
@@ -91,11 +92,12 @@
                                 wire:loading.attr="disabled"
                                 wire:loading.class="opacity-50 cursor-not-allowed"
                                 wire:target="addCurrentServer"
+                                aria-label="Add current server to the management system"
                                 class="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white overflow-hidden transition-all duration-300 hover:-translate-y-0.5 disabled:hover:translate-y-0 bg-slate-700/50 backdrop-blur-sm border border-slate-600/50 hover:border-slate-500/50">
-                            <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                            <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" aria-hidden="true"></div>
                             <span wire:loading.remove wire:target="addCurrentServer" class="relative z-10">+ Add Current Server</span>
-                            <span wire:loading wire:target="addCurrentServer" class="relative z-10 inline-flex items-center gap-2">
-                                <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                            <span wire:loading wire:target="addCurrentServer" class="relative z-10 inline-flex items-center gap-2" role="status" aria-live="polite">
+                                <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
@@ -103,10 +105,11 @@
                             </span>
                         </button>
                         <a href="{{ route('servers.create') }}"
+                           aria-label="Add a new server"
                            class="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white overflow-hidden transition-all duration-300 hover:-translate-y-0.5"
                            style="background: linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%);">
-                            <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                            <svg class="w-4 h-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" aria-hidden="true"></div>
+                            <svg class="w-4 h-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                             </svg>
                             <span class="relative z-10">Add Server</span>
@@ -129,6 +132,7 @@
                         <span class="text-white font-semibold">{{ count($selectedServers) }} server(s) selected</span>
                     </div>
                     <button wire:click="clearSelection"
+                            aria-label="Clear all selected servers"
                             class="text-sm text-slate-400 hover:text-white transition-colors underline">
                         Clear Selection
                     </button>
@@ -137,8 +141,8 @@
                 <div class="flex items-center space-x-3">
                     <!-- Loading Indicator -->
                     @if($bulkActionInProgress)
-                        <div class="flex items-center space-x-2 text-amber-400">
-                            <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                        <div class="flex items-center space-x-2 text-amber-400" role="status" aria-live="polite" aria-label="Bulk action in progress">
+                            <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
@@ -151,14 +155,17 @@
                         <button @click="open = !open"
                                 @click.away="open = false"
                                 :disabled="$wire.bulkActionInProgress"
+                                aria-label="Bulk actions menu"
+                                aria-haspopup="true"
+                                :aria-expanded="open"
                                 class="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white overflow-hidden transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                                 style="background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);">
-                            <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                            <svg class="w-5 h-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" aria-hidden="true"></div>
+                            <svg class="w-5 h-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                             </svg>
                             <span class="relative z-10">Bulk Actions</span>
-                            <svg class="w-4 h-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </button>
@@ -171,13 +178,17 @@
                              x-transition:leave="transition ease-in duration-150"
                              x-transition:leave-start="transform opacity-100 scale-100"
                              x-transition:leave-end="transform opacity-0 scale-95"
+                             role="menu"
+                             aria-label="Bulk actions menu"
                              class="absolute right-0 mt-2 w-64 bg-slate-800/95 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-700/50 overflow-hidden z-50">
 
                             <!-- Ping Selected -->
                             <button wire:click="bulkPing"
                                     @click="open = false"
+                                    role="menuitem"
+                                    aria-label="Ping all selected servers"
                                     class="w-full text-left px-4 py-3 hover:bg-slate-700/50 transition-colors flex items-center space-x-3">
-                                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.14 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path>
                                 </svg>
                                 <span class="text-white font-medium">Ping Selected</span>
@@ -187,8 +198,10 @@
                             <button wire:click="bulkReboot"
                                     wire:confirm="Are you sure you want to reboot {{ count($selectedServers) }} server(s)? All running services will be interrupted."
                                     @click="open = false"
+                                    role="menuitem"
+                                    aria-label="Reboot all selected servers"
                                     class="w-full text-left px-4 py-3 hover:bg-slate-700/50 transition-colors flex items-center space-x-3 border-t border-slate-700/50">
-                                <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                                 </svg>
                                 <span class="text-white font-medium">Reboot Selected</span>
@@ -197,8 +210,10 @@
                             <!-- Install Docker -->
                             <button wire:click="bulkInstallDocker"
                                     @click="open = false"
+                                    role="menuitem"
+                                    aria-label="Install Docker on all selected servers"
                                     class="w-full text-left px-4 py-3 hover:bg-slate-700/50 transition-colors flex items-center space-x-3 border-t border-slate-700/50">
-                                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                                 </svg>
                                 <span class="text-white font-medium">Install Docker</span>
@@ -338,9 +353,9 @@
 
     {{-- Loading State --}}
     <div wire:loading.delay class="mb-8">
-        <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 backdrop-blur-sm">
+        <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 backdrop-blur-sm" role="status" aria-live="polite" aria-label="Loading servers">
             <div class="flex items-center gap-3">
-                <svg class="animate-spin h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24">
+                <svg class="animate-spin h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" role="img" aria-hidden="true">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
@@ -356,6 +371,7 @@
                 <input type="checkbox"
                        wire:model.live="selectAll"
                        wire:change="toggleSelectAll"
+                       aria-label="Select all servers on this page"
                        class="w-5 h-5 text-blue-500 bg-slate-700 border-slate-600 rounded focus:ring-blue-500/50 focus:ring-2 focus:ring-offset-0">
                 <span class="ml-3 text-white font-medium">Select All Servers</span>
             </label>
@@ -385,6 +401,7 @@
                                    wire:model.live="selectedServers"
                                    value="{{ $server->id }}"
                                    wire:change="toggleServerSelection({{ $server->id }})"
+                                   aria-label="Select {{ $server->name }}"
                                    class="w-5 h-5 text-blue-500 bg-slate-700 border-slate-600 rounded focus:ring-blue-500/50 focus:ring-2 focus:ring-offset-0">
                         </label>
                     </div>
@@ -402,8 +419,11 @@
                                 @elseif($server->status === 'offline') bg-gradient-to-br from-red-500 to-rose-600
                                 @elseif($server->status === 'maintenance') bg-gradient-to-br from-amber-500 to-orange-500
                                 @else bg-gradient-to-br from-slate-500 to-slate-600
-                                @endif">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                @endif"
+                                role="status"
+                                aria-label="Server status: {{ ucfirst($server->status) }}"
+                                title="Server status: {{ ucfirst($server->status) }}">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                     @if($server->status === 'online')
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                     @elseif($server->status === 'maintenance')
@@ -422,15 +442,18 @@
                                 @elseif($server->status === 'offline') bg-red-500/20 text-red-400 border border-red-500/30
                                 @elseif($server->status === 'maintenance') bg-amber-500/20 text-amber-400 border border-amber-500/30
                                 @else bg-slate-600/20 text-slate-400 border border-slate-600/30
-                                @endif">
+                                @endif"
+                                role="status"
+                                aria-live="polite"
+                                aria-label="Server status: {{ ucfirst($server->status) }}">
                                 @if($server->status === 'online')
-                                    <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full mr-1.5 animate-pulse"></span>
+                                    <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full mr-1.5 animate-pulse" aria-hidden="true"></span>
                                 @else
                                     <span class="w-1.5 h-1.5 rounded-full mr-1.5
                                         @if($server->status === 'offline') bg-red-400
                                         @elseif($server->status === 'maintenance') bg-amber-400
                                         @else bg-slate-400
-                                        @endif"></span>
+                                        @endif" aria-hidden="true"></span>
                                 @endif
                                 {{ ucfirst($server->status) }}
                             </span>
@@ -448,10 +471,12 @@
 
                         <!-- Resources -->
                         <div class="space-y-2.5 mb-4">
-                            <div class="flex items-center justify-between p-3 bg-blue-500/10 border border-blue-500/30 rounded-xl backdrop-blur-sm">
+                            <div class="flex items-center justify-between p-3 bg-blue-500/10 border border-blue-500/30 rounded-xl backdrop-blur-sm"
+                                 aria-label="CPU: {{ $server->cpu_cores ?? 0 }} cores"
+                                 title="CPU: {{ $server->cpu_cores ?? 0 }} cores">
                                 <div class="flex items-center">
-                                    <div class="p-1.5 bg-blue-500/20 rounded-lg mr-2">
-                                        <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="p-1.5 bg-blue-500/20 rounded-lg mr-2" aria-hidden="true">
+                                        <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
                                         </svg>
                                     </div>
@@ -460,10 +485,12 @@
                                 <span class="text-sm font-bold text-white">{{ $server->cpu_cores ?? 0 }} Cores</span>
                             </div>
 
-                            <div class="flex items-center justify-between p-3 bg-purple-500/10 border border-purple-500/30 rounded-xl backdrop-blur-sm">
+                            <div class="flex items-center justify-between p-3 bg-purple-500/10 border border-purple-500/30 rounded-xl backdrop-blur-sm"
+                                 aria-label="RAM: {{ $server->memory_gb ?? 0 }} gigabytes"
+                                 title="RAM: {{ $server->memory_gb ?? 0 }} GB">
                                 <div class="flex items-center">
-                                    <div class="p-1.5 bg-purple-500/20 rounded-lg mr-2">
-                                        <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="p-1.5 bg-purple-500/20 rounded-lg mr-2" aria-hidden="true">
+                                        <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                                         </svg>
                                     </div>
@@ -475,18 +502,22 @@
 
                         <!-- Location & Last Ping -->
                         <div class="space-y-2 mb-4">
-                            <div class="flex items-center text-sm text-slate-300">
-                                <div class="p-1.5 bg-emerald-500/20 rounded-lg mr-2">
-                                    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="flex items-center text-sm text-slate-300"
+                                 aria-label="Server location: {{ $server->location_name ?? 'Unknown' }}"
+                                 title="Server location: {{ $server->location_name ?? 'Unknown' }}">
+                                <div class="p-1.5 bg-emerald-500/20 rounded-lg mr-2" aria-hidden="true">
+                                    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     </svg>
                                 </div>
                                 {{ $server->location_name ?? 'Unknown' }}
                             </div>
-                            <div class="flex items-center text-sm text-slate-300">
-                                <div class="p-1.5 bg-orange-500/20 rounded-lg mr-2">
-                                    <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="flex items-center text-sm text-slate-300"
+                                 aria-label="Last ping: {{ $server->last_ping_at ? $server->last_ping_at->diffForHumans() : 'Never' }}"
+                                 title="Last ping: {{ $server->last_ping_at ? $server->last_ping_at->format('Y-m-d H:i:s') : 'Never' }}">
+                                <div class="p-1.5 bg-orange-500/20 rounded-lg mr-2" aria-hidden="true">
+                                    <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                 </div>
@@ -500,39 +531,43 @@
                                         wire:loading.attr="disabled"
                                         wire:loading.class="opacity-50"
                                         wire:target="pingServer({{ $server->id }})"
+                                        aria-label="Ping {{ $server->name }}"
                                         class="text-emerald-400 hover:text-emerald-300 text-sm font-medium transition-colors inline-flex items-center">
-                                    <svg wire:loading.remove wire:target="pingServer({{ $server->id }})" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg wire:loading.remove wire:target="pingServer({{ $server->id }})" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.14 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path>
                                     </svg>
-                                    <svg wire:loading wire:target="pingServer({{ $server->id }})" class="animate-spin w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24">
+                                    <svg wire:loading wire:target="pingServer({{ $server->id }})" class="animate-spin w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
                                     <span wire:loading.remove wire:target="pingServer({{ $server->id }})">Ping</span>
-                                    <span wire:loading wire:target="pingServer({{ $server->id }})">Pinging...</span>
+                                    <span wire:loading wire:target="pingServer({{ $server->id }})" role="status" aria-live="polite">Pinging...</span>
                                 </button>
                                 <button wire:click="rebootServer({{ $server->id }})"
                                         wire:confirm="Are you sure you want to reboot '{{ $server->name }}'? All running services will be temporarily interrupted during the reboot process."
                                         wire:loading.attr="disabled"
                                         wire:loading.class="opacity-50"
                                         wire:target="rebootServer({{ $server->id }})"
+                                        aria-label="Reboot {{ $server->name }}"
                                         class="text-orange-400 hover:text-orange-300 text-sm font-medium transition-colors inline-flex items-center">
-                                    <svg wire:loading.remove wire:target="rebootServer({{ $server->id }})" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg wire:loading.remove wire:target="rebootServer({{ $server->id }})" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                                     </svg>
-                                    <svg wire:loading wire:target="rebootServer({{ $server->id }})" class="animate-spin w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24">
+                                    <svg wire:loading wire:target="rebootServer({{ $server->id }})" class="animate-spin w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
                                     <span wire:loading.remove wire:target="rebootServer({{ $server->id }})">Reboot</span>
-                                    <span wire:loading wire:target="rebootServer({{ $server->id }})">Rebooting...</span>
+                                    <span wire:loading wire:target="rebootServer({{ $server->id }})" role="status" aria-live="polite">Rebooting...</span>
                                 </button>
                                 <a href="{{ route('servers.show', $server) }}"
+                                   aria-label="View details for {{ $server->name }}"
                                    class="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors">
                                     View
                                 </a>
                                 @can('update', $server)
                                 <a href="{{ route('servers.edit', $server) }}"
+                                   aria-label="Edit {{ $server->name }}"
                                    class="text-indigo-400 hover:text-indigo-300 text-sm font-medium transition-colors">
                                     Edit
                                 </a>
@@ -543,10 +578,11 @@
                                         wire:loading.attr="disabled"
                                         wire:loading.class="opacity-50"
                                         wire:target="deleteServer({{ $server->id }})"
+                                        aria-label="Delete {{ $server->name }}"
                                         class="text-red-400 hover:text-red-300 text-sm font-medium transition-colors inline-flex items-center">
                                     <span wire:loading.remove wire:target="deleteServer({{ $server->id }})">Delete</span>
-                                    <span wire:loading wire:target="deleteServer({{ $server->id }})" class="inline-flex items-center gap-1">
-                                        <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                                    <span wire:loading wire:target="deleteServer({{ $server->id }})" class="inline-flex items-center gap-1" role="status" aria-live="polite">
+                                        <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>

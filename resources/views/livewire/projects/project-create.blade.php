@@ -6,7 +6,43 @@
 
     <!-- Progress Steps Indicator -->
     <div class="mb-8">
-        <div class="flex items-center justify-between">
+        <!-- Mobile Version: Horizontal Scroll -->
+        <div class="md:hidden overflow-x-auto pb-2 -mx-4 px-4">
+            <div class="flex items-center gap-3 min-w-max">
+                @foreach ([
+                    1 => ['title' => 'Basic Info', 'short' => 'Info', 'icon' => 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
+                    2 => ['title' => 'Framework', 'short' => 'Framework', 'icon' => 'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4'],
+                    3 => ['title' => 'Setup Options', 'short' => 'Setup', 'icon' => 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z'],
+                    4 => ['title' => 'Review', 'short' => 'Review', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4']
+                ] as $step => $info)
+                    <div class="flex items-center gap-2">
+                        <button wire:click="goToStep({{ $step }})"
+                                class="flex flex-col items-center gap-1.5 min-w-[60px] touch-manipulation active:scale-95
+                                    {{ $currentStep >= $step ? 'cursor-pointer' : 'cursor-not-allowed' }}">
+                            <div class="flex items-center justify-center w-11 h-11 rounded-full transition-all
+                                {{ $currentStep == $step ? 'bg-blue-600 text-white ring-4 ring-blue-100 dark:ring-blue-900/50' : ($currentStep > $step ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400') }}">
+                                @if ($currentStep > $step)
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                @else
+                                    <span class="text-sm font-bold">{{ $step }}</span>
+                                @endif
+                            </div>
+                            <span class="text-xs font-medium whitespace-nowrap {{ $currentStep >= $step ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-500' }}">
+                                {{ $info['short'] }}
+                            </span>
+                        </button>
+                        @if ($step < 4)
+                            <div class="w-8 h-0.5 flex-shrink-0 {{ $currentStep > $step ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700' }}"></div>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Desktop Version: Original Layout -->
+        <div class="hidden md:flex items-center justify-between">
             @foreach ([
                 1 => ['title' => 'Basic Info', 'icon' => 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
                 2 => ['title' => 'Framework', 'icon' => 'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4'],

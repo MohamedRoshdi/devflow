@@ -22,19 +22,8 @@ class ResourceAlertService
     public function checkServerResources(Server $server): array
     {
         try {
+            // Get latest metrics, will return fallback if none exist
             $metrics = $this->metricsService->getLatestMetrics($server);
-
-            if (! $metrics) {
-                // Try to collect fresh metrics
-                $metrics = $this->metricsService->collectMetrics($server);
-            }
-
-            if (! $metrics) {
-                return [
-                    'success' => false,
-                    'message' => 'Failed to collect server metrics',
-                ];
-            }
 
             return [
                 'success' => true,

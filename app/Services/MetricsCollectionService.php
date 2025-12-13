@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Models\Server;
 use Illuminate\Support\Facades\Process;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Collection;
 
 /**
@@ -24,7 +25,7 @@ class MetricsCollectionService
     /**
      * Collect metrics from a server
      *
-     * @return array{cpu: float|null, memory: array, disk: array, network: array, load: array, uptime: string|null}
+     * @return array{cpu: float, memory: array, disk: array, network: array, load: array, uptime: string|null}
      */
     public function collectServerMetrics(Server $server): array
     {
@@ -59,67 +60,70 @@ class MetricsCollectionService
      * Uses top command to get current CPU usage.
      * Falls back to mpstat if available.
      */
-    private function getCpuUsage(Server $server): ?float
+    private function getCpuUsage(Server $server): float
     {
         try {
             // Try using top first (most compatible)
             $command = "top -bn1 | grep \"Cpu(s)\" | awk '{print \$2}' | cut -d'%' -f1";
             $result = $this->executeSSHCommand($server, $command);
 
-            if ($result['success']) {
+            if ($result['success'] && trim($result['output']) !== '') {
                 $cpuUsage = (float) trim($result['output']);
-                return $cpuUsage > 0 ? $cpuUsage : null;
+                if ($cpuUsage > 0) {
+                    return $cpuUsage;
+                }
             }
 
             // Fallback to mpstat if available
             $command = "mpstat 1 1 | awk '/Average/ {print 100 - \$NF}'";
             $result = $this->executeSSHCommand($server, $command);
 
-            if ($result['success']) {
+            if ($result['success'] && trim($result['output']) !== '') {
                 $cpuUsage = (float) trim($result['output']);
-                return $cpuUsage > 0 ? $cpuUsage : null;
+                if ($cpuUsage > 0) {
+                    return $cpuUsage;
+                }
             }
 
-            return null;
+            Log::warning("Failed to get CPU usage for server {$server->name}: No valid output from commands");
+            return 0.0;
         } catch (\Exception $e) {
-            \Log::warning("Failed to get CPU usage for server {$server->name}: {$e->getMessage()}");
-            return null;
+            Log::error("Failed to get CPU usage for server {$server->name}: {$e->getMessage()}");
+            return 0.0;
         }
     }
 
     /**
      * Get memory usage statistics
      *
-     * @return array{usage_percent: float|null, used_mb: int|null, total_mb: int|null, free_mb: int|null, available_mb: int|null}
+     * @return array{usage_percent: float, used_mb: int, total_mb: int, free_mb: int, available_mb: int}
      */
     private function getMemoryUsage(Server $server): array
     {
+        $defaultReturn = [
+            'usage_percent' => 0.0,
+            'used_mb' => 0,
+            'total_mb' => 0,
+            'free_mb' => 0,
+            'available_mb' => 0,
+        ];
+
         try {
             // Get detailed memory stats using free command
             $command = "free -m | grep Mem";
             $result = $this->executeSSHCommand($server, $command);
 
             if (!$result['success']) {
-                return [
-                    'usage_percent' => null,
-                    'used_mb' => null,
-                    'total_mb' => null,
-                    'free_mb' => null,
-                    'available_mb' => null,
-                ];
+                Log::warning("Failed to get memory usage for server {$server->name}: SSH command failed");
+                return $defaultReturn;
             }
 
             // Parse free output: Mem: total used free shared buff/cache available
             $parts = preg_split('/\s+/', trim($result['output']));
 
             if (count($parts) < 7) {
-                return [
-                    'usage_percent' => null,
-                    'used_mb' => null,
-                    'total_mb' => null,
-                    'free_mb' => null,
-                    'available_mb' => null,
-                ];
+                Log::warning("Failed to parse memory usage for server {$server->name}: Unexpected output format");
+                return $defaultReturn;
             }
 
             $total = (int) $parts[1];
@@ -127,7 +131,7 @@ class MetricsCollectionService
             $free = (int) $parts[3];
             $available = (int) ($parts[6] ?? $free);
 
-            $usagePercent = $total > 0 ? round(($used / $total) * 100, 2) : null;
+            $usagePercent = $total > 0 ? round(($used / $total) * 100, 2) : 0.0;
 
             return [
                 'usage_percent' => $usagePercent,
@@ -137,50 +141,42 @@ class MetricsCollectionService
                 'available_mb' => $available,
             ];
         } catch (\Exception $e) {
-            \Log::warning("Failed to get memory usage for server {$server->name}: {$e->getMessage()}");
-            return [
-                'usage_percent' => null,
-                'used_mb' => null,
-                'total_mb' => null,
-                'free_mb' => null,
-                'available_mb' => null,
-            ];
+            Log::error("Failed to get memory usage for server {$server->name}: {$e->getMessage()}");
+            return $defaultReturn;
         }
     }
 
     /**
      * Get disk usage statistics
      *
-     * @return array{usage_percent: float|null, used_gb: float|null, total_gb: float|null, free_gb: float|null, mount_point: string}
+     * @return array{usage_percent: float, used_gb: float, total_gb: float, free_gb: float, mount_point: string}
      */
     private function getDiskUsage(Server $server): array
     {
+        $defaultReturn = [
+            'usage_percent' => 0.0,
+            'used_gb' => 0.0,
+            'total_gb' => 0.0,
+            'free_gb' => 0.0,
+            'mount_point' => '/',
+        ];
+
         try {
             // Get disk usage for root partition
             $command = "df -h / | tail -1";
             $result = $this->executeSSHCommand($server, $command);
 
             if (!$result['success']) {
-                return [
-                    'usage_percent' => null,
-                    'used_gb' => null,
-                    'total_gb' => null,
-                    'free_gb' => null,
-                    'mount_point' => '/',
-                ];
+                Log::warning("Failed to get disk usage for server {$server->name}: SSH command failed");
+                return $defaultReturn;
             }
 
             // Parse df output: Filesystem Size Used Avail Use% Mounted on
             $parts = preg_split('/\s+/', trim($result['output']));
 
             if (count($parts) < 6) {
-                return [
-                    'usage_percent' => null,
-                    'used_gb' => null,
-                    'total_gb' => null,
-                    'free_gb' => null,
-                    'mount_point' => '/',
-                ];
+                Log::warning("Failed to parse disk usage for server {$server->name}: Unexpected output format");
+                return $defaultReturn;
             }
 
             $totalStr = $parts[1];
@@ -190,21 +186,15 @@ class MetricsCollectionService
             $mountPoint = $parts[5];
 
             return [
-                'usage_percent' => is_numeric($usagePercentStr) ? (float) $usagePercentStr : null,
-                'used_gb' => $this->convertToGB($usedStr),
-                'total_gb' => $this->convertToGB($totalStr),
-                'free_gb' => $this->convertToGB($availStr),
+                'usage_percent' => is_numeric($usagePercentStr) ? (float) $usagePercentStr : 0.0,
+                'used_gb' => $this->convertToGB($usedStr) ?? 0.0,
+                'total_gb' => $this->convertToGB($totalStr) ?? 0.0,
+                'free_gb' => $this->convertToGB($availStr) ?? 0.0,
                 'mount_point' => $mountPoint,
             ];
         } catch (\Exception $e) {
-            \Log::warning("Failed to get disk usage for server {$server->name}: {$e->getMessage()}");
-            return [
-                'usage_percent' => null,
-                'used_gb' => null,
-                'total_gb' => null,
-                'free_gb' => null,
-                'mount_point' => '/',
-            ];
+            Log::error("Failed to get disk usage for server {$server->name}: {$e->getMessage()}");
+            return $defaultReturn;
         }
     }
 
@@ -232,33 +222,32 @@ class MetricsCollectionService
     /**
      * Get network statistics
      *
-     * @return array{in_bytes: int|null, out_bytes: int|null, in_packets: int|null, out_packets: int|null}
+     * @return array{in_bytes: int, out_bytes: int, in_packets: int, out_packets: int}
      */
     private function getNetworkStats(Server $server): array
     {
+        $defaultReturn = [
+            'in_bytes' => 0,
+            'out_bytes' => 0,
+            'in_packets' => 0,
+            'out_packets' => 0,
+        ];
+
         try {
             // Get network stats from /proc/net/dev
             $command = "cat /proc/net/dev | grep -E 'eth0|ens|enp' | head -1 | awk '{print \$2,\$10,\$3,\$11}'";
             $result = $this->executeSSHCommand($server, $command);
 
             if (!$result['success']) {
-                return [
-                    'in_bytes' => null,
-                    'out_bytes' => null,
-                    'in_packets' => null,
-                    'out_packets' => null,
-                ];
+                Log::warning("Failed to get network stats for server {$server->name}: SSH command failed");
+                return $defaultReturn;
             }
 
             $parts = preg_split('/\s+/', trim($result['output']));
 
             if (count($parts) < 4) {
-                return [
-                    'in_bytes' => null,
-                    'out_bytes' => null,
-                    'in_packets' => null,
-                    'out_packets' => null,
-                ];
+                Log::warning("Failed to parse network stats for server {$server->name}: Unexpected output format");
+                return $defaultReturn;
             }
 
             return [
@@ -268,43 +257,38 @@ class MetricsCollectionService
                 'out_packets' => (int) $parts[3],
             ];
         } catch (\Exception $e) {
-            \Log::warning("Failed to get network stats for server {$server->name}: {$e->getMessage()}");
-            return [
-                'in_bytes' => null,
-                'out_bytes' => null,
-                'in_packets' => null,
-                'out_packets' => null,
-            ];
+            Log::error("Failed to get network stats for server {$server->name}: {$e->getMessage()}");
+            return $defaultReturn;
         }
     }
 
     /**
      * Get load average (1, 5, 15 minutes)
      *
-     * @return array{load_1: float|null, load_5: float|null, load_15: float|null}
+     * @return array{load_1: float, load_5: float, load_15: float}
      */
     private function getLoadAverage(Server $server): array
     {
+        $defaultReturn = [
+            'load_1' => 0.0,
+            'load_5' => 0.0,
+            'load_15' => 0.0,
+        ];
+
         try {
             $command = "uptime | awk -F'load average:' '{print \$2}' | awk '{print \$1,\$2,\$3}' | tr -d ','";
             $result = $this->executeSSHCommand($server, $command);
 
             if (!$result['success']) {
-                return [
-                    'load_1' => null,
-                    'load_5' => null,
-                    'load_15' => null,
-                ];
+                Log::warning("Failed to get load average for server {$server->name}: SSH command failed");
+                return $defaultReturn;
             }
 
             $parts = preg_split('/\s+/', trim($result['output']));
 
             if (count($parts) < 3) {
-                return [
-                    'load_1' => null,
-                    'load_5' => null,
-                    'load_15' => null,
-                ];
+                Log::warning("Failed to parse load average for server {$server->name}: Unexpected output format");
+                return $defaultReturn;
             }
 
             return [
@@ -313,12 +297,8 @@ class MetricsCollectionService
                 'load_15' => (float) $parts[2],
             ];
         } catch (\Exception $e) {
-            \Log::warning("Failed to get load average for server {$server->name}: {$e->getMessage()}");
-            return [
-                'load_1' => null,
-                'load_5' => null,
-                'load_15' => null,
-            ];
+            Log::error("Failed to get load average for server {$server->name}: {$e->getMessage()}");
+            return $defaultReturn;
         }
     }
 
@@ -331,7 +311,7 @@ class MetricsCollectionService
             $command = "uptime -p";
             $result = $this->executeSSHCommand($server, $command);
 
-            if ($result['success']) {
+            if ($result['success'] && trim($result['output']) !== '') {
                 return trim($result['output']);
             }
 
@@ -339,9 +319,14 @@ class MetricsCollectionService
             $command = "uptime | awk '{print \$3,\$4}' | tr -d ','";
             $result = $this->executeSSHCommand($server, $command);
 
-            return $result['success'] ? trim($result['output']) : null;
+            if ($result['success'] && trim($result['output']) !== '') {
+                return trim($result['output']);
+            }
+
+            Log::warning("Failed to get uptime for server {$server->name}: No valid output from commands");
+            return null;
         } catch (\Exception $e) {
-            \Log::warning("Failed to get uptime for server {$server->name}: {$e->getMessage()}");
+            Log::error("Failed to get uptime for server {$server->name}: {$e->getMessage()}");
             return null;
         }
     }
@@ -434,7 +419,7 @@ class MetricsCollectionService
     /**
      * Get comprehensive server health metrics
      *
-     * @return array{cpu: float|null, memory: float|null, disk: float|null, load: float|null, status: string}
+     * @return array{cpu: float, memory: float, disk: float, load: float, status: string}
      */
     public function getServerHealthMetrics(Server $server): array
     {

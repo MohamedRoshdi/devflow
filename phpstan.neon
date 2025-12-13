@@ -109,4 +109,7 @@ parameters:
           message: '#does not accept Mockery\\MockInterface#'
         - path: tests/*
           message: '#expects .*, Mockery\\MockInterface given#'
+        # Livewire test methods
+        - path: tests/*
+          message: '#Call to an undefined method Illuminate\\Testing\\TestResponse::assertDispatched\(\)#'
     reportUnmatchedIgnoredErrors: false

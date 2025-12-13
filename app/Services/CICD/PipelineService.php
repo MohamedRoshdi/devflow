@@ -7,6 +7,8 @@ namespace App\Services\CICD;
 use App\Models\Pipeline;
 use App\Models\PipelineRun;
 use App\Models\Project;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
 use Symfony\Component\Yaml\Yaml;
 
@@ -620,6 +622,397 @@ class PipelineService
     }
 
     /**
+     * Generate Bitbucket Pipelines configuration
+     */
+    protected function generateBitbucketPipelinesConfig(Project $project, array $config): array
+    {
+        $phpVersion = $project->php_version ?? '8.2';
+
+        $pipeline = [
+            'image' => "php:{$phpVersion}",
+            'definitions' => [
+                'caches' => [
+                    'composer' => 'vendor',
+                    'npm' => 'node_modules',
+                ],
+                'services' => [],
+            ],
+            'pipelines' => [
+                'default' => [
+                    [
+                        'step' => [
+                            'name' => 'Install & Test',
+                            'caches' => ['composer'],
+                            'script' => [
+                                'apt-get update && apt-get install -y git unzip',
+                                'curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer',
+                                'composer install --prefer-dist --no-progress',
+                                'cp .env.example .env',
+                                'php artisan key:generate',
+                            ],
+                        ],
+                    ],
+                ],
+                'branches' => [
+                    'main' => [
+                        [
+                            'step' => [
+                                'name' => 'Test',
+                                'caches' => ['composer'],
+                                'script' => [
+                                    'composer install --prefer-dist --no-progress',
+                                    'cp .env.example .env',
+                                    'php artisan key:generate',
+                                    'php artisan test',
+                                ],
+                            ],
+                        ],
+                        [
+                            'step' => [
+                                'name' => 'Build Docker Image',
+                                'services' => ['docker'],
+                                'script' => [
+                                    'docker build -t $BITBUCKET_REPO_SLUG:$BITBUCKET_COMMIT .',
+                                    'docker tag $BITBUCKET_REPO_SLUG:$BITBUCKET_COMMIT $DOCKER_REGISTRY/$BITBUCKET_REPO_SLUG:$BITBUCKET_COMMIT',
+                                    'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin $DOCKER_REGISTRY',
+                                    'docker push $DOCKER_REGISTRY/$BITBUCKET_REPO_SLUG:$BITBUCKET_COMMIT',
+                                ],
+                            ],
+                        ],
+                        [
+                            'step' => [
+                                'name' => 'Deploy to Production',
+                                'deployment' => 'production',
+                                'trigger' => $config['auto_deploy'] ?? false ? 'automatic' : 'manual',
+                                'script' => [
+                                    'curl -X POST -H "Authorization: Bearer $DEVFLOW_API_TOKEN" -H "Content-Type: application/json" -d \'{"commit_hash": "\'$BITBUCKET_COMMIT\'", "branch": "main"}\' https://devflow.yourdomain.com/api/v1/projects/'.$project->id.'/deploy',
+                                ],
+                            ],
+                        ],
+                    ],
+                    'develop' => [
+                        [
+                            'step' => [
+                                'name' => 'Test',
+                                'caches' => ['composer'],
+                                'script' => [
+                                    'composer install --prefer-dist --no-progress',
+                                    'cp .env.example .env',
+                                    'php artisan key:generate',
+                                    'php artisan test',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        // Add database service if needed
+        if ($project->uses_database) {
+            $pipeline['definitions']['services']['mysql'] = [
+                'image' => 'mysql:8.0',
+                'variables' => [
+                    'MYSQL_DATABASE' => 'test_db',
+                    'MYSQL_ROOT_PASSWORD' => 'password',
+                ],
+            ];
+
+            // Add service to test steps
+            foreach ($pipeline['pipelines']['branches']['main'] as &$step) {
+                if (($step['step']['name'] ?? '') === 'Test') {
+                    $step['step']['services'] = ['mysql'];
+                }
+            }
+        }
+
+        // Add Redis service if needed
+        if ($project->uses_redis) {
+            $pipeline['definitions']['services']['redis'] = [
+                'image' => 'redis:alpine',
+            ];
+        }
+
+        // Add frontend build if project has frontend
+        if ($project->has_frontend) {
+            array_splice($pipeline['pipelines']['branches']['main'], 1, 0, [
+                [
+                    'step' => [
+                        'name' => 'Build Frontend',
+                        'image' => 'node:18',
+                        'caches' => ['npm'],
+                        'script' => [
+                            'npm ci',
+                            'npm run build',
+                        ],
+                        'artifacts' => [
+                            'public/build/**',
+                        ],
+                    ],
+                ],
+            ]);
+        }
+
+        return $pipeline;
+    }
+
+    /**
+     * Generate Jenkins Pipeline (Jenkinsfile) configuration
+     */
+    protected function generateJenkinsConfig(Project $project, array $config): array
+    {
+        $phpVersion = $project->php_version ?? '8.2';
+
+        return [
+            'pipeline' => [
+                'agent' => [
+                    'docker' => [
+                        'image' => "php:{$phpVersion}",
+                    ],
+                ],
+                'environment' => [
+                    'COMPOSER_HOME' => '${WORKSPACE}/.composer',
+                    'DEVFLOW_PROJECT_ID' => $project->id,
+                ],
+                'stages' => [
+                    [
+                        'name' => 'Checkout',
+                        'steps' => [
+                            'checkout scm',
+                        ],
+                    ],
+                    [
+                        'name' => 'Install Dependencies',
+                        'steps' => [
+                            'sh "composer install --prefer-dist --no-progress"',
+                            'sh "cp .env.example .env"',
+                            'sh "php artisan key:generate"',
+                        ],
+                    ],
+                    [
+                        'name' => 'Test',
+                        'steps' => [
+                            'sh "php artisan test --parallel"',
+                        ],
+                    ],
+                    [
+                        'name' => 'Build',
+                        'when' => [
+                            'branch' => 'main',
+                        ],
+                        'steps' => [
+                            'sh "docker build -t ${DOCKER_REGISTRY}/'.$project->slug.':${BUILD_NUMBER} ."',
+                            'sh "docker push ${DOCKER_REGISTRY}/'.$project->slug.':${BUILD_NUMBER}"',
+                        ],
+                    ],
+                    [
+                        'name' => 'Deploy',
+                        'when' => [
+                            'branch' => 'main',
+                        ],
+                        'steps' => [
+                            'sh """curl -X POST \\
+                                -H "Authorization: Bearer ${DEVFLOW_API_TOKEN}" \\
+                                -H "Content-Type: application/json" \\
+                                -d \'{"commit_hash": "${GIT_COMMIT}", "branch": "main"}\' \\
+                                https://devflow.yourdomain.com/api/v1/projects/'.$project->id.'/deploy"""',
+                        ],
+                    ],
+                ],
+                'post' => [
+                    'always' => [
+                        'cleanWs()',
+                    ],
+                    'success' => [
+                        'echo "Pipeline completed successfully"',
+                    ],
+                    'failure' => [
+                        'echo "Pipeline failed"',
+                    ],
+                ],
+            ],
+            'jenkinsfile_content' => $this->generateJenkinsfileContent($project, $config),
+        ];
+    }
+
+    /**
+     * Generate Jenkinsfile content as a string
+     */
+    protected function generateJenkinsfileContent(Project $project, array $config): string
+    {
+        $phpVersion = $project->php_version ?? '8.2';
+        $hasDatabase = $project->uses_database ? 'true' : 'false';
+
+        return <<<JENKINSFILE
+pipeline {
+    agent {
+        docker {
+            image 'php:{$phpVersion}'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
+
+    environment {
+        COMPOSER_HOME = "\${WORKSPACE}/.composer"
+        DEVFLOW_PROJECT_ID = '{$project->id}'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'apt-get update && apt-get install -y git unzip'
+                sh 'curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer'
+                sh 'composer install --prefer-dist --no-progress'
+                sh 'cp .env.example .env'
+                sh 'php artisan key:generate'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'php artisan test --parallel'
+            }
+        }
+
+        stage('Build Docker Image') {
+            when {
+                branch 'main'
+            }
+            steps {
+                script {
+                    docker.build("{$project->slug}:\${BUILD_NUMBER}")
+                }
+            }
+        }
+
+        stage('Push to Registry') {
+            when {
+                branch 'main'
+            }
+            steps {
+                script {
+                    docker.withRegistry("\${DOCKER_REGISTRY}", 'docker-credentials') {
+                        docker.image("{$project->slug}:\${BUILD_NUMBER}").push()
+                        docker.image("{$project->slug}:\${BUILD_NUMBER}").push('latest')
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            when {
+                branch 'main'
+            }
+            steps {
+                sh '''
+                    curl -X POST \\
+                        -H "Authorization: Bearer \${DEVFLOW_API_TOKEN}" \\
+                        -H "Content-Type: application/json" \\
+                        -d '{"commit_hash": "'\${GIT_COMMIT}'", "branch": "main"}' \\
+                        https://devflow.yourdomain.com/api/v1/projects/{$project->id}/deploy
+                '''
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}
+JENKINSFILE;
+    }
+
+    /**
+     * Generate custom pipeline configuration
+     */
+    protected function generateCustomConfig(Project $project, array $config): array
+    {
+        return [
+            'name' => $config['name'] ?? "{$project->name} Custom Pipeline",
+            'version' => '1.0',
+            'stages' => [
+                [
+                    'name' => 'install',
+                    'steps' => [
+                        [
+                            'name' => 'Install Composer Dependencies',
+                            'run' => 'composer install --prefer-dist --no-progress',
+                        ],
+                        [
+                            'name' => 'Setup Environment',
+                            'run' => 'cp .env.example .env && php artisan key:generate',
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'test',
+                    'steps' => [
+                        [
+                            'name' => 'Run Tests',
+                            'run' => 'php artisan test',
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'build',
+                    'steps' => [
+                        [
+                            'name' => 'Build Assets',
+                            'run' => 'npm install && npm run build',
+                            'condition' => $project->has_frontend,
+                        ],
+                        [
+                            'name' => 'Cache Config',
+                            'run' => 'php artisan config:cache && php artisan route:cache && php artisan view:cache',
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'deploy',
+                    'steps' => [
+                        [
+                            'name' => 'Run Migrations',
+                            'run' => 'php artisan migrate --force',
+                        ],
+                        [
+                            'name' => 'Clear Caches',
+                            'run' => 'php artisan cache:clear',
+                        ],
+                        [
+                            'name' => 'Restart Queue Workers',
+                            'run' => 'php artisan queue:restart',
+                        ],
+                    ],
+                ],
+            ],
+            'notifications' => [
+                'on_success' => $config['notify_on_success'] ?? true,
+                'on_failure' => $config['notify_on_failure'] ?? true,
+                'channels' => $config['notification_channels'] ?? ['email'],
+            ],
+            'timeout' => $config['timeout'] ?? 600,
+            'retry' => [
+                'max_attempts' => $config['retry_attempts'] ?? 1,
+                'delay' => $config['retry_delay'] ?? 30,
+            ],
+        ];
+    }
+
+    /**
      * Execute pipeline run
      */
     public function executePipeline(Pipeline $pipeline, string $trigger = 'manual'): PipelineRun
@@ -679,6 +1072,252 @@ class PipelineService
                 'error' => $response->body(),
             ]);
         }
+    }
+
+    /**
+     * Trigger GitLab Pipeline
+     */
+    protected function triggerGitLabPipeline(Pipeline $pipeline, PipelineRun $run): void
+    {
+        $project = $pipeline->project;
+        $gitlabProjectId = $this->extractGitLabProjectId($project->repository_url);
+        $gitlabToken = config('services.gitlab.token');
+        $gitlabUrl = config('services.gitlab.url', 'https://gitlab.com');
+
+        if (empty($gitlabToken)) {
+            $run->update([
+                'status' => 'failed',
+                'error' => 'GitLab API token not configured. Set GITLAB_TOKEN in .env',
+            ]);
+            Log::error('GitLab pipeline trigger failed: Missing API token', [
+                'pipeline_id' => $pipeline->id,
+                'project_id' => $project->id,
+            ]);
+
+            return;
+        }
+
+        if (empty($gitlabProjectId)) {
+            $run->update([
+                'status' => 'failed',
+                'error' => 'Could not extract GitLab project ID from repository URL',
+            ]);
+
+            return;
+        }
+
+        try {
+            $response = Http::withToken($gitlabToken)
+                ->timeout(30)
+                ->post("{$gitlabUrl}/api/v4/projects/{$gitlabProjectId}/pipeline", [
+                    'ref' => $project->branch,
+                    'variables' => [
+                        [
+                            'key' => 'DEVFLOW_PIPELINE_RUN_ID',
+                            'value' => (string) $run->id,
+                        ],
+                        [
+                            'key' => 'DEVFLOW_TRIGGERED',
+                            'value' => 'true',
+                        ],
+                    ],
+                ]);
+
+            if ($response->successful()) {
+                $pipelineData = $response->json();
+                $run->update([
+                    'status' => 'running',
+                    'external_id' => $pipelineData['id'] ?? null,
+                    'external_url' => $pipelineData['web_url'] ?? null,
+                ]);
+
+                Log::info('GitLab pipeline triggered successfully', [
+                    'pipeline_id' => $pipeline->id,
+                    'gitlab_pipeline_id' => $pipelineData['id'] ?? null,
+                ]);
+            } else {
+                $error = $response->json('message') ?? $response->body();
+                $run->update([
+                    'status' => 'failed',
+                    'error' => "GitLab API error: {$error}",
+                ]);
+
+                Log::error('GitLab pipeline trigger failed', [
+                    'pipeline_id' => $pipeline->id,
+                    'status_code' => $response->status(),
+                    'error' => $error,
+                ]);
+            }
+        } catch (\Exception $e) {
+            $run->update([
+                'status' => 'failed',
+                'error' => "GitLab API exception: {$e->getMessage()}",
+            ]);
+
+            Log::error('GitLab pipeline trigger exception', [
+                'pipeline_id' => $pipeline->id,
+                'exception' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Trigger Jenkins Build
+     */
+    protected function triggerJenkinsBuild(Pipeline $pipeline, PipelineRun $run): void
+    {
+        $project = $pipeline->project;
+        $jenkinsUrl = config('services.jenkins.url');
+        $jenkinsUser = config('services.jenkins.user');
+        $jenkinsToken = config('services.jenkins.token');
+        $jobName = $pipeline->configuration['jenkins_job_name'] ?? $project->slug;
+
+        if (empty($jenkinsUrl) || empty($jenkinsUser) || empty($jenkinsToken)) {
+            $run->update([
+                'status' => 'failed',
+                'error' => 'Jenkins configuration incomplete. Set JENKINS_URL, JENKINS_USER, and JENKINS_TOKEN in .env',
+            ]);
+            Log::error('Jenkins build trigger failed: Missing configuration', [
+                'pipeline_id' => $pipeline->id,
+                'project_id' => $project->id,
+            ]);
+
+            return;
+        }
+
+        try {
+            // Jenkins uses Basic Auth with user:token
+            $response = Http::withBasicAuth($jenkinsUser, $jenkinsToken)
+                ->timeout(30)
+                ->post("{$jenkinsUrl}/job/{$jobName}/buildWithParameters", [
+                    'BRANCH' => $project->branch,
+                    'COMMIT_HASH' => $run->commit_hash,
+                    'DEVFLOW_PIPELINE_RUN_ID' => $run->id,
+                    'DEVFLOW_PROJECT_ID' => $project->id,
+                ]);
+
+            // Jenkins returns 201 for successful build trigger
+            if ($response->status() === 201 || $response->successful()) {
+                // Try to get the queue item location from headers
+                $queueLocation = $response->header('Location');
+
+                $run->update([
+                    'status' => 'running',
+                    'external_url' => $queueLocation ?? "{$jenkinsUrl}/job/{$jobName}",
+                ]);
+
+                Log::info('Jenkins build triggered successfully', [
+                    'pipeline_id' => $pipeline->id,
+                    'jenkins_job' => $jobName,
+                    'queue_location' => $queueLocation,
+                ]);
+
+                // Optionally poll for the build number
+                if ($queueLocation) {
+                    $this->pollJenkinsQueueForBuildNumber($run, $queueLocation, $jenkinsUser, $jenkinsToken);
+                }
+            } else {
+                $run->update([
+                    'status' => 'failed',
+                    'error' => "Jenkins API error: HTTP {$response->status()} - {$response->body()}",
+                ]);
+
+                Log::error('Jenkins build trigger failed', [
+                    'pipeline_id' => $pipeline->id,
+                    'status_code' => $response->status(),
+                    'response' => $response->body(),
+                ]);
+            }
+        } catch (\Exception $e) {
+            $run->update([
+                'status' => 'failed',
+                'error' => "Jenkins API exception: {$e->getMessage()}",
+            ]);
+
+            Log::error('Jenkins build trigger exception', [
+                'pipeline_id' => $pipeline->id,
+                'exception' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Poll Jenkins queue to get the actual build number
+     */
+    protected function pollJenkinsQueueForBuildNumber(PipelineRun $run, string $queueLocation, string $user, string $token): void
+    {
+        // Poll up to 10 times with 2 second intervals
+        for ($i = 0; $i < 10; $i++) {
+            sleep(2);
+
+            try {
+                $response = Http::withBasicAuth($user, $token)
+                    ->timeout(10)
+                    ->get("{$queueLocation}api/json");
+
+                if ($response->successful()) {
+                    $data = $response->json();
+
+                    // Check if build has started (executable will be present)
+                    if (isset($data['executable']['number'])) {
+                        $buildNumber = $data['executable']['number'];
+                        $buildUrl = $data['executable']['url'] ?? null;
+
+                        $run->update([
+                            'external_id' => (string) $buildNumber,
+                            'external_url' => $buildUrl,
+                        ]);
+
+                        Log::info('Jenkins build number retrieved', [
+                            'run_id' => $run->id,
+                            'build_number' => $buildNumber,
+                        ]);
+
+                        return;
+                    }
+
+                    // If cancelled
+                    if (isset($data['cancelled']) && $data['cancelled']) {
+                        $run->update([
+                            'status' => 'failed',
+                            'error' => 'Jenkins build was cancelled in queue',
+                        ]);
+
+                        return;
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::warning('Failed to poll Jenkins queue', [
+                    'run_id' => $run->id,
+                    'attempt' => $i + 1,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Extract GitLab project ID from repository URL
+     * Supports both numeric IDs and URL-encoded paths
+     */
+    protected function extractGitLabProjectId(string $url): string
+    {
+        // Handle SSH URLs: git@gitlab.com:group/project.git
+        if (preg_match('/git@[^:]+:(.+?)(?:\.git)?$/', $url, $matches)) {
+            return urlencode($matches[1]);
+        }
+
+        // Handle HTTPS URLs: https://gitlab.com/group/project.git
+        if (preg_match('/gitlab\.[^\/]+\/(.+?)(?:\.git)?$/', $url, $matches)) {
+            return urlencode($matches[1]);
+        }
+
+        // Handle self-hosted GitLab URLs
+        if (preg_match('/\/\/[^\/]+\/(.+?)(?:\.git)?$/', $url, $matches)) {
+            return urlencode($matches[1]);
+        }
+
+        return '';
     }
 
     /**

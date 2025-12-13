@@ -159,7 +159,7 @@ class HealthCheckManager extends Component
 
     public function editCheck(int $checkId): void
     {
-        $check = HealthCheck::findOrFail($checkId);
+        $check = HealthCheck::with('notificationChannels:id')->findOrFail($checkId);
 
         $this->editingCheckId = $checkId;
         $this->project_id = $check->project_id;

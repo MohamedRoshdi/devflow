@@ -162,6 +162,10 @@
                                class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('deployments.approvals') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
                                 Deployment Approvals
                             </a>
+                            <a href="{{ route('deployments.scheduled') }}"
+                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('deployments.scheduled') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
+                                Scheduled Deployments
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -263,6 +267,13 @@
                     <div x-show="!sidebarCollapsed" class="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
                         DevOps Tools
                     </div>
+                    <a href="{{ route('terminal') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('terminal') ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <span x-show="!sidebarCollapsed" class="whitespace-nowrap">SSH Terminal</span>
+                    </a>
                     <a href="{{ route('kubernetes.index') }}"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('kubernetes.*') ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
                         <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

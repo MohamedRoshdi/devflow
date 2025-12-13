@@ -7,7 +7,9 @@ namespace App\Services;
 use App\Models\FailedJob;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
+use Illuminate\Support\Facades\Queue;
 
 class QueueMonitorService
 {
@@ -87,11 +89,17 @@ class QueueMonitorService
                         'available_at' => $job->available_at,
                         'reserved_at' => $job->reserved_at,
                         'job_class' => $payload['displayName'] ?? 'Unknown',
+                        'status' => $job->reserved_at === null ? 'pending' : 'processing',
                     ];
                 });
 
             return $jobs->toArray();
         } catch (\Exception $e) {
+            Log::error('Failed to retrieve recent jobs', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return [];
         }
     }
@@ -122,6 +130,13 @@ class QueueMonitorService
 
             return $failedJobs->toArray();
         } catch (\Exception $e) {
+            Log::error('Failed to retrieve failed jobs', [
+                'error' => $e->getMessage(),
+                'limit' => $limit,
+                'offset' => $offset,
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return [];
         }
     }
@@ -198,12 +213,17 @@ class QueueMonitorService
                 ->groupBy('queue')
                 ->get()
                 ->mapWithKeys(function ($item) {
-                    return [$item->queue => $item->count];
+                    return [$item->queue => (int) $item->count];
                 })
                 ->toArray();
 
             return $breakdown;
         } catch (\Exception $e) {
+            Log::error('Failed to get queue breakdown', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return [];
         }
     }
@@ -216,9 +236,19 @@ class QueueMonitorService
         try {
             $job = FailedJob::findOrFail($jobId);
 
+            Log::info("Retrying failed job {$jobId}", [
+                'job_id' => $jobId,
+                'queue' => $job->queue,
+                'job_class' => $job->job_class,
+            ]);
+
             return $job->retry();
         } catch (\Exception $e) {
-            \Log::error("Failed to retry job {$jobId}: ".$e->getMessage());
+            Log::error("Failed to retry job {$jobId}", [
+                'job_id' => $jobId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
 
             return false;
         }
@@ -230,9 +260,22 @@ class QueueMonitorService
     public function retryAllFailedJobs(): bool
     {
         try {
-            return FailedJob::retryAll();
+            $count = FailedJob::count();
+
+            Log::info('Retrying all failed jobs', ['count' => $count]);
+
+            $result = FailedJob::retryAll();
+
+            if ($result) {
+                Log::info('Successfully retried all failed jobs', ['count' => $count]);
+            }
+
+            return $result;
         } catch (\Exception $e) {
-            \Log::error('Failed to retry all jobs: '.$e->getMessage());
+            Log::error('Failed to retry all jobs', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
 
             return false;
         }
@@ -246,9 +289,19 @@ class QueueMonitorService
         try {
             $job = FailedJob::findOrFail($jobId);
 
+            Log::info("Deleting failed job {$jobId}", [
+                'job_id' => $jobId,
+                'queue' => $job->queue,
+                'job_class' => $job->job_class,
+            ]);
+
             return $job->forget();
         } catch (\Exception $e) {
-            \Log::error("Failed to delete job {$jobId}: ".$e->getMessage());
+            Log::error("Failed to delete job {$jobId}", [
+                'job_id' => $jobId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
 
             return false;
         }
@@ -260,9 +313,22 @@ class QueueMonitorService
     public function clearAllFailedJobs(): bool
     {
         try {
-            return FailedJob::forgetAll();
+            $count = FailedJob::count();
+
+            Log::info('Clearing all failed jobs', ['count' => $count]);
+
+            $result = FailedJob::forgetAll();
+
+            if ($result) {
+                Log::info('Successfully cleared all failed jobs', ['count' => $count]);
+            }
+
+            return $result;
         } catch (\Exception $e) {
-            \Log::error('Failed to clear all failed jobs: '.$e->getMessage());
+            Log::error('Failed to clear all failed jobs', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
 
             return false;
         }
@@ -293,20 +359,247 @@ class QueueMonitorService
                 $failed1hour = FailedJob::where('failed_at', '>=', $now->copy()->subHour())
                     ->count();
 
+                $successRate = $jobs1hour > 0 ? round((($jobs1hour - $failed1hour) / $jobs1hour) * 100, 2) : 100.0;
+
                 return [
                     'jobs_5min' => $jobs5min,
                     'jobs_1hour' => $jobs1hour,
                     'failed_1hour' => $failed1hour,
-                    'success_rate' => $jobs1hour > 0 ? round((($jobs1hour - $failed1hour) / $jobs1hour) * 100, 2) : 100,
+                    'success_rate' => $successRate,
+                    'throughput_per_minute' => $jobs5min > 0 ? round($jobs5min / 5, 2) : 0.0,
                 ];
             } catch (\Exception $e) {
+                Log::error('Failed to get processing rate', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+
                 return [
                     'jobs_5min' => 0,
                     'jobs_1hour' => 0,
                     'failed_1hour' => 0,
-                    'success_rate' => 100,
+                    'success_rate' => 100.0,
+                    'throughput_per_minute' => 0.0,
                 ];
             }
         });
+    }
+
+    /**
+     * Get detailed queue health status
+     */
+    public function getQueueHealth(): array
+    {
+        try {
+            $pendingJobs = $this->getPendingJobsCount();
+            $processingJobs = $this->getProcessingJobsCount();
+            $failedJobs = $this->getFailedJobsCount();
+            $workerStatus = $this->getWorkerStatus();
+            $processingRate = $this->getProcessingRate();
+
+            // Determine health status based on metrics
+            $health = 'healthy';
+            $issues = [];
+
+            if (! $workerStatus['is_running']) {
+                $health = 'critical';
+                $issues[] = 'Queue workers are not running';
+            }
+
+            if ($failedJobs > 100) {
+                $health = $health === 'critical' ? 'critical' : 'warning';
+                $issues[] = "High number of failed jobs ({$failedJobs})";
+            }
+
+            if ($pendingJobs > 1000) {
+                $health = $health === 'critical' ? 'critical' : 'warning';
+                $issues[] = "Large queue backlog ({$pendingJobs} pending jobs)";
+            }
+
+            if ($processingRate['success_rate'] < 90) {
+                $health = $health === 'critical' ? 'critical' : 'warning';
+                $issues[] = "Low success rate ({$processingRate['success_rate']}%)";
+            }
+
+            return [
+                'status' => $health,
+                'issues' => $issues,
+                'metrics' => [
+                    'pending_jobs' => $pendingJobs,
+                    'processing_jobs' => $processingJobs,
+                    'failed_jobs' => $failedJobs,
+                    'worker_count' => $workerStatus['worker_count'],
+                    'success_rate' => $processingRate['success_rate'],
+                    'throughput' => $processingRate['throughput_per_minute'],
+                ],
+                'timestamp' => now()->toIso8601String(),
+            ];
+        } catch (\Exception $e) {
+            Log::error('Failed to get queue health', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return [
+                'status' => 'unknown',
+                'issues' => ['Failed to retrieve queue health metrics'],
+                'metrics' => [],
+                'timestamp' => now()->toIso8601String(),
+            ];
+        }
+    }
+
+    /**
+     * Get queue size for a specific queue
+     */
+    public function getQueueSize(string $queueName = 'default'): int
+    {
+        try {
+            return DB::table('jobs')
+                ->where('queue', $queueName)
+                ->count();
+        } catch (\Exception $e) {
+            Log::error("Failed to get queue size for {$queueName}", [
+                'queue' => $queueName,
+                'error' => $e->getMessage(),
+            ]);
+
+            return 0;
+        }
+    }
+
+    /**
+     * Purge jobs from a specific queue
+     */
+    public function purgeQueue(string $queueName): bool
+    {
+        try {
+            $count = DB::table('jobs')
+                ->where('queue', $queueName)
+                ->count();
+
+            Log::info("Purging queue {$queueName}", [
+                'queue' => $queueName,
+                'job_count' => $count,
+            ]);
+
+            DB::table('jobs')
+                ->where('queue', $queueName)
+                ->delete();
+
+            Log::info("Successfully purged queue {$queueName}", [
+                'queue' => $queueName,
+                'jobs_deleted' => $count,
+            ]);
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Failed to purge queue {$queueName}", [
+                'queue' => $queueName,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Get average job processing time (in seconds)
+     */
+    public function getAverageProcessingTime(): float
+    {
+        $cacheKey = 'queue_monitor:avg_processing_time';
+
+        return Cache::remember($cacheKey, 300, function () {
+            try {
+                // This is an approximation based on reserved jobs
+                $processingJobs = DB::table('jobs')
+                    ->whereNotNull('reserved_at')
+                    ->select('reserved_at', 'created_at')
+                    ->get();
+
+                if ($processingJobs->isEmpty()) {
+                    return 0.0;
+                }
+
+                $totalTime = 0;
+                $now = time();
+
+                foreach ($processingJobs as $job) {
+                    $processingTime = $now - $job->reserved_at;
+                    $totalTime += $processingTime;
+                }
+
+                return round($totalTime / $processingJobs->count(), 2);
+            } catch (\Exception $e) {
+                Log::error('Failed to get average processing time', [
+                    'error' => $e->getMessage(),
+                ]);
+
+                return 0.0;
+            }
+        });
+    }
+
+    /**
+     * Get jobs that have been stuck for too long (likely failed but not marked as such)
+     */
+    public function getStuckJobs(int $thresholdMinutes = 30): array
+    {
+        try {
+            $threshold = now()->subMinutes($thresholdMinutes)->timestamp;
+
+            $stuckJobs = DB::table('jobs')
+                ->whereNotNull('reserved_at')
+                ->where('reserved_at', '<', $threshold)
+                ->get()
+                ->map(function ($job) {
+                    $payload = json_decode($job->payload, true);
+                    $stuckDuration = time() - $job->reserved_at;
+
+                    return [
+                        'id' => $job->id,
+                        'queue' => $job->queue,
+                        'attempts' => $job->attempts,
+                        'reserved_at' => $job->reserved_at,
+                        'stuck_duration_minutes' => round($stuckDuration / 60, 2),
+                        'job_class' => $payload['displayName'] ?? 'Unknown',
+                    ];
+                })
+                ->toArray();
+
+            return $stuckJobs;
+        } catch (\Exception $e) {
+            Log::error('Failed to get stuck jobs', [
+                'threshold_minutes' => $thresholdMinutes,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return [];
+        }
+    }
+
+    /**
+     * Clear cache for queue monitoring metrics
+     */
+    public function clearMonitoringCache(): bool
+    {
+        try {
+            Cache::forget('queue_monitor:processing_rate');
+            Cache::forget('queue_monitor:avg_processing_time');
+            Cache::forget('queue_monitor:jobs_per_hour');
+
+            Log::info('Queue monitoring cache cleared');
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Failed to clear monitoring cache', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
     }
 }

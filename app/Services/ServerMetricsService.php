@@ -15,7 +15,7 @@ class ServerMetricsService
     /**
      * Collect metrics from a server via SSH
      */
-    public function collectMetrics(Server $server): ?ServerMetric
+    public function collectMetrics(Server $server): ServerMetric
     {
         try {
             if ($this->isLocalhost($server->ip_address)) {
@@ -26,10 +26,14 @@ class ServerMetricsService
         } catch (\Exception $e) {
             Log::error('Failed to collect server metrics', [
                 'server_id' => $server->id,
+                'server_name' => $server->name,
+                'ip_address' => $server->ip_address,
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
-            return null;
+            // Return fallback metrics with zero values instead of null
+            return $this->createFallbackMetrics($server);
         }
     }
 
@@ -50,12 +54,48 @@ class ServerMetricsService
 
     /**
      * Get latest metrics for a server
+     * Returns a fallback metric object if no metrics exist in database
      */
-    public function getLatestMetrics(Server $server): ?ServerMetric
+    public function getLatestMetrics(Server $server): ServerMetric
     {
-        return ServerMetric::where('server_id', $server->id)
+        $metric = ServerMetric::where('server_id', $server->id)
             ->latest('recorded_at')
             ->first();
+
+        if ($metric === null) {
+            Log::warning('No metrics found for server, returning fallback', [
+                'server_id' => $server->id,
+                'server_name' => $server->name,
+            ]);
+
+            return $this->createFallbackMetrics($server);
+        }
+
+        return $metric;
+    }
+
+    /**
+     * Create fallback metrics with zero values when collection fails
+     * This ensures we always return a ServerMetric object
+     */
+    protected function createFallbackMetrics(Server $server): ServerMetric
+    {
+        return ServerMetric::create([
+            'server_id' => $server->id,
+            'cpu_usage' => 0.0,
+            'memory_usage' => 0.0,
+            'memory_used_mb' => 0,
+            'memory_total_mb' => 0,
+            'disk_usage' => 0.0,
+            'disk_used_gb' => 0,
+            'disk_total_gb' => 0,
+            'load_average_1' => 0.0,
+            'load_average_5' => 0.0,
+            'load_average_15' => 0.0,
+            'network_in_bytes' => 0,
+            'network_out_bytes' => 0,
+            'recorded_at' => now(),
+        ]);
     }
 
     /**

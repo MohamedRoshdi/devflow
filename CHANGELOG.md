@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.49.0] - 2025-12-13
+
+### Added
+- **7 New Livewire Component Tests**
+  - `tests/Feature/Livewire/DeploymentListTest.php` - Deployment list display, filtering, pagination
+  - `tests/Feature/Livewire/ProjectCreateTest.php` - Multi-step wizard, validation, server selection
+  - `tests/Feature/Livewire/ServerCreateTest.php` - Form validation, SSH testing, Docker detection
+  - `tests/Unit/Livewire/DashboardTest.php` - Stats loading, project listing, quick actions
+  - `tests/Unit/Livewire/TeamSettingsTest.php` - Team update, member management, invitations
+  - `tests/Unit/Livewire/DeploymentApprovalsTest.php` - Approve/reject flow, modal interactions
+  - `tests/Unit/Livewire/Deployments/ScheduledDeploymentsTest.php` - Schedule CRUD operations
+
+### Improved
+- **Accessibility (ARIA Labels)**
+  - `deployment-list.blade.php` - Added `role="status"`, `aria-label` to status badges and timeline
+  - `project-list.blade.php` - Added `aria-label` to project cards, icons, and action buttons
+  - `server-list.blade.php` - Added `role="status"`, `aria-label` to server status indicators
+
+### Fixed
+- **Mobile Responsiveness** - Fixed multi-step indicator breaking on mobile in `project-create.blade.php`
+
+### Documentation
+- Updated `TASKS.md` with completed test coverage and UI improvements
+- Test coverage improved from ~7% to ~14% for Livewire components
+
+---
+
 ## [5.48.1] - 2025-12-13
 
 ### Fixed

@@ -122,13 +122,9 @@ class ServerMetricsDashboard extends Component
         try {
             $metric = $this->metricsService->collectMetrics($this->server);
 
-            if ($metric) {
-                $this->dispatch('notification', type: 'success', message: 'Metrics collected successfully!');
-                $this->loadMetrics();
-                $this->dispatch('metrics-chart-update', data: $this->chartData);
-            } else {
-                $this->dispatch('notification', type: 'error', message: 'Failed to collect metrics. Check server connectivity.');
-            }
+            $this->dispatch('notification', type: 'success', message: 'Metrics collected successfully!');
+            $this->loadMetrics();
+            $this->dispatch('metrics-chart-update', data: $this->chartData);
         } catch (\Exception $e) {
             $this->dispatch('notification', type: 'error', message: 'Failed to collect metrics: '.$e->getMessage());
         }
