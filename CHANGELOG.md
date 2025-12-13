@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.53.0] - 2025-12-13
+
+### Added
+- **5 New Feature Test Files (~200 test methods)**
+  - `tests/Feature/Livewire/DockerDashboardTest.php` - Container management (28 tests)
+  - `tests/Feature/Livewire/SSLManagerTest.php` - Certificate lifecycle (44 tests)
+  - `tests/Feature/Livewire/FirewallManagerTest.php` - Firewall rules (37 tests)
+  - `tests/Feature/Livewire/HealthCheckManagerTest.php` - Health checks (63 tests)
+  - `tests/Feature/Livewire/HealthDashboardTest.php` - System health (28 tests)
+
+- **Complete Helm Chart Generation**
+  - 15+ template generators (deployment, service, ingress, configmap, secret, hpa, pdb)
+  - _helpers.tpl, NOTES.txt, RBAC templates
+  - Laravel-specific patterns (storage volumes, init containers)
+
+- **Webhook Auto-Setup for Git Providers**
+  - setupWebhook(), deleteWebhook(), verifyWebhookSignature()
+  - Supports GitHub (SHA-256 HMAC), GitLab (token), Bitbucket (IP whitelist)
+  - Migration for webhook_provider, webhook_id, webhook_url columns
+
+### Improved
+- **DockerService Refactoring**
+  - Extracted startContainer → 4 focused methods
+  - Extracted buildContainer → 5 focused methods
+  - New SSH helpers: executeRemoteCommand(), getRemoteOutput(), executeRemoteCommandWithTimeout()
+
+### Documentation
+- Updated `TASKS.md` - 73/127+ tasks completed (~58%)
+- Test coverage improved to ~82% (5,543+ tests)
+
+---
+
 ## [5.52.0] - 2025-12-13
 
 ### Added

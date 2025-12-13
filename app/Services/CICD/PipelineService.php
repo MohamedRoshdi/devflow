@@ -1384,11 +1384,526 @@ JENKINSFILE;
 
     /**
      * Setup webhook for automatic pipeline triggering
+     *
+     * @return array{success: bool, webhook_id?: string, webhook_url?: string, error?: string}
      */
-    protected function setupWebhook(Pipeline $pipeline): void
+    public function setupWebhook(Project $project): array
     {
-        // Implementation would depend on the provider
-        // This is a placeholder for the webhook setup logic
+        try {
+            // Generate webhook secret if not already set
+            if (! $project->webhook_secret) {
+                $project->webhook_secret = $project->generateWebhookSecret();
+                $project->save();
+            }
+
+            // Determine provider from repository URL
+            $provider = $this->detectGitProvider($project->repository_url);
+
+            // Setup webhook based on provider
+            $result = match ($provider) {
+                'github' => $this->setupGitHubWebhook($project),
+                'gitlab' => $this->setupGitLabWebhook($project),
+                'bitbucket' => $this->setupBitbucketWebhook($project),
+                default => ['success' => false, 'error' => "Unsupported provider: {$provider}"],
+            };
+
+            if ($result['success']) {
+                // Update project with webhook details - only set provider if it's a valid enum value
+                $project->webhook_enabled = true;
+                $project->webhook_provider = in_array($provider, ['github', 'gitlab', 'bitbucket', 'custom'], true) ? $provider : 'custom';
+                $project->webhook_id = $result['webhook_id'] ?? null;
+                $project->webhook_url = $result['webhook_url'] ?? null;
+                $project->save();
+
+                Log::info('Webhook created successfully', [
+                    'project_id' => $project->id,
+                    'provider' => $provider,
+                    'webhook_id' => $result['webhook_id'] ?? null,
+                ]);
+            } else {
+                Log::error('Webhook creation failed', [
+                    'project_id' => $project->id,
+                    'provider' => $provider,
+                    'error' => $result['error'] ?? 'Unknown error',
+                ]);
+            }
+
+            return $result;
+        } catch (\Exception $e) {
+            Log::error('Webhook setup exception', [
+                'project_id' => $project->id,
+                'exception' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Delete webhook from Git provider
+     */
+    public function deleteWebhook(Project $project): bool
+    {
+        try {
+            if (! $project->webhook_enabled || ! $project->webhook_id) {
+                Log::warning('No webhook to delete', ['project_id' => $project->id]);
+
+                return true;
+            }
+
+            $result = match ($project->webhook_provider) {
+                'github' => $this->deleteGitHubWebhook($project),
+                'gitlab' => $this->deleteGitLabWebhook($project),
+                'bitbucket' => $this->deleteBitbucketWebhook($project),
+                default => false,
+            };
+
+            if ($result) {
+                // Clear webhook data from project
+                $project->webhook_enabled = false;
+                $project->webhook_id = null;
+                $project->webhook_url = null;
+                $project->save();
+
+                Log::info('Webhook deleted successfully', [
+                    'project_id' => $project->id,
+                    'provider' => $project->webhook_provider,
+                ]);
+            }
+
+            return $result;
+        } catch (\Exception $e) {
+            Log::error('Webhook deletion exception', [
+                'project_id' => $project->id,
+                'exception' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Verify webhook signature from incoming request
+     */
+    public function verifyWebhookSignature(\Illuminate\Http\Request $request, Project $project): bool
+    {
+        try {
+            if (! $project->webhook_secret || ! $project->webhook_enabled) {
+                Log::warning('Webhook verification failed: No webhook configured', [
+                    'project_id' => $project->id,
+                ]);
+
+                return false;
+            }
+
+            $provider = $project->webhook_provider ?? $this->detectGitProvider($project->repository_url);
+
+            $isValid = match ($provider) {
+                'github' => $this->verifyGitHubSignature($request, $project->webhook_secret),
+                'gitlab' => $this->verifyGitLabSignature($request, $project->webhook_secret),
+                'bitbucket' => $this->verifyBitbucketSignature($request, $project->webhook_secret),
+                default => false,
+            };
+
+            if (! $isValid) {
+                Log::warning('Webhook signature verification failed', [
+                    'project_id' => $project->id,
+                    'provider' => $provider,
+                    'ip' => $request->ip(),
+                ]);
+            }
+
+            return $isValid;
+        } catch (\Exception $e) {
+            Log::error('Webhook verification exception', [
+                'project_id' => $project->id,
+                'exception' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Detect Git provider from repository URL
+     */
+    protected function detectGitProvider(string $url): string
+    {
+        if (str_contains($url, 'github.com')) {
+            return 'github';
+        }
+
+        if (str_contains($url, 'gitlab.com') || str_contains($url, 'gitlab')) {
+            return 'gitlab';
+        }
+
+        if (str_contains($url, 'bitbucket.org')) {
+            return 'bitbucket';
+        }
+
+        return 'custom';
+    }
+
+    /**
+     * Setup GitHub webhook
+     *
+     * @return array{success: bool, webhook_id?: string, webhook_url?: string, error?: string}
+     */
+    protected function setupGitHubWebhook(Project $project): array
+    {
+        $token = config('services.github.token');
+        if (! $token) {
+            return ['success' => false, 'error' => 'GitHub token not configured'];
+        }
+
+        $owner = $this->extractGitHubOwner($project->repository_url);
+        $repo = $this->extractGitHubRepo($project->repository_url);
+
+        if (! $owner || ! $repo) {
+            return ['success' => false, 'error' => 'Invalid GitHub repository URL'];
+        }
+
+        $webhookUrl = url("/api/webhooks/github/{$project->id}");
+
+        try {
+            $response = Http::withToken($token)
+                ->timeout(30)
+                ->post("https://api.github.com/repos/{$owner}/{$repo}/hooks", [
+                    'name' => 'web',
+                    'active' => true,
+                    'events' => ['push', 'pull_request', 'release'],
+                    'config' => [
+                        'url' => $webhookUrl,
+                        'content_type' => 'json',
+                        'secret' => $project->webhook_secret,
+                        'insecure_ssl' => '0',
+                    ],
+                ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+
+                return [
+                    'success' => true,
+                    'webhook_id' => (string) $data['id'],
+                    'webhook_url' => $webhookUrl,
+                ];
+            }
+
+            return [
+                'success' => false,
+                'error' => "GitHub API error: {$response->status()} - " . $response->json('message', $response->body()),
+            ];
+        } catch (\Exception $e) {
+            return ['success' => false, 'error' => "GitHub API exception: {$e->getMessage()}"];
+        }
+    }
+
+    /**
+     * Setup GitLab webhook
+     *
+     * @return array{success: bool, webhook_id?: string, webhook_url?: string, error?: string}
+     */
+    protected function setupGitLabWebhook(Project $project): array
+    {
+        $token = config('services.gitlab.token');
+        $gitlabUrl = config('services.gitlab.url', 'https://gitlab.com');
+
+        if (! $token) {
+            return ['success' => false, 'error' => 'GitLab token not configured'];
+        }
+
+        $projectId = $this->extractGitLabProjectId($project->repository_url);
+        if (! $projectId) {
+            return ['success' => false, 'error' => 'Invalid GitLab repository URL'];
+        }
+
+        $webhookUrl = url("/api/webhooks/gitlab/{$project->id}");
+
+        try {
+            $response = Http::withToken($token)
+                ->timeout(30)
+                ->post("{$gitlabUrl}/api/v4/projects/{$projectId}/hooks", [
+                    'url' => $webhookUrl,
+                    'token' => $project->webhook_secret,
+                    'push_events' => true,
+                    'merge_requests_events' => true,
+                    'tag_push_events' => true,
+                    'releases_events' => true,
+                    'enable_ssl_verification' => true,
+                ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+
+                return [
+                    'success' => true,
+                    'webhook_id' => (string) $data['id'],
+                    'webhook_url' => $webhookUrl,
+                ];
+            }
+
+            return [
+                'success' => false,
+                'error' => "GitLab API error: {$response->status()} - " . $response->json('message', $response->body()),
+            ];
+        } catch (\Exception $e) {
+            return ['success' => false, 'error' => "GitLab API exception: {$e->getMessage()}"];
+        }
+    }
+
+    /**
+     * Setup Bitbucket webhook
+     *
+     * @return array{success: bool, webhook_id?: string, webhook_url?: string, error?: string}
+     */
+    protected function setupBitbucketWebhook(Project $project): array
+    {
+        $username = config('services.bitbucket.username');
+        $appPassword = config('services.bitbucket.app_password');
+        $bitbucketUrl = config('services.bitbucket.url', 'https://api.bitbucket.org/2.0');
+
+        if (! $username || ! $appPassword) {
+            return ['success' => false, 'error' => 'Bitbucket credentials not configured'];
+        }
+
+        [$workspace, $repoSlug] = $this->extractBitbucketInfo($project->repository_url);
+        if (! $workspace || ! $repoSlug) {
+            return ['success' => false, 'error' => 'Invalid Bitbucket repository URL'];
+        }
+
+        $webhookUrl = url("/api/webhooks/bitbucket/{$project->id}");
+
+        try {
+            $response = Http::withBasicAuth($username, $appPassword)
+                ->timeout(30)
+                ->post("{$bitbucketUrl}/repositories/{$workspace}/{$repoSlug}/hooks", [
+                    'description' => "DevFlow Pro - {$project->name}",
+                    'url' => $webhookUrl,
+                    'active' => true,
+                    'events' => [
+                        'repo:push',
+                        'pullrequest:created',
+                        'pullrequest:updated',
+                        'pullrequest:fulfilled',
+                    ],
+                    // Bitbucket doesn't support secrets in webhooks, we'll use IP whitelisting
+                ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+
+                return [
+                    'success' => true,
+                    'webhook_id' => $data['uuid'] ?? (string) ($data['id'] ?? ''),
+                    'webhook_url' => $webhookUrl,
+                ];
+            }
+
+            return [
+                'success' => false,
+                'error' => "Bitbucket API error: {$response->status()} - " . $response->json('error.message', $response->body()),
+            ];
+        } catch (\Exception $e) {
+            return ['success' => false, 'error' => "Bitbucket API exception: {$e->getMessage()}"];
+        }
+    }
+
+    /**
+     * Delete GitHub webhook
+     */
+    protected function deleteGitHubWebhook(Project $project): bool
+    {
+        $token = config('services.github.token');
+        if (! $token) {
+            return false;
+        }
+
+        $owner = $this->extractGitHubOwner($project->repository_url);
+        $repo = $this->extractGitHubRepo($project->repository_url);
+
+        if (! $owner || ! $repo || ! $project->webhook_id) {
+            return false;
+        }
+
+        try {
+            $response = Http::withToken($token)
+                ->timeout(30)
+                ->delete("https://api.github.com/repos/{$owner}/{$repo}/hooks/{$project->webhook_id}");
+
+            return $response->successful() || $response->status() === 404; // 404 means already deleted
+        } catch (\Exception $e) {
+            Log::error('GitHub webhook deletion failed', [
+                'project_id' => $project->id,
+                'exception' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Delete GitLab webhook
+     */
+    protected function deleteGitLabWebhook(Project $project): bool
+    {
+        $token = config('services.gitlab.token');
+        $gitlabUrl = config('services.gitlab.url', 'https://gitlab.com');
+
+        if (! $token) {
+            return false;
+        }
+
+        $projectId = $this->extractGitLabProjectId($project->repository_url);
+        if (! $projectId || ! $project->webhook_id) {
+            return false;
+        }
+
+        try {
+            $response = Http::withToken($token)
+                ->timeout(30)
+                ->delete("{$gitlabUrl}/api/v4/projects/{$projectId}/hooks/{$project->webhook_id}");
+
+            return $response->successful() || $response->status() === 404;
+        } catch (\Exception $e) {
+            Log::error('GitLab webhook deletion failed', [
+                'project_id' => $project->id,
+                'exception' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Delete Bitbucket webhook
+     */
+    protected function deleteBitbucketWebhook(Project $project): bool
+    {
+        $username = config('services.bitbucket.username');
+        $appPassword = config('services.bitbucket.app_password');
+        $bitbucketUrl = config('services.bitbucket.url', 'https://api.bitbucket.org/2.0');
+
+        if (! $username || ! $appPassword) {
+            return false;
+        }
+
+        [$workspace, $repoSlug] = $this->extractBitbucketInfo($project->repository_url);
+        if (! $workspace || ! $repoSlug || ! $project->webhook_id) {
+            return false;
+        }
+
+        try {
+            $response = Http::withBasicAuth($username, $appPassword)
+                ->timeout(30)
+                ->delete("{$bitbucketUrl}/repositories/{$workspace}/{$repoSlug}/hooks/{$project->webhook_id}");
+
+            return $response->successful() || $response->status() === 404;
+        } catch (\Exception $e) {
+            Log::error('Bitbucket webhook deletion failed', [
+                'project_id' => $project->id,
+                'exception' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Verify GitHub webhook signature
+     */
+    protected function verifyGitHubSignature(\Illuminate\Http\Request $request, string $secret): bool
+    {
+        $signature = $request->header('X-Hub-Signature-256');
+        if (! $signature) {
+            return false;
+        }
+
+        $payload = $request->getContent();
+        $expectedSignature = 'sha256=' . hash_hmac('sha256', $payload, $secret);
+
+        return hash_equals($expectedSignature, $signature);
+    }
+
+    /**
+     * Verify GitLab webhook signature
+     */
+    protected function verifyGitLabSignature(\Illuminate\Http\Request $request, string $secret): bool
+    {
+        $token = $request->header('X-Gitlab-Token');
+
+        return $token === $secret;
+    }
+
+    /**
+     * Verify Bitbucket webhook signature
+     * Note: Bitbucket doesn't support webhook secrets, so we verify using IP whitelisting
+     */
+    protected function verifyBitbucketSignature(\Illuminate\Http\Request $request, string $secret): bool
+    {
+        // Bitbucket IP ranges (as of 2025)
+        $bitbucketIpRanges = [
+            '104.192.136.0/21', // Bitbucket Cloud
+            '185.166.140.0/22',
+            '18.205.93.0/25',
+            '18.234.32.128/25',
+            '13.52.5.0/25',
+        ];
+
+        $requestIp = $request->ip();
+        if (! $requestIp) {
+            return false;
+        }
+
+        foreach ($bitbucketIpRanges as $range) {
+            if ($this->ipInRange($requestIp, $range)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if IP address is within CIDR range
+     */
+    protected function ipInRange(string $ip, string $range): bool
+    {
+        if (! str_contains($range, '/')) {
+            return $ip === $range;
+        }
+
+        [$subnet, $bits] = explode('/', $range);
+        $ip = ip2long($ip);
+        $subnet = ip2long($subnet);
+        $mask = -1 << (32 - (int) $bits);
+        $subnet &= $mask;
+
+        return ($ip & $mask) === $subnet;
+    }
+
+    /**
+     * Extract Bitbucket workspace and repository slug from URL
+     *
+     * @return array{0: string, 1: string}
+     */
+    protected function extractBitbucketInfo(string $url): array
+    {
+        // Handle SSH URLs: git@bitbucket.org:workspace/repo.git
+        if (preg_match('/bitbucket\.org:([^\/]+)\/([^\.]+)/', $url, $matches)) {
+            return [$matches[1], $matches[2]];
+        }
+
+        // Handle HTTPS URLs: https://bitbucket.org/workspace/repo.git
+        if (preg_match('/bitbucket\.org\/([^\/]+)\/([^\.\/]+)/', $url, $matches)) {
+            return [$matches[1], $matches[2]];
+        }
+
+        return ['', ''];
     }
 
     /**

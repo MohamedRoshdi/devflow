@@ -62,12 +62,7 @@ class DockerService
     public function checkDockerInstallation(Server $server): array
     {
         try {
-            $command = $this->isLocalhost($server)
-                ? 'docker --version'
-                : $this->buildSSHCommand($server, 'docker --version');
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
+            $process = $this->executeRemoteCommand($server, 'docker --version', false);
 
             if ($process->isSuccessful()) {
                 $output = $process->getOutput();
@@ -117,10 +112,12 @@ class DockerService
             usermod -aG docker $USER
             BASH;
 
-            $command = $this->buildSSHCommand($server, $script);
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(config('devflow.timeouts.docker_install', 300));
-            $process->run();
+            $process = $this->executeRemoteCommandWithTimeout(
+                $server,
+                $script,
+                config('devflow.timeouts.docker_install', 300),
+                false
+            );
 
             if ($process->isSuccessful()) {
                 return [
@@ -136,112 +133,29 @@ class DockerService
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'error' => $e->getMessage(),
-            ];
+                'error' => $e->getMessage()];
         }
     }
 
+    /**
+     * Build Docker container for a project
+     *
+     * This method delegates to either docker-compose build or standalone
+     * container build based on project configuration.
+     *
+     * @param Project $project The project to build containers for
+     * @return array{success: bool, output?: string, error?: string, type?: string}
+     */
     public function buildContainer(Project $project): array
     {
         try {
             $server = $project->server;
-            $slug = $this->getValidatedSlug($project); // Validate slug before use
-            $escapedSlug = escapeshellarg($slug); // Additional shell escaping
-            $projectPath = "/var/www/{$slug}";
 
-            // Check if project uses docker-compose
-            $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
-            $checkCommand = $this->isLocalhost($server)
-                ? $checkComposeCmd
-                : $this->buildSSHCommand($server, $checkComposeCmd);
-
-            $checkProcess = Process::fromShellCommandline($checkCommand);
-            $checkProcess->run();
-            $usesCompose = trim($checkProcess->getOutput()) === 'compose';
-
-            if ($usesCompose) {
-                // Use docker compose build for projects with docker-compose.yml
-                // --no-cache ensures fresh build, --pull gets latest base images
-                $buildCommand = "cd {$projectPath} && docker compose build --no-cache --pull";
-
-                $command = $this->isLocalhost($server)
-                    ? $buildCommand
-                    : $this->buildSSHCommand($server, $buildCommand);
-
-                $process = Process::fromShellCommandline($command);
-                $process->setTimeout(config('devflow.timeouts.docker_compose_build', 1200));
-                $process->run();
-
-                if ($process->isSuccessful()) {
-                    return [
-                        'success' => true,
-                        'output' => $process->getOutput(),
-                        'type' => 'docker-compose',
-                    ];
-                }
-
-                return [
-                    'success' => false,
-                    'error' => $process->getErrorOutput() ?: $process->getOutput(),
-                ];
+            if ($this->detectComposeUsage($server, $project)) {
+                return $this->buildDockerComposeContainer($server, $project);
             }
 
-            // Standalone container mode - check for Dockerfile
-            $checkDockerfileCommand = "cd {$projectPath} && if [ -f Dockerfile ]; then echo 'Dockerfile'; elif [ -f Dockerfile.production ]; then echo 'Dockerfile.production'; else echo 'missing'; fi";
-            $checkCommand = $this->isLocalhost($server)
-                ? $checkDockerfileCommand
-                : $this->buildSSHCommand($server, $checkDockerfileCommand);
-
-            $checkProcess = Process::fromShellCommandline($checkCommand);
-            $checkProcess->run();
-            $dockerfileType = trim($checkProcess->getOutput());
-
-            // Build Docker image (--no-cache ensures fresh build, --pull gets latest base images)
-            if ($dockerfileType === 'Dockerfile') {
-                // Use project's Dockerfile
-                $buildCommand = sprintf(
-                    'cd %s && docker build --no-cache --pull -t %s .',
-                    $projectPath,
-                    $slug
-                );
-            } elseif ($dockerfileType === 'Dockerfile.production') {
-                // Use project's Dockerfile.production
-                $buildCommand = sprintf(
-                    'cd %s && docker build --no-cache --pull -f Dockerfile.production -t %s .',
-                    $projectPath,
-                    $slug
-                );
-            } else {
-                // Generate Dockerfile if project doesn't have one
-                $dockerfile = $this->generateDockerfile($project);
-                $buildCommand = sprintf(
-                    "cd %s && echo '%s' > Dockerfile && docker build --no-cache --pull -t %s .",
-                    $projectPath,
-                    addslashes($dockerfile),
-                    $slug
-                );
-            }
-
-            $command = $this->isLocalhost($server)
-                ? $buildCommand
-                : $this->buildSSHCommand($server, $buildCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(config('devflow.timeouts.docker_build', 600));
-            $process->run();
-
-            if ($process->isSuccessful()) {
-                return [
-                    'success' => true,
-                    'output' => $process->getOutput(),
-                    'type' => 'standalone',
-                ];
-            }
-
-            return [
-                'success' => false,
-                'error' => $process->getErrorOutput(),
-            ];
+            return $this->buildStandaloneContainer($server, $project);
         } catch (\Exception $e) {
             return [
                 'success' => false,
@@ -250,139 +164,339 @@ class DockerService
         }
     }
 
+    /**
+     * Detect if project uses docker-compose
+     *
+     * Checks for the presence of docker-compose.yml file in the project directory.
+     *
+     * @param Server $server The server hosting the project
+     * @param Project $project The project to check
+     * @return bool True if docker-compose.yml exists, false otherwise
+     */
+    protected function detectComposeUsage(Server $server, Project $project): bool
+    {
+        $slug = $this->getValidatedSlug($project);
+        $projectPath = "/var/www/{$slug}";
+
+        $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
+        $checkCommand = $this->isLocalhost($server)
+            ? $checkComposeCmd
+            : $this->buildSSHCommand($server, $checkComposeCmd);
+
+        $checkProcess = Process::fromShellCommandline($checkCommand);
+        $checkProcess->run();
+
+        return trim($checkProcess->getOutput()) === 'compose';
+    }
+
+    /**
+     * Build container using docker-compose
+     *
+     * Executes docker compose build with --no-cache and --pull flags to ensure
+     * fresh builds with latest base images.
+     *
+     * @param Server $server The server hosting the project
+     * @param Project $project The project to build
+     * @return array{success: bool, output?: string, error?: string, type?: string}
+     */
+    protected function buildDockerComposeContainer(Server $server, Project $project): array
+    {
+        $slug = $this->getValidatedSlug($project);
+        $projectPath = "/var/www/{$slug}";
+
+        // Use docker compose build for projects with docker-compose.yml
+        // --no-cache ensures fresh build, --pull gets latest base images
+        $buildCommand = "cd {$projectPath} && docker compose build --no-cache --pull";
+
+        $command = $this->isLocalhost($server)
+            ? $buildCommand
+            : $this->buildSSHCommand($server, $buildCommand);
+
+        $process = Process::fromShellCommandline($command);
+        $process->setTimeout(config('devflow.timeouts.docker_compose_build', 1200));
+        $process->run();
+
+        if ($process->isSuccessful()) {
+            return [
+                'success' => true,
+                'output' => $process->getOutput(),
+                'type' => 'docker-compose',
+            ];
+        }
+
+        return [
+            'success' => false,
+            'error' => $process->getErrorOutput() ?: $process->getOutput(),
+        ];
+    }
+
+    /**
+     * Build standalone Docker container
+     *
+     * Detects and uses project's Dockerfile (or Dockerfile.production), or generates
+     * a Dockerfile if none exists. Builds with --no-cache and --pull flags.
+     *
+     * @param Server $server The server hosting the project
+     * @param Project $project The project to build
+     * @return array{success: bool, output?: string, error?: string, type?: string}
+     */
+    protected function buildStandaloneContainer(Server $server, Project $project): array
+    {
+        $slug = $this->getValidatedSlug($project);
+        $projectPath = "/var/www/{$slug}";
+
+        // Check for Dockerfile
+        $checkDockerfileCommand = "cd {$projectPath} && if [ -f Dockerfile ]; then echo 'Dockerfile'; elif [ -f Dockerfile.production ]; then echo 'Dockerfile.production'; else echo 'missing'; fi";
+        $checkCommand = $this->isLocalhost($server)
+            ? $checkDockerfileCommand
+            : $this->buildSSHCommand($server, $checkDockerfileCommand);
+
+        $checkProcess = Process::fromShellCommandline($checkCommand);
+        $checkProcess->run();
+        $dockerfileType = trim($checkProcess->getOutput());
+
+        // Build Docker image (--no-cache ensures fresh build, --pull gets latest base images)
+        $buildCommand = $this->prepareBuildCommand($project, $projectPath, $slug, $dockerfileType);
+
+        $command = $this->isLocalhost($server)
+            ? $buildCommand
+            : $this->buildSSHCommand($server, $buildCommand);
+
+        $process = Process::fromShellCommandline($command);
+        $process->setTimeout(config('devflow.timeouts.docker_build', 600));
+        $process->run();
+
+        if ($process->isSuccessful()) {
+            return [
+                'success' => true,
+                'output' => $process->getOutput(),
+                'type' => 'standalone',
+            ];
+        }
+
+        return [
+            'success' => false,
+            'error' => $process->getErrorOutput(),
+        ];
+    }
+
+    /**
+     * Prepare build command based on Dockerfile type
+     *
+     * @param Project $project The project to build
+     * @param string $projectPath Absolute path to project directory
+     * @param string $slug Validated project slug
+     * @param string $dockerfileType Type of Dockerfile: 'Dockerfile', 'Dockerfile.production', or 'missing'
+     * @return string The complete build command
+     */
+    protected function prepareBuildCommand(Project $project, string $projectPath, string $slug, string $dockerfileType): string
+    {
+        if ($dockerfileType === 'Dockerfile') {
+            // Use project's Dockerfile
+            return sprintf(
+                'cd %s && docker build --no-cache --pull -t %s .',
+                $projectPath,
+                $slug
+            );
+        }
+
+        if ($dockerfileType === 'Dockerfile.production') {
+            // Use project's Dockerfile.production
+            return sprintf(
+                'cd %s && docker build --no-cache --pull -f Dockerfile.production -t %s .',
+                $projectPath,
+                $slug
+            );
+        }
+
+        // Generate Dockerfile if project doesn't have one
+        $dockerfile = $this->generateDockerfile($project);
+        return sprintf(
+            "cd %s && echo '%s' > Dockerfile && docker build --no-cache --pull -t %s .",
+            $projectPath,
+            addslashes($dockerfile),
+            $slug
+        );
+    }
+
+    /**
+     * Start container for a project
+     *
+     * Delegates to either Docker Compose or standalone container mode based on project configuration.
+     *
+     * @param Project $project The project to start containers for
+     * @return array{success: bool, output?: string, message?: string, error?: string, container_id?: string, port?: int}
+     */
     public function startContainer(Project $project): array
     {
         try {
             $server = $project->server;
-            $slug = $this->getValidatedSlug($project); // Validate slug before use
+            if ($server === null) {
+                return [
+                    'success' => false,
+                    'error' => 'Project has no associated server',
+                ];
+            }
+
+            $slug = $this->getValidatedSlug($project);
             $projectPath = "/var/www/{$slug}";
 
-            // Check if project uses docker-compose
+            // Determine if project uses docker-compose
             $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
-            $checkCommand = $this->isLocalhost($server)
-                ? $checkComposeCmd
-                : $this->buildSSHCommand($server, $checkComposeCmd);
-
-            $checkProcess = Process::fromShellCommandline($checkCommand);
-            $checkProcess->run();
+            $checkProcess = $this->executeRemoteCommand($server, $checkComposeCmd, false);
             $usesCompose = trim($checkProcess->getOutput()) === 'compose';
 
             if ($usesCompose) {
-                // Use docker compose for projects with docker-compose.yml (V2 syntax)
-                // First stop and remove any orphaned containers to prevent name conflicts
-                // Timeout increased to 180s for complex docker-compose projects
-                $cleanupCommand = "cd {$projectPath} && docker compose down --remove-orphans 2>/dev/null; true";
-                $cleanupCmd = $this->isLocalhost($server)
-                    ? $cleanupCommand
-                    : $this->buildSSHCommand($server, $cleanupCommand);
-                $cleanupProcess = Process::fromShellCommandline($cleanupCmd);
-                $cleanupProcess->setTimeout(config('devflow.timeouts.docker_compose_cleanup', 180));
-                $cleanupProcess->run();
-
-                // Also remove any orphaned containers by name pattern (handles containers from failed deploys)
-                // This catches containers like ats-elasticsearch that might exist from previous runs
-                // Security fix: Escape the slug for use in grep pattern to prevent command injection
-                $validatedSlug = $this->getValidatedSlug($project);
-                $escapedSlugForGrep = preg_quote($validatedSlug, '/');
-                $orphanCleanupCommand = "docker ps -a --format '{{.Names}}' | grep -E '^{$escapedSlugForGrep}[-_]' | xargs -r docker rm -f 2>/dev/null; true";
-                $orphanCleanupCmd = $this->isLocalhost($server)
-                    ? $orphanCleanupCommand
-                    : $this->buildSSHCommand($server, $orphanCleanupCommand);
-                $orphanCleanupProcess = Process::fromShellCommandline($orphanCleanupCmd);
-                $orphanCleanupProcess->run();
-
-                // Parse docker-compose.yml to get explicit container_names and remove them if they exist
-                // This handles cases where container_name is set explicitly (e.g., ats-elasticsearch)
-                $parseContainerNamesCmd = "cd {$projectPath} && grep -E '^\\s+container_name:' docker-compose.yml 2>/dev/null | sed 's/.*container_name:\\s*[\"'\\'']\\?\\([^\"'\\''\n]*\\)[\"'\\'']\\?/\\1/' | xargs -r -I {} docker rm -f {} 2>/dev/null; true";
-                $parseCmd = $this->isLocalhost($server)
-                    ? $parseContainerNamesCmd
-                    : $this->buildSSHCommand($server, $parseContainerNamesCmd);
-                $parseProcess = Process::fromShellCommandline($parseCmd);
-                $parseProcess->run();
-
-                $startCommand = "cd {$projectPath} && docker compose up -d --remove-orphans";
-
-                $command = $this->isLocalhost($server)
-                    ? $startCommand
-                    : $this->buildSSHCommand($server, $startCommand);
-
-                $process = Process::fromShellCommandline($command);
-                $process->setTimeout(config('devflow.timeouts.docker_compose_start', 300));
-                $process->run();
-
-                if ($process->isSuccessful()) {
-                    return [
-                        'success' => true,
-                        'output' => $process->getOutput(),
-                        'message' => 'Docker Compose services started',
-                    ];
-                }
-
-                return [
-                    'success' => false,
-                    'error' => $process->getErrorOutput() ?: $process->getOutput(),
-                ];
+                return $this->startDockerComposeContainers($server, $project);
             }
 
-            // Standalone container mode
-            // First, clean up any existing container with the same name
-            $cleanupResult = $this->cleanupExistingContainer($project);
-            if (! $cleanupResult['success']) {
-                \Log::warning("Failed to cleanup existing container for {$project->slug}: ".($cleanupResult['error'] ?? 'Unknown error'));
-            }
-
-            // Use project's assigned port, or default based on project ID
-            $port = $project->port ?? (8000 + $project->id);
-
-            // Determine the internal container port based on the Dockerfile
-            // For PHP-FPM containers, use port 9000
-            // For nginx containers, use port 80
-            $containerPort = $this->detectContainerPort($project);
-
-            // Build environment variables string
-            $envVars = $this->buildEnvironmentVariables($project);
-
-            $validatedSlug = $this->getValidatedSlug($project);
-            $escapedSlug = escapeshellarg($validatedSlug);
-            $startCommand = sprintf(
-                'docker run -d --name %s -p %d:%d%s %s',
-                $escapedSlug,
-                $port,
-                $containerPort,
-                $envVars,
-                $escapedSlug
-            );
-
-            $command = $this->isLocalhost($server)
-                ? $startCommand
-                : $this->buildSSHCommand($server, $startCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            if ($process->isSuccessful()) {
-                // Update project with the port if not set
-                if (! $project->port) {
-                    $project->update(['port' => $port]);
-                }
-
-                return [
-                    'success' => true,
-                    'container_id' => trim($process->getOutput()),
-                    'port' => $port,
-                ];
-            }
-
-            return [
-                'success' => false,
-                'error' => $process->getErrorOutput(),
-            ];
+            return $this->startStandaloneContainer($server, $project);
         } catch (\Exception $e) {
             return [
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
         }
+    }
+
+    /**
+     * Start containers using Docker Compose
+     *
+     * Handles cleanup of orphaned containers and starts all services defined in docker-compose.yml.
+     *
+     * @param Server $server The server where the project is hosted
+     * @param Project $project The project to start
+     * @return array{success: bool, output?: string, message?: string, error?: string}
+     */
+    protected function startDockerComposeContainers(Server $server, Project $project): array
+    {
+        $slug = $this->getValidatedSlug($project);
+        $projectPath = "/var/www/{$slug}";
+
+        // Cleanup orphaned containers before starting
+        $this->cleanupOrphanedContainers($server, $project);
+
+        // Start Docker Compose services
+        $startCommand = "cd {$projectPath} && docker compose up -d --remove-orphans";
+
+        $process = $this->executeRemoteCommandWithTimeout(
+            $server,
+            $startCommand,
+            config('devflow.timeouts.docker_compose_start', 300),
+            false
+        );
+
+        if ($process->isSuccessful()) {
+            return [
+                'success' => true,
+                'output' => $process->getOutput(),
+                'message' => 'Docker Compose services started',
+            ];
+        }
+
+        return [
+            'success' => false,
+            'error' => $process->getErrorOutput() ?: $process->getOutput(),
+        ];
+    }
+
+    /**
+     * Start a standalone Docker container
+     *
+     * Creates and starts a single container using docker run with appropriate port mappings
+     * and environment variables.
+     *
+     * @param Server $server The server where the project is hosted
+     * @param Project $project The project to start
+     * @return array{success: bool, container_id?: string, port?: int, error?: string}
+     */
+    protected function startStandaloneContainer(Server $server, Project $project): array
+    {
+        // Clean up any existing container with the same name
+        $cleanupResult = $this->cleanupExistingContainer($project);
+        if (! $cleanupResult['success']) {
+            \Log::warning(
+                "Failed to cleanup existing container for {$project->slug}: " .
+                ($cleanupResult['error'] ?? 'Unknown error')
+            );
+        }
+
+        // Determine port configuration
+        $port = $project->port ?? (8000 + $project->id);
+        $containerPort = $this->detectContainerPort($project);
+
+        // Build environment variables
+        $envVars = $this->buildEnvironmentVariables($project);
+
+        // Build and execute start command
+        $validatedSlug = $this->getValidatedSlug($project);
+        $escapedSlug = escapeshellarg($validatedSlug);
+        $startCommand = sprintf(
+            'docker run -d --name %s -p %d:%d%s %s',
+            $escapedSlug,
+            $port,
+            $containerPort,
+            $envVars,
+            $escapedSlug
+        );
+
+        $process = $this->executeRemoteCommand($server, $startCommand, false);
+
+        if ($process->isSuccessful()) {
+            // Update project with the port if not set
+            if (! $project->port) {
+                $project->update(['port' => $port]);
+            }
+
+            return [
+                'success' => true,
+                'container_id' => trim($process->getOutput()),
+                'port' => $port,
+            ];
+        }
+
+        return [
+            'success' => false,
+            'error' => $process->getErrorOutput(),
+        ];
+    }
+
+    /**
+     * Cleanup orphaned Docker Compose containers
+     *
+     * Removes orphaned containers in three steps:
+     * 1. Run docker compose down --remove-orphans
+     * 2. Remove containers matching project slug pattern
+     * 3. Remove containers with explicit container_name from docker-compose.yml
+     *
+     * @param Server $server The server where the project is hosted
+     * @param Project $project The project to cleanup containers for
+     * @return void
+     */
+    protected function cleanupOrphanedContainers(Server $server, Project $project): void
+    {
+        $slug = $this->getValidatedSlug($project);
+        $projectPath = "/var/www/{$slug}";
+
+        // Step 1: Standard docker compose cleanup
+        $cleanupCommand = "cd {$projectPath} && docker compose down --remove-orphans 2>/dev/null; true";
+        $this->executeRemoteCommandWithTimeout(
+            $server,
+            $cleanupCommand,
+            config('devflow.timeouts.docker_compose_cleanup', 180),
+            false
+        );
+
+        // Step 2: Remove containers by name pattern
+        // This catches containers like {slug}-elasticsearch from failed deploys
+        $escapedSlugForGrep = preg_quote($slug, '/');
+        $orphanCleanupCommand = "docker ps -a --format '{{.Names}}' | grep -E '^{$escapedSlugForGrep}[-_]' | xargs -r docker rm -f 2>/dev/null; true";
+        $this->executeRemoteCommand($server, $orphanCleanupCommand, false);
+
+        // Step 3: Remove containers with explicit container_name
+        // Parse docker-compose.yml to get container_name directives and remove those containers
+        $parseContainerNamesCmd = "cd {$projectPath} && grep -E '^\\s+container_name:' docker-compose.yml 2>/dev/null | sed 's/.*container_name:\\s*[\"'\\'']\\?\\([^\"'\\''\n]*\\)[\"'\\'']\\?/\\1/' | xargs -r -I {} docker rm -f {} 2>/dev/null; true";
+        $this->executeRemoteCommand($server, $parseContainerNamesCmd, false);
     }
 
     /**
@@ -426,12 +540,7 @@ class DockerService
                 $escapedSlug
             );
 
-            $command = $this->isLocalhost($server)
-                ? $cleanupCommand
-                : $this->buildSSHCommand($server, $cleanupCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
+            $process = $this->executeRemoteCommand($server, $cleanupCommand, false);
 
             return [
                 'success' => true,
@@ -475,12 +584,7 @@ class DockerService
 
             // Check if project uses docker-compose
             $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
-            $checkCommand = $this->isLocalhost($server)
-                ? $checkComposeCmd
-                : $this->buildSSHCommand($server, $checkComposeCmd);
-
-            $checkProcess = Process::fromShellCommandline($checkCommand);
-            $checkProcess->run();
+            $checkProcess = $this->executeRemoteCommand($server, $checkComposeCmd, false);
             $usesCompose = trim($checkProcess->getOutput()) === 'compose';
 
             if ($usesCompose) {
@@ -488,13 +592,12 @@ class DockerService
                 // Timeout increased to 180s for complex docker-compose projects (multiple services, volumes)
                 $stopCommand = "cd {$projectPath} && docker compose down --remove-orphans";
 
-                $command = $this->isLocalhost($server)
-                    ? $stopCommand
-                    : $this->buildSSHCommand($server, $stopCommand);
-
-                $process = Process::fromShellCommandline($command);
-                $process->setTimeout(config('devflow.timeouts.docker_compose_cleanup', 180));
-                $process->run();
+                $process = $this->executeRemoteCommandWithTimeout(
+                    $server,
+                    $stopCommand,
+                    config('devflow.timeouts.docker_compose_cleanup', 180),
+                    false
+                );
 
                 return [
                     'success' => true,
@@ -514,12 +617,7 @@ class DockerService
                 $escapedSlug
             );
 
-            $command = $this->isLocalhost($server)
-                ? $stopAndRemoveCommand
-                : $this->buildSSHCommand($server, $stopAndRemoveCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
+            $process = $this->executeRemoteCommand($server, $stopAndRemoveCommand, false);
 
             return [
                 'success' => true, // Always return success since we use || true
@@ -542,12 +640,7 @@ class DockerService
 
             // Check if project uses docker-compose
             $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
-            $checkCommand = $this->isLocalhost($server)
-                ? $checkComposeCmd
-                : $this->buildSSHCommand($server, $checkComposeCmd);
-
-            $checkProcess = Process::fromShellCommandline($checkCommand);
-            $checkProcess->run();
+            $checkProcess = $this->executeRemoteCommand($server, $checkComposeCmd, false);
             $usesCompose = trim($checkProcess->getOutput()) === 'compose';
 
             if ($usesCompose) {
@@ -555,12 +648,7 @@ class DockerService
                 // Try common naming patterns (V2 syntax)
                 $logsCommand = "cd {$projectPath} && docker compose logs --tail {$lines} app 2>/dev/null || docker compose logs --tail {$lines} 2>/dev/null | tail -n {$lines}";
 
-                $command = $this->isLocalhost($server)
-                    ? $logsCommand
-                    : $this->buildSSHCommand($server, $logsCommand);
-
-                $process = Process::fromShellCommandline($command);
-                $process->run();
+                $process = $this->executeRemoteCommand($server, $logsCommand, false);
 
                 return [
                     'success' => true,
@@ -573,12 +661,7 @@ class DockerService
             $validatedSlug = $this->getValidatedSlug($project);
             $escapedSlug = escapeshellarg($validatedSlug);
             $logsCommand = "docker logs --tail {$lines} ".$escapedSlug;
-            $command = $this->isLocalhost($server)
-                ? $logsCommand
-                : $this->buildSSHCommand($server, $logsCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
+            $process = $this->executeRemoteCommand($server, $logsCommand, false);
 
             return [
                 'success' => $process->isSuccessful(),
@@ -604,12 +687,7 @@ class DockerService
 
             $escapedSlug = escapeshellarg($slug);
             $dockerCommand = "docker exec {$escapedSlug} sh -c 'if [ -f {$containerPath} ]; then tail -n {$lines} {$containerPath}; else echo \"Laravel log not found inside container\"; fi'";
-            $command = $this->isLocalhost($server)
-                ? $dockerCommand
-                : $this->buildSSHCommand($server, $dockerCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
+            $process = $this->executeRemoteCommand($server, $dockerCommand, false);
 
             if ($process->isSuccessful() && trim($process->getOutput()) !== 'Laravel log not found inside container') {
                 return [
@@ -621,12 +699,7 @@ class DockerService
 
             // Fall back to host filesystem
             $hostCommand = "if [ -f {$hostPath} ]; then tail -n {$lines} {$hostPath}; else echo 'Laravel log not found on host'; fi";
-            $command = $this->isLocalhost($server)
-                ? $hostCommand
-                : $this->buildSSHCommand($server, $hostCommand);
-
-            $hostProcess = Process::fromShellCommandline($command);
-            $hostProcess->run();
+            $hostProcess = $this->executeRemoteCommand($server, $hostCommand, false);
 
             return [
                 'success' => $hostProcess->isSuccessful(),
@@ -798,10 +871,138 @@ class DockerService
     }
 
     /**
+     * Execute a remote command via SSH or locally depending on server configuration
+     *
+     * This is the primary method for executing commands on servers. It handles:
+     * - Local execution for localhost servers
+     * - Remote execution via SSH for remote servers
+     * - Proper error handling and result encapsulation
+     * - Optional error throwing
+     *
+     * @param Server $server The server to execute the command on
+     * @param string $command The command to execute
+     * @param bool $throwOnError Whether to throw exception on command failure (default: true)
+     * @return Process The completed process with results
+     * @throws \RuntimeException When command fails and $throwOnError is true
+     */
+    protected function executeRemoteCommand(Server $server, string $command, bool $throwOnError = true): Process
+    {
+        $finalCommand = $this->isLocalhost($server)
+            ? $command
+            : $this->buildSSHCommand($server, $command);
+
+        $process = Process::fromShellCommandline($finalCommand);
+        $process->run();
+
+        if ($throwOnError && !$process->isSuccessful()) {
+            throw new \RuntimeException(
+                sprintf(
+                    'Remote command failed on server %s: %s. Error: %s',
+                    $server->name,
+                    $command,
+                    $process->getErrorOutput() ?: $process->getOutput()
+                )
+            );
+        }
+
+        return $process;
+    }
+
+    /**
+     * Execute a remote command and return only the output string
+     *
+     * Convenience wrapper around executeRemoteCommand() for simple output retrieval
+     *
+     * @param Server $server The server to execute the command on
+     * @param string $command The command to execute
+     * @param bool $throwOnError Whether to throw exception on command failure (default: true)
+     * @return string The command output
+     * @throws \RuntimeException When command fails and $throwOnError is true
+     */
+    protected function getRemoteOutput(Server $server, string $command, bool $throwOnError = true): string
+    {
+        $process = $this->executeRemoteCommand($server, $command, $throwOnError);
+        return $process->getOutput();
+    }
+
+    /**
+     * Execute a remote command with a custom timeout
+     *
+     * @param Server $server The server to execute the command on
+     * @param string $command The command to execute
+     * @param int $timeout Timeout in seconds
+     * @param bool $throwOnError Whether to throw exception on command failure (default: true)
+     * @return Process The completed process with results
+     * @throws \RuntimeException When command fails and $throwOnError is true
+     */
+    protected function executeRemoteCommandWithTimeout(Server $server, string $command, int $timeout, bool $throwOnError = true): Process
+    {
+        $finalCommand = $this->isLocalhost($server)
+            ? $command
+            : $this->buildSSHCommand($server, $command);
+
+        $process = Process::fromShellCommandline($finalCommand);
+        $process->setTimeout($timeout);
+        $process->run();
+
+        if ($throwOnError && !$process->isSuccessful()) {
+            throw new \RuntimeException(
+                sprintf(
+                    'Remote command failed on server %s: %s. Error: %s',
+                    $server->name,
+                    $command,
+                    $process->getErrorOutput() ?: $process->getOutput()
+                )
+            );
+        }
+
+        return $process;
+    }
+
+    /**
+     * Execute a remote command with input (e.g., for password stdin)
+     *
+     * @param Server $server The server to execute the command on
+     * @param string $command The command to execute
+     * @param string $input Input to pass to the command via stdin
+     * @param bool $throwOnError Whether to throw exception on command failure (default: true)
+     * @return Process The completed process with results
+     * @throws \RuntimeException When command fails and $throwOnError is true
+     */
+    protected function executeRemoteCommandWithInput(Server $server, string $command, string $input, bool $throwOnError = true): Process
+    {
+        $finalCommand = $this->isLocalhost($server)
+            ? $command
+            : $this->buildSSHCommand($server, $command);
+
+        $process = Process::fromShellCommandline($finalCommand);
+        $process->setInput($input);
+        $process->run();
+
+        if ($throwOnError && !$process->isSuccessful()) {
+            throw new \RuntimeException(
+                sprintf(
+                    'Remote command failed on server %s: %s. Error: %s',
+                    $server->name,
+                    $command,
+                    $process->getErrorOutput() ?: $process->getOutput()
+                )
+            );
+        }
+
+        return $process;
+    }
+
+    /**
      * Build SSH command for remote execution
      *
      * Security: Temp files are cached per server and cleaned up in __destruct()
      * Additionally, a shutdown function provides cleanup on unexpected termination
+     *
+     * @param Server $server The server to connect to
+     * @param string $remoteCommand The command to execute remotely
+     * @return string The complete SSH command string
+     * @throws \RuntimeException When SSH key file creation fails
      */
     protected function buildSSHCommand(Server $server, string $remoteCommand): string
     {
