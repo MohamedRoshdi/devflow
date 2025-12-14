@@ -972,10 +972,23 @@ This document contains all pending tasks, improvements, and feature requests for
 
 ### Code Quality
 
-- [ ] Upgrade to PHPStan Level 9
-- [ ] Create `HealthScoreMapper` class for health status mapping
-- [ ] Create `ProjectHealthScorer` class (extract from ProjectHealthService)
-- [ ] Refactor LogAggregationService - unify parser patterns
+- [x] Upgrade to PHPStan Level 9 ✅ COMPLETED (2025-12-14)
+  - Fixed 19 files with type casts, null checks, array validation
+  - Added comprehensive ignore patterns for Laravel-specific patterns
+  - Reduced errors from 273 to 0
+- [x] Create `HealthScoreMapper` class for health status mapping ✅ COMPLETED (2025-12-14)
+  - File: `app/Mappers/HealthScoreMapper.php`
+  - Centralized health status/score/color mapping
+- [x] Create `ProjectHealthScorer` class (extract from ProjectHealthService) ✅ COMPLETED (2025-12-14)
+  - File: `app/Services/Health/ProjectHealthScorer.php`
+  - Extracted health scoring logic from ProjectHealthService
+- [x] Refactor LogAggregationService - unify parser patterns ✅ COMPLETED (2025-12-14)
+  - Created: `app/Contracts/LogParserInterface.php` - Parser interface
+  - Created: `app/Services/LogParsers/AbstractLogParser.php` - Base class with common functionality
+  - Created: `app/Services/LogParsers/LogParserFactory.php` - Factory for parser selection
+  - Created: Individual parsers: `NginxLogParser`, `LaravelLogParser`, `PhpLogParser`, `MysqlLogParser`, `SystemLogParser`, `DockerLogParser`, `GenericLogParser`
+  - Refactored: `LogAggregationService.php` reduced from 405 to 242 lines
+  - Added: `tests/Unit/LogParsers/LogParserFactoryTest.php` with 15 tests
 
 ### UI/UX
 

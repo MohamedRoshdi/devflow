@@ -1,0 +1,267 @@
+# DevFlow Pro - Docker Management Makefile
+# Convenient commands for managing Docker containers
+
+.PHONY: help build up down restart logs shell composer artisan test clean install setup production
+
+# Default target
+.DEFAULT_GOAL := help
+
+# Docker Compose command
+DOCKER_COMPOSE = docker-compose
+DOCKER_COMPOSE_EXEC = $(DOCKER_COMPOSE) exec app
+DOCKER_COMPOSE_RUN = $(DOCKER_COMPOSE) run --rm app
+
+##@ General
+
+help: ## Display this help message
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+
+##@ Development
+
+install: ## Initial project setup for development
+	@echo "Installing DevFlow Pro..."
+	cp -n .env.example .env || true
+	cp -n docker-compose.override.yml.example docker-compose.override.yml || true
+	$(DOCKER_COMPOSE) build
+	$(DOCKER_COMPOSE) up -d
+	$(DOCKER_COMPOSE_EXEC) composer install
+	$(DOCKER_COMPOSE_EXEC) php artisan key:generate
+	$(DOCKER_COMPOSE_EXEC) php artisan migrate
+	$(DOCKER_COMPOSE_EXEC) php artisan storage:link
+	@echo "Installation complete! Access at http://localhost:8080"
+
+setup: install ## Alias for install
+
+dev: ## Start development environment
+	$(DOCKER_COMPOSE) up -d
+	@echo "Development environment started!"
+	@echo "Application: http://localhost:8080"
+	@echo "Mailhog: http://localhost:8025"
+	@echo "pgAdmin: http://localhost:5050"
+	@echo "Redis Commander: http://localhost:8081"
+
+##@ Docker Management
+
+build: ## Build Docker images
+	$(DOCKER_COMPOSE) build
+
+build-no-cache: ## Build Docker images without cache
+	$(DOCKER_COMPOSE) build --no-cache
+
+up: ## Start all containers
+	$(DOCKER_COMPOSE) up -d
+
+down: ## Stop and remove all containers
+	$(DOCKER_COMPOSE) down
+
+down-volumes: ## Stop containers and remove volumes (WARNING: deletes data!)
+	$(DOCKER_COMPOSE) down -v
+
+restart: ## Restart all containers
+	$(DOCKER_COMPOSE) restart
+
+restart-app: ## Restart only the app container
+	$(DOCKER_COMPOSE) restart app
+
+stop: ## Stop all containers
+	$(DOCKER_COMPOSE) stop
+
+start: ## Start existing containers
+	$(DOCKER_COMPOSE) start
+
+ps: ## Show container status
+	$(DOCKER_COMPOSE) ps
+
+stats: ## Show container resource usage
+	docker stats
+
+##@ Logs
+
+logs: ## View all container logs
+	$(DOCKER_COMPOSE) logs -f
+
+logs-app: ## View application logs
+	$(DOCKER_COMPOSE) logs -f app
+
+logs-nginx: ## View Nginx logs
+	$(DOCKER_COMPOSE) logs -f nginx
+
+logs-postgres: ## View PostgreSQL logs
+	$(DOCKER_COMPOSE) logs -f postgres
+
+logs-redis: ## View Redis logs
+	$(DOCKER_COMPOSE) logs -f redis
+
+logs-queue: ## View queue worker logs
+	$(DOCKER_COMPOSE) logs -f queue
+
+##@ Application
+
+shell: ## Open bash shell in app container
+	$(DOCKER_COMPOSE_EXEC) bash
+
+shell-root: ## Open bash shell as root in app container
+	$(DOCKER_COMPOSE) exec -u root app bash
+
+artisan: ## Run artisan command (usage: make artisan CMD="migrate")
+	$(DOCKER_COMPOSE_EXEC) php artisan $(CMD)
+
+composer: ## Run composer command (usage: make composer CMD="require package")
+	$(DOCKER_COMPOSE_EXEC) composer $(CMD)
+
+migrate: ## Run database migrations
+	$(DOCKER_COMPOSE_EXEC) php artisan migrate
+
+migrate-fresh: ## Drop all tables and re-run migrations
+	$(DOCKER_COMPOSE_EXEC) php artisan migrate:fresh
+
+migrate-fresh-seed: ## Drop all tables, re-run migrations, and seed
+	$(DOCKER_COMPOSE_EXEC) php artisan migrate:fresh --seed
+
+seed: ## Seed the database
+	$(DOCKER_COMPOSE_EXEC) php artisan db:seed
+
+tinker: ## Open Laravel Tinker REPL
+	$(DOCKER_COMPOSE_EXEC) php artisan tinker
+
+##@ Cache Management
+
+cache-clear: ## Clear all caches
+	$(DOCKER_COMPOSE_EXEC) php artisan cache:clear
+	$(DOCKER_COMPOSE_EXEC) php artisan config:clear
+	$(DOCKER_COMPOSE_EXEC) php artisan route:clear
+	$(DOCKER_COMPOSE_EXEC) php artisan view:clear
+
+cache: ## Cache configuration for production
+	$(DOCKER_COMPOSE_EXEC) php artisan config:cache
+	$(DOCKER_COMPOSE_EXEC) php artisan route:cache
+	$(DOCKER_COMPOSE_EXEC) php artisan view:cache
+
+optimize: ## Optimize application for production
+	$(DOCKER_COMPOSE_EXEC) php artisan optimize
+	$(DOCKER_COMPOSE_EXEC) composer dump-autoload --optimize
+
+optimize-clear: ## Clear all optimization caches
+	$(DOCKER_COMPOSE_EXEC) php artisan optimize:clear
+
+##@ Testing
+
+test: ## Run PHPUnit tests
+	$(DOCKER_COMPOSE_EXEC) php artisan test
+
+test-coverage: ## Run tests with coverage report
+	$(DOCKER_COMPOSE_EXEC) php artisan test --coverage
+
+test-parallel: ## Run tests in parallel
+	$(DOCKER_COMPOSE_EXEC) php artisan test --parallel
+
+phpstan: ## Run PHPStan static analysis
+	$(DOCKER_COMPOSE_EXEC) vendor/bin/phpstan analyse
+
+##@ Database
+
+db-shell: ## Open PostgreSQL shell
+	$(DOCKER_COMPOSE) exec postgres psql -U devflow devflow_pro
+
+db-backup: ## Backup database to file
+	$(DOCKER_COMPOSE) exec postgres pg_dump -U devflow devflow_pro > backup_$$(date +%Y%m%d_%H%M%S).sql
+	@echo "Backup created: backup_$$(date +%Y%m%d_%H%M%S).sql"
+
+db-restore: ## Restore database from backup (usage: make db-restore FILE=backup.sql)
+	@if [ -z "$(FILE)" ]; then echo "Error: FILE parameter required. Usage: make db-restore FILE=backup.sql"; exit 1; fi
+	$(DOCKER_COMPOSE) exec -T postgres psql -U devflow devflow_pro < $(FILE)
+	@echo "Database restored from $(FILE)"
+
+redis-cli: ## Open Redis CLI
+	$(DOCKER_COMPOSE) exec redis redis-cli
+
+redis-flush: ## Flush all Redis data (WARNING: clears cache!)
+	$(DOCKER_COMPOSE) exec redis redis-cli FLUSHALL
+
+##@ Queue Management
+
+queue-work: ## Start queue worker (for debugging)
+	$(DOCKER_COMPOSE_EXEC) php artisan queue:work
+
+queue-listen: ## Listen to queue (for debugging)
+	$(DOCKER_COMPOSE_EXEC) php artisan queue:listen
+
+queue-restart: ## Restart queue workers
+	$(DOCKER_COMPOSE_EXEC) php artisan queue:restart
+
+queue-failed: ## List failed jobs
+	$(DOCKER_COMPOSE_EXEC) php artisan queue:failed
+
+queue-retry: ## Retry failed jobs
+	$(DOCKER_COMPOSE_EXEC) php artisan queue:retry all
+
+##@ Production
+
+production: ## Deploy production environment
+	@echo "Deploying production environment..."
+	$(DOCKER_COMPOSE) build --no-cache
+	$(DOCKER_COMPOSE) down
+	$(DOCKER_COMPOSE) up -d
+	$(DOCKER_COMPOSE_EXEC) php artisan migrate --force
+	$(DOCKER_COMPOSE_EXEC) php artisan config:cache
+	$(DOCKER_COMPOSE_EXEC) php artisan route:cache
+	$(DOCKER_COMPOSE_EXEC) php artisan view:cache
+	$(DOCKER_COMPOSE_EXEC) php artisan optimize
+	@echo "Production deployment complete!"
+
+deploy: ## Pull latest code and redeploy
+	git pull origin main
+	$(DOCKER_COMPOSE) build
+	$(DOCKER_COMPOSE) down
+	$(DOCKER_COMPOSE) up -d
+	$(DOCKER_COMPOSE_EXEC) composer install --optimize-autoloader --no-dev
+	$(DOCKER_COMPOSE_EXEC) php artisan migrate --force
+	$(DOCKER_COMPOSE_EXEC) php artisan optimize
+	$(DOCKER_COMPOSE_EXEC) php artisan queue:restart
+	@echo "Deployment complete!"
+
+##@ Maintenance
+
+clean: ## Clean up Docker resources
+	$(DOCKER_COMPOSE) down -v
+	docker system prune -f
+	@echo "Cleanup complete!"
+
+clean-all: ## Remove all Docker resources (images, containers, volumes)
+	$(DOCKER_COMPOSE) down -v --rmi all
+	docker system prune -af --volumes
+	@echo "All Docker resources removed!"
+
+permissions: ## Fix file permissions
+	$(DOCKER_COMPOSE) exec -u root app chown -R www-data:www-data /var/www/html/storage
+	$(DOCKER_COMPOSE) exec -u root app chown -R www-data:www-data /var/www/html/bootstrap/cache
+	$(DOCKER_COMPOSE) exec -u root app chmod -R 775 /var/www/html/storage
+	$(DOCKER_COMPOSE) exec -u root app chmod -R 775 /var/www/html/bootstrap/cache
+	@echo "Permissions fixed!"
+
+health: ## Check health of all services
+	@echo "Checking service health..."
+	@$(DOCKER_COMPOSE) ps
+	@echo "\nApplication Health:"
+	@curl -f http://localhost/health || echo "Application not responding"
+	@echo "\nDatabase Health:"
+	@$(DOCKER_COMPOSE) exec postgres pg_isready -U devflow || echo "Database not ready"
+	@echo "\nRedis Health:"
+	@$(DOCKER_COMPOSE) exec redis redis-cli ping || echo "Redis not responding"
+
+##@ Utility
+
+npm: ## Run npm command (usage: make npm CMD="install")
+	$(DOCKER_COMPOSE_EXEC) npm $(CMD)
+
+npm-install: ## Install npm dependencies
+	$(DOCKER_COMPOSE_EXEC) npm install
+
+npm-dev: ## Run npm dev (for development)
+	$(DOCKER_COMPOSE_EXEC) npm run dev
+
+npm-build: ## Build frontend assets for production
+	$(DOCKER_COMPOSE_EXEC) npm run build
+
+npm-watch: ## Watch and compile frontend assets
+	$(DOCKER_COMPOSE_EXEC) npm run watch
