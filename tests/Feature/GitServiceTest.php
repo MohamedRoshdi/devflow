@@ -84,8 +84,9 @@ class GitServiceTest extends TestCase
 
         $command = $method->invoke($gitService, $this->server, 'ls -la');
 
-        // Should wrap command in single quotes, not double quotes
-        $this->assertStringContainsString("root@127.0.0.1 'ls -la'", $command);
+        // Should wrap command in single quotes using escapeshellarg
+        // Format: ssh ... 'user'@'host' 'command'
+        $this->assertStringContainsString("'root'@'127.0.0.1' 'ls -la'", $command);
         $this->assertStringNotContainsString('"ls -la"', $command);
     }
 

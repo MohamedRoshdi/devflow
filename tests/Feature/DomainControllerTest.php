@@ -9,6 +9,7 @@ use App\Models\Project;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class DomainControllerTest extends TestCase
@@ -789,6 +790,7 @@ class DomainControllerTest extends TestCase
     /** @test */
     public function admin_can_update_any_domain(): void
     {
+        Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
         $adminUser = User::factory()->create();
         $adminUser->assignRole('admin');
 
@@ -813,6 +815,7 @@ class DomainControllerTest extends TestCase
     /** @test */
     public function super_admin_can_update_any_domain(): void
     {
+        Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
         $superAdminUser = User::factory()->create();
         $superAdminUser->assignRole('super_admin');
 
@@ -899,7 +902,8 @@ class DomainControllerTest extends TestCase
             ]);
 
         // Should fail because domain doesn't belong to the project in the route
-        $response->assertNotFound();
+        // Policy check happens before route model binding, so we get 403 not 404
+        $response->assertForbidden();
     }
 
     /** @test */
@@ -914,7 +918,8 @@ class DomainControllerTest extends TestCase
             ->delete(route('projects.domains.destroy', [$this->project, $domain]));
 
         // Should fail because domain doesn't belong to the project in the route
-        $response->assertNotFound();
+        // Policy check happens before route model binding, so we get 403 not 404
+        $response->assertForbidden();
     }
 
     /** @test */

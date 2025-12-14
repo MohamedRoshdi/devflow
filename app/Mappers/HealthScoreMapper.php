@@ -38,6 +38,7 @@ final class HealthScoreMapper
     public const STATUS_ERROR = 'error';
     public const STATUS_OFFLINE = 'offline';
     public const STATUS_STOPPED = 'stopped';
+    public const STATUS_MAINTENANCE = 'maintenance';
 
     /**
      * Health score thresholds
@@ -94,7 +95,8 @@ final class HealthScoreMapper
             self::STATUS_ONLINE => 95,
 
             self::STATUS_WARNING,
-            self::STATUS_DEGRADED => 65,
+            self::STATUS_DEGRADED,
+            self::STATUS_MAINTENANCE => 65,
 
             self::STATUS_CRITICAL,
             self::STATUS_DOWN,
@@ -148,7 +150,8 @@ final class HealthScoreMapper
             self::STATUS_ONLINE => self::COLOR_GREEN,
 
             self::STATUS_WARNING,
-            self::STATUS_DEGRADED => self::COLOR_YELLOW,
+            self::STATUS_DEGRADED,
+            self::STATUS_MAINTENANCE => self::COLOR_YELLOW,
 
             self::STATUS_CRITICAL,
             self::STATUS_DOWN,

@@ -22,7 +22,9 @@ class DomainManagementTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create();
-        $this->project = Project::factory()->create();
+        $this->project = Project::factory()->create([
+            'user_id' => $this->user->id,
+        ]);
     }
 
     public function test_authenticated_user_can_add_domain_to_project(): void
@@ -109,7 +111,8 @@ class DomainManagementTest extends TestCase
         $response->assertRedirect(route('projects.show', $this->project));
         $response->assertSessionHas('success', 'Domain deleted successfully.');
 
-        $this->assertDatabaseMissing('domains', [
+        // Domain uses SoftDeletes, so check for soft deletion
+        $this->assertSoftDeleted('domains', [
             'id' => $domain->id,
         ]);
     }

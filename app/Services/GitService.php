@@ -407,12 +407,13 @@ class GitService
 
                 [$hash, $author, $timestamp, $message] = explode('|', $line, 4);
 
+                $timestampInt = (int) $timestamp;
                 $commits[] = [
                     'hash' => $hash,
                     'short_hash' => substr($hash, 0, 7),
                     'author' => $author,
-                    'timestamp' => (int) $timestamp,
-                    'date' => date('Y-m-d H:i:s', $timestamp),
+                    'timestamp' => $timestampInt,
+                    'date' => date('Y-m-d H:i:s', $timestampInt),
                     'message' => $message,
                 ];
             }
