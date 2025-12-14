@@ -171,6 +171,7 @@ class MiddlewareTest extends TestCase
         $this->actingAs($nonMember);
 
         $request = Request::create('/teams/' . $this->team->id, 'GET');
+        $request->setUserResolver(fn () => $nonMember);
         $request->setRouteResolver(function () {
             $route = new \Illuminate\Routing\Route('GET', '/teams/{team}', []);
             $route->bind(request());
@@ -179,10 +180,12 @@ class MiddlewareTest extends TestCase
         });
 
         $middleware = new EnsureTeamAccess();
-        $response = $middleware->handle($request, function ($req) {
+
+        $this->expectException(\Symfony\Component\HttpKernel\Exception\HttpException::class);
+        $this->expectExceptionMessage('You do not have access to this team.');
+
+        $middleware->handle($request, function ($req) {
             return new Response('OK', 200);
         });
-
-        $this->assertEquals(403, $response->getStatusCode());
     }
 }

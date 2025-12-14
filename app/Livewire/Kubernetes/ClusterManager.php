@@ -123,10 +123,10 @@ class ClusterManager extends Component
     {
         $this->editingCluster = $cluster;
         $this->name = $cluster->name;
-        $this->endpoint = $cluster->endpoint;
+        $this->endpoint = $cluster->api_server_url ?? '';
         $this->kubeconfig = $cluster->kubeconfig ?? '';
         $this->namespace = $cluster->namespace ?? 'default';
-        $this->isDefault = $cluster->is_default;
+        $this->isDefault = $cluster->is_active;
         $this->showAddClusterModal = true;
     }
 
@@ -136,14 +136,14 @@ class ClusterManager extends Component
 
         $data = [
             'name' => $this->name,
-            'endpoint' => $this->endpoint,
+            'api_server_url' => $this->endpoint,
             'kubeconfig' => encrypt($this->kubeconfig),
             'namespace' => $this->namespace ?: 'default',
-            'is_default' => $this->isDefault,
+            'is_active' => $this->isDefault,
         ];
 
         if ($this->isDefault) {
-            KubernetesCluster::where('is_default', true)->update(['is_default' => false]);
+            KubernetesCluster::where('is_active', true)->update(['is_active' => false]);
         }
 
         if ($this->editingCluster) {

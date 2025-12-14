@@ -123,6 +123,9 @@ class ControllersTest extends TestCase
     /** @test */
     public function project_index_filters_by_status(): void
     {
+        // Set up project from setUp to a different status to avoid interference
+        $this->project->update(['status' => 'building']);
+
         Project::factory()->create(['user_id' => $this->user->id, 'server_id' => $this->server->id, 'status' => 'running']);
         Project::factory()->create(['user_id' => $this->user->id, 'server_id' => $this->server->id, 'status' => 'stopped']);
 

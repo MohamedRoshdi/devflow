@@ -105,7 +105,7 @@ class JobsTest extends TestCase
         $deployment = Deployment::factory()->create();
         $job = new DeployProjectJob($deployment);
 
-        $this->assertEquals(1200, $job->timeout);
+        $this->assertEquals(1800, $job->timeout); // 30 minutes
     }
 
     #[Test]

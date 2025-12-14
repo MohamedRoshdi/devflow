@@ -142,7 +142,7 @@ class ClusterManagerTest extends TestCase
             ->assertSet('name', 'Edit Test Cluster')
             ->assertSet('endpoint', 'https://edit.k8s.example.com')
             ->assertSet('namespace', 'production')
-            ->assertSet('isDefault', true);
+            ->assertSet('isDefault', true); // isDefault maps to is_active
     }
 
     /** @test */
