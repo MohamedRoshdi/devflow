@@ -151,7 +151,7 @@
             </button>
         </div>
         <div class="status-right text-xs text-gray-500">
-            <span>{{ $server->username }}@{{ $server->ip_address }}:{{ $server->port }}</span>
+            <span>{{ $server->username . '@' . $server->ip_address . ':' . $server->port }}</span>
         </div>
     </div>
 </div>

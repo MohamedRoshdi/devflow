@@ -63,7 +63,7 @@
                                     <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
-                                    {{ $server->username }}@{{ $server->hostname }}
+                                    {{ $server->username . '@' . $server->hostname }}
                                 </span>
                                 @if($server->docker_installed)
                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800/80 text-slate-300 border border-slate-700/50">
@@ -126,7 +126,7 @@
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-3">
                             <span class="text-xs text-slate-500 font-medium">SSH:</span>
-                            <span class="px-2.5 py-1 rounded-md bg-cyan-500/20 text-cyan-400 font-mono text-sm border border-cyan-500/30">{{ $server->username }}@{{ $server->ip_address }}:{{ $server->port }}</span>
+                            <span class="px-2.5 py-1 rounded-md bg-cyan-500/20 text-cyan-400 font-mono text-sm border border-cyan-500/30">{{ $server->username . '@' . $server->ip_address . ':' . $server->port }}</span>
                         </div>
                     </div>
                     <button wire:click="pingServer"

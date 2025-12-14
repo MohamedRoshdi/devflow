@@ -30,7 +30,7 @@
                 <div class="w-3 h-3 rounded-full bg-green-500"></div>
             </div>
             <span class="ml-4 text-sm text-gray-400">
-                {{ $server->username }}@{{ $server->ip_address }}
+                {{ $server->username . '@' . $server->ip_address }}
             </span>
         </div>
         <div class="flex items-center space-x-2">

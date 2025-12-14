@@ -97,7 +97,7 @@
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                         </svg>
-                                        <span>{{ $server->username }}@{{ $server->port }}</span>
+                                        <span>{{ $server->username . '@' . $server->port }}</span>
                                     </div>
 
                                     {{-- Tags --}}
@@ -145,7 +145,7 @@
                             <div>
                                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{ $selectedServer->name }}</h2>
                                 <p class="text-sm text-gray-600 dark:text-gray-400 font-mono">
-                                    {{ $selectedServer->username }}@{{ $selectedServer->ip_address }}:{{ $selectedServer->port }}
+                                    {{ $selectedServer->username . '@' . $selectedServer->ip_address . ':' . $selectedServer->port }}
                                 </p>
                             </div>
                         </div>
