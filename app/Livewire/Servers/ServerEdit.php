@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Servers;
 
+use App\Livewire\Concerns\HasServerFormFields;
 use App\Models\Server;
 use App\Services\DockerService;
 use App\Services\ServerConnectivityService;
@@ -13,47 +14,53 @@ use Livewire\Component;
 class ServerEdit extends Component
 {
     use AuthorizesRequests;
+    use HasServerFormFields;
 
     public Server $server;
-
-    public string $name = '';
-
-    public string $hostname = '';
-
-    public string $ip_address = '';
-
-    public int $port = 22;
-
-    public string $username = 'root';
-
-    public string $ssh_password = '';
-
-    public string $ssh_key = '';
-
-    public string $auth_method = 'password';
-
-    public ?float $latitude = null;
-
-    public ?float $longitude = null;
-
-    public string $location_name = '';
 
     public function mount(Server $server): void
     {
         $this->authorize('update', $server);
 
         $this->server = $server;
-        $this->name = $server->name;
-        $this->hostname = $server->hostname ?? '';
-        $this->ip_address = $server->ip_address;
-        $this->port = $server->port ?? 22;
-        $this->username = $server->username ?? 'root';
-        $this->latitude = $server->latitude;
-        $this->longitude = $server->longitude;
-        $this->location_name = $server->location_name ?? '';
+        $this->loadServerData();
+    }
 
-        // Determine auth method based on existing data
-        $this->auth_method = $server->ssh_key ? 'key' : 'password';
+    protected function loadServerData(): void
+    {
+        $this->name = $this->server->name;
+        $this->hostname = $this->server->hostname ?? '';
+        $this->ip_address = $this->server->ip_address;
+        $this->port = $this->server->port ?? 22;
+        $this->username = $this->server->username ?? 'root';
+        $this->latitude = $this->server->latitude;
+        $this->longitude = $this->server->longitude;
+        $this->location_name = $this->server->location_name ?? '';
+        $this->auth_method = $this->server->ssh_key ? 'key' : 'password';
+    }
+
+    /**
+     * Override to use existing credentials if new ones not provided
+     */
+    protected function getPasswordForTest(): ?string
+    {
+        if ($this->auth_method === 'password' && $this->ssh_password) {
+            return $this->ssh_password;
+        }
+
+        return $this->server->ssh_password;
+    }
+
+    /**
+     * Override to use existing credentials if new ones not provided
+     */
+    protected function getKeyForTest(): ?string
+    {
+        if ($this->auth_method === 'key' && $this->ssh_key) {
+            return $this->ssh_key;
+        }
+
+        return $this->server->ssh_key;
     }
 
     /**
@@ -61,49 +68,11 @@ class ServerEdit extends Component
      */
     public function rules(): array
     {
-        return [
-            'name' => 'required|string|max:255',
-            'hostname' => 'nullable|string|max:255',
-            'ip_address' => 'required|ip',
-            'port' => 'required|integer|min:1|max:65535',
-            'username' => 'required|string|max:255',
-            'ssh_password' => 'nullable|string',
-            'ssh_key' => 'nullable|string',
-            'auth_method' => 'required|in:password,key',
-            'latitude' => 'nullable|numeric|between:-90,90',
-            'longitude' => 'nullable|numeric|between:-180,180',
-            'location_name' => 'nullable|string|max:255',
-        ];
-    }
-
-    public function testConnection(): void
-    {
-        $this->validate();
-
-        try {
-            $tempServer = new Server([
-                'ip_address' => $this->ip_address,
-                'port' => $this->port,
-                'username' => $this->username,
-                'ssh_password' => $this->auth_method === 'password' && $this->ssh_password
-                    ? $this->ssh_password
-                    : $this->server->ssh_password,
-                'ssh_key' => $this->auth_method === 'key' && $this->ssh_key
-                    ? $this->ssh_key
-                    : $this->server->ssh_key,
-            ]);
-
-            $connectivityService = app(ServerConnectivityService::class);
-            $result = $connectivityService->testConnection($tempServer);
-
-            if ($result['reachable']) {
-                session()->flash('connection_test', $result['message'].' (Latency: '.$result['latency_ms'].'ms)');
-            } else {
-                session()->flash('connection_error', $result['message']);
-            }
-        } catch (\Exception $e) {
-            session()->flash('connection_error', 'Connection failed: '.$e->getMessage());
-        }
+        return array_merge(
+            $this->baseServerRules(),
+            ['username' => $this->usernameRule(withRegex: false)],
+            $this->authRulesForEdit()
+        );
     }
 
     public function updateServer(): \Illuminate\Http\RedirectResponse
