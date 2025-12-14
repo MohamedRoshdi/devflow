@@ -7,6 +7,9 @@ namespace App\Livewire\Kubernetes;
 use App\Models\KubernetesCluster;
 use App\Models\Project;
 use App\Services\Kubernetes\KubernetesService;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -71,11 +74,42 @@ class ClusterManager extends Component
         $this->resetForm();
     }
 
+    /**
+     * Get available projects for deployment dropdown (cached 5 minutes)
+     *
+     * @return Collection<int, Project>
+     */
+    #[Computed]
+    public function deployableProjects(): Collection
+    {
+        return Cache::remember('k8s_deployable_projects', 300, function () {
+            return Project::select('id', 'name', 'slug', 'framework')
+                ->orderBy('name')
+                ->get();
+        });
+    }
+
+    /**
+     * Get cluster list with caching for total count
+     *
+     * @return \Illuminate\Pagination\LengthAwarePaginator<int, KubernetesCluster>
+     */
+    #[Computed]
+    public function clustersList(): \Illuminate\Pagination\LengthAwarePaginator
+    {
+        // Cache the cluster count to avoid counting on every request
+        $totalClusters = Cache::remember('k8s_clusters_count', 60, function () {
+            return KubernetesCluster::count();
+        });
+
+        return KubernetesCluster::paginate(10);
+    }
+
     public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.kubernetes.cluster-manager', [
-            'clusters' => KubernetesCluster::paginate(10),
-            'projects' => Project::select('id', 'name', 'slug', 'framework')->orderBy('name')->get(),
+            'clusters' => $this->clustersList,
+            'projects' => $this->deployableProjects,
         ]);
     }
 
@@ -127,6 +161,10 @@ class ClusterManager extends Component
             }
         }
 
+        // Invalidate caches
+        Cache::forget('k8s_clusters_count');
+        unset($this->clustersList);
+
         $this->showAddClusterModal = false;
         $this->resetForm();
     }
@@ -141,6 +179,11 @@ class ClusterManager extends Component
         }
 
         $cluster->delete();
+
+        // Invalidate caches
+        Cache::forget('k8s_clusters_count');
+        unset($this->clustersList);
+
         $this->dispatch('notify', type: 'success', message: 'Cluster deleted successfully');
     }
 
@@ -232,6 +275,9 @@ class ClusterManager extends Component
     #[On('refresh-clusters')]
     public function refreshClusters(): void
     {
+        // Invalidate caches and reset computed properties
+        Cache::forget('k8s_clusters_count');
+        unset($this->clustersList, $this->deployableProjects);
         $this->resetPage();
     }
 

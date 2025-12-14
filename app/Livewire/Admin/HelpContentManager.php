@@ -123,27 +123,41 @@ class HelpContentManager extends Component
             ->paginate(15);
     }
 
+    /**
+     * Get help content statistics (cached 5 minutes)
+     *
+     * @return array{total: int, active: int, most_viewed: HelpContent|null, most_helpful: HelpContent|null}
+     */
     #[Computed]
-    public function stats()
+    public function stats(): array
     {
-        return [
-            'total' => HelpContent::count(),
-            'active' => HelpContent::where('is_active', true)->count(),
-            'most_viewed' => HelpContent::orderBy('view_count', 'desc')->first(),
-            'most_helpful' => HelpContent::where('helpful_count', '>', 0)
-                ->orderByRaw('(helpful_count / (helpful_count + not_helpful_count + 1)) DESC')
-                ->first(),
-        ];
+        return Cache::remember('help_content_stats', 300, function () {
+            return [
+                'total' => HelpContent::count(),
+                'active' => HelpContent::where('is_active', true)->count(),
+                'most_viewed' => HelpContent::orderBy('view_count', 'desc')->first(),
+                'most_helpful' => HelpContent::where('helpful_count', '>', 0)
+                    ->orderByRaw('(helpful_count / (helpful_count + not_helpful_count + 1)) DESC')
+                    ->first(),
+            ];
+        });
     }
 
+    /**
+     * Get available categories (cached 5 minutes)
+     *
+     * @return \Illuminate\Support\Collection<int, string>
+     */
     #[Computed]
-    public function categories()
+    public function categories(): \Illuminate\Support\Collection
     {
-        return HelpContent::query()
-            ->select('category')
-            ->distinct()
-            ->orderBy('category')
-            ->pluck('category');
+        return Cache::remember('help_content_categories', 300, function () {
+            return HelpContent::query()
+                ->select('category')
+                ->distinct()
+                ->orderBy('category')
+                ->pluck('category');
+        });
     }
 
     public function openCreateModal(): void
@@ -235,6 +249,7 @@ class HelpContentManager extends Component
 
             // Clear cache
             $this->getHelpContentService()->clearCache();
+            $this->clearLocalCaches();
 
             session()->flash('message', $message);
             $this->showCreateModal = false;
@@ -263,6 +278,7 @@ class HelpContentManager extends Component
 
             // Clear cache
             $this->getHelpContentService()->clearCache();
+            $this->clearLocalCaches();
 
             session()->flash('message', 'Help content deleted successfully!');
             $this->showDeleteModal = false;
@@ -281,11 +297,22 @@ class HelpContentManager extends Component
 
             // Clear cache
             $this->getHelpContentService()->clearCache();
+            $this->clearLocalCaches();
 
             session()->flash('message', 'Help content status updated!');
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to update status: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Clear locally managed caches for stats and categories
+     */
+    private function clearLocalCaches(): void
+    {
+        Cache::forget('help_content_stats');
+        Cache::forget('help_content_categories');
+        unset($this->stats, $this->categories, $this->helpContents);
     }
 
     public function addDetail(): void
