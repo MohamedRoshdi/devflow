@@ -105,7 +105,8 @@ class PipelineBuilder extends Component
         $this->commands = implode("\n", $stage->commands);
         $this->timeoutSeconds = $stage->timeout_seconds;
         $this->continueOnFailure = $stage->continue_on_failure;
-        $this->envVariables = $stage->environment_variables ?? [];
+        $envVars = $stage->environment_variables ?? [];
+        $this->envVariables = is_array($envVars) ? array_map('strval', $envVars) : [];
 
         $this->showStageModal = true;
     }
@@ -143,9 +144,9 @@ class PipelineBuilder extends Component
             // Get the max order for this type
             $maxOrder = PipelineStage::where('project_id', $this->project->id)
                 ->where('type', $this->stageType)
-                ->max('order') ?? -1;
+                ->max('order');
 
-            $data['order'] = $maxOrder + 1;
+            $data['order'] = (is_numeric($maxOrder) ? (int) $maxOrder : -1) + 1;
             PipelineStage::create($data);
             $message = 'Stage created successfully!';
         }
@@ -214,9 +215,9 @@ class PipelineBuilder extends Component
         foreach ($stages as $stage) {
             $maxOrder = PipelineStage::where('project_id', $this->project->id)
                 ->where('type', $stage['type'])
-                ->max('order') ?? -1;
+                ->max('order');
 
-            $stage['order'] = $maxOrder + 1;
+            $stage['order'] = (is_numeric($maxOrder) ? (int) $maxOrder : -1) + 1;
             $stage['project_id'] = $this->project->id;
 
             PipelineStage::create($stage);

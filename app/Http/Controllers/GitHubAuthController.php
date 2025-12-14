@@ -53,7 +53,7 @@ class GitHubAuthController extends Controller
         }
 
         // Exchange code for token
-        $code = $request->input('code');
+        $code = (string) $request->input('code');
         if (! $code) {
             return redirect()->route('settings.github')
                 ->with('error', 'No authorization code received from GitHub.');

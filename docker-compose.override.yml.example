@@ -1,0 +1,143 @@
+# DevFlow Pro - Docker Compose Override Example
+# Copy this file to docker-compose.override.yml for local development customization
+# Command: cp docker-compose.override.yml.example docker-compose.override.yml
+
+version: '3.8'
+
+services:
+  # ================================
+  # Development PostgreSQL Overrides
+  # ================================
+  postgres:
+    ports:
+      - "5432:5432"  # Expose PostgreSQL for local database tools
+    environment:
+      # Use simpler password for development
+      POSTGRES_PASSWORD: devflow_dev_password
+
+  # ================================
+  # Development Redis Overrides
+  # ================================
+  redis:
+    ports:
+      - "6379:6379"  # Expose Redis for local tools
+    command: redis-server --appendonly yes  # Remove password requirement
+
+  # ================================
+  # Development App Overrides
+  # ================================
+  app:
+    build:
+      target: development  # Use development stage
+      args:
+        INSTALL_XDEBUG: "true"  # Install Xdebug for debugging
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - LOG_LEVEL=debug
+      # Xdebug configuration
+      - XDEBUG_MODE=develop,debug,coverage
+      - XDEBUG_CONFIG=client_host=host.docker.internal client_port=9003
+      # Development mail (Mailhog)
+      - MAIL_HOST=mailhog
+      - MAIL_PORT=1025
+    volumes:
+      # Enable hot-reload by using bind mounts
+      - .:/var/www/html
+      # Node modules for frontend development
+      - /var/www/html/node_modules
+    # Expose additional ports for debugging
+    ports:
+      - "9003:9003"  # Xdebug
+
+  # ================================
+  # Development Nginx Overrides
+  # ================================
+  nginx:
+    ports:
+      - "8080:80"    # Change to 8080 to avoid conflicts
+      - "8443:443"
+    volumes:
+      # Enable hot-reload for public assets
+      - ./public:/var/www/html/public
+
+  # ================================
+  # Mailhog (Email Testing)
+  # ================================
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: devflow_mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - devflow_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
+
+  # ================================
+  # pgAdmin (Database Management)
+  # ================================
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: devflow_pgadmin
+    restart: unless-stopped
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@devflow.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - devflow_network
+    depends_on:
+      - postgres
+
+  # ================================
+  # Redis Commander (Redis GUI)
+  # ================================
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: devflow_redis_commander
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    networks:
+      - devflow_network
+    depends_on:
+      - redis
+
+  # ================================
+  # Node.js Development Server (for Vite HMR)
+  # ================================
+  # vite:
+  #   image: node:20-alpine
+  #   container_name: devflow_vite
+  #   working_dir: /app
+  #   command: npm run dev
+  #   ports:
+  #     - "5173:5173"
+  #   volumes:
+  #     - .:/app
+  #     - /app/node_modules
+  #   environment:
+  #     - NODE_ENV=development
+  #   networks:
+  #     - devflow_network
+
+# Development volumes
+volumes:
+  pgadmin_data:
+    driver: local
+
+# Note: The main docker-compose.yml networks and volumes are automatically included

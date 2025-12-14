@@ -5,6 +5,15 @@
     </div>
 
     <!-- Progress Steps Indicator -->
+    @php
+        // Map validation errors to steps
+        $stepErrors = [
+            1 => $errors->hasAny(['name', 'slug', 'server_id', 'repository_url', 'branch']),
+            2 => $errors->hasAny(['framework', 'deployment_method', 'php_version', 'node_version', 'root_directory', 'build_command', 'start_command']),
+            3 => false, // Step 3 has no required validation
+            4 => false, // Step 4 is review only
+        ];
+    @endphp
     <div class="mb-8">
         <!-- Mobile Version: Horizontal Scroll -->
         <div class="md:hidden overflow-x-auto pb-2 -mx-4 px-4">
@@ -20,24 +29,38 @@
                                 wire:loading.attr="disabled"
                                 wire:loading.class="opacity-50"
                                 wire:target="goToStep,nextStep,previousStep"
-                                class="flex flex-col items-center gap-1.5 min-w-[60px] touch-manipulation active:scale-95
+                                class="flex flex-col items-center gap-1.5 min-w-[60px] touch-manipulation active:scale-95 relative
                                     {{ $currentStep >= $step ? 'cursor-pointer' : 'cursor-not-allowed' }}">
+                            {{-- Error indicator badge --}}
+                            @if ($stepErrors[$step] && $currentStep !== $step)
+                                <span class="absolute -top-1 -right-1 flex h-5 w-5 z-10">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span class="relative inline-flex items-center justify-center rounded-full h-5 w-5 bg-red-500 text-white text-xs font-bold">!</span>
+                                </span>
+                            @endif
                             <div class="flex items-center justify-center w-11 h-11 rounded-full transition-all
-                                {{ $currentStep == $step ? 'bg-blue-600 text-white ring-4 ring-blue-100 dark:ring-blue-900/50' : ($currentStep > $step ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400') }}">
+                                {{ $stepErrors[$step] && $currentStep !== $step ? 'ring-2 ring-red-500 ring-offset-2 dark:ring-offset-gray-900' : '' }}
+                                {{ $currentStep == $step ? 'bg-blue-600 text-white ring-4 ring-blue-100 dark:ring-blue-900/50' : ($currentStep > $step ? ($stepErrors[$step] ? 'bg-red-500 text-white' : 'bg-green-500 text-white') : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400') }}">
                                 @if ($currentStep > $step)
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                    </svg>
+                                    @if ($stepErrors[$step])
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                        </svg>
+                                    @else
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                    @endif
                                 @else
                                     <span class="text-sm font-bold">{{ $step }}</span>
                                 @endif
                             </div>
-                            <span class="text-xs font-medium whitespace-nowrap {{ $currentStep >= $step ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-500' }}">
+                            <span class="text-xs font-medium whitespace-nowrap {{ $stepErrors[$step] && $currentStep !== $step ? 'text-red-500 dark:text-red-400' : ($currentStep >= $step ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-500') }}">
                                 {{ $info['short'] }}
                             </span>
                         </button>
                         @if ($step < 4)
-                            <div class="w-8 h-0.5 flex-shrink-0 {{ $currentStep > $step ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700' }}"></div>
+                            <div class="w-8 h-0.5 flex-shrink-0 {{ $currentStep > $step ? ($stepErrors[$step] ? 'bg-red-500' : 'bg-green-500') : 'bg-gray-200 dark:bg-gray-700' }}"></div>
                         @endif
                     </div>
                 @endforeach
@@ -53,28 +76,48 @@
                 4 => ['title' => 'Review', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4']
             ] as $step => $info)
                 <div class="flex items-center {{ $step < 4 ? 'flex-1' : '' }}">
-                    <button wire:click="goToStep({{ $step }})"
-                            wire:loading.attr="disabled"
-                            wire:loading.class="opacity-50"
-                            wire:target="goToStep,nextStep,previousStep"
-                            class="flex items-center justify-center w-10 h-10 rounded-full transition-all
-                                {{ $currentStep == $step ? 'bg-blue-600 text-white' : ($currentStep > $step ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400') }}
-                                {{ $currentStep >= $step ? 'cursor-pointer hover:scale-105' : 'cursor-not-allowed' }}">
-                        @if ($currentStep > $step)
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                        @else
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $info['icon'] }}"/>
-                            </svg>
+                    <div class="relative">
+                        {{-- Error indicator badge --}}
+                        @if ($stepErrors[$step] && $currentStep !== $step)
+                            <span class="absolute -top-1 -right-1 flex h-5 w-5 z-10">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span class="relative inline-flex items-center justify-center rounded-full h-5 w-5 bg-red-500 text-white text-xs font-bold">!</span>
+                            </span>
                         @endif
-                    </button>
-                    <span class="ml-2 text-sm font-medium {{ $currentStep >= $step ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-500' }}">
+                        <button wire:click="goToStep({{ $step }})"
+                                wire:loading.attr="disabled"
+                                wire:loading.class="opacity-50"
+                                wire:target="goToStep,nextStep,previousStep"
+                                title="{{ $stepErrors[$step] ? 'This step has validation errors - click to fix' : $info['title'] }}"
+                                class="flex items-center justify-center w-10 h-10 rounded-full transition-all
+                                    {{ $stepErrors[$step] && $currentStep !== $step ? 'ring-2 ring-red-500 ring-offset-2 dark:ring-offset-gray-900' : '' }}
+                                    {{ $currentStep == $step ? 'bg-blue-600 text-white' : ($currentStep > $step ? ($stepErrors[$step] ? 'bg-red-500 text-white' : 'bg-green-500 text-white') : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400') }}
+                                    {{ $currentStep >= $step ? 'cursor-pointer hover:scale-105' : 'cursor-not-allowed' }}">
+                            @if ($currentStep > $step)
+                                @if ($stepErrors[$step])
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                    </svg>
+                                @else
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                @endif
+                            @else
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $info['icon'] }}"/>
+                                </svg>
+                            @endif
+                        </button>
+                    </div>
+                    <span class="ml-2 text-sm font-medium {{ $stepErrors[$step] && $currentStep !== $step ? 'text-red-500 dark:text-red-400' : ($currentStep >= $step ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-500') }}">
                         {{ $info['title'] }}
+                        @if ($stepErrors[$step] && $currentStep !== $step)
+                            <span class="text-xs">(has errors)</span>
+                        @endif
                     </span>
                     @if ($step < 4)
-                        <div class="flex-1 h-0.5 mx-4 {{ $currentStep > $step ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700' }}"></div>
+                        <div class="flex-1 h-0.5 mx-4 {{ $currentStep > $step ? ($stepErrors[$step] ? 'bg-red-500' : 'bg-green-500') : 'bg-gray-200 dark:bg-gray-700' }}"></div>
                     @endif
                 </div>
             @endforeach

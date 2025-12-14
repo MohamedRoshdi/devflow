@@ -34,22 +34,28 @@ class ServerController extends Controller
         }
 
         if ($request->has('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('name', 'like', "%{$request->search}%")
-                    ->orWhere('hostname', 'like', "%{$request->search}%")
-                    ->orWhere('ip_address', 'like', "%{$request->search}%");
+            $searchTerm = (string) $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', "%{$searchTerm}%")
+                    ->orWhere('hostname', 'like', "%{$searchTerm}%")
+                    ->orWhere('ip_address', 'like', "%{$searchTerm}%");
             });
         }
 
         // Sorting
-        $sortBy = $request->input('sort_by', 'updated_at');
-        $sortOrder = $request->input('sort_order', 'desc');
+        $allowedSortColumns = ['id', 'name', 'hostname', 'ip_address', 'status', 'created_at', 'updated_at'];
+        $sortBy = in_array($request->input('sort_by'), $allowedSortColumns, true)
+            ? (string) $request->input('sort_by')
+            : 'updated_at';
+        $sortOrder = in_array($request->input('sort_order'), ['asc', 'desc'], true)
+            ? (string) $request->input('sort_order')
+            : 'desc';
         $query->orderBy($sortBy, $sortOrder);
 
         // Load project count
         $query->withCount('projects');
 
-        $perPage = min($request->input('per_page', 15), 100);
+        $perPage = min((int) $request->input('per_page', 15), 100);
         $servers = $query->paginate($perPage);
 
         return new ServerCollection($servers);

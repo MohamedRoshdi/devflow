@@ -83,21 +83,31 @@
                 <div class="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-lg" wire:loading.remove role="search" aria-label="Filter deployments">
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
                         <div>
-                            <label for="search-deployments" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Search</label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400" aria-hidden="true">
+                            <label for="search-deployments" class="group flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-wider mb-2 cursor-help" title="Search across commit messages, branch names, and project names">
+                                Search
+                                <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-700/50 text-slate-400 text-[10px] font-normal group-hover:bg-blue-500/30 group-hover:text-blue-300 transition-colors">?</span>
+                            </label>
+                            <div class="relative" x-data="{ focused: false }" @focusin="focused = true" @focusout="focused = false">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 transition-colors" :class="{ 'text-blue-400': focused }" aria-hidden="true">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M9.5 17a7.5 7.5 0 117.5-7.5 7.5 7.5 0 01-7.5 7.5z" />
                                     </svg>
                                 </span>
                                 <input type="text" id="search-deployments" placeholder="Commit message, branch, or project" wire:model.live.debounce.500ms="search"
                                        class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-600/50 bg-slate-900/50 backdrop-blur-sm text-sm text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
-                                       aria-label="Search deployments by commit message, branch, or project" />
+                                       aria-label="Search deployments by commit message, branch, or project"
+                                       title="Type to search through all deployments by commit message, branch name, or project name" />
                             </div>
                         </div>
                         <div>
-                            <label for="filter-project" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Project</label>
-                            <select id="filter-project" wire:model.live="projectFilter" class="w-full px-4 py-3 rounded-xl border border-slate-600/50 bg-slate-900/50 backdrop-blur-sm text-sm text-slate-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all" aria-label="Filter deployments by project">
+                            <label for="filter-project" class="group flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-wider mb-2 cursor-help" title="Filter deployments to show only those belonging to a specific project">
+                                Project
+                                <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-700/50 text-slate-400 text-[10px] font-normal group-hover:bg-blue-500/30 group-hover:text-blue-300 transition-colors">?</span>
+                            </label>
+                            <select id="filter-project" wire:model.live="projectFilter"
+                                    class="w-full px-4 py-3 rounded-xl border border-slate-600/50 bg-slate-900/50 backdrop-blur-sm text-sm text-slate-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                                    aria-label="Filter deployments by project"
+                                    title="Select a project to filter deployments, or choose 'All projects' to see all">
                                 <option value="">All projects</option>
                                 @foreach($projects as $project)
                                     <option value="{{ $project->id }}">{{ $project->name }}</option>
@@ -105,20 +115,32 @@
                             </select>
                         </div>
                         <div>
-                            <label for="filter-status" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Status</label>
-                            <select id="filter-status" wire:model.live="statusFilter" class="w-full px-4 py-3 rounded-xl border border-slate-600/50 bg-slate-900/50 backdrop-blur-sm text-sm text-slate-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all" aria-label="Filter deployments by status">
-                                <option value="">All statuses</option>
-                                <option value="success">Success</option>
-                                <option value="failed">Failed</option>
-                                <option value="running">Running</option>
-                                <option value="pending">Pending</option>
+                            <label for="filter-status" class="group flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-wider mb-2 cursor-help" title="Filter by deployment status: Success (completed), Failed (error occurred), Running (in progress), or Pending (queued)">
+                                Status
+                                <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-700/50 text-slate-400 text-[10px] font-normal group-hover:bg-blue-500/30 group-hover:text-blue-300 transition-colors">?</span>
+                            </label>
+                            <select id="filter-status" wire:model.live="statusFilter"
+                                    class="w-full px-4 py-3 rounded-xl border border-slate-600/50 bg-slate-900/50 backdrop-blur-sm text-sm text-slate-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                                    aria-label="Filter deployments by status"
+                                    title="Filter deployments by their current status">
+                                <option value="" title="Show deployments of all statuses">All statuses</option>
+                                <option value="success" title="Completed deployments without errors">Success</option>
+                                <option value="failed" title="Deployments that encountered an error">Failed</option>
+                                <option value="running" title="Deployments currently in progress">Running</option>
+                                <option value="pending" title="Deployments waiting to be executed">Pending</option>
                             </select>
                         </div>
                         <div>
-                            <label for="per-page" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Per Page</label>
-                            <select id="per-page" wire:model.live="perPage" class="w-full px-4 py-3 rounded-xl border border-slate-600/50 bg-slate-900/50 backdrop-blur-sm text-sm text-slate-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all" aria-label="Number of deployments per page">
+                            <label for="per-page" class="group flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-wider mb-2 cursor-help" title="Change how many deployments are displayed per page">
+                                Per Page
+                                <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-700/50 text-slate-400 text-[10px] font-normal group-hover:bg-blue-500/30 group-hover:text-blue-300 transition-colors">?</span>
+                            </label>
+                            <select id="per-page" wire:model.live="perPage"
+                                    class="w-full px-4 py-3 rounded-xl border border-slate-600/50 bg-slate-900/50 backdrop-blur-sm text-sm text-slate-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                                    aria-label="Number of deployments per page"
+                                    title="Adjust how many deployment entries are shown on each page">
                                 @foreach([10, 15, 20, 30, 50] as $size)
-                                    <option value="{{ $size }}">{{ $size }} results</option>
+                                    <option value="{{ $size }}" title="Show {{ $size }} deployments per page">{{ $size }} results</option>
                                 @endforeach
                             </select>
                         </div>

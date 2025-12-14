@@ -74,7 +74,7 @@ class HealthDashboard extends Component
             ->with([
                 'server:id,name',
                 'domains:id,project_id,domain,subdomain',
-                'latestDeployment:id,project_id,status,created_at'
+                'latestDeployment' => fn ($q) => $q->select('deployments.id', 'deployments.project_id', 'deployments.status', 'deployments.created_at')
             ])
             ->get();
 

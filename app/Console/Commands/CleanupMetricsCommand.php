@@ -21,11 +21,11 @@ class CleanupMetricsCommand extends Command
 
         // Clean server metrics
         $deletedServerMetrics = ServerMetric::where('recorded_at', '<', $cutoffDate)->delete();
-        $this->info("Deleted {$deletedServerMetrics} server metrics");
+        $this->info("Deleted " . (string) $deletedServerMetrics . " server metrics");
 
         // Clean project analytics
         $deletedProjectAnalytics = ProjectAnalytic::where('recorded_at', '<', $cutoffDate)->delete();
-        $this->info("Deleted {$deletedProjectAnalytics} project analytics");
+        $this->info("Deleted " . (string) $deletedProjectAnalytics . " project analytics");
 
         $this->info('Cleanup completed!');
 

@@ -169,10 +169,10 @@ class RunAllTests extends Command
         $content .= "## Overview\n\n";
         $content .= "| Metric | Value |\n";
         $content .= "|--------|-------|\n";
-        $content .= "| Total Tests | {$totalTests} |\n";
-        $content .= "| Failures | {$totalFailures} |\n";
-        $content .= "| Errors | {$totalErrors} |\n";
-        $content .= "| Duration | {$totalDuration}s |\n\n";
+        $content .= "| Total Tests | " . (string) $totalTests . " |\n";
+        $content .= "| Failures | " . (string) $totalFailures . " |\n";
+        $content .= "| Errors | " . (string) $totalErrors . " |\n";
+        $content .= "| Duration | " . (string) $totalDuration . "s |\n\n";
 
         $content .= "## Suite Results\n\n";
         $content .= "| Suite | Status | Tests | Failures | Errors | Duration |\n";

@@ -9,6 +9,7 @@ use App\Models\Project;
 use App\Models\Server;
 use App\Models\ServerMetric;
 use App\Services\DockerService;
+use App\Services\Health\ProjectHealthScorer;
 use App\Services\ProjectHealthService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
@@ -22,13 +23,15 @@ class ProjectHealthServiceTest extends TestCase
 
     private ProjectHealthService $service;
     private DockerService $dockerService;
+    private ProjectHealthScorer $healthScorer;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->dockerService = Mockery::mock(DockerService::class);
-        $this->service = new ProjectHealthService($this->dockerService);
+        $this->healthScorer = new ProjectHealthScorer();
+        $this->service = new ProjectHealthService($this->dockerService, $this->healthScorer);
     }
 
     protected function tearDown(): void

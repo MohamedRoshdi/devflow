@@ -1,10 +1,164 @@
+# DevFlow Pro - Docker Build Context Exclusions
+# Reduces Docker image size and build time
+
+# Version Control
+.git
+.gitignore
+.gitattributes
+.github
+
+# Dependencies (will be installed during build)
 node_modules
 vendor
-.git
-storage/framework/testing
-storage/logs/*
-storage/app/public/*
-bootstrap/cache/*
+bower_components
+
+# IDE and Editor files
+.idea
+.vscode
+.vs
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Testing
+.phpunit.cache
+phpunit.xml
+phpunit.dusk.xml
+.dusk
+tests/Browser/screenshots
+tests/Browser/console
+coverage
+.coverage
+.nyc_output
+
+# Development files
 .env
-.env.local
-.env.testing
+.env.*
+!.env.example
+.editorconfig
+.php_cs
+.php_cs.cache
+.phpcs-cache
+phpcs.xml
+phpstan.neon
+psalm.xml
+.scrutinizer.yml
+
+# Documentation
+*.md
+!README.md
+docs/
+.github/
+CHANGELOG.md
+CONTRIBUTING.md
+LICENSE
+
+# Build artifacts
+dist/
+build/
+public/hot
+public/storage
+storage/framework/cache/**
+storage/framework/sessions/**
+storage/framework/testing/**
+storage/framework/views/**
+storage/logs/**
+storage/app/public/**
+!storage/app/.gitignore
+!storage/framework/.gitignore
+!storage/logs/.gitignore
+bootstrap/cache/*
+!bootstrap/cache/.gitignore
+
+# Temporary files
+*.log
+*.tmp
+*.temp
+*.cache
+*.bak
+*.old
+*.orig
+*.rej
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+
+# Package manager files
+package-lock.json
+yarn.lock
+composer.lock  # Include this if you want reproducible builds
+pnpm-lock.yaml
+
+# Docker files (no need to copy into image)
+docker-compose*.yml
+!docker-compose.yml
+Dockerfile*
+.dockerignore
+
+# Deployment scripts
+deploy*.sh
+setup*.sh
+*.sh
+Makefile
+Makefile.*
+
+# Database files
+*.sql
+*.sqlite
+*.db
+
+# Backups
+*.backup
+*.dump
+backups/
+
+# Archives
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# System files
+.vagrant
+Vagrantfile
+
+# Application specific
+storage/data/
+storage/debugbar/
+
+# DevFlow specific deployment directories
+# (these are mounted as volumes, no need to copy)
+/opt/devflow/
+
+# CI/CD
+.travis.yml
+.gitlab-ci.yml
+azure-pipelines.yml
+bitbucket-pipelines.yml
+.circleci/
+.semaphore/
+
+# Security
+*.pem
+*.key
+*.crt
+*.p12
+.secrets/
+
+# Misc
+TODO
+TODO.md
+TASKS.md
+.cursor/
+.claude/

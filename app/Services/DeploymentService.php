@@ -340,6 +340,15 @@ class DeploymentService
         $failed = 0;
         $deployments = [];
 
+        // Batch query: Get all project IDs with active deployments in single query
+        $projectIds = array_map(fn ($p) => $p->id, $projects);
+        $projectsWithActiveDeployments = Deployment::whereIn('project_id', $projectIds)
+            ->whereIn('status', ['pending', 'running'])
+            ->distinct()
+            ->pluck('project_id')
+            ->flip()
+            ->toArray();
+
         foreach ($projects as $project) {
             try {
                 // Skip projects without servers
@@ -352,8 +361,8 @@ class DeploymentService
                     continue;
                 }
 
-                // Skip if already deploying
-                if ($this->hasActiveDeployment($project)) {
+                // Skip if already deploying (uses pre-fetched batch data)
+                if (isset($projectsWithActiveDeployments[$project->id])) {
                     Log::warning('Skipping project with active deployment', [
                         'project_id' => $project->id,
                         'project_name' => $project->name,

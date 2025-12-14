@@ -68,6 +68,29 @@
     .text-secondary {
         @apply text-gray-600 dark:text-gray-400;
     }
+
+    /* WCAG AA Compliant Text Colors (4.5:1 contrast ratio) */
+    /* Use these instead of direct gray classes for accessible text */
+
+    /* Primary muted text - for secondary content, descriptions */
+    .text-muted-accessible {
+        @apply text-gray-600 dark:text-gray-300;
+    }
+
+    /* Subtle text - for placeholders, hints, metadata */
+    .text-subtle-accessible {
+        @apply text-gray-500 dark:text-gray-400;
+    }
+
+    /* Label text - for form labels, captions */
+    .text-label-accessible {
+        @apply text-gray-700 dark:text-gray-200;
+    }
+
+    /* Timestamp/meta text - slightly muted but still readable */
+    .text-meta-accessible {
+        @apply text-gray-500 dark:text-gray-400;
+    }
     
     .bg-primary {
         @apply bg-white dark:bg-gray-800;

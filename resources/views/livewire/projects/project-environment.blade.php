@@ -203,23 +203,72 @@
                     </h3>
 
                     <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Variable Name</label>
+                        <div x-data="{ showServerSuggestions: false }">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Variable Name
+                                <button type="button" @click="showServerSuggestions = !showServerSuggestions"
+                                        class="ml-2 inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-xs">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Show common variables
+                                </button>
+                            </label>
                             <input wire:model="serverEnvKey"
                                    type="text"
                                    placeholder="e.g., APP_DEBUG, DB_HOST"
                                    {{ $editingServerEnvKey ? 'readonly' : '' }}
                                    class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 font-mono transition-colors uppercase {{ $editingServerEnvKey ? 'bg-gray-100 dark:bg-gray-900' : '' }}">
                             @error('serverEnvKey') <span class="text-red-600 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
+
+                            {{-- Quick Variable Suggestions --}}
+                            <div x-show="showServerSuggestions" x-collapse class="mt-3">
+                                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+                                    <div class="flex flex-wrap gap-2">
+                                        @foreach(['APP_ENV', 'APP_DEBUG', 'APP_URL', 'DB_HOST', 'DB_DATABASE', 'CACHE_DRIVER', 'QUEUE_CONNECTION', 'REDIS_HOST'] as $quickVar)
+                                            <button type="button"
+                                                    wire:click="$set('serverEnvKey', '{{ $quickVar }}')"
+                                                    @click="showServerSuggestions = false"
+                                                    class="px-2 py-1 text-xs font-mono bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded hover:bg-blue-100 dark:hover:bg-blue-800/50 transition-colors">
+                                                {{ $quickVar }}
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Value</label>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Value
+                                @if(str_contains(strtoupper($serverEnvKey ?? ''), 'PASSWORD') || str_contains(strtoupper($serverEnvKey ?? ''), 'SECRET'))
+                                    <span class="ml-2 text-xs text-amber-500 dark:text-amber-400 font-normal">(sensitive)</span>
+                                @endif
+                            </label>
                             <textarea wire:model="serverEnvValue"
                                       rows="3"
                                       placeholder="Enter variable value..."
                                       class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 font-mono transition-colors"></textarea>
                             @error('serverEnvValue') <span class="text-red-600 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
+
+                            {{-- Context-sensitive help --}}
+                            @php
+                                $serverVarHelp = match(strtoupper($serverEnvKey ?? '')) {
+                                    'APP_DEBUG' => 'Use "true" for debugging, "false" for production. Shows detailed error pages when enabled.',
+                                    'APP_ENV' => 'Set to "production" for live sites, "local" or "development" for dev environments.',
+                                    'CACHE_DRIVER' => 'Recommended: "redis" for production, "file" for simple setups, "array" for testing.',
+                                    'QUEUE_CONNECTION' => 'Use "redis" or "database" for production, "sync" processes jobs immediately.',
+                                    default => null,
+                                };
+                            @endphp
+                            @if($serverVarHelp)
+                                <p class="mt-2 text-xs text-blue-600 dark:text-blue-400 flex items-center">
+                                    <svg class="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    {{ $serverVarHelp }}
+                                </p>
+                            @endif
                         </div>
 
                         <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
@@ -330,23 +379,117 @@
                     </h3>
                     
                     <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Variable Name</label>
-                            <input wire:model="newEnvKey" 
-                                   type="text" 
+                        <div x-data="{ showSuggestions: false, suggestions: [] }">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Variable Name
+                                <button type="button" @click="showSuggestions = !showSuggestions"
+                                        class="ml-2 inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-xs">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Show common variables
+                                </button>
+                            </label>
+                            <input wire:model="newEnvKey"
+                                   type="text"
                                    placeholder="e.g., API_KEY, DATABASE_URL"
                                    {{ $editingEnvKey ? 'readonly' : '' }}
                                    class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 font-mono transition-colors {{ $editingEnvKey ? 'bg-gray-100 dark:bg-gray-900' : '' }}">
                             @error('newEnvKey') <span class="text-red-600 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
+
+                            {{-- Common Variables Reference --}}
+                            <div x-show="showSuggestions" x-collapse class="mt-3">
+                                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                                    <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                                        </svg>
+                                        Common Environment Variables
+                                    </h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm max-h-64 overflow-y-auto">
+                                        @php
+                                            $commonVars = [
+                                                ['APP_ENV', 'Application environment (local, staging, production)'],
+                                                ['APP_DEBUG', 'Enable/disable debug mode (true/false)'],
+                                                ['APP_URL', 'Base URL of your application'],
+                                                ['APP_KEY', 'Application encryption key (auto-generated)'],
+                                                ['DB_HOST', 'Database server hostname'],
+                                                ['DB_PORT', 'Database server port (default: 3306)'],
+                                                ['DB_DATABASE', 'Database name'],
+                                                ['DB_USERNAME', 'Database username'],
+                                                ['DB_PASSWORD', 'Database password'],
+                                                ['REDIS_HOST', 'Redis server hostname'],
+                                                ['REDIS_PORT', 'Redis server port (default: 6379)'],
+                                                ['REDIS_PASSWORD', 'Redis password (if required)'],
+                                                ['CACHE_DRIVER', 'Cache driver (file, redis, memcached)'],
+                                                ['SESSION_DRIVER', 'Session driver (file, cookie, redis)'],
+                                                ['QUEUE_CONNECTION', 'Queue driver (sync, redis, database)'],
+                                                ['MAIL_MAILER', 'Mail driver (smtp, sendmail, mailgun)'],
+                                                ['MAIL_HOST', 'SMTP server hostname'],
+                                                ['MAIL_PORT', 'SMTP server port'],
+                                                ['MAIL_USERNAME', 'SMTP username'],
+                                                ['MAIL_PASSWORD', 'SMTP password'],
+                                                ['AWS_ACCESS_KEY_ID', 'AWS access key for S3/services'],
+                                                ['AWS_SECRET_ACCESS_KEY', 'AWS secret key'],
+                                                ['AWS_DEFAULT_REGION', 'AWS region (us-east-1, eu-west-1)'],
+                                                ['AWS_BUCKET', 'S3 bucket name for file storage'],
+                                                ['PUSHER_APP_KEY', 'Pusher/broadcasting app key'],
+                                                ['STRIPE_KEY', 'Stripe publishable API key'],
+                                                ['STRIPE_SECRET', 'Stripe secret API key'],
+                                            ];
+                                        @endphp
+                                        @foreach($commonVars as [$varName, $description])
+                                            <button type="button"
+                                                    wire:click="$set('newEnvKey', '{{ $varName }}')"
+                                                    @click="showSuggestions = false"
+                                                    class="flex items-start p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600 text-left transition-colors group">
+                                                <code class="text-xs font-mono text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-1.5 py-0.5 rounded mr-2 whitespace-nowrap group-hover:bg-blue-100 dark:group-hover:bg-blue-800/50">{{ $varName }}</code>
+                                                <span class="text-xs text-gray-500 dark:text-gray-400 leading-tight">{{ $description }}</span>
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Value</label>
-                            <textarea wire:model="newEnvValue" 
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Value
+                                <span class="ml-2 text-xs text-gray-400 dark:text-gray-500 font-normal">
+                                    @if(str_contains(strtoupper($newEnvKey ?? ''), 'PASSWORD') || str_contains(strtoupper($newEnvKey ?? ''), 'SECRET') || str_contains(strtoupper($newEnvKey ?? ''), 'KEY'))
+                                        (sensitive - will be encrypted)
+                                    @endif
+                                </span>
+                            </label>
+                            <textarea wire:model="newEnvValue"
                                       rows="3"
                                       placeholder="Enter variable value..."
                                       class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 font-mono transition-colors"></textarea>
                             @error('newEnvValue') <span class="text-red-600 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
+
+                            {{-- Context-sensitive help based on variable name --}}
+                            @php
+                                $varHelp = match(true) {
+                                    str_contains(strtoupper($newEnvKey ?? ''), 'DB_HOST') => 'Usually "localhost" or "127.0.0.1" for local, or your database server IP/hostname for remote.',
+                                    str_contains(strtoupper($newEnvKey ?? ''), 'DB_PORT') => 'Default ports: MySQL=3306, PostgreSQL=5432, SQL Server=1433',
+                                    str_contains(strtoupper($newEnvKey ?? ''), 'REDIS_HOST') => 'Usually "127.0.0.1" for local Redis or your Redis server hostname.',
+                                    str_contains(strtoupper($newEnvKey ?? ''), 'APP_DEBUG') => 'Set to "true" for development, "false" for production. Never enable in production!',
+                                    str_contains(strtoupper($newEnvKey ?? ''), 'APP_ENV') => 'Common values: local, development, staging, production',
+                                    str_contains(strtoupper($newEnvKey ?? ''), 'CACHE_DRIVER') => 'Options: file (default), redis (recommended for production), memcached, array (testing)',
+                                    str_contains(strtoupper($newEnvKey ?? ''), 'QUEUE_CONNECTION') => 'Options: sync (immediate), database, redis (recommended), beanstalkd, sqs',
+                                    str_contains(strtoupper($newEnvKey ?? ''), 'MAIL_MAILER') => 'Options: smtp, sendmail, mailgun, ses, postmark, log (testing)',
+                                    str_contains(strtoupper($newEnvKey ?? ''), 'AWS_REGION') => 'Example: us-east-1, us-west-2, eu-west-1, ap-southeast-1',
+                                    default => null,
+                                };
+                            @endphp
+                            @if($varHelp)
+                                <p class="mt-2 text-xs text-blue-600 dark:text-blue-400 flex items-start">
+                                    <svg class="w-4 h-4 mr-1 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                                    </svg>
+                                    {{ $varHelp }}
+                                </p>
+                            @endif
                         </div>
 
                         <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">

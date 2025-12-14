@@ -39,16 +39,19 @@ class ProjectController extends Controller
         }
 
         if ($request->has('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('name', 'like', "%{$request->search}%")
-                    ->orWhere('slug', 'like', "%{$request->search}%");
+            $searchTerm = (string) $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', "%{$searchTerm}%")
+                    ->orWhere('slug', 'like', "%{$searchTerm}%");
             });
         }
 
         // Sorting with allowlist
         $allowedSortColumns = ['id', 'name', 'slug', 'status', 'framework', 'created_at', 'updated_at', 'last_deployment_at'];
         $sortBy = $request->input('sort_by', 'updated_at');
-        $sortOrder = $request->input('sort_order', 'desc');
+        $sortOrder = in_array($request->input('sort_order'), ['asc', 'desc'], true)
+            ? (string) $request->input('sort_order')
+            : 'desc';
 
         if (in_array($sortBy, $allowedSortColumns, true)) {
             $query->orderBy($sortBy, $sortOrder);
@@ -59,7 +62,7 @@ class ProjectController extends Controller
         // Load deployment count
         $query->withCount('deployments');
 
-        $perPage = min($request->input('per_page', 15), 100);
+        $perPage = min((int) $request->input('per_page', 15), 100);
         $projects = $query->paginate($perPage);
 
         return new ProjectCollection($projects);

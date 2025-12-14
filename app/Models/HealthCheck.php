@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Mappers\HealthScoreMapper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -143,21 +144,11 @@ class HealthCheck extends Model
 
     public function getStatusColorAttribute(): string
     {
-        return match ($this->status) {
-            'healthy' => 'green',
-            'degraded' => 'yellow',
-            'down' => 'red',
-            default => 'gray',
-        };
+        return HealthScoreMapper::statusToColor($this->status);
     }
 
     public function getStatusIconAttribute(): string
     {
-        return match ($this->status) {
-            'healthy' => 'check-circle',
-            'degraded' => 'exclamation-triangle',
-            'down' => 'x-circle',
-            default => 'question-mark-circle',
-        };
+        return HealthScoreMapper::statusToIcon($this->status);
     }
 }

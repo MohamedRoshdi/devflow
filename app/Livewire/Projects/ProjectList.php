@@ -65,17 +65,25 @@ class ProjectList extends Component
      */
     public function deleteProject(int $projectId): void
     {
-        $project = Project::with(['server', 'user', 'domains'])->find($projectId);
+        try {
+            $project = Project::with(['server', 'user', 'domains'])->find($projectId);
 
-        if (! $project) {
-            session()->flash('error', 'Project not found');
-            return;
+            if (! $project) {
+                session()->flash('error', 'Project not found');
+                return;
+            }
+
+            $this->authorize('delete', $project);
+
+            $projectName = $project->name;
+            $project->delete();
+            session()->flash('message', "Project '{$projectName}' deleted successfully");
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            session()->flash('error', 'You do not have permission to delete this project');
+        } catch (\Throwable $e) {
+            session()->flash('error', 'Failed to delete project: ' . $e->getMessage());
+            report($e);
         }
-
-        $this->authorize('delete', $project);
-
-        $project->delete();
-        session()->flash('message', 'Project deleted successfully');
     }
 
     /**

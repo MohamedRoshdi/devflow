@@ -123,22 +123,23 @@
     <!-- Bulk Actions Bar (Sticky when servers selected) -->
     @if(count($selectedServers) > 0)
         <div class="sticky top-0 z-40 mb-6 bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/50 p-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
+            {{-- Mobile: Stack vertically --}}
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="flex flex-wrap items-center gap-3">
                     <div class="flex items-center space-x-2">
-                        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        <span class="text-white font-semibold">{{ count($selectedServers) }} server(s) selected</span>
+                        <span class="text-white font-semibold whitespace-nowrap">{{ count($selectedServers) }} server(s) selected</span>
                     </div>
                     <button wire:click="clearSelection"
                             aria-label="Clear all selected servers"
-                            class="text-sm text-slate-400 hover:text-white transition-colors underline">
-                        Clear Selection
+                            class="text-sm text-slate-400 hover:text-white transition-colors underline whitespace-nowrap">
+                        Clear
                     </button>
                 </div>
 
-                <div class="flex items-center space-x-3">
+                <div class="flex flex-wrap items-center gap-3">
                     <!-- Loading Indicator -->
                     @if($bulkActionInProgress)
                         <div class="flex items-center space-x-2 text-amber-400" role="status" aria-live="polite" aria-label="Bulk action in progress">
@@ -151,26 +152,26 @@
                     @endif
 
                     <!-- Bulk Actions Dropdown -->
-                    <div class="relative" x-data="{ open: false }">
+                    <div class="relative flex-shrink-0" x-data="{ open: false }">
                         <button @click="open = !open"
                                 @click.away="open = false"
                                 :disabled="$wire.bulkActionInProgress"
                                 aria-label="Bulk actions menu"
                                 aria-haspopup="true"
                                 :aria-expanded="open"
-                                class="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white overflow-hidden transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="group relative inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl font-semibold text-sm text-white overflow-hidden transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto justify-center"
                                 style="background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);">
                             <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" aria-hidden="true"></div>
                             <svg class="w-5 h-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                             </svg>
                             <span class="relative z-10">Bulk Actions</span>
-                            <svg class="w-4 h-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-hidden="true">
+                            <svg class="w-4 h-4 relative z-10 transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </button>
 
-                        <!-- Dropdown Menu -->
+                        <!-- Dropdown Menu - Mobile-friendly positioning -->
                         <div x-show="open"
                              x-transition:enter="transition ease-out duration-200"
                              x-transition:enter-start="transform opacity-0 scale-95"
@@ -180,7 +181,7 @@
                              x-transition:leave-end="transform opacity-0 scale-95"
                              role="menu"
                              aria-label="Bulk actions menu"
-                             class="absolute right-0 mt-2 w-64 bg-slate-800/95 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-700/50 overflow-hidden z-50">
+                             class="absolute right-0 sm:right-0 left-0 sm:left-auto mt-2 w-full sm:w-64 bg-slate-800/95 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-700/50 overflow-hidden z-50 max-h-[60vh] overflow-y-auto">
 
                             <!-- Ping Selected -->
                             <button wire:click="bulkPing"

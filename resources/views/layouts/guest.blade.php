@@ -20,8 +20,14 @@
     @livewireStyles
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <!-- Skip to Content Link (Accessibility) -->
+    <a href="#main-content"
+       class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all">
+        Skip to main content
+    </a>
+
     <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full">
+        <main id="main-content" class="max-w-md w-full" tabindex="-1">
             <!-- Theme Toggle (Top Right) -->
             <div class="absolute top-4 right-4">
                 <button id="theme-toggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" aria-label="Toggle theme">
@@ -40,9 +46,12 @@
             </div>
             
             {{ $slot }}
-        </div>
+        </main>
     </div>
-    
+
+    <!-- Toast Notifications with Animations -->
+    <x-toast-notification />
+
     <!-- Theme Toggle Script -->
     <script>
         const themeToggleBtn = document.getElementById('theme-toggle');

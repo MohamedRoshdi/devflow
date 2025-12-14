@@ -8,6 +8,7 @@ use App\Models\Team;
 use App\Rules\FileUploadRule;
 use App\Services\TeamService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Validate;
@@ -41,27 +42,42 @@ class TeamList extends Component
             return collect();
         }
 
-        return $user->teams()
-            ->withCount('members')
-            ->with(['owner', 'members'])
-            ->latest()
-            ->get()
-            ->map(function (Team $team) use ($user) {
-                // Get role from loaded members relationship to avoid N+1
-                $member = $team->members->firstWhere('id', $user->id);
-                $role = $member?->pivot?->role;
+        $cacheKey = "user_{$user->id}_teams_list";
 
-                return [
-                    'id' => $team->id,
-                    'name' => $team->name,
-                    'description' => $team->description,
-                    'avatar_url' => $team->avatar_url,
-                    'members_count' => $team->members_count,
-                    'role' => $role,
-                    'is_owner' => $team->isOwner($user),
-                    'is_current' => $user->current_team_id === $team->id,
-                ];
-            });
+        return Cache::remember($cacheKey, 120, function () use ($user) {
+            return $user->teams()
+                ->withCount('members')
+                ->with(['owner', 'members'])
+                ->latest()
+                ->get()
+                ->map(function (Team $team) use ($user) {
+                    // Get role from loaded members relationship to avoid N+1
+                    $member = $team->members->firstWhere('id', $user->id);
+                    $role = $member?->pivot?->role;
+
+                    return [
+                        'id' => $team->id,
+                        'name' => $team->name,
+                        'description' => $team->description,
+                        'avatar_url' => $team->avatar_url,
+                        'members_count' => $team->members_count,
+                        'role' => $role,
+                        'is_owner' => $team->isOwner($user),
+                        'is_current' => $user->current_team_id === $team->id,
+                    ];
+                });
+        });
+    }
+
+    /**
+     * Clear the teams cache for the current user
+     */
+    private function clearTeamsCache(): void
+    {
+        $user = Auth::user();
+        if ($user !== null) {
+            Cache::forget("user_{$user->id}_teams_list");
+        }
     }
 
     public function openCreateModal(): void
@@ -117,6 +133,7 @@ class TeamList extends Component
             ]);
 
             $this->closeCreateModal();
+            $this->clearTeamsCache();
             unset($this->teams);
 
             // Redirect to team settings
@@ -150,6 +167,7 @@ class TeamList extends Component
             'message' => "Switched to {$team->name}",
         ]);
 
+        $this->clearTeamsCache();
         unset($this->teams);
         $this->dispatch('team-switched');
 
@@ -177,6 +195,7 @@ class TeamList extends Component
                 'message' => 'Team deleted successfully.',
             ]);
 
+            $this->clearTeamsCache();
             unset($this->teams);
         } catch (\Exception $e) {
             $this->dispatch('notification', [

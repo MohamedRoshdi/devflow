@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Mappers\HealthScoreMapper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -257,12 +258,7 @@ class Server extends Model
 
     public function getStatusColorAttribute(): string
     {
-        return match ($this->status) {
-            'online' => 'green',
-            'offline' => 'red',
-            'maintenance' => 'yellow',
-            default => 'gray',
-        };
+        return HealthScoreMapper::statusToColor($this->status);
     }
 
     public function getSecurityScoreColorAttribute(): string

@@ -172,18 +172,27 @@
                                 </div>
 
                                 @if($approval->status === 'pending')
-                                    <div class="flex gap-3 lg:flex-col">
-                                        <button wire:click="openApproveModal({{ $approval->id }})" class="flex-1 lg:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-green-700 hover:from-emerald-700 hover:to-green-800 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    {{-- Approval Actions: Stack vertically on mobile/tablet, horizontal on lg+ --}}
+                                    <div class="flex flex-col sm:flex-row lg:flex-col gap-3 w-full sm:w-auto lg:w-auto lg:min-w-[140px]">
+                                        <button wire:click="openApproveModal({{ $approval->id }})"
+                                                wire:loading.attr="disabled"
+                                                wire:loading.class="opacity-50"
+                                                wire:target="openApproveModal"
+                                                class="inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-emerald-600 to-green-700 hover:from-emerald-700 hover:to-green-800 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all min-h-[44px]">
+                                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                             </svg>
-                                            {{ __('buttons.approve') }}
+                                            <span>{{ __('buttons.approve') }}</span>
                                         </button>
-                                        <button wire:click="openRejectModal({{ $approval->id }})" class="flex-1 lg:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-700 hover:to-red-800 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <button wire:click="openRejectModal({{ $approval->id }})"
+                                                wire:loading.attr="disabled"
+                                                wire:loading.class="opacity-50"
+                                                wire:target="openRejectModal"
+                                                class="inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-700 hover:to-red-800 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all min-h-[44px]">
+                                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                             </svg>
-                                            {{ __('buttons.reject') }}
+                                            <span>{{ __('buttons.reject') }}</span>
                                         </button>
                                     </div>
                                 @endif

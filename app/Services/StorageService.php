@@ -50,7 +50,7 @@ class StorageService
     public function getTotalStorageUsed(): array
     {
         $totalMB = Project::sum('storage_used_mb');
-        $maxGB = config('app.max_storage_gb', 100);
+        $maxGB = (int) config('app.max_storage_gb', 100);
         $maxMB = $maxGB * 1024;
 
         return [

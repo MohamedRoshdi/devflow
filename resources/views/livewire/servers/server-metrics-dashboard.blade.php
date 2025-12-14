@@ -118,9 +118,14 @@
         <!-- Current Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <!-- CPU Usage Card -->
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 transition-colors">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 transition-colors group"
+                 title="CPU utilization percentage. Under 60% is healthy, 60-80% is moderate, above 80% indicates high load.">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">CPU Usage</h3>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                        CPU Usage
+                        <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-[10px] font-normal cursor-help opacity-0 group-hover:opacity-100 transition-opacity"
+                              title="CPU measures how much processing power is being used. High CPU usage can slow down response times.">?</span>
+                    </h3>
                     <div class="p-3 rounded-xl
                         @if($latestMetric->cpu_usage > 80) bg-red-100 dark:bg-red-900/30
                         @elseif($latestMetric->cpu_usage > 60) bg-yellow-100 dark:bg-yellow-900/30
@@ -146,15 +151,22 @@
                         @else bg-gradient-to-r from-blue-500 to-indigo-600
                         @endif" :style="'width: ' + Math.min(currentMetrics.cpu, 100) + '%'"></div>
                 </div>
-                <div class="mt-3 text-xs text-gray-500 dark:text-gray-400">
+                <div class="mt-3 text-xs text-gray-500 dark:text-gray-400 cursor-help"
+                     title="Load Average shows system load over 1, 5, and 15 minutes. Values equal to or less than your CPU core count are healthy. Higher values indicate the system is overloaded.">
                     Load Avg: {{ $latestMetric->load_average_1 }}, {{ $latestMetric->load_average_5 }}, {{ $latestMetric->load_average_15 }}
+                    <span class="text-gray-400 dark:text-gray-500">(1m, 5m, 15m)</span>
                 </div>
             </div>
 
             <!-- Memory Usage Card -->
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 transition-colors">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 transition-colors group"
+                 title="RAM usage percentage. Under 60% is healthy, 60-80% is moderate, above 80% may cause swapping and slow performance.">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Memory Usage</h3>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                        Memory Usage
+                        <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-[10px] font-normal cursor-help opacity-0 group-hover:opacity-100 transition-opacity"
+                              title="Memory (RAM) is used for running applications. When full, the system uses slower disk swap.">?</span>
+                    </h3>
                     <div class="p-3 rounded-xl
                         @if($latestMetric->memory_usage > 80) bg-red-100 dark:bg-red-900/30
                         @elseif($latestMetric->memory_usage > 60) bg-yellow-100 dark:bg-yellow-900/30
@@ -186,9 +198,14 @@
             </div>
 
             <!-- Disk Usage Card -->
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 transition-colors">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 transition-colors group"
+                 title="Storage space used on the primary disk. Under 60% is healthy, 60-80% needs monitoring, above 80% requires cleanup or expansion.">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Disk Usage</h3>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                        Disk Usage
+                        <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-[10px] font-normal cursor-help opacity-0 group-hover:opacity-100 transition-opacity"
+                              title="Disk space stores files, databases, and logs. Running out of disk space can crash services.">?</span>
+                    </h3>
                     <div class="p-3 rounded-xl
                         @if($latestMetric->disk_usage > 80) bg-red-100 dark:bg-red-900/30
                         @elseif($latestMetric->disk_usage > 60) bg-yellow-100 dark:bg-yellow-900/30
@@ -252,7 +269,8 @@
         <!-- Network Stats -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <!-- Network In -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 transition-colors">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 transition-colors cursor-help"
+                 title="Total data received by the server since boot. This includes all incoming traffic from users, API calls, downloads, and system updates.">
                 <div class="flex items-center gap-4">
                     <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl">
                         <svg class="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -260,7 +278,10 @@
                         </svg>
                     </div>
                     <div>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Network In (Total)</p>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                            Network In (Total)
+                            <span class="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 text-[9px]">?</span>
+                        </p>
                         <p class="text-2xl font-bold text-gray-900 dark:text-white">
                             {{ number_format($latestMetric->network_in_bytes / 1024 / 1024 / 1024, 2) }} GB
                         </p>
@@ -269,7 +290,8 @@
             </div>
 
             <!-- Network Out -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 transition-colors">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 transition-colors cursor-help"
+                 title="Total data sent by the server since boot. This includes all outgoing traffic like web pages served, API responses, uploads, and backups.">
                 <div class="flex items-center gap-4">
                     <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
                         <svg class="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -277,7 +299,10 @@
                         </svg>
                     </div>
                     <div>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Network Out (Total)</p>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                            Network Out (Total)
+                            <span class="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 text-[9px]">?</span>
+                        </p>
                         <p class="text-2xl font-bold text-gray-900 dark:text-white">
                             {{ number_format($latestMetric->network_out_bytes / 1024 / 1024 / 1024, 2) }} GB
                         </p>

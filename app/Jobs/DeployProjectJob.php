@@ -212,6 +212,9 @@ class DeployProjectJob implements ShouldQueue
 
         // Build SSH command helper for running commands as root on the server
         $server = $project->server;
+        if ($server === null) {
+            throw new \RuntimeException('Project does not have an associated server');
+        }
         $sshPrefix = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 {$server->username}@{$server->ip_address}";
 
         // Check if repository already exists (via SSH to ensure we check server state)

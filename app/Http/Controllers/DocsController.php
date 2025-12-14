@@ -96,7 +96,7 @@ class DocsController extends Controller
      */
     public function search(Request $request)
     {
-        $query = $request->input('q', '');
+        $query = (string) $request->input('q', '');
 
         if (strlen($query) < 2) {
             return response()->json([

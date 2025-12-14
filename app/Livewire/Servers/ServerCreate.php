@@ -146,6 +146,9 @@ class ServerCreate extends Component
             ? 'Server added successfully and is online!'
             : 'Server added but appears offline. Check SSH credentials.';
 
+        $this->dispatch('toast', type: $isReachable ? 'success' : 'warning', message: $message);
+        session()->flash($isReachable ? 'success' : 'warning', $message);
+
         $this->redirect(route('servers.show', $server), navigate: true);
     }
 

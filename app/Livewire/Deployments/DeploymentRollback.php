@@ -129,7 +129,7 @@ class DeploymentRollback extends Component
                 'current' => [
                     'commit' => $currentDeployment->commit_hash ? substr($currentDeployment->commit_hash, 0, 7) : 'N/A',
                     'message' => $currentDeployment->commit_message ?? 'No message',
-                    'date' => $currentDeployment->created_at->format('M d, Y H:i'),
+                    'date' => $currentDeployment->created_at?->format('M d, Y H:i') ?? 'Unknown',
                 ],
                 'target' => [
                     'commit' => $targetDeployment->commit_hash ? substr($targetDeployment->commit_hash, 0, 7) : 'N/A',

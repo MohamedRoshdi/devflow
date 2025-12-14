@@ -42,10 +42,128 @@
         </div>
     @endif
 
-    {{-- Error Message --}}
+    {{-- Enhanced Error Message with User-Friendly Context --}}
     @if ($error)
-        <div class="mb-6 bg-gradient-to-r from-red-500/20 to-red-600/20 dark:from-red-500/30 dark:to-red-600/30 border border-red-200 dark:border-red-700 text-red-800 dark:text-red-400 px-4 py-3 rounded-lg backdrop-blur-sm">
-            {{ $error }}
+        @php
+            // Parse error message and provide user-friendly context
+            $errorLower = strtolower($error);
+            $errorType = 'general';
+            $errorTitle = 'Operation Failed';
+            $suggestion = '';
+            $icon = 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z';
+
+            // Connection/SSH errors
+            if (str_contains($errorLower, 'connection') || str_contains($errorLower, 'ssh') || str_contains($errorLower, 'refused') || str_contains($errorLower, 'timed out')) {
+                $errorType = 'connection';
+                $errorTitle = 'Connection Failed';
+                $suggestion = 'The server may be offline or unreachable. Check the server status and network connectivity, then try again.';
+                $icon = 'M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.167a1 1 0 111.414 1.414m-1.414-1.414L3 3m8.293 8.293l1.414 1.414';
+            }
+            // Docker not running
+            elseif (str_contains($errorLower, 'docker daemon') || str_contains($errorLower, 'not running') || str_contains($errorLower, 'socket')) {
+                $errorType = 'docker-down';
+                $errorTitle = 'Docker Not Running';
+                $suggestion = 'Docker service is not running on this server. Please start Docker with "sudo systemctl start docker" or contact your server administrator.';
+                $icon = 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636';
+            }
+            // Permission denied
+            elseif (str_contains($errorLower, 'permission') || str_contains($errorLower, 'access denied') || str_contains($errorLower, 'forbidden')) {
+                $errorType = 'permission';
+                $errorTitle = 'Permission Denied';
+                $suggestion = 'You may not have sufficient permissions for this operation. Ensure the SSH user has Docker access (is in the docker group).';
+                $icon = 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z';
+            }
+            // Resource in use
+            elseif (str_contains($errorLower, 'in use') || str_contains($errorLower, 'being used') || str_contains($errorLower, 'conflict')) {
+                $errorType = 'in-use';
+                $errorTitle = 'Resource In Use';
+                $suggestion = 'This resource is currently being used by a running container. Stop the container first, then try again.';
+                $icon = 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z';
+            }
+            // Image not found
+            elseif (str_contains($errorLower, 'no such image') || str_contains($errorLower, 'image not found')) {
+                $errorType = 'not-found';
+                $errorTitle = 'Image Not Found';
+                $suggestion = 'The image was not found. It may have already been deleted or the reference is incorrect. Refresh to update the list.';
+                $icon = 'M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z';
+            }
+            // Volume/Network not found
+            elseif (str_contains($errorLower, 'no such volume') || str_contains($errorLower, 'no such network')) {
+                $errorType = 'not-found';
+                $errorTitle = 'Resource Not Found';
+                $suggestion = 'The resource was not found. It may have already been deleted. Refresh to update the list.';
+                $icon = 'M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z';
+            }
+            // Default suggestion for general errors
+            else {
+                $suggestion = 'An unexpected error occurred. Please check the server logs for more details or try refreshing the data.';
+            }
+        @endphp
+        <div class="mb-6 bg-gradient-to-r from-red-500/10 to-red-600/10 dark:from-red-500/20 dark:to-red-600/20 border border-red-200 dark:border-red-700 rounded-xl overflow-hidden">
+            <div class="p-4">
+                <div class="flex items-start gap-4">
+                    {{-- Error Icon --}}
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $icon }}"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    {{-- Error Content --}}
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-lg font-semibold text-red-800 dark:text-red-300 flex items-center gap-2">
+                            {{ $errorTitle }}
+                            <span class="text-xs font-normal px-2 py-0.5 bg-red-200 dark:bg-red-800 text-red-700 dark:text-red-300 rounded-full">{{ $errorType }}</span>
+                        </h4>
+
+                        {{-- Technical Error (Collapsible) --}}
+                        <div x-data="{ showDetails: false }" class="mt-2">
+                            <button @click="showDetails = !showDetails" class="text-sm text-red-600 dark:text-red-400 hover:underline flex items-center gap-1">
+                                <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-90': showDetails }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                                <span x-text="showDetails ? 'Hide technical details' : 'Show technical details'"></span>
+                            </button>
+                            <div x-show="showDetails" x-collapse class="mt-2 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+                                <code class="text-xs text-red-700 dark:text-red-300 break-all font-mono">{{ $error }}</code>
+                            </div>
+                        </div>
+
+                        {{-- User-Friendly Suggestion --}}
+                        @if($suggestion)
+                            <div class="mt-3 flex items-start gap-2 text-sm text-red-700 dark:text-red-300">
+                                <svg class="w-5 h-5 flex-shrink-0 mt-0.5 text-red-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                                </svg>
+                                <span>{{ $suggestion }}</span>
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- Action Buttons --}}
+                    <div class="flex-shrink-0 flex flex-col gap-2">
+                        <button wire:click="loadDockerInfo"
+                                wire:loading.attr="disabled"
+                                wire:target="loadDockerInfo"
+                                class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2">
+                            <svg wire:loading.remove wire:target="loadDockerInfo" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            <svg wire:loading wire:target="loadDockerInfo" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span wire:loading.remove wire:target="loadDockerInfo">Retry</span>
+                            <span wire:loading wire:target="loadDockerInfo">Retrying...</span>
+                        </button>
+                        <button wire:click="$set('error', null)" class="px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 text-sm font-medium rounded-lg transition-colors">
+                            Dismiss
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     @endif
 

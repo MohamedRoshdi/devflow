@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Models\Project;
 use App\Models\Server;
+use App\Services\Health\ProjectHealthScorer;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
@@ -19,8 +20,19 @@ use Illuminate\Support\Facades\Cache;
 class ProjectHealthService
 {
     public function __construct(
-        private readonly DockerService $dockerService
+        private readonly DockerService $dockerService,
+        private readonly ProjectHealthScorer $healthScorer
     ) {}
+
+    /**
+     * Health check cache TTL in seconds (5 minutes)
+     */
+    private const HEALTH_CHECK_CACHE_TTL = 300;
+
+    /**
+     * Docker status cache TTL in seconds (2 minutes)
+     */
+    private const DOCKER_STATUS_CACHE_TTL = 120;
 
     /**
      * Check health of all projects
@@ -34,7 +46,7 @@ class ProjectHealthService
         }])->get()->map(function (Project $project) {
             $cacheKey = "project_health_{$project->id}";
 
-            return Cache::remember($cacheKey, 60, function () use ($project) {
+            return Cache::remember($cacheKey, self::HEALTH_CHECK_CACHE_TTL, function () use ($project) {
                 return $this->checkProject($project);
             });
         });
@@ -43,7 +55,7 @@ class ProjectHealthService
     /**
      * Check health of a single project
      *
-     * @return array{project: Project, status: string, checks: array, health_score: int, issues: array}
+     * @return array{id: int, name: string, slug: string, status: string, server_name: string, checks: array, health_score: int, issues: array<int, string>, last_checked: string}
      */
     public function checkProject(Project $project): array
     {
@@ -56,8 +68,8 @@ class ProjectHealthService
         ];
 
         $issues = $this->collectIssues($checks, $project);
-        $healthScore = $this->calculateHealthScore($checks, $project);
-        $status = $this->determineOverallStatus($healthScore);
+        $healthScore = $this->healthScorer->calculateOverallScore($checks, $project);
+        $status = $this->healthScorer->determineOverallStatus($healthScore);
 
         return [
             'id' => $project->id,
@@ -68,7 +80,7 @@ class ProjectHealthService
             'checks' => $checks,
             'health_score' => $healthScore,
             'issues' => $issues,
-            'last_checked' => now()->toISOString(),
+            'last_checked' => (string) now()->toISOString(),
         ];
     }
 
@@ -93,7 +105,7 @@ class ProjectHealthService
         try {
             $startTime = microtime(true);
             $response = Http::timeout(config('devflow.timeouts.health_check', 10))->get($url);
-            $responseTime = round((microtime(true) - $startTime) * 1000); // ms
+            $responseTime = (int) round((microtime(true) - $startTime) * 1000); // ms
 
             $status = $response->successful() ? 'healthy' : 'unhealthy';
 
@@ -161,8 +173,10 @@ class ProjectHealthService
 
     /**
      * Perform actual SSL certificate check
+     *
+     * @param \App\Models\Domain $domain
      */
-    private function performSSLCheck($domain): array
+    private function performSSLCheck(\App\Models\Domain $domain): array
     {
         try {
             $streamContext = stream_context_create([
@@ -230,11 +244,25 @@ class ProjectHealthService
     }
 
     /**
-     * Check Docker container health
+     * Check Docker container health (cached per project)
      *
      * @return array{status: string, running: bool, containers: array|null, error: string|null}
      */
     private function checkDockerHealth(Project $project): array
+    {
+        $cacheKey = "docker_health_{$project->id}";
+
+        return Cache::remember($cacheKey, self::DOCKER_STATUS_CACHE_TTL, function () use ($project) {
+            return $this->performDockerHealthCheck($project);
+        });
+    }
+
+    /**
+     * Perform actual Docker health check
+     *
+     * @return array{status: string, running: bool, containers: array|null, error: string|null}
+     */
+    private function performDockerHealthCheck(Project $project): array
     {
         try {
             $containerStatus = $this->dockerService->getContainerStatus($project);
@@ -355,7 +383,7 @@ class ProjectHealthService
 
         return [
             'status' => $status,
-            'last_deployment' => $lastDeployment->created_at->diffForHumans(),
+            'last_deployment' => $lastDeployment->created_at?->diffForHumans(),
             'last_status' => $lastDeployment->status,
             'error' => $lastDeployment->status === 'failed' ? 'Last deployment failed' : null,
         ];
@@ -415,72 +443,6 @@ class ProjectHealthService
         return $issues;
     }
 
-    /**
-     * Calculate overall health score (0-100)
-     */
-    private function calculateHealthScore(array $checks, Project $project): int
-    {
-        $score = 100;
-
-        // Deduct for HTTP issues
-        if ($checks['http']['status'] === 'unreachable') {
-            $score -= 40;
-        } elseif ($checks['http']['status'] === 'unhealthy') {
-            $score -= 20;
-        }
-
-        // Deduct for slow response time
-        if (isset($checks['http']['response_time']) && $checks['http']['response_time'] > 2000) {
-            $score -= 10;
-        }
-
-        // Deduct for SSL issues
-        if ($checks['ssl']['status'] === 'expired') {
-            $score -= 30;
-        } elseif ($checks['ssl']['status'] === 'expiring_soon') {
-            $score -= 10;
-        }
-
-        // Deduct for Docker issues
-        if ($checks['docker']['status'] === 'stopped') {
-            $score -= 30;
-        } elseif ($checks['docker']['status'] === 'error') {
-            $score -= 20;
-        }
-
-        // Deduct for disk issues
-        if ($checks['disk']['status'] === 'critical') {
-            $score -= 20;
-        } elseif ($checks['disk']['status'] === 'warning') {
-            $score -= 10;
-        }
-
-        // Deduct for deployment issues
-        if ($checks['deployment']['status'] === 'failed') {
-            $score -= 20;
-        }
-
-        // Deduct for project status
-        if ($project->status !== 'running') {
-            $score -= 30;
-        }
-
-        return max(0, min(100, $score));
-    }
-
-    /**
-     * Determine overall status based on health score
-     */
-    private function determineOverallStatus(int $healthScore): string
-    {
-        if ($healthScore >= 80) {
-            return 'healthy';
-        } elseif ($healthScore >= 50) {
-            return 'warning';
-        } else {
-            return 'critical';
-        }
-    }
 
     /**
      * Check health of a server
@@ -496,8 +458,8 @@ class ProjectHealthService
         ];
 
         $issues = $this->collectServerIssues($checks, $server);
-        $healthScore = $this->calculateServerHealthScore($checks, $server);
-        $status = $this->determineOverallStatus($healthScore);
+        $healthScore = $this->healthScorer->calculateServerHealthScore($checks, $server);
+        $status = $this->healthScorer->determineOverallStatus($healthScore);
 
         return [
             'id' => $server->id,
@@ -507,7 +469,7 @@ class ProjectHealthService
             'health_score' => $healthScore,
             'checks' => $checks,
             'issues' => $issues,
-            'last_checked' => now()->toISOString(),
+            'last_checked' => (string) now()->toISOString(),
         ];
     }
 
@@ -614,35 +576,6 @@ class ProjectHealthService
         return $issues;
     }
 
-    /**
-     * Calculate server health score
-     */
-    private function calculateServerHealthScore(array $checks, Server $server): int
-    {
-        $score = 100;
-
-        if ($checks['connectivity']['status'] === 'offline') {
-            $score -= 50;
-        }
-
-        if (isset($checks['resources']['cpu_usage']) && $checks['resources']['cpu_usage'] > 80) {
-            $score -= ($checks['resources']['cpu_usage'] - 80) / 2;
-        }
-
-        if (isset($checks['resources']['memory_usage']) && $checks['resources']['memory_usage'] > 80) {
-            $score -= ($checks['resources']['memory_usage'] - 80) / 2;
-        }
-
-        if (isset($checks['resources']['disk_usage']) && $checks['resources']['disk_usage'] > 80) {
-            $score -= ($checks['resources']['disk_usage'] - 80) / 2;
-        }
-
-        if ($checks['docker']['status'] === 'not_installed') {
-            $score -= 20;
-        }
-
-        return max(0, min(100, (int) $score));
-    }
 
     /**
      * Invalidate health check cache for a project
@@ -650,6 +583,7 @@ class ProjectHealthService
     public function invalidateProjectCache(Project $project): void
     {
         Cache::forget("project_health_{$project->id}");
+        Cache::forget("docker_health_{$project->id}");
     }
 
     /**
@@ -662,5 +596,52 @@ class ProjectHealthService
                 $this->invalidateProjectCache($project);
             }
         });
+    }
+
+    /**
+     * Get cached health data or return stale data with async refresh
+     *
+     * Returns cached data immediately if available, and dispatches
+     * an async job to refresh if cache is stale.
+     *
+     * @return array|null
+     */
+    public function getCachedHealthOrRefreshAsync(Project $project): ?array
+    {
+        $cacheKey = "project_health_{$project->id}";
+        $cachedData = Cache::get($cacheKey);
+
+        if ($cachedData === null) {
+            // No cached data, dispatch async job and return null
+            \App\Jobs\CheckProjectHealthJob::dispatchForProject($project);
+
+            return null;
+        }
+
+        return $cachedData;
+    }
+
+    /**
+     * Check if health data exists in cache
+     */
+    public function hasHealthCache(Project $project): bool
+    {
+        return Cache::has("project_health_{$project->id}");
+    }
+
+    /**
+     * Dispatch async health check for a project
+     */
+    public function dispatchAsyncHealthCheck(Project $project): void
+    {
+        \App\Jobs\CheckProjectHealthJob::dispatchForProject($project);
+    }
+
+    /**
+     * Dispatch async health checks for all running projects
+     */
+    public function dispatchAllAsyncHealthChecks(): void
+    {
+        \App\Jobs\CheckProjectHealthJob::dispatchForAllProjects();
     }
 }

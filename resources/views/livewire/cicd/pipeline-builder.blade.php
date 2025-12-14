@@ -194,11 +194,40 @@
                                         </div>
                                     </div>
                                 @empty
-                                    <div class="text-center py-12 text-gray-400 dark:text-gray-500">
-                                        <svg class="mx-auto h-12 w-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
-                                        </svg>
-                                        <p class="text-sm">No stages yet</p>
+                                    {{-- Enhanced Empty State per Column --}}
+                                    <div class="text-center py-10 px-4">
+                                        <div class="relative inline-block mb-4">
+                                            <div class="absolute inset-0 bg-{{ $config['color'] }}-500/10 rounded-full blur-xl"></div>
+                                            <div class="relative p-4 bg-{{ $config['color'] }}-100/50 dark:bg-{{ $config['color'] }}-900/30 rounded-2xl">
+                                                @if($config['icon'] === 'gear')
+                                                    <svg class="w-10 h-10 text-{{ $config['color'] }}-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    </svg>
+                                                @elseif($config['icon'] === 'rocket')
+                                                    <svg class="w-10 h-10 text-{{ $config['color'] }}-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                                    </svg>
+                                                @else
+                                                    <svg class="w-10 h-10 text-{{ $config['color'] }}-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                    </svg>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <h4 class="text-base font-semibold text-gray-700 dark:text-gray-200 mb-2">No {{ $config['title'] }} Stages</h4>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                                            @if($type === 'pre_deploy')
+                                                Add steps that run before deployment, like installing dependencies or running tests.
+                                            @elseif($type === 'deploy')
+                                                Add the main deployment steps like pulling code, building assets, or running migrations.
+                                            @else
+                                                Add steps that run after deployment, like clearing caches or sending notifications.
+                                            @endif
+                                        </p>
+                                        <p class="text-xs text-gray-400 dark:text-gray-500">
+                                            Click the button below or use a template to get started.
+                                        </p>
                                     </div>
                                 @endforelse
                             </div>

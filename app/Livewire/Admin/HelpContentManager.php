@@ -131,7 +131,8 @@ class HelpContentManager extends Component
     #[Computed]
     public function stats(): array
     {
-        return Cache::remember('help_content_stats', 300, function () {
+        /** @var array{total: int, active: int, most_viewed: HelpContent|null, most_helpful: HelpContent|null} */
+        return Cache::remember('help_content_stats', 300, function (): array {
             return [
                 'total' => HelpContent::count(),
                 'active' => HelpContent::where('is_active', true)->count(),
@@ -151,7 +152,8 @@ class HelpContentManager extends Component
     #[Computed]
     public function categories(): \Illuminate\Support\Collection
     {
-        return Cache::remember('help_content_categories', 300, function () {
+        /** @var \Illuminate\Support\Collection<int, string> */
+        return Cache::remember('help_content_categories', 300, function (): \Illuminate\Support\Collection {
             return HelpContent::query()
                 ->select('category')
                 ->distinct()

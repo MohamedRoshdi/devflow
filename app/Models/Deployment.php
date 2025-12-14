@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Mappers\HealthScoreMapper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -103,24 +104,12 @@ class Deployment extends Model
 
     public function getStatusColorAttribute(): string
     {
-        return match ($this->status) {
-            'success' => 'green',
-            'failed' => 'red',
-            'running' => 'yellow',
-            'pending' => 'blue',
-            default => 'gray',
-        };
+        return HealthScoreMapper::statusToColor($this->status);
     }
 
     public function getStatusIconAttribute(): string
     {
-        return match ($this->status) {
-            'success' => 'check-circle',
-            'failed' => 'x-circle',
-            'running' => 'arrow-path',
-            'pending' => 'clock',
-            default => 'question-mark-circle',
-        };
+        return HealthScoreMapper::statusToIcon($this->status);
     }
 
     // New collaboration relationships

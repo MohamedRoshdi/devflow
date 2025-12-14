@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Mappers\HealthScoreMapper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -321,13 +322,7 @@ class Project extends Model
 
     public function getStatusColorAttribute(): string
     {
-        return match ($this->status) {
-            'running' => 'green',
-            'stopped' => 'red',
-            'building' => 'yellow',
-            'error' => 'red',
-            default => 'gray',
-        };
+        return HealthScoreMapper::statusToColor($this->status);
     }
 
     /**

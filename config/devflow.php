@@ -252,4 +252,179 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Logging Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure logging behavior for DevFlow Pro operations.
+    |
+    */
+
+    'logging' => [
+        // Log retention period (in days)
+        'retention_days' => (int) env('LOG_RETENTION_DAYS', 90),
+
+        // Log level for DevFlow operations
+        'level' => env('LOG_LEVEL', 'info'),
+
+        // Enable detailed deployment logging
+        'detailed_deployment' => (bool) env('DEVFLOW_DETAILED_DEPLOYMENT_LOGS', true),
+
+        // Enable Docker command logging
+        'docker_commands' => (bool) env('DEVFLOW_LOG_DOCKER_COMMANDS', true),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Metrics & Analytics Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Settings for metrics collection and retention.
+    |
+    */
+
+    'metrics' => [
+        // Metrics retention period (in days)
+        'retention_days' => (int) env('METRICS_RETENTION_DAYS', 30),
+
+        // Enable performance metrics collection
+        'performance_tracking' => (bool) env('DEVFLOW_METRICS_PERFORMANCE', true),
+
+        // Enable resource usage tracking
+        'resource_tracking' => (bool) env('DEVFLOW_METRICS_RESOURCES', true),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Security Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Security-related settings for DevFlow Pro.
+    |
+    */
+
+    'security' => [
+        // Enable webhook signature verification
+        'verify_webhook_signatures' => (bool) env('DEVFLOW_VERIFY_WEBHOOKS', true),
+
+        // Enable two-factor authentication requirement
+        'require_2fa' => (bool) env('DEVFLOW_REQUIRE_2FA', false),
+
+        // Enable IP whitelisting for admin functions
+        'ip_whitelist_enabled' => (bool) env('DEVFLOW_IP_WHITELIST_ENABLED', false),
+
+        // Allowed IP addresses for admin functions (comma-separated)
+        'allowed_ips' => explode(',', env('DEVFLOW_ALLOWED_IPS', '')),
+
+        // Enable audit logging
+        'audit_logging' => (bool) env('DEVFLOW_AUDIT_LOGGING', true),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Framework Support Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Default settings for different framework types.
+    |
+    */
+
+    'frameworks' => [
+        'laravel' => [
+            'default_php_version' => env('DEVFLOW_LARAVEL_DEFAULT_PHP', '8.4'),
+            'required_extensions' => ['pdo', 'mbstring', 'xml', 'curl', 'zip', 'gd'],
+            'optimization_commands' => [
+                'composer install --optimize-autoloader --no-dev',
+                'php artisan config:cache',
+                'php artisan route:cache',
+                'php artisan view:cache',
+                'php artisan migrate --force',
+            ],
+        ],
+        'symfony' => [
+            'default_php_version' => env('DEVFLOW_SYMFONY_DEFAULT_PHP', '8.4'),
+            'required_extensions' => ['pdo', 'mbstring', 'xml', 'curl', 'intl'],
+            'optimization_commands' => [
+                'composer install --optimize-autoloader --no-dev',
+                'php bin/console cache:clear --env=prod',
+                'php bin/console doctrine:migrations:migrate --no-interaction',
+            ],
+        ],
+        'wordpress' => [
+            'default_php_version' => env('DEVFLOW_WORDPRESS_DEFAULT_PHP', '8.2'),
+            'required_extensions' => ['mysqli', 'curl', 'gd', 'imagick', 'zip', 'xmlrpc'],
+        ],
+        'shopware' => [
+            'default_php_version' => env('DEVFLOW_SHOPWARE_DEFAULT_PHP', '8.3'),
+            'required_extensions' => ['pdo', 'mbstring', 'xml', 'curl', 'gd', 'intl', 'zip'],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Maintenance Mode Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Settings for maintenance mode during deployments.
+    |
+    */
+
+    'maintenance' => [
+        // Enable automatic maintenance mode during deployments
+        'auto_enable' => (bool) env('DEVFLOW_AUTO_MAINTENANCE_MODE', true),
+
+        // Custom maintenance page template
+        'template' => env('DEVFLOW_MAINTENANCE_TEMPLATE', 'default'),
+
+        // Allowed IPs during maintenance (comma-separated)
+        'allowed_ips' => explode(',', env('DEVFLOW_MAINTENANCE_ALLOWED_IPS', '')),
+
+        // Retry after (in seconds)
+        'retry_after' => (int) env('DEVFLOW_MAINTENANCE_RETRY_AFTER', 60),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Rollback Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Settings for deployment rollback functionality.
+    |
+    */
+
+    'rollback' => [
+        // Enable automatic rollback on deployment failure
+        'auto_rollback' => (bool) env('DEVFLOW_AUTO_ROLLBACK', true),
+
+        // Maximum number of rollback attempts
+        'max_attempts' => (int) env('DEVFLOW_MAX_ROLLBACK_ATTEMPTS', 3),
+
+        // Rollback timeout (in seconds)
+        'timeout' => (int) env('DEVFLOW_ROLLBACK_TIMEOUT', 300),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Storage Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Settings for project storage and cleanup.
+    |
+    */
+
+    'storage' => [
+        // Enable automatic cleanup of old artifacts
+        'auto_cleanup' => (bool) env('DEVFLOW_AUTO_CLEANUP', true),
+
+        // Cleanup retention period (in days)
+        'cleanup_retention_days' => (int) env('DEVFLOW_CLEANUP_RETENTION_DAYS', 7),
+
+        // Disk space warning threshold (in GB)
+        'disk_space_warning_gb' => (int) env('DEVFLOW_DISK_SPACE_WARNING_GB', 10),
+
+        // Disk space critical threshold (in GB)
+        'disk_space_critical_gb' => (int) env('DEVFLOW_DISK_SPACE_CRITICAL_GB', 5),
+    ],
+
 ];

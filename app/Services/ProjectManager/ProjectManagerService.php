@@ -258,8 +258,8 @@ class ProjectManagerService
                 $composeResult = $this->dockerService->deployWithCompose($project);
                 $result = [
                     'success' => $composeResult['success'] ?? false,
-                    'output' => $composeResult['output'] ?? null,
-                    'error' => $composeResult['error'] ?? null,
+                    'output' => $composeResult['output'] ?? '',
+                    'error' => $composeResult['error'] ?? '',
                 ];
             } else {
                 // Build and start standalone container
@@ -267,16 +267,16 @@ class ProjectManagerService
                 if (!$buildResult['success']) {
                     return [
                         'success' => false,
-                        'output' => $buildResult['output'] ?? null,
-                        'error' => $buildResult['error'] ?? null,
+                        'output' => $buildResult['output'] ?? '',
+                        'error' => $buildResult['error'] ?? '',
                     ];
                 }
 
                 $startResult = $this->dockerService->startContainer($project);
                 $result = [
                     'success' => $startResult['success'] ?? false,
-                    'output' => $startResult['output'] ?? null,
-                    'error' => $startResult['error'] ?? null,
+                    'output' => $startResult['output'] ?? '',
+                    'error' => $startResult['error'] ?? '',
                 ];
             }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Mappers\HealthScoreMapper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -98,19 +99,14 @@ class Domain extends Model
     public function getStatusColorAttribute(): string
     {
         if ($this->sslIsExpired()) {
-            return 'red';
+            return HealthScoreMapper::COLOR_RED;
         }
 
         if ($this->sslExpiresSoon()) {
-            return 'yellow';
+            return HealthScoreMapper::COLOR_YELLOW;
         }
 
-        return match ($this->status) {
-            'active' => 'green',
-            'inactive' => 'gray',
-            'pending' => 'yellow',
-            default => 'gray',
-        };
+        return HealthScoreMapper::statusToColor($this->status);
     }
 
     /**

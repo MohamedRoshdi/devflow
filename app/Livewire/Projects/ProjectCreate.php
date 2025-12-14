@@ -274,7 +274,8 @@ class ProjectCreate extends Component
         $this->showProgressModal = true;
 
         $this->dispatch('project-created');
-        session()->flash('message', 'Project created successfully on port '.$port.'!');
+        $this->dispatch('toast', type: 'success', message: 'Project created successfully on port '.$port.'!');
+        session()->flash('success', 'Project created successfully on port '.$port.'!');
     }
 
     /** @return array<string, bool> */

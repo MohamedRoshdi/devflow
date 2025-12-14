@@ -81,7 +81,7 @@ class StoreDomainRequest extends FormRequest
         // Convert domain to lowercase for consistency
         if ($this->has('domain')) {
             $this->merge([
-                'domain' => strtolower($this->input('domain')),
+                'domain' => strtolower((string) $this->input('domain')),
             ]);
         }
 

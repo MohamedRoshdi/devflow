@@ -149,7 +149,8 @@ class ProjectTemplateManager extends Component
         $this->install_commands = $template->install_commands ?? [];
         $this->build_commands = $template->build_commands ?? [];
         $this->post_deploy_commands = $template->post_deploy_commands ?? [];
-        $this->env_template = $template->env_template ?? [];
+        $envTemplate = $template->env_template ?? [];
+        $this->env_template = is_array($envTemplate) ? array_map('strval', $envTemplate) : [];
         $this->docker_compose_template = $template->docker_compose_template ?? '';
         $this->dockerfile_template = $template->dockerfile_template ?? '';
 

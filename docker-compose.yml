@@ -1,33 +1,410 @@
+# DevFlow Pro - Production Docker Compose Configuration
+# Laravel 12 | PHP 8.4 | PostgreSQL 16 | Redis 7 | Nginx
+# Multi-Project Deployment & Management System
+
 version: '3.8'
 
 services:
-  app:
-    image: php:8.4-cli
-    working_dir: /var/www/html
-    volumes:
-      - .:/var/www/html
-    command: tail -f /dev/null
+  # ================================
+  # PostgreSQL Database Service
+  # ================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: devflow_postgres
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT:-5432}:5432"
     environment:
-      - APP_ENV=testing
-      - DB_CONNECTION=sqlite
-      - DB_DATABASE=:memory:
-      - CACHE_DRIVER=array
-      - SESSION_DRIVER=array
-      - QUEUE_CONNECTION=sync
+      POSTGRES_DB: ${DB_DATABASE:-devflow_pro}
+      POSTGRES_USER: ${DB_USERNAME:-devflow}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Database password required}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      # Performance tuning
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=en_US.UTF-8"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+      # PostgreSQL configuration for production
+      - ./docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    networks:
+      - devflow_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-devflow} -d ${DB_DATABASE:-devflow_pro}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
-  test:
+  # ================================
+  # Redis Cache & Queue Service
+  # ================================
+  redis:
+    image: redis:7-alpine
+    container_name: devflow_redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    command: >
+      redis-server
+      --appendonly yes
+      --appendfsync everysec
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      ${REDIS_PASSWORD:+--requirepass ${REDIS_PASSWORD}}
+    volumes:
+      - redis_data:/data
+    networks:
+      - devflow_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ================================
+  # DevFlow Pro Application (PHP-FPM)
+  # ================================
+  app:
     build:
       context: .
-      dockerfile: Dockerfile.test
+      dockerfile: Dockerfile
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.4}
+        INSTALL_XDEBUG: ${INSTALL_XDEBUG:-false}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+      target: production
+    container_name: devflow_app
+    restart: unless-stopped
     working_dir: /var/www/html
     volumes:
-      - .:/var/www/html
+      # Application code (read-only in production for security)
+      - .:/var/www/html:delegated
+      # Writable directories
+      - storage_data:/var/www/html/storage
+      - bootstrap_cache:/var/www/html/bootstrap/cache
+      # Docker socket for managing other containers
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # DevFlow managed projects
+      - ${PROJECTS_PATH:-/opt/devflow/projects}:/opt/devflow/projects
+      - ${BACKUPS_PATH:-/opt/devflow/backups}:/opt/devflow/backups
+      - ${LOGS_PATH:-/opt/devflow/logs}:/opt/devflow/logs
+      - ${SSL_PATH:-/opt/devflow/ssl}:/opt/devflow/ssl
     environment:
-      - APP_ENV=testing
-      - APP_KEY=base64:I3WSB7wRH6xiI8KOmAZF3U8PA1M41PpGstglNw+PnJY=
-      - DB_CONNECTION=sqlite
-      - DB_DATABASE=:memory:
-      - CACHE_DRIVER=array
-      - SESSION_DRIVER=array
-      - QUEUE_CONNECTION=sync
-      - TELESCOPE_ENABLED=false
+      # Laravel Application
+      - APP_NAME=${APP_NAME:-DevFlow Pro}
+      - APP_ENV=${APP_ENV:-production}
+      - APP_KEY=${APP_KEY:?Application key required}
+      - APP_DEBUG=${APP_DEBUG:-false}
+      - APP_URL=${APP_URL:-http://localhost}
+
+      # Database Configuration
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=${DB_DATABASE:-devflow_pro}
+      - DB_USERNAME=${DB_USERNAME:-devflow}
+      - DB_PASSWORD=${DB_PASSWORD}
+
+      # Redis Configuration
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - REDIS_PREFIX=${REDIS_PREFIX:-devflow_}
+
+      # Cache & Session
+      - CACHE_STORE=redis
+      - SESSION_DRIVER=redis
+      - SESSION_LIFETIME=120
+
+      # Queue Configuration
+      - QUEUE_CONNECTION=redis
+
+      # Mail Configuration
+      - MAIL_MAILER=${MAIL_MAILER:-smtp}
+      - MAIL_HOST=${MAIL_HOST:-mailhog}
+      - MAIL_PORT=${MAIL_PORT:-1025}
+      - MAIL_USERNAME=${MAIL_USERNAME:-}
+      - MAIL_PASSWORD=${MAIL_PASSWORD:-}
+      - MAIL_ENCRYPTION=${MAIL_ENCRYPTION:-}
+      - MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS:-noreply@devflow.pro}
+      - MAIL_FROM_NAME=${MAIL_FROM_NAME:-DevFlow Pro}
+
+      # Logging
+      - LOG_CHANNEL=${LOG_CHANNEL:-stack}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+
+      # Filesystem
+      - FILESYSTEM_DISK=${FILESYSTEM_DISK:-local}
+
+      # DevFlow Specific
+      - PROJECTS_PATH=/opt/devflow/projects
+      - BACKUPS_PATH=/opt/devflow/backups
+      - LOGS_PATH=/opt/devflow/logs
+      - SSL_PATH=/opt/devflow/ssl
+      - DOCKER_SOCKET=/var/run/docker.sock
+      - DOCKER_NETWORK=devflow_network
+
+      # PHP Configuration
+      - PHP_MEMORY_LIMIT=512M
+      - PHP_MAX_EXECUTION_TIME=300
+      - PHP_UPLOAD_MAX_FILESIZE=100M
+      - PHP_POST_MAX_SIZE=100M
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - devflow_network
+    healthcheck:
+      test: ["CMD-SHELL", "php-fpm-healthcheck || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  # ================================
+  # Nginx Web Server
+  # ================================
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: devflow_nginx
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    volumes:
+      # Application public directory
+      - ./public:/var/www/html/public:ro
+      - storage_data:/var/www/html/storage:ro
+      # Nginx configuration
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./docker/nginx/snippets:/etc/nginx/snippets:ro
+      # SSL certificates
+      - ${SSL_PATH:-/opt/devflow/ssl}:/etc/nginx/ssl:ro
+      # Logs
+      - nginx_logs:/var/log/nginx
+    environment:
+      - NGINX_HOST=${APP_URL:-localhost}
+      - NGINX_PORT=80
+    depends_on:
+      - app
+    networks:
+      - devflow_network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  # ================================
+  # Queue Worker Service
+  # ================================
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.4}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+      target: production
+    container_name: devflow_queue
+    restart: unless-stopped
+    working_dir: /var/www/html
+    command: php artisan queue:work redis --sleep=3 --tries=3 --max-time=3600 --timeout=300
+    volumes:
+      - .:/var/www/html:delegated
+      - storage_data:/var/www/html/storage
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${PROJECTS_PATH:-/opt/devflow/projects}:/opt/devflow/projects
+      - ${BACKUPS_PATH:-/opt/devflow/backups}:/opt/devflow/backups
+      - ${LOGS_PATH:-/opt/devflow/logs}:/opt/devflow/logs
+    environment:
+      - APP_NAME=${APP_NAME:-DevFlow Pro}
+      - APP_ENV=${APP_ENV:-production}
+      - APP_KEY=${APP_KEY}
+      - APP_DEBUG=${APP_DEBUG:-false}
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=${DB_DATABASE:-devflow_pro}
+      - DB_USERNAME=${DB_USERNAME:-devflow}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - QUEUE_CONNECTION=redis
+      - LOG_CHANNEL=${LOG_CHANNEL:-stack}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - devflow_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  # ================================
+  # Scheduler Service (Cron)
+  # ================================
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.4}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+      target: production
+    container_name: devflow_scheduler
+    restart: unless-stopped
+    working_dir: /var/www/html
+    entrypoint: ["/usr/local/bin/scheduler-entrypoint.sh"]
+    volumes:
+      - .:/var/www/html:delegated
+      - storage_data:/var/www/html/storage
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${PROJECTS_PATH:-/opt/devflow/projects}:/opt/devflow/projects
+      - ${BACKUPS_PATH:-/opt/devflow/backups}:/opt/devflow/backups
+      - ${LOGS_PATH:-/opt/devflow/logs}:/opt/devflow/logs
+    environment:
+      - APP_NAME=${APP_NAME:-DevFlow Pro}
+      - APP_ENV=${APP_ENV:-production}
+      - APP_KEY=${APP_KEY}
+      - APP_DEBUG=${APP_DEBUG:-false}
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=${DB_DATABASE:-devflow_pro}
+      - DB_USERNAME=${DB_USERNAME:-devflow}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - devflow_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ================================
+  # Horizon (Optional - Laravel Queue Dashboard)
+  # ================================
+  # horizon:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     target: production
+  #   container_name: devflow_horizon
+  #   restart: unless-stopped
+  #   working_dir: /var/www/html
+  #   command: php artisan horizon
+  #   volumes:
+  #     - .:/var/www/html:delegated
+  #     - storage_data:/var/www/html/storage
+  #   environment:
+  #     - APP_ENV=${APP_ENV:-production}
+  #     - APP_KEY=${APP_KEY}
+  #     - DB_CONNECTION=pgsql
+  #     - DB_HOST=postgres
+  #     - REDIS_HOST=redis
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #   networks:
+  #     - devflow_network
+
+# ================================
+# Persistent Storage Volumes
+# ================================
+volumes:
+  # Database data
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DATA_PATH:-./storage/data}/postgres
+
+  # Redis data
+  redis_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DATA_PATH:-./storage/data}/redis
+
+  # Laravel storage (logs, cache, sessions, uploads)
+  storage_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./storage
+
+  # Bootstrap cache
+  bootstrap_cache:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./bootstrap/cache
+
+  # Nginx logs
+  nginx_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${LOGS_PATH:-./storage/logs}/nginx
+
+# ================================
+# Docker Networks
+# ================================
+networks:
+  devflow_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+    driver_opts:
+      com.docker.network.bridge.name: devflow_br0
