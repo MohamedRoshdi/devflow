@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Livewire\Teams\TeamGeneralSettings;
+use App\Livewire\Teams\TeamInvitations;
 use App\Livewire\Teams\TeamList;
+use App\Livewire\Teams\TeamMemberManager;
 use App\Livewire\Teams\TeamSettings;
 use App\Models\Team;
 use App\Models\TeamInvitation;
@@ -84,7 +87,7 @@ class TeamManagementTest extends TestCase
     {
         $this->actingAs($this->owner);
 
-        Livewire::test(TeamSettings::class, ['team' => $this->team])
+        Livewire::test(TeamGeneralSettings::class, ['team' => $this->team])
             ->set('name', 'Updated Team Name')
             ->call('updateTeam')
             ->assertHasNoErrors();
@@ -107,8 +110,8 @@ class TeamManagementTest extends TestCase
 
         $this->actingAs($member);
 
-        // Member can access settings but not update
-        Livewire::test(TeamSettings::class, ['team' => $this->team])
+        // Member can access settings but not update (only owner/admin can)
+        Livewire::test(TeamGeneralSettings::class, ['team' => $this->team])
             ->set('name', 'Hacked Name')
             ->call('updateTeam')
             ->assertDispatched('notification');
@@ -168,7 +171,7 @@ class TeamManagementTest extends TestCase
 
         $this->actingAs($this->owner);
 
-        Livewire::test(TeamSettings::class, ['team' => $this->team])
+        Livewire::test(TeamInvitations::class, ['team' => $this->team])
             ->set('inviteEmail', 'newmember@example.com')
             ->set('inviteRole', 'member')
             ->call('inviteMember')
@@ -216,7 +219,7 @@ class TeamManagementTest extends TestCase
 
         $this->actingAs($this->owner);
 
-        Livewire::test(TeamSettings::class, ['team' => $this->team])
+        Livewire::test(TeamMemberManager::class, ['team' => $this->team])
             ->call('removeMember', $member->id);
 
         $this->assertDatabaseMissing('team_members', [
@@ -245,7 +248,7 @@ class TeamManagementTest extends TestCase
 
         $this->actingAs($member1);
 
-        Livewire::test(TeamSettings::class, ['team' => $this->team])
+        Livewire::test(TeamMemberManager::class, ['team' => $this->team])
             ->call('removeMember', $member2->id);
 
         // Member2 should still exist
@@ -269,7 +272,7 @@ class TeamManagementTest extends TestCase
 
         $this->actingAs($this->owner);
 
-        Livewire::test(TeamSettings::class, ['team' => $this->team])
+        Livewire::test(TeamMemberManager::class, ['team' => $this->team])
             ->call('updateRole', $member->id, 'admin');
 
         $this->assertDatabaseHas('team_members', [
@@ -286,7 +289,7 @@ class TeamManagementTest extends TestCase
         $this->actingAs($this->owner);
 
         // Owner should not be able to remove themselves
-        Livewire::test(TeamSettings::class, ['team' => $this->team])
+        Livewire::test(TeamMemberManager::class, ['team' => $this->team])
             ->call('removeMember', $this->owner->id);
 
         // Owner should still be a member
