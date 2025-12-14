@@ -6,10 +6,13 @@ namespace App\Providers;
 
 use App\Models\Deployment;
 use App\Models\Domain;
+use App\Models\HelpContent;
+use App\Models\KubernetesCluster;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
 use App\Observers\AuditObserver;
+use App\Observers\CacheInvalidationObserver;
 use App\Observers\DeploymentObserver;
 use Illuminate\Support\ServiceProvider;
 
@@ -36,6 +39,13 @@ class AuditServiceProvider extends ServiceProvider
         Project::observe(AuditObserver::class);
         Server::observe(AuditObserver::class);
         Domain::observe(AuditObserver::class);
+
+        // Register cache invalidation observers for event-based cache clearing
+        Project::observe(CacheInvalidationObserver::class);
+        Server::observe(CacheInvalidationObserver::class);
+        Deployment::observe(CacheInvalidationObserver::class);
+        HelpContent::observe(CacheInvalidationObserver::class);
+        KubernetesCluster::observe(CacheInvalidationObserver::class);
 
         // Listen for authentication events
         \Illuminate\Support\Facades\Event::listen(
