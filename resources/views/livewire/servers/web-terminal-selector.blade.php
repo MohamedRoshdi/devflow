@@ -101,16 +101,17 @@
                                     </div>
 
                                     {{-- Tags --}}
-                                    @if($server->tags)
+                                    @php $tags = is_array($server->tags) ? $server->tags : (is_object($server->tags) ? $server->tags->toArray() : []); @endphp
+                                    @if(!empty($tags))
                                         <div class="mt-3 flex flex-wrap gap-1">
-                                            @foreach(array_slice($server->tags, 0, 3) as $tag)
+                                            @foreach(array_slice($tags, 0, 3) as $tag)
                                                 <span class="inline-flex items-center px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400">
                                                     {{ $tag }}
                                                 </span>
                                             @endforeach
-                                            @if(count($server->tags) > 3)
+                                            @if(count($tags) > 3)
                                                 <span class="inline-flex items-center px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-600 dark:bg-gray-600 dark:text-gray-400">
-                                                    +{{ count($server->tags) - 3 }}
+                                                    +{{ count($tags) - 3 }}
                                                 </span>
                                             @endif
                                         </div>
