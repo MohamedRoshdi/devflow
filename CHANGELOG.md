@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [6.3.0] - 2025-12-14
+
+### Fixed
+- **Unit Test Fixes (642 model tests + 37 policy tests passing)**
+
+  **Models:**
+  - `DeploymentScript`: Fixed variable substitution to use direct key replacement
+  - `HelpContentRelated/HelpContentTranslation/HelpInteraction`: Added HasFactory trait
+  - `PipelineStage`: Added 'migration' check for database icon mapping
+  - `PipelineStageRun`: Fixed duration calculation order in markSuccess/markFailed
+  - `SecurityScan`: Fixed duration calculation to use correct parameter order
+
+  **Factories:**
+  - `HelpContentTranslationFactory`: Added unique() modifier and expanded locale options (10 locales)
+  - `HelpInteractionFactory`: Fixed 'viewed' to 'view' enum value
+  - `UserFactory`: Added uniqid() suffix to email generation to prevent collisions
+
+  **Tests:**
+  - `AlertModelsTest`: Use make() for invalid enum values ('unknown' status/resource_type)
+  - `BackupModelsTest`: Extended TestCase with DatabaseTransactions, added setUp for table cleanup
+  - `CoreModelsTest`: Fixed status_color/status_icon expectations per HealthScoreMapper
+  - `DeploymentModelsTest`: Use make() for invalid enum values
+  - `HelpSystemModelsTest`: Fixed interaction_type enum value
+  - `PipelineModelsTest`: Use model instantiation for invalid enum types
+  - `TeamAuthModelsTest`: Use 'member' role instead of invalid 'custom' role
+  - `PoliciesTest`: Fixed ownership-based authorization tests
+
+### Test Results
+- Model Tests: 642 passed, 3 skipped
+- Policy Tests: 37 passed
+- Total verified: 679+ tests passing
+
+---
+
 ## [6.2.0] - 2025-12-14
 
 ### Fixed

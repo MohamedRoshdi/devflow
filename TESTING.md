@@ -2,15 +2,31 @@
 
 > Comprehensive test suite with 11,000+ tests covering browser, unit, feature, integration, and security testing.
 
-## ⚠️ Current Status (December 2025 - v6.2.0)
+## ⚠️ Current Status (December 2025 - v6.3.0)
 
 | Suite | Status | Notes |
 |-------|--------|-------|
+| Unit/Models | ✅ Passing | 642 tests, 3 skipped |
+| Unit/Policies | ✅ Passing | 37 tests |
 | Unit/Console | ✅ Passing | CommandsTest 69/69 |
 | Unit/Controllers | ✅ Passing | ControllersTest 68/68 |
 | Unit/Middleware | ✅ Passing | MiddlewareTest all passing |
 | Feature | ✅ Running | Run in batches due to memory |
 | Browser | ⏳ Not run | Requires Dusk setup |
+
+**Fixes Applied (v6.3.0):**
+- `DeploymentScript`: Fixed variable substitution to use direct key replacement
+- `HelpContent*` models: Added HasFactory trait to related models
+- `PipelineStage`: Added 'migration' check for database icon mapping
+- `PipelineStageRun`: Fixed duration calculation order
+- `SecurityScan`: Fixed duration calculation parameter order
+- `HelpContentTranslationFactory`: Added unique() and expanded locale options
+- `HelpInteractionFactory`: Fixed 'viewed' to 'view' enum value
+- `UserFactory`: Added uniqid() to prevent email collisions
+- Multiple test files: Use make() instead of create() for invalid enum values
+- `BackupModelsTest`: Extended TestCase with proper setUp for table cleanup
+- `CoreModelsTest`: Fixed status_color/status_icon expectations per HealthScoreMapper
+- `PoliciesTest`: Fixed ownership-based authorization tests
 
 **Fixes Applied (v6.2.0):**
 - SQLite compatibility in migrations (driver detection for index checking)
