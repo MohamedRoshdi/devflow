@@ -423,9 +423,14 @@ This document contains all pending tasks, improvements, and feature requests for
   - Updated: `ProjectEdit.php` (225→123 lines, 45% reduction)
   - Updated: `ServerEdit.php` (179→148 lines, 17% reduction)
 
-- [ ] **Abstract deployment filtering logic**
-  - Issue: `DeploymentList.php` and `DeploymentShow.php` both handle filtering
-  - Task: Create `WithDeploymentFiltering` trait
+- [x] **Abstract deployment filtering logic** ✅ COMPLETED
+  - Created: `app/Livewire/Concerns/WithDeploymentFiltering.php` (174 lines)
+    - Properties: `$search`, `$statusFilter`, `$projectFilter`
+    - Hooks: `updatedSearch()`, `updatedStatusFilter()`, `updatedProjectFilter()` (pagination reset)
+    - Computed: `filterProjects()` (cached project dropdown), `getDeploymentStatusesProperty()`
+    - Helpers: `clearFilters()`, `hasActiveFilters()`, `applyAllDeploymentFilters()`
+    - Query builders: `applyDeploymentSearch()`, `applyDeploymentStatusFilter()`, `applyDeploymentProjectFilter()`
+  - Updated: `DeploymentApprovals.php` (203→172 lines, 15% reduction)
 
 ### Caching Strategy Improvements
 
@@ -619,13 +624,13 @@ This document contains all pending tasks, improvements, and feature requests for
 | High Optimization | 4 | 3 | 1 |
 | High Tests | 18 | 18 | 0 |
 | High UI | 6 | 6 | 0 |
-| Medium Abstractions | 3 | 2 | 1 |
+| Medium Abstractions | 3 | 3 | 0 |
 | Medium Caching | 3 | 0 | 3 |
 | Medium Tests | 13 | 5 | 8 |
 | Medium Tasks | 17+ | 0 | 17+ |
 | Low Priority | 15+ | 0 | 15+ |
 | Planned Features | 5 | 0 | 5 |
-| **TOTAL** | **127+** | **81** | **46+** |
+| **TOTAL** | **127+** | **82** | **45+** |
 
 ---
 
