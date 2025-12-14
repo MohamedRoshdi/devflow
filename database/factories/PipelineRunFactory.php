@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Pipeline;
 use App\Models\PipelineRun;
 use App\Models\Project;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -13,11 +14,12 @@ class PipelineRunFactory extends Factory
     public function definition(): array
     {
         return [
+            'pipeline_id' => Pipeline::factory(),
             'project_id' => Project::factory(),
             'deployment_id' => null,
-            'run_number' => fake()->numberBetween(1, 100),
+            'run_number' => (string) fake()->numberBetween(1, 100),
             'status' => fake()->randomElement(['pending', 'running', 'success', 'failed', 'cancelled']),
-            'triggered_by' => fake()->randomElement(['manual', 'webhook', 'scheduled']),
+            'triggered_by' => fake()->randomElement(['manual', 'push', 'pr', 'schedule']),
             'trigger_data' => json_encode([]),
             'branch' => 'main',
             'commit_sha' => fake()->sha1(),

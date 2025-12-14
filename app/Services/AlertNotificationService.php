@@ -264,10 +264,11 @@ class AlertNotificationService
     /**
      * Format value with appropriate unit
      */
-    protected function formatValue(float $value, string $resourceType): string
+    protected function formatValue(float|int|string $value, string $resourceType): string
     {
         $unit = in_array($resourceType, ['cpu', 'memory', 'disk']) ? '%' : '';
+        $numericValue = is_numeric($value) ? (float) $value : 0.0;
 
-        return number_format($value, 2).$unit;
+        return number_format($numericValue, 2).$unit;
     }
 }

@@ -2,13 +2,13 @@
 
 namespace Tests;
 
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Tests\Concerns\RefreshMySQLDatabase;
 
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
-    use RefreshMySQLDatabase;
+    use DatabaseTransactions;
 
     /**
      * Indicates whether the default seeder should run before each test.
@@ -24,9 +24,6 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        // Setup MySQL database
-        $this->setUpMySQLDatabase();
-
         // Default setup for all tests
         $this->withoutVite();
     }
@@ -40,9 +37,6 @@ abstract class TestCase extends BaseTestCase
         if (class_exists(\Mockery::class)) {
             \Mockery::close();
         }
-
-        // Cleanup MySQL database
-        $this->tearDownMySQLDatabase();
 
         parent::tearDown();
     }
