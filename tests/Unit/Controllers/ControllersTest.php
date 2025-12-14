@@ -223,14 +223,14 @@ class ControllersTest extends TestCase
     }
 
     /** @test */
-    public function project_show_allows_any_authenticated_user(): void
+    public function project_show_denies_access_to_non_owners(): void
     {
-        // All projects are shared across all authenticated users per ProjectPolicy
+        // Projects are restricted to owners, team members, and admins per ProjectPolicy
         $otherUser = User::factory()->create();
 
         $response = $this->withUserApiToken($otherUser)->getJson("/api/v1/projects/{$this->project->slug}");
 
-        $response->assertStatus(200);
+        $response->assertStatus(403);
     }
 
     /** @test */
@@ -250,16 +250,16 @@ class ControllersTest extends TestCase
     }
 
     /** @test */
-    public function project_update_allows_any_authenticated_user(): void
+    public function project_update_denies_access_to_non_owners(): void
     {
-        // All projects are shared across all authenticated users per ProjectPolicy
+        // Projects are restricted to owners, team members, and admins per ProjectPolicy
         $otherUser = User::factory()->create();
 
         $response = $this->withUserApiToken($otherUser)->patchJson("/api/v1/projects/{$this->project->slug}", [
             'name' => 'Updated Name',
         ]);
 
-        $response->assertStatus(200);
+        $response->assertStatus(403);
     }
 
     /** @test */
@@ -276,9 +276,9 @@ class ControllersTest extends TestCase
     }
 
     /** @test */
-    public function project_destroy_allows_any_authenticated_user(): void
+    public function project_destroy_denies_access_to_non_owners(): void
     {
-        // All projects are shared across all authenticated users per ProjectPolicy
+        // Only the owner can delete projects per ProjectPolicy
         $projectToDelete = Project::factory()->create([
             'user_id' => $this->user->id,
             'server_id' => $this->server->id,
@@ -287,10 +287,10 @@ class ControllersTest extends TestCase
 
         $response = $this->withUserApiToken($otherUser)->deleteJson("/api/v1/projects/{$projectToDelete->slug}");
 
-        $response->assertStatus(204);
+        $response->assertStatus(403);
 
-        // Project model uses SoftDeletes
-        $this->assertSoftDeleted('projects', [
+        // Project should NOT be deleted
+        $this->assertNotSoftDeleted('projects', [
             'id' => $projectToDelete->id,
         ]);
     }
@@ -548,7 +548,7 @@ class ControllersTest extends TestCase
     {
         $response = $this->withApiToken()->postJson("/api/v1/projects/{$this->project->slug}/deployments", [
             'branch' => 'main',
-            'commit_hash' => 'abc123',
+            'commit_hash' => 'abc1234', // Must be 7-40 hex characters
         ]);
 
         $response->assertStatus(201)
@@ -557,7 +557,7 @@ class ControllersTest extends TestCase
         $this->assertDatabaseHas('deployments', [
             'project_id' => $this->project->id,
             'branch' => 'main',
-            'commit_hash' => 'abc123',
+            'commit_hash' => 'abc1234',
         ]);
     }
 
@@ -657,14 +657,14 @@ class ControllersTest extends TestCase
     }
 
     /** @test */
-    public function server_metrics_index_allows_any_authenticated_user(): void
+    public function server_metrics_index_denies_access_to_non_owners(): void
     {
-        // All servers are accessible to any authenticated user per ServerPolicy
+        // Servers are restricted to owners, team members, and admins per ServerPolicy
         $otherUser = User::factory()->create();
 
         $response = $this->actingAs($otherUser)->getJson("/api/servers/{$this->server->id}/metrics");
 
-        $response->assertStatus(200);
+        $response->assertStatus(403);
     }
 
     /** @test */
@@ -738,9 +738,14 @@ class ControllersTest extends TestCase
     {
         Bus::fake();
 
-        $this->project->update(['auto_deploy' => true]);
+        $webhookSecret = 'test-webhook-secret-token-123';
+        $this->project->update([
+            'auto_deploy' => true,
+            'webhook_enabled' => true,
+            'webhook_secret' => $webhookSecret,
+        ]);
 
-        $response = $this->postJson("/api/webhooks/deploy/{$this->project->slug}", [
+        $response = $this->postJson("/api/webhooks/deploy/{$webhookSecret}", [
             'ref' => 'refs/heads/main',
             'after' => 'abc123def456',
             'head_commit' => [
@@ -771,9 +776,14 @@ class ControllersTest extends TestCase
     /** @test */
     public function deployment_webhook_rejects_when_auto_deploy_disabled(): void
     {
-        $this->project->update(['auto_deploy' => false]);
+        $webhookSecret = 'test-webhook-secret-token-456';
+        $this->project->update([
+            'auto_deploy' => false,
+            'webhook_enabled' => true,
+            'webhook_secret' => $webhookSecret,
+        ]);
 
-        $response = $this->postJson("/api/webhooks/deploy/{$this->project->slug}", []);
+        $response = $this->postJson("/api/webhooks/deploy/{$webhookSecret}", []);
 
         $response->assertStatus(403)
             ->assertJson(['error' => 'Auto-deploy is not enabled']);
@@ -784,9 +794,15 @@ class ControllersTest extends TestCase
     {
         Bus::fake();
 
-        $this->project->update(['auto_deploy' => true]);
+        $webhookSecret = 'github-webhook-secret-789';
+        $this->project->update([
+            'auto_deploy' => true,
+            'webhook_enabled' => true,
+            'webhook_secret' => $webhookSecret,
+            'branch' => 'develop',
+        ]);
 
-        $response = $this->postJson("/api/webhooks/deploy/{$this->project->slug}", [
+        $response = $this->postJson("/api/webhooks/deploy/{$webhookSecret}", [
             'ref' => 'refs/heads/develop',
             'after' => 'commit-hash-123',
             'head_commit' => [
@@ -808,9 +824,14 @@ class ControllersTest extends TestCase
     {
         Bus::fake();
 
-        $this->project->update(['auto_deploy' => true]);
+        $webhookSecret = 'gitlab-webhook-secret-101';
+        $this->project->update([
+            'auto_deploy' => true,
+            'webhook_enabled' => true,
+            'webhook_secret' => $webhookSecret,
+        ]);
 
-        $response = $this->postJson("/api/webhooks/deploy/{$this->project->slug}", [
+        $response = $this->postJson("/api/webhooks/deploy/{$webhookSecret}", [
             'object_kind' => 'push',
             'ref' => 'refs/heads/main',
             'checkout_sha' => 'gitlab-commit-123',
@@ -832,9 +853,15 @@ class ControllersTest extends TestCase
     {
         Bus::fake();
 
-        $this->project->update(['auto_deploy' => true]);
+        $webhookSecret = 'bitbucket-webhook-secret-202';
+        $this->project->update([
+            'auto_deploy' => true,
+            'webhook_enabled' => true,
+            'webhook_secret' => $webhookSecret,
+            'branch' => 'feature-branch',
+        ]);
 
-        $response = $this->postJson("/api/webhooks/deploy/{$this->project->slug}", [
+        $response = $this->postJson("/api/webhooks/deploy/{$webhookSecret}", [
             'push' => [
                 'changes' => [
                     [
