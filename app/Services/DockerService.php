@@ -28,37 +28,6 @@ class DockerService
         }
     }
 
-    /**
-     * Validate and sanitize project slug for shell commands
-     *
-     * Project slugs are validated at input with regex: /^[a-z0-9-]+$/
-     * This method provides defense-in-depth validation before shell command usage.
-     *
-     * @param Project $project
-     * @return string Validated slug safe for shell commands
-     * @throws \InvalidArgumentException if slug contains unsafe characters
-     */
-    protected function getValidatedSlug(Project $project): string
-    {
-        $slug = $project->slug;
-
-        // Validate slug format (lowercase alphanumeric and hyphens only)
-        if (!preg_match('/^[a-z0-9-]+$/', $slug)) {
-            throw new \InvalidArgumentException(
-                "Project slug '{$slug}' contains invalid characters. Only lowercase letters, numbers, and hyphens are allowed."
-            );
-        }
-
-        // Additional safety: prevent directory traversal attempts
-        if (str_contains($slug, '..') || str_contains($slug, '/')) {
-            throw new \InvalidArgumentException(
-                "Project slug '{$slug}' contains path traversal characters."
-            );
-        }
-
-        return $slug;
-    }
-
     public function checkDockerInstallation(Server $server): array
     {
         try {
@@ -175,7 +144,7 @@ class DockerService
      */
     protected function detectComposeUsage(Server $server, Project $project): bool
     {
-        $slug = $this->getValidatedSlug($project);
+        $slug = $project->validated_slug;
         $projectPath = "/var/www/{$slug}";
 
         $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
@@ -201,7 +170,7 @@ class DockerService
      */
     protected function buildDockerComposeContainer(Server $server, Project $project): array
     {
-        $slug = $this->getValidatedSlug($project);
+        $slug = $project->validated_slug;
         $projectPath = "/var/www/{$slug}";
 
         // Use docker compose build for projects with docker-compose.yml
@@ -242,7 +211,7 @@ class DockerService
      */
     protected function buildStandaloneContainer(Server $server, Project $project): array
     {
-        $slug = $this->getValidatedSlug($project);
+        $slug = $project->validated_slug;
         $projectPath = "/var/www/{$slug}";
 
         // Check for Dockerfile
@@ -338,7 +307,7 @@ class DockerService
                 ];
             }
 
-            $slug = $this->getValidatedSlug($project);
+            $slug = $project->validated_slug;
             $projectPath = "/var/www/{$slug}";
 
             // Determine if project uses docker-compose
@@ -370,7 +339,7 @@ class DockerService
      */
     protected function startDockerComposeContainers(Server $server, Project $project): array
     {
-        $slug = $this->getValidatedSlug($project);
+        $slug = $project->validated_slug;
         $projectPath = "/var/www/{$slug}";
 
         // Cleanup orphaned containers before starting
@@ -429,7 +398,7 @@ class DockerService
         $envVars = $this->buildEnvironmentVariables($project);
 
         // Build and execute start command
-        $validatedSlug = $this->getValidatedSlug($project);
+        $validatedSlug = $project->validated_slug;
         $escapedSlug = escapeshellarg($validatedSlug);
         $startCommand = sprintf(
             'docker run -d --name %s -p %d:%d%s %s',
@@ -475,7 +444,7 @@ class DockerService
      */
     protected function cleanupOrphanedContainers(Server $server, Project $project): void
     {
-        $slug = $this->getValidatedSlug($project);
+        $slug = $project->validated_slug;
         $projectPath = "/var/www/{$slug}";
 
         // Step 1: Standard docker compose cleanup
@@ -530,8 +499,7 @@ class DockerService
     {
         try {
             $server = $project->server;
-            $slug = $this->getValidatedSlug($project); // Validate slug before use
-            $escapedSlug = escapeshellarg($slug);
+            $slug = $project->validated_slug;            $escapedSlug = escapeshellarg($slug);
 
             // Stop and remove any existing container with this name
             $cleanupCommand = sprintf(
@@ -579,8 +547,7 @@ class DockerService
     {
         try {
             $server = $project->server;
-            $slug = $this->getValidatedSlug($project); // Validate slug before use
-            $projectPath = "/var/www/{$slug}";
+            $slug = $project->validated_slug;            $projectPath = "/var/www/{$slug}";
 
             // Check if project uses docker-compose
             $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
@@ -609,7 +576,7 @@ class DockerService
             // Standalone container mode
             // Stop and force remove the container to avoid "name already in use" errors
             // Using -f flag to force removal even if container is running
-            $validatedSlug = $this->getValidatedSlug($project);
+            $validatedSlug = $project->validated_slug;
             $escapedSlug = escapeshellarg($validatedSlug);
             $stopAndRemoveCommand = sprintf(
                 'docker stop %s 2>/dev/null || true && docker rm -f %s 2>/dev/null || true',
@@ -635,8 +602,7 @@ class DockerService
     {
         try {
             $server = $project->server;
-            $slug = $this->getValidatedSlug($project); // Validate slug before use
-            $projectPath = "/var/www/{$slug}";
+            $slug = $project->validated_slug;            $projectPath = "/var/www/{$slug}";
 
             // Check if project uses docker-compose
             $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
@@ -658,7 +624,7 @@ class DockerService
             }
 
             // Standalone container mode
-            $validatedSlug = $this->getValidatedSlug($project);
+            $validatedSlug = $project->validated_slug;
             $escapedSlug = escapeshellarg($validatedSlug);
             $logsCommand = "docker logs --tail {$lines} ".$escapedSlug;
             $process = $this->executeRemoteCommand($server, $logsCommand, false);
@@ -680,8 +646,7 @@ class DockerService
     {
         try {
             $server = $project->server;
-            $slug = $this->getValidatedSlug($project); // Validate slug before use
-
+            $slug = $project->validated_slug;
             $containerPath = '/var/www/storage/logs/laravel.log';
             $hostPath = "/var/www/{$slug}/storage/logs/laravel.log";
 
@@ -718,7 +683,10 @@ class DockerService
     {
         try {
             $server = $project->server;
-            $slug = $this->getValidatedSlug($project); // Validate slug before use
+            if ($server === null) {
+                throw new \RuntimeException('Project has no server assigned');
+            }
+            $slug = $project->validated_slug;
             $hostPath = "/var/www/{$slug}/storage/logs/laravel.log";
 
             // Use sudo for non-root users to handle permission issues
@@ -769,7 +737,10 @@ class DockerService
     {
         try {
             $server = $project->server;
-            $slug = $this->getValidatedSlug($project); // Validate slug before use
+            if ($server === null) {
+                throw new \RuntimeException('Project has no server assigned');
+            }
+            $slug = $project->validated_slug;
             $hostPath = "/var/www/{$slug}/storage/logs/laravel.log";
 
             // Use sudo for non-root users
@@ -820,8 +791,7 @@ class DockerService
     public function usesDockerCompose(Project $project): bool
     {
         $server = $project->server;
-        $slug = $this->getValidatedSlug($project); // Validate slug before use
-        $projectPath = "/var/www/{$slug}";
+        $slug = $project->validated_slug;        $projectPath = "/var/www/{$slug}";
 
         $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
         $command = $this->isLocalhost($server)
@@ -841,8 +811,7 @@ class DockerService
     public function getAppContainerName(Project $project): string
     {
         $server = $project->server;
-        $slug = $this->getValidatedSlug($project); // Validate slug before use
-
+        $slug = $project->validated_slug;
         // Try common naming patterns
         $patterns = [
             "{$slug}-app",    // docker-compose v2 naming
@@ -1186,8 +1155,7 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            $slug = $this->getValidatedSlug($project); // Validate slug before use
-            $escapedSlug = escapeshellarg($slug);
+            $slug = $project->validated_slug;            $escapedSlug = escapeshellarg($slug);
 
             $statsCommand = sprintf(
                 "docker stats --no-stream --format '{{json .}}' %s",
@@ -1223,8 +1191,7 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            $slug = $this->getValidatedSlug($project); // Validate slug before use
-            $escapedSlug = escapeshellarg($slug);
+            $slug = $project->validated_slug;            $escapedSlug = escapeshellarg($slug);
 
             $inspectCommand = sprintf(
                 "docker inspect --format='{{json .HostConfig}}' %s",
@@ -1262,8 +1229,7 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            $slug = $this->getValidatedSlug($project); // Validate slug before use
-            $escapedSlug = escapeshellarg($slug);
+            $slug = $project->validated_slug;            $escapedSlug = escapeshellarg($slug);
 
             $updateCommand = 'docker update';
             if ($memoryMB !== null) {
@@ -1505,8 +1471,7 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            $slug = $this->getValidatedSlug($project); // Validate slug before use
-            $escapedSlug = escapeshellarg($slug);
+            $slug = $project->validated_slug;            $escapedSlug = escapeshellarg($slug);
             $escapedNetwork = escapeshellarg($networkName);
             $connectCommand = "docker network connect {$escapedNetwork} {$escapedSlug}";
 
@@ -1533,8 +1498,7 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            $slug = $this->getValidatedSlug($project); // Validate slug before use
-            $escapedSlug = escapeshellarg($slug);
+            $slug = $project->validated_slug;            $escapedSlug = escapeshellarg($slug);
             $escapedNetwork = escapeshellarg($networkName);
             $disconnectCommand = "docker network disconnect {$escapedNetwork} {$escapedSlug}";
 
@@ -1641,8 +1605,7 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            $slug = $this->getValidatedSlug($project); // Validate slug before use
-            $escapedSlug = escapeshellarg($slug);
+            $slug = $project->validated_slug;            $escapedSlug = escapeshellarg($slug);
 
             $statusCommand = sprintf(
                 "docker ps -a --filter name=%s --format '{{json .}}'",
@@ -1768,8 +1731,7 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            $slug = $this->getValidatedSlug($project); // Validate slug before use
-            $projectPath = "/var/www/{$slug}";
+            $slug = $project->validated_slug;            $projectPath = "/var/www/{$slug}";
 
             $composeCommand = "cd {$projectPath} && docker-compose up -d --build";
 
@@ -1797,8 +1759,7 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            $slug = $this->getValidatedSlug($project); // Validate slug before use
-            $projectPath = "/var/www/{$slug}";
+            $slug = $project->validated_slug;            $projectPath = "/var/www/{$slug}";
 
             $composeCommand = "cd {$projectPath} && docker-compose down";
 
@@ -1825,8 +1786,7 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            $slug = $this->getValidatedSlug($project); // Validate slug before use
-            $projectPath = "/var/www/{$slug}";
+            $slug = $project->validated_slug;            $projectPath = "/var/www/{$slug}";
 
             $composeCommand = "cd {$projectPath} && docker-compose ps --format json";
 
@@ -1901,8 +1861,7 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            $slug = $this->getValidatedSlug($project); // Validate slug before use
-            $escapedSlug = escapeshellarg($slug);
+            $slug = $project->validated_slug;            $escapedSlug = escapeshellarg($slug);
 
             $psCommand = "docker top {$escapedSlug}";
 
@@ -1933,8 +1892,7 @@ DOCKERFILE;
     {
         try {
             $server = $project->server;
-            $slug = $this->getValidatedSlug($project); // Validate slug before use
-            $backupName = $backupName ?? "{$slug}-backup-".date('Y-m-d-H-i-s');
+            $slug = $project->validated_slug;            $backupName = $backupName ?? "{$slug}-backup-".date('Y-m-d-H-i-s');
 
             $escapedSlug = escapeshellarg($slug);
             $escapedBackupName = escapeshellarg($backupName);

@@ -331,6 +331,35 @@ class Project extends Model
     }
 
     /**
+     * Get validated slug safe for shell commands.
+     *
+     * Provides defense-in-depth validation before shell command usage.
+     * This accessor is cached per model instance, avoiding repeated validation.
+     *
+     * @throws \InvalidArgumentException if slug contains unsafe characters
+     */
+    public function getValidatedSlugAttribute(): string
+    {
+        $slug = $this->slug;
+
+        // Validate slug format (lowercase alphanumeric and hyphens only)
+        if (! preg_match('/^[a-z0-9-]+$/', $slug)) {
+            throw new \InvalidArgumentException(
+                "Project slug '{$slug}' contains invalid characters. Only lowercase letters, numbers, and hyphens are allowed."
+            );
+        }
+
+        // Additional safety: prevent directory traversal attempts
+        if (str_contains($slug, '..') || str_contains($slug, '/')) {
+            throw new \InvalidArgumentException(
+                "Project slug '{$slug}' contains path traversal characters."
+            );
+        }
+
+        return $slug;
+    }
+
+    /**
      * @return HasMany<NotificationChannel, $this>
      */
     public function notificationChannels(): HasMany
