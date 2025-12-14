@@ -268,12 +268,12 @@
                             @endif
                         </div>
                     </div>
-                    <button wire:click="$set('showBranchSelector', true)"
+                    <button wire:click="setActiveTab('git')"
                         class="px-4 py-2 rounded-lg text-sm font-medium bg-purple-500/20 text-purple-400 border border-purple-500/30 hover:bg-purple-500/30 transition-all">
                         <svg class="w-4 h-4 inline-block mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v4a1 1 0 001 1h3v8l7-12h3a1 1 0 001-1V7a1 1 0 00-1-1H4a1 1 0 00-1 1z"/>
                         </svg>
-                        Switch Branch
+                        Manage Branch
                     </button>
                 </div>
             </div>
@@ -623,9 +623,9 @@
                                 <span class="px-3 py-2 rounded-xl bg-purple-500/20 text-purple-400 font-mono text-sm border border-purple-500/30 flex-1">
                                     {{ $project->branch }}
                                 </span>
-                                <button wire:click="$set('showBranchSelector', true)"
+                                <button wire:click="setActiveTab('git')"
                                     class="px-4 py-2 rounded-xl text-sm font-medium bg-purple-500/20 text-purple-400 border border-purple-500/30 hover:bg-purple-500/30 transition-all">
-                                    Switch
+                                    Manage
                                 </button>
                             </div>
                         </div>
@@ -775,106 +775,6 @@
             @livewire('projects.project-webhook-settings', ['project' => $project], key('webhooks-' . $project->id))
         @endif
     </div>
-
-    {{-- Branch Selector Modal with Enhanced Styling --}}
-    @if($showBranchSelector)
-        <div class="fixed inset-0 z-50 overflow-y-auto" x-transition>
-            <div class="flex items-center justify-center min-h-screen p-4">
-                <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" wire:click="$set('showBranchSelector', false)"></div>
-                <div class="relative bg-slate-900 rounded-2xl border border-slate-700/50 shadow-2xl w-full max-w-lg overflow-hidden">
-                    {{-- Modal Header --}}
-                    <div class="p-6 border-b border-slate-700/50 bg-gradient-to-r from-purple-900/30 to-pink-900/30">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-semibold text-white flex items-center gap-2">
-                                <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v4a1 1 0 001 1h3v8l7-12h3a1 1 0 001-1V7a1 1 0 00-1-1H4a1 1 0 00-1 1z"/>
-                                </svg>
-                                Switch Git Branch
-                            </h3>
-                            <button wire:click="$set('showBranchSelector', false)" class="text-slate-400 hover:text-white transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                </svg>
-                            </button>
-                        </div>
-                        <p class="text-sm text-slate-400 mt-2">Select a branch to deploy. This will update your project to use the selected branch.</p>
-                    </div>
-
-                    {{-- Modal Content --}}
-                    <div class="p-6">
-                        <div class="space-y-2 max-h-96 overflow-y-auto">
-                            @forelse($availableBranches ?? [] as $branch)
-                                <button wire:click="selectBranch('{{ $branch }}')"
-                                    class="w-full flex items-center justify-between p-4 rounded-xl transition-all
-                                        {{ $project->branch === $branch
-                                            ? 'bg-purple-500/20 border-2 border-purple-500/50 text-purple-300'
-                                            : 'bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:bg-slate-700/50 hover:border-slate-600' }}">
-                                    <div class="flex items-center gap-3">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v4a1 1 0 001 1h3v8l7-12h3a1 1 0 001-1V7a1 1 0 00-1-1H4a1 1 0 00-1 1z"/>
-                                        </svg>
-                                        <span class="font-mono font-medium">{{ $branch }}</span>
-                                    </div>
-                                    @if($project->branch === $branch)
-                                        <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-purple-500/30 text-purple-300 border border-purple-500/50">
-                                            CURRENT
-                                        </span>
-                                    @endif
-                                </button>
-                            @empty
-                                <div class="text-center py-12 text-slate-500">
-                                    <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v4a1 1 0 001 1h3v8l7-12h3a1 1 0 001-1V7a1 1 0 00-1-1H4a1 1 0 00-1 1z"/>
-                                    </svg>
-                                    <p class="text-sm">No branches available</p>
-                                    <p class="text-xs text-slate-600 mt-1">Configure repository access to see branches</p>
-                                </div>
-                            @endforelse
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endif
-
-    {{-- Branch Switch Confirmation Modal --}}
-    @if($showBranchConfirmModal)
-        <div class="fixed inset-0 z-50 overflow-y-auto" x-transition>
-            <div class="flex items-center justify-center min-h-screen p-4">
-                <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" wire:click="$set('showBranchConfirmModal', false)"></div>
-                <div class="relative bg-slate-900 rounded-2xl border border-slate-700/50 shadow-2xl w-full max-w-md overflow-hidden">
-                    <div class="p-6 border-b border-slate-700/50 bg-gradient-to-r from-amber-900/30 to-orange-900/30">
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-white">Confirm Branch Switch</h3>
-                                <p class="text-sm text-slate-400">This action will update your deployment</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="p-6 space-y-4">
-                        <p class="text-slate-300">
-                            Are you sure you want to switch from <span class="font-mono px-2 py-1 bg-slate-800 rounded text-sm">{{ $project->branch }}</span> to <span class="font-mono px-2 py-1 bg-purple-500/20 text-purple-400 rounded text-sm">{{ $selectedBranchForConfirm }}</span>?
-                        </p>
-                        <div class="flex gap-3">
-                            <button wire:click="confirmBranchSwitch"
-                                class="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium hover:from-purple-700 hover:to-pink-700 transition-all">
-                                Confirm Switch
-                            </button>
-                            <button wire:click="$set('showBranchConfirmModal', false)"
-                                class="flex-1 px-4 py-3 rounded-xl bg-slate-800 text-slate-300 font-medium hover:bg-slate-700 transition-all">
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endif
 
     {{-- Deploy Modal --}}
     @if($showDeployModal)
