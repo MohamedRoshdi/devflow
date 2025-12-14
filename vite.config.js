@@ -38,7 +38,7 @@ export default defineConfig({
     },
     // Optimize dependencies
     optimizeDeps: {
-        include: ['alpinejs'],
+        include: ['alpinejs', '@xterm/xterm', '@xterm/addon-fit', '@xterm/addon-web-links'],
         exclude: [],
     },
     // Enable CSS code splitting

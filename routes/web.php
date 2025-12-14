@@ -60,8 +60,12 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
     Route::get('/servers/{server}/provisioning', ProvisioningLogs::class)->name('servers.provisioning');
     Route::get('/servers/{server}/terminal', \App\Livewire\Servers\SSHTerminal::class)->name('servers.terminal');
 
-    // SSH Terminal (Standalone)
+    // SSH Terminal (Standalone - Simple)
     Route::get('/terminal', \App\Livewire\Servers\SSHTerminalSelector::class)->name('terminal');
+
+    // Web Terminal (xterm.js - Professional)
+    Route::get('/web-terminal', \App\Livewire\Servers\WebTerminalSelector::class)->name('web-terminal');
+    Route::get('/servers/{server}/web-terminal', \App\Livewire\Servers\WebTerminal::class)->name('servers.web-terminal');
 
     // Server Security Management
     Route::get('/servers/{server}/security', \App\Livewire\Servers\Security\ServerSecurityDashboard::class)->name('servers.security');

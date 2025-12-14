@@ -1,6 +1,9 @@
 /* Inline Help System Styles */
 @import './inline-help.css';
 
+/* xterm.js Terminal Styles */
+@import '@xterm/xterm/css/xterm.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
