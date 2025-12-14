@@ -13,18 +13,23 @@
 /storage/app/test-reports/*
 /storage/test-results/*
 /storage/backups/*
+/storage/app/backups/*
+!/storage/app/backups/.gitkeep
+/storage/app/performance-reports/*
 !/storage/framework/.gitignore
 !/storage/framework/cache/.gitignore
 !/storage/framework/sessions/.gitignore
 !/storage/framework/views/.gitignore
 !/storage/logs/.gitignore
 /vendor
-/bootstrap/cache/config.php
-/bootstrap/cache/routes-v7.php
+
+# Bootstrap cache (all PHP files)
+/bootstrap/cache/*.php
+
+# Environment files (keep only .env.example)
 .env
-.env.backup
-.env.production
-.env.testing
+.env.*
+!.env.example
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml
