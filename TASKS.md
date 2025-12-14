@@ -303,10 +303,11 @@ This document contains all pending tasks, improvements, and feature requests for
   - Added: `executeRemoteCommand()`, `getRemoteOutput()`, `executeRemoteCommandWithTimeout()`, `executeRemoteCommandWithInput()`
   - Refactored: 10+ methods to use new helpers
 
-- [ ] **Reduce slug validation calls**
-  - File: `app/Services/DockerService.php` (24+ occurrences)
-  - Issue: `getValidatedSlug()` called repeatedly
-  - Task: Validate once and cache or move to model
+- [x] **Reduce slug validation calls** ✅ COMPLETED
+  - File: `app/Services/DockerService.php` (29 occurrences → 0)
+  - Solution: Added `validated_slug` accessor to Project model
+  - Removed redundant `getValidatedSlug()` method from DockerService
+  - Validation now cached per model instance, called once per request
 
 ### Test Coverage (High Priority)
 
@@ -597,7 +598,7 @@ This document contains all pending tasks, improvements, and feature requests for
 | Critical Features | 6 | 6 | 0 |
 | Critical Navigation | 4 | 4 | 0 |
 | Critical Service Stubs | 3 | 3 | 0 |
-| Critical Optimization | 6 | 3 | 3 |
+| Critical Optimization | 6 | 4 | 2 |
 | Critical N+1 Queries | 3 | 3 | 0 |
 | Critical Tests | 8 | 8 | 0 |
 | Critical UI | 4 | 4 | 0 |
@@ -614,7 +615,7 @@ This document contains all pending tasks, improvements, and feature requests for
 | Medium Tasks | 17+ | 0 | 17+ |
 | Low Priority | 15+ | 0 | 15+ |
 | Planned Features | 5 | 0 | 5 |
-| **TOTAL** | **127+** | **78** | **49+** |
+| **TOTAL** | **127+** | **79** | **48+** |
 
 ---
 
