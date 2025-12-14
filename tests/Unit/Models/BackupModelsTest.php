@@ -12,29 +12,20 @@ use App\Models\Server;
 use App\Models\ServerBackup;
 use App\Models\StorageConfiguration;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Tests\CreatesApplication;
+use Tests\TestCase;
 
-class BackupModelsTest extends BaseTestCase
+class BackupModelsTest extends TestCase
 {
-    use CreatesApplication;
-
-    /**
-     * Indicates whether the default seeder should run before each test.
-     *
-     * @var bool
-     */
-    protected $seed = false;
-
     protected function setUp(): void
     {
-        // Set SQLite before parent setUp to avoid MySQL migration issues
-        putenv('DB_CONNECTION=sqlite');
-        putenv('DB_DATABASE=:memory:');
-
         parent::setUp();
 
-        $this->withoutVite();
+        // Clear tables for proper test isolation in scope tests
+        DatabaseBackup::query()->delete();
+        FileBackup::query()->delete();
+        ServerBackup::query()->delete();
+        BackupSchedule::query()->delete();
+        StorageConfiguration::query()->delete();
     }
 
     // ==========================================

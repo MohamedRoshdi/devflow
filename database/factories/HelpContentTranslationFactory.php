@@ -29,7 +29,7 @@ class HelpContentTranslationFactory extends Factory
     {
         return [
             'help_content_id' => HelpContent::factory(),
-            'locale' => fake()->randomElement(['fr', 'es', 'de', 'ar']),
+            'locale' => fake()->unique()->randomElement(['fr', 'es', 'de', 'ar', 'it', 'pt', 'nl', 'ru', 'ja', 'zh']),
             'brief' => fake()->sentence(),
             'details' => [
                 'step1' => fake()->sentence(),

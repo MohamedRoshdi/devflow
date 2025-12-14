@@ -223,8 +223,10 @@ class PipelineModelsTest extends TestCase
         $postDeploy = PipelineStage::factory()->create(['type' => 'post_deploy']);
         $this->assertEquals('purple', $postDeploy->color);
 
-        $custom = PipelineStage::factory()->create(['type' => 'custom']);
-        $this->assertEquals('gray', $custom->color);
+        // Test default case - create a model instance without saving to test the getColorAttribute
+        // with an unknown type (enum only allows pre_deploy, deploy, post_deploy)
+        $stage = new PipelineStage(['type' => 'unknown']);
+        $this->assertEquals('gray', $stage->color);
     }
 
     // ========================

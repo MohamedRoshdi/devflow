@@ -45,7 +45,8 @@ class DeploymentScript extends Model
 
         if ($this->variables) {
             foreach ($this->variables as $key => $value) {
-                $script = str_replace("{{$key}}", $value, $script);
+                // Direct replacement - keys should include the full placeholder (e.g., '{VAR1}')
+                $script = str_replace($key, $value, $script);
             }
         }
 

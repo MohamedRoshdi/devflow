@@ -102,7 +102,7 @@ class SecurityScan extends Model
     public function getDurationAttribute(): ?int
     {
         if ($this->started_at && $this->completed_at) {
-            return (int) $this->completed_at->diffInSeconds($this->started_at);
+            return (int) $this->started_at->diffInSeconds($this->completed_at);
         }
 
         return null;

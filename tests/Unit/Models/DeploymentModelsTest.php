@@ -129,7 +129,8 @@ class DeploymentModelsTest extends TestCase
         $pending = DeploymentApproval::factory()->create(['status' => 'pending']);
         $this->assertEquals('yellow', $pending->status_color);
 
-        $unknown = DeploymentApproval::factory()->create(['status' => 'unknown']);
+        // Use make() for unknown status as it's not in the enum
+        $unknown = DeploymentApproval::factory()->make(['status' => 'unknown']);
         $this->assertEquals('gray', $unknown->status_color);
     }
 
@@ -145,7 +146,8 @@ class DeploymentModelsTest extends TestCase
         $pending = DeploymentApproval::factory()->create(['status' => 'pending']);
         $this->assertEquals('clock', $pending->status_icon);
 
-        $unknown = DeploymentApproval::factory()->create(['status' => 'unknown']);
+        // Use make() for unknown status as it's not in the enum
+        $unknown = DeploymentApproval::factory()->make(['status' => 'unknown']);
         $this->assertEquals('question-mark-circle', $unknown->status_icon);
     }
 

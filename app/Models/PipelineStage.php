@@ -132,7 +132,7 @@ class PipelineStage extends Model
             return 'shield';
         } elseif (str_contains($name, 'install') || str_contains($name, 'composer') || str_contains($name, 'npm')) {
             return 'package';
-        } elseif (str_contains($name, 'migrate') || str_contains($name, 'database')) {
+        } elseif (str_contains($name, 'migration') || str_contains($name, 'migrate') || str_contains($name, 'database')) {
             return 'database';
         } else {
             return 'code';

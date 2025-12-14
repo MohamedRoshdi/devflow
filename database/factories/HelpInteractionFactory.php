@@ -31,7 +31,7 @@ class HelpInteractionFactory extends Factory
         return [
             'user_id' => User::factory(),
             'help_content_id' => HelpContent::factory(),
-            'interaction_type' => fake()->randomElement(['viewed', 'helpful', 'not_helpful']),
+            'interaction_type' => fake()->randomElement(['view', 'helpful', 'not_helpful']),
             'ip_address' => fake()->ipv4(),
             'user_agent' => fake()->userAgent(),
         ];

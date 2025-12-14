@@ -17,8 +17,8 @@ use Tests\TestCase;
  * Comprehensive Policy Tests
  *
  * Tests all authorization policies in DevFlow Pro.
- * Note: Current implementation uses shared authorization model where
- * all authenticated users can access all resources.
+ * Note: Current implementation uses ownership-based authorization model where
+ * users can only access their own resources (unless admin or team member).
  */
 class PoliciesTest extends TestCase
 {
@@ -344,8 +344,8 @@ class PoliciesTest extends TestCase
     public function deployment_policy_allows_user_to_view_own_deployment(): void
     {
         $user = User::factory()->create();
-        $server = Server::factory()->create();
-        $project = Project::factory()->create(['server_id' => $server->id]);
+        $server = Server::factory()->create(['user_id' => $user->id]);
+        $project = Project::factory()->create(['user_id' => $user->id, 'server_id' => $server->id]);
         $deployment = Deployment::factory()->create([
             'user_id' => $user->id,
             'project_id' => $project->id,
@@ -357,12 +357,12 @@ class PoliciesTest extends TestCase
     }
 
     /** @test */
-    public function deployment_policy_allows_user_to_view_others_deployment(): void
+    public function deployment_policy_denies_user_to_view_others_deployment(): void
     {
         $user = User::factory()->create();
         $otherUser = User::factory()->create();
-        $server = Server::factory()->create();
-        $project = Project::factory()->create(['server_id' => $server->id]);
+        $server = Server::factory()->create(['user_id' => $otherUser->id]);
+        $project = Project::factory()->create(['user_id' => $otherUser->id, 'server_id' => $server->id]);
         $deployment = Deployment::factory()->create([
             'user_id' => $otherUser->id,
             'project_id' => $project->id,
@@ -370,8 +370,8 @@ class PoliciesTest extends TestCase
         ]);
         $policy = new DeploymentPolicy;
 
-        // Shared authorization model - any authenticated user can view any deployment
-        $this->assertTrue($policy->view($user, $deployment));
+        // Users can only view their own deployments (unless admin or team member)
+        $this->assertFalse($policy->view($user, $deployment));
     }
 
     /** @test */
@@ -387,8 +387,8 @@ class PoliciesTest extends TestCase
     public function deployment_policy_allows_user_to_cancel_own_deployment(): void
     {
         $user = User::factory()->create();
-        $server = Server::factory()->create();
-        $project = Project::factory()->create(['server_id' => $server->id]);
+        $server = Server::factory()->create(['user_id' => $user->id]);
+        $project = Project::factory()->create(['user_id' => $user->id, 'server_id' => $server->id]);
         $deployment = Deployment::factory()->create([
             'user_id' => $user->id,
             'project_id' => $project->id,
@@ -400,12 +400,12 @@ class PoliciesTest extends TestCase
     }
 
     /** @test */
-    public function deployment_policy_allows_user_to_cancel_others_deployment(): void
+    public function deployment_policy_denies_user_to_cancel_others_deployment(): void
     {
         $user = User::factory()->create();
         $otherUser = User::factory()->create();
-        $server = Server::factory()->create();
-        $project = Project::factory()->create(['server_id' => $server->id]);
+        $server = Server::factory()->create(['user_id' => $otherUser->id]);
+        $project = Project::factory()->create(['user_id' => $otherUser->id, 'server_id' => $server->id]);
         $deployment = Deployment::factory()->create([
             'user_id' => $otherUser->id,
             'project_id' => $project->id,
@@ -413,16 +413,16 @@ class PoliciesTest extends TestCase
         ]);
         $policy = new DeploymentPolicy;
 
-        // Shared authorization model - any authenticated user can cancel any deployment
-        $this->assertTrue($policy->cancel($user, $deployment));
+        // Users can only cancel their own deployments (unless admin or team member)
+        $this->assertFalse($policy->cancel($user, $deployment));
     }
 
     /** @test */
     public function deployment_policy_allows_user_to_rollback_own_deployment(): void
     {
         $user = User::factory()->create();
-        $server = Server::factory()->create();
-        $project = Project::factory()->create(['server_id' => $server->id]);
+        $server = Server::factory()->create(['user_id' => $user->id]);
+        $project = Project::factory()->create(['user_id' => $user->id, 'server_id' => $server->id]);
         $deployment = Deployment::factory()->create([
             'user_id' => $user->id,
             'project_id' => $project->id,
@@ -434,12 +434,12 @@ class PoliciesTest extends TestCase
     }
 
     /** @test */
-    public function deployment_policy_allows_user_to_rollback_others_deployment(): void
+    public function deployment_policy_denies_user_to_rollback_others_deployment(): void
     {
         $user = User::factory()->create();
         $otherUser = User::factory()->create();
-        $server = Server::factory()->create();
-        $project = Project::factory()->create(['server_id' => $server->id]);
+        $server = Server::factory()->create(['user_id' => $otherUser->id]);
+        $project = Project::factory()->create(['user_id' => $otherUser->id, 'server_id' => $server->id]);
         $deployment = Deployment::factory()->create([
             'user_id' => $otherUser->id,
             'project_id' => $project->id,
@@ -447,29 +447,33 @@ class PoliciesTest extends TestCase
         ]);
         $policy = new DeploymentPolicy;
 
-        // Shared authorization model - any authenticated user can rollback any deployment
-        $this->assertTrue($policy->rollback($user, $deployment));
+        // Users can only rollback their own deployments (unless admin or team member)
+        $this->assertFalse($policy->rollback($user, $deployment));
     }
 
     /** @test */
     public function deployment_policy_works_with_different_deployment_statuses(): void
     {
         $user = User::factory()->create();
-        $server = Server::factory()->create();
-        $project = Project::factory()->create(['server_id' => $server->id]);
+        $server = Server::factory()->create(['user_id' => $user->id]);
+        $project = Project::factory()->create(['user_id' => $user->id, 'server_id' => $server->id]);
         $policy = new DeploymentPolicy;
 
+        // Create deployments owned by the user to test status doesn't affect authorization
         $successDeployment = Deployment::factory()->create([
+            'user_id' => $user->id,
             'project_id' => $project->id,
             'server_id' => $server->id,
             'status' => 'success',
         ]);
         $failedDeployment = Deployment::factory()->create([
+            'user_id' => $user->id,
             'project_id' => $project->id,
             'server_id' => $server->id,
             'status' => 'failed',
         ]);
         $runningDeployment = Deployment::factory()->create([
+            'user_id' => $user->id,
             'project_id' => $project->id,
             'server_id' => $server->id,
             'status' => 'running',
@@ -486,16 +490,19 @@ class PoliciesTest extends TestCase
     public function deployment_policy_works_with_deployments_on_different_branches(): void
     {
         $user = User::factory()->create();
-        $server = Server::factory()->create();
-        $project = Project::factory()->create(['server_id' => $server->id]);
+        $server = Server::factory()->create(['user_id' => $user->id]);
+        $project = Project::factory()->create(['user_id' => $user->id, 'server_id' => $server->id]);
         $policy = new DeploymentPolicy;
 
+        // Create deployments owned by the user to test branch doesn't affect authorization
         $mainDeployment = Deployment::factory()->create([
+            'user_id' => $user->id,
             'project_id' => $project->id,
             'server_id' => $server->id,
             'branch' => 'main',
         ]);
         $developDeployment = Deployment::factory()->create([
+            'user_id' => $user->id,
             'project_id' => $project->id,
             'server_id' => $server->id,
             'branch' => 'develop',
@@ -512,112 +519,112 @@ class PoliciesTest extends TestCase
     // ========================================
 
     /** @test */
-    public function different_users_can_manage_same_server(): void
+    public function owner_can_manage_server_but_others_cannot(): void
     {
-        $user1 = User::factory()->create(['email' => 'user1@example.com']);
-        $user2 = User::factory()->create(['email' => 'user2@example.com']);
-        $server = Server::factory()->create(['user_id' => $user1->id]);
+        $owner = User::factory()->create(['email' => 'owner@example.com']);
+        $otherUser = User::factory()->create(['email' => 'other@example.com']);
+        $server = Server::factory()->create(['user_id' => $owner->id]);
         $policy = new ServerPolicy;
 
-        // Both users can view
-        $this->assertTrue($policy->view($user1, $server));
-        $this->assertTrue($policy->view($user2, $server));
+        // Owner can view, update, delete
+        $this->assertTrue($policy->view($owner, $server));
+        $this->assertTrue($policy->update($owner, $server));
+        $this->assertTrue($policy->delete($owner, $server));
 
-        // Both users can update
-        $this->assertTrue($policy->update($user1, $server));
-        $this->assertTrue($policy->update($user2, $server));
-
-        // Both users can delete
-        $this->assertTrue($policy->delete($user1, $server));
-        $this->assertTrue($policy->delete($user2, $server));
+        // Other user cannot view, update, delete
+        $this->assertFalse($policy->view($otherUser, $server));
+        $this->assertFalse($policy->update($otherUser, $server));
+        $this->assertFalse($policy->delete($otherUser, $server));
     }
 
     /** @test */
-    public function different_users_can_manage_same_project(): void
+    public function owner_can_manage_project_but_others_cannot(): void
     {
-        $user1 = User::factory()->create(['email' => 'user1@example.com']);
-        $user2 = User::factory()->create(['email' => 'user2@example.com']);
-        $server = Server::factory()->create();
+        $owner = User::factory()->create(['email' => 'owner@example.com']);
+        $otherUser = User::factory()->create(['email' => 'other@example.com']);
+        $server = Server::factory()->create(['user_id' => $owner->id]);
         $project = Project::factory()->create([
-            'user_id' => $user1->id,
+            'user_id' => $owner->id,
             'server_id' => $server->id,
         ]);
         $policy = new ProjectPolicy;
 
-        // Both users can view
-        $this->assertTrue($policy->view($user1, $project));
-        $this->assertTrue($policy->view($user2, $project));
+        // Owner can view, deploy, update
+        $this->assertTrue($policy->view($owner, $project));
+        $this->assertTrue($policy->deploy($owner, $project));
+        $this->assertTrue($policy->update($owner, $project));
 
-        // Both users can deploy
-        $this->assertTrue($policy->deploy($user1, $project));
-        $this->assertTrue($policy->deploy($user2, $project));
-
-        // Both users can update
-        $this->assertTrue($policy->update($user1, $project));
-        $this->assertTrue($policy->update($user2, $project));
+        // Other user cannot view, deploy, update
+        $this->assertFalse($policy->view($otherUser, $project));
+        $this->assertFalse($policy->deploy($otherUser, $project));
+        $this->assertFalse($policy->update($otherUser, $project));
     }
 
     /** @test */
-    public function different_users_can_manage_same_deployment(): void
+    public function owner_can_manage_deployment_but_others_cannot(): void
     {
-        $user1 = User::factory()->create(['email' => 'user1@example.com']);
-        $user2 = User::factory()->create(['email' => 'user2@example.com']);
-        $server = Server::factory()->create();
-        $project = Project::factory()->create(['server_id' => $server->id]);
+        $owner = User::factory()->create(['email' => 'owner@example.com']);
+        $otherUser = User::factory()->create(['email' => 'other@example.com']);
+        $server = Server::factory()->create(['user_id' => $owner->id]);
+        $project = Project::factory()->create(['user_id' => $owner->id, 'server_id' => $server->id]);
         $deployment = Deployment::factory()->create([
-            'user_id' => $user1->id,
+            'user_id' => $owner->id,
             'project_id' => $project->id,
             'server_id' => $server->id,
         ]);
         $policy = new DeploymentPolicy;
 
-        // Both users can view
-        $this->assertTrue($policy->view($user1, $deployment));
-        $this->assertTrue($policy->view($user2, $deployment));
+        // Owner can view, cancel, rollback
+        $this->assertTrue($policy->view($owner, $deployment));
+        $this->assertTrue($policy->cancel($owner, $deployment));
+        $this->assertTrue($policy->rollback($owner, $deployment));
 
-        // Both users can cancel
-        $this->assertTrue($policy->cancel($user1, $deployment));
-        $this->assertTrue($policy->cancel($user2, $deployment));
-
-        // Both users can rollback
-        $this->assertTrue($policy->rollback($user1, $deployment));
-        $this->assertTrue($policy->rollback($user2, $deployment));
+        // Other user cannot view, cancel, rollback
+        $this->assertFalse($policy->view($otherUser, $deployment));
+        $this->assertFalse($policy->cancel($otherUser, $deployment));
+        $this->assertFalse($policy->rollback($otherUser, $deployment));
     }
 
     /** @test */
-    public function policies_work_consistently_across_multiple_users(): void
+    public function each_user_can_only_access_their_own_resources(): void
     {
-        // Create multiple users
+        // Create multiple users with their own resources
         $users = User::factory()->count(3)->create();
-        $server = Server::factory()->create();
-        $project = Project::factory()->create(['server_id' => $server->id]);
-        $deployment = Deployment::factory()->create([
-            'project_id' => $project->id,
-            'server_id' => $server->id,
-        ]);
 
         $serverPolicy = new ServerPolicy;
         $projectPolicy = new ProjectPolicy;
         $deploymentPolicy = new DeploymentPolicy;
 
-        // All users should have same access rights
+        // Each user should have access to their own resources only
         foreach ($users as $user) {
+            // Create resources owned by this user
+            $server = Server::factory()->create(['user_id' => $user->id]);
+            $project = Project::factory()->create(['user_id' => $user->id, 'server_id' => $server->id]);
+            $deployment = Deployment::factory()->create([
+                'user_id' => $user->id,
+                'project_id' => $project->id,
+                'server_id' => $server->id,
+            ]);
+
+            // All users can viewAny and create
             $this->assertTrue($serverPolicy->viewAny($user));
-            $this->assertTrue($serverPolicy->view($user, $server));
             $this->assertTrue($serverPolicy->create($user));
+            $this->assertTrue($projectPolicy->viewAny($user));
+            $this->assertTrue($projectPolicy->create($user));
+            $this->assertTrue($deploymentPolicy->viewAny($user));
+            $this->assertTrue($deploymentPolicy->create($user));
+
+            // Owner can access their own resources
+            $this->assertTrue($serverPolicy->view($user, $server));
             $this->assertTrue($serverPolicy->update($user, $server));
             $this->assertTrue($serverPolicy->delete($user, $server));
 
-            $this->assertTrue($projectPolicy->viewAny($user));
             $this->assertTrue($projectPolicy->view($user, $project));
-            $this->assertTrue($projectPolicy->create($user));
             $this->assertTrue($projectPolicy->update($user, $project));
             $this->assertTrue($projectPolicy->delete($user, $project));
             $this->assertTrue($projectPolicy->deploy($user, $project));
 
-            $this->assertTrue($deploymentPolicy->viewAny($user));
             $this->assertTrue($deploymentPolicy->view($user, $deployment));
-            $this->assertTrue($deploymentPolicy->create($user));
             $this->assertTrue($deploymentPolicy->cancel($user, $deployment));
             $this->assertTrue($deploymentPolicy->rollback($user, $deployment));
         }
@@ -627,14 +634,14 @@ class PoliciesTest extends TestCase
     public function policies_maintain_authorization_with_soft_deleted_projects(): void
     {
         $user = User::factory()->create();
-        $server = Server::factory()->create();
-        $project = Project::factory()->create(['server_id' => $server->id]);
+        $server = Server::factory()->create(['user_id' => $user->id]);
+        $project = Project::factory()->create(['user_id' => $user->id, 'server_id' => $server->id]);
         $policy = new ProjectPolicy;
 
-        // Before soft delete
+        // Before soft delete - owner can access
         $this->assertTrue($policy->view($user, $project));
 
-        // After soft delete
+        // After soft delete - owner can still access
         $project->delete();
         $this->assertTrue($policy->view($user, $project));
         $this->assertTrue($policy->update($user, $project));
@@ -644,13 +651,13 @@ class PoliciesTest extends TestCase
     public function policies_maintain_authorization_with_soft_deleted_servers(): void
     {
         $user = User::factory()->create();
-        $server = Server::factory()->create();
+        $server = Server::factory()->create(['user_id' => $user->id]);
         $policy = new ServerPolicy;
 
-        // Before soft delete
+        // Before soft delete - owner can access
         $this->assertTrue($policy->view($user, $server));
 
-        // After soft delete
+        // After soft delete - owner can still access
         $server->delete();
         $this->assertTrue($policy->view($user, $server));
         $this->assertTrue($policy->update($user, $server));

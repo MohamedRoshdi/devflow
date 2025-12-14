@@ -364,9 +364,10 @@ class HelpSystemModelsTest extends TestCase
     /** @test */
     public function help_interaction_stores_interaction_type(): void
     {
-        $interaction = HelpInteraction::factory()->create(['interaction_type' => 'viewed']);
+        // Use 'view' which is the valid enum value (not 'viewed')
+        $interaction = HelpInteraction::factory()->create(['interaction_type' => 'view']);
 
-        $this->assertEquals('viewed', $interaction->interaction_type);
+        $this->assertEquals('view', $interaction->interaction_type);
     }
 
     /** @test */

@@ -109,7 +109,8 @@ class AlertModelsTest extends TestCase
         $resolved = AlertHistory::factory()->create(['status' => 'resolved']);
         $this->assertEquals('green', $resolved->status_color);
 
-        $unknown = AlertHistory::factory()->create(['status' => 'unknown']);
+        // Use make() for unknown status as it's not in the enum
+        $unknown = AlertHistory::factory()->make(['status' => 'unknown']);
         $this->assertEquals('gray', $unknown->status_color);
     }
 
@@ -128,7 +129,8 @@ class AlertModelsTest extends TestCase
         $load = AlertHistory::factory()->create(['resource_type' => 'load']);
         $this->assertEquals('heroicon-o-chart-bar', $load->resource_type_icon);
 
-        $unknown = AlertHistory::factory()->create(['resource_type' => 'unknown']);
+        // Use make() for unknown resource_type as it's not in the enum
+        $unknown = AlertHistory::factory()->make(['resource_type' => 'unknown']);
         $this->assertEquals('heroicon-o-bell-alert', $unknown->resource_type_icon);
     }
 

@@ -731,7 +731,8 @@ class AdditionalModelsTest extends TestCase
             'resource_type' => 'cpu',
         ]);
 
-        $this->assertEquals('> 80%', $alert->threshold_display);
+        // threshold_value is cast as decimal:2, so it shows '80.00%'
+        $this->assertEquals('> 80.00%', $alert->threshold_display);
     }
 
     public function test_resource_alert_is_in_cooldown(): void
