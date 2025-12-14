@@ -158,7 +158,7 @@ class PipelineRun extends Model
             return null;
         }
 
-        return $this->finished_at->diffInSeconds($this->started_at);
+        return (int) $this->started_at->diffInSeconds($this->finished_at);
     }
 
     /**

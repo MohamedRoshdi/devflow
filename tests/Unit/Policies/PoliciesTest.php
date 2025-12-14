@@ -47,15 +47,15 @@ class PoliciesTest extends TestCase
     }
 
     /** @test */
-    public function server_policy_allows_user_to_view_others_server(): void
+    public function server_policy_denies_user_to_view_others_server(): void
     {
         $user = User::factory()->create();
         $otherUser = User::factory()->create();
         $server = Server::factory()->create(['user_id' => $otherUser->id]);
         $policy = new ServerPolicy;
 
-        // Shared authorization model - any authenticated user can view any server
-        $this->assertTrue($policy->view($user, $server));
+        // Users can only view their own servers (unless admin or team member)
+        $this->assertFalse($policy->view($user, $server));
     }
 
     /** @test */
@@ -78,15 +78,15 @@ class PoliciesTest extends TestCase
     }
 
     /** @test */
-    public function server_policy_allows_user_to_update_others_server(): void
+    public function server_policy_denies_user_to_update_others_server(): void
     {
         $user = User::factory()->create();
         $otherUser = User::factory()->create();
         $server = Server::factory()->create(['user_id' => $otherUser->id]);
         $policy = new ServerPolicy;
 
-        // Shared authorization model - any authenticated user can update any server
-        $this->assertTrue($policy->update($user, $server));
+        // Users can only update their own servers (unless admin or team member)
+        $this->assertFalse($policy->update($user, $server));
     }
 
     /** @test */
@@ -100,15 +100,15 @@ class PoliciesTest extends TestCase
     }
 
     /** @test */
-    public function server_policy_allows_user_to_delete_others_server(): void
+    public function server_policy_denies_user_to_delete_others_server(): void
     {
         $user = User::factory()->create();
         $otherUser = User::factory()->create();
         $server = Server::factory()->create(['user_id' => $otherUser->id]);
         $policy = new ServerPolicy;
 
-        // Shared authorization model - any authenticated user can delete any server
-        $this->assertTrue($policy->delete($user, $server));
+        // Users can only delete their own servers (unless admin)
+        $this->assertFalse($policy->delete($user, $server));
     }
 
     /** @test */
@@ -117,9 +117,10 @@ class PoliciesTest extends TestCase
         $user = User::factory()->create();
         $policy = new ServerPolicy;
 
-        $onlineServer = Server::factory()->create(['status' => 'online']);
-        $offlineServer = Server::factory()->create(['status' => 'offline']);
-        $maintenanceServer = Server::factory()->create(['status' => 'maintenance']);
+        // Create servers owned by the user to test status doesn't affect authorization
+        $onlineServer = Server::factory()->create(['user_id' => $user->id, 'status' => 'online']);
+        $offlineServer = Server::factory()->create(['user_id' => $user->id, 'status' => 'offline']);
+        $maintenanceServer = Server::factory()->create(['user_id' => $user->id, 'status' => 'maintenance']);
 
         $this->assertTrue($policy->view($user, $onlineServer));
         $this->assertTrue($policy->view($user, $offlineServer));
@@ -156,7 +157,7 @@ class PoliciesTest extends TestCase
     }
 
     /** @test */
-    public function project_policy_allows_user_to_view_others_project(): void
+    public function project_policy_denies_user_to_view_others_project(): void
     {
         $user = User::factory()->create();
         $otherUser = User::factory()->create();
@@ -167,8 +168,8 @@ class PoliciesTest extends TestCase
         ]);
         $policy = new ProjectPolicy;
 
-        // Shared authorization model - any authenticated user can view any project
-        $this->assertTrue($policy->view($user, $project));
+        // Users can only view their own projects (unless admin or team member)
+        $this->assertFalse($policy->view($user, $project));
     }
 
     /** @test */
@@ -195,7 +196,7 @@ class PoliciesTest extends TestCase
     }
 
     /** @test */
-    public function project_policy_allows_user_to_update_others_project(): void
+    public function project_policy_denies_user_to_update_others_project(): void
     {
         $user = User::factory()->create();
         $otherUser = User::factory()->create();
@@ -206,8 +207,8 @@ class PoliciesTest extends TestCase
         ]);
         $policy = new ProjectPolicy;
 
-        // Shared authorization model - any authenticated user can update any project
-        $this->assertTrue($policy->update($user, $project));
+        // Users can only update their own projects (unless admin or team member)
+        $this->assertFalse($policy->update($user, $project));
     }
 
     /** @test */
@@ -225,7 +226,7 @@ class PoliciesTest extends TestCase
     }
 
     /** @test */
-    public function project_policy_allows_user_to_delete_others_project(): void
+    public function project_policy_denies_user_to_delete_others_project(): void
     {
         $user = User::factory()->create();
         $otherUser = User::factory()->create();
@@ -236,8 +237,8 @@ class PoliciesTest extends TestCase
         ]);
         $policy = new ProjectPolicy;
 
-        // Shared authorization model - any authenticated user can delete any project
-        $this->assertTrue($policy->delete($user, $project));
+        // Users can only delete their own projects (unless admin)
+        $this->assertFalse($policy->delete($user, $project));
     }
 
     /** @test */
@@ -255,7 +256,7 @@ class PoliciesTest extends TestCase
     }
 
     /** @test */
-    public function project_policy_allows_user_to_deploy_others_project(): void
+    public function project_policy_denies_user_to_deploy_others_project(): void
     {
         $user = User::factory()->create();
         $otherUser = User::factory()->create();
@@ -266,26 +267,30 @@ class PoliciesTest extends TestCase
         ]);
         $policy = new ProjectPolicy;
 
-        // Shared authorization model - any authenticated user can deploy any project
-        $this->assertTrue($policy->deploy($user, $project));
+        // Users can only deploy their own projects (unless admin or team member)
+        $this->assertFalse($policy->deploy($user, $project));
     }
 
     /** @test */
     public function project_policy_works_with_different_project_statuses(): void
     {
         $user = User::factory()->create();
-        $server = Server::factory()->create();
+        $server = Server::factory()->create(['user_id' => $user->id]);
         $policy = new ProjectPolicy;
 
+        // Create projects owned by user to test status doesn't affect authorization
         $runningProject = Project::factory()->create([
+            'user_id' => $user->id,
             'server_id' => $server->id,
             'status' => 'running',
         ]);
         $stoppedProject = Project::factory()->create([
+            'user_id' => $user->id,
             'server_id' => $server->id,
             'status' => 'stopped',
         ]);
         $buildingProject = Project::factory()->create([
+            'user_id' => $user->id,
             'server_id' => $server->id,
             'status' => 'building',
         ]);
@@ -301,14 +306,17 @@ class PoliciesTest extends TestCase
     public function project_policy_works_with_different_project_frameworks(): void
     {
         $user = User::factory()->create();
-        $server = Server::factory()->create();
+        $server = Server::factory()->create(['user_id' => $user->id]);
         $policy = new ProjectPolicy;
 
+        // Create projects owned by user to test framework doesn't affect authorization
         $laravelProject = Project::factory()->create([
+            'user_id' => $user->id,
             'server_id' => $server->id,
             'framework' => 'laravel',
         ]);
         $nodeProject = Project::factory()->create([
+            'user_id' => $user->id,
             'server_id' => $server->id,
             'framework' => 'nodejs',
         ]);

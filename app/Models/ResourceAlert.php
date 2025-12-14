@@ -137,7 +137,7 @@ class ResourceAlert extends Model
             return null;
         }
 
-        return now()->diffInMinutes($this->last_triggered_at->addMinutes($this->cooldown_minutes));
+        return (int) now()->diffInMinutes($this->last_triggered_at->addMinutes($this->cooldown_minutes));
     }
 
     /**

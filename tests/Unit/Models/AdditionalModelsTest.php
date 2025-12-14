@@ -1379,14 +1379,8 @@ class AdditionalModelsTest extends TestCase
 
     public function test_tenant_deployment_belongs_to_tenant(): void
     {
-        // Create tenant manually since factory doesn't exist
         $project = Project::factory()->create();
-        $tenant = Tenant::create([
-            'project_id' => $project->id,
-            'name' => 'Test Tenant',
-            'subdomain' => 'test-tenant',
-            'status' => 'active',
-        ]);
+        $tenant = Tenant::factory()->create(['project_id' => $project->id]);
 
         $deployment = Deployment::factory()->create(['project_id' => $project->id]);
         $tenantDeployment = TenantDeployment::create([
@@ -1402,12 +1396,7 @@ class AdditionalModelsTest extends TestCase
     public function test_tenant_deployment_belongs_to_deployment(): void
     {
         $project = Project::factory()->create();
-        $tenant = Tenant::create([
-            'project_id' => $project->id,
-            'name' => 'Test Tenant',
-            'subdomain' => 'test-tenant',
-            'status' => 'active',
-        ]);
+        $tenant = Tenant::factory()->create(['project_id' => $project->id]);
 
         $deployment = Deployment::factory()->create(['project_id' => $project->id]);
         $tenantDeployment = TenantDeployment::create([
@@ -1423,12 +1412,7 @@ class AdditionalModelsTest extends TestCase
     public function test_tenant_deployment_creates_valid_instance(): void
     {
         $project = Project::factory()->create();
-        $tenant = Tenant::create([
-            'project_id' => $project->id,
-            'name' => 'Test Tenant',
-            'subdomain' => 'test-tenant',
-            'status' => 'active',
-        ]);
+        $tenant = Tenant::factory()->create(['project_id' => $project->id]);
 
         $deployment = Deployment::factory()->create(['project_id' => $project->id]);
         $tenantDeployment = TenantDeployment::create([
