@@ -434,15 +434,17 @@ This document contains all pending tasks, improvements, and feature requests for
 
 ### Caching Strategy Improvements
 
-- [ ] **Add caching to ClusterManager**
-  - File: `app/Livewire/Kubernetes/ClusterManager.php:77`
-  - Issue: No pagination caching, frequent API calls
-  - Task: Cache cluster list for 60 seconds
+- [x] **Add caching to ClusterManager** ✅ COMPLETED
+  - File: `app/Livewire/Kubernetes/ClusterManager.php`
+  - Added: `#[Computed]` properties `deployableProjects()` and `clustersList()`
+  - Cached: Projects dropdown (5-min TTL), cluster count (60s TTL)
+  - Added: Cache invalidation on save, delete, and refresh actions
 
-- [ ] **Add caching to HelpContentManager**
-  - File: `app/Livewire/Admin/HelpContentManager.php:116`
-  - Issue: Frequent database hits for help content
-  - Task: Cache help content for 5 minutes
+- [x] **Add caching to HelpContentManager** ✅ COMPLETED
+  - File: `app/Livewire/Admin/HelpContentManager.php`
+  - Added: Caching to `stats()` and `categories()` computed properties (5-min TTL)
+  - Added: `clearLocalCaches()` method for coordinated invalidation
+  - Integrated: With existing HelpContentService cache clearing
 
 - [ ] **Improve cache invalidation strategy**
   - Issue: Some caches not properly invalidated on updates
@@ -625,12 +627,12 @@ This document contains all pending tasks, improvements, and feature requests for
 | High Tests | 18 | 18 | 0 |
 | High UI | 6 | 6 | 0 |
 | Medium Abstractions | 3 | 3 | 0 |
-| Medium Caching | 3 | 0 | 3 |
+| Medium Caching | 3 | 2 | 1 |
 | Medium Tests | 13 | 5 | 8 |
 | Medium Tasks | 17+ | 0 | 17+ |
 | Low Priority | 15+ | 0 | 15+ |
 | Planned Features | 5 | 0 | 5 |
-| **TOTAL** | **127+** | **82** | **45+** |
+| **TOTAL** | **127+** | **84** | **43+** |
 
 ---
 
