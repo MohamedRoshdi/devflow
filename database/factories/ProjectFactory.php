@@ -21,7 +21,8 @@ class ProjectFactory extends Factory
      */
     public function definition(): array
     {
-        $name = fake()->words(2, true).' Project';
+        $uniqueId = fake()->unique()->numerify('######');
+        $name = fake()->words(2, true).' Project '.$uniqueId;
 
         return [
             'user_id' => User::factory(),

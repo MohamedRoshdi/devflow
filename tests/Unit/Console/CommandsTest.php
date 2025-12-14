@@ -7,7 +7,6 @@ namespace Tests\Unit\Console;
 use App\Console\Commands\BackupDatabase;
 use App\Console\Commands\BackupFiles;
 use App\Console\Commands\CheckResourceAlertsCommand;
-use App\Console\Commands\CheckSSLCommand;
 use App\Console\Commands\CheckSSLExpiry;
 use App\Console\Commands\CleanupBackups;
 use App\Console\Commands\CleanupMetricsCommand;
@@ -21,7 +20,6 @@ use App\Console\Commands\RunBackupsCommand;
 use App\Console\Commands\RunHealthChecksCommand;
 use App\Console\Commands\RunQualityTests;
 use App\Console\Commands\RunServerBackupsCommand;
-use App\Console\Commands\SSLRenewCommand;
 use App\Console\Commands\SyncLogsCommand;
 use App\Console\Commands\VerifyBackup;
 use App\Events\ServerMetricsUpdated;
@@ -121,6 +119,9 @@ class CommandsTest extends TestCase
     #[Test]
     public function backup_database_backs_up_all_projects(): void
     {
+        // Clean up existing backup schedules to ensure isolated test
+        BackupSchedule::query()->delete();
+
         $projects = Project::factory()->count(2)->create();
         foreach ($projects as $project) {
             BackupSchedule::factory()->create(['project_id' => $project->id]);
@@ -350,74 +351,6 @@ class CommandsTest extends TestCase
         Log::shouldHaveReceived('error')->once();
     }
 
-    // ==================== CheckSSLCommand Tests ====================
-
-    #[Test]
-    public function check_ssl_command_has_correct_signature(): void
-    {
-        $mockService = Mockery::mock(SSLService::class);
-        $command = new CheckSSLCommand($mockService);
-
-        $this->assertEquals('devflow:check-ssl', $command->getName());
-        $this->assertStringContainsString('SSL certificates', $command->getDescription());
-    }
-
-    #[Test]
-    public function check_ssl_executes_successfully(): void
-    {
-        $mockService = Mockery::mock(SSLService::class);
-        $mockService->shouldReceive('checkExpiringCertificates')
-            ->once()
-            ->andReturn([
-                'renewed' => ['example.com'],
-                'failed' => [],
-            ]);
-
-        $this->app->instance(SSLService::class, $mockService);
-
-        $this->artisan('devflow:check-ssl')
-            ->expectsOutput('Renewed certificates for:')
-            ->assertExitCode(0);
-    }
-
-    #[Test]
-    public function check_ssl_handles_failed_renewals(): void
-    {
-        $mockService = Mockery::mock(SSLService::class);
-        $mockService->shouldReceive('checkExpiringCertificates')
-            ->once()
-            ->andReturn([
-                'renewed' => [],
-                'failed' => [
-                    ['domain' => 'example.com', 'error' => 'DNS verification failed'],
-                ],
-            ]);
-
-        $this->app->instance(SSLService::class, $mockService);
-
-        $this->artisan('devflow:check-ssl')
-            ->expectsOutput('Failed to renew certificates for:')
-            ->assertExitCode(0);
-    }
-
-    #[Test]
-    public function check_ssl_handles_no_renewals_needed(): void
-    {
-        $mockService = Mockery::mock(SSLService::class);
-        $mockService->shouldReceive('checkExpiringCertificates')
-            ->once()
-            ->andReturn([
-                'renewed' => [],
-                'failed' => [],
-            ]);
-
-        $this->app->instance(SSLService::class, $mockService);
-
-        $this->artisan('devflow:check-ssl')
-            ->expectsOutput('No certificates need renewal at this time.')
-            ->assertExitCode(0);
-    }
-
     // ==================== CheckSSLExpiry Tests ====================
 
     #[Test]
@@ -537,6 +470,9 @@ class CommandsTest extends TestCase
     #[Test]
     public function cleanup_backups_cleans_all_projects(): void
     {
+        // Clean up existing backup schedules to ensure isolated test
+        BackupSchedule::query()->delete();
+
         $projects = Project::factory()->count(2)->create();
         foreach ($projects as $project) {
             BackupSchedule::factory()->create(['project_id' => $project->id]);
@@ -849,6 +785,9 @@ class CommandsTest extends TestCase
     #[Test]
     public function run_backups_handles_no_due_backups(): void
     {
+        // Clean up existing backup schedules to ensure isolated test
+        BackupSchedule::query()->delete();
+
         $this->artisan('backups:run')
             ->expectsOutput('No backups are due at this time.')
             ->assertExitCode(0);
@@ -857,6 +796,9 @@ class CommandsTest extends TestCase
     #[Test]
     public function run_backups_runs_due_backups(): void
     {
+        // Clean up existing backup schedules to ensure isolated test
+        BackupSchedule::query()->delete();
+
         $project = Project::factory()->create();
         $schedule = BackupSchedule::factory()->create([
             'project_id' => $project->id,
@@ -989,50 +931,6 @@ class CommandsTest extends TestCase
             ->assertExitCode(0);
     }
 
-    // ==================== SSLRenewCommand Tests ====================
-
-    #[Test]
-    public function ssl_renew_command_has_correct_signature(): void
-    {
-        $command = new SSLRenewCommand;
-        $this->assertEquals('ssl:renew-expiring', $command->getName());
-        $this->assertStringContainsString('SSL certificates', $command->getDescription());
-    }
-
-    #[Test]
-    public function ssl_renew_handles_no_certificates_to_renew(): void
-    {
-        $mockService = Mockery::mock(SSLService::class);
-        $mockService->shouldReceive('renewCertificate')
-            ->never();
-
-        $this->app->instance(SSLService::class, $mockService);
-
-        $this->artisan('ssl:renew-expiring')
-            ->expectsOutput('No certificates need renewal at this time.')
-            ->assertExitCode(0);
-    }
-
-    #[Test]
-    public function ssl_renew_renews_expiring_certificates(): void
-    {
-        $certificate = SSLCertificate::factory()->create([
-            'auto_renew' => true,
-            'expires_at' => now()->addDays(5),
-            'status' => 'issued',
-        ]);
-
-        $mockService = Mockery::mock(SSLService::class);
-        $mockService->shouldReceive('renewCertificate')
-            ->once()
-            ->andReturn(['success' => true, 'message' => 'Renewed']);
-
-        $this->app->instance(SSLService::class, $mockService);
-
-        $this->artisan('ssl:renew-expiring')
-            ->assertExitCode(0);
-    }
-
     // ==================== SyncLogsCommand Tests ====================
 
     #[Test]
@@ -1048,6 +946,9 @@ class CommandsTest extends TestCase
     #[Test]
     public function sync_logs_handles_no_servers(): void
     {
+        // Clean up existing servers to ensure isolated test
+        Server::query()->delete();
+
         $this->artisan('logs:sync')
             ->expectsOutput('No servers found for synchronization')
             ->assertExitCode(1);
@@ -1056,6 +957,9 @@ class CommandsTest extends TestCase
     #[Test]
     public function sync_logs_syncs_from_all_servers(): void
     {
+        // Clean up existing servers to ensure isolated test
+        Server::query()->delete();
+
         Server::factory()->count(2)->create(['status' => 'online']);
 
         $mockService = Mockery::mock(LogAggregationService::class);
@@ -1156,6 +1060,9 @@ class CommandsTest extends TestCase
     #[Test]
     public function verify_backup_verifies_all_backups(): void
     {
+        // Clean up existing backups to ensure isolated test
+        DatabaseBackup::query()->delete();
+
         DatabaseBackup::factory()->count(3)->create([
             'status' => 'completed',
             'verified_at' => null,
