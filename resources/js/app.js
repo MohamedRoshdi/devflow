@@ -203,8 +203,150 @@ window.trackLocation = function() {
     }
 };
 
-// Web Terminal Alpine.js Component
+// Register Alpine.js Components
 document.addEventListener('alpine:init', () => {
+    // Keyboard Shortcuts Component
+    Alpine.data('keyboardShortcuts', () => ({
+        showHelp: false,
+        pendingKey: null,
+        pendingTimeout: null,
+
+        init() {
+            // Nothing special needed on init
+        },
+
+        handleKeydown(event) {
+            // Don't trigger shortcuts when typing in inputs
+            const target = event.target;
+            const isInput = target.tagName === 'INPUT' ||
+                           target.tagName === 'TEXTAREA' ||
+                           target.tagName === 'SELECT' ||
+                           target.isContentEditable;
+
+            // Allow Escape in inputs
+            if (event.key === 'Escape') {
+                this.showHelp = false;
+                this.pendingKey = null;
+                return;
+            }
+
+            // Don't process other shortcuts in inputs
+            if (isInput) return;
+
+            // Handle pending combo keys (g + ...)
+            if (this.pendingKey === 'g') {
+                this.clearPending();
+                event.preventDefault();
+
+                switch (event.key.toLowerCase()) {
+                    case 'd':
+                        window.location.href = '/dashboard';
+                        break;
+                    case 'p':
+                        window.location.href = '/projects';
+                        break;
+                    case 's':
+                        window.location.href = '/servers';
+                        break;
+                    case 'l':
+                        window.location.href = '/deployments';
+                        break;
+                    case 't':
+                        window.location.href = '/settings';
+                        break;
+                }
+                return;
+            }
+
+            // Single key shortcuts
+            switch (event.key) {
+                case '?':
+                    event.preventDefault();
+                    this.showHelp = !this.showHelp;
+                    break;
+
+                case '/':
+                    event.preventDefault();
+                    this.focusSearch();
+                    break;
+
+                case 'g':
+                    event.preventDefault();
+                    this.pendingKey = 'g';
+                    this.pendingTimeout = setTimeout(() => {
+                        this.clearPending();
+                    }, 1500);
+                    break;
+
+                case 'n':
+                    event.preventDefault();
+                    this.triggerNew();
+                    break;
+
+                case 'r':
+                    if (!event.ctrlKey && !event.metaKey) {
+                        event.preventDefault();
+                        this.triggerRefresh();
+                    }
+                    break;
+
+                case 'D':
+                    if (event.shiftKey) {
+                        event.preventDefault();
+                        this.toggleDarkMode();
+                    }
+                    break;
+            }
+        },
+
+        clearPending() {
+            this.pendingKey = null;
+            if (this.pendingTimeout) {
+                clearTimeout(this.pendingTimeout);
+                this.pendingTimeout = null;
+            }
+        },
+
+        focusSearch() {
+            const searchInputs = document.querySelectorAll(
+                'input[type="search"], input[placeholder*="Search"], input[wire\\:model*="search"], input[x-model*="search"]'
+            );
+            if (searchInputs.length > 0) {
+                searchInputs[0].focus();
+                searchInputs[0].select();
+            }
+        },
+
+        triggerNew() {
+            const addButton = document.querySelector(
+                '[href$="/create"], [href*="/new"], button[wire\\:click*="showCreate"], button[wire\\:click*="openModal"]'
+            );
+            if (addButton) {
+                addButton.click();
+            }
+        },
+
+        triggerRefresh() {
+            if (typeof Livewire !== 'undefined') {
+                Livewire.dispatch('$refresh');
+            } else {
+                window.location.reload();
+            }
+        },
+
+        toggleDarkMode() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+    }));
+
+    // Web Terminal Component
     Alpine.data('webTerminal', (livewire, serverId) => ({
         terminal: null,
         fitAddon: null,
