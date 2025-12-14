@@ -446,9 +446,14 @@ This document contains all pending tasks, improvements, and feature requests for
   - Added: `clearLocalCaches()` method for coordinated invalidation
   - Integrated: With existing HelpContentService cache clearing
 
-- [ ] **Improve cache invalidation strategy**
-  - Issue: Some caches not properly invalidated on updates
-  - Task: Implement event-based cache invalidation
+- [x] **Improve cache invalidation strategy** ✅ COMPLETED
+  - Created: `app/Services/CacheInvalidationService.php` (159 lines)
+    - Centralized cache key patterns per model
+    - Methods: `invalidateForModel()`, `invalidateProjectCaches()`, `invalidateDeploymentCaches()`, etc.
+  - Created: `app/Observers/CacheInvalidationObserver.php` (61 lines)
+    - Handles: created, updated, deleted, restored, forceDeleted events
+  - Updated: `app/Providers/AuditServiceProvider.php`
+    - Registered observer for: Project, Server, Deployment, HelpContent, KubernetesCluster
 
 ### Database Optimization
 
@@ -627,12 +632,12 @@ This document contains all pending tasks, improvements, and feature requests for
 | High Tests | 18 | 18 | 0 |
 | High UI | 6 | 6 | 0 |
 | Medium Abstractions | 3 | 3 | 0 |
-| Medium Caching | 3 | 2 | 1 |
+| Medium Caching | 3 | 3 | 0 |
 | Medium Tests | 13 | 5 | 8 |
 | Medium Tasks | 17+ | 0 | 17+ |
 | Low Priority | 15+ | 0 | 15+ |
 | Planned Features | 5 | 0 | 5 |
-| **TOTAL** | **127+** | **84** | **43+** |
+| **TOTAL** | **127+** | **85** | **42+** |
 
 ---
 
