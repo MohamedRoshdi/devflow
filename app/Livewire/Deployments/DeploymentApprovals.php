@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire\Deployments;
 
+use App\Livewire\Concerns\WithDeploymentFiltering;
 use App\Models\DeploymentApproval;
-use App\Models\Project;
 use App\Services\DeploymentApprovalService;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
@@ -14,13 +14,8 @@ use Livewire\WithPagination;
 
 class DeploymentApprovals extends Component
 {
+    use WithDeploymentFiltering;
     use WithPagination;
-
-    public string $search = '';
-
-    public string $statusFilter = 'pending';
-
-    public ?int $projectFilter = null;
 
     public ?int $selectedApprovalId = null;
 
@@ -78,20 +73,10 @@ class DeploymentApprovals extends Component
         return $query->paginate(20);
     }
 
-    #[Computed]
-    public function projects()
+    public function mount(): void
     {
-        $user = auth()->user();
-        if ($user === null) {
-            return collect();
-        }
-
-        // Get projects user has access to
-        if ($user->can('approve_all_deployments')) {
-            return Project::orderBy('name')->get(['id', 'name']);
-        }
-
-        return $user->projects()->orderBy('name')->get(['id', 'name']);
+        // Default to showing pending approvals
+        $this->statusFilter = 'pending';
     }
 
     #[Computed]
@@ -172,21 +157,6 @@ class DeploymentApprovals extends Component
                 'message' => $e->getMessage(),
             ]);
         }
-    }
-
-    public function updatingSearch(): void
-    {
-        $this->resetPage();
-    }
-
-    public function updatingStatusFilter(): void
-    {
-        $this->resetPage();
-    }
-
-    public function updatingProjectFilter(): void
-    {
-        $this->resetPage();
     }
 
     #[On('approval-requested')]

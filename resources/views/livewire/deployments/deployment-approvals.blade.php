@@ -71,7 +71,7 @@
                     <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">{{ __('labels.project') }}</label>
                     <select wire:model.live="projectFilter" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500">
                         <option value="">{{ __('labels.all_projects') }}</option>
-                        @foreach($this->projects as $project)
+                        @foreach($this->filterProjects as $project)
                             <option value="{{ $project->id }}">{{ $project->name }}</option>
                         @endforeach
                     </select>
