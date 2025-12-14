@@ -1,6 +1,6 @@
 # DevFlow Pro - Task Backlog & Roadmap
 
-> Last Updated: 2025-12-13 | Version: 5.53.0
+> Last Updated: 2025-12-14 | Version: 5.53.0
 
 This document contains all pending tasks, improvements, and feature requests for DevFlow Pro, organized by priority and category.
 
@@ -188,37 +188,44 @@ This document contains all pending tasks, improvements, and feature requests for
 
 ### Large Component Refactoring (High Priority)
 
-- [ ] **Refactor Dashboard.php - TOO LARGE**
-  - File: `app/Livewire/Dashboard.php` (974 lines)
-  - Issue: Single component handling multiple concerns
-  - Task: Split into:
-    - `DashboardStats.php` - Statistics cards
-    - `DashboardProjects.php` - Project listing
-    - `DashboardQuickActions.php` - Action buttons
-    - `DashboardRecentActivity.php` - Activity feed
+- [x] **Refactor Dashboard.php - TOO LARGE** ✅ COMPLETED
+  - File: `app/Livewire/Dashboard.php` (974 → 387 lines, 60% reduction)
+  - Split into child Livewire components:
+    - `app/Livewire/Dashboard/DashboardStats.php` (206 lines) - Statistics cards (main + secondary)
+    - `app/Livewire/Dashboard/DashboardQuickActions.php` (113 lines) - Action buttons
+    - `app/Livewire/Dashboard/DashboardRecentActivity.php` (190 lines) - Activity feed
+    - `app/Livewire/Dashboard/DashboardServerHealth.php` (137 lines) - Server health metrics
+  - Created blade views for all child components
+  - All components pass PHPStan Level 8
 
-- [ ] **Refactor TeamSettings.php**
-  - File: `app/Livewire/Teams/TeamSettings.php` (467 lines)
-  - Issue: Multiple concerns mixed (settings, members, invitations)
-  - Task: Extract into:
-    - `TeamGeneralSettings.php` - Basic team settings
-    - `TeamMemberManager.php` - Member management
-    - `TeamInvitations.php` - Invitation handling
+- [x] **Refactor TeamSettings.php** ✅ COMPLETED
+  - File: `app/Livewire/Teams/TeamSettings.php` (467 → 192 lines, 59% reduction)
+  - Split into child Livewire components:
+    - `app/Livewire/Teams/TeamGeneralSettings.php` (114 lines) - Basic team settings
+    - `app/Livewire/Teams/TeamMemberManager.php` (132 lines) - Member management
+    - `app/Livewire/Teams/TeamInvitations.php` (197 lines) - Invitation handling
+  - Created blade views for all child components
+  - All components pass PHPStan Level 8
 
-- [ ] **Refactor ProjectShow.php**
-  - File: `app/Livewire/Projects/ProjectShow.php` (459 lines)
-  - Issue: Too many responsibilities
-  - Task: Use Livewire child components for each tab
+- [x] **Refactor ProjectShow.php** ✅ COMPLETED
+  - File: `app/Livewire/Projects/ProjectShow.php` (459 → 205 lines, 55% reduction)
+  - Removed duplicate git methods (already handled by ProjectGit child component)
+  - Kept minimal update status checking for overview banner
+  - Removed unused branch selector/confirm modals from blade view
+  - Child components already in use: ProjectGit, ProjectEnvironment, DeploymentList, ProjectWebhookSettings
 
-- [ ] **Refactor ProjectCreate.php**
-  - File: `app/Livewire/Projects/ProjectCreate.php` (449 lines)
-  - Issue: Complex multi-step form handling
-  - Task: Extract step components or use form wizard trait
+- [x] **Refactor ProjectCreate.php** ✅ COMPLETED
+  - File: `app/Livewire/Projects/ProjectCreate.php` (449 → 422 lines)
+  - Created reusable `HasWizardSteps` trait (110 lines) in `app/Livewire/Concerns/`
+  - Trait provides: `nextStep()`, `previousStep()`, `goToStep()`, progress helpers
+  - Improved code organization with extracted helper methods
+  - All components pass PHPStan Level 8
 
-- [ ] **Refactor GitManager.php**
-  - File: `app/Livewire/Projects/DevFlow/GitManager.php` (446 lines)
-  - Issue: Git operations could be abstracted
-  - Task: Extract `GitOperationsService` for reusability
+- [x] **Refactor GitManager.php** ✅ COMPLETED
+  - File: `app/Livewire/Projects/DevFlow/GitManager.php` (446 → 279 lines, 37% reduction)
+  - Created: `app/Services/LocalGitService.php` (482 lines) for local git operations
+  - Service methods: `getGitInfo()`, `getCommits()`, `getStatus()`, `getBranches()`, `initialize()`, `pull()`, `switchBranch()`, `remove()`
+  - Separate from SSH-based GitService for remote server operations
 
 ### Silent Failure Logging Issues (High Priority)
 
@@ -594,7 +601,7 @@ This document contains all pending tasks, improvements, and feature requests for
 | Critical N+1 Queries | 3 | 3 | 0 |
 | Critical Tests | 8 | 8 | 0 |
 | Critical UI | 4 | 4 | 0 |
-| High Refactoring | 5 | 0 | 5 |
+| High Refactoring | 5 | 5 | 0 |
 | High Silent Failures | 4 | 4 | 0 |
 | High Security | 3 | 3 | 0 |
 | High Features | 3 | 3 | 0 |
@@ -607,7 +614,7 @@ This document contains all pending tasks, improvements, and feature requests for
 | Medium Tasks | 17+ | 0 | 17+ |
 | Low Priority | 15+ | 0 | 15+ |
 | Planned Features | 5 | 0 | 5 |
-| **TOTAL** | **127+** | **73** | **54+** |
+| **TOTAL** | **127+** | **78** | **49+** |
 
 ---
 
