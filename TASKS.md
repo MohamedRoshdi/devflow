@@ -411,10 +411,17 @@ This document contains all pending tasks, improvements, and feature requests for
   - Hooks: `loadEditData(int $id)`, `resetModalForm()` for customization
   - Updated: `ResourceAlertManager.php` as demonstration (295→276 lines)
 
-- [ ] **Create WithFormValidation trait for Create/Edit pairs**
-  - Issue: `ProjectCreate.php` and `ProjectEdit.php` share validation logic
-  - Issue: `ServerCreate.php` and `ServerEdit.php` share validation logic
-  - Task: Extract common validation patterns
+- [x] **Create WithFormValidation trait for Create/Edit pairs** ✅ COMPLETED
+  - Created: `app/Livewire/Concerns/HasProjectFormFields.php` (142 lines)
+    - Properties: name, slug, server_id, repository_url, branch, framework, php_version, node_version, root_directory, build_command, start_command, auto_deploy, latitude, longitude
+    - Computed: `getFrameworksProperty()`, `getPhpVersionsProperty()`, `getNodeVersionsProperty()`
+    - Helpers: `baseProjectRules()`, `uniqueSlugRule(?int $ignoreId)`, `updatedName()`
+  - Created: `app/Livewire/Concerns/HasServerFormFields.php` (152 lines)
+    - Properties: name, hostname, ip_address, port, username, ssh_password, ssh_key, auth_method, latitude, longitude, location_name
+    - Methods: `testConnection()`, `getLocation()`, `getPasswordForTest()`, `getKeyForTest()`
+    - Helpers: `baseServerRules()`, `usernameRule()`, `authRulesForCreate()`, `authRulesForEdit()`
+  - Updated: `ProjectEdit.php` (225→123 lines, 45% reduction)
+  - Updated: `ServerEdit.php` (179→148 lines, 17% reduction)
 
 - [ ] **Abstract deployment filtering logic**
   - Issue: `DeploymentList.php` and `DeploymentShow.php` both handle filtering
@@ -612,13 +619,13 @@ This document contains all pending tasks, improvements, and feature requests for
 | High Optimization | 4 | 3 | 1 |
 | High Tests | 18 | 18 | 0 |
 | High UI | 6 | 6 | 0 |
-| Medium Abstractions | 3 | 1 | 2 |
+| Medium Abstractions | 3 | 2 | 1 |
 | Medium Caching | 3 | 0 | 3 |
 | Medium Tests | 13 | 5 | 8 |
 | Medium Tasks | 17+ | 0 | 17+ |
 | Low Priority | 15+ | 0 | 15+ |
 | Planned Features | 5 | 0 | 5 |
-| **TOTAL** | **127+** | **80** | **47+** |
+| **TOTAL** | **127+** | **81** | **46+** |
 
 ---
 
