@@ -403,10 +403,13 @@ This document contains all pending tasks, improvements, and feature requests for
 
 ### Code Abstraction Opportunities
 
-- [ ] **Create WithModalManagement trait**
-  - Issue: Multiple components use `showCreateModal`, `showEditModal`, `showDeleteModal` pattern
-  - Task: Create reusable trait with common modal state management
-  - Affected Components: 15+ components
+- [x] **Create WithModalManagement trait** ✅ COMPLETED
+  - Created: `app/Livewire/Concerns/WithModalManagement.php` (144 lines)
+  - Provides: `showCreateModal`, `showEditModal`, `showDeleteModal` properties
+  - Provides: `openCreateModal()`, `closeCreateModal()`, `openEditModal()`, `closeEditModal()`, etc.
+  - Provides: `editingId`, `deletingId` for tracking items being modified
+  - Hooks: `loadEditData(int $id)`, `resetModalForm()` for customization
+  - Updated: `ResourceAlertManager.php` as demonstration (295→276 lines)
 
 - [ ] **Create WithFormValidation trait for Create/Edit pairs**
   - Issue: `ProjectCreate.php` and `ProjectEdit.php` share validation logic
@@ -609,13 +612,13 @@ This document contains all pending tasks, improvements, and feature requests for
 | High Optimization | 4 | 3 | 1 |
 | High Tests | 18 | 18 | 0 |
 | High UI | 6 | 6 | 0 |
-| Medium Abstractions | 3 | 0 | 3 |
+| Medium Abstractions | 3 | 1 | 2 |
 | Medium Caching | 3 | 0 | 3 |
 | Medium Tests | 13 | 5 | 8 |
 | Medium Tasks | 17+ | 0 | 17+ |
 | Low Priority | 15+ | 0 | 15+ |
 | Planned Features | 5 | 0 | 5 |
-| **TOTAL** | **127+** | **79** | **48+** |
+| **TOTAL** | **127+** | **80** | **47+** |
 
 ---
 
