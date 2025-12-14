@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Servers;
 
+use App\Livewire\Concerns\WithModalManagement;
 use App\Models\AlertHistory;
 use App\Models\ResourceAlert;
 use App\Models\Server;
@@ -15,15 +16,10 @@ use Livewire\WithPagination;
 
 class ResourceAlertManager extends Component
 {
+    use WithModalManagement;
     use WithPagination;
 
     public Server $server;
-
-    public bool $showCreateModal = false;
-
-    public bool $showEditModal = false;
-
-    public ?ResourceAlert $editingAlert = null;
 
     // Form fields
     public string $resource_type = 'cpu';
@@ -110,31 +106,21 @@ class ResourceAlertManager extends Component
             ->paginate(10);
     }
 
-    public function openCreateModal(): void
+    /**
+     * Load edit data for the alert (override from trait)
+     */
+    protected function loadEditData(int $id): void
     {
-        $this->resetForm();
-        $this->showCreateModal = true;
-    }
+        $alert = ResourceAlert::findOrFail($id);
 
-    public function closeCreateModal(): void
-    {
-        $this->showCreateModal = false;
-        $this->resetForm();
-        $this->resetValidation();
-    }
-
-    public function openEditModal(int $alertId): void
-    {
-        $this->editingAlert = ResourceAlert::findOrFail($alertId);
-
-        $this->resource_type = $this->editingAlert->resource_type;
-        $this->threshold_type = $this->editingAlert->threshold_type;
-        $this->threshold_value = $this->editingAlert->threshold_value;
-        $this->cooldown_minutes = $this->editingAlert->cooldown_minutes;
-        $this->is_active = $this->editingAlert->is_active;
+        $this->resource_type = $alert->resource_type;
+        $this->threshold_type = $alert->threshold_type;
+        $this->threshold_value = $alert->threshold_value;
+        $this->cooldown_minutes = $alert->cooldown_minutes;
+        $this->is_active = $alert->is_active;
 
         // Load notification channels
-        $channels = $this->editingAlert->notification_channels ?? [];
+        $channels = $alert->notification_channels ?? [];
 
         if (isset($channels['email'])) {
             $this->enable_email = true;
@@ -150,15 +136,24 @@ class ResourceAlertManager extends Component
             $this->enable_discord = true;
             $this->discord_webhook = $channels['discord']['webhook_url'] ?? '';
         }
-
-        $this->showEditModal = true;
     }
 
-    public function closeEditModal(): void
+    /**
+     * Reset form fields (override from trait)
+     */
+    protected function resetModalForm(): void
     {
-        $this->showEditModal = false;
-        $this->editingAlert = null;
-        $this->resetForm();
+        $this->resource_type = 'cpu';
+        $this->threshold_type = 'above';
+        $this->threshold_value = 80.00;
+        $this->cooldown_minutes = 15;
+        $this->is_active = true;
+        $this->enable_email = false;
+        $this->email_address = '';
+        $this->enable_slack = false;
+        $this->slack_webhook = '';
+        $this->enable_discord = false;
+        $this->discord_webhook = '';
         $this->resetValidation();
     }
 
@@ -186,11 +181,12 @@ class ResourceAlertManager extends Component
     {
         $this->validate();
 
-        if ($this->editingAlert === null) {
+        if ($this->editingId === null) {
             return;
         }
 
-        $this->editingAlert->update([
+        $alert = ResourceAlert::findOrFail($this->editingId);
+        $alert->update([
             'resource_type' => $this->resource_type,
             'threshold_type' => $this->threshold_type,
             'threshold_value' => $this->threshold_value,
@@ -271,21 +267,6 @@ class ResourceAlertManager extends Component
         }
 
         return $channels;
-    }
-
-    protected function resetForm(): void
-    {
-        $this->resource_type = 'cpu';
-        $this->threshold_type = 'above';
-        $this->threshold_value = 80.00;
-        $this->cooldown_minutes = 15;
-        $this->is_active = true;
-        $this->enable_email = false;
-        $this->email_address = '';
-        $this->enable_slack = false;
-        $this->slack_webhook = '';
-        $this->enable_discord = false;
-        $this->discord_webhook = '';
     }
 
     public function render(): \Illuminate\View\View
