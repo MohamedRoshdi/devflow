@@ -36,7 +36,17 @@ class ServerEdit extends Component
         $this->latitude = $this->server->latitude;
         $this->longitude = $this->server->longitude;
         $this->location_name = $this->server->location_name ?? '';
-        $this->auth_method = $this->server->ssh_key ? 'key' : 'password';
+
+        // Debug: log the ssh credentials state
+        logger()->info('ServerEdit loadServerData', [
+            'server_id' => $this->server->id,
+            'has_ssh_key' => !empty($this->server->ssh_key),
+            'ssh_key_length' => strlen($this->server->ssh_key ?? ''),
+            'has_ssh_password' => !empty($this->server->ssh_password),
+        ]);
+
+        // Use empty() for more reliable check (catches empty strings, null, etc.)
+        $this->auth_method = !empty($this->server->ssh_key) ? 'key' : 'password';
     }
 
     /**
@@ -79,6 +89,17 @@ class ServerEdit extends Component
     {
         $this->validate();
 
+        // Debug logging - remove after fixing
+        logger()->info('ServerEdit updateServer called', [
+            'auth_method' => $this->auth_method,
+            'ssh_password_length' => strlen($this->ssh_password),
+            'ssh_password_empty' => empty($this->ssh_password),
+            'ssh_password_trimmed_length' => strlen(trim($this->ssh_password)),
+            'ssh_password_is_string' => is_string($this->ssh_password),
+            'ssh_password_ord' => strlen($this->ssh_password) > 0 ? ord($this->ssh_password[0]) : 'empty',
+            'ssh_key_length' => strlen($this->ssh_key),
+        ]);
+
         /** @var array<string, mixed> */
         $updateData = [
             'name' => $this->name,
@@ -92,13 +113,20 @@ class ServerEdit extends Component
         ];
 
         // Only update credentials if new ones are provided
-        if ($this->auth_method === 'password' && $this->ssh_password) {
+        // Use strlen() > 0 instead of truthiness to handle edge cases like "0"
+        if ($this->auth_method === 'password' && strlen($this->ssh_password) > 0) {
             $updateData['ssh_password'] = $this->ssh_password;
             $updateData['ssh_key'] = null;
-        } elseif ($this->auth_method === 'key' && $this->ssh_key) {
+        } elseif ($this->auth_method === 'key' && strlen($this->ssh_key) > 0) {
             $updateData['ssh_key'] = $this->ssh_key;
             $updateData['ssh_password'] = null;
         }
+
+        // Debug: Log what we're about to save
+        logger()->info('ServerEdit about to update', [
+            'update_data_has_password' => isset($updateData['ssh_password']),
+            'update_data_keys' => array_keys($updateData),
+        ]);
 
         $this->server->update($updateData);
 

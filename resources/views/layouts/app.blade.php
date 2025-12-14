@@ -110,107 +110,32 @@
                         Infrastructure
                     </div>
 
-                    <!-- Servers with Dropdown -->
-                    <div x-data="{ open: {{ request()->routeIs('servers.*') ? 'true' : 'false' }} }">
-                        <button @click="open = !open"
-                                class="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('servers.*') ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/>
-                                </svg>
-                                <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Servers</span>
-                            </div>
-                            <svg x-show="!sidebarCollapsed" class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                            </svg>
-                        </button>
-                        <div x-show="open && !sidebarCollapsed" x-collapse class="ml-8 space-y-1 mt-1">
-                            <a href="{{ route('servers.index') }}"
-                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('servers.index') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-                                All Servers
-                            </a>
-                            @if(request()->route('server'))
-                            <div class="border-t border-slate-700 my-2"></div>
-                            <a href="{{ route('servers.edit', request()->route('server')) }}"
-                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('servers.edit') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-                                <span class="flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                    </svg>
-                                    Edit Server
-                                </span>
-                            </a>
-                            @endif
-                        </div>
-                    </div>
+                    <!-- Servers - Direct Link -->
+                    <a href="{{ route('servers.index') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('servers.*') ? 'bg-slate-800 text-white border-l-4 border-blue-500 -ml-1 pl-4' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/>
+                        </svg>
+                        <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Servers</span>
+                    </a>
 
-                    <!-- Projects with Dropdown -->
-                    <div x-data="{ open: {{ request()->routeIs('projects.*') ? 'true' : 'false' }} }">
-                        <button @click="open = !open"
-                                class="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('projects.*') ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
-                                </svg>
-                                <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Projects</span>
-                            </div>
-                            <svg x-show="!sidebarCollapsed" class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                            </svg>
-                        </button>
-                        <div x-show="open && !sidebarCollapsed" x-collapse class="ml-8 space-y-1 mt-1">
-                            <a href="{{ route('projects.index') }}"
-                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('projects.index') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-                                All Projects
-                            </a>
-                            <a href="{{ route('projects.devflow') }}"
-                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('projects.devflow') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-                                DevFlow Pro (Self)
-                            </a>
-                            @if(request()->route('project'))
-                            <div class="border-t border-slate-700 my-2"></div>
-                            <a href="{{ route('projects.edit', request()->route('project')) }}"
-                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('projects.edit') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-                                <span class="flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                    </svg>
-                                    Edit Project
-                                </span>
-                            </a>
-                            @endif
-                        </div>
-                    </div>
+                    <!-- Projects - Direct Link -->
+                    <a href="{{ route('projects.index') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('projects.*') ? 'bg-slate-800 text-white border-l-4 border-blue-500 -ml-1 pl-4' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                        </svg>
+                        <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Projects</span>
+                    </a>
 
-                    <!-- Deployments with Dropdown -->
-                    <div x-data="{ open: {{ request()->routeIs('deployments.*') ? 'true' : 'false' }} }">
-                        <button @click="open = !open"
-                                class="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('deployments.*') ? 'bg-slate-800 text-white border-l-4 border-blue-500 ml-0 -ml-2 pl-5' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
-                                </svg>
-                                <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Deployments</span>
-                            </div>
-                            <svg x-show="!sidebarCollapsed" class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                            </svg>
-                        </button>
-                        <div x-show="open && !sidebarCollapsed" x-collapse class="ml-8 space-y-1 mt-1">
-                            <a href="{{ route('deployments.index') }}"
-                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('deployments.index') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-                                All Deployments
-                            </a>
-                            <a href="{{ route('deployments.approvals') }}"
-                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('deployments.approvals') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-                                Deployment Approvals
-                            </a>
-                            <a href="{{ route('deployments.scheduled') }}"
-                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('deployments.scheduled') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-                                Scheduled Deployments
-                            </a>
-                        </div>
-                    </div>
+                    <!-- Deployments - Direct Link -->
+                    <a href="{{ route('deployments.index') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('deployments.*') ? 'bg-slate-800 text-white border-l-4 border-blue-500 -ml-1 pl-4' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                        </svg>
+                        <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Deployments</span>
+                    </a>
                 </div>
 
                 <!-- Documentation Section (PROMINENT) -->
@@ -617,40 +542,46 @@
 
     <!-- Theme Toggle Script -->
     <script>
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const themeToggleMobileBtn = document.getElementById('theme-toggle-mobile');
-        const htmlElement = document.documentElement;
-        const themeColorMeta = document.getElementById('theme-color-meta');
+        (function() {
+            // Skip if already initialized
+            if (window.__themeToggleInitialized) return;
+            window.__themeToggleInitialized = true;
 
-        function setTheme(theme) {
-            if (theme === 'dark') {
-                htmlElement.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-                if (themeColorMeta) {
-                    themeColorMeta.setAttribute('content', '#1f2937');
-                }
-            } else {
-                htmlElement.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-                if (themeColorMeta) {
-                    themeColorMeta.setAttribute('content', '#2563eb');
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const themeToggleMobileBtn = document.getElementById('theme-toggle-mobile');
+            const htmlElement = document.documentElement;
+            const themeColorMeta = document.getElementById('theme-color-meta');
+
+            function setTheme(theme) {
+                if (theme === 'dark') {
+                    htmlElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                    if (themeColorMeta) {
+                        themeColorMeta.setAttribute('content', '#1f2937');
+                    }
+                } else {
+                    htmlElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                    if (themeColorMeta) {
+                        themeColorMeta.setAttribute('content', '#2563eb');
+                    }
                 }
             }
-        }
 
-        function toggleTheme() {
-            const currentTheme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            setTheme(newTheme);
-        }
+            function toggleTheme() {
+                const currentTheme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                setTheme(newTheme);
+            }
 
-        if (themeToggleBtn) {
-            themeToggleBtn.addEventListener('click', toggleTheme);
-        }
+            if (themeToggleBtn) {
+                themeToggleBtn.addEventListener('click', toggleTheme);
+            }
 
-        if (themeToggleMobileBtn) {
-            themeToggleMobileBtn.addEventListener('click', toggleTheme);
-        }
+            if (themeToggleMobileBtn) {
+                themeToggleMobileBtn.addEventListener('click', toggleTheme);
+            }
+        })();
     </script>
 
     @livewireScripts

@@ -1,3 +1,4 @@
+<div>
 @if($helpContent)
     <div class="inline-help mt-2"
          wire:key="help-{{ $helpContent->key }}"
@@ -107,11 +108,6 @@
         @endif
     </div>
 @else
-    <!-- Fallback if help content not found -->
-    <div class="inline-help mt-2 text-muted" role="note">
-        <small>
-            <span aria-hidden="true">ℹ️</span>
-            Help content coming soon...
-        </small>
-    </div>
+    <!-- Fallback if help content not found - empty for cleaner UI -->
 @endif
+</div>

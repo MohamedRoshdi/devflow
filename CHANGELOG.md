@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [6.4.0] - 2025-12-14
+
+### Fixed
+- **InlineHelp Component**: Fixed raw `wire:id` attribute showing as visible text by wrapping template in proper root div
+- **Server Edit Form**: Fixed auth_method conditional rendering not properly switching between password/key fields
+- **Server Edit Form**: Changed SSH password condition from truthy check to `strlen() > 0` to handle edge cases
+- **Theme Toggle Script**: Wrapped in IIFE to prevent "themeToggleBtn already declared" error during Livewire page swaps
+
+### Changed
+- **Navigation Sidebar**: Simplified Servers, Projects, and Deployments from dropdowns to direct links (removes unnecessary "All X" submenu clicks)
+- **Server Edit**: SSH password field simplified for debugging (temporary change)
+
+### Infrastructure
+- **SSH Authentication**: Set up SSH key-based authentication for DevFlow server self-connection
+- Added user's SSH key to authorized_keys for both root and user accounts
+- Created SSH config file for automatic key selection
+
+---
+
 ## [6.3.0] - 2025-12-14
 
 ### Fixed

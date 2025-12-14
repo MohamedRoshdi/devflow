@@ -134,45 +134,24 @@
                 <livewire:components.inline-help help-key="ssh-access-button" :collapsible="true" />
             </div>
 
-            <!-- SSH Password -->
-            @if($auth_method === 'password')
+            <!-- SSH Password - Always visible, simple binding -->
             <div>
                 <label for="ssh_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     SSH Password
-                    <span class="text-gray-400 text-xs">(Leave blank to keep current)</span>
+                    <span class="text-gray-400 text-xs">(Enter password for SSH authentication)</span>
                 </label>
-                <input wire:model="ssh_password"
+                <input wire:model.defer="ssh_password"
+                       name="ssh_password"
                        id="ssh_password"
-                       type="password"
-                       placeholder="Enter new SSH password or leave blank"
-                       wire:loading.attr="disabled"
-                       wire:target="updateServer,testConnection"
-                       class="input @error('ssh_password') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
+                       type="text"
+                       placeholder="Enter SSH password"
+                       autocomplete="off"
+                       class="input @error('ssh_password') border-red-500 @enderror">
+                <p class="text-xs text-gray-500 mt-1">Debug: Password will be visible while we fix the issue</p>
                 @error('ssh_password')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
-            @endif
-
-            <!-- SSH Key -->
-            @if($auth_method === 'key')
-            <div>
-                <label for="ssh_key" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    SSH Private Key
-                    <span class="text-gray-400 text-xs">(Leave blank to keep current)</span>
-                </label>
-                <textarea wire:model="ssh_key"
-                          id="ssh_key"
-                          rows="6"
-                          placeholder="-----BEGIN OPENSSH PRIVATE KEY-----"
-                          wire:loading.attr="disabled"
-                          wire:target="updateServer,testConnection"
-                          class="input @error('ssh_key') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed"></textarea>
-                @error('ssh_key')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-            @endif
 
             <!-- GPS Location -->
             <div class="border-t pt-6">
