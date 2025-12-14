@@ -75,7 +75,7 @@ class ServerEdit extends Component
         );
     }
 
-    public function updateServer(): \Illuminate\Http\RedirectResponse
+    public function updateServer(): void
     {
         $this->validate();
 
@@ -137,8 +137,8 @@ class ServerEdit extends Component
             ? 'Server updated successfully and is online!'
             : 'Server updated but appears offline. Check SSH credentials.';
 
-        return redirect()->route('servers.show', $this->server)
-            ->with('message', $message);
+        $this->redirect(route('servers.show', $this->server), navigate: true);
+        session()->flash('message', $message);
     }
 
     public function render(): \Illuminate\View\View
