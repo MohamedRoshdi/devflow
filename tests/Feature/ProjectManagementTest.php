@@ -114,8 +114,64 @@ class ProjectManagementTest extends TestCase
     /** @test */
     public function git_commits_are_loaded_correctly()
     {
-        // Skip: Git functionality moved to separate component - prepareGitTab no longer exists
-        $this->markTestSkipped('Git tab functionality refactored to separate component');
+        $this->actingAs($this->user);
+
+        $project = Project::factory()->create([
+            'user_id' => $this->user->id,
+            'server_id' => $this->server->id,
+            'branch' => 'main',
+        ]);
+
+        // Mock GitService to return test data with correct structure
+        $this->mock(GitService::class, function ($mock) {
+            $mock->shouldReceive('getLatestCommits')
+                ->andReturn([
+                    'success' => true,
+                    'commits' => [
+                        [
+                            'hash' => 'abc123def456',
+                            'short_hash' => 'abc123d',
+                            'message' => 'Test commit',
+                            'author' => 'Test Author',
+                            'timestamp' => time(),
+                            'date' => now()->toDateTimeString(),
+                        ],
+                    ],
+                    'total' => 1,
+                ]);
+            $mock->shouldReceive('getBranches')
+                ->andReturn([
+                    'success' => true,
+                    'branches' => [
+                        [
+                            'name' => 'main',
+                            'full_name' => 'origin/main',
+                            'last_commit_date' => '2 hours ago',
+                            'last_committer' => 'Test Author',
+                            'is_current' => true,
+                            'is_main' => true,
+                        ],
+                    ],
+                    'current_branch' => 'main',
+                    'total' => 1,
+                ]);
+            $mock->shouldReceive('checkForUpdates')
+                ->andReturn([
+                    'success' => true,
+                    'up_to_date' => true,
+                    'local_commit' => 'abc123',
+                    'remote_commit' => 'abc123',
+                    'commits_behind' => 0,
+                ]);
+        });
+
+        // Test ProjectGit component (git functionality moved here)
+        Livewire::test(\App\Livewire\Projects\ProjectGit::class, ['project' => $project])
+            ->assertSet('loading', false)
+            ->assertSet('commits', function ($commits) {
+                return count($commits) === 1 && $commits[0]['hash'] === 'abc123def456';
+            })
+            ->assertSet('totalCommits', 1);
     }
 
     /** @test */
@@ -268,37 +324,266 @@ class ProjectManagementTest extends TestCase
     }
 
     /** @test */
-    public function auto_refresh_can_be_toggled()
+    public function project_git_component_loads_branches()
     {
-        // Skip: Auto-refresh functionality removed from ProjectShow component
-        $this->markTestSkipped('Auto-refresh functionality refactored out of ProjectShow');
+        $this->actingAs($this->user);
+
+        $project = Project::factory()->create([
+            'user_id' => $this->user->id,
+            'server_id' => $this->server->id,
+            'branch' => 'main',
+        ]);
+
+        $expectedBranches = [
+            [
+                'name' => 'main',
+                'full_name' => 'origin/main',
+                'last_commit_date' => '2 hours ago',
+                'last_committer' => 'Test Author',
+                'is_current' => true,
+                'is_main' => true,
+            ],
+            [
+                'name' => 'develop',
+                'full_name' => 'origin/develop',
+                'last_commit_date' => '1 day ago',
+                'last_committer' => 'Test Author',
+                'is_current' => false,
+                'is_main' => false,
+            ],
+        ];
+
+        // Mock GitService
+        $this->mock(GitService::class, function ($mock) use ($expectedBranches) {
+            $mock->shouldReceive('getLatestCommits')
+                ->andReturn(['success' => true, 'commits' => [], 'total' => 0]);
+            $mock->shouldReceive('getBranches')
+                ->andReturn([
+                    'success' => true,
+                    'branches' => $expectedBranches,
+                    'current_branch' => 'main',
+                    'total' => 2,
+                ]);
+            $mock->shouldReceive('checkForUpdates')
+                ->andReturn(['success' => true, 'up_to_date' => true]);
+        });
+
+        Livewire::test(\App\Livewire\Projects\ProjectGit::class, ['project' => $project])
+            ->assertSet('branches', $expectedBranches);
     }
 
     /** @test */
-    public function auto_refresh_interval_can_be_set()
+    public function project_git_component_handles_pagination()
     {
-        // Skip: Auto-refresh functionality removed from ProjectShow component
-        $this->markTestSkipped('Auto-refresh functionality refactored out of ProjectShow');
+        $this->actingAs($this->user);
+
+        $project = Project::factory()->create([
+            'user_id' => $this->user->id,
+            'server_id' => $this->server->id,
+            'branch' => 'main',
+        ]);
+
+        $branchData = [
+            [
+                'name' => 'main',
+                'full_name' => 'origin/main',
+                'last_commit_date' => '2 hours ago',
+                'last_committer' => 'Test Author',
+                'is_current' => true,
+                'is_main' => true,
+            ],
+        ];
+
+        $commitData = [
+            'hash' => 'abc123def456',
+            'short_hash' => 'abc123d',
+            'message' => 'Test commit',
+            'author' => 'Test Author',
+            'timestamp' => time(),
+            'date' => now()->toDateTimeString(),
+        ];
+
+        // Mock GitService
+        $this->mock(GitService::class, function ($mock) use ($branchData, $commitData) {
+            $mock->shouldReceive('getLatestCommits')
+                ->andReturn([
+                    'success' => true,
+                    'commits' => array_fill(0, 10, $commitData),
+                    'total' => 25, // More than one page
+                ]);
+            $mock->shouldReceive('getBranches')
+                ->andReturn(['success' => true, 'branches' => $branchData, 'current_branch' => 'main', 'total' => 1]);
+            $mock->shouldReceive('checkForUpdates')
+                ->andReturn(['success' => true, 'up_to_date' => true]);
+        });
+
+        $component = Livewire::test(\App\Livewire\Projects\ProjectGit::class, ['project' => $project]);
+
+        // Initial page should be 1
+        $component->assertSet('currentPage', 1)
+            ->assertSet('totalCommits', 25);
+
+        // Go to next page
+        $component->call('nextPage')
+            ->assertSet('currentPage', 2);
+
+        // Go back
+        $component->call('previousPage')
+            ->assertSet('currentPage', 1);
     }
 
     /** @test */
-    public function auto_refresh_interval_is_bounded()
+    public function project_git_component_shows_update_status()
     {
-        // Skip: Auto-refresh functionality removed from ProjectShow component
-        $this->markTestSkipped('Auto-refresh functionality refactored out of ProjectShow');
+        $this->actingAs($this->user);
+
+        $project = Project::factory()->create([
+            'user_id' => $this->user->id,
+            'server_id' => $this->server->id,
+            'branch' => 'main',
+        ]);
+
+        $branchData = [[
+            'name' => 'main',
+            'full_name' => 'origin/main',
+            'last_commit_date' => '2 hours ago',
+            'last_committer' => 'Test Author',
+            'is_current' => true,
+            'is_main' => true,
+        ]];
+
+        // Mock GitService with updates available
+        $this->mock(GitService::class, function ($mock) use ($branchData) {
+            $mock->shouldReceive('getLatestCommits')
+                ->andReturn(['success' => true, 'commits' => [], 'total' => 0]);
+            $mock->shouldReceive('getBranches')
+                ->andReturn(['success' => true, 'branches' => $branchData, 'current_branch' => 'main', 'total' => 1]);
+            $mock->shouldReceive('checkForUpdates')
+                ->andReturn([
+                    'success' => true,
+                    'up_to_date' => false,
+                    'local_commit' => 'abc123',
+                    'remote_commit' => 'def456',
+                    'commits_behind' => 3,
+                ]);
+        });
+
+        Livewire::test(\App\Livewire\Projects\ProjectGit::class, ['project' => $project])
+            ->assertSet('updateStatus.up_to_date', false)
+            ->assertSet('updateStatus.commits_behind', 3);
     }
 
     /** @test */
-    public function auto_refresh_only_runs_when_enabled_and_on_git_tab()
+    public function project_git_component_handles_errors_gracefully()
     {
-        // Skip: Auto-refresh functionality removed from ProjectShow component
-        $this->markTestSkipped('Auto-refresh functionality refactored out of ProjectShow');
+        $this->actingAs($this->user);
+
+        $project = Project::factory()->create([
+            'user_id' => $this->user->id,
+            'server_id' => $this->server->id,
+            'branch' => 'main',
+        ]);
+
+        // Mock GitService to return error
+        $this->mock(GitService::class, function ($mock) {
+            $mock->shouldReceive('getLatestCommits')
+                ->andReturn([
+                    'success' => false,
+                    'error' => 'Repository not found',
+                ]);
+            $mock->shouldReceive('getBranches')
+                ->andReturn(['success' => true, 'branches' => [], 'current_branch' => 'main', 'total' => 0]);
+            $mock->shouldReceive('checkForUpdates')
+                ->andReturn(['success' => true, 'up_to_date' => true]);
+        });
+
+        Livewire::test(\App\Livewire\Projects\ProjectGit::class, ['project' => $project])
+            ->assertSet('error', 'Repository not found')
+            ->assertSet('loading', false);
     }
 
     /** @test */
-    public function git_data_refresh_updates_timestamp()
+    public function project_git_component_can_refresh_data()
     {
-        // Skip: Git timestamp functionality removed from ProjectShow component
-        $this->markTestSkipped('Git tab functionality refactored to separate component');
+        $this->actingAs($this->user);
+
+        $project = Project::factory()->create([
+            'user_id' => $this->user->id,
+            'server_id' => $this->server->id,
+            'branch' => 'main',
+        ]);
+
+        $branchData = [[
+            'name' => 'main',
+            'full_name' => 'origin/main',
+            'last_commit_date' => '2 hours ago',
+            'last_committer' => 'Test Author',
+            'is_current' => true,
+            'is_main' => true,
+        ]];
+
+        // Mock GitService
+        $this->mock(GitService::class, function ($mock) use ($branchData) {
+            $mock->shouldReceive('getLatestCommits')
+                ->andReturn(['success' => true, 'commits' => [], 'total' => 0]);
+            $mock->shouldReceive('getBranches')
+                ->andReturn(['success' => true, 'branches' => $branchData, 'current_branch' => 'main', 'total' => 1]);
+            $mock->shouldReceive('checkForUpdates')
+                ->andReturn(['success' => true, 'up_to_date' => true]);
+        });
+
+        Livewire::test(\App\Livewire\Projects\ProjectGit::class, ['project' => $project])
+            ->call('refresh')
+            ->assertSet('loading', false)
+            ->assertHasNoErrors();
+    }
+
+    /** @test */
+    public function project_git_can_switch_branch()
+    {
+        $this->actingAs($this->user);
+
+        $project = Project::factory()->create([
+            'user_id' => $this->user->id,
+            'server_id' => $this->server->id,
+            'branch' => 'main',
+        ]);
+
+        $branchData = [
+            [
+                'name' => 'main',
+                'full_name' => 'origin/main',
+                'last_commit_date' => '2 hours ago',
+                'last_committer' => 'Test Author',
+                'is_current' => true,
+                'is_main' => true,
+            ],
+            [
+                'name' => 'develop',
+                'full_name' => 'origin/develop',
+                'last_commit_date' => '1 day ago',
+                'last_committer' => 'Test Author',
+                'is_current' => false,
+                'is_main' => false,
+            ],
+        ];
+
+        // Mock GitService
+        $this->mock(GitService::class, function ($mock) use ($branchData) {
+            $mock->shouldReceive('getLatestCommits')
+                ->andReturn(['success' => true, 'commits' => [], 'total' => 0]);
+            $mock->shouldReceive('getBranches')
+                ->andReturn(['success' => true, 'branches' => $branchData, 'current_branch' => 'main', 'total' => 2]);
+            $mock->shouldReceive('checkForUpdates')
+                ->andReturn(['success' => true, 'up_to_date' => true]);
+            $mock->shouldReceive('switchBranch')
+                ->with(\Mockery::type(Project::class), 'develop')
+                ->once()
+                ->andReturn(['success' => true, 'message' => 'Switched to develop']);
+        });
+
+        Livewire::test(\App\Livewire\Projects\ProjectGit::class, ['project' => $project])
+            ->call('switchBranch', 'develop')
+            ->assertHasNoErrors();
     }
 }
