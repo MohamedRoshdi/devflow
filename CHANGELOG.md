@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [6.2.0] - 2025-12-14
+
+### Fixed
+- **Test Infrastructure Overhaul**
+  - Fixed SQLite compatibility in 3 migration files (driver detection for index checking)
+  - Changed TestCase from custom `RefreshMySQLDatabase` to Laravel's `DatabaseTransactions`
+  - Fixed `AlertNotificationService::formatValue` to accept `string|int|float` types
+  - Added missing `pipeline_id` to `PipelineRunFactory`
+  - Made `ProjectFactory` slug unique with numerify suffix
+
+- **Test Isolation Issues**
+  - Added proper cleanup in CommandsTest (BackupSchedule, Server, DatabaseBackup queries)
+  - Removed tests for non-existent `CheckSSLCommand` and `SSLRenewCommand`
+  - Fixed ControllersTest to match current restrictive policies (403 for non-owners)
+  - Fixed webhook tests to use `webhook_secret` token instead of slug
+  - Fixed `deployment_store` test with valid 7-char commit hash
+
+- **Code Corrections**
+  - Fixed MiddlewareTest to use `expectException` for abort(403)
+  - Updated `DeployProjectJob` timeout assertion (1200 -> 1800)
+  - Fixed `ClusterManager` to use correct model fields (`api_server_url`, `is_active`)
+
+### Test Results
+- CommandsTest: 69/69 passing
+- ControllersTest: 68/68 passing
+- MiddlewareTest: All passing
+- 324+ tests verified passing before memory limits
+
+---
+
 ## [5.53.0] - 2025-12-13
 
 ### Added

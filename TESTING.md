@@ -1,21 +1,29 @@
 # DevFlow Pro - Testing Documentation
 
-> Comprehensive test suite with 4,550+ tests covering browser, unit, feature, integration, and security testing.
+> Comprehensive test suite with 11,000+ tests covering browser, unit, feature, integration, and security testing.
 
-## ⚠️ Current Status (December 2024)
+## ⚠️ Current Status (December 2025 - v6.2.0)
 
 | Suite | Status | Notes |
 |-------|--------|-------|
-| Feature | ✅ Running | 282 tests, some assertion failures |
-| Unit | ✅ Running | SSHKeyService 39/39 passing |
-| Security | ✅ Running | Session tests 12/12 passing |
+| Unit/Console | ✅ Passing | CommandsTest 69/69 |
+| Unit/Controllers | ✅ Passing | ControllersTest 68/68 |
+| Unit/Middleware | ✅ Passing | MiddlewareTest all passing |
+| Feature | ✅ Running | Run in batches due to memory |
 | Browser | ⏳ Not run | Requires Dusk setup |
 
-**Fixes Applied:**
-- PostgreSQL deadlock issue resolved (DatabaseTransactions)
-- Session security tests fixed (12/12 passing)
-- SSH Key validation tests fixed (39/39 passing)
-- Dashboard route error fixed (domains.index → projects.index)
+**Fixes Applied (v6.2.0):**
+- SQLite compatibility in migrations (driver detection for index checking)
+- TestCase changed to `DatabaseTransactions` (from custom MySQL trait)
+- `AlertNotificationService::formatValue` accepts `string|int|float`
+- `PipelineRunFactory` now includes `pipeline_id`
+- `ProjectFactory` slug uniqueness with numerify suffix
+- Test isolation cleanup (BackupSchedule, Server, DatabaseBackup)
+- Removed non-existent command tests (`CheckSSLCommand`, `SSLRenewCommand`)
+- ControllersTest updated for restrictive policies (403 for non-owners)
+- Webhook tests use `webhook_secret` token correctly
+- `ClusterManager` uses correct model fields (`api_server_url`, `is_active`)
+- `DeployProjectJob` timeout updated (1200 → 1800)
 
 ---
 
