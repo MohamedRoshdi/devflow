@@ -457,29 +457,15 @@ This document contains all pending tasks, improvements, and feature requests for
 
 ### Database Optimization
 
-- [ ] **Add composite index (user_id, status) to projects**
-  - Table: `projects`
-  - Usage: User-scoped project queries in ProjectController
-
-- [ ] **Add composite index (team_id, status) to projects**
-  - Table: `projects`
-  - Usage: Team-scoped project queries
-
-- [ ] **Add composite index (project_id, ssl_enabled) to domains**
-  - Table: `domains`
-  - Usage: "Domains needing renewal" queries
-
-- [ ] **Add composite index (project_id, is_primary) to domains**
-  - Table: `domains`
-  - Usage: Primary domain lookup in ProjectHealthService
-
-- [ ] **Add index on deployments.user_id**
-  - Table: `deployments`
-  - Usage: Deployment stats queries
-
-- [ ] **Add index on deployments.triggered_by**
-  - Table: `deployments`
-  - Usage: Deployment filtering
+- [x] **Add composite index (user_id, status) to projects** ✅ COMPLETED
+- [x] **Add composite index (team_id, status) to projects** ✅ COMPLETED
+- [x] **Add composite index (project_id, ssl_enabled) to domains** ✅ COMPLETED
+- [x] **Add composite index (project_id, is_primary) to domains** ✅ COMPLETED
+- [x] **Add index on deployments.user_id** ✅ COMPLETED
+- [x] **Add index on deployments.triggered_by** ✅ COMPLETED
+  - Migration: `2025_12_14_030213_add_performance_indexes_to_projects_domains_deployments.php`
+  - Features: Idempotent checks to skip existing indexes
+  - Tables: projects (2 indexes), domains (2 indexes), deployments (2 indexes)
 
 ### Code Optimization
 
@@ -633,11 +619,12 @@ This document contains all pending tasks, improvements, and feature requests for
 | High UI | 6 | 6 | 0 |
 | Medium Abstractions | 3 | 3 | 0 |
 | Medium Caching | 3 | 3 | 0 |
+| Medium Database | 6 | 6 | 0 |
 | Medium Tests | 13 | 5 | 8 |
 | Medium Tasks | 17+ | 0 | 17+ |
 | Low Priority | 15+ | 0 | 15+ |
 | Planned Features | 5 | 0 | 5 |
-| **TOTAL** | **127+** | **85** | **42+** |
+| **TOTAL** | **133+** | **91** | **42+** |
 
 ---
 
