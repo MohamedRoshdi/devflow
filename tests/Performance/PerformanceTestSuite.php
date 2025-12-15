@@ -6,14 +6,14 @@ use App\Models\Deployment;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class PerformanceTestSuite extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     protected static array $metrics = [];
 

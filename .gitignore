@@ -58,3 +58,4 @@ postgres_test_data/
 *.local.sh
 deploy.local.sh
 quick-deploy.local.sh
+public/vendor/

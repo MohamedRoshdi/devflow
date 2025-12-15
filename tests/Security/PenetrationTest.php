@@ -931,11 +931,12 @@ class PenetrationTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // System directory paths should be rejected
+        // System directory paths should be rejected (except /var/www/ which is allowed)
         $systemPaths = [
             '/etc/shadow',
             '/var/log/auth.log',
             '/root/.ssh/id_rsa',
+            '/var/run/secrets',
         ];
 
         foreach ($systemPaths as $path) {

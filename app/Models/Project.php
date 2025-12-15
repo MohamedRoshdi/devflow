@@ -144,7 +144,8 @@ class Project extends Model
             }
 
             // Reject absolute paths to sensitive system directories
-            $dangerousPaths = ['/etc/', '/var/', '/root/', '/home/', '/usr/', '/bin/', '/sbin/', '/boot/', '/proc/', '/sys/'];
+            // Allow /var/www/ as it's a legitimate web root
+            $dangerousPaths = ['/etc/', '/var/log/', '/var/run/', '/root/', '/home/', '/usr/', '/bin/', '/sbin/', '/boot/', '/proc/', '/sys/'];
             foreach ($dangerousPaths as $dangerous) {
                 if (str_starts_with(strtolower($path), $dangerous)) {
                     throw new \InvalidArgumentException(
