@@ -27,7 +27,7 @@ class QueueMonitor extends Component
 
     public bool $showJobDetails = false;
 
-    public bool $isLoading = true;
+    public bool $isLoading = false;
 
     private QueueMonitorService $queueMonitor;
 
@@ -38,7 +38,7 @@ class QueueMonitor extends Component
 
     public function mount(): void
     {
-        // Don't load data on mount - use wire:init for lazy loading
+        $this->loadStats();
     }
 
     /**

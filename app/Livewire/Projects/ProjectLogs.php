@@ -29,12 +29,13 @@ class ProjectLogs extends Component
 
     public bool $downloading = false;
 
-    public bool $isLoading = true;
+    public bool $isLoading = false;
 
     public function mount(Project $project): void
     {
         // All projects are shared across all users
         $this->projectId = $project->id;
+        $this->loadData();
     }
 
     public function loadData(): void

@@ -5,7 +5,6 @@
 @endphp
 
 <div wire:key="project-show-{{ $project->id }}"
-     wire:init="preloadUpdateStatus"
      class="min-h-screen">
 
     {{-- Animated Background Orbs --}}

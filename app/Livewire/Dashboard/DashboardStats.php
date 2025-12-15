@@ -59,7 +59,7 @@ class DashboardStats extends Component
     /** @var array<string, int> */
     public array $queueStats = [];
 
-    public bool $isLoading = true;
+    public bool $isLoading = false;
 
     public bool $hasError = false;
 
@@ -67,7 +67,7 @@ class DashboardStats extends Component
 
     public function mount(): void
     {
-        // Initial state is loading - data will be loaded via wire:init
+        $this->loadStats();
     }
 
     /**

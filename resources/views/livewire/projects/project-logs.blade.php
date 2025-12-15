@@ -1,4 +1,4 @@
-<div class="bg-white dark:bg-gray-800 rounded-xl shadow dark:shadow-gray-900/40 overflow-hidden" wire:init="loadData">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow dark:shadow-gray-900/40 overflow-hidden">
     <div class="bg-gradient-to-r from-slate-900 via-indigo-900 to-blue-900 px-6 py-8 text-white">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div>

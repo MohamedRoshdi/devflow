@@ -53,6 +53,7 @@ trait WithServerFiltering
             ->select([
                 'id', 'name', 'hostname', 'ip_address', 'port', 'status',
                 'user_id', 'docker_installed', 'last_ping_at', 'created_at', 'updated_at',
+                'cpu_cores', 'memory_gb', 'disk_gb', 'location_name', 'os',
             ])
             ->get();
     }
@@ -74,6 +75,7 @@ trait WithServerFiltering
             ->select([
                 'id', 'name', 'hostname', 'ip_address', 'port', 'status',
                 'user_id', 'docker_installed', 'last_ping_at', 'created_at', 'updated_at',
+                'cpu_cores', 'memory_gb', 'disk_gb', 'location_name', 'os',
             ])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {

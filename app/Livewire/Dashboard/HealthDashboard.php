@@ -19,7 +19,7 @@ class HealthDashboard extends Component
     /** @var array<int, array<string, mixed>> */
     public array $serversHealth = [];
 
-    public bool $isLoading = true;
+    public bool $isLoading = false;
 
     public string $filterStatus = 'all';
 
@@ -50,8 +50,7 @@ class HealthDashboard extends Component
             'You do not have permission to view health dashboard.'
         );
 
-        // Don't load data on mount - use wire:init for lazy loading
-        // This allows the page to render immediately with a loading state
+        $this->loadHealthData();
     }
 
     public function loadHealthData()

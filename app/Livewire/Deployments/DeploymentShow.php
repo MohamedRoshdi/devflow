@@ -95,6 +95,23 @@ class DeploymentShow extends Component
         $this->analyzeProgress();
     }
 
+    /**
+     * Listen for deployment status updates via WebSocket
+     *
+     * @param  array<string, mixed>  $event
+     */
+    #[On('echo-private:deployment.{deployment.id},.deployment.status.updated')]
+    public function onStatusUpdated(array $event): void
+    {
+        $this->deployment->refresh();
+        $this->analyzeProgress();
+
+        // Initialize logs if deployment just completed
+        if (in_array($this->deployment->status, ['success', 'failed']) && empty($this->liveLogs)) {
+            $this->initializeLiveLogs();
+        }
+    }
+
     public function refresh(): void
     {
         $freshDeployment = $this->deployment->fresh();

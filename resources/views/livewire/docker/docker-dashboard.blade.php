@@ -1,4 +1,4 @@
-<div wire:init="loadInitialData" class="space-y-6">
+<div class="space-y-6">
     {{-- Header with Gradient --}}
     <div class="relative mb-8 rounded-2xl bg-gradient-to-br from-cyan-500 via-blue-500 to-indigo-500 dark:from-cyan-600 dark:via-blue-600 dark:to-indigo-600 p-8 shadow-xl overflow-hidden">
         <div class="absolute inset-0 bg-black/10 dark:bg-black/20 backdrop-blur-sm"></div>

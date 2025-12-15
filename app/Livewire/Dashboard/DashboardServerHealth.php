@@ -27,7 +27,7 @@ class DashboardServerHealth extends Component
 
     public function mount(): void
     {
-        // Initial data loaded via wire:init
+        $this->loadServerHealth();
     }
 
     /**

@@ -28,7 +28,7 @@ class DashboardRecentActivity extends Component
 
     public bool $loadingMoreActivity = false;
 
-    public bool $isLoading = true;
+    public bool $isLoading = false;
 
     public bool $hasError = false;
 
@@ -36,7 +36,7 @@ class DashboardRecentActivity extends Component
 
     public function mount(): void
     {
-        // Initial data loaded via wire:init
+        $this->loadRecentActivity();
     }
 
     /**

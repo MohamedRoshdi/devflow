@@ -68,7 +68,7 @@ class Dashboard extends Component
     public bool $editMode = false;
 
     // Lazy loading state
-    public bool $isLoading = true;
+    public bool $isLoading = false;
 
     // Alert data for system status banner
     public int $healthCheckDown = 0;

@@ -1,4 +1,4 @@
-<div wire:init="loadServerData" wire:poll.60s x-data="{ bulkDropdownOpen: false, servicesDropdownOpen: false }" class="min-h-screen">
+<div x-data="{ bulkDropdownOpen: false, servicesDropdownOpen: false }" class="min-h-screen">
     {{-- Animated Background Orbs --}}
     <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
         <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-blue-500/5 via-indigo-500/5 to-purple-500/5 rounded-full blur-3xl animate-pulse"></div>

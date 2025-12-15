@@ -37,7 +37,7 @@ class SystemStatus extends Component
      */
     public array $databaseStats = [];
 
-    public bool $isLoading = true;
+    public bool $isLoading = false;
 
     private QueueMonitorService $queueMonitor;
 
@@ -48,7 +48,7 @@ class SystemStatus extends Component
 
     public function mount(): void
     {
-        // Don't load data on mount - use wire:init for lazy loading
+        $this->loadAllStats();
     }
 
     /**

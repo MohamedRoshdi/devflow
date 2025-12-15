@@ -1,4 +1,4 @@
-<div wire:init="loadRecentActivity" class="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 overflow-hidden">
+<div class="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 overflow-hidden">
     <div class="px-6 py-4 border-b border-slate-700/50 flex items-center justify-between">
         <h2 class="font-semibold text-white">Recent Activity</h2>
         <a href="{{ route('deployments.index') }}" class="text-sm text-blue-400 hover:text-blue-300">View all &rarr;</a>

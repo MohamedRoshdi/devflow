@@ -1,4 +1,4 @@
-<div class="space-y-6" wire:init="loadHealthData">
+<div class="space-y-6">
     <!-- Header -->
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
         <div class="bg-gradient-to-r from-emerald-500 to-teal-500 p-6">

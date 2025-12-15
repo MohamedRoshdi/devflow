@@ -41,7 +41,7 @@ class ServerList extends Component
     use WithServerActions;
     use WithBulkServerActions;
 
-    public bool $isLoading = true;
+    public bool $isLoading = false;
 
     /**
      * Initialize component on mount

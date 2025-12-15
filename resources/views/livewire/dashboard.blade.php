@@ -1,4 +1,4 @@
-<div wire:init="loadDashboardData" wire:poll.30s="refreshDashboard" class="space-y-6">
+<div class="space-y-6">
 
     {{-- Animated Background Orbs --}}
     <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">

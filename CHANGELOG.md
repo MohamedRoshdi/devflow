@@ -7,6 +7,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [6.5.0] - 2025-12-15
+
+### Performance - Livewire Loading Optimization
+
+#### Removed Unnecessary Polling
+Eliminated `wire:poll` and `wire:init` from 15+ pages that were causing constant loading spinners and unnecessary server requests.
+
+**Pages Fixed:**
+- Dashboard (`wire:poll.30s` removed)
+- Dashboard Stats widget
+- Dashboard Server Health widget
+- Dashboard Recent Activity widget
+- Server List (`wire:poll.60s` removed)
+- Server Show (`wire:poll.30s` removed)
+- Health Dashboard
+- Docker Dashboard
+- System Admin
+- System Status
+- Queue Monitor (`wire:poll.5s` removed - was polling every 5 seconds!)
+- Project Show
+- Project Logs
+- Project Docker Management
+
+#### Smart Conditional Polling
+Changed deployment pages to only poll when actually needed:
+- **Deployment Show**: Only polls when `status = pending/running`
+- **Server Provisioning**: Only polls during active provisioning
+- **Docker Install**: Only polls during installation
+
+#### Data Loading Optimization
+- Changed all affected components to load data on `mount()` instead of lazy-loading via `wire:init`
+- Set `isLoading = false` by default to prevent unnecessary loading states
+- Pages now render instantly with data
+
+#### WebSocket Integration (Reverb)
+- Fixed Nginx WebSocket proxy configuration for Laravel Reverb
+- Added WebSocket listener for real-time deployment status updates
+- Deployment pages now receive real-time updates via WebSocket when available
+
+#### Server List Fix
+- Fixed missing columns (`cpu_cores`, `memory_gb`, `disk_gb`, `location_name`, `os`) in server queries
+- Server list now displays correct hardware specifications
+
+### Infrastructure
+- Added WebSocket proxy location block to Nginx for `/app/` path
+- Configured proper WebSocket headers (Upgrade, Connection) for Reverb
+
+---
+
 ## [6.4.0] - 2025-12-14
 
 ### Fixed

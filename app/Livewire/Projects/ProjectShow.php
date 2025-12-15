@@ -56,6 +56,8 @@ class ProjectShow extends Component
 
         $tab = request()->query('tab', 'overview');
         $this->activeTab = is_string($tab) ? $tab : 'overview';
+
+        $this->preloadUpdateStatus();
     }
 
     public function setActiveTab(string $tab): void

@@ -1,4 +1,4 @@
-<div wire:init="loadSystemData" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Hero Section -->
     <div class="mb-10 relative">
         <div class="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 opacity-80 blur-xl"></div>

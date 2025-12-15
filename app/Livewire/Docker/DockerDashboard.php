@@ -34,7 +34,7 @@ class DockerDashboard extends Component
 
     public bool $loading = false;
 
-    public bool $isLoading = true;
+    public bool $isLoading = false;
 
     public ?string $error = null;
 
@@ -49,7 +49,7 @@ class DockerDashboard extends Component
     {
         // All servers are shared across all users
         $this->server = $server;
-        // Don't load Docker info on mount - use wire:init for lazy loading
+        $this->loadInitialData();
     }
 
     /**

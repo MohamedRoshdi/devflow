@@ -1,4 +1,4 @@
-<div wire:poll.3s="refresh" class="min-h-screen">
+<div @if(in_array($deployment->status, ['pending', 'running'])) wire:poll.3s="refresh" @endif class="min-h-screen">
     {{-- Animated Background Orbs --}}
     <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
         <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-emerald-500/5 via-teal-500/5 to-cyan-500/5 rounded-full blur-3xl animate-pulse"></div>

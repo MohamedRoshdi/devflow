@@ -1,4 +1,4 @@
-<div wire:init="loadStats">
+<div>
     {{-- Main Stats Grid --}}
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         @if($isLoading)

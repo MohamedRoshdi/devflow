@@ -1,5 +1,4 @@
-<div wire:init="loadServerData"
-     @if($dockerInstalling) wire:poll.3s="checkDockerInstallProgress" @else wire:poll.30s @endif
+<div @if($dockerInstalling) wire:poll.3s="checkDockerInstallProgress" @endif
      class="min-h-screen">
 
     {{-- Animated Background Orbs --}}

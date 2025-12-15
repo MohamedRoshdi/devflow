@@ -1,4 +1,4 @@
-<div wire:init="loadAllStats">
+<div>
     {{-- Hero Section --}}
     <div class="mb-8 rounded-2xl bg-gradient-to-br from-slate-600 via-gray-600 to-zinc-700 p-8 text-white shadow-xl">
         <div class="flex items-center justify-between">

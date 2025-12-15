@@ -27,7 +27,7 @@ class ServerShow extends Component
     /** @var array<string, mixed>|null */
     public ?array $dockerInstallStatus = null;
 
-    public bool $isLoading = true;
+    public bool $isLoading = false;
 
     public string $activeTab = 'overview';
 
@@ -37,7 +37,7 @@ class ServerShow extends Component
 
         $this->server = $server;
         $this->recentMetrics = collect();
-        // Don't load metrics on mount - use wire:init for lazy loading
+        $this->loadMetrics();
     }
 
     /**

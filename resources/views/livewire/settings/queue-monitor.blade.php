@@ -1,4 +1,4 @@
-<div wire:init="loadStats" wire:poll.5s="loadStats">
+<div>
     <!-- Hero Section -->
     <div class="relative mb-8 rounded-2xl bg-gradient-to-br from-purple-500 via-pink-500 to-red-500 dark:from-purple-600 dark:via-pink-600 dark:to-red-600 p-8 shadow-xl overflow-hidden">
         <div class="absolute inset-0 bg-black/10 dark:bg-black/20 backdrop-blur-sm"></div>

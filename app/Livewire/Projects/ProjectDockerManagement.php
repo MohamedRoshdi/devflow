@@ -42,6 +42,7 @@ class ProjectDockerManagement extends Component
     {
         // All projects are shared across all users
         $this->projectId = $project->id;
+        $this->initDocker();
     }
 
     /**
