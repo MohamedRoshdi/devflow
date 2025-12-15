@@ -21,6 +21,18 @@ class Server extends Model
     /** @use HasFactory<\Database\Factories\ServerFactory> */
     use HasFactory, SoftDeletes;
 
+    /**
+     * Fields that should have HTML tags stripped for XSS protection.
+     *
+     * @var array<int, string>
+     */
+    protected array $sanitizeFields = [
+        'name',
+        'hostname',
+        'location_name',
+        'os',
+    ];
+
     protected $fillable = [
         'user_id',
         'team_id',
@@ -80,6 +92,30 @@ class Server extends Model
             'latitude' => 'decimal:8',
             'longitude' => 'decimal:8',
         ];
+    }
+
+    /**
+     * Boot the model and register event handlers.
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (Server $server) {
+            $server->sanitizeInputs();
+        });
+    }
+
+    /**
+     * Sanitize input fields by stripping HTML tags to prevent XSS attacks.
+     *
+     * This provides defense-in-depth alongside Blade's {{ }} escaping.
+     */
+    protected function sanitizeInputs(): void
+    {
+        foreach ($this->sanitizeFields as $field) {
+            if (isset($this->attributes[$field]) && is_string($this->attributes[$field])) {
+                $this->attributes[$field] = strip_tags($this->attributes[$field]);
+            }
+        }
     }
 
     // Relationships

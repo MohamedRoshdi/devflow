@@ -6,12 +6,15 @@ use App\Models\Deployment;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class PerformanceTestSuite extends TestCase
 {
+    use RefreshDatabase;
+
     protected static array $metrics = [];
 
     /**
@@ -34,6 +37,7 @@ class PerformanceTestSuite extends TestCase
 
     /**
      * Test database query performance
+     * @test
      */
     public function test_database_query_performance(): void
     {
@@ -79,6 +83,7 @@ class PerformanceTestSuite extends TestCase
 
     /**
      * Test N+1 query detection
+     * @test
      */
     public function test_n_plus_one_query_detection(): void
     {
@@ -123,6 +128,7 @@ class PerformanceTestSuite extends TestCase
 
     /**
      * Test cache performance
+     * @test
      */
     public function test_cache_performance(): void
     {
@@ -164,6 +170,7 @@ class PerformanceTestSuite extends TestCase
 
     /**
      * Test API response times
+     * @test
      */
     public function test_api_response_times(): void
     {
@@ -199,6 +206,7 @@ class PerformanceTestSuite extends TestCase
 
     /**
      * Test memory usage
+     * @test
      */
     public function test_memory_usage(): void
     {
@@ -252,6 +260,7 @@ class PerformanceTestSuite extends TestCase
 
     /**
      * Test concurrent user load
+     * @test
      */
     public function test_concurrent_user_load(): void
     {

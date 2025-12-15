@@ -95,10 +95,74 @@ class Project extends Model
      */
     protected static function booted(): void
     {
+        static::saving(function (Project $project) {
+            $project->sanitizeInputs();
+            $project->validatePathSecurity();
+        });
+
         static::updated(function (Project $project) {
             // Clear project-specific cache when project is updated
             cache()->forget("project_{$project->id}_stats");
         });
+    }
+
+    /**
+     * Sanitize input fields by stripping HTML tags to prevent XSS attacks.
+     */
+    protected function sanitizeInputs(): void
+    {
+        $sanitizeFields = ['name', 'repository_url', 'branch', 'health_check_url'];
+
+        foreach ($sanitizeFields as $field) {
+            if (isset($this->attributes[$field]) && is_string($this->attributes[$field])) {
+                $this->attributes[$field] = strip_tags($this->attributes[$field]);
+            }
+        }
+    }
+
+    /**
+     * Validate path-related fields to prevent path traversal attacks.
+     *
+     * @throws \InvalidArgumentException if path contains unsafe patterns
+     */
+    protected function validatePathSecurity(): void
+    {
+        $pathFields = ['root_directory'];
+
+        foreach ($pathFields as $field) {
+            if (! isset($this->attributes[$field]) || ! is_string($this->attributes[$field])) {
+                continue;
+            }
+
+            $path = $this->attributes[$field];
+
+            // Reject path traversal sequences
+            if (str_contains($path, '..')) {
+                throw new \InvalidArgumentException(
+                    "The {$field} field contains path traversal sequences (..) which are not allowed."
+                );
+            }
+
+            // Reject absolute paths to sensitive system directories
+            $dangerousPaths = ['/etc/', '/var/', '/root/', '/home/', '/usr/', '/bin/', '/sbin/', '/boot/', '/proc/', '/sys/'];
+            foreach ($dangerousPaths as $dangerous) {
+                if (str_starts_with(strtolower($path), $dangerous)) {
+                    throw new \InvalidArgumentException(
+                        "The {$field} field cannot point to system directories."
+                    );
+                }
+            }
+
+            // Reject Windows system paths
+            if (preg_match('/^[A-Za-z]:\\\\(Windows|System|Program)/i', $path)) {
+                throw new \InvalidArgumentException(
+                    "The {$field} field cannot point to Windows system directories."
+                );
+            }
+
+            // Sanitize the path by removing any traversal attempts
+            $this->attributes[$field] = preg_replace('/\.\.[\\/\\\\]/', '', $path);
+        }
     }
 
     /**

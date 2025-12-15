@@ -157,8 +157,8 @@ class PenetrationTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // TODO: Consider adding input sanitization at the model level to strip HTML tags
-        // Current behavior: XSS payloads are stored as-is but should be escaped during rendering
+        // Input sanitization is now implemented at the model level via sanitizeInputs()
+        // HTML tags are stripped from fields like name, hostname, location_name, os
         foreach (array_slice($this->xssPayloads, 0, 5) as $payload) {
             $server = Server::factory()->create([
                 'user_id' => $this->user->id,
@@ -168,10 +168,10 @@ class PenetrationTest extends TestCase
             // Verify the server was created
             $this->assertNotNull($server);
 
-            // The payload is stored as-is (not sanitized during storage)
-            // Security relies on proper escaping during output (Blade {{ }} syntax)
-            // This is the standard Laravel approach - validate input, escape output
-            $this->assertTrue(true, 'Server created - output escaping should be verified in view tests');
+            // HTML tags should be stripped from the name
+            $this->assertStringNotContainsString('<script>', $server->name);
+            $this->assertStringNotContainsString('<img', $server->name);
+            $this->assertStringNotContainsString('onerror', $server->name);
         }
     }
 
@@ -544,12 +544,15 @@ class PenetrationTest extends TestCase
         Sanctum::actingAs($this->user, ['projects:read']);
 
         // Try to perform action requiring higher privileges
-        $response = $this->deleteJson("/api/v1/projects/{$this->project->id}");
+        $response = $this->deleteJson("/api/v1/projects/{$this->project->slug}");
 
-        // TODO: Implement ability-based authorization for Sanctum tokens
-        // Currently returns 404 (resource not found due to policy check)
-        // Should return 403 (forbidden) when proper ability checks are in place
-        $this->assertContains($response->status(), [403, 404], 'Unauthorized action should be denied');
+        // Ability-based authorization now returns 403 when token lacks required abilities
+        // The CheckSanctumAbility middleware checks token abilities before policy checks
+        $response->assertStatus(403);
+        $response->assertJson([
+            'error' => 'insufficient_token_abilities',
+            'required_ability' => 'projects:delete',
+        ]);
     }
 
     /** @test */
@@ -905,33 +908,71 @@ class PenetrationTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // TODO: Add path traversal validation in Project model or form request
-        // Current behavior: Path traversal sequences are stored as-is
-        // Should sanitize or reject paths containing '..' or absolute system paths
+        // Path traversal validation is now implemented in Project model
+        // The validatePathSecurity() method rejects paths containing '..' or system directories
         $maliciousPaths = [
             '../../../etc/passwd',
             '..\\..\\..\\windows\\system32\\config\\sam',
-            '/etc/shadow',
-            'C:\\Windows\\System32\\drivers\\etc\\hosts',
         ];
 
-        $hasPathSanitization = true;
-
         foreach ($maliciousPaths as $path) {
+            $this->expectException(\InvalidArgumentException::class);
+
+            Project::factory()->create([
+                'user_id' => $this->user->id,
+                'server_id' => $this->server->id,
+                'root_directory' => $path,
+            ]);
+        }
+    }
+
+    /** @test */
+    public function it_rejects_system_directory_paths(): void
+    {
+        $this->actingAs($this->user);
+
+        // System directory paths should be rejected
+        $systemPaths = [
+            '/etc/shadow',
+            '/var/log/auth.log',
+            '/root/.ssh/id_rsa',
+        ];
+
+        foreach ($systemPaths as $path) {
+            try {
+                Project::factory()->create([
+                    'user_id' => $this->user->id,
+                    'server_id' => $this->server->id,
+                    'root_directory' => $path,
+                ]);
+
+                $this->fail("Expected InvalidArgumentException for path: {$path}");
+            } catch (\InvalidArgumentException $e) {
+                $this->assertStringContainsString('system directories', $e->getMessage());
+            }
+        }
+    }
+
+    /** @test */
+    public function it_allows_safe_project_paths(): void
+    {
+        $this->actingAs($this->user);
+
+        // Safe paths should be allowed
+        $safePaths = [
+            '/app/projects/my-project',
+            'projects/laravel-app',
+            './src',
+        ];
+
+        foreach ($safePaths as $path) {
             $project = Project::factory()->create([
                 'user_id' => $this->user->id,
                 'server_id' => $this->server->id,
                 'root_directory' => $path,
             ]);
 
-            // Check if path contains traversal sequences
-            if (str_contains($project->root_directory, '..')) {
-                $hasPathSanitization = false;
-            }
-        }
-
-        if (!$hasPathSanitization) {
-            $this->markTestIncomplete('Path traversal sanitization not implemented - should validate root_directory field');
+            $this->assertEquals($path, $project->root_directory);
         }
     }
 

@@ -7,6 +7,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [6.6.0] - 2025-12-15
+
+### Security Enhancements
+
+#### Input Sanitization at Model Level
+Implemented automatic HTML tag stripping on save to prevent XSS attacks as defense-in-depth alongside Blade escaping.
+
+**Server Model:**
+- `name`, `hostname`, `location_name`, `os` fields now automatically strip HTML tags
+- Sanitization occurs in `booted()` lifecycle hook before save
+
+**Project Model:**
+- `name`, `repository_url`, `branch`, `health_check_url` fields now automatically strip HTML tags
+
+#### Path Traversal Protection
+Added comprehensive path validation to prevent directory traversal attacks.
+
+**Project Model - `validatePathSecurity()`:**
+- Rejects paths containing `..` (directory traversal sequences)
+- Blocks access to system directories (`/etc/`, `/var/`, `/root/`, `/home/`, `/usr/`, `/bin/`, `/sbin/`, `/boot/`, `/proc/`, `/sys/`)
+- Blocks Windows system paths (`C:\Windows\`, `C:\System\`, etc.)
+- Throws `InvalidArgumentException` for malicious paths
+
+#### Sanctum Token Ability-Based Authorization
+New middleware for fine-grained API access control based on token abilities.
+
+**New Middleware: `CheckSanctumAbility`**
+- Checks token abilities before policy checks
+- Returns 403 with `insufficient_token_abilities` error when token lacks required permission
+- Supports resource:action format (e.g., `projects:read`, `servers:delete`)
+- Supports wildcard abilities (`*` and `projects:*`)
+
+**API Routes Updated:**
+- All v1 API routes now enforce ability checks
+- `projects:read`, `projects:create`, `projects:update`, `projects:delete`
+- `servers:read`, `servers:create`, `servers:update`, `servers:delete`
+- `deployments:read`, `deployments:create`, `deployments:update`
+
+### Testing
+
+#### Performance Test Suite
+- Added `@test` annotations to all performance test methods
+- Added `RefreshDatabase` trait for proper database isolation
+- Tests now properly detected by PHPUnit 11
+
+#### Security Tests Updated
+- Updated XSS tests to verify HTML tag stripping
+- Updated path traversal tests to verify rejection of malicious paths
+- Updated token privilege escalation tests to expect 403 responses
+
+### Infrastructure
+- Removed deprecated `version` attribute from `docker-compose.dusk.yml`
+- Registered `abilities` middleware alias in `bootstrap/app.php`
+
+---
+
 ## [6.5.0] - 2025-12-15
 
 ### Performance - Livewire Loading Optimization
