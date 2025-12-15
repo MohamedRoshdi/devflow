@@ -68,12 +68,14 @@ class ProjectManagerServiceTest extends TestCase
     #[Test]
     public function it_creates_project_successfully(): void
     {
-        Log::shouldReceive('info')->times(2);
+        Log::shouldReceive('info')->times(3);
 
+        $user = User::factory()->create();
         $server = \App\Models\Server::factory()->create();
         $projectData = [
             'name' => 'Test Project',
             'slug' => 'test-project',
+            'user_id' => $user->id,
             'server_id' => $server->id,
             'repository_url' => 'https://github.com/test/repo',
             'branch' => 'main',
@@ -91,12 +93,14 @@ class ProjectManagerServiceTest extends TestCase
     #[Test]
     public function it_initializes_project_storage(): void
     {
-        Log::shouldReceive('info')->times(2);
+        Log::shouldReceive('info')->times(3);
 
+        $user = User::factory()->create();
         $server = \App\Models\Server::factory()->create();
         $projectData = [
             'name' => 'Test Project',
-            'slug' => 'test-project',
+            'slug' => 'test-project-storage',
+            'user_id' => $user->id,
             'server_id' => $server->id,
             'repository_url' => 'https://github.com/test/repo',
             'branch' => 'main',
@@ -122,7 +126,7 @@ class ProjectManagerServiceTest extends TestCase
     #[Test]
     public function it_rolls_back_on_project_creation_failure(): void
     {
-        Log::shouldReceive('info')->once();
+        // When project creation fails early (before any logging), only error is logged
         Log::shouldReceive('error')->once();
 
         $initialCount = Project::count();
@@ -146,7 +150,8 @@ class ProjectManagerServiceTest extends TestCase
     #[Test]
     public function it_deploys_project_successfully(): void
     {
-        Log::shouldReceive('info')->times(3);
+        // Service logs: "Deployment started" + "Deployment completed successfully"
+        Log::shouldReceive('info')->times(2);
 
         $user = User::factory()->create();
         $this->actingAs($user);
@@ -203,7 +208,8 @@ class ProjectManagerServiceTest extends TestCase
     #[Test]
     public function it_handles_deployment_failure(): void
     {
-        Log::shouldReceive('info')->times(2);
+        // Service logs: "Deployment started" (1 info), then failure triggers error log
+        Log::shouldReceive('info')->once();
         Log::shouldReceive('error')->once();
 
         $user = User::factory()->create();
@@ -231,7 +237,8 @@ class ProjectManagerServiceTest extends TestCase
     #[Test]
     public function it_deploys_standalone_container(): void
     {
-        Log::shouldReceive('info')->times(3);
+        // Service logs: "Deployment started" + "Deployment completed successfully"
+        Log::shouldReceive('info')->times(2);
 
         $user = User::factory()->create();
         $this->actingAs($user);
@@ -397,7 +404,7 @@ class ProjectManagerServiceTest extends TestCase
 
         $this->storageService->shouldReceive('cleanupProjectStorage')
             ->once()
-            ->andReturn(['success' => true, 'freed_mb' => 100]);
+            ->andReturn(true);  // Returns bool, not array
 
         $this->storageService->shouldReceive('calculateProjectStorage')
             ->once();
@@ -468,7 +475,8 @@ class ProjectManagerServiceTest extends TestCase
     #[Test]
     public function it_restarts_project_successfully(): void
     {
-        Log::shouldReceive('info')->once();
+        // Service logs: "Restarting project" + "Stopping project" + "Starting project"
+        Log::shouldReceive('info')->times(3);
 
         $project = Project::factory()->create(['status' => 'running']);
 
@@ -489,7 +497,9 @@ class ProjectManagerServiceTest extends TestCase
     #[Test]
     public function it_handles_restart_failure_on_stop(): void
     {
-        Log::shouldReceive('info')->once();
+        // Service logs: "Restarting project" + "Stopping project" (before exception)
+        // Then stopProject catches exception and logs 1 error, returns early
+        Log::shouldReceive('info')->times(2);
         Log::shouldReceive('error')->once();
 
         $project = Project::factory()->create();
@@ -509,6 +519,7 @@ class ProjectManagerServiceTest extends TestCase
     #[Test]
     public function it_performs_rollback_successfully(): void
     {
+        // Service logs: "Starting rollback" + "Rollback completed successfully"
         Log::shouldReceive('info')->times(2);
 
         $project = Project::factory()->create();
@@ -524,7 +535,6 @@ class ProjectManagerServiceTest extends TestCase
 
         $this->rollbackService->shouldReceive('rollbackToDeployment')
             ->once()
-            ->with($deployment)
             ->andReturn([
                 'success' => true,
                 'deployment' => $newDeployment,

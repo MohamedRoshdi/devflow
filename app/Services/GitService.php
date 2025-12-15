@@ -163,7 +163,7 @@ class GitService
                     'author' => $author,
                     'email' => $email,
                     'timestamp' => (int) $timestamp,
-                    'date' => date('Y-m-d H:i:s', $timestamp),
+                    'date' => date('Y-m-d H:i:s', (int) $timestamp),
                     'message' => $message,
                 ];
             }
@@ -212,7 +212,7 @@ class GitService
                 'short_hash' => substr($hash, 0, 7),
                 'author' => $author,
                 'timestamp' => (int) $timestamp,
-                'date' => date('Y-m-d H:i:s', $timestamp),
+                'date' => date('Y-m-d H:i:s', (int) $timestamp),
                 'message' => $message,
             ];
         } catch (\Exception $e) {

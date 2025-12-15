@@ -427,6 +427,7 @@ class DeploymentServiceTest extends TestCase
         Deployment::factory()->count(3)->create([
             'project_id' => $project->id,
             'status' => 'failed',
+            'duration_seconds' => null,
         ]);
 
         $stats = $this->service->getDeploymentStats($project, 30);
@@ -506,16 +507,12 @@ class DeploymentServiceTest extends TestCase
     #[Test]
     public function it_validates_deployment_prerequisites(): void
     {
+        $server = \App\Models\Server::factory()->create(['status' => 'online']);
         $project = Project::factory()->create([
-            'server_id' => 1,
+            'server_id' => $server->id,
             'repository_url' => 'https://github.com/test/repo',
             'branch' => 'main',
         ]);
-
-        $project->server()->associate(
-            \App\Models\Server::factory()->create(['status' => 'online'])
-        );
-        $project->save();
 
         $result = $this->service->validateDeploymentPrerequisites($project);
 
@@ -535,7 +532,7 @@ class DeploymentServiceTest extends TestCase
         $result = $this->service->validateDeploymentPrerequisites($project);
 
         $this->assertFalse($result['valid']);
-        $this->assertContains('does not have a server assigned', $result['errors']);
+        $this->assertContains('Project does not have a server assigned', $result['errors']);
     }
 
     #[Test]

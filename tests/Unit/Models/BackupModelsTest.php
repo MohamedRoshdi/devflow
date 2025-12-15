@@ -331,15 +331,50 @@ class BackupModelsTest extends TestCase
 
     public function test_file_backup_duration_accessor(): void
     {
-        // Skip: FileBackup::getDurationAttribute() has return type ?int but diffInSeconds returns float
-        // This causes TypeError and needs model fix
-        $this->markTestSkipped('FileBackup::getDurationAttribute() return type issue - model needs fix');
+        $backup = FileBackup::factory()->create([
+            'started_at' => now()->subMinutes(5),
+            'completed_at' => now(),
+        ]);
+
+        $this->assertEquals(300, $backup->duration);
+
+        // Test null when not completed
+        $backup = FileBackup::factory()->create([
+            'started_at' => now(),
+            'completed_at' => null,
+        ]);
+        $this->assertNull($backup->duration);
     }
 
     public function test_file_backup_formatted_duration_accessor(): void
     {
-        // Skip: Depends on duration accessor which has type error
-        $this->markTestSkipped('Depends on duration accessor which has type error - model needs fix');
+        // Test seconds only (< 60s)
+        $backup = FileBackup::factory()->create([
+            'started_at' => now()->subSeconds(30),
+            'completed_at' => now(),
+        ]);
+        $this->assertEquals('30s', $backup->formatted_duration);
+
+        // Test minutes and seconds
+        $backup = FileBackup::factory()->create([
+            'started_at' => now()->subMinutes(5)->subSeconds(30),
+            'completed_at' => now(),
+        ]);
+        $this->assertEquals('5m 30s', $backup->formatted_duration);
+
+        // Test hours and minutes
+        $backup = FileBackup::factory()->create([
+            'started_at' => now()->subHours(2)->subMinutes(30),
+            'completed_at' => now(),
+        ]);
+        $this->assertEquals('2h 30m', $backup->formatted_duration);
+
+        // Test null when not completed
+        $backup = FileBackup::factory()->create([
+            'started_at' => now(),
+            'completed_at' => null,
+        ]);
+        $this->assertNull($backup->formatted_duration);
     }
 
     public function test_file_backup_status_color_accessor(): void

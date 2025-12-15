@@ -436,9 +436,29 @@ class InfrastructureModelsTest extends TestCase
     #[Test]
     public function health_check_belongs_to_many_notification_channels(): void
     {
-        // Skip: NotificationChannel factory uses user_id but table created by 2024 migration doesn't have it
-        // Migration conflict: 2024 migration creates table without user_id, 2025 migration skips if table exists
-        $this->markTestSkipped('NotificationChannel migration conflict - table schema mismatch');
+        $healthCheck = HealthCheck::factory()->create();
+        $channel1 = NotificationChannel::factory()->create();
+        $channel2 = NotificationChannel::factory()->create();
+
+        // Attach channels with pivot data
+        $healthCheck->notificationChannels()->attach($channel1->id, [
+            'notify_on_failure' => true,
+            'notify_on_recovery' => false,
+        ]);
+        $healthCheck->notificationChannels()->attach($channel2->id, [
+            'notify_on_failure' => true,
+            'notify_on_recovery' => true,
+        ]);
+
+        $healthCheck->refresh();
+
+        $this->assertCount(2, $healthCheck->notificationChannels);
+        $this->assertTrue($healthCheck->notificationChannels->contains($channel1));
+        $this->assertTrue($healthCheck->notificationChannels->contains($channel2));
+
+        // Check pivot data
+        $firstChannel = $healthCheck->notificationChannels->first();
+        $this->assertTrue((bool) $firstChannel->pivot->notify_on_failure);
     }
 
     #[Test]

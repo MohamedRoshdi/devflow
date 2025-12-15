@@ -33,7 +33,7 @@ class PipelineService
         ]);
 
         // Set up webhook for automatic triggering
-        $this->setupWebhook($pipeline);
+        $this->setupWebhook($project);
 
         // Create pipeline file in repository
         $this->createPipelineFile($pipeline);

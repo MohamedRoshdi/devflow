@@ -154,8 +154,7 @@ class CacheManagementServiceTest extends TestCase
     #[Test]
     public function it_handles_project_cache_clear_failure(): void
     {
-        \Log::shouldReceive('error')->once();
-
+        // No error log is made when success is false - only on exception
         $project = Project::factory()->create();
 
         $this->dockerService->shouldReceive('clearProjectCache')
