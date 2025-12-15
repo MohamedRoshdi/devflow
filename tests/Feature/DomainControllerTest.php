@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Domain;
 use App\Models\Project;
 use App\Models\Team;
@@ -39,7 +41,7 @@ class DomainControllerTest extends TestCase
 
     // ==================== Store Method Tests ====================
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_create_domain_for_their_project(): void
     {
         $domainData = [
@@ -68,7 +70,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function domain_is_automatically_lowercased_on_creation(): void
     {
         $response = $this->actingAs($this->user)
@@ -84,7 +86,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function domain_creation_defaults_ssl_to_enabled(): void
     {
         $response = $this->actingAs($this->user)
@@ -103,7 +105,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function guest_cannot_create_domain(): void
     {
         $response = $this->post(route('projects.domains.store', $this->project), [
@@ -117,7 +119,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function user_cannot_create_domain_for_another_users_project(): void
     {
         $response = $this->actingAs($this->user)
@@ -133,7 +135,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function domain_creation_validates_required_domain_field(): void
     {
         $response = $this->actingAs($this->user)
@@ -146,7 +148,7 @@ class DomainControllerTest extends TestCase
         $this->assertDatabaseCount('domains', 0);
     }
 
-    /** @test */
+    #[Test]
     public function domain_creation_validates_domain_format(): void
     {
         $invalidDomains = [
@@ -173,7 +175,7 @@ class DomainControllerTest extends TestCase
         $this->assertDatabaseCount('domains', 0);
     }
 
-    /** @test */
+    #[Test]
     public function domain_creation_accepts_valid_domain_formats(): void
     {
         $validDomains = [
@@ -200,7 +202,7 @@ class DomainControllerTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function domain_creation_validates_domain_uniqueness(): void
     {
         Domain::factory()->create([
@@ -218,7 +220,7 @@ class DomainControllerTest extends TestCase
         $this->assertDatabaseCount('domains', 1);
     }
 
-    /** @test */
+    #[Test]
     public function domain_creation_validates_domain_max_length(): void
     {
         $response = $this->actingAs($this->user)
@@ -229,7 +231,7 @@ class DomainControllerTest extends TestCase
         $response->assertSessionHasErrors(['domain']);
     }
 
-    /** @test */
+    #[Test]
     public function domain_creation_validates_ssl_provider(): void
     {
         $response = $this->actingAs($this->user)
@@ -241,7 +243,7 @@ class DomainControllerTest extends TestCase
         $response->assertSessionHasErrors(['ssl_provider']);
     }
 
-    /** @test */
+    #[Test]
     public function domain_creation_accepts_valid_ssl_providers(): void
     {
         $validProviders = ['letsencrypt', 'custom', 'cloudflare'];
@@ -262,7 +264,7 @@ class DomainControllerTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function domain_creation_accepts_boolean_ssl_enabled(): void
     {
         $response = $this->actingAs($this->user)
@@ -279,7 +281,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function domain_creation_accepts_metadata_array(): void
     {
         $metadata = ['key1' => 'value1', 'key2' => 'value2'];
@@ -299,7 +301,7 @@ class DomainControllerTest extends TestCase
 
     // ==================== Update Method Tests ====================
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_update_their_domain(): void
     {
         $domain = Domain::factory()->create([
@@ -334,7 +336,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function domain_is_automatically_lowercased_on_update(): void
     {
         $domain = Domain::factory()->create([
@@ -355,7 +357,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function domain_update_can_update_single_field(): void
     {
         $domain = Domain::factory()->create([
@@ -380,7 +382,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function guest_cannot_update_domain(): void
     {
         $domain = Domain::factory()->create([
@@ -400,7 +402,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function user_cannot_update_another_users_domain(): void
     {
         $domain = Domain::factory()->create([
@@ -421,7 +423,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function domain_update_validates_domain_format(): void
     {
         $domain = Domain::factory()->create([
@@ -442,7 +444,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function domain_update_validates_domain_uniqueness_excluding_current(): void
     {
         $domain1 = Domain::factory()->create([
@@ -469,7 +471,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function domain_update_allows_keeping_same_domain_name(): void
     {
         $domain = Domain::factory()->create([
@@ -493,7 +495,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function domain_update_validates_ssl_provider(): void
     {
         $domain = Domain::factory()->create([
@@ -508,7 +510,7 @@ class DomainControllerTest extends TestCase
         $response->assertSessionHasErrors(['ssl_provider']);
     }
 
-    /** @test */
+    #[Test]
     public function domain_update_validates_status(): void
     {
         $domain = Domain::factory()->create([
@@ -529,7 +531,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function domain_update_accepts_valid_status_values(): void
     {
         $validStatuses = ['active', 'inactive', 'pending'];
@@ -554,7 +556,7 @@ class DomainControllerTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function domain_update_can_update_ssl_certificate_and_key(): void
     {
         $domain = Domain::factory()->create([
@@ -579,7 +581,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function domain_update_can_clear_ssl_certificate(): void
     {
         $domain = Domain::factory()->create([
@@ -605,7 +607,7 @@ class DomainControllerTest extends TestCase
 
     // ==================== Destroy Method Tests ====================
 
-    /** @test */
+    #[Test]
     public function project_owner_can_delete_their_domain(): void
     {
         $domain = Domain::factory()->create([
@@ -624,7 +626,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function guest_cannot_delete_domain(): void
     {
         $domain = Domain::factory()->create([
@@ -641,7 +643,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function user_cannot_delete_another_users_domain(): void
     {
         $domain = Domain::factory()->create([
@@ -659,7 +661,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function deleting_domain_does_not_affect_other_domains(): void
     {
         $domain1 = Domain::factory()->create([
@@ -689,7 +691,7 @@ class DomainControllerTest extends TestCase
 
     // ==================== Team Access Tests ====================
 
-    /** @test */
+    #[Test]
     public function team_member_can_update_domain_of_team_project(): void
     {
         $team = Team::factory()->create([
@@ -725,7 +727,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function team_member_cannot_delete_domain_of_team_project(): void
     {
         $team = Team::factory()->create([
@@ -759,7 +761,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function team_owner_can_delete_domain_of_team_project(): void
     {
         $team = Team::factory()->create([
@@ -787,7 +789,7 @@ class DomainControllerTest extends TestCase
 
     // ==================== Admin/Super Admin Tests ====================
 
-    /** @test */
+    #[Test]
     public function admin_can_update_any_domain(): void
     {
         Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
@@ -812,7 +814,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function super_admin_can_update_any_domain(): void
     {
         Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
@@ -839,7 +841,7 @@ class DomainControllerTest extends TestCase
 
     // ==================== Edge Cases and Error Handling ====================
 
-    /** @test */
+    #[Test]
     public function domain_creation_handles_metadata_validation(): void
     {
         $response = $this->actingAs($this->user)
@@ -851,7 +853,7 @@ class DomainControllerTest extends TestCase
         $response->assertSessionHasErrors(['metadata']);
     }
 
-    /** @test */
+    #[Test]
     public function domain_update_handles_metadata_validation(): void
     {
         $domain = Domain::factory()->create([
@@ -866,7 +868,7 @@ class DomainControllerTest extends TestCase
         $response->assertSessionHasErrors(['metadata']);
     }
 
-    /** @test */
+    #[Test]
     public function domain_operations_handle_non_existent_project(): void
     {
         $response = $this->actingAs($this->user)
@@ -877,7 +879,7 @@ class DomainControllerTest extends TestCase
         $response->assertNotFound();
     }
 
-    /** @test */
+    #[Test]
     public function domain_operations_handle_non_existent_domain(): void
     {
         $response = $this->actingAs($this->user)
@@ -888,7 +890,7 @@ class DomainControllerTest extends TestCase
         $response->assertNotFound();
     }
 
-    /** @test */
+    #[Test]
     public function domain_update_handles_project_domain_mismatch(): void
     {
         $domain = Domain::factory()->create([
@@ -906,7 +908,7 @@ class DomainControllerTest extends TestCase
         $response->assertForbidden();
     }
 
-    /** @test */
+    #[Test]
     public function domain_delete_handles_project_domain_mismatch(): void
     {
         $domain = Domain::factory()->create([
@@ -922,7 +924,7 @@ class DomainControllerTest extends TestCase
         $response->assertForbidden();
     }
 
-    /** @test */
+    #[Test]
     public function domain_creation_sets_status_to_pending_automatically(): void
     {
         $response = $this->actingAs($this->user)
@@ -941,7 +943,7 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function multiple_domains_can_be_added_to_same_project(): void
     {
         $domains = ['example1.com', 'example2.com', 'example3.com'];
@@ -965,7 +967,7 @@ class DomainControllerTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function only_one_primary_domain_per_project(): void
     {
         $domain1 = Domain::factory()->create([

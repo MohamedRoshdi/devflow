@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Team;
 use App\Models\TeamInvitation;
 use App\Models\TeamMember;
@@ -122,8 +124,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 1: Teams list page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_teams_list_page_loads(): void
     {
         $this->browse(function (Browser $browser) {
@@ -142,8 +145,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 2: Create team button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_create_team_button_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -162,8 +166,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 3: Create team modal opens when button clicked
      *
-     * @test
      */
+
+    #[Test]
     public function test_create_team_modal_opens(): void
     {
         $this->browse(function (Browser $browser) {
@@ -186,8 +191,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 4: Team name field is present in create modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_name_field_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -210,8 +216,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 5: Teams list displays existing teams
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_list_displays_existing_teams(): void
     {
         $this->browse(function (Browser $browser) {
@@ -231,8 +238,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 6: Team settings page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_settings_page_loads(): void
     {
         $this->browse(function (Browser $browser) {
@@ -254,8 +262,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 7: Team members list is visible in settings
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_members_list_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -279,8 +288,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 8: Invite member button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_invite_member_button_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -302,8 +312,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 9: Invite member modal opens when button clicked
      *
-     * @test
      */
+
+    #[Test]
     public function test_invite_member_modal_opens(): void
     {
         $this->browse(function (Browser $browser) {
@@ -329,8 +340,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 10: Email field is present in invitation modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_email_field_for_invitation_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -356,8 +368,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 11: Role selection dropdown is present in invitation modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_role_selection_dropdown_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -384,8 +397,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 12: Remove member button is visible for team members
      *
-     * @test
      */
+
+    #[Test]
     public function test_remove_member_button_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -407,8 +421,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 13: Danger Zone tab displays team deletion option
      *
-     * @test
      */
+
+    #[Test]
     public function test_danger_zone_displays_deletion_option(): void
     {
         $this->browse(function (Browser $browser) {
@@ -431,8 +446,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 14: Team deletion button is present for owners
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_deletion_button_for_owners(): void
     {
         $this->browse(function (Browser $browser) {
@@ -453,8 +469,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 15: Flash messages display properly after actions
      *
-     * @test
      */
+
+    #[Test]
     public function test_flash_messages_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -479,8 +496,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 16: Team description field is editable in General settings
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_description_editable(): void
     {
         $this->browse(function (Browser $browser) {
@@ -502,8 +520,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 17: Team avatar upload field is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_avatar_upload_field_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -525,8 +544,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 18: Transfer ownership option is visible for team owners
      *
-     * @test
      */
+
+    #[Test]
     public function test_transfer_ownership_option_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -548,8 +568,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 19: Member role can be changed via dropdown
      *
-     * @test
      */
+
+    #[Test]
     public function test_member_role_can_be_changed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -573,8 +594,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 20: Team card displays member count
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_card_displays_member_count(): void
     {
         $this->browse(function (Browser $browser) {
@@ -592,8 +614,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 21: Team settings button navigates to settings page
      *
-     * @test
      */
+
+    #[Test]
     public function test_settings_button_navigates_correctly(): void
     {
         $this->browse(function (Browser $browser) {
@@ -611,8 +634,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 22: Invitations tab shows pending invitations
      *
-     * @test
      */
+
+    #[Test]
     public function test_invitations_tab_shows_pending_invitations(): void
     {
         $this->browse(function (Browser $browser) {
@@ -632,8 +656,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 23: Team owner badge is displayed correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_owner_badge_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -651,8 +676,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 24: Create team form validates required fields
      *
-     * @test
      */
+
+    #[Test]
     public function test_create_team_form_validates_required_fields(): void
     {
         $this->browse(function (Browser $browser) {
@@ -674,8 +700,9 @@ class TeamManagementTest extends DuskTestCase
     /**
      * Test 25: Team name is displayed in settings header
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_name_displayed_in_settings_header(): void
     {
         $this->browse(function (Browser $browser) {

@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Team;
 use App\Models\TeamMember;
 use App\Models\User;
@@ -74,8 +76,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 1: Teams list page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_teams_list_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -94,8 +97,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 2: Create team button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_create_team_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -120,8 +124,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 3: Team creation modal displays when clicking create button
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_creation_modal_displays()
     {
         $this->browse(function (Browser $browser) {
@@ -167,8 +172,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 4: Team settings page is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_settings_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -195,8 +201,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 5: Team member list is visible in settings
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_member_list_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -222,8 +229,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 6: Team cards show correct information
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_cards_show_correct_info()
     {
         $this->browse(function (Browser $browser) {
@@ -249,8 +257,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 7: Team settings tabs are functional
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_settings_tabs_functional()
     {
         $this->browse(function (Browser $browser) {
@@ -277,8 +286,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 8: Invite member button is present in team settings
      *
-     * @test
      */
+
+    #[Test]
     public function test_invite_member_button_present()
     {
         $this->browse(function (Browser $browser) {
@@ -304,8 +314,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 9: Team owner badge is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_owner_badge_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -330,8 +341,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 10: Switch team functionality is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_switch_team_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -357,8 +369,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 11: Team description is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_description_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -383,8 +396,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 12: Team avatar/icon is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_avatar_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -410,8 +424,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 13: Member count is displayed on team cards
      *
-     * @test
      */
+
+    #[Test]
     public function test_member_count_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -436,8 +451,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 14: Team settings form has required fields
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_settings_form_has_required_fields()
     {
         $this->browse(function (Browser $browser) {
@@ -461,8 +477,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 15: Danger zone section is visible for team owner
      *
-     * @test
      */
+
+    #[Test]
     public function test_danger_zone_visible_for_owner()
     {
         $this->browse(function (Browser $browser) {
@@ -489,8 +506,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 16: Current team indicator is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_current_team_indicator_present()
     {
         $this->browse(function (Browser $browser) {
@@ -516,8 +534,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 17: Empty state is shown when no teams exist
      *
-     * @test
      */
+
+    #[Test]
     public function test_empty_state_shown_when_no_teams()
     {
         // Create a new user without teams
@@ -552,8 +571,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 18: Team search/filter is present (if applicable)
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_search_present()
     {
         $this->browse(function (Browser $browser) {
@@ -582,8 +602,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 19: Navigation to teams page from dashboard works
      *
-     * @test
      */
+
+    #[Test]
     public function test_navigation_to_teams_from_dashboard()
     {
         $this->browse(function (Browser $browser) {
@@ -618,8 +639,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 20: Team actions dropdown/menu is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_actions_menu_present()
     {
         $this->browse(function (Browser $browser) {
@@ -646,8 +668,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 21: Team validation - empty name should show error
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_creation_validation_empty_name()
     {
         $this->browse(function (Browser $browser) {
@@ -677,8 +700,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 22: Team member roles are displayed correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_member_roles_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -703,8 +727,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 23: Team permissions configuration section exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_permissions_section_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -731,8 +756,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 24: Team invitation form fields are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_invitation_form_fields()
     {
         $this->browse(function (Browser $browser) {
@@ -769,8 +795,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 25: Team switcher dropdown is functional
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_switcher_dropdown_functional()
     {
         $this->browse(function (Browser $browser) {
@@ -797,8 +824,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 26: Team owner transfer option is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_owner_transfer_option()
     {
         $this->browse(function (Browser $browser) {
@@ -825,8 +853,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 27: Team settings can be updated (visual check)
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_settings_update_visual()
     {
         $this->browse(function (Browser $browser) {
@@ -850,8 +879,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 28: Team project access control section exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_project_access_control()
     {
         $this->browse(function (Browser $browser) {
@@ -878,8 +908,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 29: Team server access control section exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_server_access_control()
     {
         $this->browse(function (Browser $browser) {
@@ -906,8 +937,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 30: Team activity logs are accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_activity_logs_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -935,8 +967,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 31: Personal team indicator is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_personal_team_indicator()
     {
         $this->browse(function (Browser $browser) {
@@ -963,8 +996,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 32: Team member count is accurate on settings page
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_member_count_accurate()
     {
         $this->browse(function (Browser $browser) {
@@ -989,8 +1023,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 33: Team deletion confirmation modal appears
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_deletion_confirmation_modal()
     {
         $this->browse(function (Browser $browser) {
@@ -1017,8 +1052,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 34: Team URL/slug is displayed correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_url_slug_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -1037,8 +1073,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 35: Team invite link can be generated
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_invite_link_generation()
     {
         $this->browse(function (Browser $browser) {
@@ -1065,8 +1102,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 36: Remove member button exists for team owner
      *
-     * @test
      */
+
+    #[Test]
     public function test_remove_member_button_for_owner()
     {
         $this->browse(function (Browser $browser) {
@@ -1093,8 +1131,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 37: Team creation timestamp is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_creation_timestamp_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -1122,8 +1161,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 38: Team settings breadcrumb navigation works
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_settings_breadcrumb_navigation()
     {
         $this->browse(function (Browser $browser) {
@@ -1150,8 +1190,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 39: Team role change dropdown exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_role_change_dropdown()
     {
         $this->browse(function (Browser $browser) {
@@ -1178,8 +1219,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 40: Team settings page has responsive layout
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_settings_responsive_layout()
     {
         $this->browse(function (Browser $browser) {
@@ -1206,8 +1248,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 41: Team member email is displayed in member list
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_member_email_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -1230,8 +1273,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 42: Team pending invitations section exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_pending_invitations_section()
     {
         $this->browse(function (Browser $browser) {
@@ -1258,8 +1302,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 43: Leave team option is available for members
      *
-     * @test
      */
+
+    #[Test]
     public function test_leave_team_option_for_members()
     {
         $this->browse(function (Browser $browser) {
@@ -1285,8 +1330,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 44: Team avatar upload option exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_avatar_upload_option()
     {
         $this->browse(function (Browser $browser) {
@@ -1314,8 +1360,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 45: Team resource count is displayed (projects/servers)
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_resource_count_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -1343,8 +1390,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 46: Multiple teams can be viewed in list
      *
-     * @test
      */
+
+    #[Test]
     public function test_multiple_teams_in_list()
     {
         $this->browse(function (Browser $browser) {
@@ -1367,8 +1415,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 47: Team card actions are accessible via buttons
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_card_actions_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -1393,8 +1442,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 48: Team settings save button is functional
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_settings_save_button_functional()
     {
         $this->browse(function (Browser $browser) {
@@ -1419,8 +1469,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 49: Team member joined date is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_member_joined_date_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -1448,8 +1499,9 @@ class TeamsTest extends DuskTestCase
     /**
      * Test 50: Team settings form validation works
      *
-     * @test
      */
+
+    #[Test]
     public function test_team_settings_form_validation()
     {
         $this->browse(function (Browser $browser) {

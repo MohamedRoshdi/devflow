@@ -2,6 +2,7 @@
 
 namespace Tests\Browser;
 
+use PHPUnit\Framework\Attributes\Group;
 use App\Models\Deployment;
 use App\Models\Project;
 use App\Models\Server;
@@ -35,9 +36,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 1: Page loads successfully when server exists
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_page_loads_successfully_with_server(): void
     {
         if (! $this->server) {
@@ -59,9 +59,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 2: Page shows error when server doesn't exist
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_page_shows_error_for_nonexistent_server(): void
     {
         $this->browse(function (Browser $browser) {
@@ -77,9 +76,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 3: Server name is displayed
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_server_name_displayed(): void
     {
         if (! $this->server) {
@@ -99,9 +97,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 4: Server IP address is shown
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_server_ip_address_shown(): void
     {
         if (! $this->server) {
@@ -121,9 +118,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 5: Server status indicator is visible
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_server_status_indicator_visible(): void
     {
         if (! $this->server) {
@@ -143,9 +139,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 6: Edit server button is visible
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_edit_server_button_visible(): void
     {
         if (! $this->server) {
@@ -165,9 +160,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 7: Back to servers link is visible
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_back_button_visible(): void
     {
         if (! $this->server) {
@@ -187,9 +181,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 8: Quick Actions section is present
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_quick_actions_section_present(): void
     {
         if (! $this->server) {
@@ -209,9 +202,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 9: Metrics link is visible
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_metrics_link_visible(): void
     {
         if (! $this->server) {
@@ -231,9 +223,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 10: Security link is visible
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_security_link_visible(): void
     {
         if (! $this->server) {
@@ -253,9 +244,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 11: Backups link is visible
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_backups_link_visible(): void
     {
         if (! $this->server) {
@@ -275,9 +265,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 12: Docker link/button is visible
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_docker_link_visible(): void
     {
         if (! $this->server) {
@@ -306,9 +295,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 13: SSL link is visible
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_ssl_link_visible(): void
     {
         if (! $this->server) {
@@ -328,9 +316,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 14: Projects section is displayed
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_projects_section_displayed(): void
     {
         if (! $this->server) {
@@ -350,9 +337,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 15: Projects list shows server projects
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_projects_list_shows_server_projects(): void
     {
         if (! $this->server) {
@@ -380,9 +366,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 16: Resource usage/metrics section is shown
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_resource_usage_shown(): void
     {
         if (! $this->server) {
@@ -402,9 +387,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 17: Connection status or last ping is shown
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_connection_status_indicator(): void
     {
         if (! $this->server) {
@@ -424,9 +408,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 18: Server OS info is displayed
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_server_os_info_displayed(): void
     {
         if (! $this->server) {
@@ -452,9 +435,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 19: CPU/RAM/Disk info is shown
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_cpu_ram_disk_info_shown(): void
     {
         if (! $this->server) {
@@ -482,9 +464,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 20: Server Information section is present
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_server_information_section_present(): void
     {
         if (! $this->server) {
@@ -508,9 +489,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 21: Flash messages display after actions
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_flash_messages_display(): void
     {
         if (! $this->server) {
@@ -536,9 +516,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 22: Ping server button is functional
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_ping_server_button_functional(): void
     {
         if (! $this->server) {
@@ -562,9 +541,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 23: Docker status card is displayed
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_docker_status_card_displayed(): void
     {
         if (! $this->server) {
@@ -592,9 +570,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 24: Status card shows correct status badge
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_status_card_shows_correct_badge(): void
     {
         if (! $this->server) {
@@ -618,9 +595,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 25: Recent Deployments section is present
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_recent_deployments_section_present(): void
     {
         if (! $this->server) {
@@ -640,9 +616,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 26: Reboot server button is visible
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_reboot_server_button_visible(): void
     {
         if (! $this->server) {
@@ -665,9 +640,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 27: Clear cache button is visible
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_clear_cache_button_visible(): void
     {
         if (! $this->server) {
@@ -690,9 +664,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 28: Services restart dropdown is visible
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_services_dropdown_visible(): void
     {
         if (! $this->server) {
@@ -715,9 +688,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 29: SSH Terminal section is present
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_ssh_terminal_section_present(): void
     {
         if (! $this->server) {
@@ -737,9 +709,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 30: Metrics data displays when available
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_metrics_data_displays_when_available(): void
     {
         if (! $this->server) {
@@ -774,9 +745,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 31: Empty state message when no metrics
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_empty_state_when_no_metrics(): void
     {
         // Create a server with no metrics
@@ -806,9 +776,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 32: Empty state message when no deployments
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_empty_state_when_no_deployments(): void
     {
         // Create a server with no deployments
@@ -838,9 +807,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 33: Server hostname is displayed in info section
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_server_hostname_displayed(): void
     {
         if (! $this->server) {
@@ -860,9 +828,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 34: Server port is displayed
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_server_port_displayed(): void
     {
         if (! $this->server) {
@@ -882,9 +849,8 @@ class ServerShowTest extends DuskTestCase
 
     /**
      * Test 35: Server username is displayed
-     *
-     * @group server-show
-     */
+     *     */
+    #[Group('server-show')]
     public function test_server_username_displayed(): void
     {
         if (! $this->server) {

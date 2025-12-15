@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\ApiToken;
 use App\Models\User;
 use Laravel\Dusk\Browser;
@@ -34,8 +36,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 1: API token page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_token_page_loads_successfully()
     {
         $this->browse(function (Browser $browser) {
@@ -62,8 +65,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 2: Token list is displayed when tokens exist
      *
-     * @test
      */
+
+    #[Test]
     public function test_token_list_displayed_when_tokens_exist()
     {
         // Create a test token
@@ -101,8 +105,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 3: Create token button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_create_token_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -127,8 +132,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 4: Create token modal opens when button is clicked
      *
-     * @test
      */
+
+    #[Test]
     public function test_create_token_modal_opens()
     {
         $this->browse(function (Browser $browser) {
@@ -168,8 +174,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 5: Token name field is present in create modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_token_name_field_present()
     {
         $this->browse(function (Browser $browser) {
@@ -194,8 +201,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 6: Token permissions/abilities checkboxes are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_token_permissions_checkboxes_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -221,8 +229,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 7: Create token form has required fields
      *
-     * @test
      */
+
+    #[Test]
     public function test_create_token_form_has_required_fields()
     {
         $this->browse(function (Browser $browser) {
@@ -247,8 +256,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 8: Token expiration dropdown is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_token_expiration_dropdown_present()
     {
         $this->browse(function (Browser $browser) {
@@ -274,8 +284,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 9: Copy token button is shown in token display modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_copy_token_button_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -300,8 +311,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 10: Revoke token button is visible for existing tokens
      *
-     * @test
      */
+
+    #[Test]
     public function test_revoke_token_button_visible()
     {
         // Create a test token
@@ -337,8 +349,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 11: Revoke confirmation is shown when revoking token
      *
-     * @test
      */
+
+    #[Test]
     public function test_revoke_confirmation_shown()
     {
         // Create a test token
@@ -375,8 +388,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 12: Token last used timestamp is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_token_last_used_timestamp_shown()
     {
         // Create a test token with last_used_at
@@ -414,8 +428,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 13: Token creation date is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_token_creation_date_shown()
     {
         // Create a test token
@@ -452,8 +467,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 14: Empty state is shown when no tokens exist
      *
-     * @test
      */
+
+    #[Test]
     public function test_empty_state_shown_when_no_tokens()
     {
         // Ensure no tokens exist
@@ -481,8 +497,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 15: Warning message is displayed in token display modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_warning_message_in_token_display_modal()
     {
         $this->browse(function (Browser $browser) {
@@ -508,8 +525,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 16: Token abilities are displayed as badges
      *
-     * @test
      */
+
+    #[Test]
     public function test_token_abilities_displayed_as_badges()
     {
         // Create a test token with multiple abilities
@@ -546,8 +564,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 17: Regenerate token button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_regenerate_token_button_visible()
     {
         // Create a test token
@@ -583,8 +602,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 18: Token expiration date is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_token_expiration_date_displayed()
     {
         // Create a test token with expiration
@@ -621,8 +641,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 19: Expired token is marked with red indicator
      *
-     * @test
      */
+
+    #[Test]
     public function test_expired_token_marked_with_red_indicator()
     {
         // Create an expired token
@@ -659,8 +680,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 20: Full access badge is shown for tokens without specific abilities
      *
-     * @test
      */
+
+    #[Test]
     public function test_full_access_badge_shown_for_empty_abilities()
     {
         // Create a token with no specific abilities
@@ -696,8 +718,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 21: Token table headers are displayed correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_token_table_headers_displayed()
     {
         // Create a test token to ensure table is shown
@@ -737,8 +760,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 22: Hero section with gradient is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_hero_section_with_gradient_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -764,8 +788,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 23: Modal has cancel button
      *
-     * @test
      */
+
+    #[Test]
     public function test_modal_has_cancel_button()
     {
         $this->browse(function (Browser $browser) {
@@ -789,8 +814,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 24: Token display modal shows readonly token input
      *
-     * @test
      */
+
+    #[Test]
     public function test_token_display_modal_shows_readonly_input()
     {
         $this->browse(function (Browser $browser) {
@@ -815,8 +841,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 25: Abilities list shows all available permissions
      *
-     * @test
      */
+
+    #[Test]
     public function test_abilities_list_shows_all_available_permissions()
     {
         $this->browse(function (Browser $browser) {
@@ -843,8 +870,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 26: Token icon is displayed in the hero section
      *
-     * @test
      */
+
+    #[Test]
     public function test_token_icon_displayed_in_hero()
     {
         $this->browse(function (Browser $browser) {
@@ -869,8 +897,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 27: Token rows have hover effect
      *
-     * @test
      */
+
+    #[Test]
     public function test_token_rows_have_hover_effect()
     {
         // Create a test token
@@ -906,8 +935,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 28: API token manager is responsive on mobile
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_token_manager_responsive_on_mobile()
     {
         $this->browse(function (Browser $browser) {
@@ -933,8 +963,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 29: Dark mode classes are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_dark_mode_classes_present()
     {
         $this->browse(function (Browser $browser) {
@@ -959,8 +990,9 @@ class ApiTokenManagerTest extends DuskTestCase
     /**
      * Test 30: Token actions are aligned to the right
      *
-     * @test
      */
+
+    #[Test]
     public function test_token_actions_aligned_right()
     {
         // Create a test token

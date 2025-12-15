@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Laravel\Dusk\Browser;
@@ -34,8 +36,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 1: Queue monitor page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_queue_monitor_page_loads_successfully(): void
     {
         $this->browse(function (Browser $browser) {
@@ -53,8 +56,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 2: Queue statistics cards are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_queue_statistics_cards_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -74,8 +78,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 3: Pending jobs count is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_pending_jobs_count_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -95,8 +100,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 4: Failed jobs count is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_failed_jobs_count_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -114,8 +120,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 5: Processing jobs count is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_processing_jobs_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -133,8 +140,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 6: Jobs per hour metric displays
      *
-     * @test
      */
+
+    #[Test]
     public function test_jobs_per_hour_metric_displays(): void
     {
         $this->browse(function (Browser $browser) {
@@ -152,8 +160,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 7: Worker status is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_worker_status_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -171,8 +180,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 8: Refresh button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_refresh_button_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -190,8 +200,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 9: Failed jobs table headers are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_failed_jobs_table_headers_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -218,8 +229,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 10: Retry all failed button exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_retry_all_failed_button_exists(): void
     {
         $this->browse(function (Browser $browser) {
@@ -245,8 +257,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 11: Clear all failed button exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_clear_all_failed_button_exists(): void
     {
         $this->browse(function (Browser $browser) {
@@ -271,8 +284,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 12: Job details can be viewed
      *
-     * @test
      */
+
+    #[Test]
     public function test_job_details_viewable(): void
     {
         $this->browse(function (Browser $browser) {
@@ -298,8 +312,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 13: Exception message is shown for failed jobs
      *
-     * @test
      */
+
+    #[Test]
     public function test_exception_message_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -324,8 +339,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 14: Failed at timestamp is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_failed_at_timestamp_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -350,8 +366,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 15: Queue name is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_queue_name_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -376,8 +393,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 16: Retry job button is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_retry_job_button_available(): void
     {
         $this->browse(function (Browser $browser) {
@@ -402,8 +420,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 17: Delete job button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_delete_job_button_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -428,8 +447,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 18: Auto-refresh is configured (wire:poll)
      *
-     * @test
      */
+
+    #[Test]
     public function test_auto_refresh_configured(): void
     {
         $this->browse(function (Browser $browser) {
@@ -450,8 +470,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 19: Empty state is shown when no failed jobs
      *
-     * @test
      */
+
+    #[Test]
     public function test_empty_state_shown_when_no_failed_jobs(): void
     {
         $this->browse(function (Browser $browser) {
@@ -479,8 +500,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 20: Flash messages display area exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_flash_messages_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -507,8 +529,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 21: Job class name is shown in table
      *
-     * @test
      */
+
+    #[Test]
     public function test_job_class_name_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -533,8 +556,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 22: Modal structure exists for job details
      *
-     * @test
      */
+
+    #[Test]
     public function test_modal_structure_exists(): void
     {
         $this->browse(function (Browser $browser) {
@@ -559,8 +583,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 23: Job UUID field exists in details
      *
-     * @test
      */
+
+    #[Test]
     public function test_job_uuid_field_exists(): void
     {
         $this->browse(function (Browser $browser) {
@@ -584,8 +609,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 24: Exception stack trace section exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_exception_stack_trace_section_exists(): void
     {
         $this->browse(function (Browser $browser) {
@@ -610,8 +636,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 25: Loading state indicator exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_loading_state_indicator_exists(): void
     {
         $this->browse(function (Browser $browser) {
@@ -636,8 +663,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 26: Confirmation dialog markup exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_confirmation_dialog_markup_exists(): void
     {
         $this->browse(function (Browser $browser) {
@@ -661,8 +689,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 27: Hero section with title is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_hero_section_with_title_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -681,8 +710,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 28: Statistics cards have proper styling classes
      *
-     * @test
      */
+
+    #[Test]
     public function test_statistics_cards_styling(): void
     {
         $this->browse(function (Browser $browser) {
@@ -708,8 +738,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 29: Dark mode classes are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_dark_mode_classes_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -733,8 +764,9 @@ class QueueMonitorTest extends DuskTestCase
     /**
      * Test 30: Livewire component is properly initialized
      *
-     * @test
      */
+
+    #[Test]
     public function test_livewire_component_initialized(): void
     {
         $this->browse(function (Browser $browser) {

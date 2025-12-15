@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\KubernetesCluster;
 use App\Models\Project;
 use App\Models\User;
@@ -35,8 +37,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 1: Page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_page_loads_successfully()
     {
         $this->browse(function (Browser $browser) {
@@ -61,8 +64,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 2: Cluster list is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_cluster_list_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -87,8 +91,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 3: Add cluster button visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_add_cluster_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -113,8 +118,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 4: Add cluster modal opens
      *
-     * @test
      */
+
+    #[Test]
     public function test_add_cluster_modal_opens()
     {
         $this->browse(function (Browser $browser) {
@@ -154,8 +160,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 5: Cluster name field present
      *
-     * @test
      */
+
+    #[Test]
     public function test_cluster_name_field_present()
     {
         $this->browse(function (Browser $browser) {
@@ -181,8 +188,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 6: Kubeconfig field present
      *
-     * @test
      */
+
+    #[Test]
     public function test_kubeconfig_field_present()
     {
         $this->browse(function (Browser $browser) {
@@ -207,8 +215,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 7: Create cluster connection form submits
      *
-     * @test
      */
+
+    #[Test]
     public function test_create_cluster_form_submits()
     {
         $this->browse(function (Browser $browser) {
@@ -234,8 +243,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 8: Cluster status indicators shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_cluster_status_indicators_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -262,8 +272,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 9: Namespace list visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_namespace_list_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -288,8 +299,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 10: Pod list visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_pod_list_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -316,8 +328,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 11: Delete cluster button visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_delete_cluster_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -342,8 +355,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 12: Refresh status button works
      *
-     * @test
      */
+
+    #[Test]
     public function test_refresh_status_button_works()
     {
         $this->browse(function (Browser $browser) {
@@ -369,8 +383,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 13: Cluster details expandable
      *
-     * @test
      */
+
+    #[Test]
     public function test_cluster_details_expandable()
     {
         $this->browse(function (Browser $browser) {
@@ -397,8 +412,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 14: Connection status shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_connection_status_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -424,8 +440,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 15: Flash messages display
      *
-     * @test
      */
+
+    #[Test]
     public function test_flash_messages_display()
     {
         $this->browse(function (Browser $browser) {
@@ -452,8 +469,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 16: Endpoint field present in form
      *
-     * @test
      */
+
+    #[Test]
     public function test_endpoint_field_present()
     {
         $this->browse(function (Browser $browser) {
@@ -479,8 +497,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 17: Table columns are properly labeled
      *
-     * @test
      */
+
+    #[Test]
     public function test_table_columns_properly_labeled()
     {
         $this->browse(function (Browser $browser) {
@@ -507,8 +526,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 18: Action buttons present (Test, Deploy, Edit, Delete)
      *
-     * @test
      */
+
+    #[Test]
     public function test_action_buttons_present()
     {
         $this->browse(function (Browser $browser) {
@@ -535,8 +555,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 19: Deploy modal contains project selection
      *
-     * @test
      */
+
+    #[Test]
     public function test_deploy_modal_project_selection()
     {
         $this->browse(function (Browser $browser) {
@@ -562,8 +583,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 20: Deploy modal contains replicas configuration
      *
-     * @test
      */
+
+    #[Test]
     public function test_deploy_modal_replicas_configuration()
     {
         $this->browse(function (Browser $browser) {
@@ -588,8 +610,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 21: Deploy modal contains autoscaling option
      *
-     * @test
      */
+
+    #[Test]
     public function test_deploy_modal_autoscaling_option()
     {
         $this->browse(function (Browser $browser) {
@@ -615,8 +638,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 22: Deploy modal contains CPU configuration
      *
-     * @test
      */
+
+    #[Test]
     public function test_deploy_modal_cpu_configuration()
     {
         $this->browse(function (Browser $browser) {
@@ -641,8 +665,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 23: Deploy modal contains Memory configuration
      *
-     * @test
      */
+
+    #[Test]
     public function test_deploy_modal_memory_configuration()
     {
         $this->browse(function (Browser $browser) {
@@ -667,8 +692,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 24: Deploy modal contains service type selection
      *
-     * @test
      */
+
+    #[Test]
     public function test_deploy_modal_service_type_selection()
     {
         $this->browse(function (Browser $browser) {
@@ -695,8 +721,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 25: Empty state message when no clusters
      *
-     * @test
      */
+
+    #[Test]
     public function test_empty_state_message()
     {
         $this->browse(function (Browser $browser) {
@@ -723,8 +750,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 26: Default cluster indicator visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_default_cluster_indicator_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -750,8 +778,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 27: Project count displayed for clusters
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_count_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -776,8 +805,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 28: Cancel button present in modals
      *
-     * @test
      */
+
+    #[Test]
     public function test_cancel_button_in_modals()
     {
         $this->browse(function (Browser $browser) {
@@ -802,8 +832,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 29: Form validation errors display
      *
-     * @test
      */
+
+    #[Test]
     public function test_form_validation_errors_display()
     {
         $this->browse(function (Browser $browser) {
@@ -830,8 +861,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 30: Dark mode support
      *
-     * @test
      */
+
+    #[Test]
     public function test_dark_mode_support()
     {
         $this->browse(function (Browser $browser) {
@@ -858,8 +890,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 31: Responsive design classes present
      *
-     * @test
      */
+
+    #[Test]
     public function test_responsive_design_classes()
     {
         $this->browse(function (Browser $browser) {
@@ -886,8 +919,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 32: Page title displays correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_page_title_displays_correctly()
     {
         $this->browse(function (Browser $browser) {
@@ -912,8 +946,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 33: Kubernetes icon/logo present
      *
-     * @test
      */
+
+    #[Test]
     public function test_kubernetes_icon_present()
     {
         $this->browse(function (Browser $browser) {
@@ -939,8 +974,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 34: Namespace field optional indicator
      *
-     * @test
      */
+
+    #[Test]
     public function test_namespace_field_optional_indicator()
     {
         $this->browse(function (Browser $browser) {
@@ -965,8 +1001,9 @@ class ClusterManagerTest extends DuskTestCase
     /**
      * Test 35: Pagination visible when needed
      *
-     * @test
      */
+
+    #[Test]
     public function test_pagination_visible_when_needed()
     {
         $this->browse(function (Browser $browser) {

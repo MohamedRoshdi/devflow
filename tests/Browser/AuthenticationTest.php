@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Dusk\Browser;
@@ -51,8 +53,9 @@ class AuthenticationTest extends DuskTestCase
      * - Forgot password link
      * - Proper heading and labels
      *
-     * @test
      */
+
+    #[Test]
     public function login_page_loads_with_all_form_elements(): void
     {
         $this->browse(function (Browser $browser) {
@@ -104,8 +107,9 @@ class AuthenticationTest extends DuskTestCase
      * - Verify redirect to dashboard
      * - Verify authentication status
      *
-     * @test
      */
+
+    #[Test]
     public function login_with_valid_credentials_redirects_to_dashboard(): void
     {
         $this->browse(function (Browser $browser) {
@@ -143,8 +147,9 @@ class AuthenticationTest extends DuskTestCase
      * - Verify error message display
      * - Verify no redirect occurs
      *
-     * @test
      */
+
+    #[Test]
     public function login_with_invalid_credentials_shows_error(): void
     {
         $this->browse(function (Browser $browser) {
@@ -177,8 +182,9 @@ class AuthenticationTest extends DuskTestCase
      *
      * Tests validation when email field is empty
      *
-     * @test
      */
+
+    #[Test]
     public function login_validation_empty_email(): void
     {
         $this->browse(function (Browser $browser) {
@@ -204,8 +210,9 @@ class AuthenticationTest extends DuskTestCase
      *
      * Tests validation when password field is empty
      *
-     * @test
      */
+
+    #[Test]
     public function login_validation_empty_password(): void
     {
         $this->browse(function (Browser $browser) {
@@ -230,8 +237,9 @@ class AuthenticationTest extends DuskTestCase
      *
      * Tests validation when email format is invalid
      *
-     * @test
      */
+
+    #[Test]
     public function login_validation_invalid_email_format(): void
     {
         $this->browse(function (Browser $browser) {
@@ -261,8 +269,9 @@ class AuthenticationTest extends DuskTestCase
      * - Verify redirect to home/login
      * - Verify session is cleared
      *
-     * @test
      */
+
+    #[Test]
     public function logout_functionality_works_correctly(): void
     {
         $this->browse(function (Browser $browser) {
@@ -295,8 +304,9 @@ class AuthenticationTest extends DuskTestCase
      *
      * Tests that authenticated users have access to protected routes
      *
-     * @test
      */
+
+    #[Test]
     public function authenticated_user_can_access_dashboard(): void
     {
         $this->browse(function (Browser $browser) {
@@ -318,8 +328,9 @@ class AuthenticationTest extends DuskTestCase
      *
      * Tests that guests are redirected to login when accessing protected routes
      *
-     * @test
      */
+
+    #[Test]
     public function unauthenticated_user_redirected_to_login(): void
     {
         $this->browse(function (Browser $browser) {
@@ -339,8 +350,9 @@ class AuthenticationTest extends DuskTestCase
      *
      * Tests that the remember me checkbox persists the session
      *
-     * @test
      */
+
+    #[Test]
     public function remember_me_checkbox_functionality(): void
     {
         $this->browse(function (Browser $browser) {
@@ -368,8 +380,9 @@ class AuthenticationTest extends DuskTestCase
      *
      * Tests that the login page supports dark mode and has proper styling
      *
-     * @test
      */
+
+    #[Test]
     public function login_page_supports_dark_mode(): void
     {
         $this->browse(function (Browser $browser) {
@@ -398,8 +411,9 @@ class AuthenticationTest extends DuskTestCase
      *
      * Tests that the forgot password link works
      *
-     * @test
      */
+
+    #[Test]
     public function forgot_password_link_navigates_correctly(): void
     {
         $this->browse(function (Browser $browser) {
@@ -421,8 +435,9 @@ class AuthenticationTest extends DuskTestCase
      *
      * Tests that Livewire loading states work correctly
      *
-     * @test
      */
+
+    #[Test]
     public function login_form_shows_loading_state(): void
     {
         $this->browse(function (Browser $browser) {
@@ -450,8 +465,9 @@ class AuthenticationTest extends DuskTestCase
      *
      * Tests behavior with multiple failed login attempts
      *
-     * @test
      */
+
+    #[Test]
     public function multiple_failed_login_attempts(): void
     {
         $this->browse(function (Browser $browser) {
@@ -482,8 +498,9 @@ class AuthenticationTest extends DuskTestCase
      *
      * Tests that the email field is autofocused on page load
      *
-     * @test
      */
+
+    #[Test]
     public function login_email_field_has_autofocus(): void
     {
         $this->browse(function (Browser $browser) {
@@ -505,8 +522,9 @@ class AuthenticationTest extends DuskTestCase
      *
      * Tests that session status messages are displayed correctly
      *
-     * @test
      */
+
+    #[Test]
     public function login_displays_session_status_messages(): void
     {
         $this->browse(function (Browser $browser) {
@@ -530,8 +548,9 @@ class AuthenticationTest extends DuskTestCase
      *
      * Tests that successful login updates the user's last login timestamp
      *
-     * @test
      */
+
+    #[Test]
     public function successful_login_updates_last_login_timestamp(): void
     {
         $user = User::where('email', self::TEST_EMAIL)->first();
@@ -562,8 +581,9 @@ class AuthenticationTest extends DuskTestCase
      *
      * Tests that login page renders correctly on different screen sizes
      *
-     * @test
      */
+
+    #[Test]
     public function login_page_responsive_layout(): void
     {
         $this->browse(function (Browser $browser) {
@@ -597,8 +617,9 @@ class AuthenticationTest extends DuskTestCase
      *
      * Tests that users are redirected to their intended destination after login
      *
-     * @test
      */
+
+    #[Test]
     public function login_redirects_to_intended_destination(): void
     {
         $this->browse(function (Browser $browser) {
@@ -628,8 +649,9 @@ class AuthenticationTest extends DuskTestCase
      *
      * Tests basic accessibility features of the login form
      *
-     * @test
      */
+
+    #[Test]
     public function login_form_has_proper_accessibility_features(): void
     {
         $this->browse(function (Browser $browser) {

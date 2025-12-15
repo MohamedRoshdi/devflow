@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
@@ -75,7 +77,7 @@ MD;
 
     // ==================== Index Page Tests ====================
 
-    /** @test */
+    #[Test]
     public function user_can_view_documentation_index(): void
     {
         $this->actingAsUser();
@@ -91,7 +93,7 @@ MD;
             ->assertSee('Servers');
     }
 
-    /** @test */
+    #[Test]
     public function documentation_index_displays_all_categories(): void
     {
         $this->actingAsUser();
@@ -121,7 +123,7 @@ MD;
 
     // ==================== Show Method Tests ====================
 
-    /** @test */
+    #[Test]
     public function user_can_view_documentation_page_with_category(): void
     {
         $this->actingAsUser();
@@ -138,7 +140,7 @@ MD;
             ->assertViewHas('tableOfContents');
     }
 
-    /** @test */
+    #[Test]
     public function documentation_page_renders_markdown_content(): void
     {
         $this->actingAsUser();
@@ -152,7 +154,7 @@ MD;
             ->assertSee('Second Section');
     }
 
-    /** @test */
+    #[Test]
     public function documentation_page_parses_frontmatter_correctly(): void
     {
         $this->actingAsUser();
@@ -164,7 +166,7 @@ MD;
             ->assertViewHas('description', 'This is a test category for documentation');
     }
 
-    /** @test */
+    #[Test]
     public function documentation_page_generates_table_of_contents(): void
     {
         $this->actingAsUser();
@@ -190,7 +192,7 @@ MD;
         $this->assertContains('Second Section', $titles);
     }
 
-    /** @test */
+    #[Test]
     public function documentation_page_strips_frontmatter_from_content(): void
     {
         $this->actingAsUser();
@@ -205,7 +207,7 @@ MD;
         $this->assertStringNotContainsString('description:', $content);
     }
 
-    /** @test */
+    #[Test]
     public function documentation_page_uses_default_title_when_no_frontmatter(): void
     {
         $this->actingAsUser();
@@ -222,7 +224,7 @@ MD;
         File::delete($noFrontmatterFile);
     }
 
-    /** @test */
+    #[Test]
     public function documentation_page_caches_rendered_content(): void
     {
         $this->actingAsUser();
@@ -249,7 +251,7 @@ MD;
 
     // ==================== 404 Handling Tests ====================
 
-    /** @test */
+    #[Test]
     public function documentation_page_returns_404_for_missing_category(): void
     {
         $this->actingAsUser();
@@ -259,7 +261,7 @@ MD;
         $response->assertNotFound();
     }
 
-    /** @test */
+    #[Test]
     public function documentation_page_shows_error_message_for_missing_page(): void
     {
         $this->actingAsUser();
@@ -271,7 +273,7 @@ MD;
 
     // ==================== Search Method Tests ====================
 
-    /** @test */
+    #[Test]
     public function user_can_search_documentation(): void
     {
         $this->actingAsUser();
@@ -285,7 +287,7 @@ MD;
             ->assertViewHas('categories');
     }
 
-    /** @test */
+    #[Test]
     public function search_returns_json_when_expecting_json(): void
     {
         $this->actingAsUser();
@@ -299,7 +301,7 @@ MD;
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function search_finds_matching_content(): void
     {
         $this->actingAsUser();
@@ -324,7 +326,7 @@ MD;
         $this->assertStringContainsString('search term', $firstResult['excerpt']);
     }
 
-    /** @test */
+    #[Test]
     public function search_returns_empty_results_for_query_less_than_2_characters(): void
     {
         $this->actingAsUser();
@@ -338,7 +340,7 @@ MD;
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function search_returns_empty_results_for_no_matches(): void
     {
         $this->actingAsUser();
@@ -352,7 +354,7 @@ MD;
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function search_is_case_insensitive(): void
     {
         $this->actingAsUser();
@@ -376,7 +378,7 @@ MD;
         );
     }
 
-    /** @test */
+    #[Test]
     public function search_highlights_query_in_excerpt(): void
     {
         $this->actingAsUser();
@@ -395,7 +397,7 @@ MD;
         $this->assertStringContainsString('</mark>', $excerpt);
     }
 
-    /** @test */
+    #[Test]
     public function search_finds_matching_sections(): void
     {
         $this->actingAsUser();
@@ -422,7 +424,7 @@ MD;
         }
     }
 
-    /** @test */
+    #[Test]
     public function search_limits_sections_to_five(): void
     {
         $this->actingAsUser();
@@ -450,7 +452,7 @@ MD;
         File::delete($manySectionsFile);
     }
 
-    /** @test */
+    #[Test]
     public function search_includes_correct_url_in_results(): void
     {
         $this->actingAsUser();
@@ -470,7 +472,7 @@ MD;
 
     // ==================== Markdown Parsing Tests ====================
 
-    /** @test */
+    #[Test]
     public function markdown_content_is_converted_to_html(): void
     {
         $this->actingAsUser();
@@ -485,7 +487,7 @@ MD;
         $this->assertStringContainsString('<p>', $content);
     }
 
-    /** @test */
+    #[Test]
     public function markdown_bold_text_is_converted_to_strong_tags(): void
     {
         $this->actingAsUser();
@@ -499,7 +501,7 @@ MD;
         $this->assertStringContainsString('</strong>', $content);
     }
 
-    /** @test */
+    #[Test]
     public function markdown_with_code_blocks_is_parsed_correctly(): void
     {
         $this->actingAsUser();
@@ -531,7 +533,7 @@ MD;
 
     // ==================== Authentication Tests ====================
 
-    /** @test */
+    #[Test]
     public function guest_users_cannot_access_documentation(): void
     {
         $response = $this->get(route('docs.show'));
@@ -539,7 +541,7 @@ MD;
         $response->assertRedirect(route('login'));
     }
 
-    /** @test */
+    #[Test]
     public function guest_users_cannot_search_documentation(): void
     {
         $response = $this->get(route('docs.search', ['q' => 'test']));
@@ -549,7 +551,7 @@ MD;
 
     // ==================== Real Documentation Files Tests ====================
 
-    /** @test */
+    #[Test]
     public function user_can_view_actual_deployments_documentation(): void
     {
         $this->actingAsUser();
@@ -568,7 +570,7 @@ MD;
             ->assertSee('Deployments');
     }
 
-    /** @test */
+    #[Test]
     public function user_can_view_actual_domains_documentation(): void
     {
         $this->actingAsUser();
@@ -588,7 +590,7 @@ MD;
 
     // ==================== Edge Cases Tests ====================
 
-    /** @test */
+    #[Test]
     public function search_handles_special_characters_safely(): void
     {
         $this->actingAsUser();
@@ -601,7 +603,7 @@ MD;
         }
     }
 
-    /** @test */
+    #[Test]
     public function documentation_page_handles_markdown_without_headings(): void
     {
         $this->actingAsUser();
@@ -621,7 +623,7 @@ MD;
         File::delete($noHeadingsFile);
     }
 
-    /** @test */
+    #[Test]
     public function search_returns_empty_array_when_docs_directory_does_not_exist(): void
     {
         $this->actingAsUser();
@@ -648,7 +650,7 @@ MD;
         }
     }
 
-    /** @test */
+    #[Test]
     public function cache_key_changes_when_file_is_modified(): void
     {
         $this->actingAsUser();

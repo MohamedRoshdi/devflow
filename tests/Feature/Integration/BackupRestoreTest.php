@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Integration;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\BackupSchedule;
 use App\Models\DatabaseBackup;
 use App\Models\FileBackup;
@@ -65,7 +67,7 @@ class BackupRestoreTest extends TestCase
 
     // ==================== Database Backup Tests ====================
 
-    /** @test */
+    #[Test]
     public function can_create_database_backup(): void
     {
         $backup = DatabaseBackup::factory()->create([
@@ -84,7 +86,7 @@ class BackupRestoreTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function database_backup_stores_metadata(): void
     {
         $backup = DatabaseBackup::factory()->create([
@@ -104,7 +106,7 @@ class BackupRestoreTest extends TestCase
         $this->assertEquals(5242880, $backup->file_size);
     }
 
-    /** @test */
+    #[Test]
     public function database_backup_tracks_duration(): void
     {
         $startTime = now()->subMinutes(3);
@@ -124,7 +126,7 @@ class BackupRestoreTest extends TestCase
         $this->assertEquals(180, $duration);
     }
 
-    /** @test */
+    #[Test]
     public function failed_database_backup_stores_error(): void
     {
         $backup = DatabaseBackup::factory()->create([
@@ -141,7 +143,7 @@ class BackupRestoreTest extends TestCase
 
     // ==================== File Backup Tests ====================
 
-    /** @test */
+    #[Test]
     public function can_create_file_backup(): void
     {
         $backup = FileBackup::factory()->create([
@@ -161,7 +163,7 @@ class BackupRestoreTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function file_backup_respects_exclusions(): void
     {
         $backup = FileBackup::factory()->create([
@@ -178,7 +180,7 @@ class BackupRestoreTest extends TestCase
         $this->assertCount(4, $backup->exclude_patterns);
     }
 
-    /** @test */
+    #[Test]
     public function file_backup_calculates_compression_ratio(): void
     {
         $backup = FileBackup::factory()->create([
@@ -195,7 +197,7 @@ class BackupRestoreTest extends TestCase
 
     // ==================== Server Backup Tests ====================
 
-    /** @test */
+    #[Test]
     public function can_create_full_server_backup(): void
     {
         $backup = ServerBackup::factory()->create([
@@ -211,7 +213,7 @@ class BackupRestoreTest extends TestCase
         $this->assertEquals('completed', $backup->status);
     }
 
-    /** @test */
+    #[Test]
     public function can_create_incremental_server_backup(): void
     {
         // Create initial full backup
@@ -238,7 +240,7 @@ class BackupRestoreTest extends TestCase
 
     // ==================== Backup Schedule Tests ====================
 
-    /** @test */
+    #[Test]
     public function can_create_backup_schedule(): void
     {
         $schedule = BackupSchedule::factory()->create([
@@ -257,7 +259,7 @@ class BackupRestoreTest extends TestCase
         $this->assertEquals(30, $schedule->retention_days);
     }
 
-    /** @test */
+    #[Test]
     public function backup_schedule_supports_multiple_frequencies(): void
     {
         $frequencies = ['hourly', 'daily', 'weekly', 'monthly'];
@@ -275,7 +277,7 @@ class BackupRestoreTest extends TestCase
         $this->assertEquals(4, BackupSchedule::count());
     }
 
-    /** @test */
+    #[Test]
     public function can_pause_and_resume_backup_schedule(): void
     {
         $schedule = BackupSchedule::factory()->create([
@@ -296,7 +298,7 @@ class BackupRestoreTest extends TestCase
         $this->assertTrue($freshSchedule->is_active);
     }
 
-    /** @test */
+    #[Test]
     public function backup_schedule_tracks_last_run(): void
     {
         $schedule = BackupSchedule::factory()->create([
@@ -317,7 +319,7 @@ class BackupRestoreTest extends TestCase
 
     // ==================== Restore Tests ====================
 
-    /** @test */
+    #[Test]
     public function can_restore_database_from_backup(): void
     {
         $backup = DatabaseBackup::factory()->create([
@@ -338,7 +340,7 @@ class BackupRestoreTest extends TestCase
         $this->assertEquals($backup->id, $restore->restored_from_id);
     }
 
-    /** @test */
+    #[Test]
     public function restore_tracks_source_backup(): void
     {
         $original = DatabaseBackup::factory()->create([
@@ -363,7 +365,7 @@ class BackupRestoreTest extends TestCase
 
     // ==================== Backup Integrity Tests ====================
 
-    /** @test */
+    #[Test]
     public function backup_stores_checksum_for_verification(): void
     {
         $backup = DatabaseBackup::factory()->create([
@@ -377,7 +379,7 @@ class BackupRestoreTest extends TestCase
         $this->assertStringStartsWith('sha256:', $backup->checksum);
     }
 
-    /** @test */
+    #[Test]
     public function can_verify_backup_integrity(): void
     {
         $backup = DatabaseBackup::factory()->create([
@@ -400,7 +402,7 @@ class BackupRestoreTest extends TestCase
         $this->assertNotNull($freshBackup->verified_at);
     }
 
-    /** @test */
+    #[Test]
     public function corrupted_backup_marked_as_failed(): void
     {
         $backup = DatabaseBackup::factory()->create([
@@ -424,7 +426,7 @@ class BackupRestoreTest extends TestCase
 
     // ==================== Retention Policy Tests ====================
 
-    /** @test */
+    #[Test]
     public function identifies_backups_for_cleanup(): void
     {
         // Old backup beyond retention
@@ -450,7 +452,7 @@ class BackupRestoreTest extends TestCase
         $this->assertCount(1, $expiredBackups);
     }
 
-    /** @test */
+    #[Test]
     public function retention_keeps_minimum_backup_count(): void
     {
         // Create 10 backups
@@ -478,7 +480,7 @@ class BackupRestoreTest extends TestCase
 
     // ==================== Cross-Server Restore Tests ====================
 
-    /** @test */
+    #[Test]
     public function can_restore_backup_to_different_server(): void
     {
         $sourceServer = $this->server;
@@ -507,7 +509,7 @@ class BackupRestoreTest extends TestCase
 
     // ==================== Backup Statistics Tests ====================
 
-    /** @test */
+    #[Test]
     public function calculates_total_backup_storage(): void
     {
         DatabaseBackup::factory()->create([
@@ -531,7 +533,7 @@ class BackupRestoreTest extends TestCase
         $this->assertEquals(314572800, $totalSize); // 300MB
     }
 
-    /** @test */
+    #[Test]
     public function tracks_backup_success_rate(): void
     {
         // Successful backups
@@ -560,7 +562,7 @@ class BackupRestoreTest extends TestCase
 
     // ==================== Notification Tests ====================
 
-    /** @test */
+    #[Test]
     public function backup_completion_can_trigger_notification(): void
     {
         $backup = DatabaseBackup::factory()->create([
@@ -573,7 +575,7 @@ class BackupRestoreTest extends TestCase
         $this->assertTrue($backup->notify_on_complete);
     }
 
-    /** @test */
+    #[Test]
     public function backup_failure_can_trigger_alert(): void
     {
         $backup = DatabaseBackup::factory()->create([

@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\AlertHistory;
 use App\Models\ResourceAlert;
 use App\Models\Server;
@@ -69,8 +71,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 1: Resource alerts page access
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_access_resource_alerts_page(): void
     {
         $this->browse(function (Browser $browser) {
@@ -94,8 +97,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 2: Create alert button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_create_alert_button_is_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -118,8 +122,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 3: Alert rule creation modal opens
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_rule_creation_modal_opens(): void
     {
         $this->browse(function (Browser $browser) {
@@ -150,8 +155,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 4: CPU alert can be created
      *
-     * @test
      */
+
+    #[Test]
     public function test_cpu_alert_can_be_created(): void
     {
         $this->browse(function (Browser $browser) {
@@ -185,8 +191,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 5: Memory alert can be created
      *
-     * @test
      */
+
+    #[Test]
     public function test_memory_alert_can_be_created(): void
     {
         $this->browse(function (Browser $browser) {
@@ -218,8 +225,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 6: Disk alert can be created
      *
-     * @test
      */
+
+    #[Test]
     public function test_disk_alert_can_be_created(): void
     {
         $this->browse(function (Browser $browser) {
@@ -251,8 +259,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 7: Load average alert can be created
      *
-     * @test
      */
+
+    #[Test]
     public function test_load_alert_can_be_created(): void
     {
         $this->browse(function (Browser $browser) {
@@ -284,8 +293,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 8: Alert threshold configuration with above type
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_threshold_above_configuration(): void
     {
         $this->browse(function (Browser $browser) {
@@ -317,8 +327,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 9: Alert threshold configuration with below type
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_threshold_below_configuration(): void
     {
         $this->browse(function (Browser $browser) {
@@ -350,8 +361,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 10: Email notification channel configuration
      *
-     * @test
      */
+
+    #[Test]
     public function test_email_notification_channel_configuration(): void
     {
         $this->browse(function (Browser $browser) {
@@ -381,8 +393,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 11: Multiple notification channels
      *
-     * @test
      */
+
+    #[Test]
     public function test_multiple_notification_channels(): void
     {
         $this->browse(function (Browser $browser) {
@@ -411,8 +424,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 12: Alert history viewing
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_history_viewing(): void
     {
         $this->browse(function (Browser $browser) {
@@ -455,8 +469,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 13: Active alerts display
      *
-     * @test
      */
+
+    #[Test]
     public function test_active_alerts_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -488,8 +503,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 14: Inactive alerts display
      *
-     * @test
      */
+
+    #[Test]
     public function test_inactive_alerts_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -521,8 +537,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 15: Alert acknowledgement
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_acknowledgement(): void
     {
         $this->browse(function (Browser $browser) {
@@ -562,8 +579,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 16: Alert resolution
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_resolution(): void
     {
         $this->browse(function (Browser $browser) {
@@ -603,8 +621,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 17: CPU alerts configuration with custom threshold
      *
-     * @test
      */
+
+    #[Test]
     public function test_cpu_alerts_custom_threshold_configuration(): void
     {
         $this->browse(function (Browser $browser) {
@@ -633,8 +652,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 18: Memory alerts configuration with custom threshold
      *
-     * @test
      */
+
+    #[Test]
     public function test_memory_alerts_custom_threshold_configuration(): void
     {
         $this->browse(function (Browser $browser) {
@@ -663,8 +683,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 19: Disk alerts configuration with custom threshold
      *
-     * @test
      */
+
+    #[Test]
     public function test_disk_alerts_custom_threshold_configuration(): void
     {
         $this->browse(function (Browser $browser) {
@@ -693,8 +714,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 20: Alert severity levels - Critical
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_severity_level_critical(): void
     {
         $this->browse(function (Browser $browser) {
@@ -723,8 +745,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 21: Alert severity levels - Warning
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_severity_level_warning(): void
     {
         $this->browse(function (Browser $browser) {
@@ -753,8 +776,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 22: Alert severity levels - Info
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_severity_level_info(): void
     {
         $this->browse(function (Browser $browser) {
@@ -783,8 +807,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 23: Alert cooldown period - 5 minutes
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_cooldown_5_minutes(): void
     {
         $this->browse(function (Browser $browser) {
@@ -813,8 +838,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 24: Alert cooldown period - 15 minutes
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_cooldown_15_minutes(): void
     {
         $this->browse(function (Browser $browser) {
@@ -843,8 +869,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 25: Alert cooldown period - 30 minutes
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_cooldown_30_minutes(): void
     {
         $this->browse(function (Browser $browser) {
@@ -873,8 +900,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 26: Alert cooldown period - 60 minutes
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_cooldown_60_minutes(): void
     {
         $this->browse(function (Browser $browser) {
@@ -903,8 +931,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 27: Alert escalation rules
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_escalation_rules(): void
     {
         $this->browse(function (Browser $browser) {
@@ -945,8 +974,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 28: Multiple alerts for same resource type
      *
-     * @test
      */
+
+    #[Test]
     public function test_multiple_alerts_for_same_resource(): void
     {
         $this->browse(function (Browser $browser) {
@@ -990,8 +1020,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 29: Alert list displays all resource types
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_list_displays_all_resource_types(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1048,8 +1079,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 30: Alert editing functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_editing_functionality(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1081,8 +1113,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 31: Alert deletion functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_deletion_functionality(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1114,8 +1147,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 32: Alert toggle active/inactive
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_toggle_active_inactive(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1152,8 +1186,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 33: Alert history pagination
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_history_pagination(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1197,8 +1232,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 34: Alert notification channel - Slack
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_notification_channel_slack(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1227,8 +1263,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 35: Alert notification channel - Discord
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_notification_channel_discord(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1257,8 +1294,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 36: Bulk alert activation
      *
-     * @test
      */
+
+    #[Test]
     public function test_bulk_alert_activation(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1301,8 +1339,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 37: Bulk alert deactivation
      *
-     * @test
      */
+
+    #[Test]
     public function test_bulk_alert_deactivation(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1345,8 +1384,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 38: Bulk alert deletion
      *
-     * @test
      */
+
+    #[Test]
     public function test_bulk_alert_deletion(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1385,8 +1425,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 39: Alert cooldown status display
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_cooldown_status_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1417,8 +1458,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 40: Alert threshold display formatting
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_threshold_display_formatting(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1449,8 +1491,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 41: Alert resource type icon display
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_resource_type_icon_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1480,8 +1523,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 42: Alert resource type label display
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_resource_type_label_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1511,8 +1555,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 43: Alert triggered history status
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_triggered_history_status(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1553,8 +1598,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 44: Alert resolved history status
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_resolved_history_status(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1595,8 +1641,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 45: Alert latest history relationship
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_latest_history_relationship(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1649,8 +1696,9 @@ class ResourceAlertsTest extends DuskTestCase
     /**
      * Test 46: Alert notification timestamp
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_notification_timestamp(): void
     {
         $this->browse(function (Browser $browser) {

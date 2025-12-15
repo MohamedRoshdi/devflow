@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\User;
 use Laravel\Dusk\Browser;
 use Spatie\Permission\Models\Role;
@@ -94,8 +96,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 1: Users list page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_users_list_page_loads(): void
     {
         $this->browse(function (Browser $browser) {
@@ -114,8 +117,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 2: User list is displayed with users
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_list_displays_users(): void
     {
         $this->browse(function (Browser $browser) {
@@ -136,8 +140,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 3: Search users functionality works
      *
-     * @test
      */
+
+    #[Test]
     public function test_search_users_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -160,8 +165,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 4: Filter by role functionality works
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_by_role_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -184,8 +190,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 5: User avatar is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_avatar_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -203,8 +210,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 6: User email is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_email_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -223,8 +231,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 7: User role badge is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_role_badge_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -243,8 +252,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 8: Created timestamp is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_created_timestamp_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -262,8 +272,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 9: User verification status indicator displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_verification_status_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -282,8 +293,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 10: Edit user button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_edit_user_button_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -302,8 +314,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 11: Delete user button is visible (for other users)
      *
-     * @test
      */
+
+    #[Test]
     public function test_delete_user_button_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -322,8 +335,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 12: Add User button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_add_user_button_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -342,8 +356,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 13: Create user modal opens when button clicked
      *
-     * @test
      */
+
+    #[Test]
     public function test_create_user_modal_opens(): void
     {
         $this->browse(function (Browser $browser) {
@@ -368,8 +383,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 14: Name field present in create modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_name_field_present_in_create_modal(): void
     {
         $this->browse(function (Browser $browser) {
@@ -392,8 +408,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 15: Email field present in create modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_email_field_present_in_create_modal(): void
     {
         $this->browse(function (Browser $browser) {
@@ -416,8 +433,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 16: Password field present in create modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_password_field_present_in_create_modal(): void
     {
         $this->browse(function (Browser $browser) {
@@ -440,8 +458,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 17: Password confirmation field present in create modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_password_confirmation_field_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -464,8 +483,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 18: Role selection checkboxes present in create modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_role_selection_checkboxes_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -489,8 +509,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 19: Edit user modal opens when edit button clicked
      *
-     * @test
      */
+
+    #[Test]
     public function test_edit_user_modal_opens(): void
     {
         $this->browse(function (Browser $browser) {
@@ -514,8 +535,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 20: Project count is displayed for each user
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_count_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -534,8 +556,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 21: Flash success message displays after user creation
      *
-     * @test
      */
+
+    #[Test]
     public function test_flash_success_message_displays(): void
     {
         $this->browse(function (Browser $browser) {
@@ -553,8 +576,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 22: Flash error message displays when trying to delete own account
      *
-     * @test
      */
+
+    #[Test]
     public function test_flash_error_message_for_self_deletion(): void
     {
         $this->browse(function (Browser $browser) {
@@ -573,8 +597,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 23: Pagination links are displayed when many users exist
      *
-     * @test
      */
+
+    #[Test]
     public function test_pagination_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -592,8 +617,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 24: Clear filters button works when filters are applied
      *
-     * @test
      */
+
+    #[Test]
     public function test_clear_filters_button_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -615,8 +641,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 25: Empty state displays when no users found
      *
-     * @test
      */
+
+    #[Test]
     public function test_empty_state_displays(): void
     {
         $this->browse(function (Browser $browser) {
@@ -638,8 +665,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 26: Cancel button closes create modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_cancel_button_closes_create_modal(): void
     {
         $this->browse(function (Browser $browser) {
@@ -663,8 +691,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 27: User table has proper columns
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_table_has_proper_columns(): void
     {
         $this->browse(function (Browser $browser) {
@@ -687,8 +716,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 28: Current user indicator is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_current_user_indicator_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -706,8 +736,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 29: Edit modal pre-fills user data
      *
-     * @test
      */
+
+    #[Test]
     public function test_edit_modal_prefills_user_data(): void
     {
         $this->browse(function (Browser $browser) {
@@ -729,8 +760,9 @@ class UserListTest extends DuskTestCase
     /**
      * Test 30: Search by email works
      *
-     * @test
      */
+
+    #[Test]
     public function test_search_by_email_works(): void
     {
         $this->browse(function (Browser $browser) {

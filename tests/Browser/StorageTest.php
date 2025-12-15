@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\StorageConfiguration;
@@ -86,8 +88,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 1: Storage settings page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_settings_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -114,8 +117,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 2: Storage configurations list displays
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_configurations_list_displays()
     {
         $this->browse(function (Browser $browser) {
@@ -142,8 +146,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 3: Create storage configuration modal opens
      *
-     * @test
      */
+
+    #[Test]
     public function test_create_storage_configuration_modal_opens()
     {
         $this->browse(function (Browser $browser) {
@@ -170,8 +175,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 4: S3 storage provider tab is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_s3_storage_provider_tab_available()
     {
         $this->browse(function (Browser $browser) {
@@ -197,8 +203,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 5: Google Cloud Storage provider tab is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_gcs_storage_provider_tab_available()
     {
         $this->browse(function (Browser $browser) {
@@ -224,8 +231,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 6: FTP storage provider tab is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_ftp_storage_provider_tab_available()
     {
         $this->browse(function (Browser $browser) {
@@ -250,8 +258,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 7: SFTP storage provider tab is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_sftp_storage_provider_tab_available()
     {
         $this->browse(function (Browser $browser) {
@@ -277,8 +286,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 8: Local storage provider option is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_local_storage_provider_available()
     {
         $this->browse(function (Browser $browser) {
@@ -304,8 +314,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 9: Storage credentials fields are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_credentials_fields_present()
     {
         $this->browse(function (Browser $browser) {
@@ -333,8 +344,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 10: Storage bucket/container name field is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_bucket_field_present()
     {
         $this->browse(function (Browser $browser) {
@@ -360,8 +372,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 11: Storage region selection is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_region_selection_available()
     {
         $this->browse(function (Browser $browser) {
@@ -388,8 +401,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 12: Storage path prefix field is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_path_prefix_field_available()
     {
         $this->browse(function (Browser $browser) {
@@ -415,8 +429,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 13: Storage encryption option is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_encryption_option_available()
     {
         $this->browse(function (Browser $browser) {
@@ -442,8 +457,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 14: Generate encryption key button is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_generate_encryption_key_button_available()
     {
         $this->browse(function (Browser $browser) {
@@ -469,8 +485,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 15: Test storage connection functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_test_storage_connection_available()
     {
         $this->browse(function (Browser $browser) {
@@ -496,8 +513,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 16: Set default storage option is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_set_default_storage_option_available()
     {
         $this->browse(function (Browser $browser) {
@@ -523,8 +541,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 17: Edit storage configuration modal opens
      *
-     * @test
      */
+
+    #[Test]
     public function test_edit_storage_configuration_modal_opens()
     {
         $this->browse(function (Browser $browser) {
@@ -550,8 +569,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 18: Delete storage configuration option is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_delete_storage_configuration_available()
     {
         $this->browse(function (Browser $browser) {
@@ -577,8 +597,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 19: Storage configuration status indicator is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_configuration_status_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -605,8 +626,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 20: Storage last tested timestamp is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_last_tested_timestamp_displayed()
     {
         // Update last tested timestamp
@@ -636,8 +658,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 21: Storage usage statistics are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_usage_statistics_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -665,8 +688,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 22: Storage cleanup tools are accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_cleanup_tools_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -693,8 +717,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 23: Storage configuration project assignment is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_project_assignment_available()
     {
         $this->browse(function (Browser $browser) {
@@ -720,8 +745,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 24: Storage endpoint configuration is available (for S3-compatible)
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_endpoint_configuration_available()
     {
         $this->browse(function (Browser $browser) {
@@ -747,8 +773,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 25: Storage test results display (connection test feedback)
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_test_results_display()
     {
         $this->browse(function (Browser $browser) {
@@ -775,8 +802,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 26: Storage driver icon/badge is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_driver_icon_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -803,8 +831,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 27: Storage configuration name field is editable
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_configuration_name_editable()
     {
         $this->browse(function (Browser $browser) {
@@ -830,8 +859,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 28: FTP passive mode toggle is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_ftp_passive_mode_toggle_available()
     {
         $this->browse(function (Browser $browser) {
@@ -857,8 +887,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 29: FTP SSL/TLS option is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_ftp_ssl_option_available()
     {
         $this->browse(function (Browser $browser) {
@@ -885,8 +916,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 30: SFTP private key field is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_sftp_private_key_field_available()
     {
         $this->browse(function (Browser $browser) {
@@ -913,8 +945,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 31: Storage configuration save button works
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_configuration_save_button_works()
     {
         $this->browse(function (Browser $browser) {
@@ -940,8 +973,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 32: Storage configuration validation works
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_configuration_validation_works()
     {
         $this->browse(function (Browser $browser) {
@@ -967,8 +1001,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 33: Storage configuration default badge is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_default_badge_displayed()
     {
         // Set storage as default
@@ -997,8 +1032,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 34: Storage port configuration is available (FTP/SFTP)
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_port_configuration_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1024,8 +1060,9 @@ class StorageTest extends DuskTestCase
     /**
      * Test 35: Storage configuration filtering/search is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_configuration_filtering_available()
     {
         $this->browse(function (Browser $browser) {

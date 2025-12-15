@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Security;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Deployment;
 use App\Models\Project;
 use App\Models\Server;
@@ -62,7 +64,7 @@ class AuthorizationTest extends TestCase
 
     // ==================== IDOR (Insecure Direct Object Reference) Tests ====================
 
-    /** @test */
+    #[Test]
     public function user_cannot_access_other_users_project(): void
     {
         $this->actingAs($this->otherUser);
@@ -77,7 +79,7 @@ class AuthorizationTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function user_cannot_update_other_users_project(): void
     {
         $this->actingAs($this->otherUser);
@@ -97,7 +99,7 @@ class AuthorizationTest extends TestCase
         $this->assertNotEquals('Hacked Project Name', $this->project->name);
     }
 
-    /** @test */
+    #[Test]
     public function user_cannot_delete_other_users_project(): void
     {
         $this->actingAs($this->otherUser);
@@ -112,7 +114,7 @@ class AuthorizationTest extends TestCase
         $this->assertDatabaseHas('projects', ['id' => $projectId]);
     }
 
-    /** @test */
+    #[Test]
     public function user_cannot_access_other_users_server(): void
     {
         $this->actingAs($this->otherUser);
@@ -126,7 +128,7 @@ class AuthorizationTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function user_cannot_deploy_other_users_project(): void
     {
         $this->actingAs($this->otherUser);
@@ -142,7 +144,7 @@ class AuthorizationTest extends TestCase
 
     // ==================== Role-Based Access Control Tests ====================
 
-    /** @test */
+    #[Test]
     public function admin_can_access_admin_panel(): void
     {
         $this->actingAs($this->admin);
@@ -157,7 +159,7 @@ class AuthorizationTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function regular_user_cannot_access_admin_panel(): void
     {
         $this->actingAs($this->user);
@@ -173,7 +175,7 @@ class AuthorizationTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function regular_user_cannot_access_system_settings(): void
     {
         $this->actingAs($this->user);
@@ -191,7 +193,7 @@ class AuthorizationTest extends TestCase
 
     // ==================== Team Access Control Tests ====================
 
-    /** @test */
+    #[Test]
     public function team_member_can_access_team_projects(): void
     {
         $team = Team::factory()->create([
@@ -221,7 +223,7 @@ class AuthorizationTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function non_team_member_cannot_access_team_projects(): void
     {
         $team = Team::factory()->create([
@@ -248,7 +250,7 @@ class AuthorizationTest extends TestCase
 
     // ==================== Privilege Escalation Tests ====================
 
-    /** @test */
+    #[Test]
     public function user_cannot_assign_admin_role_to_self(): void
     {
         $this->actingAs($this->user);
@@ -269,7 +271,7 @@ class AuthorizationTest extends TestCase
         $this->assertFalse($this->user->hasRole('super_admin'));
     }
 
-    /** @test */
+    #[Test]
     public function team_member_cannot_elevate_to_owner(): void
     {
         $team = Team::factory()->create([
@@ -301,7 +303,7 @@ class AuthorizationTest extends TestCase
 
     // ==================== API Key Authorization Tests ====================
 
-    /** @test */
+    #[Test]
     public function api_key_only_allows_access_to_owners_resources(): void
     {
         $apiToken = \App\Models\ApiToken::factory()->create([
@@ -336,7 +338,7 @@ class AuthorizationTest extends TestCase
 
     // ==================== Mass Assignment Protection Tests ====================
 
-    /** @test */
+    #[Test]
     public function user_cannot_set_user_id_through_mass_assignment(): void
     {
         $this->actingAs($this->user);
@@ -359,7 +361,7 @@ class AuthorizationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function user_cannot_modify_protected_attributes(): void
     {
         $this->actingAs($this->user);

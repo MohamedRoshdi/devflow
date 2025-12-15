@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Server;
 use App\Models\User;
 use App\Services\ServerConnectivityService;
@@ -22,7 +24,7 @@ class ServerManagementTest extends TestCase
         $this->user = User::factory()->create();
     }
 
-    /** @test */
+    #[Test]
     public function user_can_view_servers_list()
     {
         $this->actingAs($this->user);
@@ -37,7 +39,7 @@ class ServerManagementTest extends TestCase
         $response->assertSeeLivewire(\App\Livewire\Servers\ServerList::class);
     }
 
-    /** @test */
+    #[Test]
     public function user_can_create_server_with_password_authentication()
     {
         $this->actingAs($this->user);
@@ -64,7 +66,7 @@ class ServerManagementTest extends TestCase
         $this->assertNull($server->ssh_key);
     }
 
-    /** @test */
+    #[Test]
     public function user_can_create_server_with_ssh_key_authentication()
     {
         $this->actingAs($this->user);
@@ -92,7 +94,7 @@ test_key_content
         $this->assertNull($server->ssh_password);
     }
 
-    /** @test */
+    #[Test]
     public function hostname_is_optional_when_creating_server()
     {
         $this->actingAs($this->user);
@@ -114,7 +116,7 @@ test_key_content
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function hostname_can_be_provided_when_creating_server()
     {
         $this->actingAs($this->user);
@@ -135,7 +137,7 @@ test_key_content
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function ip_address_is_required()
     {
         $this->actingAs($this->user);
@@ -151,7 +153,7 @@ test_key_content
             ->assertHasErrors(['ip_address' => 'required']);
     }
 
-    /** @test */
+    #[Test]
     public function ip_address_must_be_valid()
     {
         $this->actingAs($this->user);
@@ -167,7 +169,7 @@ test_key_content
             ->assertHasErrors(['ip_address' => 'ip']);
     }
 
-    /** @test */
+    #[Test]
     public function password_is_required_when_auth_method_is_password()
     {
         $this->actingAs($this->user);
@@ -183,7 +185,7 @@ test_key_content
             ->assertHasErrors(['ssh_password']);
     }
 
-    /** @test */
+    #[Test]
     public function ssh_key_is_required_when_auth_method_is_key()
     {
         $this->actingAs($this->user);
@@ -199,7 +201,7 @@ test_key_content
             ->assertHasErrors(['ssh_key']);
     }
 
-    /** @test */
+    #[Test]
     public function user_cannot_view_other_users_server()
     {
         $otherUser = User::factory()->create();
@@ -215,7 +217,7 @@ test_key_content
         $response->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function server_status_is_set_correctly()
     {
         $server = Server::factory()->online()->create([
@@ -227,7 +229,7 @@ test_key_content
         $this->assertFalse($server->isOffline());
     }
 
-    /** @test */
+    #[Test]
     public function server_status_color_attribute_returns_correct_value()
     {
         $onlineServer = Server::factory()->create([
@@ -250,7 +252,7 @@ test_key_content
         $this->assertEquals('yellow', $maintenanceServer->status_color);
     }
 
-    /** @test */
+    #[Test]
     public function ssh_password_is_hidden_from_array()
     {
         $server = Server::factory()->withPassword()->create([
@@ -263,7 +265,7 @@ test_key_content
         $this->assertArrayNotHasKey('ssh_key', $array);
     }
 
-    /** @test */
+    #[Test]
     public function server_can_have_gps_location()
     {
         $server = Server::factory()->create([
@@ -278,7 +280,7 @@ test_key_content
         $this->assertEquals('New York, USA', $server->location_name);
     }
 
-    /** @test */
+    #[Test]
     public function server_tracks_last_ping_time()
     {
         $server = Server::factory()->create([
@@ -290,7 +292,7 @@ test_key_content
         $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $server->last_ping_at);
     }
 
-    /** @test */
+    #[Test]
     public function connectivity_service_extracts_numeric_values_correctly()
     {
         $service = new ServerConnectivityService;
@@ -312,7 +314,7 @@ test_key_content
         $this->assertEquals(32, $method->invoke($service, 'CPU cores: 32'));
     }
 
-    /** @test */
+    #[Test]
     public function server_has_correct_relationships()
     {
         $server = Server::factory()->create([

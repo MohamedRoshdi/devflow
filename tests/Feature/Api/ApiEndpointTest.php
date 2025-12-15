@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\ApiToken;
 use App\Models\Deployment;
 use App\Models\Project;
@@ -52,7 +54,7 @@ class ApiEndpointTest extends TestCase
     // Project Update Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function it_requires_authentication_to_update_project(): void
     {
         $project = Project::factory()->create(['user_id' => $this->user->id]);
@@ -67,7 +69,7 @@ class ApiEndpointTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_invalid_token_for_project_update(): void
     {
         $project = Project::factory()->create(['user_id' => $this->user->id]);
@@ -85,7 +87,7 @@ class ApiEndpointTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_expired_token_for_project_update(): void
     {
         $expiredToken = Str::random(40);
@@ -113,7 +115,7 @@ class ApiEndpointTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_updating_other_users_project(): void
     {
         // Authorization policy restricts access to own resources only
@@ -126,7 +128,7 @@ class ApiEndpointTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function it_successfully_updates_own_project(): void
     {
         $project = Project::factory()->create([
@@ -155,7 +157,7 @@ class ApiEndpointTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_update_project_data(): void
     {
         $project = Project::factory()->create(['user_id' => $this->user->id]);
@@ -169,7 +171,7 @@ class ApiEndpointTest extends TestCase
             ->assertJsonValidationErrors(['name']);
     }
 
-    /** @test */
+    #[Test]
     public function it_regenerates_webhook_secret_when_enabling_webhook(): void
     {
         $project = Project::factory()->create([
@@ -193,7 +195,7 @@ class ApiEndpointTest extends TestCase
     // Project Delete Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function it_requires_authentication_to_delete_project(): void
     {
         $project = Project::factory()->create(['user_id' => $this->user->id]);
@@ -206,7 +208,7 @@ class ApiEndpointTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_deleting_other_users_project(): void
     {
         // Authorization policy restricts access to own resources only
@@ -218,7 +220,7 @@ class ApiEndpointTest extends TestCase
         $this->assertDatabaseHas('projects', ['id' => $otherProject->id]);
     }
 
-    /** @test */
+    #[Test]
     public function it_successfully_deletes_own_project(): void
     {
         $project = Project::factory()->create(['user_id' => $this->user->id]);
@@ -230,7 +232,7 @@ class ApiEndpointTest extends TestCase
         $this->assertSoftDeleted('projects', ['id' => $project->id]);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_404_when_deleting_nonexistent_project(): void
     {
         $response = $this->deleteJson('/api/v1/projects/nonexistent-project', [], $this->apiHeaders());
@@ -242,7 +244,7 @@ class ApiEndpointTest extends TestCase
     // Server Update Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function it_requires_authentication_to_update_server(): void
     {
         $server = Server::factory()->create(['user_id' => $this->user->id]);
@@ -257,7 +259,7 @@ class ApiEndpointTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_updating_other_users_server(): void
     {
         // Authorization policy restricts access to own resources only
@@ -270,7 +272,7 @@ class ApiEndpointTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function it_successfully_updates_own_server(): void
     {
         $server = Server::factory()->create([
@@ -299,7 +301,7 @@ class ApiEndpointTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_update_server_data(): void
     {
         $server = Server::factory()->create(['user_id' => $this->user->id]);
@@ -317,7 +319,7 @@ class ApiEndpointTest extends TestCase
     // Server Delete Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function it_requires_authentication_to_delete_server(): void
     {
         $server = Server::factory()->create(['user_id' => $this->user->id]);
@@ -330,7 +332,7 @@ class ApiEndpointTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_deleting_other_users_server(): void
     {
         // Authorization policy restricts access to own resources only
@@ -342,7 +344,7 @@ class ApiEndpointTest extends TestCase
         $this->assertDatabaseHas('servers', ['id' => $otherServer->id]);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_deleting_server_with_active_projects(): void
     {
         $server = Server::factory()->create(['user_id' => $this->user->id]);
@@ -361,7 +363,7 @@ class ApiEndpointTest extends TestCase
         $this->assertDatabaseHas('servers', ['id' => $server->id]);
     }
 
-    /** @test */
+    #[Test]
     public function it_successfully_deletes_server_without_projects(): void
     {
         $server = Server::factory()->create(['user_id' => $this->user->id]);
@@ -377,7 +379,7 @@ class ApiEndpointTest extends TestCase
     // Webhook Endpoint Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function it_returns_404_for_invalid_webhook_token(): void
     {
         $response = $this->postJson('/api/webhooks/deploy/invalid-token', [
@@ -390,7 +392,7 @@ class ApiEndpointTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_403_when_auto_deploy_disabled(): void
     {
         $project = Project::factory()->create([
@@ -408,7 +410,7 @@ class ApiEndpointTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_successfully_triggers_deployment_via_github_webhook(): void
     {
         \Illuminate\Support\Facades\Queue::fake();
@@ -442,7 +444,7 @@ class ApiEndpointTest extends TestCase
         \Illuminate\Support\Facades\Queue::assertPushed(\App\Jobs\DeployProjectJob::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_successfully_triggers_deployment_via_gitlab_webhook(): void
     {
         \Illuminate\Support\Facades\Queue::fake();
@@ -477,7 +479,7 @@ class ApiEndpointTest extends TestCase
         \Illuminate\Support\Facades\Queue::assertPushed(\App\Jobs\DeployProjectJob::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_successfully_triggers_deployment_via_bitbucket_webhook(): void
     {
         \Illuminate\Support\Facades\Queue::fake();
@@ -523,7 +525,7 @@ class ApiEndpointTest extends TestCase
     // Server Metrics Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function it_requires_authentication_to_view_server_metrics(): void
     {
         $server = Server::factory()->create(['user_id' => $this->user->id]);
@@ -533,7 +535,7 @@ class ApiEndpointTest extends TestCase
         $response->assertStatus(401);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_viewing_other_users_server_metrics(): void
     {
         // Authorization policy restricts access to own resources only
@@ -549,7 +551,7 @@ class ApiEndpointTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function it_successfully_retrieves_server_metrics_with_sanctum(): void
     {
         // Note: Server metrics use auth:sanctum (legacy routes), not api.auth
@@ -575,7 +577,7 @@ class ApiEndpointTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_authentication_to_store_server_metrics(): void
     {
         $server = Server::factory()->create(['user_id' => $this->user->id]);
@@ -589,7 +591,7 @@ class ApiEndpointTest extends TestCase
         $response->assertStatus(401);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_storing_metrics_for_other_users_server(): void
     {
         // Authorization policy restricts access to own resources only
@@ -605,7 +607,7 @@ class ApiEndpointTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function it_successfully_stores_server_metrics_with_sanctum(): void
     {
         // Note: Server metrics use auth:sanctum (legacy routes), not api.auth
@@ -642,7 +644,7 @@ class ApiEndpointTest extends TestCase
         $this->assertNotNull($server->last_ping_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_server_metrics_data_with_sanctum(): void
     {
         // Note: Server metrics use auth:sanctum (legacy routes), not api.auth
@@ -663,7 +665,7 @@ class ApiEndpointTest extends TestCase
     // Deployment Rollback Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function it_requires_authentication_to_rollback_deployment(): void
     {
         $project = Project::factory()->create(['user_id' => $this->user->id]);
@@ -677,7 +679,7 @@ class ApiEndpointTest extends TestCase
         $response->assertStatus(401);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_rolling_back_other_users_deployment(): void
     {
         // Authorization policy restricts access to own resources only
@@ -694,7 +696,7 @@ class ApiEndpointTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_rolling_back_to_failed_deployment(): void
     {
         $project = Project::factory()->create(['user_id' => $this->user->id]);
@@ -711,7 +713,7 @@ class ApiEndpointTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_rollback_when_deployment_in_progress(): void
     {
         $project = Project::factory()->create(['user_id' => $this->user->id]);
@@ -734,7 +736,7 @@ class ApiEndpointTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_successfully_initiates_rollback_deployment(): void
     {
         $project = Project::factory()->create(['user_id' => $this->user->id]);
@@ -766,7 +768,7 @@ class ApiEndpointTest extends TestCase
     // API Token Ability Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function it_restricts_access_based_on_token_abilities(): void
     {
         // Note: Current implementation doesn't enforce abilities at controller level
@@ -804,7 +806,7 @@ class ApiEndpointTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function it_allows_wildcard_abilities_for_resource(): void
     {
         $wildcardToken = Str::random(40);
@@ -833,7 +835,7 @@ class ApiEndpointTest extends TestCase
     // API Response Format Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function it_returns_proper_json_structure_for_project_list(): void
     {
         Project::factory()->count(3)->create(['user_id' => $this->user->id]);
@@ -860,7 +862,7 @@ class ApiEndpointTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_proper_json_structure_for_server_list(): void
     {
         Server::factory()->count(2)->create(['user_id' => $this->user->id]);
@@ -886,7 +888,7 @@ class ApiEndpointTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_proper_error_format_for_validation_errors(): void
     {
         $response = $this->postJson('/api/v1/projects', [
@@ -904,7 +906,7 @@ class ApiEndpointTest extends TestCase
     // Rate Limiting and Security Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function it_accepts_bearer_token_in_authorization_header(): void
     {
         $response = $this->getJson('/api/v1/projects', [
@@ -915,7 +917,7 @@ class ApiEndpointTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_malformed_authorization_header(): void
     {
         $response = $this->getJson('/api/v1/projects', [
@@ -926,7 +928,7 @@ class ApiEndpointTest extends TestCase
         $response->assertStatus(401);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_token_last_used_timestamp_after_request(): void
     {
         $originalLastUsed = $this->apiToken->last_used_at;

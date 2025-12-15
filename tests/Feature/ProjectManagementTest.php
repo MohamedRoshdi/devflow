@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
@@ -31,7 +33,7 @@ class ProjectManagementTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function user_can_create_project()
     {
         $this->actingAs($this->user);
@@ -64,7 +66,7 @@ class ProjectManagementTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function user_cannot_access_other_users_project()
     {
         $otherUser = User::factory()->create();
@@ -81,7 +83,7 @@ class ProjectManagementTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function project_status_updates_correctly()
     {
         $this->actingAs($this->user);
@@ -111,7 +113,7 @@ class ProjectManagementTest extends TestCase
         $this->assertContains($project->fresh()->status, ['running', 'stopped']);
     }
 
-    /** @test */
+    #[Test]
     public function git_commits_are_loaded_correctly()
     {
         $this->actingAs($this->user);
@@ -174,7 +176,7 @@ class ProjectManagementTest extends TestCase
             ->assertSet('totalCommits', 1);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_can_be_triggered()
     {
         $this->actingAs($this->user);
@@ -207,7 +209,7 @@ class ProjectManagementTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function project_search_works_correctly()
     {
         $this->actingAs($this->user);
@@ -231,7 +233,7 @@ class ProjectManagementTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function environment_variables_can_be_updated()
     {
         $this->actingAs($this->user);
@@ -255,7 +257,7 @@ class ProjectManagementTest extends TestCase
         $this->assertEquals('false', $project->env_variables['APP_DEBUG']);
     }
 
-    /** @test */
+    #[Test]
     public function domain_can_be_added_to_project()
     {
         $this->actingAs($this->user);
@@ -279,7 +281,7 @@ class ProjectManagementTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function project_status_badge_has_correct_color()
     {
         $this->actingAs($this->user);
@@ -303,7 +305,7 @@ class ProjectManagementTest extends TestCase
         $response->assertSee('bg-slate-500');
     }
 
-    /** @test */
+    #[Test]
     public function cache_is_cleared_on_project_update()
     {
         $this->actingAs($this->user);
@@ -323,7 +325,7 @@ class ProjectManagementTest extends TestCase
         $this->assertNull(cache()->get("project_{$project->id}_stats"));
     }
 
-    /** @test */
+    #[Test]
     public function project_git_component_loads_branches()
     {
         $this->actingAs($this->user);
@@ -372,7 +374,7 @@ class ProjectManagementTest extends TestCase
             ->assertSet('branches', $expectedBranches);
     }
 
-    /** @test */
+    #[Test]
     public function project_git_component_handles_pagination()
     {
         $this->actingAs($this->user);
@@ -432,7 +434,7 @@ class ProjectManagementTest extends TestCase
             ->assertSet('currentPage', 1);
     }
 
-    /** @test */
+    #[Test]
     public function project_git_component_shows_update_status()
     {
         $this->actingAs($this->user);
@@ -473,7 +475,7 @@ class ProjectManagementTest extends TestCase
             ->assertSet('updateStatus.commits_behind', 3);
     }
 
-    /** @test */
+    #[Test]
     public function project_git_component_handles_errors_gracefully()
     {
         $this->actingAs($this->user);
@@ -502,7 +504,7 @@ class ProjectManagementTest extends TestCase
             ->assertSet('loading', false);
     }
 
-    /** @test */
+    #[Test]
     public function project_git_component_can_refresh_data()
     {
         $this->actingAs($this->user);
@@ -538,7 +540,7 @@ class ProjectManagementTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function project_git_can_switch_branch()
     {
         $this->actingAs($this->user);

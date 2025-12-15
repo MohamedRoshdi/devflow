@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\SecurityScan;
 use App\Models\Server;
 use App\Models\User;
@@ -145,8 +147,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 1: Security scan dashboard page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_scan_dashboard_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -172,8 +175,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 2: Start new security scan button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_start_new_scan_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -199,8 +203,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 3: Security scan history is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_scan_history_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -226,8 +231,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 4: Latest security scan is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_latest_scan_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -253,8 +259,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 5: Security score is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_score_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -279,8 +286,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 6: Risk level indicator is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_risk_level_indicator_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -307,8 +315,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 7: Scan status badges are visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_scan_status_badges_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -334,8 +343,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 8: Running scan shows progress indicator
      *
-     * @test
      */
+
+    #[Test]
     public function test_running_scan_shows_progress()
     {
         $this->browse(function (Browser $browser) {
@@ -361,8 +371,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 9: Scan results summary is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_scan_results_summary_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -388,8 +399,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 10: View scan details button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_view_scan_details_button_present()
     {
         $this->browse(function (Browser $browser) {
@@ -415,8 +427,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 11: Critical vulnerabilities are highlighted
      *
-     * @test
      */
+
+    #[Test]
     public function test_critical_vulnerabilities_highlighted()
     {
         $this->browse(function (Browser $browser) {
@@ -441,8 +454,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 12: High severity vulnerabilities are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_high_severity_vulnerabilities_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -467,8 +481,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 13: Medium severity vulnerabilities are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_medium_severity_vulnerabilities_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -493,8 +508,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 14: Low severity vulnerabilities are listed
      *
-     * @test
      */
+
+    #[Test]
     public function test_low_severity_vulnerabilities_listed()
     {
         $this->browse(function (Browser $browser) {
@@ -519,8 +535,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 15: Vulnerability count by severity is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_vulnerability_count_by_severity_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -545,8 +562,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 16: Remediation suggestions are available
      *
-     * @test
      */
+
+    #[Test]
     public function test_remediation_suggestions_available()
     {
         $this->browse(function (Browser $browser) {
@@ -572,8 +590,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 17: Scan duration is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_scan_duration_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -599,8 +618,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 18: Scan timestamp is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_scan_timestamp_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -626,8 +646,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 19: Pagination for scan history works
      *
-     * @test
      */
+
+    #[Test]
     public function test_scan_history_pagination_works()
     {
         $this->browse(function (Browser $browser) {
@@ -653,8 +674,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 20: Filter scans by severity level
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_scans_by_severity()
     {
         $this->browse(function (Browser $browser) {
@@ -680,8 +702,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 21: Search vulnerabilities by keyword
      *
-     * @test
      */
+
+    #[Test]
     public function test_search_vulnerabilities_by_keyword()
     {
         $this->browse(function (Browser $browser) {
@@ -706,8 +729,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 22: Vulnerability details modal can be opened
      *
-     * @test
      */
+
+    #[Test]
     public function test_vulnerability_details_modal_opens()
     {
         $this->browse(function (Browser $browser) {
@@ -732,8 +756,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 23: Mark vulnerability as resolved
      *
-     * @test
      */
+
+    #[Test]
     public function test_mark_vulnerability_as_resolved()
     {
         $this->browse(function (Browser $browser) {
@@ -759,8 +784,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 24: Mark as false positive option
      *
-     * @test
      */
+
+    #[Test]
     public function test_mark_as_false_positive_option()
     {
         $this->browse(function (Browser $browser) {
@@ -785,8 +811,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 25: Export scan report as PDF option
      *
-     * @test
      */
+
+    #[Test]
     public function test_export_scan_report_as_pdf()
     {
         $this->browse(function (Browser $browser) {
@@ -812,8 +839,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 26: Export scan report as CSV option
      *
-     * @test
      */
+
+    #[Test]
     public function test_export_scan_report_as_csv()
     {
         $this->browse(function (Browser $browser) {
@@ -838,8 +866,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 27: Schedule recurring scans option
      *
-     * @test
      */
+
+    #[Test]
     public function test_schedule_recurring_scans_option()
     {
         $this->browse(function (Browser $browser) {
@@ -865,8 +894,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 28: Scan comparison feature exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_scan_comparison_feature_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -892,8 +922,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 29: Vulnerability categories are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_vulnerability_categories_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -919,8 +950,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 30: Scan type selection is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_scan_type_selection_available()
     {
         $this->browse(function (Browser $browser) {
@@ -946,8 +978,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 31: PCI compliance check option
      *
-     * @test
      */
+
+    #[Test]
     public function test_pci_compliance_check_option()
     {
         $this->browse(function (Browser $browser) {
@@ -972,8 +1005,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 32: HIPAA compliance check option
      *
-     * @test
      */
+
+    #[Test]
     public function test_hipaa_compliance_check_option()
     {
         $this->browse(function (Browser $browser) {
@@ -998,8 +1032,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 33: Scan notifications are configurable
      *
-     * @test
      */
+
+    #[Test]
     public function test_scan_notifications_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -1024,8 +1059,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 34: Security score trend chart is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_score_trend_chart_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -1051,8 +1087,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 35: Quick scan action is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_quick_scan_action_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1077,8 +1114,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 36: Deep scan option is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_deep_scan_option_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1104,8 +1142,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 37: Scan progress percentage is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_scan_progress_percentage_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -1131,8 +1170,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 38: Refresh scan results button exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_refresh_scan_results_button_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -1157,8 +1197,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 39: Server selection dropdown for scans
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_selection_dropdown_for_scans()
     {
         $this->browse(function (Browser $browser) {
@@ -1183,8 +1224,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 40: Vulnerability details show affected files
      *
-     * @test
      */
+
+    #[Test]
     public function test_vulnerability_details_show_affected_files()
     {
         $this->browse(function (Browser $browser) {
@@ -1210,8 +1252,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 41: CVE references are linked
      *
-     * @test
      */
+
+    #[Test]
     public function test_cve_references_are_linked()
     {
         $this->browse(function (Browser $browser) {
@@ -1236,8 +1279,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 42: Scan can be cancelled while running
      *
-     * @test
      */
+
+    #[Test]
     public function test_scan_can_be_cancelled_while_running()
     {
         $this->browse(function (Browser $browser) {
@@ -1263,8 +1307,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 43: Vulnerability remediation priority is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_vulnerability_remediation_priority_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -1290,8 +1335,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 44: Scan history can be filtered by date range
      *
-     * @test
      */
+
+    #[Test]
     public function test_scan_history_filtered_by_date_range()
     {
         $this->browse(function (Browser $browser) {
@@ -1317,8 +1363,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 45: Automated remediation suggestions exist
      *
-     * @test
      */
+
+    #[Test]
     public function test_automated_remediation_suggestions_exist()
     {
         $this->browse(function (Browser $browser) {
@@ -1344,8 +1391,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 46: Scan summary shows total issues found
      *
-     * @test
      */
+
+    #[Test]
     public function test_scan_summary_shows_total_issues()
     {
         $this->browse(function (Browser $browser) {
@@ -1371,8 +1419,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 47: Real-time scan updates via Livewire polling
      *
-     * @test
      */
+
+    #[Test]
     public function test_realtime_scan_updates_via_polling()
     {
         $this->browse(function (Browser $browser) {
@@ -1397,8 +1446,9 @@ class SecurityScanDashboardTest extends DuskTestCase
     /**
      * Test 48: Security best practices recommendations section
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_best_practices_recommendations_section()
     {
         $this->browse(function (Browser $browser) {

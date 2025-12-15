@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Server;
 use App\Models\ServerMetric;
 use App\Models\User;
@@ -99,8 +101,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 1: Server metrics dashboard access
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_access_server_metrics_dashboard()
     {
         $this->browse(function (Browser $browser) {
@@ -123,8 +126,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 2: CPU usage chart is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_cpu_usage_chart_is_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -147,8 +151,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 3: Memory usage display is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_memory_usage_display_is_present()
     {
         $this->browse(function (Browser $browser) {
@@ -171,8 +176,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 4: Disk usage statistics are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_disk_usage_statistics_are_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -195,8 +201,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 5: Network traffic monitoring is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_network_traffic_monitoring_is_available()
     {
         $this->browse(function (Browser $browser) {
@@ -220,8 +227,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 6: Process list viewing is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_process_list_viewing_is_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -244,8 +252,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 7: Real-time metrics updates are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_real_time_metrics_updates_are_present()
     {
         $this->browse(function (Browser $browser) {
@@ -269,8 +278,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 8: Historical metrics viewing is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_historical_metrics_viewing_is_available()
     {
         $this->browse(function (Browser $browser) {
@@ -293,8 +303,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 9: Metrics time range selection is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_time_range_selection_is_present()
     {
         $this->browse(function (Browser $browser) {
@@ -319,8 +330,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 10: Metrics export functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_export_functionality_is_available()
     {
         $this->browse(function (Browser $browser) {
@@ -344,8 +356,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 11: Metrics alerting thresholds are configurable
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_alerting_thresholds_are_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -368,8 +381,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 12: Server load averages are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_load_averages_are_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -392,8 +406,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 13: Uptime statistics are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_uptime_statistics_are_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -416,8 +431,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 14: Metrics comparison between servers is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_comparison_between_servers_is_available()
     {
         $this->browse(function (Browser $browser) {
@@ -440,8 +456,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 15: Custom metrics configuration is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_custom_metrics_configuration_is_present()
     {
         $this->browse(function (Browser $browser) {
@@ -464,8 +481,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 16: CPU usage percentage is accurate
      *
-     * @test
      */
+
+    #[Test]
     public function test_cpu_usage_percentage_is_accurate()
     {
         $this->browse(function (Browser $browser) {
@@ -488,8 +506,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 17: Memory usage in GB/MB is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_memory_usage_in_gb_mb_is_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -512,8 +531,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 18: Disk space remaining is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_disk_space_remaining_is_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -537,8 +557,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 19: Network upload speed is tracked
      *
-     * @test
      */
+
+    #[Test]
     public function test_network_upload_speed_is_tracked()
     {
         $this->browse(function (Browser $browser) {
@@ -561,8 +582,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 20: Network download speed is tracked
      *
-     * @test
      */
+
+    #[Test]
     public function test_network_download_speed_is_tracked()
     {
         $this->browse(function (Browser $browser) {
@@ -585,8 +607,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 21: Metrics graphs are interactive
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_graphs_are_interactive()
     {
         $this->browse(function (Browser $browser) {
@@ -609,8 +632,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 22: Metrics data is refreshed periodically
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_data_is_refreshed_periodically()
     {
         $this->browse(function (Browser $browser) {
@@ -632,8 +656,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 23: Metrics dashboard shows current values
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_dashboard_shows_current_values()
     {
         $this->browse(function (Browser $browser) {
@@ -656,8 +681,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 24: Metrics dashboard shows peak values
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_dashboard_shows_peak_values()
     {
         $this->browse(function (Browser $browser) {
@@ -680,8 +706,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 25: Metrics dashboard shows average values
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_dashboard_shows_average_values()
     {
         $this->browse(function (Browser $browser) {
@@ -704,8 +731,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 26: Metrics can be filtered by date range
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_can_be_filtered_by_date_range()
     {
         $this->browse(function (Browser $browser) {
@@ -728,8 +756,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 27: Metrics support 24-hour view
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_support_24_hour_view()
     {
         $this->browse(function (Browser $browser) {
@@ -752,8 +781,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 28: Metrics support 7-day view
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_support_7_day_view()
     {
         $this->browse(function (Browser $browser) {
@@ -777,8 +807,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 29: Metrics support 30-day view
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_support_30_day_view()
     {
         $this->browse(function (Browser $browser) {
@@ -802,8 +833,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 30: CPU temperature is monitored
      *
-     * @test
      */
+
+    #[Test]
     public function test_cpu_temperature_is_monitored()
     {
         $this->browse(function (Browser $browser) {
@@ -826,8 +858,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 31: Swap usage is tracked
      *
-     * @test
      */
+
+    #[Test]
     public function test_swap_usage_is_tracked()
     {
         $this->browse(function (Browser $browser) {
@@ -850,8 +883,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 32: I/O operations are monitored
      *
-     * @test
      */
+
+    #[Test]
     public function test_io_operations_are_monitored()
     {
         $this->browse(function (Browser $browser) {
@@ -874,8 +908,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 33: Active connections are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_active_connections_are_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -898,8 +933,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 34: Server health score is calculated
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_health_score_is_calculated()
     {
         $this->browse(function (Browser $browser) {
@@ -922,8 +958,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 35: Metrics alerts can be configured
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_alerts_can_be_configured()
     {
         $this->browse(function (Browser $browser) {
@@ -946,8 +983,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 36: Metrics can trigger notifications
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_can_trigger_notifications()
     {
         $this->browse(function (Browser $browser) {
@@ -970,8 +1008,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 37: Historical data can be cleared
      *
-     * @test
      */
+
+    #[Test]
     public function test_historical_data_can_be_cleared()
     {
         $this->browse(function (Browser $browser) {
@@ -994,8 +1033,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 38: Metrics show response times
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_show_response_times()
     {
         $this->browse(function (Browser $browser) {
@@ -1018,8 +1058,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 39: Metrics dashboard is mobile responsive
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_dashboard_is_mobile_responsive()
     {
         $this->browse(function (Browser $browser) {
@@ -1043,8 +1084,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 40: Metrics support dark mode
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_support_dark_mode()
     {
         $this->browse(function (Browser $browser) {
@@ -1066,8 +1108,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 41: Metrics can be printed/exported to PDF
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_can_be_printed_or_exported_to_pdf()
     {
         $this->browse(function (Browser $browser) {
@@ -1090,8 +1133,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 42: Metrics show trend indicators
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_show_trend_indicators()
     {
         $this->browse(function (Browser $browser) {
@@ -1115,8 +1159,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 43: Metrics show comparison with previous period
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_show_comparison_with_previous_period()
     {
         $this->browse(function (Browser $browser) {
@@ -1140,8 +1185,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 44: Metrics dashboard loads quickly
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_dashboard_loads_quickly()
     {
         $this->browse(function (Browser $browser) {
@@ -1164,8 +1210,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 45: Metrics data is accurate and valid
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_data_is_accurate_and_valid()
     {
         $this->browse(function (Browser $browser) {
@@ -1190,8 +1237,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 46: CPU cores count is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_cpu_cores_count_is_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -1214,8 +1262,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 47: Total memory capacity is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_total_memory_capacity_is_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -1238,8 +1287,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 48: Disk partitions are listed
      *
-     * @test
      */
+
+    #[Test]
     public function test_disk_partitions_are_listed()
     {
         $this->browse(function (Browser $browser) {
@@ -1262,8 +1312,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 49: Network interfaces are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_network_interfaces_are_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -1286,8 +1337,9 @@ class ServerMetricsTest extends DuskTestCase
     /**
      * Test 50: Metrics refresh interval can be customized
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_refresh_interval_can_be_customized()
     {
         $this->browse(function (Browser $browser) {

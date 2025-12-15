@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\ApiToken;
 use App\Models\Server;
 use App\Models\User;
@@ -43,7 +45,7 @@ class ServerApiTest extends TestCase
 
     // ==================== List Servers ====================
 
-    /** @test */
+    #[Test]
     public function it_can_list_all_servers(): void
     {
         Server::factory()->count(3)->create([
@@ -61,7 +63,7 @@ class ServerApiTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_authentication_to_list_servers(): void
     {
         $response = $this->getJson('/api/v1/servers');
@@ -71,7 +73,7 @@ class ServerApiTest extends TestCase
 
     // ==================== Create Server ====================
 
-    /** @test */
+    #[Test]
     public function it_can_create_a_server(): void
     {
         $serverData = [
@@ -95,7 +97,7 @@ class ServerApiTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_required_fields_when_creating_server(): void
     {
         $response = $this->withHeaders($this->headers)
@@ -105,7 +107,7 @@ class ServerApiTest extends TestCase
             ->assertJsonValidationErrors(['name', 'ip_address']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_ip_address_format(): void
     {
         $response = $this->withHeaders($this->headers)
@@ -120,7 +122,7 @@ class ServerApiTest extends TestCase
             ->assertJsonValidationErrors(['ip_address']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_unique_ip_address(): void
     {
         Server::factory()->create([
@@ -142,7 +144,7 @@ class ServerApiTest extends TestCase
 
     // ==================== Get Single Server ====================
 
-    /** @test */
+    #[Test]
     public function it_can_get_a_single_server(): void
     {
         $server = Server::factory()->create([
@@ -156,7 +158,7 @@ class ServerApiTest extends TestCase
             ->assertJsonPath('data.id', $server->id);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_404_for_nonexistent_server(): void
     {
         $response = $this->withHeaders($this->headers)
@@ -167,7 +169,7 @@ class ServerApiTest extends TestCase
 
     // ==================== Update Server ====================
 
-    /** @test */
+    #[Test]
     public function it_can_update_a_server(): void
     {
         $server = Server::factory()->create([
@@ -191,7 +193,7 @@ class ServerApiTest extends TestCase
 
     // ==================== Delete Server ====================
 
-    /** @test */
+    #[Test]
     public function it_can_delete_a_server(): void
     {
         $server = Server::factory()->create([
@@ -211,7 +213,7 @@ class ServerApiTest extends TestCase
 
     // ==================== Server Status ====================
 
-    /** @test */
+    #[Test]
     public function it_can_get_server_status(): void
     {
         // Status info is included in the server show endpoint, not a separate route
@@ -229,7 +231,7 @@ class ServerApiTest extends TestCase
 
     // ==================== Server Metrics ====================
 
-    /** @test */
+    #[Test]
     public function it_can_get_server_metrics(): void
     {
         $server = Server::factory()->create([
@@ -244,7 +246,7 @@ class ServerApiTest extends TestCase
 
     // ==================== Port Validation ====================
 
-    /** @test */
+    #[Test]
     public function it_creates_server_with_default_port(): void
     {
         // Verify server creation works without specifying port
@@ -264,7 +266,7 @@ class ServerApiTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_accepts_valid_ssh_port(): void
     {
         $response = $this->withHeaders($this->headers)

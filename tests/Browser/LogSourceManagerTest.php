@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\LogSource;
 use App\Models\Project;
 use App\Models\Server;
@@ -66,8 +68,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test log source manager page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function log_source_manager_page_loads(): void
     {
         $this->browse(function (Browser $browser) {
@@ -83,8 +86,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test opening add log source modal
      *
-     * @test
      */
+
+    #[Test]
     public function opening_add_log_source_modal_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -104,8 +108,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test creating new file log source
      *
-     * @test
      */
+
+    #[Test]
     public function creating_new_file_log_source_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -128,8 +133,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test creating docker log source
      *
-     * @test
      */
+
+    #[Test]
     public function creating_docker_log_source_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -152,8 +158,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test creating journald log source
      *
-     * @test
      */
+
+    #[Test]
     public function creating_journald_log_source_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -176,8 +183,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test creating log source with project association
      *
-     * @test
      */
+
+    #[Test]
     public function creating_log_source_with_project_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -202,8 +210,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test validation error for empty name
      *
-     * @test
      */
+
+    #[Test]
     public function validation_error_for_empty_name(): void
     {
         $this->browse(function (Browser $browser) {
@@ -223,8 +232,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test validation error for empty path
      *
-     * @test
      */
+
+    #[Test]
     public function validation_error_for_empty_path(): void
     {
         $this->browse(function (Browser $browser) {
@@ -244,8 +254,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test using predefined Laravel template
      *
-     * @test
      */
+
+    #[Test]
     public function using_laravel_template_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -266,8 +277,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test using predefined Nginx access template
      *
-     * @test
      */
+
+    #[Test]
     public function using_nginx_access_template_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -287,8 +299,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test using predefined Nginx error template
      *
-     * @test
      */
+
+    #[Test]
     public function using_nginx_error_template_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -308,8 +321,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test using predefined Docker template
      *
-     * @test
      */
+
+    #[Test]
     public function using_docker_template_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -329,8 +343,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test using predefined MySQL template
      *
-     * @test
      */
+
+    #[Test]
     public function using_mysql_template_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -350,8 +365,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test closing add modal without saving
      *
-     * @test
      */
+
+    #[Test]
     public function closing_modal_without_saving_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -371,8 +387,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test editing existing log source
      *
-     * @test
      */
+
+    #[Test]
     public function editing_existing_log_source_works(): void
     {
         // Create a log source first
@@ -411,8 +428,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test editing log source type
      *
-     * @test
      */
+
+    #[Test]
     public function editing_log_source_type_works(): void
     {
         $logSource = LogSource::create([
@@ -444,8 +462,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test toggling log source active status
      *
-     * @test
      */
+
+    #[Test]
     public function toggling_log_source_status_works(): void
     {
         $logSource = LogSource::create([
@@ -477,8 +496,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test active status indicator shows correctly
      *
-     * @test
      */
+
+    #[Test]
     public function active_status_indicator_shows_correctly(): void
     {
         $activeSource = LogSource::create([
@@ -514,8 +534,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test deleting log source
      *
-     * @test
      */
+
+    #[Test]
     public function deleting_log_source_works(): void
     {
         $logSource = LogSource::create([
@@ -542,8 +563,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test testing log source connection
      *
-     * @test
      */
+
+    #[Test]
     public function testing_log_source_connection_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -563,8 +585,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test log source list shows all sources
      *
-     * @test
      */
+
+    #[Test]
     public function log_source_list_shows_all_sources(): void
     {
         $sources = [];
@@ -597,8 +620,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test log source shows correct type badge
      *
-     * @test
      */
+
+    #[Test]
     public function log_source_shows_correct_type_badge(): void
     {
         $fileSource = LogSource::create([
@@ -642,8 +666,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test log source displays path correctly
      *
-     * @test
      */
+
+    #[Test]
     public function log_source_displays_path_correctly(): void
     {
         $logSource = LogSource::create([
@@ -668,8 +693,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test syncing log source
      *
-     * @test
      */
+
+    #[Test]
     public function syncing_log_source_works(): void
     {
         $logSource = LogSource::create([
@@ -695,8 +721,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test log source with project shows project name
      *
-     * @test
      */
+
+    #[Test]
     public function log_source_with_project_shows_project_name(): void
     {
         $logSource = LogSource::create([
@@ -722,8 +749,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test empty state when no log sources exist
      *
-     * @test
      */
+
+    #[Test]
     public function empty_state_displays_when_no_sources(): void
     {
         // Clean up any existing sources
@@ -741,8 +769,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test log source card shows all information
      *
-     * @test
      */
+
+    #[Test]
     public function log_source_card_shows_all_information(): void
     {
         $logSource = LogSource::create([
@@ -770,8 +799,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test last sync time displays correctly
      *
-     * @test
      */
+
+    #[Test]
     public function last_sync_time_displays_correctly(): void
     {
         $logSource = LogSource::create([
@@ -797,8 +827,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test multiple log sources of different types
      *
-     * @test
      */
+
+    #[Test]
     public function multiple_log_sources_different_types_display(): void
     {
         $sources = [
@@ -842,8 +873,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test log source actions menu exists
      *
-     * @test
      */
+
+    #[Test]
     public function log_source_actions_menu_exists(): void
     {
         $logSource = LogSource::create([
@@ -871,8 +903,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test creating log source from Laravel template and saving
      *
-     * @test
      */
+
+    #[Test]
     public function creating_from_laravel_template_and_saving_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -893,8 +926,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test form resets after successful creation
      *
-     * @test
      */
+
+    #[Test]
     public function form_resets_after_successful_creation(): void
     {
         $this->browse(function (Browser $browser) {
@@ -919,8 +953,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test modal closes after successful creation
      *
-     * @test
      */
+
+    #[Test]
     public function modal_closes_after_successful_creation(): void
     {
         $this->browse(function (Browser $browser) {
@@ -942,8 +977,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test modal closes after successful edit
      *
-     * @test
      */
+
+    #[Test]
     public function modal_closes_after_successful_edit(): void
     {
         $logSource = LogSource::create([
@@ -974,8 +1010,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test notification appears for successful operations
      *
-     * @test
      */
+
+    #[Test]
     public function notification_appears_for_successful_operations(): void
     {
         $logSource = LogSource::create([
@@ -1001,8 +1038,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test page shows server name in header
      *
-     * @test
      */
+
+    #[Test]
     public function page_shows_server_name_in_header(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1017,8 +1055,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test log source type dropdown has all options
      *
-     * @test
      */
+
+    #[Test]
     public function type_dropdown_has_all_options(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1034,8 +1073,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test project dropdown shows available projects
      *
-     * @test
      */
+
+    #[Test]
     public function project_dropdown_shows_available_projects(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1052,8 +1092,9 @@ class LogSourceManagerTest extends DuskTestCase
     /**
      * Test all template buttons are visible
      *
-     * @test
      */
+
+    #[Test]
     public function all_template_buttons_are_visible(): void
     {
         $this->browse(function (Browser $browser) {

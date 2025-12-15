@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\Auth\ForgotPassword;
 use App\Livewire\Auth\Login;
 use App\Models\User;
@@ -27,7 +29,7 @@ class AuthenticationTest extends TestCase
 
     // ==================== Login Tests ====================
 
-    /** @test */
+    #[Test]
     public function user_can_view_login_page(): void
     {
         $response = $this->get('/login');
@@ -36,7 +38,7 @@ class AuthenticationTest extends TestCase
             ->assertSee('Login');
     }
 
-    /** @test */
+    #[Test]
     public function user_can_login_with_correct_credentials(): void
     {
         $user = User::factory()->create([
@@ -53,7 +55,7 @@ class AuthenticationTest extends TestCase
         $this->assertAuthenticatedAs($user);
     }
 
-    /** @test */
+    #[Test]
     public function user_cannot_login_with_incorrect_password(): void
     {
         User::factory()->create([
@@ -70,7 +72,7 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
     }
 
-    /** @test */
+    #[Test]
     public function user_cannot_login_with_nonexistent_email(): void
     {
         Livewire::test(Login::class)
@@ -82,7 +84,7 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
     }
 
-    /** @test */
+    #[Test]
     public function login_requires_email_and_password(): void
     {
         Livewire::test(Login::class)
@@ -94,7 +96,7 @@ class AuthenticationTest extends TestCase
 
     // ==================== Registration Tests ====================
 
-    /** @test */
+    #[Test]
     public function user_can_view_registration_page(): void
     {
         // Registration is closed - should redirect to login
@@ -104,7 +106,7 @@ class AuthenticationTest extends TestCase
             ->assertSessionHas('status', 'Registration is currently closed. Please contact an administrator for access.');
     }
 
-    /** @test */
+    #[Test]
     public function user_can_register_with_valid_data(): void
     {
         // Registration is closed - POST /register route doesn't exist
@@ -114,7 +116,7 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect('/login');
     }
 
-    /** @test */
+    #[Test]
     public function registration_requires_unique_email(): void
     {
         // Registration is closed - POST /register route doesn't exist
@@ -124,7 +126,7 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect('/login');
     }
 
-    /** @test */
+    #[Test]
     public function registration_requires_password_confirmation(): void
     {
         // Registration is closed - POST /register route doesn't exist
@@ -134,7 +136,7 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect('/login');
     }
 
-    /** @test */
+    #[Test]
     public function registration_requires_minimum_password_length(): void
     {
         // Registration is closed - POST /register route doesn't exist
@@ -146,7 +148,7 @@ class AuthenticationTest extends TestCase
 
     // ==================== Logout Tests ====================
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_logout(): void
     {
         $user = User::factory()->create();
@@ -159,7 +161,7 @@ class AuthenticationTest extends TestCase
 
     // ==================== Password Reset Tests ====================
 
-    /** @test */
+    #[Test]
     public function user_can_view_forgot_password_page(): void
     {
         $response = $this->get('/forgot-password');
@@ -167,7 +169,7 @@ class AuthenticationTest extends TestCase
         $response->assertOk();
     }
 
-    /** @test */
+    #[Test]
     public function user_can_request_password_reset_link(): void
     {
         Password::shouldReceive('sendResetLink')
@@ -184,7 +186,7 @@ class AuthenticationTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function password_reset_fails_for_nonexistent_email(): void
     {
         Livewire::test(ForgotPassword::class)
@@ -195,7 +197,7 @@ class AuthenticationTest extends TestCase
 
     // ==================== Protected Routes Tests ====================
 
-    /** @test */
+    #[Test]
     public function guest_cannot_access_dashboard(): void
     {
         $response = $this->get('/dashboard');
@@ -203,7 +205,7 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect('/login');
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_access_dashboard(): void
     {
         $user = User::factory()->create();
@@ -213,7 +215,7 @@ class AuthenticationTest extends TestCase
         $response->assertOk();
     }
 
-    /** @test */
+    #[Test]
     public function guest_cannot_access_projects(): void
     {
         $response = $this->get('/projects');
@@ -221,7 +223,7 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect('/login');
     }
 
-    /** @test */
+    #[Test]
     public function guest_cannot_access_servers(): void
     {
         $response = $this->get('/servers');
@@ -231,7 +233,7 @@ class AuthenticationTest extends TestCase
 
     // ==================== Session Tests ====================
 
-    /** @test */
+    #[Test]
     public function session_is_regenerated_on_login(): void
     {
         $user = User::factory()->create([
@@ -250,7 +252,7 @@ class AuthenticationTest extends TestCase
         $this->assertAuthenticatedAs($user);
     }
 
-    /** @test */
+    #[Test]
     public function remember_me_creates_remember_token(): void
     {
         $user = User::factory()->create([

@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
@@ -71,8 +73,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 1: Docker dashboard page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_dashboard_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -90,8 +93,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 2: Docker system information is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_system_info_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -117,8 +121,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 3: Docker overview tab is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_overview_tab_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -144,8 +149,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 4: Docker images list is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_images_list_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -182,8 +188,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 5: Docker volumes list is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_volumes_list_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -209,8 +216,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 6: Docker networks list is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_networks_list_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -236,8 +244,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 7: Docker disk usage information is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_disk_usage_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -265,8 +274,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 8: Docker prune buttons are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_prune_buttons_present()
     {
         $this->browse(function (Browser $browser) {
@@ -293,8 +303,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 9: Docker image delete functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_image_delete_available()
     {
         $this->browse(function (Browser $browser) {
@@ -320,8 +331,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 10: Project Docker management page is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_docker_management_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -346,8 +358,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 11: Container start/stop buttons are present in project
      *
-     * @test
      */
+
+    #[Test]
     public function test_container_start_stop_buttons_present()
     {
         $this->browse(function (Browser $browser) {
@@ -389,8 +402,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 12: Container logs viewing is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_container_logs_viewing_available()
     {
         $this->browse(function (Browser $browser) {
@@ -416,8 +430,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 13: Container status information is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_container_status_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -444,8 +459,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 14: Container statistics are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_container_statistics_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -472,8 +488,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 15: Docker compose build button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_compose_build_button_present()
     {
         $this->browse(function (Browser $browser) {
@@ -499,8 +516,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 16: Docker volume delete functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_volume_delete_available()
     {
         $this->browse(function (Browser $browser) {
@@ -525,8 +543,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 17: Docker network delete functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_network_delete_available()
     {
         $this->browse(function (Browser $browser) {
@@ -551,8 +570,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 18: Container export/backup functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_container_export_backup_available()
     {
         $this->browse(function (Browser $browser) {
@@ -578,8 +598,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 19: Docker system prune functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_system_prune_available()
     {
         $this->browse(function (Browser $browser) {
@@ -605,8 +626,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 20: Navigation to Docker dashboard from server page works
      *
-     * @test
      */
+
+    #[Test]
     public function test_navigation_to_docker_from_server()
     {
         $this->browse(function (Browser $browser) {
@@ -641,8 +663,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 21: Docker image prune functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_image_prune_available()
     {
         $this->browse(function (Browser $browser) {
@@ -668,8 +691,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 22: Container restart functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_container_restart_available()
     {
         $this->browse(function (Browser $browser) {
@@ -695,8 +719,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 23: Docker tabs/navigation is functional
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_tabs_functional()
     {
         $this->browse(function (Browser $browser) {
@@ -724,8 +749,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 24: Refresh/reload Docker information is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_refresh_available()
     {
         $this->browse(function (Browser $browser) {
@@ -751,8 +777,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 25: Error messages are displayed when Docker operations fail
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_error_messages_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -780,8 +807,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 26: Container environment variables are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_container_environment_variables_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -808,8 +836,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 27: Container port mappings are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_container_port_mappings_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -836,8 +865,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 28: Container health checks are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_container_health_checks_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -864,8 +894,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 29: Docker installation status is displayed on server page
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_installation_status_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -892,8 +923,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 30: Container creation from images is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_container_creation_from_images_available()
     {
         $this->browse(function (Browser $browser) {
@@ -920,8 +952,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 31: Docker registry configuration is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_registry_configuration_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -948,8 +981,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 32: Container CPU usage is monitored
      *
-     * @test
      */
+
+    #[Test]
     public function test_container_cpu_usage_monitored()
     {
         $this->browse(function (Browser $browser) {
@@ -975,8 +1009,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 33: Container memory usage is monitored
      *
-     * @test
      */
+
+    #[Test]
     public function test_container_memory_usage_monitored()
     {
         $this->browse(function (Browser $browser) {
@@ -1002,8 +1037,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 34: Docker compose up functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_compose_up_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1029,8 +1065,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 35: Docker compose down functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_compose_down_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1056,8 +1093,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 36: Docker compose restart functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_compose_restart_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1083,8 +1121,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 37: Docker volume creation is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_volume_creation_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1110,8 +1149,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 38: Docker network creation is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_network_creation_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1137,8 +1177,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 39: Docker image pull functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_image_pull_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1164,8 +1205,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 40: Docker container inspect functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_container_inspect_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1191,8 +1233,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 41: Docker container exec/shell functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_container_exec_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1219,8 +1262,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 42: Docker volume inspect functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_volume_inspect_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1245,8 +1289,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 43: Docker network inspect functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_network_inspect_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1271,8 +1316,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 44: Docker container rename functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_container_rename_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1298,8 +1344,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 45: Docker container pause/unpause functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_container_pause_unpause_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1325,8 +1372,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 46: Docker image tag functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_image_tag_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1352,8 +1400,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 47: Docker container remove/delete functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_container_remove_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1380,8 +1429,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 48: Docker compose pull functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_compose_pull_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1407,8 +1457,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 49: Docker stats real-time monitoring is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_stats_realtime_monitoring_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1435,8 +1486,9 @@ class DockerTest extends DuskTestCase
     /**
      * Test 50: Docker compose file editing is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_compose_file_editing_accessible()
     {
         $this->browse(function (Browser $browser) {

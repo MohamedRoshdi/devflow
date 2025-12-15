@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Security;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
@@ -44,7 +46,7 @@ class FileUploadSecurityTest extends TestCase
 
     // ==================== File Type Validation Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_rejects_php_file_uploads(): void
     {
         $this->actingAs($this->user);
@@ -63,7 +65,7 @@ class FileUploadSecurityTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_executable_file_uploads(): void
     {
         $this->actingAs($this->user);
@@ -81,7 +83,7 @@ class FileUploadSecurityTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_shell_script_uploads(): void
     {
         $this->actingAs($this->user);
@@ -99,7 +101,7 @@ class FileUploadSecurityTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_double_extension_files(): void
     {
         $this->actingAs($this->user);
@@ -120,7 +122,7 @@ class FileUploadSecurityTest extends TestCase
 
     // ==================== File Size Validation Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_rejects_oversized_files(): void
     {
         $this->actingAs($this->user);
@@ -142,7 +144,7 @@ class FileUploadSecurityTest extends TestCase
 
     // ==================== MIME Type Spoofing Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_validates_actual_mime_type_not_extension(): void
     {
         $this->actingAs($this->user);
@@ -166,7 +168,7 @@ class FileUploadSecurityTest extends TestCase
 
     // ==================== Filename Sanitization Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_sanitizes_filenames_with_special_characters(): void
     {
         $this->actingAs($this->user);
@@ -188,7 +190,7 @@ class FileUploadSecurityTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_sanitizes_null_byte_in_filename(): void
     {
         $this->actingAs($this->user);
@@ -211,7 +213,7 @@ class FileUploadSecurityTest extends TestCase
 
     // ==================== SSH Key Upload Tests ====================
 
-    /** @test */
+    #[Test]
     public function ssh_key_upload_validates_format(): void
     {
         $this->actingAs($this->user);
@@ -225,7 +227,7 @@ class FileUploadSecurityTest extends TestCase
         $this->assertArrayHasKey('error', $result);
     }
 
-    /** @test */
+    #[Test]
     public function ssh_key_upload_accepts_valid_rsa_key(): void
     {
         $this->actingAs($this->user);
@@ -242,7 +244,7 @@ class FileUploadSecurityTest extends TestCase
         $this->assertEquals('rsa', $result['type']);
     }
 
-    /** @test */
+    #[Test]
     public function ssh_key_upload_accepts_valid_ed25519_key(): void
     {
         $this->actingAs($this->user);
@@ -261,7 +263,7 @@ class FileUploadSecurityTest extends TestCase
 
     // ==================== Environment File Upload Tests ====================
 
-    /** @test */
+    #[Test]
     public function env_file_content_is_validated(): void
     {
         $this->actingAs($this->user);

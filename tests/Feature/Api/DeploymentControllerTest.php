@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Jobs\DeployProjectJob;
 use App\Models\ApiToken;
 use App\Models\Deployment;
@@ -69,7 +71,7 @@ class DeploymentControllerTest extends TestCase
 
     // ==================== List Deployments ====================
 
-    /** @test */
+    #[Test]
     public function it_can_list_deployments_for_a_project(): void
     {
         Deployment::factory()->count(5)->create([
@@ -103,7 +105,7 @@ class DeploymentControllerTest extends TestCase
             ->assertJsonCount(5, 'data');
     }
 
-    /** @test */
+    #[Test]
     public function it_can_filter_deployments_by_status(): void
     {
         Deployment::factory()->count(3)->create([
@@ -127,7 +129,7 @@ class DeploymentControllerTest extends TestCase
             ->assertJsonCount(3, 'data');
     }
 
-    /** @test */
+    #[Test]
     public function it_can_filter_deployments_by_branch(): void
     {
         Deployment::factory()->count(3)->create([
@@ -151,7 +153,7 @@ class DeploymentControllerTest extends TestCase
             ->assertJsonCount(2, 'data');
     }
 
-    /** @test */
+    #[Test]
     public function it_can_filter_deployments_by_triggered_by(): void
     {
         Deployment::factory()->count(2)->create([
@@ -175,7 +177,7 @@ class DeploymentControllerTest extends TestCase
             ->assertJsonCount(3, 'data');
     }
 
-    /** @test */
+    #[Test]
     public function it_can_sort_deployments_by_created_at_desc(): void
     {
         $deployment1 = Deployment::factory()->create([
@@ -201,7 +203,7 @@ class DeploymentControllerTest extends TestCase
         $this->assertEquals($deployment1->id, $data[1]['id']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_paginate_deployments(): void
     {
         Deployment::factory()->count(25)->create([
@@ -219,7 +221,7 @@ class DeploymentControllerTest extends TestCase
             ->assertJsonPath('meta.per_page', 10);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_filter_parameters(): void
     {
         $response = $this->withHeaders($this->headers)
@@ -229,7 +231,7 @@ class DeploymentControllerTest extends TestCase
             ->assertJsonValidationErrors(['status']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_sort_parameters(): void
     {
         $response = $this->withHeaders($this->headers)
@@ -239,7 +241,7 @@ class DeploymentControllerTest extends TestCase
             ->assertJsonValidationErrors(['sort_by']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_pagination_parameters(): void
     {
         $response = $this->withHeaders($this->headers)
@@ -249,7 +251,7 @@ class DeploymentControllerTest extends TestCase
             ->assertJsonValidationErrors(['per_page']);
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_authentication_to_list_deployments(): void
     {
         $response = $this->getJson("/api/v1/projects/{$this->project->slug}/deployments");
@@ -257,7 +259,7 @@ class DeploymentControllerTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_authorization_to_list_deployments(): void
     {
         $otherApiToken = 'other-api-token-456';
@@ -277,7 +279,7 @@ class DeploymentControllerTest extends TestCase
 
     // ==================== Show Deployment ====================
 
-    /** @test */
+    #[Test]
     public function it_can_show_a_deployment(): void
     {
         $deployment = Deployment::factory()->create([
@@ -317,7 +319,7 @@ class DeploymentControllerTest extends TestCase
             ->assertJsonPath('data.status', 'success');
     }
 
-    /** @test */
+    #[Test]
     public function it_loads_relationships_when_showing_deployment(): void
     {
         $deployment = Deployment::factory()->create([
@@ -339,7 +341,7 @@ class DeploymentControllerTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_404_for_nonexistent_deployment(): void
     {
         $response = $this->withHeaders($this->headers)
@@ -348,7 +350,7 @@ class DeploymentControllerTest extends TestCase
         $response->assertNotFound();
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_authentication_to_show_deployment(): void
     {
         $deployment = Deployment::factory()->create([
@@ -362,7 +364,7 @@ class DeploymentControllerTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_authorization_to_show_deployment(): void
     {
         $otherApiToken = 'other-api-token-456';
@@ -388,7 +390,7 @@ class DeploymentControllerTest extends TestCase
 
     // ==================== Create Deployment ====================
 
-    /** @test */
+    #[Test]
     public function it_can_create_a_deployment(): void
     {
         Queue::fake();
@@ -429,7 +431,7 @@ class DeploymentControllerTest extends TestCase
         Queue::assertPushed(DeployProjectJob::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_create_deployment_with_minimal_data(): void
     {
         Queue::fake();
@@ -445,7 +447,7 @@ class DeploymentControllerTest extends TestCase
         Queue::assertPushed(DeployProjectJob::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_create_deployment_with_environment_snapshot(): void
     {
         Queue::fake();
@@ -473,7 +475,7 @@ class DeploymentControllerTest extends TestCase
         $this->assertEquals('20.0', $deployment->environment_snapshot['node_version']);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_concurrent_deployments(): void
     {
         Deployment::factory()->create([
@@ -493,7 +495,7 @@ class DeploymentControllerTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_commit_hash_format(): void
     {
         $response = $this->withHeaders($this->headers)
@@ -505,7 +507,7 @@ class DeploymentControllerTest extends TestCase
             ->assertJsonValidationErrors(['commit_hash']);
     }
 
-    /** @test */
+    #[Test]
     public function it_accepts_valid_commit_hash_formats(): void
     {
         Queue::fake();
@@ -535,7 +537,7 @@ class DeploymentControllerTest extends TestCase
         $response->assertCreated();
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_commit_message_length(): void
     {
         $response = $this->withHeaders($this->headers)
@@ -547,7 +549,7 @@ class DeploymentControllerTest extends TestCase
             ->assertJsonValidationErrors(['commit_message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_authentication_to_create_deployment(): void
     {
         $response = $this->postJson("/api/v1/projects/{$this->project->slug}/deployments", []);
@@ -555,7 +557,7 @@ class DeploymentControllerTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_authorization_to_create_deployment(): void
     {
         $otherApiToken = 'other-api-token-456';
@@ -575,7 +577,7 @@ class DeploymentControllerTest extends TestCase
 
     // ==================== Rollback Deployment ====================
 
-    /** @test */
+    #[Test]
     public function it_can_rollback_to_successful_deployment(): void
     {
         Queue::fake();
@@ -621,7 +623,7 @@ class DeploymentControllerTest extends TestCase
         Queue::assertPushed(DeployProjectJob::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_cannot_rollback_to_failed_deployment(): void
     {
         $deployment = Deployment::factory()->failed()->create([
@@ -641,7 +643,7 @@ class DeploymentControllerTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_cannot_rollback_to_pending_deployment(): void
     {
         $deployment = Deployment::factory()->pending()->create([
@@ -661,7 +663,7 @@ class DeploymentControllerTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_cannot_rollback_to_running_deployment(): void
     {
         $deployment = Deployment::factory()->running()->create([
@@ -681,7 +683,7 @@ class DeploymentControllerTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_rollback_when_deployment_in_progress(): void
     {
         $deployment = Deployment::factory()->success()->create([
@@ -707,7 +709,7 @@ class DeploymentControllerTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_preserves_environment_snapshot_on_rollback(): void
     {
         Queue::fake();
@@ -733,7 +735,7 @@ class DeploymentControllerTest extends TestCase
         $this->assertEquals($deployment->environment_snapshot, $rollbackDeployment->environment_snapshot);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_404_for_nonexistent_deployment_rollback(): void
     {
         $response = $this->withHeaders($this->headers)
@@ -742,7 +744,7 @@ class DeploymentControllerTest extends TestCase
         $response->assertNotFound();
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_authentication_to_rollback(): void
     {
         $deployment = Deployment::factory()->success()->create([
@@ -756,7 +758,7 @@ class DeploymentControllerTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_authorization_to_rollback(): void
     {
         $otherApiToken = 'other-api-token-456';
@@ -782,7 +784,7 @@ class DeploymentControllerTest extends TestCase
 
     // ==================== Rate Limiting ====================
 
-    /** @test */
+    #[Test]
     public function it_rate_limits_deployment_list_requests(): void
     {
         // The list endpoint has a rate limit of 60 requests per minute
@@ -799,7 +801,7 @@ class DeploymentControllerTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_rate_limits_deployment_creation_requests(): void
     {
         Queue::fake();
@@ -820,7 +822,7 @@ class DeploymentControllerTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_rate_limits_rollback_requests(): void
     {
         Queue::fake();

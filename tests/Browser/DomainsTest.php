@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Domain;
 use App\Models\Project;
 use App\Models\Server;
@@ -186,8 +188,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 1: Domain list page loads on project view
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_list_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -214,8 +217,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 2: Primary domain badge is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_primary_domain_badge_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -241,8 +245,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 3: Domain SSL status indicators are visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_ssl_status_indicators_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -269,8 +274,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 4: DNS configuration status is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_dns_configuration_status_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -297,8 +303,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 5: Domain count is accurate
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_count_accurate()
     {
         $this->browse(function (Browser $browser) {
@@ -327,8 +334,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 6: Add new domain button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_add_new_domain_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -355,8 +363,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 7: Domain edit functionality is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_edit_functionality_present()
     {
         $this->browse(function (Browser $browser) {
@@ -383,8 +392,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 8: Domain deletion option is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_deletion_option_available()
     {
         $this->browse(function (Browser $browser) {
@@ -411,8 +421,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 9: SSL certificate expiry warning is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_expiry_warning_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -439,8 +450,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 10: Domain verification status displays correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_verification_status_displays()
     {
         $this->browse(function (Browser $browser) {
@@ -467,8 +479,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 11: Subdomain support is indicated
      *
-     * @test
      */
+
+    #[Test]
     public function test_subdomain_support_indicated()
     {
         $this->browse(function (Browser $browser) {
@@ -495,8 +508,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 12: SSL provider information is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_provider_information_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -523,8 +537,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 13: Auto-renew SSL status is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_auto_renew_ssl_status_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -551,8 +566,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 14: Domain status badges are color-coded
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_status_badges_color_coded()
     {
         $this->browse(function (Browser $browser) {
@@ -579,8 +595,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 15: Pending DNS domains are highlighted
      *
-     * @test
      */
+
+    #[Test]
     public function test_pending_dns_domains_highlighted()
     {
         $this->browse(function (Browser $browser) {
@@ -607,8 +624,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 16: Set primary domain action is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_set_primary_domain_action_available()
     {
         $this->browse(function (Browser $browser) {
@@ -635,8 +653,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 17: Domain search/filter functionality is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_search_filter_functionality_present()
     {
         $this->browse(function (Browser $browser) {
@@ -663,8 +682,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 18: SSL certificate dates are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_certificate_dates_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -691,8 +711,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 19: Verify domain DNS button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_verify_domain_dns_button_present()
     {
         $this->browse(function (Browser $browser) {
@@ -719,8 +740,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 20: Enable SSL button is available for non-SSL domains
      *
-     * @test
      */
+
+    #[Test]
     public function test_enable_ssl_button_available()
     {
         $this->browse(function (Browser $browser) {
@@ -747,8 +769,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 21: Domain details modal can be opened
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_details_modal_opens()
     {
         $this->browse(function (Browser $browser) {
@@ -775,8 +798,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 22: Inactive domains are visually distinguished
      *
-     * @test
      */
+
+    #[Test]
     public function test_inactive_domains_visually_distinguished()
     {
         $this->browse(function (Browser $browser) {
@@ -803,8 +827,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 23: Domain creation form validation is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_creation_form_validation_present()
     {
         $this->browse(function (Browser $browser) {
@@ -831,8 +856,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 24: DNS configuration instructions are available
      *
-     * @test
      */
+
+    #[Test]
     public function test_dns_configuration_instructions_available()
     {
         $this->browse(function (Browser $browser) {
@@ -859,8 +885,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 25: SSL renewal action is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_renewal_action_available()
     {
         $this->browse(function (Browser $browser) {
@@ -887,8 +914,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 26: Domain redirection settings are accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_redirection_settings_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -915,8 +943,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 27: Force HTTPS option is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_force_https_option_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -943,8 +972,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 28: Domain expiry tracking for SSL is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_expiry_tracking_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -971,8 +1001,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 29: Bulk domain actions are available
      *
-     * @test
      */
+
+    #[Test]
     public function test_bulk_domain_actions_available()
     {
         $this->browse(function (Browser $browser) {
@@ -999,8 +1030,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 30: Domain health check status is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_health_check_status_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -1027,8 +1059,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 31: Domain project association is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_project_association_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -1055,8 +1088,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 32: Domain sorting functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_sorting_functionality_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1083,8 +1117,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 33: Domain pagination works correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_pagination_works()
     {
         $this->browse(function (Browser $browser) {
@@ -1111,8 +1146,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 34: Domain DNS records display correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_dns_records_display()
     {
         $this->browse(function (Browser $browser) {
@@ -1139,8 +1175,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 35: Domain SSL certificate information is detailed
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_ssl_certificate_information_detailed()
     {
         $this->browse(function (Browser $browser) {
@@ -1167,8 +1204,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 36: Domain wildcard SSL support is indicated
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_wildcard_ssl_support_indicated()
     {
         $this->browse(function (Browser $browser) {
@@ -1194,8 +1232,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 37: Domain quick actions menu is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_quick_actions_menu_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -1222,8 +1261,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 38: Domain import/export functionality is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_import_export_functionality_present()
     {
         $this->browse(function (Browser $browser) {
@@ -1250,8 +1290,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 39: Domain activity log is viewable
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_activity_log_viewable()
     {
         $this->browse(function (Browser $browser) {
@@ -1278,8 +1319,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 40: Domain error alerts are displayed prominently
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_error_alerts_displayed_prominently()
     {
         $this->browse(function (Browser $browser) {
@@ -1306,8 +1348,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 41: Domain clone/duplicate functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_clone_functionality_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1334,8 +1377,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 42: Domain statistics summary is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_statistics_summary_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -1362,8 +1406,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 43: Domain form has proper input fields
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_form_has_proper_input_fields()
     {
         $this->browse(function (Browser $browser) {
@@ -1390,8 +1435,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 44: Domain status filter functionality works
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_status_filter_functionality_works()
     {
         $this->browse(function (Browser $browser) {
@@ -1418,8 +1464,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 45: Domain SSL filter functionality works
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_ssl_filter_functionality_works()
     {
         $this->browse(function (Browser $browser) {
@@ -1446,8 +1493,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 46: Domain refresh/sync button is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_refresh_sync_button_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1474,8 +1522,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 47: Domain DNS verification progress indicator works
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_dns_verification_progress_indicator_works()
     {
         $this->browse(function (Browser $browser) {
@@ -1502,8 +1551,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 48: Domain documentation links are accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_documentation_links_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -1530,8 +1580,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 49: Domain notifications preferences are configurable
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_notifications_preferences_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -1558,8 +1609,9 @@ class DomainsTest extends DuskTestCase
     /**
      * Test 50: Domain performance metrics are visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_performance_metrics_visible()
     {
         $this->browse(function (Browser $browser) {

@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\NotificationChannel;
 use App\Models\NotificationLog;
 use App\Models\User;
@@ -161,8 +163,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 1: Notification logs page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_logs_page_loads_successfully(): void
     {
         $this->browse(function (Browser $browser) {
@@ -185,8 +188,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 2: Notification list displays entries
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_list_displays_entries(): void
     {
         $this->browse(function (Browser $browser) {
@@ -212,8 +216,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 3: Filter by type works
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_by_type_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -239,8 +244,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 4: Filter by status works
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_by_status_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -265,8 +271,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 5: Date range filter works
      *
-     * @test
      */
+
+    #[Test]
     public function test_date_range_filter_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -291,8 +298,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 6: Search notifications works
      *
-     * @test
      */
+
+    #[Test]
     public function test_search_notifications_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -315,8 +323,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 7: Notification details viewable
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_details_viewable(): void
     {
         $this->browse(function (Browser $browser) {
@@ -341,8 +350,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 8: Retry button for failed notifications
      *
-     * @test
      */
+
+    #[Test]
     public function test_retry_button_for_failed_notifications(): void
     {
         $this->browse(function (Browser $browser) {
@@ -366,8 +376,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 9: Delete button visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_delete_button_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -391,8 +402,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 10: Notification type badge displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_type_badge_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -417,8 +429,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 11: Status indicator shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_status_indicator_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -443,8 +456,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 12: Sent timestamp displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_sent_timestamp_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -469,8 +483,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 13: Recipient displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_recipient_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -495,8 +510,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 14: Subject/title shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_subject_title_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -521,8 +537,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 15: Pagination works
      *
-     * @test
      */
+
+    #[Test]
     public function test_pagination_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -547,8 +564,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 16: Empty state message
      *
-     * @test
      */
+
+    #[Test]
     public function test_empty_state_message(): void
     {
         $this->browse(function (Browser $browser) {
@@ -577,8 +595,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 17: Bulk delete option
      *
-     * @test
      */
+
+    #[Test]
     public function test_bulk_delete_option(): void
     {
         $this->browse(function (Browser $browser) {
@@ -603,8 +622,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 18: Export logs option
      *
-     * @test
      */
+
+    #[Test]
     public function test_export_logs_option(): void
     {
         $this->browse(function (Browser $browser) {
@@ -628,8 +648,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 19: Statistics summary displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_statistics_summary_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -655,8 +676,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 20: Flash messages display
      *
-     * @test
      */
+
+    #[Test]
     public function test_flash_messages_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -681,8 +703,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 21: Event type filter available
      *
-     * @test
      */
+
+    #[Test]
     public function test_event_type_filter_available(): void
     {
         $this->browse(function (Browser $browser) {
@@ -707,8 +730,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 22: Clear filters button works
      *
-     * @test
      */
+
+    #[Test]
     public function test_clear_filters_button_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -732,8 +756,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 23: Error message displayed for failed notifications
      *
-     * @test
      */
+
+    #[Test]
     public function test_error_message_displayed_for_failed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -758,8 +783,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 24: Channel name displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_channel_name_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -784,8 +810,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 25: Success notifications highlighted
      *
-     * @test
      */
+
+    #[Test]
     public function test_success_notifications_highlighted(): void
     {
         $this->browse(function (Browser $browser) {
@@ -809,8 +836,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 26: Failed notifications highlighted
      *
-     * @test
      */
+
+    #[Test]
     public function test_failed_notifications_highlighted(): void
     {
         $this->browse(function (Browser $browser) {
@@ -834,8 +862,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 27: Payload content viewable
      *
-     * @test
      */
+
+    #[Test]
     public function test_payload_content_viewable(): void
     {
         $this->browse(function (Browser $browser) {
@@ -860,8 +889,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 28: Notification log count display
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_log_count_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -886,8 +916,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 29: Recent notifications section
      *
-     * @test
      */
+
+    #[Test]
     public function test_recent_notifications_section(): void
     {
         $this->browse(function (Browser $browser) {
@@ -911,8 +942,9 @@ class NotificationLogsTest extends DuskTestCase
     /**
      * Test 30: Notification details modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_details_modal(): void
     {
         $this->browse(function (Browser $browser) {

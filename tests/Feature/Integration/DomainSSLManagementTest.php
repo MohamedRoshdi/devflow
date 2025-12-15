@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Integration;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Domain;
 use App\Models\Project;
 use App\Models\Server;
@@ -63,7 +65,7 @@ class DomainSSLManagementTest extends TestCase
 
     // ==================== Domain Addition Tests ====================
 
-    /** @test */
+    #[Test]
     public function can_add_domain_to_project(): void
     {
         $domain = Domain::factory()->create([
@@ -83,7 +85,7 @@ class DomainSSLManagementTest extends TestCase
         $this->assertEquals('pending', $domain->status);
     }
 
-    /** @test */
+    #[Test]
     public function can_add_subdomain_to_project(): void
     {
         $domain = Domain::factory()->create([
@@ -98,7 +100,7 @@ class DomainSSLManagementTest extends TestCase
         $this->assertFalse($domain->is_primary);
     }
 
-    /** @test */
+    #[Test]
     public function project_can_have_multiple_domains(): void
     {
         Domain::factory()->create([
@@ -123,7 +125,7 @@ class DomainSSLManagementTest extends TestCase
         $this->assertCount(3, $this->project->domains);
     }
 
-    /** @test */
+    #[Test]
     public function only_one_domain_can_be_primary(): void
     {
         $primary = Domain::factory()->create([
@@ -148,7 +150,7 @@ class DomainSSLManagementTest extends TestCase
 
     // ==================== DNS Verification Tests ====================
 
-    /** @test */
+    #[Test]
     public function domain_status_transitions_on_verification(): void
     {
         $domain = Domain::factory()->create([
@@ -165,7 +167,7 @@ class DomainSSLManagementTest extends TestCase
         $this->assertEquals('active', $freshDomain->status);
     }
 
-    /** @test */
+    #[Test]
     public function failed_dns_verification_sets_status_to_failed(): void
     {
         $domain = Domain::factory()->create([
@@ -182,7 +184,7 @@ class DomainSSLManagementTest extends TestCase
         $this->assertEquals('failed', $freshDomain->status);
     }
 
-    /** @test */
+    #[Test]
     public function can_retry_failed_dns_verification(): void
     {
         $domain = Domain::factory()->create([
@@ -201,7 +203,7 @@ class DomainSSLManagementTest extends TestCase
 
     // ==================== SSL Certificate Provisioning Tests ====================
 
-    /** @test */
+    #[Test]
     public function can_enable_ssl_for_domain(): void
     {
         $domain = Domain::factory()->create([
@@ -222,7 +224,7 @@ class DomainSSLManagementTest extends TestCase
         $this->assertTrue($freshDomain->ssl_auto_renew);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_certificate_stores_expiry_date(): void
     {
         $domain = Domain::factory()->create([
@@ -237,7 +239,7 @@ class DomainSSLManagementTest extends TestCase
         $this->assertTrue($domain->ssl_expires_at->isFuture());
     }
 
-    /** @test */
+    #[Test]
     public function identifies_expiring_ssl_certificates(): void
     {
         // Certificate expiring in 10 days
@@ -267,7 +269,7 @@ class DomainSSLManagementTest extends TestCase
         $this->assertEquals('expiring.com', $firstExpiring->domain);
     }
 
-    /** @test */
+    #[Test]
     public function identifies_expired_ssl_certificates(): void
     {
         Domain::factory()->create([
@@ -287,7 +289,7 @@ class DomainSSLManagementTest extends TestCase
 
     // ==================== SSL Certificate Renewal Tests ====================
 
-    /** @test */
+    #[Test]
     public function ssl_renewal_updates_expiry_date(): void
     {
         $domain = Domain::factory()->create([
@@ -307,7 +309,7 @@ class DomainSSLManagementTest extends TestCase
         $this->assertTrue($freshDomain->ssl_expires_at->gt(now()->addDays(30)));
     }
 
-    /** @test */
+    #[Test]
     public function auto_renewal_flag_controls_renewal_behavior(): void
     {
         $autoRenew = Domain::factory()->create([
@@ -338,7 +340,7 @@ class DomainSSLManagementTest extends TestCase
 
     // ==================== Domain Migration Tests ====================
 
-    /** @test */
+    #[Test]
     public function can_migrate_domain_to_different_project(): void
     {
         $newProject = Project::factory()->create([
@@ -367,7 +369,7 @@ class DomainSSLManagementTest extends TestCase
         $this->assertCount(1, $freshNewProject->domains);
     }
 
-    /** @test */
+    #[Test]
     public function domain_migration_preserves_ssl_settings(): void
     {
         $newProject = Project::factory()->create([
@@ -399,7 +401,7 @@ class DomainSSLManagementTest extends TestCase
 
     // ==================== Multi-Domain SSL Tests ====================
 
-    /** @test */
+    #[Test]
     public function can_group_domains_for_san_certificate(): void
     {
         $domains = [];
@@ -430,7 +432,7 @@ class DomainSSLManagementTest extends TestCase
 
     // ==================== Domain Redirect Tests ====================
 
-    /** @test */
+    #[Test]
     public function can_configure_domain_redirect(): void
     {
         $primaryDomain = Domain::factory()->create([
@@ -454,7 +456,7 @@ class DomainSSLManagementTest extends TestCase
 
     // ==================== Domain Deletion Tests ====================
 
-    /** @test */
+    #[Test]
     public function deleting_domain_removes_ssl_configuration(): void
     {
         $domain = Domain::factory()->create([
@@ -470,7 +472,7 @@ class DomainSSLManagementTest extends TestCase
         $this->assertDatabaseMissing('domains', ['id' => $domainId]);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_delete_primary_domain_with_others_existing(): void
     {
         $primary = Domain::factory()->create([
@@ -496,7 +498,7 @@ class DomainSSLManagementTest extends TestCase
 
     // ==================== Domain Statistics Tests ====================
 
-    /** @test */
+    #[Test]
     public function calculates_ssl_coverage_statistics(): void
     {
         // Domains with SSL
@@ -524,7 +526,7 @@ class DomainSSLManagementTest extends TestCase
         $this->assertEquals(60.0, $coverage);
     }
 
-    /** @test */
+    #[Test]
     public function tracks_domain_status_distribution(): void
     {
         Domain::factory()->create([

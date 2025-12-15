@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Integration;
 
+
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\ProvisioningLog;
 use App\Models\Server;
 use App\Models\SSLCertificate;
@@ -31,10 +34,9 @@ use Tests\TestCase;
  * - Queue job dispatching for async operations
  * - Server connectivity testing
  * - Firewall configuration
- *
- * @group integration
- * @group provisioning
  */
+#[Group('integration')]
+#[Group('provisioning')]
 class ServerProvisioningTest extends TestCase
 {
     use RefreshDatabase;
@@ -64,7 +66,7 @@ class ServerProvisioningTest extends TestCase
 
     // ==================== Fresh Server Setup Tests ====================
 
-    /** @test */
+    #[Test]
     public function fresh_server_can_be_created_with_pending_status(): void
     {
         $server = Server::factory()->create([
@@ -93,7 +95,7 @@ class ServerProvisioningTest extends TestCase
         $this->assertNull($server->provisioned_at);
     }
 
-    /** @test */
+    #[Test]
     public function server_status_transitions_from_pending_to_provisioning(): void
     {
         $server = Server::factory()->create([
@@ -115,7 +117,7 @@ class ServerProvisioningTest extends TestCase
         $this->assertTrue($freshServer->isProvisioning());
     }
 
-    /** @test */
+    #[Test]
     public function server_status_transitions_from_provisioning_to_online(): void
     {
         $server = Server::factory()->create([
@@ -144,7 +146,7 @@ class ServerProvisioningTest extends TestCase
         $this->assertNotNull($freshServer->provisioned_at);
     }
 
-    /** @test */
+    #[Test]
     public function provisioning_creates_provisioning_logs(): void
     {
         $server = Server::factory()->create([
@@ -182,7 +184,7 @@ class ServerProvisioningTest extends TestCase
         $this->assertCount(2, $server->provisioningLogs);
     }
 
-    /** @test */
+    #[Test]
     public function provisioning_log_tracks_task_completion(): void
     {
         $server = Server::factory()->create(['user_id' => $this->user->id]);
@@ -205,7 +207,7 @@ class ServerProvisioningTest extends TestCase
         $this->assertStringContainsString('Nginx installed successfully', $freshLog->output);
     }
 
-    /** @test */
+    #[Test]
     public function provisioning_log_tracks_task_failure(): void
     {
         $server = Server::factory()->create(['user_id' => $this->user->id]);
@@ -230,7 +232,7 @@ class ServerProvisioningTest extends TestCase
 
     // ==================== Docker Installation Tests ====================
 
-    /** @test */
+    #[Test]
     public function docker_installation_updates_server_record(): void
     {
         $server = Server::factory()->create([
@@ -256,7 +258,7 @@ class ServerProvisioningTest extends TestCase
         $this->assertEquals('24.0.7', $result['version']);
     }
 
-    /** @test */
+    #[Test]
     public function docker_installation_verification_succeeds(): void
     {
         $server = Server::factory()->create([
@@ -282,7 +284,7 @@ class ServerProvisioningTest extends TestCase
         $this->assertEquals('24.0.7', $result['version']);
     }
 
-    /** @test */
+    #[Test]
     public function docker_installation_failure_is_tracked(): void
     {
         $server = Server::factory()->create([
@@ -308,7 +310,7 @@ class ServerProvisioningTest extends TestCase
         $this->assertStringContainsString('Unable to connect', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function docker_compose_verification_succeeds(): void
     {
         $server = Server::factory()->create([
@@ -334,7 +336,7 @@ class ServerProvisioningTest extends TestCase
 
     // ==================== SSL Certificate Setup Tests ====================
 
-    /** @test */
+    #[Test]
     public function ssl_certificate_can_be_issued(): void
     {
         $server = Server::factory()->create([
@@ -366,7 +368,7 @@ class ServerProvisioningTest extends TestCase
         $this->assertArrayHasKey('certificate', $result);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_certificate_issuance_creates_database_record(): void
     {
         $server = Server::factory()->create(['user_id' => $this->user->id]);
@@ -395,7 +397,7 @@ class ServerProvisioningTest extends TestCase
         $this->assertEquals('test.example.com', $server->sslCertificates->first()?->domain_name);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_certificate_renewal_succeeds(): void
     {
         $server = Server::factory()->create(['user_id' => $this->user->id]);
@@ -423,7 +425,7 @@ class ServerProvisioningTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_certificate_renewal_failure_is_tracked(): void
     {
         $server = Server::factory()->create(['user_id' => $this->user->id]);
@@ -451,7 +453,7 @@ class ServerProvisioningTest extends TestCase
         $this->assertArrayHasKey('error', $result);
     }
 
-    /** @test */
+    #[Test]
     public function certbot_installation_check_succeeds(): void
     {
         $server = Server::factory()->create(['user_id' => $this->user->id]);
@@ -471,7 +473,7 @@ class ServerProvisioningTest extends TestCase
 
     // ==================== Server Connectivity Testing ====================
 
-    /** @test */
+    #[Test]
     public function server_connectivity_test_succeeds(): void
     {
         $server = Server::factory()->create([
@@ -500,7 +502,7 @@ class ServerProvisioningTest extends TestCase
         $this->assertArrayHasKey('latency_ms', $result);
     }
 
-    /** @test */
+    #[Test]
     public function server_connectivity_test_failure_is_handled(): void
     {
         $server = Server::factory()->create([
@@ -528,7 +530,7 @@ class ServerProvisioningTest extends TestCase
         $this->assertStringContainsString('Connection timeout', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function ping_updates_server_status_to_online(): void
     {
         $server = Server::factory()->create([
@@ -549,7 +551,7 @@ class ServerProvisioningTest extends TestCase
         $this->assertTrue($success);
     }
 
-    /** @test */
+    #[Test]
     public function ping_updates_server_status_to_offline(): void
     {
         $server = Server::factory()->create([
@@ -571,7 +573,7 @@ class ServerProvisioningTest extends TestCase
 
     // ==================== Health Check Configuration Tests ====================
 
-    /** @test */
+    #[Test]
     public function server_health_check_tracks_last_check(): void
     {
         $server = Server::factory()->create([
@@ -588,7 +590,7 @@ class ServerProvisioningTest extends TestCase
         $this->assertTrue($freshServer->last_ping_at->isToday());
     }
 
-    /** @test */
+    #[Test]
     public function server_system_info_is_collected(): void
     {
         $server = Server::factory()->create(['user_id' => $this->user->id]);
@@ -615,7 +617,7 @@ class ServerProvisioningTest extends TestCase
 
     // ==================== Firewall Configuration Tests ====================
 
-    /** @test */
+    #[Test]
     public function firewall_configuration_updates_server_record(): void
     {
         $server = Server::factory()->create([
@@ -637,7 +639,7 @@ class ServerProvisioningTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function firewall_allows_custom_ports(): void
     {
         $server = Server::factory()->create([
@@ -662,7 +664,7 @@ class ServerProvisioningTest extends TestCase
 
     // ==================== Error Handling and Rollback Tests ====================
 
-    /** @test */
+    #[Test]
     public function provisioning_failure_updates_status_to_failed(): void
     {
         $server = Server::factory()->create([
@@ -683,7 +685,7 @@ class ServerProvisioningTest extends TestCase
         $this->assertFalse($freshServer->isProvisioned());
     }
 
-    /** @test */
+    #[Test]
     public function provisioning_creates_error_log_on_failure(): void
     {
         $server = Server::factory()->create(['user_id' => $this->user->id]);
@@ -708,7 +710,7 @@ class ServerProvisioningTest extends TestCase
         $this->assertStringContainsString('GPG key verification failed', $freshLog->output);
     }
 
-    /** @test */
+    #[Test]
     public function failed_provisioning_can_be_retried(): void
     {
         $server = Server::factory()->create([
@@ -731,7 +733,7 @@ class ServerProvisioningTest extends TestCase
 
     // ==================== Queue Job Integration Tests ====================
 
-    /** @test */
+    #[Test]
     public function provisioning_job_is_dispatched_to_queue(): void
     {
         Queue::fake();
@@ -746,7 +748,7 @@ class ServerProvisioningTest extends TestCase
         Queue::assertNothingPushed();
     }
 
-    /** @test */
+    #[Test]
     public function multiple_servers_can_be_provisioned_concurrently(): void
     {
         $server1 = Server::factory()->create([
@@ -774,7 +776,7 @@ class ServerProvisioningTest extends TestCase
 
     // ==================== Complete Provisioning Workflow Test ====================
 
-    /** @test */
+    #[Test]
     public function complete_server_provisioning_workflow_succeeds(): void
     {
         // Step 1: Create fresh server
@@ -883,7 +885,7 @@ class ServerProvisioningTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function provisioning_workflow_handles_partial_failure_and_rollback(): void
     {
         // Step 1: Create server and start provisioning
@@ -946,7 +948,7 @@ class ServerProvisioningTest extends TestCase
 
     // ==================== Installed Packages Tracking ====================
 
-    /** @test */
+    #[Test]
     public function server_tracks_installed_packages(): void
     {
         $server = Server::factory()->create([
@@ -966,7 +968,7 @@ class ServerProvisioningTest extends TestCase
         $this->assertFalse($freshServer->hasPackageInstalled('docker'));
     }
 
-    /** @test */
+    #[Test]
     public function installed_packages_are_unique(): void
     {
         $server = Server::factory()->create(['user_id' => $this->user->id]);

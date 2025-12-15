@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
@@ -75,8 +77,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 1: Project environment page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_environment_page_loads()
     {
         if (! $this->project) {
@@ -104,8 +107,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 2: Environment variables section is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_environment_variables_section_visible()
     {
         if (! $this->project) {
@@ -133,8 +137,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 3: Add environment variable button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_add_environment_variable_button_present()
     {
         if (! $this->project) {
@@ -162,8 +167,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 4: Environment variable key field works
      *
-     * @test
      */
+
+    #[Test]
     public function test_environment_variable_key_field_works()
     {
         if (! $this->project) {
@@ -191,8 +197,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 5: Environment variable value field works
      *
-     * @test
      */
+
+    #[Test]
     public function test_environment_variable_value_field_works()
     {
         if (! $this->project) {
@@ -220,8 +227,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 6: Save environment variables functionality works
      *
-     * @test
      */
+
+    #[Test]
     public function test_save_environment_variables_works()
     {
         if (! $this->project) {
@@ -250,8 +258,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 7: Delete environment variable functionality works
      *
-     * @test
      */
+
+    #[Test]
     public function test_delete_environment_variable_works()
     {
         if (! $this->project) {
@@ -280,8 +289,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 8: Environment variables list displays correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_environment_variables_list_displays()
     {
         if (! $this->project) {
@@ -311,8 +321,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 9: Masked/hidden values for secrets work
      *
-     * @test
      */
+
+    #[Test]
     public function test_masked_values_for_secrets()
     {
         if (! $this->project) {
@@ -342,8 +353,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 10: Show/hide value toggle functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_show_hide_value_toggle()
     {
         if (! $this->project) {
@@ -372,8 +384,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 11: Validation for duplicate keys works
      *
-     * @test
      */
+
+    #[Test]
     public function test_validation_for_duplicate_keys()
     {
         if (! $this->project) {
@@ -402,8 +415,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 12: Import from .env file option exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_import_from_env_file_option()
     {
         if (! $this->project) {
@@ -432,8 +446,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 13: Export environment variables option exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_export_environment_variables_option()
     {
         if (! $this->project) {
@@ -462,8 +477,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 14: Environment sync status is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_environment_sync_status_visible()
     {
         if (! $this->project) {
@@ -492,8 +508,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 15: Flash messages for success are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_success_flash_messages_displayed()
     {
         if (! $this->project) {
@@ -522,8 +539,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 16: Flash messages for errors are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_error_flash_messages_displayed()
     {
         if (! $this->project) {
@@ -552,8 +570,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 17: Environment selector displays all options
      *
-     * @test
      */
+
+    #[Test]
     public function test_environment_selector_displays_options()
     {
         if (! $this->project) {
@@ -582,8 +601,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 18: Server environment variables section exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_environment_variables_section_exists()
     {
         if (! $this->project) {
@@ -611,8 +631,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 19: Environment variable modal can be opened
      *
-     * @test
      */
+
+    #[Test]
     public function test_environment_variable_modal_opens()
     {
         if (! $this->project) {
@@ -641,8 +662,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 20: Environment variable modal can be closed
      *
-     * @test
      */
+
+    #[Test]
     public function test_environment_variable_modal_closes()
     {
         if (! $this->project) {
@@ -671,8 +693,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 21: Environment type badge displays correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_environment_type_badge_displays()
     {
         if (! $this->project) {
@@ -703,8 +726,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 22: Refresh server environment button works
      *
-     * @test
      */
+
+    #[Test]
     public function test_refresh_server_environment_button()
     {
         if (! $this->project) {
@@ -732,8 +756,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 23: Environment variables show proper formatting
      *
-     * @test
      */
+
+    #[Test]
     public function test_environment_variables_proper_formatting()
     {
         if (! $this->project) {
@@ -762,8 +787,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 24: Edit environment variable functionality exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_edit_environment_variable_functionality()
     {
         if (! $this->project) {
@@ -792,8 +818,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 25: Warning messages for sensitive operations are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_warning_messages_for_sensitive_operations()
     {
         if (! $this->project) {
@@ -823,8 +850,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 26: Environment variables support textarea for multiline values
      *
-     * @test
      */
+
+    #[Test]
     public function test_textarea_for_multiline_values()
     {
         if (! $this->project) {
@@ -853,8 +881,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 27: Loading states are properly indicated
      *
-     * @test
      */
+
+    #[Test]
     public function test_loading_states_indicated()
     {
         if (! $this->project) {
@@ -883,8 +912,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 28: Error states are properly displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_error_states_displayed()
     {
         if (! $this->project) {
@@ -913,8 +943,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 29: Variable count is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_variable_count_displayed()
     {
         if (! $this->project) {
@@ -943,8 +974,9 @@ class ProjectEnvironmentTest extends DuskTestCase
     /**
      * Test 30: Confirm dialog for delete operations exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_confirm_dialog_for_delete()
     {
         if (! $this->project) {

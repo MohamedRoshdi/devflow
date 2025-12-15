@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Server;
 use App\Models\ServerTag;
 use App\Models\User;
@@ -79,8 +81,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 1: Server tags management page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_view_server_tags(): void
     {
         $this->browse(function (Browser $browser) {
@@ -104,8 +107,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 2: Tag creation form is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_creation_form_is_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -129,8 +133,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 3: Tag color picker is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_color_picker_is_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -154,8 +159,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 4: Existing tags are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_existing_tags_are_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -178,8 +184,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 5: Tag edit button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_edit_button_is_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -202,8 +209,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 6: Tag delete button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_delete_button_is_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -226,8 +234,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 7: Tag color is displayed visually
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_color_is_displayed_visually(): void
     {
         $this->browse(function (Browser $browser) {
@@ -251,8 +260,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 8: Tag server count is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_server_count_is_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -276,8 +286,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 9: Tag edit modal can be opened
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_edit_modal_can_be_opened(): void
     {
         $this->browse(function (Browser $browser) {
@@ -301,8 +312,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 10: Tag name validation is enforced
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_name_validation_is_enforced(): void
     {
         $this->browse(function (Browser $browser) {
@@ -326,8 +338,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 11: Tag color validation is enforced
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_color_validation_is_enforced(): void
     {
         $this->browse(function (Browser $browser) {
@@ -351,8 +364,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 12: Tag list is sortable
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_list_is_sortable(): void
     {
         $this->browse(function (Browser $browser) {
@@ -375,8 +389,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 13: Server list page shows tags
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_list_page_shows_tags(): void
     {
         $this->browse(function (Browser $browser) {
@@ -399,8 +414,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 14: Server detail page shows tags
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_detail_page_shows_tags(): void
     {
         $this->browse(function (Browser $browser) {
@@ -423,8 +439,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 15: Tag assignment interface is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_assignment_interface_is_available(): void
     {
         $this->browse(function (Browser $browser) {
@@ -448,8 +465,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 16: Tag removal interface is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_removal_interface_is_available(): void
     {
         $this->browse(function (Browser $browser) {
@@ -473,8 +491,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 17: Server filter by tag is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_filter_by_tag_is_available(): void
     {
         $this->browse(function (Browser $browser) {
@@ -498,8 +517,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 18: Tag search functionality is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_search_functionality_is_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -523,8 +543,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 19: Tag statistics are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_statistics_are_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -548,8 +569,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 20: Tag usage count is accurate
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_usage_count_is_accurate(): void
     {
         $this->browse(function (Browser $browser) {
@@ -572,8 +594,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 21: Bulk tag assignment is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_bulk_tag_assignment_is_available(): void
     {
         $this->browse(function (Browser $browser) {
@@ -597,8 +620,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 22: Bulk tag removal is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_bulk_tag_removal_is_available(): void
     {
         $this->browse(function (Browser $browser) {
@@ -621,8 +645,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 23: Tag auto-suggestion is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_auto_suggestion_is_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -646,8 +671,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 24: Tag category grouping is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_category_grouping_is_available(): void
     {
         $this->browse(function (Browser $browser) {
@@ -671,8 +697,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 25: Tag-based server grouping works
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_based_server_grouping_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -695,8 +722,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 26: Tag permissions are enforced
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_permissions_are_enforced(): void
     {
         $this->browse(function (Browser $browser) {
@@ -720,8 +748,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 27: Tag color presets are available
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_color_presets_are_available(): void
     {
         $this->browse(function (Browser $browser) {
@@ -746,8 +775,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 28: Tag unique name constraint is enforced
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_unique_name_constraint_is_enforced(): void
     {
         $this->browse(function (Browser $browser) {
@@ -770,8 +800,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 29: Tag export functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_export_functionality_is_available(): void
     {
         $this->browse(function (Browser $browser) {
@@ -795,8 +826,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 30: Tag import functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_import_functionality_is_available(): void
     {
         $this->browse(function (Browser $browser) {
@@ -820,8 +852,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 31: Tag deletion confirmation is required
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_deletion_confirmation_is_required(): void
     {
         $this->browse(function (Browser $browser) {
@@ -845,8 +878,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 32: Tag edit preserves server associations
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_edit_preserves_server_associations(): void
     {
         $this->browse(function (Browser $browser) {
@@ -869,8 +903,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 33: Tag quick actions are available
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_quick_actions_are_available(): void
     {
         $this->browse(function (Browser $browser) {
@@ -893,8 +928,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 34: Tag name length limit is enforced
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_name_length_limit_is_enforced(): void
     {
         $this->browse(function (Browser $browser) {
@@ -917,8 +953,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 35: Tag success messages are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_success_messages_are_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -942,8 +979,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 36: Tag error messages are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_error_messages_are_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -967,8 +1005,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 37: Tag modal close button works
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_modal_close_button_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -991,8 +1030,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 38: Tag list refreshes after updates
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_list_refreshes_after_updates(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1016,8 +1056,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 39: Tag events are dispatched correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_events_are_dispatched_correctly(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1041,8 +1082,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 40: Tag creation resets form after success
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_creation_resets_form_after_success(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1066,8 +1108,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 41: Tag assignment dropdown is populated
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_assignment_dropdown_is_populated(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1091,8 +1134,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 42: Tag filter shows correct server count
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_filter_shows_correct_server_count(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1115,8 +1159,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 43: Tag color is visible in server list
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_color_is_visible_in_server_list(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1139,8 +1184,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 44: Tag supports dark mode
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_supports_dark_mode(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1163,8 +1209,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 45: Tag navigation from servers page works
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_navigation_from_servers_page_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1189,8 +1236,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 46: Tag responsive design works
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_responsive_design_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1214,8 +1262,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 47: Tag component uses Livewire attributes
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_component_uses_livewire_attributes(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1238,8 +1287,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 48: Tag empty state is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_empty_state_is_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1263,8 +1313,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 49: Tag ordering is alphabetical
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_ordering_is_alphabetical(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1287,8 +1338,9 @@ class ServerTagsTest extends DuskTestCase
     /**
      * Test 50: Tag performance with multiple tags
      *
-     * @test
      */
+
+    #[Test]
     public function test_tag_performance_with_multiple_tags(): void
     {
         $this->browse(function (Browser $browser) {

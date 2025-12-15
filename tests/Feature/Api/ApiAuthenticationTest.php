@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api;
 
+
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\ApiToken;
 use App\Models\Project;
 use App\Models\Server;
@@ -16,10 +19,9 @@ use Tests\TestCase;
  *
  * Tests the authentication and authorization functionality for API endpoints.
  * Covers token validation, expiration, abilities/permissions, and error responses.
- *
- * @group api
- * @group authentication
  */
+#[Group('api')]
+#[Group('authentication')]
 class ApiAuthenticationTest extends TestCase
 {
     use RefreshDatabase;
@@ -46,7 +48,7 @@ class ApiAuthenticationTest extends TestCase
 
     // ==================== Token Authentication ====================
 
-    /** @test */
+    #[Test]
     public function it_rejects_requests_without_token(): void
     {
         $response = $this->getJson('/api/v1/projects');
@@ -57,7 +59,7 @@ class ApiAuthenticationTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_requests_with_invalid_token(): void
     {
         $response = $this->withHeaders([
@@ -71,7 +73,7 @@ class ApiAuthenticationTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_requests_with_malformed_authorization_header(): void
     {
         $response = $this->withHeaders([
@@ -85,7 +87,7 @@ class ApiAuthenticationTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_accepts_requests_with_valid_token(): void
     {
         $token = 'valid-test-token-123';
@@ -103,7 +105,7 @@ class ApiAuthenticationTest extends TestCase
         $response->assertOk();
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_bearer_prefix(): void
     {
         $token = 'test-token-no-bearer';
@@ -124,7 +126,7 @@ class ApiAuthenticationTest extends TestCase
 
     // ==================== Token Expiration ====================
 
-    /** @test */
+    #[Test]
     public function it_rejects_expired_tokens(): void
     {
         $token = 'expired-token-test';
@@ -145,7 +147,7 @@ class ApiAuthenticationTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_accepts_tokens_without_expiration(): void
     {
         $token = 'never-expires-token';
@@ -163,7 +165,7 @@ class ApiAuthenticationTest extends TestCase
         $response->assertOk();
     }
 
-    /** @test */
+    #[Test]
     public function it_accepts_tokens_expiring_in_future(): void
     {
         $token = 'future-expiry-token';
@@ -181,7 +183,7 @@ class ApiAuthenticationTest extends TestCase
         $response->assertOk();
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_tokens_that_just_expired(): void
     {
         $token = 'just-expired-token';
@@ -204,7 +206,7 @@ class ApiAuthenticationTest extends TestCase
 
     // ==================== Token Abilities/Permissions ====================
 
-    /** @test */
+    #[Test]
     public function it_allows_tokens_with_wildcard_ability(): void
     {
         $token = 'wildcard-ability-token';
@@ -223,7 +225,7 @@ class ApiAuthenticationTest extends TestCase
         $response->assertOk();
     }
 
-    /** @test */
+    #[Test]
     public function it_allows_tokens_with_empty_abilities_full_access(): void
     {
         $token = 'empty-abilities-token';
@@ -242,7 +244,7 @@ class ApiAuthenticationTest extends TestCase
         $response->assertOk();
     }
 
-    /** @test */
+    #[Test]
     public function it_allows_tokens_with_null_abilities_full_access(): void
     {
         $token = 'null-abilities-token';
@@ -261,7 +263,7 @@ class ApiAuthenticationTest extends TestCase
         $response->assertOk();
     }
 
-    /** @test */
+    #[Test]
     public function it_allows_tokens_with_specific_ability(): void
     {
         $token = 'specific-ability-token';
@@ -280,7 +282,7 @@ class ApiAuthenticationTest extends TestCase
         $response->assertOk();
     }
 
-    /** @test */
+    #[Test]
     public function it_allows_tokens_with_category_wildcard(): void
     {
         $token = 'category-wildcard-token';
@@ -301,7 +303,7 @@ class ApiAuthenticationTest extends TestCase
 
     // ==================== User Context ====================
 
-    /** @test */
+    #[Test]
     public function it_sets_authenticated_user_from_token(): void
     {
         $token = 'user-context-token';
@@ -337,7 +339,7 @@ class ApiAuthenticationTest extends TestCase
         $this->assertCount(4, $data);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_token_with_deleted_user(): void
     {
         $tempUser = User::factory()->create();
@@ -362,7 +364,7 @@ class ApiAuthenticationTest extends TestCase
 
     // ==================== Token Last Used Tracking ====================
 
-    /** @test */
+    #[Test]
     public function it_tracks_token_last_used_timestamp(): void
     {
         $token = 'last-used-tracking-token';
@@ -390,7 +392,7 @@ class ApiAuthenticationTest extends TestCase
 
     // ==================== Cross-User Access Control ====================
 
-    /** @test */
+    #[Test]
     public function it_prevents_accessing_other_users_projects(): void
     {
         // Create another user's project
@@ -417,7 +419,7 @@ class ApiAuthenticationTest extends TestCase
         $this->assertContains($response->status(), [403, 404]);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_modifying_other_users_projects(): void
     {
         // Create another user's project
@@ -446,7 +448,7 @@ class ApiAuthenticationTest extends TestCase
         $this->assertContains($response->status(), [403, 404]);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_deploying_other_users_projects(): void
     {
         // Create another user's project
@@ -475,7 +477,7 @@ class ApiAuthenticationTest extends TestCase
 
     // ==================== Sanctum Token (Legacy) ====================
 
-    /** @test */
+    #[Test]
     public function it_accepts_sanctum_tokens_for_legacy_routes(): void
     {
         $sanctumToken = $this->user->createToken('test-token')->plainTextToken;
@@ -490,7 +492,7 @@ class ApiAuthenticationTest extends TestCase
             ->assertJsonPath('email', $this->user->email);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_current_user_info(): void
     {
         $sanctumToken = $this->user->createToken('test-token')->plainTextToken;
@@ -512,7 +514,7 @@ class ApiAuthenticationTest extends TestCase
 
     // ==================== API Token vs Sanctum Token ====================
 
-    /** @test */
+    #[Test]
     public function it_distinguishes_between_api_tokens_and_sanctum_tokens(): void
     {
         // ApiToken for v1 routes
@@ -543,7 +545,7 @@ class ApiAuthenticationTest extends TestCase
 
     // ==================== Error Response Format ====================
 
-    /** @test */
+    #[Test]
     public function it_returns_consistent_error_format_for_missing_token(): void
     {
         $response = $this->getJson('/api/v1/projects');
@@ -555,7 +557,7 @@ class ApiAuthenticationTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_consistent_error_format_for_invalid_token(): void
     {
         $response = $this->withHeaders([
@@ -570,7 +572,7 @@ class ApiAuthenticationTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_consistent_error_format_for_expired_token(): void
     {
         $token = 'expired-format-test-token';
@@ -594,7 +596,7 @@ class ApiAuthenticationTest extends TestCase
 
     // ==================== Multiple Tokens Per User ====================
 
-    /** @test */
+    #[Test]
     public function it_allows_user_to_have_multiple_valid_tokens(): void
     {
         $token1 = 'multi-token-1';
@@ -628,7 +630,7 @@ class ApiAuthenticationTest extends TestCase
         $response2->assertOk();
     }
 
-    /** @test */
+    #[Test]
     public function it_invalidates_only_specific_token_when_deleted(): void
     {
         $token1 = 'delete-test-token-1';
@@ -666,7 +668,7 @@ class ApiAuthenticationTest extends TestCase
 
     // ==================== Token Hash Security ====================
 
-    /** @test */
+    #[Test]
     public function it_stores_tokens_as_hashed_values(): void
     {
         $plainToken = 'plain-text-token-test';
@@ -681,7 +683,7 @@ class ApiAuthenticationTest extends TestCase
         $this->assertNotEquals($plainToken, $apiToken->token);
     }
 
-    /** @test */
+    #[Test]
     public function it_cannot_authenticate_with_hashed_token_directly(): void
     {
         $plainToken = 'hash-auth-test-token';

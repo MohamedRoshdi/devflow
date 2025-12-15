@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Server;
 use App\Models\User;
 use Laravel\Dusk\Browser;
@@ -39,8 +41,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 1: Fail2ban manager page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_fail2ban_manager_page_loads_successfully()
     {
         if (! $this->server) {
@@ -73,8 +76,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 2: Fail2ban status is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_fail2ban_status_is_displayed()
     {
         if (! $this->server) {
@@ -108,8 +112,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 3: Start fail2ban button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_start_fail2ban_button_is_visible()
     {
         if (! $this->server) {
@@ -141,8 +146,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 4: Stop fail2ban button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_stop_fail2ban_button_is_visible()
     {
         if (! $this->server) {
@@ -174,8 +180,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 5: Jail list is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_jail_list_is_displayed()
     {
         if (! $this->server) {
@@ -207,8 +214,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 6: Jail selection functionality works
      *
-     * @test
      */
+
+    #[Test]
     public function test_jail_selection_works()
     {
         if (! $this->server) {
@@ -240,8 +248,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 7: Banned IPs list is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_banned_ips_list_is_displayed()
     {
         if (! $this->server) {
@@ -273,8 +282,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 8: Unban IP button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_unban_ip_button_is_present()
     {
         if (! $this->server) {
@@ -306,8 +316,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 9: Install fail2ban button shown when not installed
      *
-     * @test
      */
+
+    #[Test]
     public function test_install_fail2ban_button_shown_when_not_installed()
     {
         if (! $this->server) {
@@ -340,8 +351,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 10: Flash messages display
      *
-     * @test
      */
+
+    #[Test]
     public function test_flash_messages_display()
     {
         if (! $this->server) {
@@ -374,8 +386,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 11: Selected jail is highlighted
      *
-     * @test
      */
+
+    #[Test]
     public function test_selected_jail_is_highlighted()
     {
         if (! $this->server) {
@@ -407,8 +420,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 12: Loading states work
      *
-     * @test
      */
+
+    #[Test]
     public function test_loading_states_work()
     {
         if (! $this->server) {
@@ -441,8 +455,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 13: Navigation back to security dashboard works
      *
-     * @test
      */
+
+    #[Test]
     public function test_navigation_back_to_security_dashboard_works()
     {
         if (! $this->server) {
@@ -474,8 +489,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 14: Service status indicators (enabled/disabled)
      *
-     * @test
      */
+
+    #[Test]
     public function test_service_status_indicators_display()
     {
         if (! $this->server) {
@@ -510,8 +526,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 15: Refresh status button works
      *
-     * @test
      */
+
+    #[Test]
     public function test_refresh_status_button_works()
     {
         if (! $this->server) {
@@ -543,8 +560,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 16: Fail2ban service control section is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_fail2ban_service_control_section_is_present()
     {
         if (! $this->server) {
@@ -577,8 +595,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 17: Jail count is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_jail_count_is_displayed()
     {
         if (! $this->server) {
@@ -610,8 +629,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 18: Banned IP count is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_banned_ip_count_is_displayed()
     {
         if (! $this->server) {
@@ -642,8 +662,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 19: Page title displays Fail2ban Manager
      *
-     * @test
      */
+
+    #[Test]
     public function test_page_title_displays_fail2ban_manager()
     {
         if (! $this->server) {
@@ -674,8 +695,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 20: Server name is displayed in the header
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_name_is_displayed_in_header()
     {
         if (! $this->server) {
@@ -706,8 +728,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 21: Empty state message displayed when no jails configured
      *
-     * @test
      */
+
+    #[Test]
     public function test_empty_state_message_when_no_jails()
     {
         if (! $this->server) {
@@ -738,8 +761,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 22: Empty state message displayed when no IPs banned
      *
-     * @test
      */
+
+    #[Test]
     public function test_empty_state_message_when_no_banned_ips()
     {
         if (! $this->server) {
@@ -770,8 +794,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 23: Confirmation dialog for unban action exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_confirmation_dialog_for_unban_exists()
     {
         if (! $this->server) {
@@ -802,8 +827,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 24: Icons are properly displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_icons_are_properly_displayed()
     {
         if (! $this->server) {
@@ -834,8 +860,9 @@ class Fail2banManagerTest extends DuskTestCase
     /**
      * Test 25: Responsive design elements present
      *
-     * @test
      */
+
+    #[Test]
     public function test_responsive_design_elements_present()
     {
         if (! $this->server) {

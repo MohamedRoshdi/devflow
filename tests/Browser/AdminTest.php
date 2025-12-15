@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\User;
 use Laravel\Dusk\Browser;
 use Spatie\Permission\Models\Role;
@@ -60,8 +62,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 1: Users list page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_users_list_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -88,8 +91,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 2: User creation button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_creation_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -116,8 +120,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 3: User creation modal opens
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_creation_modal_opens()
     {
         $this->browse(function (Browser $browser) {
@@ -157,8 +162,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 4: User search functionality works
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_search_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -188,8 +194,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 5: Role filter is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_role_filter_available()
     {
         $this->browse(function (Browser $browser) {
@@ -215,8 +222,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 6: Users table displays correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_users_table_displays()
     {
         $this->browse(function (Browser $browser) {
@@ -241,8 +249,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 7: Edit user button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_edit_user_button_present()
     {
         $this->browse(function (Browser $browser) {
@@ -268,8 +277,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 8: Delete user button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_delete_user_button_present()
     {
         $this->browse(function (Browser $browser) {
@@ -295,8 +305,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 9: User roles are displayed in table
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_roles_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -322,8 +333,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 10: User email verification status shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_email_verification_status_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -349,8 +361,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 11: User projects count is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_projects_count_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -375,8 +388,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 12: User creation date is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_creation_date_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -403,8 +417,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 13: User form has required fields
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_form_has_required_fields()
     {
         $this->browse(function (Browser $browser) {
@@ -430,8 +445,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 14: Role assignment checkboxes are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_role_assignment_checkboxes_present()
     {
         $this->browse(function (Browser $browser) {
@@ -456,8 +472,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 15: Current user indicator is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_current_user_indicator_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -482,8 +499,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 16: Pagination is present when needed
      *
-     * @test
      */
+
+    #[Test]
     public function test_pagination_present()
     {
         $this->browse(function (Browser $browser) {
@@ -510,8 +528,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 17: User avatar or initial is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_avatar_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -537,8 +556,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 18: Empty state message when no users found
      *
-     * @test
      */
+
+    #[Test]
     public function test_empty_state_message()
     {
         $this->browse(function (Browser $browser) {
@@ -564,8 +584,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 19: Flash messages are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_flash_messages_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -591,8 +612,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 20: Admin dashboard is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_admin_dashboard_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -618,8 +640,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 21: System admin page is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_system_admin_page_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -645,8 +668,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 22: User edit modal has password confirmation
      *
-     * @test
      */
+
+    #[Test]
     public function test_password_confirmation_field_present()
     {
         $this->browse(function (Browser $browser) {
@@ -671,8 +695,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 23: User list shows multiple role badges
      *
-     * @test
      */
+
+    #[Test]
     public function test_multiple_role_badges_supported()
     {
         $this->browse(function (Browser $browser) {
@@ -698,8 +723,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 24: Search and filter can be cleared
      *
-     * @test
      */
+
+    #[Test]
     public function test_filters_can_be_cleared()
     {
         $this->browse(function (Browser $browser) {
@@ -724,8 +750,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 25: User cannot delete their own account
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_cannot_delete_own_account()
     {
         $this->browse(function (Browser $browser) {
@@ -750,8 +777,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 26: Delete confirmation is required
      *
-     * @test
      */
+
+    #[Test]
     public function test_delete_confirmation_required()
     {
         $this->browse(function (Browser $browser) {
@@ -776,8 +804,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 27: Modal can be closed without saving
      *
-     * @test
      */
+
+    #[Test]
     public function test_modal_can_be_closed()
     {
         $this->browse(function (Browser $browser) {
@@ -803,8 +832,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 28: Form validation messages are handled
      *
-     * @test
      */
+
+    #[Test]
     public function test_form_validation_messages_handled()
     {
         $this->browse(function (Browser $browser) {
@@ -829,8 +859,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 29: User list supports dark mode
      *
-     * @test
      */
+
+    #[Test]
     public function test_dark_mode_support()
     {
         $this->browse(function (Browser $browser) {
@@ -855,8 +886,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 30: Navigation to users page from dashboard works
      *
-     * @test
      */
+
+    #[Test]
     public function test_navigation_to_users_from_dashboard()
     {
         $this->browse(function (Browser $browser) {
@@ -883,8 +915,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 31: System admin page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_system_admin_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -908,8 +941,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 32: System overview tab displays
      *
-     * @test
      */
+
+    #[Test]
     public function test_system_overview_tab_displays()
     {
         $this->browse(function (Browser $browser) {
@@ -933,8 +967,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 33: Backup stats are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_stats_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -957,8 +992,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 34: System metrics are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_system_metrics_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -983,8 +1019,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 35: Recent alerts section exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_recent_alerts_section_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -1008,8 +1045,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 36: Backup logs tab is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_logs_tab_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -1033,8 +1071,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 37: Monitoring logs tab is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_monitoring_logs_tab_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -1058,8 +1097,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 38: Optimization logs tab is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_optimization_logs_tab_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -1083,8 +1123,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 39: Run backup now button exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_run_backup_now_button_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -1108,8 +1149,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 40: Run optimization button exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_run_optimization_button_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -1133,8 +1175,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 41: Audit log viewer is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_audit_log_viewer_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -1158,8 +1201,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 42: Audit log search functionality present
      *
-     * @test
      */
+
+    #[Test]
     public function test_audit_log_search_present()
     {
         $this->browse(function (Browser $browser) {
@@ -1182,8 +1226,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 43: Audit log filters are available
      *
-     * @test
      */
+
+    #[Test]
     public function test_audit_log_filters_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1208,8 +1253,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 44: Audit log date range filter present
      *
-     * @test
      */
+
+    #[Test]
     public function test_audit_log_date_range_filter()
     {
         $this->browse(function (Browser $browser) {
@@ -1233,8 +1279,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 45: Audit log export functionality exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_audit_log_export_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -1258,8 +1305,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 46: Audit log clear filters button present
      *
-     * @test
      */
+
+    #[Test]
     public function test_audit_log_clear_filters_button()
     {
         $this->browse(function (Browser $browser) {
@@ -1283,8 +1331,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 47: Audit log activity stats displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_audit_log_activity_stats()
     {
         $this->browse(function (Browser $browser) {
@@ -1308,8 +1357,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 48: Cache management functionality accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_cache_management_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -1333,8 +1383,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 49: Queue monitoring is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_queue_monitoring_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1358,8 +1409,9 @@ class AdminTest extends DuskTestCase
     /**
      * Test 50: System health indicators shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_system_health_indicators()
     {
         $this->browse(function (Browser $browser) {

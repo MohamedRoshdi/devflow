@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\Teams\TeamGeneralSettings;
 use App\Livewire\Teams\TeamInvitations;
 use App\Livewire\Teams\TeamList;
@@ -51,7 +53,7 @@ class TeamManagementTest extends TestCase
 
     // ==================== Team Creation Tests ====================
 
-    /** @test */
+    #[Test]
     public function user_can_create_team(): void
     {
         $this->actingAs($this->owner);
@@ -68,7 +70,7 @@ class TeamManagementTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function team_creation_requires_name(): void
     {
         $this->actingAs($this->owner);
@@ -82,7 +84,7 @@ class TeamManagementTest extends TestCase
 
     // ==================== Team Update Tests ====================
 
-    /** @test */
+    #[Test]
     public function owner_can_update_team(): void
     {
         $this->actingAs($this->owner);
@@ -98,7 +100,7 @@ class TeamManagementTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function non_owner_cannot_update_team(): void
     {
         $member = User::factory()->create();
@@ -122,7 +124,7 @@ class TeamManagementTest extends TestCase
 
     // ==================== Team Deletion Tests ====================
 
-    /** @test */
+    #[Test]
     public function owner_can_delete_team(): void
     {
         $this->actingAs($this->owner);
@@ -138,7 +140,7 @@ class TeamManagementTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function non_owner_cannot_delete_team(): void
     {
         $member = User::factory()->create();
@@ -163,7 +165,7 @@ class TeamManagementTest extends TestCase
 
     // ==================== Team Member Management Tests ====================
 
-    /** @test */
+    #[Test]
     public function owner_can_invite_member(): void
     {
         Mail::fake();
@@ -183,7 +185,7 @@ class TeamManagementTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function invited_user_can_accept_invitation(): void
     {
         $invitation = TeamInvitation::factory()->create([
@@ -207,7 +209,7 @@ class TeamManagementTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function owner_can_remove_member(): void
     {
         $member = User::factory()->create();
@@ -228,7 +230,7 @@ class TeamManagementTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function member_cannot_remove_other_members(): void
     {
         $member1 = User::factory()->create();
@@ -260,7 +262,7 @@ class TeamManagementTest extends TestCase
 
     // ==================== Role Management Tests ====================
 
-    /** @test */
+    #[Test]
     public function owner_can_change_member_role(): void
     {
         $member = User::factory()->create();
@@ -282,7 +284,7 @@ class TeamManagementTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function member_cannot_leave_as_sole_owner(): void
     {
         // Owner tries to leave their own team without transferring ownership
@@ -301,7 +303,7 @@ class TeamManagementTest extends TestCase
 
     // ==================== Team Visibility Tests ====================
 
-    /** @test */
+    #[Test]
     public function user_can_only_see_their_teams(): void
     {
         $otherUser = User::factory()->create();
@@ -319,7 +321,7 @@ class TeamManagementTest extends TestCase
             ->assertDontSee('Other Team');
     }
 
-    /** @test */
+    #[Test]
     public function team_member_can_see_shared_team(): void
     {
         $member = User::factory()->create();

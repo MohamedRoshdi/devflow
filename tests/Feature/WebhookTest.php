@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
@@ -42,7 +44,7 @@ class WebhookTest extends TestCase
 
     // ==================== GitHub Webhook Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_accepts_valid_github_push_webhook(): void
     {
         $payload = [
@@ -89,7 +91,7 @@ class WebhookTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_invalid_github_signature(): void
     {
         $payload = [
@@ -109,7 +111,7 @@ class WebhookTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_webhook_without_signature(): void
     {
         $payload = [
@@ -129,7 +131,7 @@ class WebhookTest extends TestCase
 
     // ==================== GitLab Webhook Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_accepts_valid_gitlab_push_webhook(): void
     {
         $payload = [
@@ -160,7 +162,7 @@ class WebhookTest extends TestCase
 
     // ==================== Bitbucket Webhook Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_accepts_valid_bitbucket_push_webhook(): void
     {
         // Bitbucket webhooks are not implemented - expect 404
@@ -198,7 +200,7 @@ class WebhookTest extends TestCase
 
     // ==================== Generic Webhook Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_handles_ping_event(): void
     {
         $payload = [
@@ -230,7 +232,7 @@ class WebhookTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_ignores_non_push_events(): void
     {
         $payload = [
@@ -262,7 +264,7 @@ class WebhookTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_401_for_invalid_secret(): void
     {
         $payload = [
@@ -282,7 +284,7 @@ class WebhookTest extends TestCase
 
     // ==================== Webhook Security Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_prevents_replay_attacks_with_timestamp(): void
     {
         // Webhook implementations should check timestamp to prevent replay
@@ -318,7 +320,7 @@ class WebhookTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_content_type(): void
     {
         $payload = ['ref' => 'refs/heads/main'];
@@ -348,7 +350,7 @@ class WebhookTest extends TestCase
 
     // ==================== Rate Limiting Tests ====================
 
-    /** @test */
+    #[Test]
     public function webhooks_are_rate_limited(): void
     {
         $payload = ['ref' => 'refs/heads/main'];

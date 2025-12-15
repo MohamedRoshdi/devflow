@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\User;
 use Illuminate\Support\Facades\Password;
 use Laravel\Dusk\Browser;
@@ -41,8 +43,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that the forgot password page loads and contains basic content
      *
-     * @test
      */
+
+    #[Test]
     public function forgot_password_page_loads_successfully(): void
     {
         $this->browse(function (Browser $browser) {
@@ -59,8 +62,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that the email input field exists and has correct attributes
      *
-     * @test
      */
+
+    #[Test]
     public function email_field_is_present_with_proper_attributes(): void
     {
         $this->browse(function (Browser $browser) {
@@ -90,8 +94,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that the submit button exists with correct text
      *
-     * @test
      */
+
+    #[Test]
     public function submit_button_is_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -115,8 +120,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that the back to login link exists and works
      *
-     * @test
      */
+
+    #[Test]
     public function back_to_login_link_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -143,8 +149,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that HTML5 validation prevents empty submissions
      *
-     * @test
      */
+
+    #[Test]
     public function form_validation_prevents_empty_submission(): void
     {
         $this->browse(function (Browser $browser) {
@@ -167,8 +174,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that invalid email format triggers validation
      *
-     * @test
      */
+
+    #[Test]
     public function invalid_email_format_shows_error(): void
     {
         $this->browse(function (Browser $browser) {
@@ -193,8 +201,9 @@ class ForgotPasswordTest extends DuskTestCase
      * Verifies that the system handles non-existent emails
      * Note: Laravel may show success message for security reasons
      *
-     * @test
      */
+
+    #[Test]
     public function nonexistent_email_handled_gracefully(): void
     {
         $this->browse(function (Browser $browser) {
@@ -220,8 +229,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that success message appears after valid submission
      *
-     * @test
      */
+
+    #[Test]
     public function success_message_displayed_for_valid_email(): void
     {
         $this->browse(function (Browser $browser) {
@@ -250,8 +260,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that the page has the correct title
      *
-     * @test
      */
+
+    #[Test]
     public function page_title_is_correct(): void
     {
         $this->browse(function (Browser $browser) {
@@ -272,8 +283,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that the form has proper CSS classes and styling
      *
-     * @test
      */
+
+    #[Test]
     public function form_has_proper_styling(): void
     {
         $this->browse(function (Browser $browser) {
@@ -300,8 +312,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that the email input is properly labeled
      *
-     * @test
      */
+
+    #[Test]
     public function input_has_proper_label(): void
     {
         $this->browse(function (Browser $browser) {
@@ -323,8 +336,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that Livewire CSRF protection is in place
      *
-     * @test
      */
+
+    #[Test]
     public function csrf_protection_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -346,8 +360,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that rate limiting is enforced
      *
-     * @test
      */
+
+    #[Test]
     public function rate_limiting_prevents_abuse(): void
     {
         $this->browse(function (Browser $browser) {
@@ -379,8 +394,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that the loading state is shown during processing
      *
-     * @test
      */
+
+    #[Test]
     public function loading_state_appears_on_submit(): void
     {
         $this->browse(function (Browser $browser) {
@@ -411,8 +427,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that the page is responsive on mobile devices
      *
-     * @test
      */
+
+    #[Test]
     public function responsive_design_works_on_mobile(): void
     {
         $this->browse(function (Browser $browser) {
@@ -450,8 +467,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that dark mode CSS classes exist
      *
-     * @test
      */
+
+    #[Test]
     public function dark_mode_styling_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -475,8 +493,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that the email field receives focus on page load
      *
-     * @test
      */
+
+    #[Test]
     public function email_field_has_autofocus(): void
     {
         $this->browse(function (Browser $browser) {
@@ -497,8 +516,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies keyboard accessibility
      *
-     * @test
      */
+
+    #[Test]
     public function form_submits_with_enter_key(): void
     {
         $this->browse(function (Browser $browser) {
@@ -523,8 +543,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that validation errors are styled correctly
      *
-     * @test
      */
+
+    #[Test]
     public function error_message_styling_is_proper(): void
     {
         $this->browse(function (Browser $browser) {
@@ -552,8 +573,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that success message persists appropriately
      *
-     * @test
      */
+
+    #[Test]
     public function success_message_persists_correctly(): void
     {
         $this->browse(function (Browser $browser) {
@@ -581,8 +603,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that multiple valid submissions work correctly
      *
-     * @test
      */
+
+    #[Test]
     public function multiple_valid_submissions_work(): void
     {
         $this->browse(function (Browser $browser) {
@@ -614,8 +637,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that Livewire real-time validation works
      *
-     * @test
      */
+
+    #[Test]
     public function email_input_has_livewire_binding(): void
     {
         $this->browse(function (Browser $browser) {
@@ -638,8 +662,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that the route is properly configured
      *
-     * @test
      */
+
+    #[Test]
     public function page_accessible_via_direct_url(): void
     {
         $this->browse(function (Browser $browser) {
@@ -657,8 +682,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that the guest layout wrapper is used
      *
-     * @test
      */
+
+    #[Test]
     public function guest_layout_is_applied(): void
     {
         $this->browse(function (Browser $browser) {
@@ -682,8 +708,9 @@ class ForgotPasswordTest extends DuskTestCase
      *
      * Verifies that even logged-in users can access the page
      *
-     * @test
      */
+
+    #[Test]
     public function authenticated_users_can_access_page(): void
     {
         $this->browse(function (Browser $browser) {

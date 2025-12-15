@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Security;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
 use App\Models\ApiToken;
@@ -97,7 +99,7 @@ class PenetrationTest extends TestCase
 
     // ==================== XSS PAYLOAD TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_prevents_xss_in_project_name(): void
     {
         $this->actingAs($this->user);
@@ -127,7 +129,7 @@ class PenetrationTest extends TestCase
         $this->assertTrue(true, 'XSS payloads tested');
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_xss_in_project_description(): void
     {
         $this->actingAs($this->user);
@@ -152,7 +154,7 @@ class PenetrationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_xss_in_server_name(): void
     {
         $this->actingAs($this->user);
@@ -175,7 +177,7 @@ class PenetrationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_xss_in_deployment_comment(): void
     {
         $this->actingAs($this->user);
@@ -197,7 +199,7 @@ class PenetrationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_stored_xss_in_user_profile(): void
     {
         $this->actingAs($this->user);
@@ -216,7 +218,7 @@ class PenetrationTest extends TestCase
 
     // ==================== SQL INJECTION TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_prevents_sql_injection_in_project_search(): void
     {
         $this->actingAs($this->user);
@@ -234,7 +236,7 @@ class PenetrationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_sql_injection_in_server_filters(): void
     {
         $this->actingAs($this->user);
@@ -251,7 +253,7 @@ class PenetrationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_sql_injection_in_deployment_queries(): void
     {
         $this->actingAs($this->user);
@@ -266,7 +268,7 @@ class PenetrationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_sanitizes_user_input_in_database_queries(): void
     {
         $maliciousEmail = "admin' OR '1'='1";
@@ -290,7 +292,7 @@ class PenetrationTest extends TestCase
         $this->assertGuest();
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_union_based_sql_injection(): void
     {
         $this->actingAs($this->user);
@@ -311,7 +313,7 @@ class PenetrationTest extends TestCase
 
     // ==================== RACE CONDITION TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_prevents_concurrent_deployment_race_conditions(): void
     {
         $this->actingAs($this->user);
@@ -334,7 +336,7 @@ class PenetrationTest extends TestCase
         $this->assertLessThanOrEqual(2, $created, 'Race condition detected: Too many concurrent deployments created');
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_double_submit_on_project_creation(): void
     {
         $this->actingAs($this->user);
@@ -366,7 +368,7 @@ class PenetrationTest extends TestCase
         $this->assertLessThanOrEqual(1, $count, 'Double-submit vulnerability detected');
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_concurrent_resource_updates_safely(): void
     {
         $this->actingAs($this->user);
@@ -385,7 +387,7 @@ class PenetrationTest extends TestCase
         $this->assertEquals($initialCount + 3, $finalCount);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_race_condition_in_api_token_generation(): void
     {
         $this->actingAs($this->user);
@@ -403,7 +405,7 @@ class PenetrationTest extends TestCase
 
     // ==================== MASS ASSIGNMENT TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_prevents_mass_assignment_of_user_role(): void
     {
         $this->actingAs($this->user);
@@ -422,7 +424,7 @@ class PenetrationTest extends TestCase
         $this->assertFalse($this->user->hasRole('super_admin'), 'User should not have super_admin role through mass assignment');
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_mass_assignment_of_project_owner(): void
     {
         $this->actingAs($this->user);
@@ -437,7 +439,7 @@ class PenetrationTest extends TestCase
         $this->assertEquals($this->user->id, $this->project->user_id, 'Project owner should not be changeable via mass assignment');
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_mass_assignment_of_server_credentials(): void
     {
         $this->actingAs($this->user);
@@ -453,7 +455,7 @@ class PenetrationTest extends TestCase
         $this->assertNotEquals('malicious-password', $this->server->ssh_password ?? '');
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_hidden_field_injection_in_forms(): void
     {
         $this->actingAs($this->user);
@@ -485,7 +487,7 @@ class PenetrationTest extends TestCase
         $this->assertTrue(true, 'Hidden field injection test completed');
     }
 
-    /** @test */
+    #[Test]
     public function it_guards_against_parameter_pollution(): void
     {
         $this->actingAs($this->user);
@@ -519,7 +521,7 @@ class PenetrationTest extends TestCase
 
     // ==================== API TOKEN ABUSE TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_prevents_token_enumeration_attacks(): void
     {
         $invalidTokens = [
@@ -536,7 +538,7 @@ class PenetrationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_token_privilege_escalation(): void
     {
         $token = $this->user->createToken('user-token', ['projects:read'])->plainTextToken;
@@ -555,7 +557,7 @@ class PenetrationTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_invalidates_expired_tokens(): void
     {
         $token = $this->user->createToken('expired-token', ['*'], now()->subDay());
@@ -566,7 +568,7 @@ class PenetrationTest extends TestCase
         $response->assertStatus(401);
     }
 
-    /** @test */
+    #[Test]
     public function it_enforces_api_rate_limiting(): void
     {
         Sanctum::actingAs($this->user);
@@ -607,7 +609,7 @@ class PenetrationTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_token_reuse_after_revocation(): void
     {
         $token = $this->user->createToken('test-token');
@@ -637,7 +639,7 @@ class PenetrationTest extends TestCase
 
     // ==================== AUTHENTICATION TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_prevents_session_fixation_attacks(): void
     {
         // Start a fresh session
@@ -658,7 +660,7 @@ class PenetrationTest extends TestCase
         $this->assertNotEquals($initialSessionId, $newSessionId, 'Session ID should change after login to prevent session fixation attacks');
     }
 
-    /** @test */
+    #[Test]
     public function it_enforces_secure_cookie_settings(): void
     {
         config(['session.secure' => true]);
@@ -687,7 +689,7 @@ class PenetrationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_enforces_password_complexity_requirements(): void
     {
         // Test weak passwords that should be rejected
@@ -735,7 +737,7 @@ class PenetrationTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_implements_brute_force_protection(): void
     {
         // Clear any existing rate limiting for this user
@@ -766,7 +768,7 @@ class PenetrationTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_out_user_on_suspicious_activity(): void
     {
         $this->actingAs($this->user);
@@ -782,7 +784,7 @@ class PenetrationTest extends TestCase
 
     // ==================== AUTHORIZATION TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_prevents_unauthorized_project_access(): void
     {
         $otherUser = User::factory()->create();
@@ -795,7 +797,7 @@ class PenetrationTest extends TestCase
         $this->assertContains($response->status(), [403, 404], 'Unauthorized user should not access project');
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_unauthorized_server_modifications(): void
     {
         $otherUser = User::factory()->create();
@@ -814,7 +816,7 @@ class PenetrationTest extends TestCase
         $this->assertEquals($originalName, $this->server->name, 'Server name should not be changed by unauthorized user');
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_unauthorized_deployment_triggering(): void
     {
         $otherUser = User::factory()->create();
@@ -831,7 +833,7 @@ class PenetrationTest extends TestCase
         $this->assertEquals($initialCount, $finalCount, 'No deployment should be created by unauthorized user');
     }
 
-    /** @test */
+    #[Test]
     public function it_enforces_team_based_access_control(): void
     {
         $team = Team::factory()->create();
@@ -854,7 +856,7 @@ class PenetrationTest extends TestCase
 
     // ==================== CSRF TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_enforces_csrf_protection_on_state_changing_requests(): void
     {
         $this->actingAs($this->user);
@@ -875,7 +877,7 @@ class PenetrationTest extends TestCase
 
     // ==================== INPUT VALIDATION TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_validates_repository_url_format(): void
     {
         $this->actingAs($this->user);
@@ -903,7 +905,7 @@ class PenetrationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_sanitizes_file_path_inputs(): void
     {
         $this->actingAs($this->user);
@@ -926,7 +928,7 @@ class PenetrationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_system_directory_paths(): void
     {
         $this->actingAs($this->user);
@@ -954,7 +956,7 @@ class PenetrationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_allows_safe_project_paths(): void
     {
         $this->actingAs($this->user);
@@ -977,7 +979,7 @@ class PenetrationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_command_injection_in_deployment_scripts(): void
     {
         $this->actingAs($this->user);
@@ -1001,7 +1003,7 @@ class PenetrationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_ldap_injection(): void
     {
         $this->actingAs($this->user);
@@ -1034,7 +1036,7 @@ class PenetrationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_xml_external_entity_injection(): void
     {
         $this->actingAs($this->user);

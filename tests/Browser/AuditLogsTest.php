@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\AuditLog;
 use App\Models\Deployment;
 use App\Models\Project;
@@ -181,8 +183,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 1: Audit logs page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_audit_logs_page_loads_successfully(): void
     {
         $this->browse(function (Browser $browser) {
@@ -206,8 +209,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 2: Audit logs list displays entries
      *
-     * @test
      */
+
+    #[Test]
     public function test_audit_logs_list_displays_entries(): void
     {
         $this->browse(function (Browser $browser) {
@@ -233,8 +237,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 3: Audit log pagination works
      *
-     * @test
      */
+
+    #[Test]
     public function test_audit_log_pagination_works(): void
     {
         // Create more audit logs to ensure pagination
@@ -273,8 +278,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 4: Filter audit logs by user
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_audit_logs_by_user(): void
     {
         $this->browse(function (Browser $browser) {
@@ -298,8 +304,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 5: Filter audit logs by action type
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_audit_logs_by_action_type(): void
     {
         $this->browse(function (Browser $browser) {
@@ -323,8 +330,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 6: Filter audit logs by date range
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_audit_logs_by_date_range(): void
     {
         $this->browse(function (Browser $browser) {
@@ -349,8 +357,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 7: Search audit logs functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_search_audit_logs_functionality(): void
     {
         $this->browse(function (Browser $browser) {
@@ -373,8 +382,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 8: View audit log details
      *
-     * @test
      */
+
+    #[Test]
     public function test_view_audit_log_details(): void
     {
         $this->browse(function (Browser $browser) {
@@ -398,8 +408,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 9: Export audit logs to CSV
      *
-     * @test
      */
+
+    #[Test]
     public function test_export_audit_logs_to_csv(): void
     {
         $this->browse(function (Browser $browser) {
@@ -423,8 +434,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 10: Export audit logs to JSON
      *
-     * @test
      */
+
+    #[Test]
     public function test_export_audit_logs_to_json(): void
     {
         $this->browse(function (Browser $browser) {
@@ -448,8 +460,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 11: Audit log retention settings visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_audit_log_retention_settings_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -474,8 +487,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 12: User activity tracking displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_activity_tracking_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -499,8 +513,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 13: Server action logging visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_action_logging_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -524,8 +539,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 14: Project change logging visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_change_logging_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -549,8 +565,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 15: Deployment activity logging visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_deployment_activity_logging_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -573,8 +590,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 16: Security event logging visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_event_logging_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -598,8 +616,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 17: API access logging visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_access_logging_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -624,8 +643,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 18: Filter by action category
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_by_action_category(): void
     {
         $this->browse(function (Browser $browser) {
@@ -648,8 +668,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 19: Filter by model type
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_by_model_type(): void
     {
         $this->browse(function (Browser $browser) {
@@ -673,8 +694,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 20: Filter by IP address
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_by_ip_address(): void
     {
         $this->browse(function (Browser $browser) {
@@ -697,8 +719,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 21: Clear filters functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_clear_filters_functionality(): void
     {
         $this->browse(function (Browser $browser) {
@@ -721,8 +744,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 22: Audit log timestamp display
      *
-     * @test
      */
+
+    #[Test]
     public function test_audit_log_timestamp_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -747,8 +771,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 23: User name display in logs
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_name_display_in_logs(): void
     {
         $this->browse(function (Browser $browser) {
@@ -772,8 +797,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 24: Action description display
      *
-     * @test
      */
+
+    #[Test]
     public function test_action_description_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -798,8 +824,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 25: IP address display in logs
      *
-     * @test
      */
+
+    #[Test]
     public function test_ip_address_display_in_logs(): void
     {
         $this->browse(function (Browser $browser) {
@@ -821,8 +848,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 26: Old values display in change logs
      *
-     * @test
      */
+
+    #[Test]
     public function test_old_values_display_in_change_logs(): void
     {
         $this->browse(function (Browser $browser) {
@@ -846,8 +874,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 27: New values display in change logs
      *
-     * @test
      */
+
+    #[Test]
     public function test_new_values_display_in_change_logs(): void
     {
         $this->browse(function (Browser $browser) {
@@ -871,8 +900,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 28: Model identifier display
      *
-     * @test
      */
+
+    #[Test]
     public function test_model_identifier_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -897,8 +927,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 29: Audit log statistics display
      *
-     * @test
      */
+
+    #[Test]
     public function test_audit_log_statistics_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -923,8 +954,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 30: Activity timeline view
      *
-     * @test
      */
+
+    #[Test]
     public function test_activity_timeline_view(): void
     {
         $this->browse(function (Browser $browser) {
@@ -948,8 +980,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 31: Recent activity section
      *
-     * @test
      */
+
+    #[Test]
     public function test_recent_activity_section(): void
     {
         $this->browse(function (Browser $browser) {
@@ -973,8 +1006,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 32: User activity summary
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_activity_summary(): void
     {
         $this->browse(function (Browser $browser) {
@@ -998,8 +1032,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 33: Action type breakdown
      *
-     * @test
      */
+
+    #[Test]
     public function test_action_type_breakdown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1023,8 +1058,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 34: Security events filter
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_events_filter(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1047,8 +1083,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 35: Export filtered results
      *
-     * @test
      */
+
+    #[Test]
     public function test_export_filtered_results(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1071,8 +1108,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 36: Date range picker functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_date_range_picker_functionality(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1096,8 +1134,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 37: Real-time log updates
      *
-     * @test
      */
+
+    #[Test]
     public function test_real_time_log_updates(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1128,8 +1167,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 38: Audit log detail modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_audit_log_detail_modal(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1153,8 +1193,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 39: Bulk export functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_bulk_export_functionality(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1178,8 +1219,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 40: Search by action name
      *
-     * @test
      */
+
+    #[Test]
     public function test_search_by_action_name(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1202,8 +1244,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 41: Filter by today's activity
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_by_today_activity(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1227,8 +1270,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 42: Filter by last 7 days
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_by_last_7_days(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1252,8 +1296,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 43: Filter by last 30 days
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_by_last_30_days(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1277,8 +1322,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 44: Non-admin user cannot access audit logs
      *
-     * @test
      */
+
+    #[Test]
     public function test_non_admin_cannot_access_audit_logs(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1306,8 +1352,9 @@ class AuditLogsTest extends DuskTestCase
     /**
      * Test 45: Audit log count display
      *
-     * @test
      */
+
+    #[Test]
     public function test_audit_log_count_display(): void
     {
         $this->browse(function (Browser $browser) {

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Integration;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\Team;
@@ -57,7 +59,7 @@ class TeamCollaborationTest extends TestCase
 
     // ==================== Team Creation Tests ====================
 
-    /** @test */
+    #[Test]
     public function user_can_create_team(): void
     {
         $user = User::factory()->create();
@@ -73,14 +75,14 @@ class TeamCollaborationTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function team_owner_is_automatically_added_as_member(): void
     {
         $this->assertTrue($this->team->hasMember($this->owner));
         $this->assertEquals('owner', $this->team->getMemberRole($this->owner));
     }
 
-    /** @test */
+    #[Test]
     public function user_can_have_multiple_teams(): void
     {
         $team2 = Team::factory()->create([
@@ -101,7 +103,7 @@ class TeamCollaborationTest extends TestCase
 
     // ==================== Member Invitation Tests ====================
 
-    /** @test */
+    #[Test]
     public function owner_can_invite_member_to_team(): void
     {
         $invitation = TeamInvitation::factory()->create([
@@ -118,7 +120,7 @@ class TeamCollaborationTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function invitation_generates_unique_token(): void
     {
         $invitation1 = TeamInvitation::factory()->create([
@@ -137,7 +139,7 @@ class TeamCollaborationTest extends TestCase
         $this->assertNotEquals($invitation1->token, $invitation2->token);
     }
 
-    /** @test */
+    #[Test]
     public function user_can_accept_invitation(): void
     {
         $newUser = User::factory()->create([
@@ -161,7 +163,7 @@ class TeamCollaborationTest extends TestCase
         $this->assertDatabaseMissing('team_invitations', ['id' => $invitationId]);
     }
 
-    /** @test */
+    #[Test]
     public function invitation_can_be_canceled(): void
     {
         $invitation = TeamInvitation::factory()->create([
@@ -175,7 +177,7 @@ class TeamCollaborationTest extends TestCase
         $this->assertDatabaseMissing('team_invitations', ['id' => $invitationId]);
     }
 
-    /** @test */
+    #[Test]
     public function invitation_expires_after_period(): void
     {
         $invitation = TeamInvitation::factory()->create([
@@ -191,7 +193,7 @@ class TeamCollaborationTest extends TestCase
 
     // ==================== Role & Permission Tests ====================
 
-    /** @test */
+    #[Test]
     public function team_supports_multiple_roles(): void
     {
         $admin = User::factory()->create();
@@ -207,7 +209,7 @@ class TeamCollaborationTest extends TestCase
         $this->assertEquals('viewer', $this->team->getMemberRole($viewer));
     }
 
-    /** @test */
+    #[Test]
     public function owner_can_change_member_role(): void
     {
         $member = User::factory()->create();
@@ -221,7 +223,7 @@ class TeamCollaborationTest extends TestCase
         $this->assertEquals('admin', $freshTeam->getMemberRole($member));
     }
 
-    /** @test */
+    #[Test]
     public function owner_cannot_change_own_role(): void
     {
         // Owner's role should remain 'owner'
@@ -231,7 +233,7 @@ class TeamCollaborationTest extends TestCase
         // This would be enforced by business logic, not the database
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_invite_members(): void
     {
         $admin = User::factory()->create();
@@ -250,7 +252,7 @@ class TeamCollaborationTest extends TestCase
 
     // ==================== Shared Resource Tests ====================
 
-    /** @test */
+    #[Test]
     public function team_members_can_access_team_projects(): void
     {
         $member = User::factory()->create();
@@ -276,7 +278,7 @@ class TeamCollaborationTest extends TestCase
         $this->assertEquals($project->id, $firstProject->id);
     }
 
-    /** @test */
+    #[Test]
     public function team_members_can_access_team_servers(): void
     {
         $member = User::factory()->create();
@@ -293,7 +295,7 @@ class TeamCollaborationTest extends TestCase
         $this->assertCount(1, $teamServers);
     }
 
-    /** @test */
+    #[Test]
     public function personal_projects_not_visible_to_team(): void
     {
         $member = User::factory()->create();
@@ -319,7 +321,7 @@ class TeamCollaborationTest extends TestCase
 
     // ==================== Team Switching Tests ====================
 
-    /** @test */
+    #[Test]
     public function user_can_switch_current_team(): void
     {
         $team2 = Team::factory()->create([
@@ -340,7 +342,7 @@ class TeamCollaborationTest extends TestCase
         $this->assertEquals($team2->id, $freshOwner->current_team_id);
     }
 
-    /** @test */
+    #[Test]
     public function current_team_affects_resource_context(): void
     {
         $this->owner->update(['current_team_id' => $this->team->id]);
@@ -362,7 +364,7 @@ class TeamCollaborationTest extends TestCase
 
     // ==================== Member Removal Tests ====================
 
-    /** @test */
+    #[Test]
     public function owner_can_remove_member(): void
     {
         $member = User::factory()->create();
@@ -378,7 +380,7 @@ class TeamCollaborationTest extends TestCase
         $this->assertFalse($freshTeam->hasMember($member));
     }
 
-    /** @test */
+    #[Test]
     public function member_can_leave_team(): void
     {
         $member = User::factory()->create();
@@ -392,7 +394,7 @@ class TeamCollaborationTest extends TestCase
         $this->assertFalse($freshTeam->hasMember($member));
     }
 
-    /** @test */
+    #[Test]
     public function owner_cannot_leave_team(): void
     {
         // Owner should not be able to leave without transferring ownership
@@ -404,7 +406,7 @@ class TeamCollaborationTest extends TestCase
 
     // ==================== Team Deletion Tests ====================
 
-    /** @test */
+    #[Test]
     public function deleting_team_removes_member_associations(): void
     {
         $member1 = User::factory()->create();
@@ -421,7 +423,7 @@ class TeamCollaborationTest extends TestCase
         $this->assertDatabaseMissing('team_user', ['team_id' => $teamId]);
     }
 
-    /** @test */
+    #[Test]
     public function deleting_team_removes_pending_invitations(): void
     {
         TeamInvitation::factory()->create([
@@ -443,7 +445,7 @@ class TeamCollaborationTest extends TestCase
 
     // ==================== Team Statistics Tests ====================
 
-    /** @test */
+    #[Test]
     public function calculates_team_member_count(): void
     {
         User::factory()->count(5)->create()->each(function ($user) {
@@ -454,7 +456,7 @@ class TeamCollaborationTest extends TestCase
         $this->assertEquals(6, $this->team->members()->count());
     }
 
-    /** @test */
+    #[Test]
     public function tracks_team_resource_counts(): void
     {
         $server = Server::factory()->create([
@@ -482,7 +484,7 @@ class TeamCollaborationTest extends TestCase
 
     // ==================== Ownership Transfer Tests ====================
 
-    /** @test */
+    #[Test]
     public function can_transfer_team_ownership(): void
     {
         $newOwner = User::factory()->create();
@@ -502,7 +504,7 @@ class TeamCollaborationTest extends TestCase
 
     // ==================== Activity & Audit Tests ====================
 
-    /** @test */
+    #[Test]
     public function team_activity_is_trackable(): void
     {
         // This would typically use activity logging
@@ -513,7 +515,7 @@ class TeamCollaborationTest extends TestCase
         $this->assertTrue($this->team->hasMember($member));
     }
 
-    /** @test */
+    #[Test]
     public function member_changes_are_timestamped(): void
     {
         $member = User::factory()->create();

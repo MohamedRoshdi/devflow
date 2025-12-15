@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\HealthCheck;
 use App\Models\NotificationChannel;
 use App\Models\Project;
@@ -37,8 +39,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 1: Health check dashboard page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_dashboard_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -65,8 +68,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 2: Health check manager page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_manager_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -93,8 +97,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 3: Health check list displays existing checks
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_list_displays()
     {
         $this->browse(function (Browser $browser) {
@@ -122,8 +127,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 4: Create health check button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_create_health_check_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -151,8 +157,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 5: Health check creation modal can be opened
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_creation_modal_opens()
     {
         $this->browse(function (Browser $browser) {
@@ -180,8 +187,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 6: Health check configuration form elements exist
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_configuration_form_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -210,8 +218,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 7: HTTP health check type is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_http_health_check_type_available()
     {
         $this->browse(function (Browser $browser) {
@@ -236,8 +245,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 8: TCP health check type is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_tcp_health_check_type_available()
     {
         $this->browse(function (Browser $browser) {
@@ -262,8 +272,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 9: DNS health check type is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_dns_health_check_type_available()
     {
         $this->browse(function (Browser $browser) {
@@ -288,8 +299,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 10: SSL health check type is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_health_check_type_available()
     {
         $this->browse(function (Browser $browser) {
@@ -314,8 +326,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 11: Health check interval is configurable
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_interval_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -342,8 +355,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 12: Health check timeout is configurable
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_timeout_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -369,8 +383,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 13: Expected status code is configurable
      *
-     * @test
      */
+
+    #[Test]
     public function test_expected_status_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -397,8 +412,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 14: Health check results modal can be accessed
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_results_modal_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -425,8 +441,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 15: Health check history displays
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_history_displays()
     {
         $this->browse(function (Browser $browser) {
@@ -453,8 +470,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 16: Health check status indicators are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_status_indicators_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -482,8 +500,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 17: Alert configuration is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_configuration_available()
     {
         $this->browse(function (Browser $browser) {
@@ -510,8 +529,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 18: Notification channels can be managed
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_channels_manageable()
     {
         $this->browse(function (Browser $browser) {
@@ -538,8 +558,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 19: Notification on failure is configurable
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_on_failure_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -565,8 +586,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 20: Notification on recovery is configurable
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_on_recovery_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -592,8 +614,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 21: Health check can be toggled active/inactive
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_toggle_active()
     {
         $this->browse(function (Browser $browser) {
@@ -620,8 +643,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 22: Health check can be paused
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_can_be_paused()
     {
         $this->browse(function (Browser $browser) {
@@ -647,8 +671,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 23: Health check can be resumed
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_can_be_resumed()
     {
         $this->browse(function (Browser $browser) {
@@ -674,8 +699,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 24: Health check can be manually run
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_manual_run()
     {
         $this->browse(function (Browser $browser) {
@@ -702,8 +728,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 25: Health check edit functionality exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_edit_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -729,8 +756,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 26: Health check delete functionality exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_delete_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -756,8 +784,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 27: Project health checks are linkable
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_health_checks_linkable()
     {
         $this->browse(function (Browser $browser) {
@@ -783,8 +812,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 28: Server health checks are linkable
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_health_checks_linkable()
     {
         $this->browse(function (Browser $browser) {
@@ -810,8 +840,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 29: Health statistics are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_statistics_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -839,8 +870,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 30: Response time is tracked
      *
-     * @test
      */
+
+    #[Test]
     public function test_response_time_tracked()
     {
         $this->browse(function (Browser $browser) {
@@ -867,8 +899,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 31: Consecutive failures are tracked
      *
-     * @test
      */
+
+    #[Test]
     public function test_consecutive_failures_tracked()
     {
         $this->browse(function (Browser $browser) {
@@ -894,8 +927,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 32: Health check last checked time is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_last_checked_time_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -922,8 +956,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 33: Health dashboard shows overall status
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_dashboard_shows_overall_status()
     {
         $this->browse(function (Browser $browser) {
@@ -950,8 +985,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 34: Health dashboard shows project health
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_dashboard_shows_project_health()
     {
         $this->browse(function (Browser $browser) {
@@ -977,8 +1013,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 35: Health dashboard shows server health
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_dashboard_shows_server_health()
     {
         $this->browse(function (Browser $browser) {
@@ -1004,8 +1041,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 36: Health dashboard can be refreshed
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_dashboard_refreshable()
     {
         $this->browse(function (Browser $browser) {
@@ -1031,8 +1069,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 37: Uptime statistics are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_uptime_statistics_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -1058,8 +1097,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 38: Health check groups/categories exist
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_groups_exist()
     {
         $this->browse(function (Browser $browser) {
@@ -1085,8 +1125,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 39: Bulk health check operations are available
      *
-     * @test
      */
+
+    #[Test]
     public function test_bulk_health_check_operations_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1112,8 +1153,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 40: Response validation rules can be configured
      *
-     * @test
      */
+
+    #[Test]
     public function test_response_validation_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -1139,8 +1181,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 41: Alerting rules can be configured
      *
-     * @test
      */
+
+    #[Test]
     public function test_alerting_rules_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -1166,8 +1209,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 42: Email notification channel type is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_email_notification_channel_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1192,8 +1236,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 43: Slack notification channel type is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_slack_notification_channel_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1218,8 +1263,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 44: Discord notification channel type is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_discord_notification_channel_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1244,8 +1290,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 45: Notification channel test functionality exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_channel_test_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -1271,8 +1318,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 46: Health check export functionality exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_export_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -1299,8 +1347,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 47: Health check import functionality exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_import_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -1326,8 +1375,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 48: Health check search functionality exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_search_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -1353,8 +1403,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 49: Health check filter by type functionality exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_filter_by_type()
     {
         $this->browse(function (Browser $browser) {
@@ -1380,8 +1431,9 @@ class HealthChecksTest extends DuskTestCase
     /**
      * Test 50: Health check filter by status functionality exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_filter_by_status()
     {
         $this->browse(function (Browser $browser) {

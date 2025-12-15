@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Integration;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
@@ -60,7 +62,7 @@ class WorkflowIntegrationTest extends TestCase
     // Pipeline Execution Workflow Tests (10 tests)
     // =================================================================
 
-    /** @test */
+    #[Test]
     public function it_executes_complete_pipeline_with_multiple_stages(): void
     {
         // Arrange: Create pipeline with stages
@@ -125,7 +127,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertEquals('success', $pipelineRun->fresh()->stageRuns->last()->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_pipeline_stage_failure(): void
     {
         // Arrange
@@ -164,7 +166,7 @@ class WorkflowIntegrationTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_continues_pipeline_when_stage_has_continue_on_failure(): void
     {
         // Arrange
@@ -203,7 +205,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertEquals('success', $stageRun2->fresh()->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_tracks_pipeline_execution_duration(): void
     {
         // Arrange
@@ -229,7 +231,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertGreaterThanOrEqual(0, abs($duration));
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_pipeline_with_deployment_trigger(): void
     {
         // Arrange
@@ -259,7 +261,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertEquals($deployment->id, $pipelineRun->deployment_id);
     }
 
-    /** @test */
+    #[Test]
     public function it_stores_pipeline_artifacts(): void
     {
         // Arrange
@@ -282,7 +284,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertEquals($artifacts, $pipelineRun->fresh()->artifacts);
     }
 
-    /** @test */
+    #[Test]
     public function it_tracks_pipeline_run_number_incrementally(): void
     {
         // Arrange
@@ -313,7 +315,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertEquals(3, $run3->run_number);
     }
 
-    /** @test */
+    #[Test]
     public function it_cancels_running_pipeline(): void
     {
         // Arrange
@@ -337,7 +339,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertNotNull($pipelineRun->fresh()->finished_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_executes_enabled_stages_only(): void
     {
         // Arrange
@@ -367,7 +369,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertEquals($enabledStage->id, $stages->first()->id);
     }
 
-    /** @test */
+    #[Test]
     public function it_stores_stage_execution_output(): void
     {
         // Arrange
@@ -399,7 +401,7 @@ class WorkflowIntegrationTest extends TestCase
     // Multi-Tenant Deployment Workflow Tests (12 tests)
     // =================================================================
 
-    /** @test */
+    #[Test]
     public function it_creates_tenant_with_complete_configuration(): void
     {
         // Arrange & Act
@@ -432,7 +434,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertTrue($tenant->isActive());
     }
 
-    /** @test */
+    #[Test]
     public function it_deploys_to_single_tenant(): void
     {
         // Arrange
@@ -465,7 +467,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertCount(1, $tenant->deployments);
     }
 
-    /** @test */
+    #[Test]
     public function it_deploys_to_multiple_tenants(): void
     {
         // Arrange
@@ -499,7 +501,7 @@ class WorkflowIntegrationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_verifies_tenant_isolation(): void
     {
         // Arrange: Create multiple tenants
@@ -520,7 +522,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertNotEquals($tenant1->subdomain, $tenant2->subdomain);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_tenant_trial_period(): void
     {
         // Arrange
@@ -534,7 +536,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertNotNull($tenant->trial_ends_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_expired_tenant_trial(): void
     {
         // Arrange
@@ -547,7 +549,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertFalse($tenant->isOnTrial());
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_tenant_url_from_subdomain(): void
     {
         // Arrange
@@ -569,7 +571,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertEquals('https://client1.example.com', $url);
     }
 
-    /** @test */
+    #[Test]
     public function it_tracks_tenant_deployment_history(): void
     {
         // Arrange
@@ -593,7 +595,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertCount(5, $tenant->deployments);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_failed_tenant_deployment(): void
     {
         // Arrange
@@ -618,7 +620,7 @@ class WorkflowIntegrationTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_stores_tenant_custom_configuration(): void
     {
         // Arrange & Act
@@ -639,7 +641,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertTrue($config['custom_branding']);
     }
 
-    /** @test */
+    #[Test]
     public function it_manages_tenant_features(): void
     {
         // Arrange & Act
@@ -659,7 +661,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertFalse($tenant->features['custom_reports']);
     }
 
-    /** @test */
+    #[Test]
     public function it_encrypts_tenant_admin_password(): void
     {
         // Arrange & Act
@@ -682,7 +684,7 @@ class WorkflowIntegrationTest extends TestCase
     // Webhook Delivery Workflow Tests (10 tests)
     // =================================================================
 
-    /** @test */
+    #[Test]
     public function it_receives_and_processes_webhook(): void
     {
         // Arrange & Act
@@ -708,7 +710,7 @@ class WorkflowIntegrationTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_triggers_deployment_from_webhook(): void
     {
         // Arrange
@@ -737,7 +739,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertTrue($webhook->fresh()->isSuccess());
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_webhook_signature_verification(): void
     {
         // Arrange & Act
@@ -753,7 +755,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertTrue($webhook->isSuccess());
     }
 
-    /** @test */
+    #[Test]
     public function it_stores_webhook_failure(): void
     {
         // Arrange & Act
@@ -774,7 +776,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertTrue($webhook->isFailed());
     }
 
-    /** @test */
+    #[Test]
     public function it_ignores_irrelevant_webhook_events(): void
     {
         // Arrange & Act
@@ -789,7 +791,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertTrue($webhook->isIgnored());
     }
 
-    /** @test */
+    #[Test]
     public function it_processes_webhook_from_multiple_providers(): void
     {
         // Arrange & Act
@@ -819,7 +821,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertEquals(['bitbucket', 'github', 'gitlab'], $providers);
     }
 
-    /** @test */
+    #[Test]
     public function it_stores_webhook_payload(): void
     {
         // Arrange & Act
@@ -852,7 +854,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertEquals('test-repo', $webhook->payload['repository']['name']);
     }
 
-    /** @test */
+    #[Test]
     public function it_tracks_webhook_pending_status(): void
     {
         // Arrange & Act
@@ -866,7 +868,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertFalse($webhook->isSuccess());
     }
 
-    /** @test */
+    #[Test]
     public function it_links_webhook_to_deployment(): void
     {
         // Arrange
@@ -885,7 +887,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertInstanceOf(Deployment::class, $webhook->deployment);
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_notification_after_webhook_processing(): void
     {
         // Arrange
@@ -918,7 +920,7 @@ class WorkflowIntegrationTest extends TestCase
     // Bulk Server Operations Tests (8 tests)
     // =================================================================
 
-    /** @test */
+    #[Test]
     public function it_selects_multiple_servers_for_bulk_action(): void
     {
         // Arrange
@@ -933,7 +935,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertCount(5, $selectedServers);
     }
 
-    /** @test */
+    #[Test]
     public function it_executes_bulk_update_on_servers(): void
     {
         // Arrange
@@ -954,7 +956,7 @@ class WorkflowIntegrationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_tracks_bulk_operation_progress(): void
     {
         // Arrange
@@ -974,7 +976,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertEquals('success', $results[$servers->first()->id]['status']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_partial_failures_in_bulk_operations(): void
     {
         // Arrange
@@ -997,7 +999,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertEquals(2, $failureCount);
     }
 
-    /** @test */
+    #[Test]
     public function it_executes_bulk_security_scan(): void
     {
         // Arrange
@@ -1024,7 +1026,7 @@ class WorkflowIntegrationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_performs_bulk_server_reboot(): void
     {
         // Arrange
@@ -1042,7 +1044,7 @@ class WorkflowIntegrationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_executes_bulk_package_installation(): void
     {
         // Arrange
@@ -1065,7 +1067,7 @@ class WorkflowIntegrationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_bulk_operation_report(): void
     {
         // Arrange
@@ -1093,7 +1095,7 @@ class WorkflowIntegrationTest extends TestCase
     // Security Scanning Workflow Tests (10 tests)
     // =================================================================
 
-    /** @test */
+    #[Test]
     public function it_initiates_security_scan(): void
     {
         // Arrange & Act
@@ -1110,7 +1112,7 @@ class WorkflowIntegrationTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_executes_security_checks(): void
     {
         // Arrange
@@ -1138,7 +1140,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertCount(2, $scan->fresh()->findings);
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_security_report(): void
     {
         // Arrange
@@ -1169,7 +1171,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertCount(3, $scan->recommendations);
     }
 
-    /** @test */
+    #[Test]
     public function it_alerts_on_critical_vulnerabilities(): void
     {
         // Arrange
@@ -1207,7 +1209,7 @@ class WorkflowIntegrationTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_security_score_from_findings(): void
     {
         // Arrange & Act
@@ -1221,7 +1223,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertEquals('low', $riskLevel);
     }
 
-    /** @test */
+    #[Test]
     public function it_tracks_scan_duration(): void
     {
         // Arrange
@@ -1240,7 +1242,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertGreaterThanOrEqual(0, abs($duration));
     }
 
-    /** @test */
+    #[Test]
     public function it_stores_scan_findings_with_details(): void
     {
         // Arrange & Act
@@ -1271,7 +1273,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertEquals('high', $findings[1]['severity']);
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_security_recommendations(): void
     {
         // Arrange & Act
@@ -1292,7 +1294,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertContains('Enable and configure UFW firewall', $scan->recommendations);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_failed_security_scan(): void
     {
         // Arrange & Act
@@ -1308,7 +1310,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertNotNull($scan->completed_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_retrieves_latest_security_scan_for_server(): void
     {
         // Arrange: Create multiple scans
@@ -1336,7 +1338,7 @@ class WorkflowIntegrationTest extends TestCase
     // Additional Integration Tests (6 tests for 56 total)
     // =================================================================
 
-    /** @test */
+    #[Test]
     public function it_completes_full_ci_cd_workflow(): void
     {
         // Arrange: Setup complete CI/CD pipeline
@@ -1399,7 +1401,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertTrue($pipelineRun->fresh()->stageRuns->every(fn($run) => $run->status === 'success'));
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_rollback_workflow(): void
     {
         // Arrange: Create successful deployment
@@ -1432,7 +1434,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertEquals($successfulDeployment->commit_hash, $rollbackDeployment->commit_hash);
     }
 
-    /** @test */
+    #[Test]
     public function it_manages_project_with_multiple_environments(): void
     {
         // Arrange: Create project with multiple servers
@@ -1459,7 +1461,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertEquals('main', $productionDeployment->branch);
     }
 
-    /** @test */
+    #[Test]
     public function it_tracks_complete_deployment_lifecycle(): void
     {
         // Arrange & Act: Create deployment through all stages
@@ -1490,7 +1492,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertEquals(120, $deployment->fresh()->duration_seconds);
     }
 
-    /** @test */
+    #[Test]
     public function it_manages_concurrent_deployments_across_projects(): void
     {
         // Arrange: Create multiple projects
@@ -1522,7 +1524,7 @@ class WorkflowIntegrationTest extends TestCase
         $this->assertEquals(3, $runningDeployments);
     }
 
-    /** @test */
+    #[Test]
     public function it_integrates_monitoring_with_deployments(): void
     {
         // Arrange

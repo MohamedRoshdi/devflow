@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\HealthCheck;
 use App\Models\NotificationChannel;
 use App\Models\Project;
@@ -101,8 +103,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 1: Health check manager page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_manager_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -121,8 +124,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 2: Health check list is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_list_displays()
     {
         $this->browse(function (Browser $browser) {
@@ -141,8 +145,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 3: Add health check button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_add_health_check_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -160,8 +165,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 4: Add health check modal opens
      *
-     * @test
      */
+
+    #[Test]
     public function test_add_health_check_modal_opens()
     {
         $this->browse(function (Browser $browser) {
@@ -193,8 +199,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 5: URL field is present in form
      *
-     * @test
      */
+
+    #[Test]
     public function test_url_field_present()
     {
         $this->browse(function (Browser $browser) {
@@ -218,8 +225,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 6: Check type field is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_check_type_field_present()
     {
         $this->browse(function (Browser $browser) {
@@ -244,8 +252,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 7: Interval dropdown works
      *
-     * @test
      */
+
+    #[Test]
     public function test_interval_dropdown_works()
     {
         $this->browse(function (Browser $browser) {
@@ -269,8 +278,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 8: Expected status field is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_expected_status_field_present()
     {
         $this->browse(function (Browser $browser) {
@@ -294,8 +304,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 9: Health check status indicators are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_status_indicators_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -320,8 +331,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 10: Enable/disable toggle works
      *
-     * @test
      */
+
+    #[Test]
     public function test_enable_disable_toggle_works()
     {
         $this->browse(function (Browser $browser) {
@@ -346,8 +358,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 11: Delete health check button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_delete_health_check_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -371,8 +384,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 12: Last check timestamp is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_last_check_timestamp_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -396,8 +410,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 13: Health check history/results are accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_history_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -421,8 +436,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 14: Health statistics are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_statistics_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -444,8 +460,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 15: Flash messages display
      *
-     * @test
      */
+
+    #[Test]
     public function test_flash_messages_display()
     {
         $this->browse(function (Browser $browser) {
@@ -471,8 +488,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 16: Run check now button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_run_check_now_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -496,8 +514,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 17: Edit health check button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_edit_health_check_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -521,8 +540,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 18: Notification channels are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_channels_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -546,8 +566,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 19: HTTP check type is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_http_check_type_available()
     {
         $this->browse(function (Browser $browser) {
@@ -570,8 +591,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 20: TCP check type is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_tcp_check_type_available()
     {
         $this->browse(function (Browser $browser) {
@@ -594,8 +616,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 21: SSL expiry check type is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_expiry_check_type_available()
     {
         $this->browse(function (Browser $browser) {
@@ -618,8 +641,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 22: Response time is tracked
      *
-     * @test
      */
+
+    #[Test]
     public function test_response_time_tracked()
     {
         $this->browse(function (Browser $browser) {
@@ -643,8 +667,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 23: Consecutive failures are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_consecutive_failures_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -668,8 +693,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 24: Project selection is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_selection_available()
     {
         $this->browse(function (Browser $browser) {
@@ -692,8 +718,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 25: Server selection is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_selection_available()
     {
         $this->browse(function (Browser $browser) {
@@ -716,8 +743,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 26: Timeout configuration is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_timeout_configuration_available()
     {
         $this->browse(function (Browser $browser) {
@@ -740,8 +768,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 27: Email notification channel type is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_email_notification_channel_available()
     {
         $this->browse(function (Browser $browser) {
@@ -764,8 +793,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 28: Slack notification channel type is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_slack_notification_channel_available()
     {
         $this->browse(function (Browser $browser) {
@@ -788,8 +818,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 29: Discord notification channel type is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_discord_notification_channel_available()
     {
         $this->browse(function (Browser $browser) {
@@ -811,8 +842,9 @@ class HealthCheckManagerTest extends DuskTestCase
     /**
      * Test 30: Health check type badge is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_type_badge_displayed()
     {
         $this->browse(function (Browser $browser) {

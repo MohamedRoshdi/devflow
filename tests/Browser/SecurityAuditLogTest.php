@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\SecurityEvent;
 use App\Models\Server;
 use App\Models\User;
@@ -112,8 +114,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 1: Security audit log page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_audit_log_page_loads_successfully(): void
     {
         $this->browse(function (Browser $browser) {
@@ -137,8 +140,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 2: Audit log entries display
      *
-     * @test
      */
+
+    #[Test]
     public function test_audit_log_entries_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -163,8 +167,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 3: Event type filtering - Firewall Enabled
      *
-     * @test
      */
+
+    #[Test]
     public function test_event_type_filtering_firewall_enabled(): void
     {
         $this->browse(function (Browser $browser) {
@@ -188,8 +193,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 4: Event type filtering - Rule Added
      *
-     * @test
      */
+
+    #[Test]
     public function test_event_type_filtering_rule_added(): void
     {
         $this->browse(function (Browser $browser) {
@@ -212,8 +218,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 5: Event type filtering - IP Banned
      *
-     * @test
      */
+
+    #[Test]
     public function test_event_type_filtering_ip_banned(): void
     {
         $this->browse(function (Browser $browser) {
@@ -236,8 +243,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 6: Event type filtering - SSH Config Changed
      *
-     * @test
      */
+
+    #[Test]
     public function test_event_type_filtering_ssh_config_changed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -260,8 +268,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 7: User filtering
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_filtering(): void
     {
         $this->browse(function (Browser $browser) {
@@ -284,8 +293,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 8: IP address display
      *
-     * @test
      */
+
+    #[Test]
     public function test_ip_address_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -307,8 +317,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 9: Timestamp display
      *
-     * @test
      */
+
+    #[Test]
     public function test_timestamp_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -333,8 +344,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 10: Action description display
      *
-     * @test
      */
+
+    #[Test]
     public function test_action_description_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -358,8 +370,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 11: Resource affected display
      *
-     * @test
      */
+
+    #[Test]
     public function test_resource_affected_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -382,8 +395,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 12: Date range filtering - From date
      *
-     * @test
      */
+
+    #[Test]
     public function test_date_range_filtering_from_date(): void
     {
         $this->browse(function (Browser $browser) {
@@ -407,8 +421,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 13: Date range filtering - To date
      *
-     * @test
      */
+
+    #[Test]
     public function test_date_range_filtering_to_date(): void
     {
         $this->browse(function (Browser $browser) {
@@ -432,8 +447,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 14: Search functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_search_functionality(): void
     {
         $this->browse(function (Browser $browser) {
@@ -456,8 +472,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 15: Pagination
      *
-     * @test
      */
+
+    #[Test]
     public function test_pagination(): void
     {
         $this->browse(function (Browser $browser) {
@@ -482,8 +499,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 16: Export audit logs to CSV
      *
-     * @test
      */
+
+    #[Test]
     public function test_export_audit_logs_csv(): void
     {
         $this->browse(function (Browser $browser) {
@@ -507,8 +525,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 17: Export audit logs to JSON
      *
-     * @test
      */
+
+    #[Test]
     public function test_export_audit_logs_json(): void
     {
         $this->browse(function (Browser $browser) {
@@ -531,8 +550,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 18: Export audit logs to PDF
      *
-     * @test
      */
+
+    #[Test]
     public function test_export_audit_logs_pdf(): void
     {
         $this->browse(function (Browser $browser) {
@@ -555,8 +575,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 19: Severity level indicators
      *
-     * @test
      */
+
+    #[Test]
     public function test_severity_level_indicators(): void
     {
         $this->browse(function (Browser $browser) {
@@ -582,8 +603,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 20: Geographic location display
      *
-     * @test
      */
+
+    #[Test]
     public function test_geographic_location_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -607,8 +629,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 21: User agent/browser info display
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_agent_browser_info_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -632,8 +655,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 22: Session ID tracking
      *
-     * @test
      */
+
+    #[Test]
     public function test_session_id_tracking(): void
     {
         $this->browse(function (Browser $browser) {
@@ -656,8 +680,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 23: Suspicious activity highlighting
      *
-     * @test
      */
+
+    #[Test]
     public function test_suspicious_activity_highlighting(): void
     {
         $this->browse(function (Browser $browser) {
@@ -681,8 +706,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 24: Real-time log updates
      *
-     * @test
      */
+
+    #[Test]
     public function test_real_time_log_updates(): void
     {
         $this->browse(function (Browser $browser) {
@@ -711,8 +737,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 25: Bulk export
      *
-     * @test
      */
+
+    #[Test]
     public function test_bulk_export(): void
     {
         $this->browse(function (Browser $browser) {
@@ -736,8 +763,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 26: Log retention policy display
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_retention_policy_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -761,8 +789,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 27: Access control events logging
      *
-     * @test
      */
+
+    #[Test]
     public function test_access_control_events_logging(): void
     {
         $this->browse(function (Browser $browser) {
@@ -786,8 +815,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 28: API access logging
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_access_logging(): void
     {
         $this->browse(function (Browser $browser) {
@@ -810,8 +840,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 29: Failed authentication attempts logging
      *
-     * @test
      */
+
+    #[Test]
     public function test_failed_authentication_attempts_logging(): void
     {
         $this->browse(function (Browser $browser) {
@@ -835,8 +866,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 30: Permission escalation events
      *
-     * @test
      */
+
+    #[Test]
     public function test_permission_escalation_events(): void
     {
         $this->browse(function (Browser $browser) {
@@ -860,8 +892,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 31: Server filter dropdown
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_filter_dropdown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -884,8 +917,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 32: Event type filter dropdown
      *
-     * @test
      */
+
+    #[Test]
     public function test_event_type_filter_dropdown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -909,8 +943,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 33: Clear filters button
      *
-     * @test
      */
+
+    #[Test]
     public function test_clear_filters_button(): void
     {
         $this->browse(function (Browser $browser) {
@@ -933,8 +968,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 34: View event details modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_view_event_details_modal(): void
     {
         $this->browse(function (Browser $browser) {
@@ -958,8 +994,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 35: Event metadata display
      *
-     * @test
      */
+
+    #[Test]
     public function test_event_metadata_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -983,8 +1020,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 36: Statistics display - Total events
      *
-     * @test
      */
+
+    #[Test]
     public function test_statistics_total_events(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1008,8 +1046,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 37: Statistics display - Today's events
      *
-     * @test
      */
+
+    #[Test]
     public function test_statistics_today_events(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1032,8 +1071,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 38: Statistics display - Firewall events
      *
-     * @test
      */
+
+    #[Test]
     public function test_statistics_firewall_events(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1055,8 +1095,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 39: Statistics display - IP bans
      *
-     * @test
      */
+
+    #[Test]
     public function test_statistics_ip_bans(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1079,8 +1120,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 40: Event color coding - Firewall enabled (green)
      *
-     * @test
      */
+
+    #[Test]
     public function test_event_color_coding_firewall_enabled(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1104,8 +1146,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 41: Event color coding - Firewall disabled (red)
      *
-     * @test
      */
+
+    #[Test]
     public function test_event_color_coding_firewall_disabled(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1129,8 +1172,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 42: Event color coding - IP banned (orange)
      *
-     * @test
      */
+
+    #[Test]
     public function test_event_color_coding_ip_banned(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1154,8 +1198,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 43: Search by IP address
      *
-     * @test
      */
+
+    #[Test]
     public function test_search_by_ip_address(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1178,8 +1223,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 44: Search by details text
      *
-     * @test
      */
+
+    #[Test]
     public function test_search_by_details_text(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1202,8 +1248,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 45: Pagination - Next page
      *
-     * @test
      */
+
+    #[Test]
     public function test_pagination_next_page(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1226,8 +1273,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 46: Pagination - Previous page
      *
-     * @test
      */
+
+    #[Test]
     public function test_pagination_previous_page(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1250,8 +1298,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 47: Empty state display when no events
      *
-     * @test
      */
+
+    #[Test]
     public function test_empty_state_display(): void
     {
         // Temporarily clear all events to test empty state
@@ -1282,8 +1331,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 48: Responsive design - Mobile view
      *
-     * @test
      */
+
+    #[Test]
     public function test_responsive_design_mobile(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1310,8 +1360,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 49: Responsive design - Tablet view
      *
-     * @test
      */
+
+    #[Test]
     public function test_responsive_design_tablet(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1338,8 +1389,9 @@ class SecurityAuditLogTest extends DuskTestCase
     /**
      * Test 50: Event list sorting by date
      *
-     * @test
      */
+
+    #[Test]
     public function test_event_list_sorting_by_date(): void
     {
         $this->browse(function (Browser $browser) {

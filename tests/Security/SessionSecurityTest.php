@@ -7,6 +7,7 @@ namespace Tests\Security;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class SessionSecurityTest extends TestCase
@@ -25,7 +26,7 @@ class SessionSecurityTest extends TestCase
 
     // ==================== CSRF Protection Tests ====================
 
-    /** @test */
+    #[Test]
     public function post_requests_require_csrf_token(): void
     {
         // Test CSRF protection on logout route (a valid POST route)
@@ -40,7 +41,7 @@ class SessionSecurityTest extends TestCase
         $response->assertRedirect();
     }
 
-    /** @test */
+    #[Test]
     public function api_routes_are_exempt_from_csrf(): void
     {
         // API routes should use token auth instead
@@ -54,7 +55,7 @@ class SessionSecurityTest extends TestCase
 
     // ==================== Session Fixation Tests ====================
 
-    /** @test */
+    #[Test]
     public function session_id_changes_after_login(): void
     {
         // Get initial session ID
@@ -70,7 +71,7 @@ class SessionSecurityTest extends TestCase
         $this->assertNotEquals($sessionIdBefore, $sessionIdAfter);
     }
 
-    /** @test */
+    #[Test]
     public function session_id_changes_after_logout(): void
     {
         $this->actingAs($this->user);
@@ -85,7 +86,7 @@ class SessionSecurityTest extends TestCase
 
     // ==================== Session Timeout Tests ====================
 
-    /** @test */
+    #[Test]
     public function session_expires_after_inactivity(): void
     {
         // This tests the concept - actual timeout depends on config
@@ -101,7 +102,7 @@ class SessionSecurityTest extends TestCase
 
     // ==================== Cookie Security Tests ====================
 
-    /** @test */
+    #[Test]
     public function session_cookie_is_http_only(): void
     {
         // Session cookie should be HttpOnly
@@ -109,7 +110,7 @@ class SessionSecurityTest extends TestCase
         $this->assertTrue(config('session.http_only'));
     }
 
-    /** @test */
+    #[Test]
     public function session_cookie_same_site_is_set(): void
     {
         // Verify SameSite cookie attribute is configured
@@ -119,7 +120,7 @@ class SessionSecurityTest extends TestCase
 
     // ==================== Concurrent Session Tests ====================
 
-    /** @test */
+    #[Test]
     public function user_can_have_multiple_sessions(): void
     {
         // Login from first "device"
@@ -137,7 +138,7 @@ class SessionSecurityTest extends TestCase
 
     // ==================== Session Data Protection Tests ====================
 
-    /** @test */
+    #[Test]
     public function sensitive_data_is_not_stored_in_session(): void
     {
         $this->actingAs($this->user);
@@ -152,7 +153,7 @@ class SessionSecurityTest extends TestCase
 
     // ==================== Session Hijacking Prevention Tests ====================
 
-    /** @test */
+    #[Test]
     public function session_is_bound_to_user_agent(): void
     {
         // Login with specific user agent
@@ -167,7 +168,7 @@ class SessionSecurityTest extends TestCase
 
     // ==================== Remember Token Tests ====================
 
-    /** @test */
+    #[Test]
     public function remember_token_is_long_and_random(): void
     {
         // Login with remember me - this sets the remember token
@@ -184,7 +185,7 @@ class SessionSecurityTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function remember_token_changes_on_each_login(): void
     {
         // First login with remember

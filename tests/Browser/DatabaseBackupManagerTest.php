@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\BackupSchedule;
 use App\Models\DatabaseBackup;
 use App\Models\Project;
@@ -66,8 +68,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 1: Database backup manager page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_database_backup_manager_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -91,8 +94,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 2: Create backup modal opens
      *
-     * @test
      */
+
+    #[Test]
     public function test_create_backup_modal_opens()
     {
         $this->browse(function (Browser $browser) {
@@ -117,8 +121,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 3: Database name input is required
      *
-     * @test
      */
+
+    #[Test]
     public function test_database_name_input_required()
     {
         $this->browse(function (Browser $browser) {
@@ -142,8 +147,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 4: Database type selection available
      *
-     * @test
      */
+
+    #[Test]
     public function test_database_type_selection_available()
     {
         $this->browse(function (Browser $browser) {
@@ -168,8 +174,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 5: Schedule modal opens
      *
-     * @test
      */
+
+    #[Test]
     public function test_schedule_modal_opens()
     {
         $this->browse(function (Browser $browser) {
@@ -193,8 +200,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 6: Frequency options display
      *
-     * @test
      */
+
+    #[Test]
     public function test_frequency_options_display()
     {
         $this->browse(function (Browser $browser) {
@@ -220,8 +228,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 7: Time selection input is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_time_selection_input_present()
     {
         $this->browse(function (Browser $browser) {
@@ -244,8 +253,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 8: Retention days configuration
      *
-     * @test
      */
+
+    #[Test]
     public function test_retention_days_configuration()
     {
         $this->browse(function (Browser $browser) {
@@ -269,8 +279,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 9: Storage disk selection
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_disk_selection()
     {
         $this->browse(function (Browser $browser) {
@@ -295,8 +306,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 10: Backup list displays
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_list_displays()
     {
         // Create test backup
@@ -341,8 +353,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 11: Schedule list displays
      *
-     * @test
      */
+
+    #[Test]
     public function test_schedule_list_displays()
     {
         BackupSchedule::firstOrCreate(
@@ -382,8 +395,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 12: Backup statistics are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_statistics_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -408,8 +422,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 13: Delete backup confirmation modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_delete_backup_confirmation_modal()
     {
         $this->browse(function (Browser $browser) {
@@ -433,8 +448,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 14: Restore backup confirmation modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_restore_backup_confirmation_modal()
     {
         $this->browse(function (Browser $browser) {
@@ -457,8 +473,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 15: Verify backup modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_verify_backup_modal()
     {
         $this->browse(function (Browser $browser) {
@@ -482,8 +499,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 16: Download backup functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_download_backup_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -506,8 +524,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 17: Backup status indicators
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_status_indicators()
     {
         $this->browse(function (Browser $browser) {
@@ -533,8 +552,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 18: Backup file size display
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_file_size_display()
     {
         $this->browse(function (Browser $browser) {
@@ -559,8 +579,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 19: Backup checksum display
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_checksum_display()
     {
         $this->browse(function (Browser $browser) {
@@ -584,8 +605,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 20: Schedule toggle functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_schedule_toggle_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -610,8 +632,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 21: Weekly schedule day selection
      *
-     * @test
      */
+
+    #[Test]
     public function test_weekly_schedule_day_selection()
     {
         $this->browse(function (Browser $browser) {
@@ -635,8 +658,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 22: Monthly schedule day selection
      *
-     * @test
      */
+
+    #[Test]
     public function test_monthly_schedule_day_selection()
     {
         $this->browse(function (Browser $browser) {
@@ -660,8 +684,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 23: Backup creation progress indicator
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_creation_progress_indicator()
     {
         $this->browse(function (Browser $browser) {
@@ -685,8 +710,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 24: Schedule creation progress indicator
      *
-     * @test
      */
+
+    #[Test]
     public function test_schedule_creation_progress_indicator()
     {
         $this->browse(function (Browser $browser) {
@@ -709,8 +735,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 25: Verification progress indicator
      *
-     * @test
      */
+
+    #[Test]
     public function test_verification_progress_indicator()
     {
         $this->browse(function (Browser $browser) {
@@ -733,8 +760,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 26: Backup started time display
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_started_time_display()
     {
         $this->browse(function (Browser $browser) {
@@ -758,8 +786,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 27: Backup completed time display
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_completed_time_display()
     {
         $this->browse(function (Browser $browser) {
@@ -783,8 +812,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 28: Failed backup error message display
      *
-     * @test
      */
+
+    #[Test]
     public function test_failed_backup_error_message_display()
     {
         DatabaseBackup::firstOrCreate(
@@ -826,8 +856,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 29: Delete schedule functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_delete_schedule_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -851,8 +882,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 30: Backup pagination
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_pagination()
     {
         $this->browse(function (Browser $browser) {
@@ -877,8 +909,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 31: MySQL database type option
      *
-     * @test
      */
+
+    #[Test]
     public function test_mysql_database_type_option()
     {
         $this->browse(function (Browser $browser) {
@@ -899,8 +932,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 32: PostgreSQL database type option
      *
-     * @test
      */
+
+    #[Test]
     public function test_postgresql_database_type_option()
     {
         $this->browse(function (Browser $browser) {
@@ -921,8 +955,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 33: SQLite database type option
      *
-     * @test
      */
+
+    #[Test]
     public function test_sqlite_database_type_option()
     {
         $this->browse(function (Browser $browser) {
@@ -943,8 +978,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 34: Local storage disk option
      *
-     * @test
      */
+
+    #[Test]
     public function test_local_storage_disk_option()
     {
         $this->browse(function (Browser $browser) {
@@ -965,8 +1001,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 35: S3 storage disk option
      *
-     * @test
      */
+
+    #[Test]
     public function test_s3_storage_disk_option()
     {
         $this->browse(function (Browser $browser) {
@@ -987,8 +1024,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 36: Hourly frequency option
      *
-     * @test
      */
+
+    #[Test]
     public function test_hourly_frequency_option()
     {
         $this->browse(function (Browser $browser) {
@@ -1009,8 +1047,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 37: Daily frequency option
      *
-     * @test
      */
+
+    #[Test]
     public function test_daily_frequency_option()
     {
         $this->browse(function (Browser $browser) {
@@ -1031,8 +1070,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 38: Weekly frequency option
      *
-     * @test
      */
+
+    #[Test]
     public function test_weekly_frequency_option()
     {
         $this->browse(function (Browser $browser) {
@@ -1053,8 +1093,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 39: Monthly frequency option
      *
-     * @test
      */
+
+    #[Test]
     public function test_monthly_frequency_option()
     {
         $this->browse(function (Browser $browser) {
@@ -1075,8 +1116,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 40: Total backups statistic
      *
-     * @test
      */
+
+    #[Test]
     public function test_total_backups_statistic()
     {
         $this->browse(function (Browser $browser) {
@@ -1099,8 +1141,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 41: Scheduled backups count statistic
      *
-     * @test
      */
+
+    #[Test]
     public function test_scheduled_backups_count_statistic()
     {
         $this->browse(function (Browser $browser) {
@@ -1123,8 +1166,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 42: Total size statistic
      *
-     * @test
      */
+
+    #[Test]
     public function test_total_size_statistic()
     {
         $this->browse(function (Browser $browser) {
@@ -1147,8 +1191,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 43: Last backup time statistic
      *
-     * @test
      */
+
+    #[Test]
     public function test_last_backup_time_statistic()
     {
         $this->browse(function (Browser $browser) {
@@ -1171,8 +1216,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 44: Backup type full indicator
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_type_full_indicator()
     {
         $this->browse(function (Browser $browser) {
@@ -1193,8 +1239,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 45: Active schedule indicator
      *
-     * @test
      */
+
+    #[Test]
     public function test_active_schedule_indicator()
     {
         $this->browse(function (Browser $browser) {
@@ -1217,8 +1264,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 46: Backup file name display
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_file_name_display()
     {
         $this->browse(function (Browser $browser) {
@@ -1243,8 +1291,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 47: Backup database name display
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_database_name_display()
     {
         $this->browse(function (Browser $browser) {
@@ -1267,8 +1316,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 48: Schedule frequency display
      *
-     * @test
      */
+
+    #[Test]
     public function test_schedule_frequency_display()
     {
         $this->browse(function (Browser $browser) {
@@ -1289,8 +1339,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 49: Schedule time display
      *
-     * @test
      */
+
+    #[Test]
     public function test_schedule_time_display()
     {
         $this->browse(function (Browser $browser) {
@@ -1314,8 +1365,9 @@ class DatabaseBackupManagerTest extends DuskTestCase
     /**
      * Test 50: Retention days display
      *
-     * @test
      */
+
+    #[Test]
     public function test_retention_days_display()
     {
         $this->browse(function (Browser $browser) {

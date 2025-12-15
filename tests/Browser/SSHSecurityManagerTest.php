@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Server;
 use App\Models\User;
 use Laravel\Dusk\Browser;
@@ -35,8 +37,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 1: SSH security manager page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_security_manager_page_loads_successfully()
     {
         if (! $this->server) {
@@ -65,8 +68,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 2: SSH configuration is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_configuration_is_displayed()
     {
         if (! $this->server) {
@@ -95,8 +99,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 3: Current SSH port is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_current_ssh_port_is_shown()
     {
         if (! $this->server) {
@@ -125,8 +130,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 4: Root login toggle is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_root_login_toggle_is_visible()
     {
         if (! $this->server) {
@@ -155,8 +161,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 5: Password authentication toggle is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_password_authentication_toggle_is_visible()
     {
         if (! $this->server) {
@@ -185,8 +192,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 6: Public key authentication status shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_public_key_authentication_status_shown()
     {
         if (! $this->server) {
@@ -215,8 +223,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 7: Max auth tries is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_max_auth_tries_is_displayed()
     {
         if (! $this->server) {
@@ -245,8 +254,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 8: Change port button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_change_port_button_is_present()
     {
         if (! $this->server) {
@@ -275,8 +285,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 9: Harden SSH button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_harden_ssh_button_is_present()
     {
         if (! $this->server) {
@@ -305,8 +316,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 10: Restart SSH button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_restart_ssh_button_is_present()
     {
         if (! $this->server) {
@@ -335,8 +347,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 11: Harden confirmation modal can open
      *
-     * @test
      */
+
+    #[Test]
     public function test_harden_confirmation_modal_opens()
     {
         if (! $this->server) {
@@ -365,8 +378,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 12: Flash messages display area exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_flash_messages_display()
     {
         if (! $this->server) {
@@ -394,8 +408,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 13: Loading states work
      *
-     * @test
      */
+
+    #[Test]
     public function test_loading_states_work()
     {
         if (! $this->server) {
@@ -424,8 +439,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 14: Toggle buttons have correct wire:click handlers
      *
-     * @test
      */
+
+    #[Test]
     public function test_toggle_buttons_work()
     {
         if (! $this->server) {
@@ -454,8 +470,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 15: Port input validation attributes exist
      *
-     * @test
      */
+
+    #[Test]
     public function test_port_input_validation_works()
     {
         if (! $this->server) {
@@ -484,8 +501,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 16: Navigation back to security dashboard works
      *
-     * @test
      */
+
+    #[Test]
     public function test_navigation_back_to_security_dashboard_works()
     {
         if (! $this->server) {
@@ -514,8 +532,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 17: Refresh button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_refresh_button_is_present()
     {
         if (! $this->server) {
@@ -544,8 +563,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 18: Security recommendations section exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_recommendations_section_exists()
     {
         if (! $this->server) {
@@ -574,8 +594,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 19: Port recommendation is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_port_recommendation_is_displayed()
     {
         if (! $this->server) {
@@ -604,8 +625,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 20: Root login recommendation is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_root_login_recommendation_is_displayed()
     {
         if (! $this->server) {
@@ -634,8 +656,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 21: Password authentication recommendation is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_password_authentication_recommendation_is_displayed()
     {
         if (! $this->server) {
@@ -664,8 +687,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 22: Max auth tries recommendation is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_max_auth_tries_recommendation_is_displayed()
     {
         if (! $this->server) {
@@ -694,8 +718,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 23: Harden modal shows warning message
      *
-     * @test
      */
+
+    #[Test]
     public function test_harden_modal_shows_warning_message()
     {
         if (! $this->server) {
@@ -724,8 +749,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 24: Harden modal lists changes to be applied
      *
-     * @test
      */
+
+    #[Test]
     public function test_harden_modal_lists_changes()
     {
         if (! $this->server) {
@@ -754,8 +780,9 @@ class SSHSecurityManagerTest extends DuskTestCase
     /**
      * Test 25: Server name is displayed in header
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_name_is_displayed_in_header()
     {
         if (! $this->server) {

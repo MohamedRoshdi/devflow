@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Integration;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Deployment;
 use App\Models\Pipeline;
 use App\Models\PipelineRun;
@@ -77,7 +79,7 @@ class CICDPipelineTest extends TestCase
 
     // ==================== Pipeline Configuration Tests ====================
 
-    /** @test */
+    #[Test]
     public function can_create_pipeline_for_project(): void
     {
         $pipeline = Pipeline::factory()->create([
@@ -93,7 +95,7 @@ class CICDPipelineTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_can_have_multiple_stages(): void
     {
         $stages = [
@@ -113,7 +115,7 @@ class CICDPipelineTest extends TestCase
         $this->assertCount(3, $this->pipeline->stages);
     }
 
-    /** @test */
+    #[Test]
     public function stages_execute_in_order(): void
     {
         PipelineStage::factory()->create([
@@ -141,7 +143,7 @@ class CICDPipelineTest extends TestCase
         $this->assertEquals('Deploy', $orderedStages[2]->name);
     }
 
-    /** @test */
+    #[Test]
     public function stage_can_have_commands(): void
     {
         $stage = PipelineStage::factory()->create([
@@ -160,7 +162,7 @@ class CICDPipelineTest extends TestCase
 
     // ==================== Pipeline Trigger Tests ====================
 
-    /** @test */
+    #[Test]
     public function pipeline_triggers_on_webhook(): void
     {
         $webhookPayload = [
@@ -193,7 +195,7 @@ class CICDPipelineTest extends TestCase
         $this->assertEquals('pending', $run->status);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_can_be_triggered_manually(): void
     {
         $run = PipelineRun::factory()->create([
@@ -208,7 +210,7 @@ class CICDPipelineTest extends TestCase
         $this->assertEquals($this->user->id, $run->user_id);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_trigger_respects_branch_filter(): void
     {
         // Pipeline configured for main branch only
@@ -225,7 +227,7 @@ class CICDPipelineTest extends TestCase
 
     // ==================== Pipeline Execution Tests ====================
 
-    /** @test */
+    #[Test]
     public function pipeline_run_tracks_stage_status(): void
     {
         $run = PipelineRun::factory()->create([
@@ -250,7 +252,7 @@ class CICDPipelineTest extends TestCase
         $this->assertEquals('running', $run->status);
     }
 
-    /** @test */
+    #[Test]
     public function failed_stage_stops_pipeline(): void
     {
         $run = PipelineRun::factory()->create([
@@ -265,7 +267,7 @@ class CICDPipelineTest extends TestCase
         $this->assertEquals('Test', $run->failed_at_stage);
     }
 
-    /** @test */
+    #[Test]
     public function successful_pipeline_triggers_deployment(): void
     {
         $run = PipelineRun::factory()->create([
@@ -290,7 +292,7 @@ class CICDPipelineTest extends TestCase
 
     // ==================== Pipeline Variables Tests ====================
 
-    /** @test */
+    #[Test]
     public function pipeline_can_have_variables(): void
     {
         $this->pipeline->update([
@@ -307,7 +309,7 @@ class CICDPipelineTest extends TestCase
         $this->assertEquals('production', $freshPipeline->variables['NODE_ENV']);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_variables_can_be_secret(): void
     {
         $this->pipeline->update([
@@ -323,7 +325,7 @@ class CICDPipelineTest extends TestCase
         $this->assertArrayHasKey('API_KEY', $freshPipeline->secrets);
     }
 
-    /** @test */
+    #[Test]
     public function run_inherits_pipeline_variables(): void
     {
         $this->pipeline->update([
@@ -345,7 +347,7 @@ class CICDPipelineTest extends TestCase
 
     // ==================== Pipeline History Tests ====================
 
-    /** @test */
+    #[Test]
     public function tracks_pipeline_run_history(): void
     {
         // Create multiple runs
@@ -370,7 +372,7 @@ class CICDPipelineTest extends TestCase
         $this->assertEquals(5, $successRuns);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_run_stores_duration(): void
     {
         $run = PipelineRun::factory()->create([
@@ -385,7 +387,7 @@ class CICDPipelineTest extends TestCase
         $this->assertEquals(300, $run->duration_seconds);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_average_pipeline_duration(): void
     {
         PipelineRun::factory()->create([
@@ -418,7 +420,7 @@ class CICDPipelineTest extends TestCase
 
     // ==================== Pipeline Logs Tests ====================
 
-    /** @test */
+    #[Test]
     public function pipeline_run_stores_logs(): void
     {
         $run = PipelineRun::factory()->create([
@@ -432,7 +434,7 @@ class CICDPipelineTest extends TestCase
         $this->assertStringContainsString('Build complete', $run->logs);
     }
 
-    /** @test */
+    #[Test]
     public function stage_logs_are_separate(): void
     {
         $run = PipelineRun::factory()->create([
@@ -453,7 +455,7 @@ class CICDPipelineTest extends TestCase
 
     // ==================== Pipeline Notifications Tests ====================
 
-    /** @test */
+    #[Test]
     public function pipeline_failure_triggers_notification(): void
     {
         $run = PipelineRun::factory()->create([
@@ -468,7 +470,7 @@ class CICDPipelineTest extends TestCase
         $this->assertEquals('failed', $run->status);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_success_can_trigger_notification(): void
     {
         $run = PipelineRun::factory()->create([
@@ -483,7 +485,7 @@ class CICDPipelineTest extends TestCase
 
     // ==================== Pipeline Conditions Tests ====================
 
-    /** @test */
+    #[Test]
     public function stage_can_have_conditions(): void
     {
         $stage = PipelineStage::factory()->create([
@@ -499,7 +501,7 @@ class CICDPipelineTest extends TestCase
         $this->assertTrue($stage->conditions['require_approval']);
     }
 
-    /** @test */
+    #[Test]
     public function stage_can_be_skipped(): void
     {
         $stage = PipelineStage::factory()->create([
@@ -513,7 +515,7 @@ class CICDPipelineTest extends TestCase
 
     // ==================== Pipeline Statistics Tests ====================
 
-    /** @test */
+    #[Test]
     public function calculates_pipeline_success_rate(): void
     {
         PipelineRun::factory()->count(8)->create([
@@ -537,7 +539,7 @@ class CICDPipelineTest extends TestCase
         $this->assertEquals(80.0, $successRate);
     }
 
-    /** @test */
+    #[Test]
     public function tracks_runs_per_day(): void
     {
         // Today's runs
@@ -563,7 +565,7 @@ class CICDPipelineTest extends TestCase
 
     // ==================== Concurrent Pipeline Tests ====================
 
-    /** @test */
+    #[Test]
     public function can_run_multiple_pipelines_concurrently(): void
     {
         $pipeline2 = Pipeline::factory()->create([
@@ -590,7 +592,7 @@ class CICDPipelineTest extends TestCase
         $this->assertEquals(2, $runningCount);
     }
 
-    /** @test */
+    #[Test]
     public function can_cancel_running_pipeline(): void
     {
         $run = PipelineRun::factory()->create([
@@ -613,7 +615,7 @@ class CICDPipelineTest extends TestCase
 
     // ==================== Retry Tests ====================
 
-    /** @test */
+    #[Test]
     public function can_retry_failed_pipeline(): void
     {
         $failedRun = PipelineRun::factory()->create([

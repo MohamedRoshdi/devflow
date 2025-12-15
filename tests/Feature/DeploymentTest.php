@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Events\DeploymentStatusUpdated;
 use App\Models\Deployment;
 use App\Models\Project;
@@ -33,7 +35,7 @@ class DeploymentTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_creates_correct_database_record()
     {
         $this->actingAs($this->user);
@@ -60,7 +62,7 @@ class DeploymentTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_dispatches_job_when_created_with_pending_status()
     {
         Queue::fake();
@@ -82,7 +84,7 @@ class DeploymentTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function deployment_broadcasts_status_updates()
     {
         Event::fake([DeploymentStatusUpdated::class]);
@@ -102,7 +104,7 @@ class DeploymentTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function rollback_creates_new_deployment_with_reference()
     {
         $this->actingAs($this->user);
@@ -147,7 +149,7 @@ class DeploymentTest extends TestCase
         $this->assertEquals($oldDeployment->id, $result['deployment']->rollback_deployment_id);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_status_progression_is_correct()
     {
         $deployment = Deployment::factory()->create([
@@ -171,7 +173,7 @@ class DeploymentTest extends TestCase
         $this->assertNotNull($deployment->fresh()->completed_at);
     }
 
-    /** @test */
+    #[Test]
     public function failed_deployment_stores_error_message()
     {
         $deployment = Deployment::factory()->create([
@@ -192,7 +194,7 @@ class DeploymentTest extends TestCase
         $this->assertEquals($errorMessage, $deployment->fresh()->error_message);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_pagination_works_correctly()
     {
         $this->actingAs($this->user);
@@ -214,7 +216,7 @@ class DeploymentTest extends TestCase
         $this->assertEquals(25, Deployment::where('project_id', $this->project->id)->count());
     }
 
-    /** @test */
+    #[Test]
     public function deployment_can_be_cancelled()
     {
         Queue::fake();
@@ -232,7 +234,7 @@ class DeploymentTest extends TestCase
         $this->assertEquals('cancelled', $deployment->fresh()->status);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_logs_are_stored_correctly()
     {
         $logOutput = "Building Docker image...\nImage built successfully\nStarting containers...";
@@ -249,7 +251,7 @@ class DeploymentTest extends TestCase
         $this->assertStringContainsString('Building Docker image', $freshDeployment->output_log);
     }
 
-    /** @test */
+    #[Test]
     public function only_successful_deployments_can_be_rollback_targets()
     {
         $this->actingAs($this->user);
@@ -273,7 +275,7 @@ class DeploymentTest extends TestCase
         $this->assertEquals($successfulDeployment->id, $rollbackPoints[0]['id']);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_webhook_triggers_auto_deploy()
     {
         Queue::fake();

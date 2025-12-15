@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
@@ -38,8 +40,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 1: Page loads successfully (skip if no project)
      *
-     * @test
      */
+
+    #[Test]
     public function test_page_loads_successfully()
     {
         if (! $this->project) {
@@ -69,8 +72,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 2: Project name pre-filled
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_name_prefilled()
     {
         if (! $this->project) {
@@ -99,8 +103,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 3: Repository URL pre-filled
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_url_prefilled()
     {
         if (! $this->project) {
@@ -128,8 +133,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 4: Branch pre-filled
      *
-     * @test
      */
+
+    #[Test]
     public function test_branch_prefilled()
     {
         if (! $this->project) {
@@ -158,8 +164,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 5: Server selection shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_selection_shown()
     {
         if (! $this->project) {
@@ -188,8 +195,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 6: Framework selection shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_framework_selection_shown()
     {
         if (! $this->project) {
@@ -214,8 +222,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 7: PHP version shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_php_version_shown()
     {
         if (! $this->project) {
@@ -240,8 +249,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 8: Node version field visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_node_version_visible()
     {
         if (! $this->project) {
@@ -266,8 +276,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 9: Root directory field visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_root_directory_visible()
     {
         if (! $this->project) {
@@ -295,8 +306,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 10: Build command field visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_build_command_visible()
     {
         if (! $this->project) {
@@ -321,8 +333,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 11: Update button visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_update_button_visible()
     {
         if (! $this->project) {
@@ -352,8 +365,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 12: Cancel button present
      *
-     * @test
      */
+
+    #[Test]
     public function test_cancel_button_present()
     {
         if (! $this->project) {
@@ -382,8 +396,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 13: Slug field present and auto-generates
      *
-     * @test
      */
+
+    #[Test]
     public function test_slug_field_present()
     {
         if (! $this->project) {
@@ -411,8 +426,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 14: Auto-deploy toggle visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_auto_deploy_toggle_visible()
     {
         if (! $this->project) {
@@ -437,8 +453,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 15: Form validation works
      *
-     * @test
      */
+
+    #[Test]
     public function test_form_validation_works()
     {
         if (! $this->project) {
@@ -478,8 +495,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 16: Changes persist after save
      *
-     * @test
      */
+
+    #[Test]
     public function test_changes_persist_after_save()
     {
         if (! $this->project) {
@@ -530,8 +548,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 17: Success message displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_success_message_displayed()
     {
         if (! $this->project) {
@@ -572,8 +591,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 18: Error handling for invalid repository URL
      *
-     * @test
      */
+
+    #[Test]
     public function test_error_handling_invalid_repo()
     {
         if (! $this->project) {
@@ -617,8 +637,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 19: Navigation back works
      *
-     * @test
      */
+
+    #[Test]
     public function test_back_navigation_works()
     {
         if (! $this->project) {
@@ -657,8 +678,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 20: GPS Location fields present
      *
-     * @test
      */
+
+    #[Test]
     public function test_location_fields_present()
     {
         if (! $this->project) {
@@ -687,8 +709,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 21: Server refresh button works
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_refresh_button()
     {
         if (! $this->project) {
@@ -717,8 +740,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 22: Start command field present
      *
-     * @test
      */
+
+    #[Test]
     public function test_start_command_field()
     {
         if (! $this->project) {
@@ -743,8 +767,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 23: Framework options available
      *
-     * @test
      */
+
+    #[Test]
     public function test_framework_options_available()
     {
         if (! $this->project) {
@@ -774,8 +799,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 24: All form fields are editable
      *
-     * @test
      */
+
+    #[Test]
     public function test_all_fields_editable()
     {
         if (! $this->project) {
@@ -810,8 +836,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 25: Flash messages display properly
      *
-     * @test
      */
+
+    #[Test]
     public function test_flash_messages_display()
     {
         if (! $this->project) {
@@ -852,8 +879,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 26: Server selection radio buttons work
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_radio_buttons()
     {
         if (! $this->project) {
@@ -889,8 +917,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 27: Section headers are visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_section_headers_visible()
     {
         if (! $this->project) {
@@ -921,8 +950,9 @@ class ProjectEditTest extends DuskTestCase
     /**
      * Test 28: Form has proper Livewire structure
      *
-     * @test
      */
+
+    #[Test]
     public function test_livewire_structure()
     {
         if (! $this->project) {

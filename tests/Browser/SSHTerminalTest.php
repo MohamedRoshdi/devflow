@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Server;
 use App\Models\User;
 use Laravel\Dusk\Browser;
@@ -67,8 +69,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 1: SSH Terminal page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_access_ssh_terminal()
     {
         $this->browse(function (Browser $browser) {
@@ -94,8 +97,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 2: Terminal header is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_terminal_header_is_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -121,8 +125,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 3: Connection status indicator is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_connection_status_indicator_present()
     {
         $this->browse(function (Browser $browser) {
@@ -148,8 +153,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 4: Command input field is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_command_input_field_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -174,8 +180,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 5: Execute button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_execute_button_present()
     {
         $this->browse(function (Browser $browser) {
@@ -200,8 +207,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 6: Command output display area exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_command_output_display_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -227,8 +235,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 7: Terminal history section is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_terminal_history_available()
     {
         $this->browse(function (Browser $browser) {
@@ -253,8 +262,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 8: Clear history button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_clear_history_button_present()
     {
         $this->browse(function (Browser $browser) {
@@ -279,8 +289,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 9: Terminal prompt symbol is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_terminal_prompt_symbol_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -305,8 +316,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 10: Quick commands section is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_quick_commands_section_available()
     {
         $this->browse(function (Browser $browser) {
@@ -331,8 +343,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 11: System info quick commands are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_system_info_quick_commands_present()
     {
         $this->browse(function (Browser $browser) {
@@ -358,8 +371,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 12: Docker quick commands are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_quick_commands_present()
     {
         $this->browse(function (Browser $browser) {
@@ -384,8 +398,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 13: Process & Services commands are available
      *
-     * @test
      */
+
+    #[Test]
     public function test_process_services_commands_available()
     {
         $this->browse(function (Browser $browser) {
@@ -411,8 +426,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 14: Terminal has dark theme styling
      *
-     * @test
      */
+
+    #[Test]
     public function test_terminal_has_dark_theme()
     {
         $this->browse(function (Browser $browser) {
@@ -437,8 +453,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 15: Terminal font is monospace
      *
-     * @test
      */
+
+    #[Test]
     public function test_terminal_font_is_monospace()
     {
         $this->browse(function (Browser $browser) {
@@ -462,8 +479,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 16: Command rerun functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_command_rerun_functionality_available()
     {
         $this->browse(function (Browser $browser) {
@@ -488,8 +506,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 17: Exit code is displayed in history
      *
-     * @test
      */
+
+    #[Test]
     public function test_exit_code_displayed_in_history()
     {
         $this->browse(function (Browser $browser) {
@@ -514,8 +533,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 18: Success/failure indicators are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_success_failure_indicators_present()
     {
         $this->browse(function (Browser $browser) {
@@ -541,8 +561,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 19: Timestamp is shown for commands
      *
-     * @test
      */
+
+    #[Test]
     public function test_timestamp_shown_for_commands()
     {
         $this->browse(function (Browser $browser) {
@@ -567,8 +588,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 20: Web services quick commands are available
      *
-     * @test
      */
+
+    #[Test]
     public function test_web_services_commands_available()
     {
         $this->browse(function (Browser $browser) {
@@ -594,8 +616,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 21: Log viewing commands are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_viewing_commands_present()
     {
         $this->browse(function (Browser $browser) {
@@ -621,8 +644,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 22: Terminal shows server username
      *
-     * @test
      */
+
+    #[Test]
     public function test_terminal_shows_server_username()
     {
         $this->browse(function (Browser $browser) {
@@ -647,8 +671,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 23: Terminal shows server IP address
      *
-     * @test
      */
+
+    #[Test]
     public function test_terminal_shows_server_ip()
     {
         $this->browse(function (Browser $browser) {
@@ -672,8 +697,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 24: Terminal has responsive design
      *
-     * @test
      */
+
+    #[Test]
     public function test_terminal_has_responsive_design()
     {
         $this->browse(function (Browser $browser) {
@@ -698,8 +724,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 25: Command input has placeholder text
      *
-     * @test
      */
+
+    #[Test]
     public function test_command_input_has_placeholder()
     {
         $this->browse(function (Browser $browser) {
@@ -724,8 +751,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 26: Terminal has loading state indicator
      *
-     * @test
      */
+
+    #[Test]
     public function test_terminal_has_loading_indicator()
     {
         $this->browse(function (Browser $browser) {
@@ -750,8 +778,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 27: Execute button is disabled when executing
      *
-     * @test
      */
+
+    #[Test]
     public function test_execute_button_disabled_when_executing()
     {
         $this->browse(function (Browser $browser) {
@@ -776,8 +805,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 28: Terminal input is disabled when executing
      *
-     * @test
      */
+
+    #[Test]
     public function test_terminal_input_disabled_when_executing()
     {
         $this->browse(function (Browser $browser) {
@@ -801,8 +831,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 29: Quick command buttons have hover effect
      *
-     * @test
      */
+
+    #[Test]
     public function test_quick_command_buttons_have_hover()
     {
         $this->browse(function (Browser $browser) {
@@ -826,8 +857,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 30: Quick command buttons have tooltips
      *
-     * @test
      */
+
+    #[Test]
     public function test_quick_command_buttons_have_tooltips()
     {
         $this->browse(function (Browser $browser) {
@@ -851,8 +883,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 31: Terminal has proper color scheme
      *
-     * @test
      */
+
+    #[Test]
     public function test_terminal_has_proper_color_scheme()
     {
         $this->browse(function (Browser $browser) {
@@ -878,8 +911,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 32: Terminal window has macOS-style controls
      *
-     * @test
      */
+
+    #[Test]
     public function test_terminal_has_macos_controls()
     {
         $this->browse(function (Browser $browser) {
@@ -905,8 +939,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 33: Explore system commands are available
      *
-     * @test
      */
+
+    #[Test]
     public function test_explore_system_commands_available()
     {
         $this->browse(function (Browser $browser) {
@@ -932,8 +967,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 34: Terminal form uses wire:submit.prevent
      *
-     * @test
      */
+
+    #[Test]
     public function test_terminal_form_uses_wire_submit()
     {
         $this->browse(function (Browser $browser) {
@@ -957,8 +993,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 35: Command input has autofocus
      *
-     * @test
      */
+
+    #[Test]
     public function test_command_input_has_autofocus()
     {
         $this->browse(function (Browser $browser) {
@@ -982,8 +1019,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 36: Terminal has rounded corners
      *
-     * @test
      */
+
+    #[Test]
     public function test_terminal_has_rounded_corners()
     {
         $this->browse(function (Browser $browser) {
@@ -1008,8 +1046,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 37: Terminal uses Livewire wire:model
      *
-     * @test
      */
+
+    #[Test]
     public function test_terminal_uses_livewire_wire_model()
     {
         $this->browse(function (Browser $browser) {
@@ -1033,8 +1072,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 38: Command categories are organized
      *
-     * @test
      */
+
+    #[Test]
     public function test_command_categories_are_organized()
     {
         $this->browse(function (Browser $browser) {
@@ -1059,8 +1099,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 39: Terminal supports dark mode properly
      *
-     * @test
      */
+
+    #[Test]
     public function test_terminal_supports_dark_mode()
     {
         $this->browse(function (Browser $browser) {
@@ -1085,8 +1126,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 40: Terminal has spacing and layout structure
      *
-     * @test
      */
+
+    #[Test]
     public function test_terminal_has_spacing_layout()
     {
         $this->browse(function (Browser $browser) {
@@ -1112,8 +1154,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 41: Quick command click sets input value
      *
-     * @test
      */
+
+    #[Test]
     public function test_quick_command_click_sets_input()
     {
         $this->browse(function (Browser $browser) {
@@ -1137,8 +1180,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 42: Terminal has confirmation for clear history
      *
-     * @test
      */
+
+    #[Test]
     public function test_terminal_has_clear_history_confirmation()
     {
         $this->browse(function (Browser $browser) {
@@ -1163,8 +1207,9 @@ class SSHTerminalTest extends DuskTestCase
     /**
      * Test 43: Navigation from server details to terminal works
      *
-     * @test
      */
+
+    #[Test]
     public function test_navigation_from_server_to_terminal()
     {
         $this->browse(function (Browser $browser) {

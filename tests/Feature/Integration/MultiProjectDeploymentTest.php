@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Integration;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Jobs\DeployProjectJob;
 use App\Models\Deployment;
 use App\Models\Project;
@@ -76,7 +78,7 @@ class MultiProjectDeploymentTest extends TestCase
 
     // ==================== Batch Deployment Tests ====================
 
-    /** @test */
+    #[Test]
     public function can_deploy_multiple_projects_in_batch(): void
     {
         Queue::fake();
@@ -106,7 +108,7 @@ class MultiProjectDeploymentTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function batch_deployment_dispatches_jobs_for_all_projects(): void
     {
         Queue::fake();
@@ -118,7 +120,7 @@ class MultiProjectDeploymentTest extends TestCase
         Queue::assertPushed(DeployProjectJob::class, 5);
     }
 
-    /** @test */
+    #[Test]
     public function batch_deployment_tracks_individual_statuses(): void
     {
         $deployments = [];
@@ -142,7 +144,7 @@ class MultiProjectDeploymentTest extends TestCase
 
     // ==================== Partial Failure Handling Tests ====================
 
-    /** @test */
+    #[Test]
     public function handles_partial_batch_failure_gracefully(): void
     {
         // Create deployments with mixed statuses
@@ -175,7 +177,7 @@ class MultiProjectDeploymentTest extends TestCase
         $this->assertEquals('Git pull failed', $failedDeployment->error_message);
     }
 
-    /** @test */
+    #[Test]
     public function failed_deployment_does_not_affect_other_projects(): void
     {
         // First project deployment fails
@@ -207,7 +209,7 @@ class MultiProjectDeploymentTest extends TestCase
 
     // ==================== Server-Wide Deployment Tests ====================
 
-    /** @test */
+    #[Test]
     public function can_deploy_all_projects_on_a_server(): void
     {
         Queue::fake();
@@ -234,7 +236,7 @@ class MultiProjectDeploymentTest extends TestCase
         $this->assertEquals(5, $pendingCount);
     }
 
-    /** @test */
+    #[Test]
     public function server_deployment_respects_project_status(): void
     {
         // Set one project as inactive
@@ -253,7 +255,7 @@ class MultiProjectDeploymentTest extends TestCase
 
     // ==================== Multi-Project Rollback Tests ====================
 
-    /** @test */
+    #[Test]
     public function can_rollback_multiple_projects_to_previous_version(): void
     {
         // Create original deployments (v1)
@@ -297,7 +299,7 @@ class MultiProjectDeploymentTest extends TestCase
         $this->assertEquals(5, $rollbackCount);
     }
 
-    /** @test */
+    #[Test]
     public function rollback_preserves_original_deployment_reference(): void
     {
         // Create original successful deployment
@@ -324,7 +326,7 @@ class MultiProjectDeploymentTest extends TestCase
 
     // ==================== Concurrent Deployment Tests ====================
 
-    /** @test */
+    #[Test]
     public function prevents_concurrent_deployments_to_same_project(): void
     {
         // Create running deployment
@@ -342,7 +344,7 @@ class MultiProjectDeploymentTest extends TestCase
         $this->assertTrue($hasActiveDeployment);
     }
 
-    /** @test */
+    #[Test]
     public function allows_deployments_to_different_projects_concurrently(): void
     {
         // Create running deployments for different projects
@@ -360,7 +362,7 @@ class MultiProjectDeploymentTest extends TestCase
 
     // ==================== Deployment Statistics Tests ====================
 
-    /** @test */
+    #[Test]
     public function calculates_batch_deployment_statistics(): void
     {
         // Create mixed deployment results
@@ -390,7 +392,7 @@ class MultiProjectDeploymentTest extends TestCase
         $this->assertEquals(80.0, $stats['success_rate']);
     }
 
-    /** @test */
+    #[Test]
     public function tracks_deployment_duration_for_batch(): void
     {
         foreach ($this->projects as $index => $project) {
@@ -411,7 +413,7 @@ class MultiProjectDeploymentTest extends TestCase
 
     // ==================== Authorization Tests ====================
 
-    /** @test */
+    #[Test]
     public function user_can_only_deploy_their_own_projects(): void
     {
         $otherUser = User::factory()->create();
@@ -427,7 +429,7 @@ class MultiProjectDeploymentTest extends TestCase
         $this->assertFalse($userProjects->contains('id', $otherProject->id));
     }
 
-    /** @test */
+    #[Test]
     public function batch_deployment_filters_by_user_permission(): void
     {
         $otherUser = User::factory()->create();
@@ -446,7 +448,7 @@ class MultiProjectDeploymentTest extends TestCase
 
     // ==================== Queue and Job Tests ====================
 
-    /** @test */
+    #[Test]
     public function batch_deployment_queues_jobs_sequentially(): void
     {
         Queue::fake();
@@ -459,7 +461,7 @@ class MultiProjectDeploymentTest extends TestCase
         Queue::assertPushed(DeployProjectJob::class, 5);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_completion_updates_project_timestamp(): void
     {
         $project = $this->projects[0];

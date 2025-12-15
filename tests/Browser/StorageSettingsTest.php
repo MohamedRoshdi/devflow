@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Project;
 use App\Models\StorageConfiguration;
 use App\Models\User;
@@ -52,8 +54,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 1: Storage settings page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_settings_page_loads(): void
     {
         $this->browse(function (Browser $browser) {
@@ -79,8 +82,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 2: Add Storage button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_add_storage_button_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -106,8 +110,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 3: Storage driver tabs are displayed in modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_driver_tabs_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -141,8 +146,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 4: S3 configuration fields are shown when S3 is selected
      *
-     * @test
      */
+
+    #[Test]
     public function test_s3_configuration_fields_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -175,8 +181,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 5: Configuration name field is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_configuration_name_field_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -208,8 +215,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 6: Storage usage statistics are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_usage_statistics_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -252,8 +260,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 7: Test connection button is present for storage configurations
      *
-     * @test
      */
+
+    #[Test]
     public function test_test_connection_button_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -295,8 +304,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 8: Save settings button is visible in modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_save_settings_button_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -329,8 +339,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 9: Storage configurations list is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_configurations_list_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -384,8 +395,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 10: Default storage badge is shown for default configuration
      *
-     * @test
      */
+
+    #[Test]
     public function test_default_storage_badge_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -424,8 +436,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 11: Set as default button is visible for non-default configurations
      *
-     * @test
      */
+
+    #[Test]
     public function test_set_as_default_button_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -464,8 +477,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 12: Edit button is present for storage configurations
      *
-     * @test
      */
+
+    #[Test]
     public function test_edit_button_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -503,8 +517,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 13: Delete button is present for storage configurations
      *
-     * @test
      */
+
+    #[Test]
     public function test_delete_button_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -542,8 +557,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 14: Project selector is available in configuration modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_selector_available(): void
     {
         $this->browse(function (Browser $browser) {
@@ -575,8 +591,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 15: Encryption options are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_encryption_options_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -608,8 +625,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 16: Generate encryption key button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_generate_encryption_key_button_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -640,8 +658,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 17: Storage driver icons are displayed correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_driver_icons_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -693,8 +712,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 18: Status badges are displayed for configurations
      *
-     * @test
      */
+
+    #[Test]
     public function test_status_badges_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -732,8 +752,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 19: Empty state is shown when no configurations exist
      *
-     * @test
      */
+
+    #[Test]
     public function test_empty_state_shown_when_no_configurations(): void
     {
         $this->browse(function (Browser $browser) {
@@ -760,8 +781,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 20: Cancel button closes the modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_cancel_button_closes_modal(): void
     {
         $this->browse(function (Browser $browser) {
@@ -792,8 +814,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 21: Region field is displayed for S3
      *
-     * @test
      */
+
+    #[Test]
     public function test_region_field_displayed_for_s3(): void
     {
         $this->browse(function (Browser $browser) {
@@ -824,8 +847,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 22: Bucket name field is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_bucket_name_field_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -856,8 +880,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 23: Custom endpoint field is available for S3-compatible services
      *
-     * @test
      */
+
+    #[Test]
     public function test_custom_endpoint_field_available(): void
     {
         $this->browse(function (Browser $browser) {
@@ -889,8 +914,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 24: Path prefix field is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_path_prefix_field_available(): void
     {
         $this->browse(function (Browser $browser) {
@@ -921,8 +947,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 25: FTP configuration fields are shown when FTP is selected
      *
-     * @test
      */
+
+    #[Test]
     public function test_ftp_configuration_fields_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -958,8 +985,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 26: SFTP configuration fields are shown when SFTP is selected
      *
-     * @test
      */
+
+    #[Test]
     public function test_sftp_configuration_fields_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -995,8 +1023,9 @@ class StorageSettingsTest extends DuskTestCase
     /**
      * Test 27: GCS service account field is shown when GCS is selected
      *
-     * @test
      */
+
+    #[Test]
     public function test_gcs_service_account_field_shown(): void
     {
         $this->browse(function (Browser $browser) {

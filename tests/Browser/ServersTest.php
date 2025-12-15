@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Server;
 use App\Models\ServerTag;
 use App\Models\User;
@@ -69,8 +71,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 1: Server list page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_list_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -96,8 +99,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 2: Server creation button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_creation_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -124,8 +128,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 3: Server creation page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_creation_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -151,8 +156,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 4: Server creation form has required fields
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_creation_form_has_required_fields()
     {
         $this->browse(function (Browser $browser) {
@@ -178,8 +184,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 5: Server show/details page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_show_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -205,8 +212,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 6: Server edit page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_edit_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -232,8 +240,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 7: Server metrics dashboard loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_metrics_dashboard_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -260,8 +269,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 8: Server tags manager page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_tags_manager_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -287,8 +297,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 9: Server status is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_status_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -314,8 +325,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 10: Server search functionality is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_search_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -341,8 +353,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 11: Server filter by status is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_status_filter_available()
     {
         $this->browse(function (Browser $browser) {
@@ -367,8 +380,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 12: Server ping action is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_ping_action_present()
     {
         $this->browse(function (Browser $browser) {
@@ -394,8 +408,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 13: Server reboot action is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_reboot_action_present()
     {
         $this->browse(function (Browser $browser) {
@@ -421,8 +436,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 14: Server Docker status is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_docker_status_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -447,8 +463,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 15: Server Docker management page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_docker_management_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -473,8 +490,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 16: Server hardware info is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_hardware_info_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -501,8 +519,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 17: Server projects list is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_projects_list_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -527,8 +546,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 18: Server SSH configuration is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_ssh_configuration_present()
     {
         $this->browse(function (Browser $browser) {
@@ -554,8 +574,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 19: Server delete action is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_delete_action_present()
     {
         $this->browse(function (Browser $browser) {
@@ -581,8 +602,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 20: Server SSL manager page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_ssl_manager_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -607,8 +629,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 21: Server alerts page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_alerts_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -634,8 +657,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 22: Server backups page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_backups_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -661,8 +685,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 23: Server security dashboard loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_security_dashboard_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -688,8 +713,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 24: Server tag assignment is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_tag_assignment_available()
     {
         $this->browse(function (Browser $browser) {
@@ -714,8 +740,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 25: Server connection test is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_connection_test_available()
     {
         $this->browse(function (Browser $browser) {
@@ -740,8 +767,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 26: Server metrics show CPU usage
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_metrics_show_cpu_usage()
     {
         $this->browse(function (Browser $browser) {
@@ -767,8 +795,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 27: Server metrics show memory usage
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_metrics_show_memory_usage()
     {
         $this->browse(function (Browser $browser) {
@@ -794,8 +823,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 28: Server metrics show disk usage
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_metrics_show_disk_usage()
     {
         $this->browse(function (Browser $browser) {
@@ -821,8 +851,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 29: Server bulk actions are available
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_bulk_actions_available()
     {
         $this->browse(function (Browser $browser) {
@@ -848,8 +879,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 30: Server location information is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_location_information_present()
     {
         $this->browse(function (Browser $browser) {
@@ -875,8 +907,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 31: Server validation messages are handled
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_validation_messages_handled()
     {
         $this->browse(function (Browser $browser) {
@@ -901,8 +934,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 32: Server last ping time is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_last_ping_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -928,8 +962,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 33: Server service restart is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_service_restart_available()
     {
         $this->browse(function (Browser $browser) {
@@ -954,8 +989,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 34: Server cache clear is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_cache_clear_available()
     {
         $this->browse(function (Browser $browser) {
@@ -980,8 +1016,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 35: Server supports dark mode
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_supports_dark_mode()
     {
         $this->browse(function (Browser $browser) {
@@ -1006,8 +1043,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 36: Server pagination is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_pagination_present()
     {
         $this->browse(function (Browser $browser) {
@@ -1033,8 +1071,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 37: Server OS information is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_os_information_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -1060,8 +1099,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 38: Server IP address is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_ip_address_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -1086,8 +1126,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 39: Navigation to servers from dashboard works
      *
-     * @test
      */
+
+    #[Test]
     public function test_navigation_to_servers_from_dashboard()
     {
         $this->browse(function (Browser $browser) {
@@ -1114,8 +1155,9 @@ class ServersTest extends DuskTestCase
     /**
      * Test 40: Server current VPS quick add is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_current_vps_quick_add_available()
     {
         $this->browse(function (Browser $browser) {

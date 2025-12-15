@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\User;
 use Laravel\Dusk\Browser;
 use Spatie\Permission\Models\Role;
@@ -58,8 +60,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 1: System admin page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_system_admin_page_loads_successfully(): void
     {
         $this->browse(function (Browser $browser) {
@@ -83,8 +86,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 2: System overview displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_system_overview_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -108,8 +112,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 3: Database backup stats shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_database_backup_stats_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -132,8 +137,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 4: System monitoring stats shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_system_monitoring_stats_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -156,8 +162,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 5: Log rotation info shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_rotation_info_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -181,8 +188,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 6: DB optimization schedule shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_db_optimization_schedule_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -205,8 +213,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 7: Quick actions section displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_quick_actions_section_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -229,8 +238,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 8: Recent alerts section displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_recent_alerts_section_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -254,8 +264,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 9: System health indicators shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_system_health_indicators_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -279,8 +290,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 10: Navigation tabs displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_navigation_tabs_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -304,8 +316,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 11: Switch to backup logs tab
      *
-     * @test
      */
+
+    #[Test]
     public function test_switch_to_backup_logs_tab(): void
     {
         $this->browse(function (Browser $browser) {
@@ -328,8 +341,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 12: Switch to monitoring logs tab
      *
-     * @test
      */
+
+    #[Test]
     public function test_switch_to_monitoring_logs_tab(): void
     {
         $this->browse(function (Browser $browser) {
@@ -352,8 +366,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 13: Switch to optimization logs tab
      *
-     * @test
      */
+
+    #[Test]
     public function test_switch_to_optimization_logs_tab(): void
     {
         $this->browse(function (Browser $browser) {
@@ -376,8 +391,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 14: Statistics cards displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_statistics_cards_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -402,8 +418,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 15: Run backup now button visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_run_backup_now_button_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -426,8 +443,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 16: Optimize now button visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_optimize_now_button_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -450,8 +468,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 17: Backup status indicator shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_status_indicator_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -475,8 +494,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 18: System alerts section visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_system_alerts_section_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -500,8 +520,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 19: Admin-only access verified
      *
-     * @test
      */
+
+    #[Test]
     public function test_admin_only_access_verified(): void
     {
         $this->browse(function (Browser $browser) {
@@ -529,8 +550,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 20: Flash messages display correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_flash_messages_display_correctly(): void
     {
         $this->browse(function (Browser $browser) {
@@ -554,8 +576,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 21: Backup statistics complete
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_statistics_complete(): void
     {
         $this->browse(function (Browser $browser) {
@@ -579,8 +602,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 22: Schedule information displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_schedule_information_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -605,8 +629,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 23: Alert severity levels shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_severity_levels_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -631,8 +656,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 24: Loading states working
      *
-     * @test
      */
+
+    #[Test]
     public function test_loading_states_working(): void
     {
         $this->browse(function (Browser $browser) {
@@ -656,8 +682,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 25: Info banner displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_info_banner_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -681,8 +708,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 26: Automated features list shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_automated_features_list_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -706,8 +734,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 27: Backup retention policy shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_retention_policy_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -731,8 +760,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 28: Monitoring interval shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_monitoring_interval_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -756,8 +786,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 29: Database operations listed
      *
-     * @test
      */
+
+    #[Test]
     public function test_database_operations_listed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -781,8 +812,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 30: System metrics visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_system_metrics_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -807,8 +839,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 31: Hero section displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_hero_section_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -831,8 +864,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 32: Visual indicators present
      *
-     * @test
      */
+
+    #[Test]
     public function test_visual_indicators_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -856,8 +890,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 33: Success message styling
      *
-     * @test
      */
+
+    #[Test]
     public function test_success_message_styling(): void
     {
         $this->browse(function (Browser $browser) {
@@ -880,8 +915,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 34: Error message styling
      *
-     * @test
      */
+
+    #[Test]
     public function test_error_message_styling(): void
     {
         $this->browse(function (Browser $browser) {
@@ -904,8 +940,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 35: Responsive grid layout
      *
-     * @test
      */
+
+    #[Test]
     public function test_responsive_grid_layout(): void
     {
         $this->browse(function (Browser $browser) {
@@ -929,8 +966,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 36: Card hover effects
      *
-     * @test
      */
+
+    #[Test]
     public function test_card_hover_effects(): void
     {
         $this->browse(function (Browser $browser) {
@@ -953,8 +991,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 37: Dark mode support
      *
-     * @test
      */
+
+    #[Test]
     public function test_dark_mode_support(): void
     {
         $this->browse(function (Browser $browser) {
@@ -977,8 +1016,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 38: Gradient backgrounds used
      *
-     * @test
      */
+
+    #[Test]
     public function test_gradient_backgrounds_used(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1002,8 +1042,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 39: Log display formatting
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_display_formatting(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1027,8 +1068,9 @@ class SystemAdminTest extends DuskTestCase
     /**
      * Test 40: Timestamp display in cards
      *
-     * @test
      */
+
+    #[Test]
     public function test_timestamp_display_in_cards(): void
     {
         $this->browse(function (Browser $browser) {

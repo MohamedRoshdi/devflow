@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\FileBackup;
 use App\Models\Project;
 use App\Models\Server;
@@ -65,8 +67,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 1: File backup manager page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_file_backup_manager_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -93,8 +96,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 2: Create backup modal opens
      *
-     * @test
      */
+
+    #[Test]
     public function test_create_backup_modal_opens()
     {
         $this->browse(function (Browser $browser) {
@@ -121,8 +125,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 3: Full backup type selection available
      *
-     * @test
      */
+
+    #[Test]
     public function test_full_backup_type_selection()
     {
         $this->browse(function (Browser $browser) {
@@ -147,8 +152,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 4: Incremental backup type selection available
      *
-     * @test
      */
+
+    #[Test]
     public function test_incremental_backup_type_selection()
     {
         $this->browse(function (Browser $browser) {
@@ -173,8 +179,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 5: Storage disk selection for local storage
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_disk_local_selection()
     {
         $this->browse(function (Browser $browser) {
@@ -199,8 +206,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 6: Storage disk selection for S3
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_disk_s3_selection()
     {
         $this->browse(function (Browser $browser) {
@@ -225,8 +233,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 7: Storage disk selection for Google Cloud Storage
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_disk_gcs_selection()
     {
         $this->browse(function (Browser $browser) {
@@ -251,8 +260,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 8: Storage disk selection for Azure Blob Storage
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_disk_azure_selection()
     {
         $this->browse(function (Browser $browser) {
@@ -277,8 +287,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 9: Base backup selection for incremental backups
      *
-     * @test
      */
+
+    #[Test]
     public function test_base_backup_selection_for_incremental()
     {
         // Create a full backup first
@@ -324,8 +335,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 10: File backup list displays correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_file_backup_list_displays()
     {
         $this->browse(function (Browser $browser) {
@@ -351,8 +363,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 11: Backup status indicators shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_status_indicators_shown()
     {
         FileBackup::firstOrCreate(
@@ -398,8 +411,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 12: Backup file size displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_file_size_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -426,8 +440,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 13: Backup files count displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_files_count_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -452,8 +467,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 14: Backup checksum displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_checksum_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -478,8 +494,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 15: Backup duration displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_duration_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -505,8 +522,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 16: Backup timestamp displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_timestamp_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -532,8 +550,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 17: Restore backup modal opens
      *
-     * @test
      */
+
+    #[Test]
     public function test_restore_backup_modal_opens()
     {
         $this->browse(function (Browser $browser) {
@@ -558,8 +577,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 18: Overwrite option on restore
      *
-     * @test
      */
+
+    #[Test]
     public function test_restore_overwrite_option()
     {
         $this->browse(function (Browser $browser) {
@@ -584,8 +604,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 19: Download backup functionality available
      *
-     * @test
      */
+
+    #[Test]
     public function test_download_backup_available()
     {
         $this->browse(function (Browser $browser) {
@@ -610,8 +631,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 20: View backup manifest modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_view_backup_manifest_modal()
     {
         FileBackup::firstOrCreate(
@@ -660,8 +682,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 21: Delete backup confirmation
      *
-     * @test
      */
+
+    #[Test]
     public function test_delete_backup_confirmation()
     {
         $this->browse(function (Browser $browser) {
@@ -687,8 +710,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 22: Exclude patterns modal opens
      *
-     * @test
      */
+
+    #[Test]
     public function test_exclude_patterns_modal_opens()
     {
         $this->browse(function (Browser $browser) {
@@ -714,8 +738,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 23: Add exclude pattern functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_add_exclude_pattern_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -741,8 +766,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 24: Remove exclude pattern functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_remove_exclude_pattern_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -768,8 +794,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 25: Reset exclude patterns to defaults
      *
-     * @test
      */
+
+    #[Test]
     public function test_reset_exclude_patterns_to_defaults()
     {
         $this->browse(function (Browser $browser) {
@@ -794,8 +821,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 26: Search/filter backups functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_search_filter_backups()
     {
         $this->browse(function (Browser $browser) {
@@ -820,8 +848,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 27: Filter by backup type (full/incremental)
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_by_backup_type()
     {
         $this->browse(function (Browser $browser) {
@@ -847,8 +876,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 28: Filter by backup status
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_by_backup_status()
     {
         $this->browse(function (Browser $browser) {
@@ -874,8 +904,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 29: Incremental backup shows parent reference
      *
-     * @test
      */
+
+    #[Test]
     public function test_incremental_backup_shows_parent()
     {
         // Create parent full backup
@@ -933,8 +964,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 30: Backup with child backups shows warning on delete
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_with_children_delete_warning()
     {
         $this->browse(function (Browser $browser) {
@@ -959,8 +991,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 31: Backup error messages displayed for failed backups
      *
-     * @test
      */
+
+    #[Test]
     public function test_failed_backup_error_messages()
     {
         FileBackup::firstOrCreate(
@@ -1004,8 +1037,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 32: Backup compression indicated
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_compression_indicated()
     {
         $this->browse(function (Browser $browser) {
@@ -1031,8 +1065,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 33: Backup progress tracking for running backups
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_progress_tracking()
     {
         FileBackup::firstOrCreate(
@@ -1075,8 +1110,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 34: Backup size estimation shown before creation
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_size_estimation()
     {
         $this->browse(function (Browser $browser) {
@@ -1101,8 +1137,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 35: Backup encryption settings available
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_encryption_settings()
     {
         $this->browse(function (Browser $browser) {
@@ -1127,8 +1164,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 36: Backup verification functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_verification_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -1153,8 +1191,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 37: Backup logs viewing functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_logs_viewing()
     {
         $this->browse(function (Browser $browser) {
@@ -1179,8 +1218,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 38: Empty state shown when no backups exist
      *
-     * @test
      */
+
+    #[Test]
     public function test_empty_state_no_backups()
     {
         // Create a new project with no backups
@@ -1220,8 +1260,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 39: Backup type color coding
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_type_color_coding()
     {
         $this->browse(function (Browser $browser) {
@@ -1247,8 +1288,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 40: Backup status color coding
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_status_color_coding()
     {
         $this->browse(function (Browser $browser) {
@@ -1274,8 +1316,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 41: Incremental depth indicator
      *
-     * @test
      */
+
+    #[Test]
     public function test_incremental_depth_indicator()
     {
         $this->browse(function (Browser $browser) {
@@ -1300,8 +1343,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 42: Backup retention policy settings
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_retention_policy()
     {
         $this->browse(function (Browser $browser) {
@@ -1327,8 +1371,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 43: Backup sorting options
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_sorting_options()
     {
         $this->browse(function (Browser $browser) {
@@ -1353,8 +1398,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 44: Bulk backup operations
      *
-     * @test
      */
+
+    #[Test]
     public function test_bulk_backup_operations()
     {
         $this->browse(function (Browser $browser) {
@@ -1379,8 +1425,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 45: Backup notification settings
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_notification_settings()
     {
         $this->browse(function (Browser $browser) {
@@ -1405,8 +1452,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 46: Backup statistics summary
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_statistics_summary()
     {
         $this->browse(function (Browser $browser) {
@@ -1432,8 +1480,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 47: Storage disk usage indicators
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_disk_usage_indicators()
     {
         $this->browse(function (Browser $browser) {
@@ -1458,8 +1507,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 48: Backup chain visualization
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_chain_visualization()
     {
         $this->browse(function (Browser $browser) {
@@ -1484,8 +1534,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 49: Backup metadata display
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_metadata_display()
     {
         $this->browse(function (Browser $browser) {
@@ -1510,8 +1561,9 @@ class FileBackupManagerTest extends DuskTestCase
     /**
      * Test 50: Refresh backups list functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_refresh_backups_list()
     {
         $this->browse(function (Browser $browser) {

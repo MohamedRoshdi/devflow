@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\KubernetesCluster;
 use App\Models\Project;
 use App\Models\User;
@@ -35,8 +37,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 1: Kubernetes cluster list page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_kubernetes_cluster_list_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -63,8 +66,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 2: Add cluster button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_add_cluster_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -91,8 +95,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 3: Cluster table displays with correct columns
      *
-     * @test
      */
+
+    #[Test]
     public function test_cluster_table_displays_columns()
     {
         $this->browse(function (Browser $browser) {
@@ -119,8 +124,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 4: Cluster actions are available (Test, Deploy, Edit, Delete)
      *
-     * @test
      */
+
+    #[Test]
     public function test_cluster_actions_available()
     {
         $this->browse(function (Browser $browser) {
@@ -147,8 +153,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 5: Add cluster modal can be opened
      *
-     * @test
      */
+
+    #[Test]
     public function test_add_cluster_modal_opens()
     {
         $this->browse(function (Browser $browser) {
@@ -182,8 +189,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 6: Cluster form has required fields
      *
-     * @test
      */
+
+    #[Test]
     public function test_cluster_form_has_required_fields()
     {
         $this->browse(function (Browser $browser) {
@@ -210,8 +218,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 7: Cluster namespace field is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_cluster_namespace_field_present()
     {
         $this->browse(function (Browser $browser) {
@@ -236,8 +245,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 8: Deploy to Kubernetes modal functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_deploy_to_kubernetes_modal()
     {
         $this->browse(function (Browser $browser) {
@@ -264,8 +274,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 9: Deployment resource limits configuration
      *
-     * @test
      */
+
+    #[Test]
     public function test_deployment_resource_limits_configuration()
     {
         $this->browse(function (Browser $browser) {
@@ -292,8 +303,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 10: Replica count configuration is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_replica_count_configuration()
     {
         $this->browse(function (Browser $browser) {
@@ -319,8 +331,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 11: Auto-scaling configuration is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_autoscaling_configuration_present()
     {
         $this->browse(function (Browser $browser) {
@@ -347,8 +360,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 12: Service type selection is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_service_type_selection_available()
     {
         $this->browse(function (Browser $browser) {
@@ -375,8 +389,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 13: Cluster status indicators are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_cluster_status_indicators_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -403,8 +418,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 14: Default cluster indicator is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_default_cluster_indicator_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -430,8 +446,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 15: Cluster connection test button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_cluster_connection_test_button_present()
     {
         $this->browse(function (Browser $browser) {
@@ -456,8 +473,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 16: Kubeconfig input field is secure
      *
-     * @test
      */
+
+    #[Test]
     public function test_kubeconfig_input_secure()
     {
         $this->browse(function (Browser $browser) {
@@ -483,8 +501,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 17: Project count is displayed for each cluster
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_count_displayed_per_cluster()
     {
         $this->browse(function (Browser $browser) {
@@ -509,8 +528,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 18: Cluster deletion confirmation is required
      *
-     * @test
      */
+
+    #[Test]
     public function test_cluster_deletion_confirmation()
     {
         $this->browse(function (Browser $browser) {
@@ -535,8 +555,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 19: Cluster edit functionality is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_cluster_edit_functionality_available()
     {
         $this->browse(function (Browser $browser) {
@@ -562,8 +583,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 20: Empty state message when no clusters exist
      *
-     * @test
      */
+
+    #[Test]
     public function test_empty_state_message_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -590,8 +612,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 21: Cluster API endpoint validation
      *
-     * @test
      */
+
+    #[Test]
     public function test_cluster_api_endpoint_validation()
     {
         $this->browse(function (Browser $browser) {
@@ -616,8 +639,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 22: Deployment CPU configuration fields
      *
-     * @test
      */
+
+    #[Test]
     public function test_deployment_cpu_configuration_fields()
     {
         $this->browse(function (Browser $browser) {
@@ -642,8 +666,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 23: Deployment memory configuration fields
      *
-     * @test
      */
+
+    #[Test]
     public function test_deployment_memory_configuration_fields()
     {
         $this->browse(function (Browser $browser) {
@@ -668,8 +693,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 24: Project selection dropdown in deployment modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_selection_dropdown_in_deployment()
     {
         $this->browse(function (Browser $browser) {
@@ -694,8 +720,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 25: Cluster namespace management visibility
      *
-     * @test
      */
+
+    #[Test]
     public function test_cluster_namespace_management_visibility()
     {
         $this->browse(function (Browser $browser) {
@@ -720,8 +747,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 26: Kubernetes icon/logo is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_kubernetes_icon_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -747,8 +775,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 27: Cluster list pagination works
      *
-     * @test
      */
+
+    #[Test]
     public function test_cluster_list_pagination()
     {
         $this->browse(function (Browser $browser) {
@@ -775,8 +804,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 28: Cluster modal can be cancelled/closed
      *
-     * @test
      */
+
+    #[Test]
     public function test_cluster_modal_can_be_cancelled()
     {
         $this->browse(function (Browser $browser) {
@@ -802,8 +832,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 29: Dark mode support for Kubernetes page
      *
-     * @test
      */
+
+    #[Test]
     public function test_dark_mode_support_kubernetes_page()
     {
         $this->browse(function (Browser $browser) {
@@ -830,8 +861,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 30: Responsive design for mobile/tablet view
      *
-     * @test
      */
+
+    #[Test]
     public function test_responsive_design_kubernetes_page()
     {
         $this->browse(function (Browser $browser) {
@@ -858,8 +890,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 31: Pod listing functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_pod_listing_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -884,8 +917,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 32: Pod status indicators (Running, Pending, Failed)
      *
-     * @test
      */
+
+    #[Test]
     public function test_pod_status_indicators()
     {
         $this->browse(function (Browser $browser) {
@@ -912,8 +946,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 33: Pod logs viewing functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_pod_logs_viewing_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -938,8 +973,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 34: ConfigMap management interface
      *
-     * @test
      */
+
+    #[Test]
     public function test_configmap_management_interface()
     {
         $this->browse(function (Browser $browser) {
@@ -965,8 +1001,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 35: Secret management interface
      *
-     * @test
      */
+
+    #[Test]
     public function test_secret_management_interface()
     {
         $this->browse(function (Browser $browser) {
@@ -992,8 +1029,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 36: Ingress configuration interface
      *
-     * @test
      */
+
+    #[Test]
     public function test_ingress_configuration_interface()
     {
         $this->browse(function (Browser $browser) {
@@ -1019,8 +1057,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 37: Cluster resource monitoring dashboard
      *
-     * @test
      */
+
+    #[Test]
     public function test_cluster_resource_monitoring_dashboard()
     {
         $this->browse(function (Browser $browser) {
@@ -1045,8 +1084,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 38: Kubectl command execution interface
      *
-     * @test
      */
+
+    #[Test]
     public function test_kubectl_command_execution_interface()
     {
         $this->browse(function (Browser $browser) {
@@ -1072,8 +1112,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 39: Helm chart management interface
      *
-     * @test
      */
+
+    #[Test]
     public function test_helm_chart_management_interface()
     {
         $this->browse(function (Browser $browser) {
@@ -1099,8 +1140,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 40: Cluster scaling controls
      *
-     * @test
      */
+
+    #[Test]
     public function test_cluster_scaling_controls()
     {
         $this->browse(function (Browser $browser) {
@@ -1126,8 +1168,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 41: Cluster health monitoring indicators
      *
-     * @test
      */
+
+    #[Test]
     public function test_cluster_health_monitoring_indicators()
     {
         $this->browse(function (Browser $browser) {
@@ -1152,8 +1195,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 42: Deployment rollout history
      *
-     * @test
      */
+
+    #[Test]
     public function test_deployment_rollout_history()
     {
         $this->browse(function (Browser $browser) {
@@ -1179,8 +1223,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 43: Deployment rollback functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_deployment_rollback_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -1206,8 +1251,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 44: Cluster node information display
      *
-     * @test
      */
+
+    #[Test]
     public function test_cluster_node_information_display()
     {
         $this->browse(function (Browser $browser) {
@@ -1232,8 +1278,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 45: Persistent Volume (PV) management
      *
-     * @test
      */
+
+    #[Test]
     public function test_persistent_volume_management()
     {
         $this->browse(function (Browser $browser) {
@@ -1259,8 +1306,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 46: StatefulSet management interface
      *
-     * @test
      */
+
+    #[Test]
     public function test_statefulset_management_interface()
     {
         $this->browse(function (Browser $browser) {
@@ -1286,8 +1334,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 47: DaemonSet management interface
      *
-     * @test
      */
+
+    #[Test]
     public function test_daemonset_management_interface()
     {
         $this->browse(function (Browser $browser) {
@@ -1313,8 +1362,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 48: Job and CronJob management
      *
-     * @test
      */
+
+    #[Test]
     public function test_job_and_cronjob_management()
     {
         $this->browse(function (Browser $browser) {
@@ -1340,8 +1390,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 49: Horizontal Pod Autoscaler (HPA) configuration
      *
-     * @test
      */
+
+    #[Test]
     public function test_horizontal_pod_autoscaler_configuration()
     {
         $this->browse(function (Browser $browser) {
@@ -1367,8 +1418,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 50: Network Policy management
      *
-     * @test
      */
+
+    #[Test]
     public function test_network_policy_management()
     {
         $this->browse(function (Browser $browser) {
@@ -1393,8 +1445,9 @@ class KubernetesTest extends DuskTestCase
     /**
      * Test 51: Service mesh integration indicators
      *
-     * @test
      */
+
+    #[Test]
     public function test_service_mesh_integration_indicators()
     {
         $this->browse(function (Browser $browser) {

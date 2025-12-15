@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\SecurityEvent;
 use App\Models\Server;
 use App\Models\User;
@@ -40,8 +42,9 @@ class ServerSecurityDashboardTest extends DuskTestCase
     /**
      * Test 1: Security dashboard page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_dashboard_page_loads()
     {
         // Skip if no server available
@@ -77,8 +80,9 @@ class ServerSecurityDashboardTest extends DuskTestCase
     /**
      * Test 2: Security overview is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_overview_displayed()
     {
         if (! $this->server) {
@@ -112,8 +116,9 @@ class ServerSecurityDashboardTest extends DuskTestCase
     /**
      * Test 3: Firewall status card is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_firewall_status_card_visible()
     {
         if (! $this->server) {
@@ -146,8 +151,9 @@ class ServerSecurityDashboardTest extends DuskTestCase
     /**
      * Test 4: Fail2ban status card is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_fail2ban_status_card_visible()
     {
         if (! $this->server) {
@@ -179,8 +185,9 @@ class ServerSecurityDashboardTest extends DuskTestCase
     /**
      * Test 5: SSH security status card is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_security_status_card_visible()
     {
         if (! $this->server) {
@@ -212,8 +219,9 @@ class ServerSecurityDashboardTest extends DuskTestCase
     /**
      * Test 6: Security scan status card is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_scan_status_card_visible()
     {
         if (! $this->server) {
@@ -245,8 +253,9 @@ class ServerSecurityDashboardTest extends DuskTestCase
     /**
      * Test 7: Navigate to firewall manager works
      *
-     * @test
      */
+
+    #[Test]
     public function test_navigate_to_firewall_manager()
     {
         if (! $this->server) {
@@ -297,8 +306,9 @@ class ServerSecurityDashboardTest extends DuskTestCase
     /**
      * Test 8: Navigate to fail2ban manager works
      *
-     * @test
      */
+
+    #[Test]
     public function test_navigate_to_fail2ban_manager()
     {
         if (! $this->server) {
@@ -348,8 +358,9 @@ class ServerSecurityDashboardTest extends DuskTestCase
     /**
      * Test 9: Navigate to SSH security manager works
      *
-     * @test
      */
+
+    #[Test]
     public function test_navigate_to_ssh_security_manager()
     {
         if (! $this->server) {
@@ -399,8 +410,9 @@ class ServerSecurityDashboardTest extends DuskTestCase
     /**
      * Test 10: Navigate to security scan dashboard works
      *
-     * @test
      */
+
+    #[Test]
     public function test_navigate_to_security_scan_dashboard()
     {
         if (! $this->server) {
@@ -450,8 +462,9 @@ class ServerSecurityDashboardTest extends DuskTestCase
     /**
      * Test 11: Overall security score/status shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_overall_security_score_shown()
     {
         if (! $this->server) {
@@ -485,8 +498,9 @@ class ServerSecurityDashboardTest extends DuskTestCase
     /**
      * Test 12: Quick action buttons are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_quick_action_buttons_present()
     {
         if (! $this->server) {
@@ -519,8 +533,9 @@ class ServerSecurityDashboardTest extends DuskTestCase
     /**
      * Test 13: Recent security events displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_recent_security_events_displayed()
     {
         if (! $this->server) {
@@ -553,8 +568,9 @@ class ServerSecurityDashboardTest extends DuskTestCase
     /**
      * Test 14: Server info header is correct
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_info_header_correct()
     {
         if (! $this->server) {
@@ -586,8 +602,9 @@ class ServerSecurityDashboardTest extends DuskTestCase
     /**
      * Test 15: Navigation back to server works
      *
-     * @test
      */
+
+    #[Test]
     public function test_navigation_back_to_server_works()
     {
         if (! $this->server) {
@@ -636,8 +653,9 @@ class ServerSecurityDashboardTest extends DuskTestCase
     /**
      * Test 16: Security score visualization is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_score_visualization_displayed()
     {
         if (! $this->server) {
@@ -670,8 +688,9 @@ class ServerSecurityDashboardTest extends DuskTestCase
     /**
      * Test 17: Open ports information is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_open_ports_information_shown()
     {
         if (! $this->server) {
@@ -703,8 +722,9 @@ class ServerSecurityDashboardTest extends DuskTestCase
     /**
      * Test 18: Refresh status button works
      *
-     * @test
      */
+
+    #[Test]
     public function test_refresh_status_button_works()
     {
         if (! $this->server) {
@@ -736,8 +756,9 @@ class ServerSecurityDashboardTest extends DuskTestCase
     /**
      * Test 19: Run security scan button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_run_security_scan_button_present()
     {
         if (! $this->server) {
@@ -769,8 +790,9 @@ class ServerSecurityDashboardTest extends DuskTestCase
     /**
      * Test 20: Quick navigation cards are responsive
      *
-     * @test
      */
+
+    #[Test]
     public function test_quick_navigation_cards_responsive()
     {
         if (! $this->server) {

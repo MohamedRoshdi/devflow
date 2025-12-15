@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api;
 
+
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\ApiToken;
 use App\Models\Project;
 use App\Models\Server;
@@ -19,10 +22,9 @@ use Tests\TestCase;
  * Tests the rate limiting functionality for API endpoints.
  * Covers standard read operations (60/min), write operations (10/min),
  * and webhook endpoints (custom limits).
- *
- * @group api
- * @group rate-limiting
  */
+#[Group('api')]
+#[Group('rate-limiting')]
 class ApiRateLimitingTest extends TestCase
 {
     use RefreshDatabase;
@@ -70,7 +72,7 @@ class ApiRateLimitingTest extends TestCase
 
     // ==================== Standard Read Rate Limit (60/min) ====================
 
-    /** @test */
+    #[Test]
     public function it_allows_read_requests_within_rate_limit(): void
     {
         $response = $this->withHeaders($this->headers)
@@ -81,7 +83,7 @@ class ApiRateLimitingTest extends TestCase
         $response->assertHeader('X-RateLimit-Remaining');
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_rate_limit_headers_in_response(): void
     {
         $response = $this->withHeaders($this->headers)
@@ -94,7 +96,7 @@ class ApiRateLimitingTest extends TestCase
         $this->assertNotNull($response->headers->get('X-RateLimit-Remaining'));
     }
 
-    /** @test */
+    #[Test]
     public function it_decrements_remaining_requests_correctly(): void
     {
         // Make first request
@@ -113,7 +115,7 @@ class ApiRateLimitingTest extends TestCase
         $this->assertLessThanOrEqual($remaining1, $remaining2 + 1);
     }
 
-    /** @test */
+    #[Test]
     public function it_enforces_rate_limit_for_project_list(): void
     {
         // Configure a very low rate limit for testing
@@ -130,7 +132,7 @@ class ApiRateLimitingTest extends TestCase
 
     // ==================== Restrictive Write Rate Limit (10/min) ====================
 
-    /** @test */
+    #[Test]
     public function it_applies_stricter_rate_limit_for_deploy_operations(): void
     {
         $response = $this->withHeaders($this->headers)
@@ -145,7 +147,7 @@ class ApiRateLimitingTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_applies_stricter_rate_limit_for_deployment_store(): void
     {
         $response = $this->withHeaders($this->headers)
@@ -158,7 +160,7 @@ class ApiRateLimitingTest extends TestCase
         $this->assertContains($response->status(), [200, 201, 400, 403, 422, 429, 500]);
     }
 
-    /** @test */
+    #[Test]
     public function it_applies_stricter_rate_limit_for_rollback(): void
     {
         $response = $this->withHeaders($this->headers)
@@ -170,7 +172,7 @@ class ApiRateLimitingTest extends TestCase
 
     // ==================== Server Metrics Rate Limit ====================
 
-    /** @test */
+    #[Test]
     public function it_applies_rate_limit_to_server_metrics_read(): void
     {
         $response = $this->withHeaders($this->headers)
@@ -180,7 +182,7 @@ class ApiRateLimitingTest extends TestCase
         $this->assertContains($response->status(), [200, 404, 500]);
     }
 
-    /** @test */
+    #[Test]
     public function it_applies_stricter_rate_limit_to_server_metrics_write(): void
     {
         $response = $this->withHeaders($this->headers)
@@ -196,7 +198,7 @@ class ApiRateLimitingTest extends TestCase
 
     // ==================== Webhook Rate Limit ====================
 
-    /** @test */
+    #[Test]
     public function it_applies_webhook_rate_limit_to_deploy_webhook(): void
     {
         $response = $this->postJson('/api/webhooks/deploy/invalid-token', [
@@ -208,7 +210,7 @@ class ApiRateLimitingTest extends TestCase
         $this->assertContains($response->status(), [401, 403, 404, 422, 429, 500]);
     }
 
-    /** @test */
+    #[Test]
     public function it_allows_webhook_requests_without_api_token(): void
     {
         // Webhooks should not require API token auth but should have their own verification
@@ -222,7 +224,7 @@ class ApiRateLimitingTest extends TestCase
 
     // ==================== Rate Limit Reset ====================
 
-    /** @test */
+    #[Test]
     public function it_provides_retry_after_header_when_rate_limited(): void
     {
         // This tests the infrastructure - actual rate limiting behavior
@@ -238,7 +240,7 @@ class ApiRateLimitingTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_resets_rate_limit_after_window_expires(): void
     {
         // Make initial request
@@ -253,7 +255,7 @@ class ApiRateLimitingTest extends TestCase
 
     // ==================== Different Users Have Separate Limits ====================
 
-    /** @test */
+    #[Test]
     public function it_tracks_rate_limits_per_user(): void
     {
         // Create second user with separate token
@@ -291,7 +293,7 @@ class ApiRateLimitingTest extends TestCase
 
     // ==================== Rate Limit by IP for Unauthenticated ====================
 
-    /** @test */
+    #[Test]
     public function it_applies_rate_limit_to_unauthenticated_requests(): void
     {
         // Unauthenticated request should still be rate limited (and rejected for auth)
@@ -300,7 +302,7 @@ class ApiRateLimitingTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_consume_authenticated_rate_limit_for_unauthenticated_requests(): void
     {
         // Unauthenticated request
@@ -319,7 +321,7 @@ class ApiRateLimitingTest extends TestCase
 
     // ==================== Endpoint-Specific Rate Limits ====================
 
-    /** @test */
+    #[Test]
     public function it_has_different_limits_for_read_and_write_endpoints(): void
     {
         // Read endpoint (60/min)
@@ -338,7 +340,7 @@ class ApiRateLimitingTest extends TestCase
         $this->assertGreaterThanOrEqual(10, $readLimit);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_rate_limit_configuration(): void
     {
         // Verify that the API routes have rate limiting middleware configured
@@ -355,7 +357,7 @@ class ApiRateLimitingTest extends TestCase
 
     // ==================== Servers Endpoint Rate Limit ====================
 
-    /** @test */
+    #[Test]
     public function it_applies_rate_limit_to_servers_list(): void
     {
         $response = $this->withHeaders($this->headers)
@@ -365,7 +367,7 @@ class ApiRateLimitingTest extends TestCase
         $this->assertNotNull($response->headers->get('X-RateLimit-Limit'));
     }
 
-    /** @test */
+    #[Test]
     public function it_applies_rate_limit_to_server_show(): void
     {
         $response = $this->withHeaders($this->headers)
@@ -375,7 +377,7 @@ class ApiRateLimitingTest extends TestCase
         $this->assertContains($response->status(), [200, 403, 404]);
     }
 
-    /** @test */
+    #[Test]
     public function it_applies_rate_limit_to_deployment_show(): void
     {
         $response = $this->withHeaders($this->headers)

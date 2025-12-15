@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\SSHKey;
 use App\Models\Server;
 use App\Models\User;
@@ -35,8 +37,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 1: SSH key manager page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_key_manager_page_loads_successfully()
     {
         $this->browse(function (Browser $browser) {
@@ -63,8 +66,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 2: SSH key list is displayed when keys exist
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_key_list_displayed_when_keys_exist()
     {
         // Create a test SSH key
@@ -103,8 +107,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 3: Generate new key button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_generate_new_key_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -129,8 +134,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 4: Import existing key button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_import_existing_key_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -155,8 +161,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 5: Generate key modal opens when button is clicked
      *
-     * @test
      */
+
+    #[Test]
     public function test_generate_key_modal_opens()
     {
         $this->browse(function (Browser $browser) {
@@ -196,8 +203,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 6: Key name field is present in generate modal
      *
-     * @test
      */
+
+    #[Test]
     public function test_key_name_field_present()
     {
         $this->browse(function (Browser $browser) {
@@ -222,8 +230,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 7: Key type selector is present with options
      *
-     * @test
      */
+
+    #[Test]
     public function test_key_type_selector_present()
     {
         $this->browse(function (Browser $browser) {
@@ -248,8 +257,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 8: ED25519 key type option is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_ed25519_key_type_available()
     {
         $this->browse(function (Browser $browser) {
@@ -273,8 +283,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 9: RSA key type option is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_rsa_key_type_available()
     {
         $this->browse(function (Browser $browser) {
@@ -298,8 +309,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 10: ECDSA key type option is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_ecdsa_key_type_available()
     {
         $this->browse(function (Browser $browser) {
@@ -323,8 +335,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 11: Import modal opens when import button is clicked
      *
-     * @test
      */
+
+    #[Test]
     public function test_import_modal_opens()
     {
         $this->browse(function (Browser $browser) {
@@ -364,8 +377,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 12: Import modal has public key textarea
      *
-     * @test
      */
+
+    #[Test]
     public function test_import_modal_has_public_key_textarea()
     {
         $this->browse(function (Browser $browser) {
@@ -390,8 +404,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 13: Import modal has private key textarea
      *
-     * @test
      */
+
+    #[Test]
     public function test_import_modal_has_private_key_textarea()
     {
         $this->browse(function (Browser $browser) {
@@ -416,8 +431,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 14: Copy public key button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_copy_public_key_button_visible()
     {
         // Create a test SSH key
@@ -454,8 +470,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 15: Download private key button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_download_private_key_button_visible()
     {
         // Create a test SSH key
@@ -492,8 +509,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 16: Delete key button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_delete_key_button_visible()
     {
         // Create a test SSH key
@@ -530,8 +548,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 17: Delete confirmation is shown when deleting key
      *
-     * @test
      */
+
+    #[Test]
     public function test_delete_confirmation_shown()
     {
         // Create a test SSH key
@@ -568,8 +587,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 18: Key fingerprint is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_key_fingerprint_displayed()
     {
         // Create a test SSH key
@@ -606,8 +626,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 19: Key creation date is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_key_creation_date_shown()
     {
         // Create a test SSH key
@@ -645,8 +666,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 20: Empty state is shown when no SSH keys exist
      *
-     * @test
      */
+
+    #[Test]
     public function test_empty_state_shown_when_no_keys()
     {
         // Ensure no SSH keys exist
@@ -674,8 +696,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 21: View public key button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_view_public_key_button_visible()
     {
         // Create a test SSH key
@@ -712,8 +735,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 22: Deploy to server button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_deploy_to_server_button_visible()
     {
         // Create a test SSH key
@@ -750,8 +774,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 23: Key type badge is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_key_type_badge_displayed()
     {
         // Create a test SSH key
@@ -788,8 +813,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 24: Deployed servers count is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_deployed_servers_count_shown()
     {
         // Create a test SSH key
@@ -839,8 +865,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 25: Deploy modal has server selector
      *
-     * @test
      */
+
+    #[Test]
     public function test_deploy_modal_has_server_selector()
     {
         $this->browse(function (Browser $browser) {
@@ -865,8 +892,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 26: View key modal displays public key
      *
-     * @test
      */
+
+    #[Test]
     public function test_view_key_modal_displays_public_key()
     {
         $this->browse(function (Browser $browser) {
@@ -891,8 +919,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 27: Hero section with gradient is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_hero_section_with_gradient_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -918,8 +947,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 28: Success flash messages are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_success_flash_messages_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -943,8 +973,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 29: Error flash messages are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_error_flash_messages_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -968,8 +999,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 30: Generated key success message is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_generated_key_success_message_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -994,8 +1026,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 31: Dark mode classes are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_dark_mode_classes_present()
     {
         $this->browse(function (Browser $browser) {
@@ -1020,8 +1053,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 32: Remove from server button is visible for deployed keys
      *
-     * @test
      */
+
+    #[Test]
     public function test_remove_from_server_button_visible()
     {
         // Create a test SSH key
@@ -1070,8 +1104,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 33: SSH key manager is responsive on mobile
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_key_manager_responsive_on_mobile()
     {
         $this->browse(function (Browser $browser) {
@@ -1097,8 +1132,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 34: Generated key shows fingerprint
      *
-     * @test
      */
+
+    #[Test]
     public function test_generated_key_shows_fingerprint()
     {
         $this->browse(function (Browser $browser) {
@@ -1122,8 +1158,9 @@ class SSHKeyManagerTest extends DuskTestCase
     /**
      * Test 35: Modal has close button
      *
-     * @test
      */
+
+    #[Test]
     public function test_modal_has_close_button()
     {
         $this->browse(function (Browser $browser) {

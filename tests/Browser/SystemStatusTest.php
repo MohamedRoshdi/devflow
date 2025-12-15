@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\User;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Traits\LoginViaUI;
@@ -33,8 +35,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 1: System status page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_system_status_page_loads_successfully()
     {
         $this->browse(function (Browser $browser) {
@@ -61,8 +64,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 2: Overall system health indicator is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_overall_system_health_indicator_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -87,8 +91,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 3: Database connection status is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_database_connection_status_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -114,8 +119,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 4: Redis connection status is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_redis_connection_status_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -139,8 +145,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 5: Queue worker status is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_queue_worker_status_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -165,8 +172,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 6: WebSocket/Reverb server status is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_websocket_reverb_status_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -191,8 +199,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 7: Cache driver information is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_cache_driver_information_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -218,8 +227,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 8: PHP version is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_php_version_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -244,8 +254,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 9: Laravel version is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_laravel_version_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -270,8 +281,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 10: Application version/environment is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_application_version_environment_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -297,8 +309,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 11: Server uptime is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_uptime_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -323,8 +336,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 12: Memory usage display is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_memory_usage_display_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -350,8 +364,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 13: CPU usage information is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_cpu_usage_information_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -376,8 +391,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 14: Disk space/storage status is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_disk_space_storage_status_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -402,8 +418,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 15: Service status indicators show correct colors
      *
-     * @test
      */
+
+    #[Test]
     public function test_service_status_indicators_show_correct_colors()
     {
         $this->browse(function (Browser $browser) {
@@ -431,8 +448,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 16: Running status shows green indicator
      *
-     * @test
      */
+
+    #[Test]
     public function test_running_status_shows_green_indicator()
     {
         $this->browse(function (Browser $browser) {
@@ -457,8 +475,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 17: Stopped status shows red indicator
      *
-     * @test
      */
+
+    #[Test]
     public function test_stopped_status_shows_red_indicator()
     {
         $this->browse(function (Browser $browser) {
@@ -484,8 +503,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 18: Warning status shows yellow indicator
      *
-     * @test
      */
+
+    #[Test]
     public function test_warning_status_shows_yellow_indicator()
     {
         $this->browse(function (Browser $browser) {
@@ -511,8 +531,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 19: Refresh status button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_refresh_status_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -538,8 +559,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 20: Refresh button updates status when clicked
      *
-     * @test
      */
+
+    #[Test]
     public function test_refresh_button_updates_status_when_clicked()
     {
         $this->browse(function (Browser $browser) {
@@ -572,8 +594,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 21: Queue statistics are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_queue_statistics_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -599,8 +622,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 22: Cache statistics are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_cache_statistics_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -626,8 +650,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 23: Database statistics are visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_database_statistics_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -653,8 +678,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 24: Redis info is displayed when Redis is used
      *
-     * @test
      */
+
+    #[Test]
     public function test_redis_info_displayed_when_redis_used()
     {
         $this->browse(function (Browser $browser) {
@@ -678,8 +704,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 25: Queue worker count is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_queue_worker_count_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -704,8 +731,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 26: Reverb WebSocket port information is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_reverb_websocket_port_information_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -730,8 +758,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 27: Service details are expandable/collapsible
      *
-     * @test
      */
+
+    #[Test]
     public function test_service_details_expandable_collapsible()
     {
         $this->browse(function (Browser $browser) {
@@ -756,8 +785,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 28: Test broadcast button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_broadcast_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -782,8 +812,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 29: Broadcasting status is indicated
      *
-     * @test
      */
+
+    #[Test]
     public function test_broadcasting_status_indicated()
     {
         $this->browse(function (Browser $browser) {
@@ -808,8 +839,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 30: Environment display shows production/staging/local
      *
-     * @test
      */
+
+    #[Test]
     public function test_environment_display_shows_correct_env()
     {
         $this->browse(function (Browser $browser) {
@@ -835,8 +867,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 31: Debug mode warning is shown when debug is enabled
      *
-     * @test
      */
+
+    #[Test]
     public function test_debug_mode_warning_shown_when_enabled()
     {
         $this->browse(function (Browser $browser) {
@@ -861,8 +894,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 32: Maintenance mode status is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_maintenance_mode_status_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -887,8 +921,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 33: Loading state is shown during refresh
      *
-     * @test
      */
+
+    #[Test]
     public function test_loading_state_shown_during_refresh()
     {
         $this->browse(function (Browser $browser) {
@@ -913,8 +948,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 34: Service list is organized properly
      *
-     * @test
      */
+
+    #[Test]
     public function test_service_list_organized_properly()
     {
         $this->browse(function (Browser $browser) {
@@ -940,8 +976,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 35: Failed jobs count is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_failed_jobs_count_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -966,8 +1003,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 36: Pending jobs count is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_pending_jobs_count_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -992,8 +1030,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 37: Redis memory usage is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_redis_memory_usage_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -1018,8 +1057,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 38: Redis connected clients count is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_redis_connected_clients_count_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -1044,8 +1084,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 39: Database version is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_database_version_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -1070,8 +1111,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 40: Database name/driver is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_database_name_driver_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -1096,8 +1138,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 41: Error messages are displayed for failed services
      *
-     * @test
      */
+
+    #[Test]
     public function test_error_messages_displayed_for_failed_services()
     {
         $this->browse(function (Browser $browser) {
@@ -1123,8 +1166,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 42: Service details contain helpful information
      *
-     * @test
      */
+
+    #[Test]
     public function test_service_details_contain_helpful_information()
     {
         $this->browse(function (Browser $browser) {
@@ -1150,8 +1194,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 43: Real-time status updates work with Livewire polling
      *
-     * @test
      */
+
+    #[Test]
     public function test_realtime_status_updates_with_livewire_polling()
     {
         $this->browse(function (Browser $browser) {
@@ -1175,8 +1220,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 44: Notification appears after refresh
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_appears_after_refresh()
     {
         $this->browse(function (Browser $browser) {
@@ -1210,8 +1256,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 45: Status page is responsive on mobile
      *
-     * @test
      */
+
+    #[Test]
     public function test_status_page_responsive_on_mobile()
     {
         $this->browse(function (Browser $browser) {
@@ -1237,8 +1284,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 46: Status page works on tablet viewport
      *
-     * @test
      */
+
+    #[Test]
     public function test_status_page_works_on_tablet_viewport()
     {
         $this->browse(function (Browser $browser) {
@@ -1264,8 +1312,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 47: All service cards are properly styled
      *
-     * @test
      */
+
+    #[Test]
     public function test_all_service_cards_properly_styled()
     {
         $this->browse(function (Browser $browser) {
@@ -1291,8 +1340,9 @@ class SystemStatusTest extends DuskTestCase
     /**
      * Test 48: System status page integrates with navigation
      *
-     * @test
      */
+
+    #[Test]
     public function test_system_status_integrates_with_navigation()
     {
         $this->browse(function (Browser $browser) {

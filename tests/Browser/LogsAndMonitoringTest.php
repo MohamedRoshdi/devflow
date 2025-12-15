@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\LogEntry;
 use App\Models\Project;
 use App\Models\Server;
@@ -66,8 +68,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 1: Log viewer page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_viewer_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -92,8 +95,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 2: Notification logs page is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_logs_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -118,8 +122,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 3: Webhook logs display correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_logs_display()
     {
         $this->browse(function (Browser $browser) {
@@ -144,8 +149,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 4: Security audit log shows events
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_audit_log_shows_events()
     {
         $this->browse(function (Browser $browser) {
@@ -171,8 +177,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 5: Log source manager displays
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_source_manager_displays()
     {
         $this->browse(function (Browser $browser) {
@@ -197,8 +204,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 6: Log filtering works correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_filtering_works()
     {
         // Create sample log entries with different levels
@@ -267,8 +275,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 7: Log search functionality works
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_search_functionality()
     {
         // Create log entries with searchable content
@@ -321,8 +330,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 8: Log viewer shows server filter
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_viewer_shows_server_filter()
     {
         $this->browse(function (Browser $browser) {
@@ -345,8 +355,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 9: Log viewer shows project filter
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_viewer_shows_project_filter()
     {
         $this->browse(function (Browser $browser) {
@@ -369,8 +380,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 10: Log entries display with correct information
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_entries_display_with_information()
     {
         // Create a log entry with specific data
@@ -405,8 +417,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 11: Log level badges display correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_level_badges_display()
     {
         // Create logs with different levels
@@ -458,8 +471,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 12: Notification logs show notification types
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_logs_show_types()
     {
         $this->browse(function (Browser $browser) {
@@ -484,8 +498,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 13: Webhook logs show request details
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_logs_show_request_details()
     {
         $this->browse(function (Browser $browser) {
@@ -510,8 +525,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 14: Security audit log shows user actions
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_audit_log_shows_user_actions()
     {
         $this->browse(function (Browser $browser) {
@@ -537,8 +553,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 15: Log statistics are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_statistics_displayed()
     {
         // Create logs for statistics
@@ -586,8 +603,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 16: Date range filter is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_date_range_filter_available()
     {
         $this->browse(function (Browser $browser) {
@@ -612,8 +630,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 17: Log export functionality exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_export_functionality_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -637,8 +656,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 18: Log sync functionality is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_sync_functionality_present()
     {
         $this->browse(function (Browser $browser) {
@@ -662,8 +682,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 19: Log viewer pagination works
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_viewer_pagination_works()
     {
         // Create many log entries to trigger pagination
@@ -700,8 +721,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 20: Clear filters button works
      *
-     * @test
      */
+
+    #[Test]
     public function test_clear_filters_button_works()
     {
         $this->browse(function (Browser $browser) {
@@ -734,8 +756,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 21: Log source types are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_source_types_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -760,8 +783,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 22: Auto-refresh toggle exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_auto_refresh_toggle_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -785,8 +809,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 23: Log detail view expands
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_detail_view_expands()
     {
         // Create a log entry with stack trace
@@ -822,8 +847,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 24: Navigation between log types works
      *
-     * @test
      */
+
+    #[Test]
     public function test_navigation_between_log_types()
     {
         $this->browse(function (Browser $browser) {
@@ -877,8 +903,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 25: Empty state displays when no logs exist
      *
-     * @test
      */
+
+    #[Test]
     public function test_empty_state_when_no_logs()
     {
         // Clear all logs
@@ -906,8 +933,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 26: Log source manager can add new source
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_source_manager_can_add_new_source()
     {
         $this->browse(function (Browser $browser) {
@@ -931,8 +959,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 27: Log source templates are available
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_source_templates_available()
     {
         $this->browse(function (Browser $browser) {
@@ -957,8 +986,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 28: Real-time log streaming indicator exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_realtime_log_streaming_indicator()
     {
         $this->browse(function (Browser $browser) {
@@ -983,8 +1013,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 29: Log rotation settings page is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_rotation_settings_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -1009,8 +1040,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 30: Log cleanup operations are available
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_cleanup_operations_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1035,8 +1067,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 31: Critical log level highlights correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_critical_log_level_highlights()
     {
         // Create critical log entry
@@ -1070,8 +1103,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 32: Debug log level can be filtered
      *
-     * @test
      */
+
+    #[Test]
     public function test_debug_log_level_filtering()
     {
         // Create debug log entries
@@ -1104,8 +1138,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 33: Log context information displays
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_context_information_displays()
     {
         // Create log with context
@@ -1140,8 +1175,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 34: Log file path is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_file_path_shown()
     {
         // Create log with file path
@@ -1177,8 +1213,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 35: Log viewer shows timestamp correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_viewer_shows_timestamp()
     {
         // Create recent log entry
@@ -1213,8 +1250,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 36: Notification logs show delivery status
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_logs_show_delivery_status()
     {
         $this->browse(function (Browser $browser) {
@@ -1239,8 +1277,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 37: Webhook logs show response codes
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_logs_show_response_codes()
     {
         $this->browse(function (Browser $browser) {
@@ -1265,8 +1304,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 38: Security logs show IP addresses
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_logs_show_ip_addresses()
     {
         $this->browse(function (Browser $browser) {
@@ -1290,8 +1330,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 39: Log viewer has quick time filters
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_viewer_quick_time_filters()
     {
         $this->browse(function (Browser $browser) {
@@ -1316,8 +1357,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 40: Log entries per page can be changed
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_entries_per_page_changeable()
     {
         // Create multiple log entries
@@ -1354,8 +1396,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 41: Log source can be toggled active/inactive
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_source_toggle_active()
     {
         $this->browse(function (Browser $browser) {
@@ -1380,8 +1423,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 42: Log source shows last sync time
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_source_shows_last_sync_time()
     {
         $this->browse(function (Browser $browser) {
@@ -1406,8 +1450,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 43: Server health monitoring displays metrics
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_health_monitoring_displays_metrics()
     {
         $this->browse(function (Browser $browser) {
@@ -1433,8 +1478,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 44: Alert configuration page is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_configuration_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -1459,8 +1505,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 45: Log retention policy settings exist
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_retention_policy_settings_exist()
     {
         $this->browse(function (Browser $browser) {
@@ -1485,8 +1532,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 46: Multiple log levels can be filtered simultaneously
      *
-     * @test
      */
+
+    #[Test]
     public function test_multiple_log_levels_filtered_simultaneously()
     {
         // Create logs with different levels
@@ -1528,8 +1576,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 47: Log export includes all filtered data
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_export_includes_filtered_data()
     {
         // Create sample logs
@@ -1563,8 +1612,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 48: Security audit log shows failed login attempts
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_audit_shows_failed_logins()
     {
         $this->browse(function (Browser $browser) {
@@ -1589,8 +1639,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 49: Log viewer displays total count of results
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_viewer_displays_total_count()
     {
         // Create sample logs
@@ -1627,8 +1678,9 @@ class LogsAndMonitoringTest extends DuskTestCase
     /**
      * Test 50: Webhook retry functionality exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_retry_functionality_exists()
     {
         $this->browse(function (Browser $browser) {

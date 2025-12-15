@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Server;
 use App\Models\User;
 use Laravel\Dusk\Browser;
@@ -39,8 +41,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 1: Firewall manager page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_firewall_manager_page_loads_successfully()
     {
         if (! $this->server) {
@@ -69,8 +72,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 2: Firewall status is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_firewall_status_is_displayed()
     {
         if (! $this->server) {
@@ -102,8 +106,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 3: Enable firewall button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_enable_firewall_button_is_visible()
     {
         if (! $this->server) {
@@ -133,8 +138,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 4: Disable firewall button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_disable_firewall_button_is_visible()
     {
         if (! $this->server) {
@@ -164,8 +170,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 5: Add rule button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_add_rule_button_is_present()
     {
         if (! $this->server) {
@@ -194,8 +201,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 6: Add rule modal opens
      *
-     * @test
      */
+
+    #[Test]
     public function test_add_rule_modal_opens()
     {
         if (! $this->server) {
@@ -224,8 +232,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 7: Add rule form has port field
      *
-     * @test
      */
+
+    #[Test]
     public function test_add_rule_form_has_port_field()
     {
         if (! $this->server) {
@@ -254,8 +263,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 8: Add rule form has protocol field
      *
-     * @test
      */
+
+    #[Test]
     public function test_add_rule_form_has_protocol_field()
     {
         if (! $this->server) {
@@ -284,8 +294,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 9: Protocol dropdown has tcp, udp, any options
      *
-     * @test
      */
+
+    #[Test]
     public function test_protocol_dropdown_has_options()
     {
         if (! $this->server) {
@@ -315,8 +326,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 10: Add rule form has action field
      *
-     * @test
      */
+
+    #[Test]
     public function test_add_rule_form_has_action_field()
     {
         if (! $this->server) {
@@ -345,8 +357,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 11: Action dropdown has allow, deny, reject, limit options
      *
-     * @test
      */
+
+    #[Test]
     public function test_action_dropdown_has_options()
     {
         if (! $this->server) {
@@ -377,8 +390,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 12: Add rule form has from IP field
      *
-     * @test
      */
+
+    #[Test]
     public function test_add_rule_form_has_from_ip_field()
     {
         if (! $this->server) {
@@ -408,8 +422,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 13: Add rule form has description field
      *
-     * @test
      */
+
+    #[Test]
     public function test_add_rule_form_has_description_field()
     {
         if (! $this->server) {
@@ -439,8 +454,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 14: Rule list section is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_rule_list_is_displayed()
     {
         if (! $this->server) {
@@ -470,8 +486,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 15: Delete rule buttons are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_delete_rule_buttons_are_present()
     {
         if (! $this->server) {
@@ -501,8 +518,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 16: Install UFW button shown when not installed
      *
-     * @test
      */
+
+    #[Test]
     public function test_install_ufw_button_shown_when_not_installed()
     {
         if (! $this->server) {
@@ -531,8 +549,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 17: Flash messages display area exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_flash_messages_display()
     {
         if (! $this->server) {
@@ -561,8 +580,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 18: Form validation indicators are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_form_validation_works()
     {
         if (! $this->server) {
@@ -591,8 +611,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 19: Navigation back to security dashboard works
      *
-     * @test
      */
+
+    #[Test]
     public function test_navigation_back_to_security_dashboard_works()
     {
         if (! $this->server) {
@@ -621,8 +642,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 20: Refresh button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_refresh_button_is_present()
     {
         if (! $this->server) {
@@ -651,8 +673,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 21: UFW status indicator is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_ufw_status_indicator_is_visible()
     {
         if (! $this->server) {
@@ -681,8 +704,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 22: Rules table structure is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_rules_table_structure_is_present()
     {
         if (! $this->server) {
@@ -712,8 +736,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 23: Modal cancel button works
      *
-     * @test
      */
+
+    #[Test]
     public function test_modal_cancel_button_works()
     {
         if (! $this->server) {
@@ -742,8 +767,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 24: Confirm disable modal exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_confirm_disable_modal_exists()
     {
         if (! $this->server) {
@@ -772,8 +798,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 25: Server name is displayed in header
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_name_is_displayed_in_header()
     {
         if (! $this->server) {
@@ -802,8 +829,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 26: Loading states are handled
      *
-     * @test
      */
+
+    #[Test]
     public function test_loading_states_are_handled()
     {
         if (! $this->server) {
@@ -832,8 +860,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 27: Rule action badges are styled
      *
-     * @test
      */
+
+    #[Test]
     public function test_rule_action_badges_are_styled()
     {
         if (! $this->server) {
@@ -864,8 +893,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 28: Empty state message is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_empty_state_message_is_shown()
     {
         if (! $this->server) {
@@ -894,8 +924,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 29: Debug output section exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_debug_output_section_exists()
     {
         if (! $this->server) {
@@ -925,8 +956,9 @@ class FirewallManagerTest extends DuskTestCase
     /**
      * Test 30: Firewall hero section is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_firewall_hero_section_is_displayed()
     {
         if (! $this->server) {

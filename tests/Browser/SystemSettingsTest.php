@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\SystemSetting;
 use App\Models\User;
 use Laravel\Dusk\Browser;
@@ -51,8 +53,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 1: System settings page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_system_settings_page_loads_successfully(): void
     {
         $this->browse(function (Browser $browser) {
@@ -78,8 +81,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 2: General settings group is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_general_settings_group_is_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -104,8 +108,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 3: Auth settings group is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_auth_settings_group_is_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -130,8 +135,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 4: Features settings group is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_features_settings_group_is_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -155,8 +161,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 5: Mail settings group is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_mail_settings_group_is_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -181,8 +188,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 6: Security settings group is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_settings_group_is_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -206,8 +214,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 7: Can switch to auth settings group
      *
-     * @test
      */
+
+    #[Test]
     public function test_can_switch_to_auth_settings_group(): void
     {
         $this->browse(function (Browser $browser) {
@@ -238,8 +247,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 8: Can switch to features settings group
      *
-     * @test
      */
+
+    #[Test]
     public function test_can_switch_to_features_settings_group(): void
     {
         $this->browse(function (Browser $browser) {
@@ -270,8 +280,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 9: Toggle settings are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_toggle_settings_are_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -297,8 +308,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 10: Save button is present and clickable
      *
-     * @test
      */
+
+    #[Test]
     public function test_save_button_is_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -324,8 +336,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 11: Reset to defaults button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_reset_to_defaults_button_is_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -351,8 +364,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 12: Clear cache button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_clear_cache_button_is_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -378,8 +392,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 13: Settings form validation works
      *
-     * @test
      */
+
+    #[Test]
     public function test_settings_form_validation_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -405,8 +420,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 14: Success notification displays after save
      *
-     * @test
      */
+
+    #[Test]
     public function test_success_notification_displays(): void
     {
         $this->browse(function (Browser $browser) {
@@ -432,8 +448,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 15: Error notification can display
      *
-     * @test
      */
+
+    #[Test]
     public function test_error_notification_can_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -459,8 +476,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 16: General settings group has appropriate content
      *
-     * @test
      */
+
+    #[Test]
     public function test_general_settings_group_has_content(): void
     {
         $this->browse(function (Browser $browser) {
@@ -486,8 +504,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 17: Auth settings group has appropriate content
      *
-     * @test
      */
+
+    #[Test]
     public function test_auth_settings_group_has_content(): void
     {
         $this->browse(function (Browser $browser) {
@@ -523,8 +542,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 18: Features settings group has appropriate content
      *
-     * @test
      */
+
+    #[Test]
     public function test_features_settings_group_has_content(): void
     {
         $this->browse(function (Browser $browser) {
@@ -559,8 +579,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 19: Mail settings group has appropriate content
      *
-     * @test
      */
+
+    #[Test]
     public function test_mail_settings_group_has_content(): void
     {
         $this->browse(function (Browser $browser) {
@@ -595,8 +616,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 20: Security settings group has appropriate content
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_settings_group_has_content(): void
     {
         $this->browse(function (Browser $browser) {
@@ -631,8 +653,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 21: Navigation between setting groups works correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_navigation_between_groups_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -667,8 +690,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 22: UI elements are properly styled
      *
-     * @test
      */
+
+    #[Test]
     public function test_ui_elements_are_properly_styled(): void
     {
         $this->browse(function (Browser $browser) {
@@ -696,8 +720,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 23: Sidebar navigation is visible and functional
      *
-     * @test
      */
+
+    #[Test]
     public function test_sidebar_navigation_is_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -723,8 +748,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 24: Page has proper header/hero section
      *
-     * @test
      */
+
+    #[Test]
     public function test_page_has_proper_header_section(): void
     {
         $this->browse(function (Browser $browser) {
@@ -749,8 +775,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 25: Settings are organized by groups
      *
-     * @test
      */
+
+    #[Test]
     public function test_settings_are_organized_by_groups(): void
     {
         $this->browse(function (Browser $browser) {
@@ -776,8 +803,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 26: Toggle switches have visual feedback
      *
-     * @test
      */
+
+    #[Test]
     public function test_toggle_switches_have_visual_feedback(): void
     {
         $this->browse(function (Browser $browser) {
@@ -804,8 +832,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 27: Save button shows loading state
      *
-     * @test
      */
+
+    #[Test]
     public function test_save_button_shows_loading_state(): void
     {
         $this->browse(function (Browser $browser) {
@@ -832,8 +861,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 28: Settings descriptions are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_settings_descriptions_are_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -860,8 +890,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 29: Integer input fields are present for numeric settings
      *
-     * @test
      */
+
+    #[Test]
     public function test_integer_input_fields_for_numeric_settings(): void
     {
         $this->browse(function (Browser $browser) {
@@ -887,8 +918,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 30: Text input fields are present for string settings
      *
-     * @test
      */
+
+    #[Test]
     public function test_text_input_fields_for_string_settings(): void
     {
         $this->browse(function (Browser $browser) {
@@ -914,8 +946,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 31: Settings page is responsive on mobile
      *
-     * @test
      */
+
+    #[Test]
     public function test_settings_page_is_responsive_on_mobile(): void
     {
         $this->browse(function (Browser $browser) {
@@ -941,8 +974,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 32: Settings page is responsive on tablet
      *
-     * @test
      */
+
+    #[Test]
     public function test_settings_page_is_responsive_on_tablet(): void
     {
         $this->browse(function (Browser $browser) {
@@ -968,8 +1002,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 33: Dark mode styling is supported
      *
-     * @test
      */
+
+    #[Test]
     public function test_dark_mode_styling_is_supported(): void
     {
         $this->browse(function (Browser $browser) {
@@ -995,8 +1030,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 34: Icons are used for visual enhancement
      *
-     * @test
      */
+
+    #[Test]
     public function test_icons_are_used_for_visual_enhancement(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1022,8 +1058,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 35: Settings groups have icons
      *
-     * @test
      */
+
+    #[Test]
     public function test_settings_groups_have_icons(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1048,8 +1085,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 36: Active group is visually highlighted
      *
-     * @test
      */
+
+    #[Test]
     public function test_active_group_is_visually_highlighted(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1075,8 +1113,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 37: Settings have proper spacing and layout
      *
-     * @test
      */
+
+    #[Test]
     public function test_settings_have_proper_spacing_and_layout(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1103,8 +1142,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 38: Transitions are smooth between groups
      *
-     * @test
      */
+
+    #[Test]
     public function test_transitions_are_smooth_between_groups(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1130,8 +1170,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 39: Empty settings group shows appropriate message
      *
-     * @test
      */
+
+    #[Test]
     public function test_empty_settings_group_shows_message(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1158,8 +1199,9 @@ class SystemSettingsTest extends DuskTestCase
     /**
      * Test 40: Page requires authentication
      *
-     * @test
      */
+
+    #[Test]
     public function test_page_requires_authentication(): void
     {
         $this->browse(function (Browser $browser) {

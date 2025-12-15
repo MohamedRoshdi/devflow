@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Deployment;
 use App\Models\Project;
 use App\Models\User;
@@ -35,8 +37,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 1: Analytics dashboard page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_analytics_dashboard_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -63,8 +66,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 2: Deployment statistics cards are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_deployment_statistics_cards_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -91,8 +95,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 3: Server performance metrics are visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_performance_metrics_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -119,8 +124,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 4: Project analytics section is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_analytics_section_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -147,8 +153,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 5: Time period filter is functional
      *
-     * @test
      */
+
+    #[Test]
     public function test_time_period_filter_functional()
     {
         $this->browse(function (Browser $browser) {
@@ -175,8 +182,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 6: Project filter dropdown is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_filter_dropdown_available()
     {
         $this->browse(function (Browser $browser) {
@@ -202,8 +210,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 7: CPU usage chart displays correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_cpu_usage_chart_displays()
     {
         $this->browse(function (Browser $browser) {
@@ -229,8 +238,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 8: Memory usage chart displays correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_memory_usage_chart_displays()
     {
         $this->browse(function (Browser $browser) {
@@ -256,8 +266,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 9: Disk usage chart displays correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_disk_usage_chart_displays()
     {
         $this->browse(function (Browser $browser) {
@@ -283,8 +294,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 10: Total deployments count is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_total_deployments_count_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -309,8 +321,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 11: Successful deployments count is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_successful_deployments_count_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -335,8 +348,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 12: Failed deployments count is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_failed_deployments_count_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -361,8 +375,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 13: Average deployment duration is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_average_deployment_duration_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -388,8 +403,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 14: Total projects count is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_total_projects_count_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -414,8 +430,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 15: Running projects count is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_running_projects_count_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -440,8 +457,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 16: Stopped projects count is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_stopped_projects_count_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -466,8 +484,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 17: Total storage usage is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_total_storage_usage_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -493,8 +512,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 18: Filter section is properly labeled
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_section_properly_labeled()
     {
         $this->browse(function (Browser $browser) {
@@ -520,8 +540,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 19: Success rate percentage is calculated
      *
-     * @test
      */
+
+    #[Test]
     public function test_success_rate_percentage_calculated()
     {
         $this->browse(function (Browser $browser) {
@@ -546,8 +567,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 20: Failure rate percentage is calculated
      *
-     * @test
      */
+
+    #[Test]
     public function test_failure_rate_percentage_calculated()
     {
         $this->browse(function (Browser $browser) {
@@ -572,8 +594,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 21: Server metrics show status indicators
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_metrics_show_status_indicators()
     {
         $this->browse(function (Browser $browser) {
@@ -600,8 +623,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 22: Progress bars are displayed for metrics
      *
-     * @test
      */
+
+    #[Test]
     public function test_progress_bars_displayed_for_metrics()
     {
         $this->browse(function (Browser $browser) {
@@ -627,8 +651,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 23: Analytics page has proper heading
      *
-     * @test
      */
+
+    #[Test]
     public function test_analytics_page_proper_heading()
     {
         $this->browse(function (Browser $browser) {
@@ -653,8 +678,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 24: Deployment statistics section has title
      *
-     * @test
      */
+
+    #[Test]
     public function test_deployment_statistics_section_has_title()
     {
         $this->browse(function (Browser $browser) {
@@ -679,8 +705,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 25: Server performance section has title
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_performance_section_has_title()
     {
         $this->browse(function (Browser $browser) {
@@ -705,8 +732,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 26: Project analytics section has title
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_analytics_section_has_title()
     {
         $this->browse(function (Browser $browser) {
@@ -731,8 +759,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 27: Time period filter has all options
      *
-     * @test
      */
+
+    #[Test]
     public function test_time_period_filter_has_all_options()
     {
         $this->browse(function (Browser $browser) {
@@ -759,8 +788,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 28: Cards have gradient backgrounds
      *
-     * @test
      */
+
+    #[Test]
     public function test_cards_have_gradient_backgrounds()
     {
         $this->browse(function (Browser $browser) {
@@ -785,8 +815,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 29: Metrics display percentage values
      *
-     * @test
      */
+
+    #[Test]
     public function test_metrics_display_percentage_values()
     {
         $this->browse(function (Browser $browser) {
@@ -811,8 +842,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 30: Analytics page has responsive design
      *
-     * @test
      */
+
+    #[Test]
     public function test_analytics_page_responsive_design()
     {
         $this->browse(function (Browser $browser) {
@@ -838,8 +870,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 31: Navigation from dashboard to analytics works
      *
-     * @test
      */
+
+    #[Test]
     public function test_navigation_from_dashboard_to_analytics()
     {
         $this->browse(function (Browser $browser) {
@@ -869,8 +902,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 32: Analytics page uses Livewire for reactivity
      *
-     * @test
      */
+
+    #[Test]
     public function test_analytics_page_uses_livewire()
     {
         $this->browse(function (Browser $browser) {
@@ -896,8 +930,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 33: Dashboard hero section is styled
      *
-     * @test
      */
+
+    #[Test]
     public function test_dashboard_hero_section_styled()
     {
         $this->browse(function (Browser $browser) {
@@ -922,8 +957,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 34: Icons are displayed throughout the page
      *
-     * @test
      */
+
+    #[Test]
     public function test_icons_displayed_throughout_page()
     {
         $this->browse(function (Browser $browser) {
@@ -948,8 +984,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 35: Dark mode classes are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_dark_mode_classes_present()
     {
         $this->browse(function (Browser $browser) {
@@ -975,8 +1012,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 36: User activity tracking is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_activity_tracking_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -1002,8 +1040,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 37: Resource usage analytics are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_resource_usage_analytics_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -1029,8 +1068,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 38: Trend analysis is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_trend_analysis_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1056,8 +1096,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 39: Custom date range filtering exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_custom_date_range_filtering_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -1083,8 +1124,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 40: Export analytics data functionality present
      *
-     * @test
      */
+
+    #[Test]
     public function test_export_analytics_data_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -1111,8 +1153,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 41: Comparison views are available
      *
-     * @test
      */
+
+    #[Test]
     public function test_comparison_views_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1139,8 +1182,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 42: Top projects by activity are listed
      *
-     * @test
      */
+
+    #[Test]
     public function test_top_projects_by_activity_listed()
     {
         $this->browse(function (Browser $browser) {
@@ -1166,8 +1210,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 43: Top servers by activity are listed
      *
-     * @test
      */
+
+    #[Test]
     public function test_top_servers_by_activity_listed()
     {
         $this->browse(function (Browser $browser) {
@@ -1193,8 +1238,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 44: Error rate tracking is implemented
      *
-     * @test
      */
+
+    #[Test]
     public function test_error_rate_tracking_implemented()
     {
         $this->browse(function (Browser $browser) {
@@ -1220,8 +1266,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 45: Performance benchmarks are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_performance_benchmarks_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -1247,8 +1294,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 46: Deployment frequency chart exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_deployment_frequency_chart_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -1274,8 +1322,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 47: Response time metrics are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_response_time_metrics_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -1301,8 +1350,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 48: Uptime statistics are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_uptime_statistics_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -1328,8 +1378,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 49: Cost analysis section is present (if applicable)
      *
-     * @test
      */
+
+    #[Test]
     public function test_cost_analysis_section_present()
     {
         $this->browse(function (Browser $browser) {
@@ -1356,8 +1407,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 50: Network usage metrics are tracked
      *
-     * @test
      */
+
+    #[Test]
     public function test_network_usage_metrics_tracked()
     {
         $this->browse(function (Browser $browser) {
@@ -1383,8 +1435,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 51: Historical data visualization exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_historical_data_visualization_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -1410,8 +1463,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 52: Real-time updates functionality works
      *
-     * @test
      */
+
+    #[Test]
     public function test_realtime_updates_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -1437,8 +1491,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 53: Alerts and notifications summary is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_alerts_notifications_summary_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -1464,8 +1519,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 54: Data refresh button is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_data_refresh_button_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1491,8 +1547,9 @@ class AnalyticsTest extends DuskTestCase
     /**
      * Test 55: Analytics dashboard loads without errors
      *
-     * @test
      */
+
+    #[Test]
     public function test_analytics_dashboard_loads_without_errors()
     {
         $this->browse(function (Browser $browser) {

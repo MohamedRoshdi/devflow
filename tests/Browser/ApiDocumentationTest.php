@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\User;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Traits\LoginViaUI;
@@ -33,8 +35,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 1: API documentation page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_view_api_documentation(): void
     {
         $this->browse(function (Browser $browser) {
@@ -62,8 +65,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 2: Authentication section is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_authentication_section_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -89,8 +93,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 3: API endpoints are listed
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_endpoints_are_listed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -117,8 +122,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 4: Projects API endpoints documentation exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_projects_api_endpoints_documented(): void
     {
         $this->browse(function (Browser $browser) {
@@ -142,8 +148,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 5: Servers API endpoints documentation exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_servers_api_endpoints_documented(): void
     {
         $this->browse(function (Browser $browser) {
@@ -167,8 +174,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 6: Deployments API endpoints documentation exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_deployments_api_endpoints_documented(): void
     {
         $this->browse(function (Browser $browser) {
@@ -192,8 +200,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 7: API request examples are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_request_examples_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -219,8 +228,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 8: API response examples are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_response_examples_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -246,8 +256,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 9: HTTP methods are documented
      *
-     * @test
      */
+
+    #[Test]
     public function test_http_methods_documented(): void
     {
         $this->browse(function (Browser $browser) {
@@ -274,8 +285,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 10: API versioning information is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_versioning_information_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -300,8 +312,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 11: Authentication requirements are documented
      *
-     * @test
      */
+
+    #[Test]
     public function test_authentication_requirements_documented(): void
     {
         $this->browse(function (Browser $browser) {
@@ -327,8 +340,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 12: Rate limiting information is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_rate_limiting_information_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -354,8 +368,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 13: Error codes are documented
      *
-     * @test
      */
+
+    #[Test]
     public function test_error_codes_documented(): void
     {
         $this->browse(function (Browser $browser) {
@@ -384,8 +399,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 14: Webhook documentation is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_documentation_available(): void
     {
         $this->browse(function (Browser $browser) {
@@ -410,8 +426,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 15: Navigation between API sections works
      *
-     * @test
      */
+
+    #[Test]
     public function test_navigation_between_api_sections(): void
     {
         $this->browse(function (Browser $browser) {
@@ -445,8 +462,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 16: API token creation link/button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_token_creation_link_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -472,8 +490,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 17: API base URL is documented
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_base_url_documented(): void
     {
         $this->browse(function (Browser $browser) {
@@ -498,8 +517,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 18: Request headers are documented
      *
-     * @test
      */
+
+    #[Test]
     public function test_request_headers_documented(): void
     {
         $this->browse(function (Browser $browser) {
@@ -525,8 +545,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 19: Response formats are explained
      *
-     * @test
      */
+
+    #[Test]
     public function test_response_formats_explained(): void
     {
         $this->browse(function (Browser $browser) {
@@ -552,8 +573,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 20: Pagination documentation is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_pagination_documentation_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -579,8 +601,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 21: Filtering and sorting parameters are documented
      *
-     * @test
      */
+
+    #[Test]
     public function test_filtering_sorting_parameters_documented(): void
     {
         $this->browse(function (Browser $browser) {
@@ -606,8 +629,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 22: Code snippets are syntax highlighted
      *
-     * @test
      */
+
+    #[Test]
     public function test_code_snippets_syntax_highlighted(): void
     {
         $this->browse(function (Browser $browser) {
@@ -634,8 +658,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 23: API changelog or version history is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_changelog_available(): void
     {
         $this->browse(function (Browser $browser) {
@@ -661,8 +686,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 24: Search functionality in documentation
      *
-     * @test
      */
+
+    #[Test]
     public function test_search_functionality_in_docs(): void
     {
         $this->browse(function (Browser $browser) {
@@ -687,8 +713,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 25: API request builder/tester is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_request_builder_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -714,8 +741,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 26: API usage statistics are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_usage_statistics_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -741,8 +769,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 27: API token management link from documentation
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_token_management_link_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -776,8 +805,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 28: Multiple API versions are documented
      *
-     * @test
      */
+
+    #[Test]
     public function test_multiple_api_versions_documented(): void
     {
         $this->browse(function (Browser $browser) {
@@ -802,8 +832,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 29: Webhook event types are listed
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_event_types_listed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -829,8 +860,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 30: API security best practices are documented
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_security_best_practices_documented(): void
     {
         $this->browse(function (Browser $browser) {
@@ -856,8 +888,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 31: API token scopes/permissions are explained
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_token_scopes_explained(): void
     {
         $this->browse(function (Browser $browser) {
@@ -883,8 +916,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 32: API endpoint parameters are detailed
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_endpoint_parameters_detailed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -910,8 +944,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 33: API data validation rules are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_data_validation_rules_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -938,8 +973,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 34: Quick start guide is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_quick_start_guide_available(): void
     {
         $this->browse(function (Browser $browser) {
@@ -965,8 +1001,9 @@ class ApiDocumentationTest extends DuskTestCase
     /**
      * Test 35: API documentation is mobile responsive
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_documentation_mobile_responsive(): void
     {
         $this->browse(function (Browser $browser) {

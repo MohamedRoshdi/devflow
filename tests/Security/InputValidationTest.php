@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Security;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\Projects\ProjectCreate;
 use App\Livewire\Servers\ServerCreate;
 use App\Models\Project;
@@ -34,7 +36,7 @@ class InputValidationTest extends TestCase
 
     // ==================== XSS Prevention Tests ====================
 
-    /** @test */
+    #[Test]
     public function project_name_sanitizes_script_tags(): void
     {
         $this->actingAs($this->user);
@@ -51,7 +53,7 @@ class InputValidationTest extends TestCase
         $this->assertStringNotContainsString('<script>', e('<script>'));
     }
 
-    /** @test */
+    #[Test]
     public function server_name_sanitizes_html(): void
     {
         $this->actingAs($this->user);
@@ -67,7 +69,7 @@ class InputValidationTest extends TestCase
         $this->assertStringNotContainsString('<img', e('<img src=x>'));
     }
 
-    /** @test */
+    #[Test]
     public function environment_variables_escape_special_characters(): void
     {
         $this->actingAs($this->user);
@@ -92,7 +94,7 @@ class InputValidationTest extends TestCase
 
     // ==================== SQL Injection Prevention Tests ====================
 
-    /** @test */
+    #[Test]
     public function project_search_prevents_sql_injection(): void
     {
         $this->actingAs($this->user);
@@ -112,7 +114,7 @@ class InputValidationTest extends TestCase
         $this->assertDatabaseCount('projects', 1);
     }
 
-    /** @test */
+    #[Test]
     public function server_filter_prevents_sql_injection(): void
     {
         $this->actingAs($this->user);
@@ -124,7 +126,7 @@ class InputValidationTest extends TestCase
 
     // ==================== Path Traversal Prevention Tests ====================
 
-    /** @test */
+    #[Test]
     public function file_path_prevents_directory_traversal(): void
     {
         $this->actingAs($this->user);
@@ -148,7 +150,7 @@ class InputValidationTest extends TestCase
 
     // ==================== Command Injection Prevention Tests ====================
 
-    /** @test */
+    #[Test]
     public function branch_name_prevents_command_injection(): void
     {
         $this->actingAs($this->user);
@@ -164,7 +166,7 @@ class InputValidationTest extends TestCase
             ->assertHasErrors('branch');
     }
 
-    /** @test */
+    #[Test]
     public function ssh_user_prevents_command_injection(): void
     {
         $this->actingAs($this->user);
@@ -183,7 +185,7 @@ class InputValidationTest extends TestCase
 
     // ==================== LDAP Injection Prevention Tests ====================
 
-    /** @test */
+    #[Test]
     public function username_prevents_ldap_injection(): void
     {
         // Test email validation via Livewire Login component
@@ -196,7 +198,7 @@ class InputValidationTest extends TestCase
 
     // ==================== Header Injection Prevention Tests ====================
 
-    /** @test */
+    #[Test]
     public function email_prevents_header_injection(): void
     {
         // Test email validation via Livewire ForgotPassword component
@@ -208,7 +210,7 @@ class InputValidationTest extends TestCase
 
     // ==================== Integer Overflow Tests ====================
 
-    /** @test */
+    #[Test]
     public function pagination_handles_large_numbers(): void
     {
         $this->actingAs($this->user);
@@ -218,7 +220,7 @@ class InputValidationTest extends TestCase
         $response->assertOk();
     }
 
-    /** @test */
+    #[Test]
     public function port_number_validates_range(): void
     {
         $this->actingAs($this->user);
@@ -237,7 +239,7 @@ class InputValidationTest extends TestCase
 
     // ==================== URL Validation Tests ====================
 
-    /** @test */
+    #[Test]
     public function repository_url_validates_protocol(): void
     {
         $this->actingAs($this->user);
@@ -253,7 +255,7 @@ class InputValidationTest extends TestCase
             ->assertHasErrors('repository_url');
     }
 
-    /** @test */
+    #[Test]
     public function webhook_url_validates_https(): void
     {
         $this->actingAs($this->user);
@@ -267,7 +269,7 @@ class InputValidationTest extends TestCase
 
     // ==================== JSON Injection Prevention Tests ====================
 
-    /** @test */
+    #[Test]
     public function json_config_prevents_injection(): void
     {
         $this->actingAs($this->user);

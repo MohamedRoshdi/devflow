@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\ApiToken;
 use App\Models\SSHKey;
 use App\Models\User;
@@ -51,8 +53,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 1: User can access profile settings page
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_view_profile_settings(): void
     {
         $this->browse(function (Browser $browser) {
@@ -68,8 +71,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 2: Profile settings page displays user information
      *
-     * @test
      */
+
+    #[Test]
     public function test_profile_page_displays_user_information(): void
     {
         $this->browse(function (Browser $browser) {
@@ -87,8 +91,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 3: User can edit their name
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_edit_name(): void
     {
         $this->browse(function (Browser $browser) {
@@ -115,8 +120,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 4: User can edit their email
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_edit_email(): void
     {
         $this->browse(function (Browser $browser) {
@@ -143,8 +149,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 5: User can view avatar upload section
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_view_avatar_section(): void
     {
         $this->browse(function (Browser $browser) {
@@ -159,8 +166,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 6: User can access password change section
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_access_password_change_section(): void
     {
         $this->browse(function (Browser $browser) {
@@ -176,8 +184,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 7: Password change requires current password
      *
-     * @test
      */
+
+    #[Test]
     public function test_password_change_requires_current_password(): void
     {
         $this->browse(function (Browser $browser) {
@@ -194,8 +203,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 8: User can view API token management page
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_view_api_token_management(): void
     {
         $this->browse(function (Browser $browser) {
@@ -210,8 +220,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 9: User can create new API token
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_create_api_token(): void
     {
         $this->browse(function (Browser $browser) {
@@ -228,8 +239,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 10: API token creation requires name
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_token_creation_requires_name(): void
     {
         $this->browse(function (Browser $browser) {
@@ -244,8 +256,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 11: User can view existing API tokens
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_view_existing_api_tokens(): void
     {
         $this->browse(function (Browser $browser) {
@@ -273,8 +286,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 12: User can revoke API tokens
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_revoke_api_tokens(): void
     {
         $this->browse(function (Browser $browser) {
@@ -311,8 +325,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 13: User can access SSH key management
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_access_ssh_key_management(): void
     {
         $this->browse(function (Browser $browser) {
@@ -327,8 +342,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 14: SSH key page has add key button
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_key_page_has_add_button(): void
     {
         $this->browse(function (Browser $browser) {
@@ -343,8 +359,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 15: User can view existing SSH keys
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_view_existing_ssh_keys(): void
     {
         $this->browse(function (Browser $browser) {
@@ -371,8 +388,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 16: User can access notification preferences
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_access_notification_preferences(): void
     {
         $this->browse(function (Browser $browser) {
@@ -387,8 +405,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 17: Notification preferences show deployment notifications
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_preferences_show_deployment_options(): void
     {
         $this->browse(function (Browser $browser) {
@@ -402,8 +421,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 18: User can access theme preferences
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_access_theme_preferences(): void
     {
         $this->browse(function (Browser $browser) {
@@ -418,8 +438,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 19: Theme preferences show dark/light mode options
      *
-     * @test
      */
+
+    #[Test]
     public function test_theme_preferences_show_mode_options(): void
     {
         $this->browse(function (Browser $browser) {
@@ -433,8 +454,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 20: User can toggle dark mode
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_toggle_dark_mode(): void
     {
         $this->browse(function (Browser $browser) {
@@ -457,8 +479,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 21: User can view timezone settings
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_view_timezone_settings(): void
     {
         $this->browse(function (Browser $browser) {
@@ -473,8 +496,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 22: Timezone settings show timezone selector
      *
-     * @test
      */
+
+    #[Test]
     public function test_timezone_settings_show_selector(): void
     {
         $this->browse(function (Browser $browser) {
@@ -489,8 +513,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 23: User can change timezone
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_change_timezone(): void
     {
         $this->browse(function (Browser $browser) {
@@ -515,8 +540,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 24: User can view language/locale settings
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_view_language_settings(): void
     {
         $this->browse(function (Browser $browser) {
@@ -530,8 +556,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 25: User can access session management
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_access_session_management(): void
     {
         $this->browse(function (Browser $browser) {
@@ -546,8 +573,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 26: Session management shows active sessions
      *
-     * @test
      */
+
+    #[Test]
     public function test_session_management_shows_active_sessions(): void
     {
         $this->browse(function (Browser $browser) {
@@ -561,8 +589,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 27: User can view account deletion section
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_view_account_deletion_section(): void
     {
         $this->browse(function (Browser $browser) {
@@ -576,8 +605,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 28: User can view email verification status
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_view_email_verification_status(): void
     {
         $this->browse(function (Browser $browser) {
@@ -591,8 +621,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 29: User can access activity log
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_access_activity_log(): void
     {
         $this->browse(function (Browser $browser) {
@@ -606,8 +637,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 30: Activity log shows recent activities
      *
-     * @test
      */
+
+    #[Test]
     public function test_activity_log_shows_recent_activities(): void
     {
         $this->browse(function (Browser $browser) {
@@ -621,8 +653,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 31: Profile form has proper validation
      *
-     * @test
      */
+
+    #[Test]
     public function test_profile_form_has_validation(): void
     {
         $this->browse(function (Browser $browser) {
@@ -638,8 +671,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 32: Email must be unique validation
      *
-     * @test
      */
+
+    #[Test]
     public function test_email_must_be_unique_validation(): void
     {
         $this->browse(function (Browser $browser) {
@@ -654,8 +688,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 33: User can view two-factor authentication settings
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_view_two_factor_settings(): void
     {
         $this->browse(function (Browser $browser) {
@@ -669,8 +704,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 34: Two-factor authentication shows enable option
      *
-     * @test
      */
+
+    #[Test]
     public function test_two_factor_shows_enable_option(): void
     {
         $this->browse(function (Browser $browser) {
@@ -684,8 +720,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 35: User preferences are persisted
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_preferences_are_persisted(): void
     {
         $this->browse(function (Browser $browser) {
@@ -705,8 +742,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 36: Navigation between settings sections works
      *
-     * @test
      */
+
+    #[Test]
     public function test_navigation_between_settings_sections(): void
     {
         $this->browse(function (Browser $browser) {
@@ -726,8 +764,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 37: Settings page has proper breadcrumbs
      *
-     * @test
      */
+
+    #[Test]
     public function test_settings_page_has_breadcrumbs(): void
     {
         $this->browse(function (Browser $browser) {
@@ -741,8 +780,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 38: User can cancel profile edits
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_cancel_profile_edits(): void
     {
         $this->browse(function (Browser $browser) {
@@ -770,8 +810,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 39: Settings page is responsive on mobile
      *
-     * @test
      */
+
+    #[Test]
     public function test_settings_page_responsive_on_mobile(): void
     {
         $this->browse(function (Browser $browser) {
@@ -787,8 +828,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 40: Settings page is responsive on tablet
      *
-     * @test
      */
+
+    #[Test]
     public function test_settings_page_responsive_on_tablet(): void
     {
         $this->browse(function (Browser $browser) {
@@ -804,8 +846,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 41: Settings sidebar navigation is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_settings_sidebar_navigation_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -819,8 +862,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 42: User can access GitHub settings from settings menu
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_access_github_settings(): void
     {
         $this->browse(function (Browser $browser) {
@@ -835,8 +879,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 43: User can access storage settings
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_access_storage_settings(): void
     {
         $this->browse(function (Browser $browser) {
@@ -851,8 +896,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 44: User can access system status from settings
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_access_system_status(): void
     {
         $this->browse(function (Browser $browser) {
@@ -867,8 +913,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 45: User can access health checks settings
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_access_health_checks_settings(): void
     {
         $this->browse(function (Browser $browser) {
@@ -883,8 +930,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 46: Settings pages require authentication
      *
-     * @test
      */
+
+    #[Test]
     public function test_settings_pages_require_authentication(): void
     {
         $this->browse(function (Browser $browser) {
@@ -902,8 +950,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 47: Profile update shows success message
      *
-     * @test
      */
+
+    #[Test]
     public function test_profile_update_shows_success_message(): void
     {
         $this->browse(function (Browser $browser) {
@@ -919,8 +968,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 48: User can view default setup preferences
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_view_default_setup_preferences(): void
     {
         $this->browse(function (Browser $browser) {
@@ -934,8 +984,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 49: Default preferences show SSL toggle
      *
-     * @test
      */
+
+    #[Test]
     public function test_default_preferences_show_ssl_toggle(): void
     {
         $this->browse(function (Browser $browser) {
@@ -949,8 +1000,9 @@ class UserSettingsTest extends DuskTestCase
     /**
      * Test 50: Settings page has consistent layout across sections
      *
-     * @test
      */
+
+    #[Test]
     public function test_settings_consistent_layout(): void
     {
         $this->browse(function (Browser $browser) {

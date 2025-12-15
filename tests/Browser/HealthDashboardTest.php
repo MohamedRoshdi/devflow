@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\User;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Traits\LoginViaUI;
@@ -33,8 +35,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 1: Health dashboard page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_dashboard_page_loads_successfully()
     {
         $this->browse(function (Browser $browser) {
@@ -60,8 +63,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 2: Overall health status is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_overall_health_status_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -86,8 +90,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 3: Health check list is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_list_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -113,8 +118,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 4: Service status indicators are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_service_status_indicators_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -140,8 +146,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 5: Response time metrics are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_response_time_metrics_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -166,8 +173,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 6: Uptime status is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_uptime_status_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -193,8 +201,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 7: Recent incidents section is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_recent_incidents_section_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -220,8 +229,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 8: Health score is displayed for projects
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_score_displayed_for_projects()
     {
         $this->browse(function (Browser $browser) {
@@ -246,8 +256,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 9: Refresh button works
      *
-     * @test
      */
+
+    #[Test]
     public function test_refresh_button_works()
     {
         $this->browse(function (Browser $browser) {
@@ -280,8 +291,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 10: Filter by status works (All filter)
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_by_status_all_works()
     {
         $this->browse(function (Browser $browser) {
@@ -305,8 +317,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 11: Filter by status works (Healthy filter)
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_by_status_healthy_works()
     {
         $this->browse(function (Browser $browser) {
@@ -338,8 +351,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 12: Filter by status works (Warning filter)
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_by_status_warning_works()
     {
         $this->browse(function (Browser $browser) {
@@ -371,8 +385,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 13: Filter by status works (Critical filter)
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_by_status_critical_works()
     {
         $this->browse(function (Browser $browser) {
@@ -404,8 +419,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 14: Health check details are visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_details_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -431,8 +447,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 15: Success and failure counts are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_success_failure_counts_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -458,8 +475,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 16: Average response time is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_average_response_time_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -484,8 +502,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 17: Last check timestamps are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_last_check_timestamps_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -511,8 +530,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 18: Alert indicators are visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_alert_indicators_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -540,8 +560,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 19: Stats overview section is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_stats_overview_section_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -568,8 +589,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 20: Flash messages display properly
      *
-     * @test
      */
+
+    #[Test]
     public function test_flash_messages_display_properly()
     {
         $this->browse(function (Browser $browser) {
@@ -602,8 +624,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 21: Project health cards are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_health_cards_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -629,8 +652,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 22: Server health section is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_health_section_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -656,8 +680,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 23: CPU usage is displayed for servers
      *
-     * @test
      */
+
+    #[Test]
     public function test_cpu_usage_displayed_for_servers()
     {
         $this->browse(function (Browser $browser) {
@@ -681,8 +706,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 24: RAM usage is displayed for servers
      *
-     * @test
      */
+
+    #[Test]
     public function test_ram_usage_displayed_for_servers()
     {
         $this->browse(function (Browser $browser) {
@@ -707,8 +733,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 25: Disk usage is displayed for servers
      *
-     * @test
      */
+
+    #[Test]
     public function test_disk_usage_displayed_for_servers()
     {
         $this->browse(function (Browser $browser) {
@@ -733,8 +760,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 26: Issues list is displayed for projects
      *
-     * @test
      */
+
+    #[Test]
     public function test_issues_list_displayed_for_projects()
     {
         $this->browse(function (Browser $browser) {
@@ -760,8 +788,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 27: Loading state is shown initially
      *
-     * @test
      */
+
+    #[Test]
     public function test_loading_state_shown_initially()
     {
         $this->browse(function (Browser $browser) {
@@ -786,8 +815,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 28: View project links are functional
      *
-     * @test
      */
+
+    #[Test]
     public function test_view_project_links_functional()
     {
         $this->browse(function (Browser $browser) {
@@ -812,8 +842,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 29: Server view links are functional
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_view_links_functional()
     {
         $this->browse(function (Browser $browser) {
@@ -838,8 +869,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 30: Empty state is shown when no projects exist
      *
-     * @test
      */
+
+    #[Test]
     public function test_empty_state_shown_when_no_projects()
     {
         $this->browse(function (Browser $browser) {
@@ -864,8 +896,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 31: Health score color coding is correct
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_score_color_coding_correct()
     {
         $this->browse(function (Browser $browser) {
@@ -893,8 +926,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 32: Project server information is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_server_information_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -919,8 +953,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 33: Deployment status is shown for projects
      *
-     * @test
      */
+
+    #[Test]
     public function test_deployment_status_shown_for_projects()
     {
         $this->browse(function (Browser $browser) {
@@ -946,8 +981,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 34: Filter tabs show correct counts
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_tabs_show_correct_counts()
     {
         $this->browse(function (Browser $browser) {
@@ -974,8 +1010,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 35: Responsive design works on mobile
      *
-     * @test
      */
+
+    #[Test]
     public function test_responsive_design_works_on_mobile()
     {
         $this->browse(function (Browser $browser) {
@@ -1001,8 +1038,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 36: Responsive design works on tablet
      *
-     * @test
      */
+
+    #[Test]
     public function test_responsive_design_works_on_tablet()
     {
         $this->browse(function (Browser $browser) {
@@ -1028,8 +1066,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 37: Gradient headers are styled correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_gradient_headers_styled_correctly()
     {
         $this->browse(function (Browser $browser) {
@@ -1055,8 +1094,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 38: Server projects count is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_projects_count_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -1080,8 +1120,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 39: Health dashboard integrates with navigation
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_dashboard_integrates_with_navigation()
     {
         $this->browse(function (Browser $browser) {
@@ -1107,8 +1148,9 @@ class HealthDashboardTest extends DuskTestCase
     /**
      * Test 40: System health title and description are visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_system_health_title_description_visible()
     {
         $this->browse(function (Browser $browser) {

@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Deployment;
 use App\Models\Project;
 use App\Models\Server;
@@ -66,8 +68,9 @@ class DeploymentTest extends DuskTestCase
     /**
      * Test deployments list page loads with deployment history
      *
-     * @test
      */
+
+    #[Test]
     public function deployments_list_page_loads_with_history()
     {
         // Create multiple deployments with different statuses
@@ -102,8 +105,9 @@ class DeploymentTest extends DuskTestCase
     /**
      * Test deployment cards show correct information
      *
-     * @test
      */
+
+    #[Test]
     public function deployment_cards_show_correct_info()
     {
         $deployment = Deployment::factory()->success()->create([
@@ -135,8 +139,9 @@ class DeploymentTest extends DuskTestCase
     /**
      * Test status badges display correctly with correct colors
      *
-     * @test
      */
+
+    #[Test]
     public function status_badges_display_correctly()
     {
         // Create deployments with all statuses
@@ -194,8 +199,9 @@ class DeploymentTest extends DuskTestCase
     /**
      * Test clicking on deployment navigates to detail page
      *
-     * @test
      */
+
+    #[Test]
     public function clicking_deployment_navigates_to_detail_page()
     {
         $deployment = Deployment::factory()->success()->create([
@@ -222,8 +228,9 @@ class DeploymentTest extends DuskTestCase
     /**
      * Test deployment detail shows progress and steps
      *
-     * @test
      */
+
+    #[Test]
     public function deployment_detail_shows_progress_and_steps()
     {
         $deployment = Deployment::factory()->running()->create([
@@ -253,8 +260,9 @@ class DeploymentTest extends DuskTestCase
     /**
      * Test deployment logs are visible
      *
-     * @test
      */
+
+    #[Test]
     public function deployment_logs_are_visible()
     {
         $logContent = "Starting deployment...\nPulling latest changes from repository\nBuilding Docker image\nStarting containers\nDeployment completed successfully";
@@ -285,8 +293,9 @@ class DeploymentTest extends DuskTestCase
     /**
      * Test log auto-scroll functionality
      *
-     * @test
      */
+
+    #[Test]
     public function log_auto_scroll_works()
     {
         // Create long log output to enable scrolling
@@ -323,8 +332,9 @@ class DeploymentTest extends DuskTestCase
     /**
      * Test deployment from project page works
      *
-     * @test
      */
+
+    #[Test]
     public function deployment_from_project_page_works()
     {
         $this->browse(function (Browser $browser) {
@@ -343,8 +353,9 @@ class DeploymentTest extends DuskTestCase
     /**
      * Test deployment status updates in real-time (polling)
      *
-     * @test
      */
+
+    #[Test]
     public function deployment_status_updates_in_real_time()
     {
         $deployment = Deployment::factory()->running()->create([
@@ -376,8 +387,9 @@ class DeploymentTest extends DuskTestCase
     /**
      * Test failed deployment shows error message
      *
-     * @test
      */
+
+    #[Test]
     public function failed_deployment_shows_error_message()
     {
         $deployment = Deployment::factory()->failed()->create([
@@ -409,8 +421,9 @@ class DeploymentTest extends DuskTestCase
     /**
      * Test successful deployment shows success message
      *
-     * @test
      */
+
+    #[Test]
     public function successful_deployment_shows_success_message()
     {
         $deployment = Deployment::factory()->success()->create([
@@ -440,8 +453,9 @@ class DeploymentTest extends DuskTestCase
     /**
      * Test filter deployments by status
      *
-     * @test
      */
+
+    #[Test]
     public function filter_deployments_by_status()
     {
         // Create deployments with different statuses
@@ -486,8 +500,9 @@ class DeploymentTest extends DuskTestCase
     /**
      * Test filter deployments by project
      *
-     * @test
      */
+
+    #[Test]
     public function filter_deployments_by_project()
     {
         // Create second project
@@ -534,8 +549,9 @@ class DeploymentTest extends DuskTestCase
     /**
      * Test pagination works with many deployments
      *
-     * @test
      */
+
+    #[Test]
     public function pagination_works_with_many_deployments()
     {
         // Create 25 deployments to trigger pagination (default is 15 per page)
@@ -571,8 +587,9 @@ class DeploymentTest extends DuskTestCase
     /**
      * Test rollback button appears for successful deployments
      *
-     * @test
      */
+
+    #[Test]
     public function rollback_button_appears_for_successful_deployments()
     {
         // Create a successful deployment
@@ -596,8 +613,9 @@ class DeploymentTest extends DuskTestCase
     /**
      * Test search functionality in deployments
      *
-     * @test
      */
+
+    #[Test]
     public function search_functionality_works()
     {
         // Create deployments with distinct commit messages
@@ -639,8 +657,9 @@ class DeploymentTest extends DuskTestCase
     /**
      * Test deployment statistics cards
      *
-     * @test
      */
+
+    #[Test]
     public function deployment_statistics_display_correctly()
     {
         // Create deployments with known counts
@@ -681,8 +700,9 @@ class DeploymentTest extends DuskTestCase
     /**
      * Test deployment detail page shows all required information
      *
-     * @test
      */
+
+    #[Test]
     public function deployment_detail_shows_all_required_information()
     {
         $deployment = Deployment::factory()->success()->create([
@@ -730,8 +750,9 @@ class DeploymentTest extends DuskTestCase
     /**
      * Test empty state when no deployments exist
      *
-     * @test
      */
+
+    #[Test]
     public function empty_state_displays_when_no_deployments()
     {
         $this->browse(function (Browser $browser) {

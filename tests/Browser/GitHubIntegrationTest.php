@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Deployment;
 use App\Models\GitHubConnection;
 use App\Models\GitHubRepository;
@@ -133,8 +135,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 1: GitHub integrations page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_integrations_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -158,8 +161,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 2: GitHub connection status is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_connection_status_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -182,8 +186,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 3: Connect GitHub account button is visible when not connected
      *
-     * @test
      */
+
+    #[Test]
     public function test_connect_github_button_visible_when_not_connected()
     {
         // Temporarily disable connection
@@ -212,8 +217,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 4: GitHub OAuth flow redirects properly
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_oauth_flow_redirects()
     {
         $this->browse(function (Browser $browser) {
@@ -235,8 +241,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 5: GitHub repositories list is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_repositories_list_displayed()
     {
         // Create additional repositories
@@ -264,8 +271,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 6: Repository details show correct information
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_details_show_correct_info()
     {
         $this->browse(function (Browser $browser) {
@@ -289,8 +297,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 7: Repository search/filter functionality works
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_search_filter_works()
     {
         // Create repositories with different names
@@ -334,8 +343,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 8: Import repository to project works
      *
-     * @test
      */
+
+    #[Test]
     public function test_import_repository_to_project()
     {
         // Create unlinked repository
@@ -365,8 +375,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 9: GitHub webhook configuration is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_webhook_configuration_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -389,8 +400,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 10: Webhook secret is displayed (masked)
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_secret_displayed_masked()
     {
         $this->browse(function (Browser $browser) {
@@ -414,8 +426,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 11: Webhook deliveries are logged and displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_deliveries_logged_and_displayed()
     {
         // Create webhook deliveries
@@ -450,8 +463,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 12: GitHub branch list is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_branch_list_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -474,8 +488,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 13: Switch branch functionality works
      *
-     * @test
      */
+
+    #[Test]
     public function test_switch_branch_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -499,8 +514,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 14: GitHub commit history is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_commit_history_displayed()
     {
         // Create deployments with commit info
@@ -534,8 +550,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 15: Commit details show full information
      *
-     * @test
      */
+
+    #[Test]
     public function test_commit_details_show_full_information()
     {
         $deployment = Deployment::factory()->create([
@@ -568,8 +585,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 16: GitHub pull request integration info displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_pull_request_integration()
     {
         $this->browse(function (Browser $browser) {
@@ -594,8 +612,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 17: GitHub Actions integration status
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_actions_integration_status()
     {
         $this->browse(function (Browser $browser) {
@@ -620,8 +639,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 18: Deployment status updates to GitHub
      *
-     * @test
      */
+
+    #[Test]
     public function test_deployment_status_updates_to_github()
     {
         $deployment = Deployment::factory()->create([
@@ -653,8 +673,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 19: GitHub repository sync button works
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_repository_sync_button()
     {
         $this->browse(function (Browser $browser) {
@@ -677,8 +698,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 20: Disconnect GitHub account shows confirmation
      *
-     * @test
      */
+
+    #[Test]
     public function test_disconnect_github_account_confirmation()
     {
         $this->browse(function (Browser $browser) {
@@ -701,8 +723,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 21: GitHub connection scopes are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_connection_scopes_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -726,8 +749,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 22: GitHub user profile info is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_user_profile_info_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -751,8 +775,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 23: Repository language badges are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_language_badges_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -775,8 +800,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 24: Repository stars and forks count displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_stars_forks_count_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -800,8 +826,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 25: Auto-deploy toggle for GitHub webhooks
      *
-     * @test
      */
+
+    #[Test]
     public function test_auto_deploy_toggle_for_github_webhooks()
     {
         $this->browse(function (Browser $browser) {
@@ -825,8 +852,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 26: GitHub webhook events list is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_webhook_events_list_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -850,8 +878,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 27: Repository last sync time is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_last_sync_time_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -875,8 +904,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 28: GitHub repository link to GitHub.com works
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_repository_link_to_github_com()
     {
         $this->browse(function (Browser $browser) {
@@ -898,8 +928,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 29: Token expiration warning is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_token_expiration_warning_shown()
     {
         // Set token to expire soon
@@ -934,8 +965,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 30: Multiple GitHub connections management
      *
-     * @test
      */
+
+    #[Test]
     public function test_multiple_github_connections_management()
     {
         // Create additional connection (inactive)
@@ -968,8 +1000,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 31: Private repository indicator is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_private_repository_indicator_displayed()
     {
         // Create private repository
@@ -1002,8 +1035,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 32: Repository pagination works
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_pagination_works()
     {
         // Create many repositories
@@ -1032,8 +1066,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 33: Webhook delivery retry functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_delivery_retry_functionality()
     {
         $failedDelivery = WebhookDelivery::factory()->create([
@@ -1064,8 +1099,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 34: GitHub integration statistics dashboard
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_integration_statistics_dashboard()
     {
         $this->browse(function (Browser $browser) {
@@ -1089,8 +1125,9 @@ class GitHubIntegrationTest extends DuskTestCase
     /**
      * Test 35: Default branch badge is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_default_branch_badge_displayed()
     {
         $this->browse(function (Browser $browser) {

@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Domain;
 use App\Models\Project;
 use App\Models\Server;
@@ -204,8 +206,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 1: SSL certificates list page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_certificates_list_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -232,8 +235,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 2: SSL statistics dashboard displays
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_statistics_dashboard_displays()
     {
         $this->browse(function (Browser $browser) {
@@ -260,8 +264,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 3: Certificate details modal can be opened
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_details_modal_opens()
     {
         $this->browse(function (Browser $browser) {
@@ -288,8 +293,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 4: Certificate expiry warnings are visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_expiry_warnings_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -316,8 +322,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 5: SSL status filter works
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_status_filter_works()
     {
         $this->browse(function (Browser $browser) {
@@ -344,8 +351,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 6: Certificate search functionality present
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_search_functionality_present()
     {
         $this->browse(function (Browser $browser) {
@@ -372,8 +380,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 7: Certificate renewal button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_renewal_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -400,8 +409,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 8: Let's Encrypt provider information displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_letsencrypt_provider_information_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -428,8 +438,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 9: Certificate status indicators are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_status_indicators_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -456,8 +467,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 10: Expiring certificates are highlighted
      *
-     * @test
      */
+
+    #[Test]
     public function test_expiring_certificates_highlighted()
     {
         $this->browse(function (Browser $browser) {
@@ -484,8 +496,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 11: Expired certificates are shown with error state
      *
-     * @test
      */
+
+    #[Test]
     public function test_expired_certificates_shown_with_error_state()
     {
         $this->browse(function (Browser $browser) {
@@ -512,8 +525,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 12: Failed certificate issuance is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_failed_certificate_issuance_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -540,8 +554,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 13: Domain verification status is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_verification_status_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -568,8 +583,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 14: Certificate auto-renewal status is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_auto_renewal_status_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -596,8 +612,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 15: Certificate expiry dates are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_expiry_dates_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -624,8 +641,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 16: Certificate issue date is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_issue_date_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -652,8 +670,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 17: Bulk renewal option is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_bulk_renewal_option_available()
     {
         $this->browse(function (Browser $browser) {
@@ -680,8 +699,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 18: Certificate download option is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_download_option_present()
     {
         $this->browse(function (Browser $browser) {
@@ -708,8 +728,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 19: Certificate paths are accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_paths_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -736,8 +757,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 20: Critical certificates section displays
      *
-     * @test
      */
+
+    #[Test]
     public function test_critical_certificates_section_displays()
     {
         $this->browse(function (Browser $browser) {
@@ -764,8 +786,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 21: Certificate provider badge is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_provider_badge_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -792,8 +815,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 22: Days until expiry counter is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_days_until_expiry_counter_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -820,8 +844,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 23: Certificate validation error messages displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_validation_errors_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -848,8 +873,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 24: SSL certificate pagination works
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_certificate_pagination_works()
     {
         $this->browse(function (Browser $browser) {
@@ -876,8 +902,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 25: Issue new certificate button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_issue_new_certificate_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -904,8 +931,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 26: Certificate revocation option is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_revocation_option_available()
     {
         $this->browse(function (Browser $browser) {
@@ -932,8 +960,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 27: Certificate refresh/check expiry action works
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_refresh_check_expiry_action_works()
     {
         $this->browse(function (Browser $browser) {
@@ -960,8 +989,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 28: Domain list linked to certificates is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_domain_list_linked_to_certificates_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -988,8 +1018,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 29: Last renewal attempt timestamp is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_last_renewal_attempt_timestamp_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -1016,8 +1047,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 30: SSL certificate count is accurate
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_certificate_count_accurate()
     {
         $this->browse(function (Browser $browser) {
@@ -1047,8 +1079,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 31: Certificate chain validation status is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_chain_validation_status_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -1075,8 +1108,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 32: Certificate history/logs are accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_history_logs_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -1103,8 +1137,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 33: Wildcard certificate support is indicated
      *
-     * @test
      */
+
+    #[Test]
     public function test_wildcard_certificate_support_indicated()
     {
         $this->browse(function (Browser $browser) {
@@ -1131,8 +1166,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 34: SSL certificate export functionality present
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_certificate_export_functionality_present()
     {
         $this->browse(function (Browser $browser) {
@@ -1159,8 +1195,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 35: Certificate auto-renewal toggle is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_auto_renewal_toggle_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1187,8 +1224,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 36: Certificate notification settings are configurable
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_notification_settings_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -1215,8 +1253,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 37: SSL certificate creation modal opens
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_certificate_creation_modal_opens()
     {
         $this->browse(function (Browser $browser) {
@@ -1243,8 +1282,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 38: Let's Encrypt certificate option is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_letsencrypt_certificate_option_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1271,8 +1311,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 39: Custom certificate upload option is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_custom_certificate_upload_option_present()
     {
         $this->browse(function (Browser $browser) {
@@ -1299,8 +1340,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 40: Certificate verification button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_verification_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -1327,8 +1369,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 41: SSL certificate sorting functionality works
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_certificate_sorting_functionality_works()
     {
         $this->browse(function (Browser $browser) {
@@ -1355,8 +1398,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 42: Certificate details show issuer information
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_details_show_issuer_information()
     {
         $this->browse(function (Browser $browser) {
@@ -1383,8 +1427,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 43: Certificate bulk deletion option is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_bulk_deletion_option_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1411,8 +1456,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 44: Certbot installation status is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_certbot_installation_status_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -1439,8 +1485,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 45: SSL certificate quick actions menu is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_certificate_quick_actions_menu_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1467,8 +1514,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 46: Certificate expiry notifications preview is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_expiry_notifications_preview_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -1495,8 +1543,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 47: SSL certificate domain association is clear
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_certificate_domain_association_clear()
     {
         $this->browse(function (Browser $browser) {
@@ -1523,8 +1572,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 48: Certificate renewal progress indicator is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_renewal_progress_indicator_present()
     {
         $this->browse(function (Browser $browser) {
@@ -1551,8 +1601,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 49: SSL certificate statistics cards display correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_certificate_statistics_cards_display_correctly()
     {
         $this->browse(function (Browser $browser) {
@@ -1579,8 +1630,9 @@ class SSLTest extends DuskTestCase
     /**
      * Test 50: Certificate management page is responsive
      *
-     * @test
      */
+
+    #[Test]
     public function test_certificate_management_page_responsive()
     {
         $this->browse(function (Browser $browser) {

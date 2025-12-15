@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
@@ -63,8 +65,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 1: Webhook logs page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_logs_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -91,8 +94,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 2: Webhook statistics are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_statistics_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -119,8 +123,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 3: Webhook filter by status works
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_filter_by_status()
     {
         $this->browse(function (Browser $browser) {
@@ -147,8 +152,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 4: Webhook filter by provider works
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_filter_by_provider()
     {
         $this->browse(function (Browser $browser) {
@@ -175,8 +181,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 5: Webhook filter by project works
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_filter_by_project()
     {
         $this->browse(function (Browser $browser) {
@@ -202,8 +209,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 6: Webhook filter by event type works
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_filter_by_event_type()
     {
         $this->browse(function (Browser $browser) {
@@ -230,8 +238,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 7: Webhook search functionality works
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_search_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -257,8 +266,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 8: Clear filters button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_clear_filters_button()
     {
         $this->browse(function (Browser $browser) {
@@ -284,8 +294,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 9: Webhook delivery details can be viewed
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_delivery_details_viewable()
     {
         $this->browse(function (Browser $browser) {
@@ -312,8 +323,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 10: Webhook status indicators are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_status_indicators_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -342,8 +354,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 11: Webhook timestamp information is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_timestamp_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -370,8 +383,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 12: Project webhook settings page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_webhook_settings_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -397,8 +411,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 13: Webhook enable/disable toggle is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_enable_disable_toggle()
     {
         $this->browse(function (Browser $browser) {
@@ -425,8 +440,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 14: Webhook URL is displayed when enabled
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_url_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -453,8 +469,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 15: GitHub webhook URL is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_webhook_url_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -479,8 +496,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 16: GitLab webhook URL is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_gitlab_webhook_url_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -505,8 +523,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 17: Webhook secret is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_secret_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -532,8 +551,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 18: Webhook secret visibility toggle works
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_secret_visibility_toggle()
     {
         $this->browse(function (Browser $browser) {
@@ -560,8 +580,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 19: Regenerate webhook secret button is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_regenerate_webhook_secret_button()
     {
         $this->browse(function (Browser $browser) {
@@ -587,8 +608,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 20: Webhook secret regeneration requires confirmation
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_secret_regeneration_confirmation()
     {
         $this->browse(function (Browser $browser) {
@@ -614,8 +636,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 21: Copy webhook URL button is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_copy_webhook_url_button()
     {
         $this->browse(function (Browser $browser) {
@@ -640,8 +663,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 22: Recent webhook deliveries are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_recent_webhook_deliveries_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -668,8 +692,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 23: Webhook delivery status badges are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_delivery_status_badges()
     {
         $this->browse(function (Browser $browser) {
@@ -696,8 +721,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 24: Webhook event type is displayed in logs
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_event_type_in_logs()
     {
         $this->browse(function (Browser $browser) {
@@ -723,8 +749,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 25: Webhook provider is displayed in logs
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_provider_in_logs()
     {
         $this->browse(function (Browser $browser) {
@@ -750,8 +777,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 26: Webhook pagination works
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_pagination()
     {
         $this->browse(function (Browser $browser) {
@@ -778,8 +806,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 27: Webhook payload can be viewed
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_payload_viewable()
     {
         $this->browse(function (Browser $browser) {
@@ -805,8 +834,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 28: Webhook response can be viewed
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_response_viewable()
     {
         $this->browse(function (Browser $browser) {
@@ -832,8 +862,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 29: Webhook signature verification is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_signature_verification()
     {
         $this->browse(function (Browser $browser) {
@@ -859,8 +890,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 30: Webhook deployment link is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_deployment_link()
     {
         $this->browse(function (Browser $browser) {
@@ -886,8 +918,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 31: Webhook configuration instructions are available
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_configuration_instructions()
     {
         $this->browse(function (Browser $browser) {
@@ -914,8 +947,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 32: Webhook security warning is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_security_warning()
     {
         $this->browse(function (Browser $browser) {
@@ -942,8 +976,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 33: Webhook event types are documented
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_event_types_documented()
     {
         $this->browse(function (Browser $browser) {
@@ -969,8 +1004,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 34: Webhook delivery count is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_delivery_count()
     {
         $this->browse(function (Browser $browser) {
@@ -997,8 +1033,9 @@ class WebhooksTest extends DuskTestCase
     /**
      * Test 35: Webhook success rate is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_success_rate()
     {
         $this->browse(function (Browser $browser) {

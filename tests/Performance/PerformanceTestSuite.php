@@ -2,6 +2,7 @@
 
 namespace Tests\Performance;
 
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Deployment;
 use App\Models\Project;
 use App\Models\Server;
@@ -37,8 +38,8 @@ class PerformanceTestSuite extends TestCase
 
     /**
      * Test database query performance
-     * @test
      */
+    #[Test]
     public function test_database_query_performance(): void
     {
         $tests = [
@@ -83,8 +84,8 @@ class PerformanceTestSuite extends TestCase
 
     /**
      * Test N+1 query detection
-     * @test
      */
+    #[Test]
     public function test_n_plus_one_query_detection(): void
     {
         // Create test data
@@ -128,8 +129,8 @@ class PerformanceTestSuite extends TestCase
 
     /**
      * Test cache performance
-     * @test
      */
+    #[Test]
     public function test_cache_performance(): void
     {
         $testData = str_repeat('x', 10000); // 10KB of data
@@ -170,8 +171,8 @@ class PerformanceTestSuite extends TestCase
 
     /**
      * Test API response times
-     * @test
      */
+    #[Test]
     public function test_api_response_times(): void
     {
         $user = User::factory()->create();
@@ -206,8 +207,8 @@ class PerformanceTestSuite extends TestCase
 
     /**
      * Test memory usage
-     * @test
      */
+    #[Test]
     public function test_memory_usage(): void
     {
         $scenarios = [
@@ -260,8 +261,8 @@ class PerformanceTestSuite extends TestCase
 
     /**
      * Test concurrent user load
-     * @test
      */
+    #[Test]
     public function test_concurrent_user_load(): void
     {
         $concurrentUsers = 10;

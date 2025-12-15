@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\GitHubConnection;
 use App\Models\GitHubRepository;
 use App\Models\Server;
@@ -36,8 +38,9 @@ class GitHubRepoPickerTest extends DuskTestCase
     /**
      * Test 1: Project create page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_create_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -64,8 +67,9 @@ class GitHubRepoPickerTest extends DuskTestCase
     /**
      * Test 2: Repository URL field is present on project create page
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_url_field_is_present()
     {
         $this->browse(function (Browser $browser) {
@@ -96,8 +100,9 @@ class GitHubRepoPickerTest extends DuskTestCase
     /**
      * Test 3: Branch field is present on project create page
      *
-     * @test
      */
+
+    #[Test]
     public function test_branch_field_is_present()
     {
         $this->browse(function (Browser $browser) {
@@ -126,8 +131,9 @@ class GitHubRepoPickerTest extends DuskTestCase
     /**
      * Test 4: GitHub connection status shown when not connected
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_connection_status_shown_not_connected()
     {
         $this->browse(function (Browser $browser) {
@@ -156,8 +162,9 @@ class GitHubRepoPickerTest extends DuskTestCase
     /**
      * Test 5: GitHub import button shown on project create page
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_import_button_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -182,8 +189,9 @@ class GitHubRepoPickerTest extends DuskTestCase
     /**
      * Test 6: Manual URL entry works in repository field
      *
-     * @test
      */
+
+    #[Test]
     public function test_manual_url_entry_works()
     {
         // Ensure at least one server exists
@@ -229,8 +237,9 @@ class GitHubRepoPickerTest extends DuskTestCase
     /**
      * Test 7: Validation for repository URL field
      *
-     * @test
      */
+
+    #[Test]
     public function test_validation_for_repository_url()
     {
         // Ensure at least one server exists
@@ -273,8 +282,9 @@ class GitHubRepoPickerTest extends DuskTestCase
     /**
      * Test 8: Connect GitHub button shown when not connected
      *
-     * @test
      */
+
+    #[Test]
     public function test_connect_github_button_shown_when_not_connected()
     {
         $this->browse(function (Browser $browser) {
@@ -305,8 +315,9 @@ class GitHubRepoPickerTest extends DuskTestCase
     /**
      * Test 9: GitHub repo picker modal can be triggered
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_repo_picker_modal_can_be_triggered()
     {
         $this->browse(function (Browser $browser) {
@@ -330,8 +341,9 @@ class GitHubRepoPickerTest extends DuskTestCase
     /**
      * Test 10: Repository list loads when connected
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_list_loads_when_connected()
     {
         $this->browse(function (Browser $browser) {
@@ -382,8 +394,9 @@ class GitHubRepoPickerTest extends DuskTestCase
     /**
      * Test 11: Search/filter repositories functionality exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_search_filter_repositories_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -437,8 +450,9 @@ class GitHubRepoPickerTest extends DuskTestCase
     /**
      * Test 12: Repository selection UI elements are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_selection_ui_elements_present()
     {
         $this->browse(function (Browser $browser) {
@@ -473,8 +487,9 @@ class GitHubRepoPickerTest extends DuskTestCase
     /**
      * Test 13: Branch dropdown elements should exist
      *
-     * @test
      */
+
+    #[Test]
     public function test_branch_dropdown_elements_exist()
     {
         $this->browse(function (Browser $browser) {
@@ -496,8 +511,9 @@ class GitHubRepoPickerTest extends DuskTestCase
     /**
      * Test 14: Loading state indication exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_loading_state_indication_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -523,8 +539,9 @@ class GitHubRepoPickerTest extends DuskTestCase
     /**
      * Test 15: Navigation from project create page works correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_navigation_from_project_create_works()
     {
         $this->browse(function (Browser $browser) {
@@ -559,8 +576,9 @@ class GitHubRepoPickerTest extends DuskTestCase
     /**
      * Test 16: Error messages display capability exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_error_messages_display_capability_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -587,8 +605,9 @@ class GitHubRepoPickerTest extends DuskTestCase
     /**
      * Test 17: Repository refresh functionality exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_refresh_functionality_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -625,8 +644,9 @@ class GitHubRepoPickerTest extends DuskTestCase
     /**
      * Test 18: Project create wizard steps work
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_create_wizard_steps_work()
     {
         $this->browse(function (Browser $browser) {
@@ -652,8 +672,9 @@ class GitHubRepoPickerTest extends DuskTestCase
     /**
      * Test 19: GitHub settings page is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_settings_page_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -679,8 +700,9 @@ class GitHubRepoPickerTest extends DuskTestCase
     /**
      * Test 20: Repository visibility filter exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_visibility_filter_exists()
     {
         $this->browse(function (Browser $browser) {

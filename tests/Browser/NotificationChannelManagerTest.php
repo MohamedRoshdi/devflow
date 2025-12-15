@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\NotificationChannel;
 use App\Models\Project;
 use App\Models\Server;
@@ -28,7 +30,7 @@ class NotificationChannelManagerTest extends DuskTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function user_can_view_notification_channels_page(): void
     {
         $this->browse(function (Browser $browser) {
@@ -39,7 +41,7 @@ class NotificationChannelManagerTest extends DuskTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function user_can_open_add_channel_modal(): void
     {
         $this->browse(function (Browser $browser) {
@@ -51,7 +53,7 @@ class NotificationChannelManagerTest extends DuskTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function user_can_create_slack_channel(): void
     {
         $this->browse(function (Browser $browser) {
@@ -69,7 +71,7 @@ class NotificationChannelManagerTest extends DuskTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function user_can_create_discord_channel(): void
     {
         $this->browse(function (Browser $browser) {
@@ -87,7 +89,7 @@ class NotificationChannelManagerTest extends DuskTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function user_can_edit_channel(): void
     {
         $channel = NotificationChannel::factory()->create([
@@ -109,7 +111,7 @@ class NotificationChannelManagerTest extends DuskTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function user_can_delete_channel(): void
     {
         $channel = NotificationChannel::factory()->create([
@@ -129,7 +131,7 @@ class NotificationChannelManagerTest extends DuskTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function user_can_toggle_channel(): void
     {
         $channel = NotificationChannel::factory()->create([
@@ -147,7 +149,7 @@ class NotificationChannelManagerTest extends DuskTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function user_can_test_channel(): void
     {
         $channel = NotificationChannel::factory()->create([
@@ -164,7 +166,7 @@ class NotificationChannelManagerTest extends DuskTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function form_validates_required_fields(): void
     {
         $this->browse(function (Browser $browser) {
@@ -178,7 +180,7 @@ class NotificationChannelManagerTest extends DuskTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function form_validates_webhook_url(): void
     {
         $this->browse(function (Browser $browser) {
@@ -195,7 +197,7 @@ class NotificationChannelManagerTest extends DuskTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function events_selection_works(): void
     {
         $this->browse(function (Browser $browser) {

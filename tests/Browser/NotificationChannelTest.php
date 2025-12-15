@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\NotificationChannel;
 use App\Models\Project;
 use App\Models\Server;
@@ -66,8 +68,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test notification channel manager page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function notification_channel_manager_page_loads(): void
     {
         $this->browse(function (Browser $browser) {
@@ -83,8 +86,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test channel list is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function channel_list_is_displayed(): void
     {
         $channel = NotificationChannel::create([
@@ -111,8 +115,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test add channel button visible
      *
-     * @test
      */
+
+    #[Test]
     public function add_channel_button_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -127,8 +132,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test add channel modal opens
      *
-     * @test
      */
+
+    #[Test]
     public function add_channel_modal_opens(): void
     {
         $this->browse(function (Browser $browser) {
@@ -147,8 +153,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test channel type dropdown present
      *
-     * @test
      */
+
+    #[Test]
     public function channel_type_dropdown_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -168,8 +175,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test channel name field present
      *
-     * @test
      */
+
+    #[Test]
     public function channel_name_field_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -186,8 +194,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test webhook URL field for Slack/Discord
      *
-     * @test
      */
+
+    #[Test]
     public function webhook_url_field_for_slack_discord(): void
     {
         $this->browse(function (Browser $browser) {
@@ -205,8 +214,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test create channel form submits
      *
-     * @test
      */
+
+    #[Test]
     public function create_channel_form_submits(): void
     {
         $this->browse(function (Browser $browser) {
@@ -228,8 +238,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test test channel button visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_channel_button_visible(): void
     {
         $channel = NotificationChannel::create([
@@ -256,8 +267,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test enable/disable toggle works
      *
-     * @test
      */
+
+    #[Test]
     public function enable_disable_toggle_works(): void
     {
         $channel = NotificationChannel::create([
@@ -290,8 +302,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test delete channel button visible
      *
-     * @test
      */
+
+    #[Test]
     public function delete_channel_button_visible(): void
     {
         $channel = NotificationChannel::create([
@@ -318,8 +331,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test channel status indicators shown
      *
-     * @test
      */
+
+    #[Test]
     public function channel_status_indicators_shown(): void
     {
         $enabledChannel = NotificationChannel::create([
@@ -359,8 +373,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test flash messages display
      *
-     * @test
      */
+
+    #[Test]
     public function flash_messages_display(): void
     {
         $channel = NotificationChannel::create([
@@ -388,8 +403,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test creating Slack channel
      *
-     * @test
      */
+
+    #[Test]
     public function creating_slack_channel_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -413,8 +429,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test creating Discord channel
      *
-     * @test
      */
+
+    #[Test]
     public function creating_discord_channel_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -438,8 +455,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test creating Teams channel
      *
-     * @test
      */
+
+    #[Test]
     public function creating_teams_channel_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -463,8 +481,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test creating webhook channel with secret
      *
-     * @test
      */
+
+    #[Test]
     public function creating_webhook_channel_with_secret_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -489,8 +508,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test notification events selection
      *
-     * @test
      */
+
+    #[Test]
     public function notification_events_selection_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -507,8 +527,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test editing existing channel
      *
-     * @test
      */
+
+    #[Test]
     public function editing_existing_channel_works(): void
     {
         $channel = NotificationChannel::create([
@@ -546,8 +567,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test deleting channel
      *
-     * @test
      */
+
+    #[Test]
     public function deleting_channel_works(): void
     {
         $channel = NotificationChannel::create([
@@ -575,8 +597,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test validation error for empty name
      *
-     * @test
      */
+
+    #[Test]
     public function validation_error_for_empty_name(): void
     {
         $this->browse(function (Browser $browser) {
@@ -595,8 +618,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test validation error for empty webhook URL
      *
-     * @test
      */
+
+    #[Test]
     public function validation_error_for_empty_webhook_url(): void
     {
         $this->browse(function (Browser $browser) {
@@ -617,8 +641,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test empty state displays when no channels exist
      *
-     * @test
      */
+
+    #[Test]
     public function empty_state_displays_when_no_channels(): void
     {
         // Clean up any existing channels
@@ -636,8 +661,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test channel displays events correctly
      *
-     * @test
      */
+
+    #[Test]
     public function channel_displays_events_correctly(): void
     {
         $channel = NotificationChannel::create([
@@ -664,8 +690,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test multiple channels display correctly
      *
-     * @test
      */
+
+    #[Test]
     public function multiple_channels_display_correctly(): void
     {
         $channels = [
@@ -715,8 +742,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test closing modal without saving
      *
-     * @test
      */
+
+    #[Test]
     public function closing_modal_without_saving_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -736,8 +764,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test provider icons display correctly
      *
-     * @test
      */
+
+    #[Test]
     public function provider_icons_display_correctly(): void
     {
         $slackChannel = NotificationChannel::create([
@@ -777,8 +806,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test modal closes after successful creation
      *
-     * @test
      */
+
+    #[Test]
     public function modal_closes_after_successful_creation(): void
     {
         $this->browse(function (Browser $browser) {
@@ -800,8 +830,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test webhook secret field only visible for webhook type
      *
-     * @test
      */
+
+    #[Test]
     public function webhook_secret_field_only_visible_for_webhook_type(): void
     {
         $this->browse(function (Browser $browser) {
@@ -823,8 +854,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test page header displays correctly
      *
-     * @test
      */
+
+    #[Test]
     public function page_header_displays_correctly(): void
     {
         $this->browse(function (Browser $browser) {
@@ -840,8 +872,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test enabled checkbox default state
      *
-     * @test
      */
+
+    #[Test]
     public function enabled_checkbox_default_state(): void
     {
         $this->browse(function (Browser $browser) {
@@ -859,8 +892,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test edit button is visible for each channel
      *
-     * @test
      */
+
+    #[Test]
     public function edit_button_is_visible_for_each_channel(): void
     {
         $channel = NotificationChannel::create([
@@ -888,8 +922,9 @@ class NotificationChannelTest extends DuskTestCase
     /**
      * Test channel card shows provider correctly
      *
-     * @test
      */
+
+    #[Test]
     public function channel_card_shows_provider_correctly(): void
     {
         $channel = NotificationChannel::create([

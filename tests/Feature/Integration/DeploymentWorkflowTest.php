@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Integration;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Jobs\DeployProjectJob;
 use App\Models\Deployment;
 use App\Models\Project;
@@ -79,7 +81,7 @@ class DeploymentWorkflowTest extends TestCase
 
     // ==================== GitHub Webhook to Deployment Tests ====================
 
-    /** @test */
+    #[Test]
     public function github_push_webhook_creates_deployment_record(): void
     {
         Queue::fake();
@@ -153,7 +155,7 @@ class DeploymentWorkflowTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function github_webhook_with_invalid_signature_is_rejected(): void
     {
         $payload = [
@@ -196,7 +198,7 @@ class DeploymentWorkflowTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function github_webhook_for_wrong_branch_is_ignored(): void
     {
         Queue::fake();
@@ -245,7 +247,7 @@ class DeploymentWorkflowTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function github_non_push_events_are_ignored(): void
     {
         $payload = [
@@ -285,7 +287,7 @@ class DeploymentWorkflowTest extends TestCase
 
     // ==================== GitLab Webhook to Deployment Tests ====================
 
-    /** @test */
+    #[Test]
     public function gitlab_push_webhook_creates_deployment_record(): void
     {
         Queue::fake();
@@ -339,7 +341,7 @@ class DeploymentWorkflowTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function gitlab_webhook_with_invalid_token_is_rejected(): void
     {
         $payload = [
@@ -367,7 +369,7 @@ class DeploymentWorkflowTest extends TestCase
 
     // ==================== Deployment Status Transition Tests ====================
 
-    /** @test */
+    #[Test]
     public function deployment_transitions_from_pending_to_running_to_success(): void
     {
         // Create pending deployment
@@ -411,7 +413,7 @@ class DeploymentWorkflowTest extends TestCase
         $this->assertTrue($successDeployment->isSuccess());
     }
 
-    /** @test */
+    #[Test]
     public function deployment_transitions_from_running_to_failed(): void
     {
         $deployment = Deployment::factory()->create([
@@ -438,7 +440,7 @@ class DeploymentWorkflowTest extends TestCase
         $this->assertTrue($freshDeployment->isFailed());
     }
 
-    /** @test */
+    #[Test]
     public function only_one_deployment_can_be_active_at_a_time(): void
     {
         // Create active deployment
@@ -464,7 +466,7 @@ class DeploymentWorkflowTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function deployment_can_be_created_after_previous_completes(): void
     {
         // Create completed deployment
@@ -502,7 +504,7 @@ class DeploymentWorkflowTest extends TestCase
 
     // ==================== Deployment Execution Tests ====================
 
-    /** @test */
+    #[Test]
     public function deployment_stores_output_logs(): void
     {
         $logs = "Building Docker image...\nImage built successfully\nStarting containers...\nDeployment completed";
@@ -522,7 +524,7 @@ class DeploymentWorkflowTest extends TestCase
         $this->assertStringContainsString('Deployment completed', $freshDeployment->output_log);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_stores_error_logs_on_failure(): void
     {
         $errorLog = "Error: Failed to connect to MySQL\nConnection refused on port 3306\nStack trace...";
@@ -541,7 +543,7 @@ class DeploymentWorkflowTest extends TestCase
         $this->assertStringContainsString('Failed to connect to MySQL', $freshDeployment->error_log);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_records_duration(): void
     {
         $startTime = now()->subMinutes(2);
@@ -563,7 +565,7 @@ class DeploymentWorkflowTest extends TestCase
 
     // ==================== Rollback Workflow Tests ====================
 
-    /** @test */
+    #[Test]
     public function rollback_creates_new_deployment_with_previous_commit(): void
     {
         // Create successful deployments
@@ -603,7 +605,7 @@ class DeploymentWorkflowTest extends TestCase
         $this->assertStringContainsString('Rollback to:', $rollbackDeployment->commit_message);
     }
 
-    /** @test */
+    #[Test]
     public function rollback_cannot_target_failed_deployment(): void
     {
         $failedDeployment = Deployment::factory()->create([
@@ -623,7 +625,7 @@ class DeploymentWorkflowTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function rollback_cannot_be_performed_during_active_deployment(): void
     {
         $successfulDeployment = Deployment::factory()->create([
@@ -652,7 +654,7 @@ class DeploymentWorkflowTest extends TestCase
 
     // ==================== Failed Deployment Handling Tests ====================
 
-    /** @test */
+    #[Test]
     public function failed_deployment_updates_project_status(): void
     {
         $this->project->update(['status' => 'running']);
@@ -670,7 +672,7 @@ class DeploymentWorkflowTest extends TestCase
         $this->assertNotNull($deployment->error_log);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_can_be_cancelled(): void
     {
         $deployment = Deployment::factory()->create([
@@ -689,7 +691,7 @@ class DeploymentWorkflowTest extends TestCase
         $this->assertNotNull($refreshedDeployment->completed_at);
     }
 
-    /** @test */
+    #[Test]
     public function completed_deployment_cannot_be_cancelled(): void
     {
         $deployment = Deployment::factory()->create([
@@ -709,7 +711,7 @@ class DeploymentWorkflowTest extends TestCase
 
     // ==================== Webhook Delivery Tracking Tests ====================
 
-    /** @test */
+    #[Test]
     public function webhook_delivery_is_linked_to_deployment(): void
     {
         $deployment = Deployment::factory()->create([
@@ -729,7 +731,7 @@ class DeploymentWorkflowTest extends TestCase
         $this->assertEquals($this->project->id, $delivery->project_id);
     }
 
-    /** @test */
+    #[Test]
     public function webhook_delivery_records_payload_and_signature(): void
     {
         $payload = [
@@ -752,7 +754,7 @@ class DeploymentWorkflowTest extends TestCase
 
     // ==================== Deployment Validation Tests ====================
 
-    /** @test */
+    #[Test]
     public function deployment_requires_valid_project(): void
     {
         $this->expectException(\RuntimeException::class);
@@ -769,7 +771,7 @@ class DeploymentWorkflowTest extends TestCase
         $this->assertContains('Project does not have a server assigned', $validation['errors']);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_requires_online_server(): void
     {
         $offlineServer = Server::factory()->create([
@@ -790,7 +792,7 @@ class DeploymentWorkflowTest extends TestCase
 
     // ==================== Complete Workflow Integration Test ====================
 
-    /** @test */
+    #[Test]
     public function complete_deployment_workflow_from_webhook_to_success(): void
     {
         Queue::fake();

@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\User;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Traits\LoginViaUI;
@@ -33,8 +35,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 1: Server create page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_page_loads_successfully()
     {
         $this->browse(function (Browser $browser) {
@@ -53,8 +56,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 2: Server name field is present and functional
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_name_field_present()
     {
         $this->browse(function (Browser $browser) {
@@ -76,8 +80,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 3: IP address field is present and functional
      *
-     * @test
      */
+
+    #[Test]
     public function test_ip_address_field_present()
     {
         $this->browse(function (Browser $browser) {
@@ -99,8 +104,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 4: SSH port field is present with default value
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_port_field_present()
     {
         $this->browse(function (Browser $browser) {
@@ -120,8 +126,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 5: SSH user field is present with default value
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_user_field_present()
     {
         $this->browse(function (Browser $browser) {
@@ -141,8 +148,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 6: Hostname field is present and optional
      *
-     * @test
      */
+
+    #[Test]
     public function test_hostname_field_present()
     {
         $this->browse(function (Browser $browser) {
@@ -162,8 +170,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 7: Authentication method selector is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_authentication_method_selector_present()
     {
         $this->browse(function (Browser $browser) {
@@ -185,8 +194,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 8: Test connection button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_test_connection_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -209,8 +219,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 9: Add Server button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_add_server_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -233,8 +244,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 10: Form validation works on submission
      *
-     * @test
      */
+
+    #[Test]
     public function test_form_validation_works()
     {
         $this->browse(function (Browser $browser) {
@@ -261,8 +273,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 11: Required field validation for server name
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_name_required_validation()
     {
         $this->browse(function (Browser $browser) {
@@ -291,8 +304,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 12: IP address validation
      *
-     * @test
      */
+
+    #[Test]
     public function test_ip_address_validation()
     {
         $this->browse(function (Browser $browser) {
@@ -321,8 +335,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 13: Port number validation
      *
-     * @test
      */
+
+    #[Test]
     public function test_port_number_validation()
     {
         $this->browse(function (Browser $browser) {
@@ -353,8 +368,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 14: Cancel button is present and functional
      *
-     * @test
      */
+
+    #[Test]
     public function test_cancel_button_present()
     {
         $this->browse(function (Browser $browser) {
@@ -377,8 +393,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 15: Back navigation works with cancel button
      *
-     * @test
      */
+
+    #[Test]
     public function test_back_navigation_works()
     {
         $this->browse(function (Browser $browser) {
@@ -404,8 +421,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 16: SSH key option can be selected
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_key_selection_works()
     {
         $this->browse(function (Browser $browser) {
@@ -431,8 +449,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 17: Password field is shown when password method is selected
      *
-     * @test
      */
+
+    #[Test]
     public function test_password_field_shown_when_selected()
     {
         $this->browse(function (Browser $browser) {
@@ -454,8 +473,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 18: SSH key field is shown when key method is selected
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_key_field_shown_when_selected()
     {
         $this->browse(function (Browser $browser) {
@@ -476,8 +496,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 19: GPS location fields are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_gps_location_fields_present()
     {
         $this->browse(function (Browser $browser) {
@@ -498,8 +519,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 20: Get location button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_get_location_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -524,8 +546,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 21: Authentication method toggle updates form
      *
-     * @test
      */
+
+    #[Test]
     public function test_authentication_method_toggle_updates_form()
     {
         $this->browse(function (Browser $browser) {
@@ -557,8 +580,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 22: Port field accepts custom port numbers
      *
-     * @test
      */
+
+    #[Test]
     public function test_port_field_accepts_custom_values()
     {
         $this->browse(function (Browser $browser) {
@@ -579,8 +603,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 23: Username field can be changed from default
      *
-     * @test
      */
+
+    #[Test]
     public function test_username_field_can_be_changed()
     {
         $this->browse(function (Browser $browser) {
@@ -601,8 +626,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 24: Password field has proper input type
      *
-     * @test
      */
+
+    #[Test]
     public function test_password_field_is_password_type()
     {
         $this->browse(function (Browser $browser) {
@@ -625,8 +651,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 25: Form has proper HTML5 validation attributes
      *
-     * @test
      */
+
+    #[Test]
     public function test_form_has_required_attributes()
     {
         $this->browse(function (Browser $browser) {
@@ -653,8 +680,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 26: SSH key textarea has proper placeholder
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_key_textarea_has_placeholder()
     {
         $this->browse(function (Browser $browser) {
@@ -681,8 +709,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 27: IP address field has proper placeholder
      *
-     * @test
      */
+
+    #[Test]
     public function test_ip_address_has_placeholder()
     {
         $this->browse(function (Browser $browser) {
@@ -708,8 +737,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 28: Required fields are marked with asterisks
      *
-     * @test
      */
+
+    #[Test]
     public function test_required_fields_marked_with_asterisks()
     {
         $this->browse(function (Browser $browser) {
@@ -732,8 +762,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 29: GPS latitude field accepts decimal values
      *
-     * @test
      */
+
+    #[Test]
     public function test_latitude_field_accepts_decimal_values()
     {
         $this->browse(function (Browser $browser) {
@@ -753,8 +784,9 @@ class ServerCreateTest extends DuskTestCase
     /**
      * Test 30: GPS longitude field accepts decimal values
      *
-     * @test
      */
+
+    #[Test]
     public function test_longitude_field_accepts_decimal_values()
     {
         $this->browse(function (Browser $browser) {

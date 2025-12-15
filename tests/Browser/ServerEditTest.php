@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Server;
 use App\Models\User;
 use Laravel\Dusk\Browser;
@@ -39,8 +41,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 1: Page loads successfully (skip if no server)
      *
-     * @test
      */
+
+    #[Test]
     public function test_page_loads_successfully()
     {
         if (! $this->server) {
@@ -71,8 +74,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 2: Server name field pre-filled
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_name_field_prefilled()
     {
         if (! $this->server) {
@@ -102,8 +106,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 3: IP address field pre-filled
      *
-     * @test
      */
+
+    #[Test]
     public function test_ip_address_field_prefilled()
     {
         if (! $this->server) {
@@ -133,8 +138,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 4: SSH port field pre-filled
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_port_field_prefilled()
     {
         if (! $this->server) {
@@ -164,8 +170,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 5: SSH user field pre-filled
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_user_field_prefilled()
     {
         if (! $this->server) {
@@ -195,8 +202,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 6: Authentication method options present
      *
-     * @test
      */
+
+    #[Test]
     public function test_auth_method_options_present()
     {
         if (! $this->server) {
@@ -230,8 +238,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 7: Current values displayed correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_current_values_displayed()
     {
         if (! $this->server) {
@@ -265,8 +274,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 8: Update button visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_update_button_visible()
     {
         if (! $this->server) {
@@ -298,8 +308,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 9: Cancel button present
      *
-     * @test
      */
+
+    #[Test]
     public function test_cancel_button_present()
     {
         if (! $this->server) {
@@ -330,8 +341,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 10: Test connection button present
      *
-     * @test
      */
+
+    #[Test]
     public function test_connection_button_present()
     {
         if (! $this->server) {
@@ -362,8 +374,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 11: Form validation works for required fields
      *
-     * @test
      */
+
+    #[Test]
     public function test_form_validation_works()
     {
         if (! $this->server) {
@@ -406,8 +419,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 12: Changes persist after save
      *
-     * @test
      */
+
+    #[Test]
     public function test_changes_persist_after_save()
     {
         if (! $this->server) {
@@ -462,8 +476,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 13: Success message displayed after update
      *
-     * @test
      */
+
+    #[Test]
     public function test_success_message_displayed()
     {
         if (! $this->server) {
@@ -510,8 +525,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 14: Error handling works for invalid IP
      *
-     * @test
      */
+
+    #[Test]
     public function test_error_handling_invalid_ip()
     {
         if (! $this->server) {
@@ -559,8 +575,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 15: Back navigation works
      *
-     * @test
      */
+
+    #[Test]
     public function test_back_navigation_works()
     {
         if (! $this->server) {
@@ -605,8 +622,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 16: Delete server option exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_delete_server_option_exists()
     {
         if (! $this->server) {
@@ -637,8 +655,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 17: Danger zone section visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_danger_zone_section()
     {
         if (! $this->server) {
@@ -669,8 +688,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 18: Hostname field present
      *
-     * @test
      */
+
+    #[Test]
     public function test_hostname_field_present()
     {
         if (! $this->server) {
@@ -696,8 +716,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 19: Location fields present (latitude, longitude)
      *
-     * @test
      */
+
+    #[Test]
     public function test_location_fields_present()
     {
         if (! $this->server) {
@@ -728,8 +749,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 20: Flash messages display properly
      *
-     * @test
      */
+
+    #[Test]
     public function test_flash_messages_display()
     {
         if (! $this->server) {
@@ -769,8 +791,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 21: Password field conditionally shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_password_field_conditionally_shown()
     {
         if (! $this->server) {
@@ -804,8 +827,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 22: SSH Key field conditionally shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_key_field_conditionally_shown()
     {
         if (! $this->server) {
@@ -840,8 +864,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 23: Port validation accepts valid ports
      *
-     * @test
      */
+
+    #[Test]
     public function test_port_validation()
     {
         if (! $this->server) {
@@ -873,8 +898,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 24: All form fields are editable
      *
-     * @test
      */
+
+    #[Test]
     public function test_all_fields_editable()
     {
         if (! $this->server) {
@@ -917,8 +943,9 @@ class ServerEditTest extends DuskTestCase
     /**
      * Test 25: Form layout is properly structured
      *
-     * @test
      */
+
+    #[Test]
     public function test_form_layout_structured()
     {
         if (! $this->server) {

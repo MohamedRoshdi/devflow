@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
@@ -80,8 +82,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 1: Project configuration page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_configuration_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -105,8 +108,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 2: Basic project settings section is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_basic_project_settings_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -130,8 +134,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 3: Project name field is present and editable
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_name_field_present()
     {
         $this->browse(function (Browser $browser) {
@@ -154,8 +159,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 4: Project slug field is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_slug_field_present()
     {
         $this->browse(function (Browser $browser) {
@@ -178,8 +184,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 5: Repository settings section is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_settings_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -203,8 +210,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 6: Repository URL field is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_url_field_present()
     {
         $this->browse(function (Browser $browser) {
@@ -227,8 +235,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 7: Branch field is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_branch_field_present()
     {
         $this->browse(function (Browser $browser) {
@@ -251,8 +260,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 8: Framework selection dropdown is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_framework_selection_available()
     {
         $this->browse(function (Browser $browser) {
@@ -276,8 +286,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 9: PHP version selection is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_php_version_selection_available()
     {
         $this->browse(function (Browser $browser) {
@@ -301,8 +312,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 10: Node.js version selection is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_nodejs_version_selection_available()
     {
         $this->browse(function (Browser $browser) {
@@ -326,8 +338,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 11: Root directory field is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_root_directory_field_present()
     {
         $this->browse(function (Browser $browser) {
@@ -350,8 +363,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 12: Health check URL field is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_url_field_available()
     {
         $this->browse(function (Browser $browser) {
@@ -375,8 +389,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 13: Auto-deploy toggle is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_auto_deploy_toggle_present()
     {
         $this->browse(function (Browser $browser) {
@@ -400,8 +415,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 14: Save configuration button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_save_configuration_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -425,8 +441,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 15: Framework options include Laravel
      *
-     * @test
      */
+
+    #[Test]
     public function test_framework_options_include_laravel()
     {
         $this->browse(function (Browser $browser) {
@@ -447,8 +464,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 16: Framework options include Node.js
      *
-     * @test
      */
+
+    #[Test]
     public function test_framework_options_include_nodejs()
     {
         $this->browse(function (Browser $browser) {
@@ -471,8 +489,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 17: Framework options include React
      *
-     * @test
      */
+
+    #[Test]
     public function test_framework_options_include_react()
     {
         $this->browse(function (Browser $browser) {
@@ -493,8 +512,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 18: PHP version options include 8.4
      *
-     * @test
      */
+
+    #[Test]
     public function test_php_version_options_include_84()
     {
         $this->browse(function (Browser $browser) {
@@ -517,8 +537,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 19: PHP version options include 8.3
      *
-     * @test
      */
+
+    #[Test]
     public function test_php_version_options_include_83()
     {
         $this->browse(function (Browser $browser) {
@@ -541,8 +562,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 20: Node.js version options include 22
      *
-     * @test
      */
+
+    #[Test]
     public function test_node_version_options_include_22()
     {
         $this->browse(function (Browser $browser) {
@@ -565,8 +587,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 21: Node.js version options include 20 (LTS)
      *
-     * @test
      */
+
+    #[Test]
     public function test_node_version_options_include_20()
     {
         $this->browse(function (Browser $browser) {
@@ -589,8 +612,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 22: Configuration page shows current project name
      *
-     * @test
      */
+
+    #[Test]
     public function test_configuration_shows_current_project_name()
     {
         $this->browse(function (Browser $browser) {
@@ -611,8 +635,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 23: Configuration page shows current branch
      *
-     * @test
      */
+
+    #[Test]
     public function test_configuration_shows_current_branch()
     {
         $this->browse(function (Browser $browser) {
@@ -633,8 +658,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 24: Configuration page has breadcrumb navigation
      *
-     * @test
      */
+
+    #[Test]
     public function test_configuration_has_breadcrumb_navigation()
     {
         $this->browse(function (Browser $browser) {
@@ -658,8 +684,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 25: Configuration page is accessible from project show page
      *
-     * @test
      */
+
+    #[Test]
     public function test_configuration_accessible_from_project_show()
     {
         $this->browse(function (Browser $browser) {
@@ -685,8 +712,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 26: Validation error messages are handled
      *
-     * @test
      */
+
+    #[Test]
     public function test_validation_error_messages_handled()
     {
         $this->browse(function (Browser $browser) {
@@ -709,8 +737,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 27: Success message display is implemented
      *
-     * @test
      */
+
+    #[Test]
     public function test_success_message_display_implemented()
     {
         $this->browse(function (Browser $browser) {
@@ -734,8 +763,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 28: Configuration form uses Livewire
      *
-     * @test
      */
+
+    #[Test]
     public function test_configuration_form_uses_livewire()
     {
         $this->browse(function (Browser $browser) {
@@ -758,8 +788,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 29: Configuration page has proper title
      *
-     * @test
      */
+
+    #[Test]
     public function test_configuration_page_has_proper_title()
     {
         $this->browse(function (Browser $browser) {
@@ -783,8 +814,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 30: Cancel or back button is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_cancel_or_back_button_available()
     {
         $this->browse(function (Browser $browser) {
@@ -808,8 +840,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 31: Repository URL accepts GitHub URLs
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_url_accepts_github()
     {
         $this->browse(function (Browser $browser) {
@@ -832,8 +865,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 32: Repository URL validation pattern exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_url_validation_pattern_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -856,8 +890,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 33: Slug field has validation rules
      *
-     * @test
      */
+
+    #[Test]
     public function test_slug_field_has_validation_rules()
     {
         $this->browse(function (Browser $browser) {
@@ -878,8 +913,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 34: Configuration page supports dark mode
      *
-     * @test
      */
+
+    #[Test]
     public function test_configuration_supports_dark_mode()
     {
         $this->browse(function (Browser $browser) {
@@ -902,8 +938,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 35: Framework field has proper select element
      *
-     * @test
      */
+
+    #[Test]
     public function test_framework_field_has_select_element()
     {
         $this->browse(function (Browser $browser) {
@@ -926,8 +963,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 36: PHP version field has proper select element
      *
-     * @test
      */
+
+    #[Test]
     public function test_php_version_field_has_select_element()
     {
         $this->browse(function (Browser $browser) {
@@ -950,8 +988,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 37: Node.js version field has proper select element
      *
-     * @test
      */
+
+    #[Test]
     public function test_node_version_field_has_select_element()
     {
         $this->browse(function (Browser $browser) {
@@ -974,8 +1013,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 38: Health check URL has proper input type
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_url_has_proper_input_type()
     {
         $this->browse(function (Browser $browser) {
@@ -998,8 +1038,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 39: Auto-deploy uses checkbox or toggle
      *
-     * @test
      */
+
+    #[Test]
     public function test_auto_deploy_uses_checkbox_or_toggle()
     {
         $this->browse(function (Browser $browser) {
@@ -1022,8 +1063,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 40: Configuration page is responsive
      *
-     * @test
      */
+
+    #[Test]
     public function test_configuration_page_is_responsive()
     {
         $this->browse(function (Browser $browser) {
@@ -1047,8 +1089,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 41: Form fields have proper labels
      *
-     * @test
      */
+
+    #[Test]
     public function test_form_fields_have_proper_labels()
     {
         $this->browse(function (Browser $browser) {
@@ -1069,8 +1112,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 42: Configuration data persists after save
      *
-     * @test
      */
+
+    #[Test]
     public function test_configuration_data_persists()
     {
         $this->browse(function (Browser $browser) {
@@ -1094,8 +1138,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 43: Loading states are implemented
      *
-     * @test
      */
+
+    #[Test]
     public function test_loading_states_implemented()
     {
         $this->browse(function (Browser $browser) {
@@ -1119,8 +1164,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 44: Help text or tooltips are available
      *
-     * @test
      */
+
+    #[Test]
     public function test_help_text_or_tooltips_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1145,8 +1191,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 45: Configuration sections are well-organized
      *
-     * @test
      */
+
+    #[Test]
     public function test_configuration_sections_well_organized()
     {
         $this->browse(function (Browser $browser) {
@@ -1170,8 +1217,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 46: Required fields are marked
      *
-     * @test
      */
+
+    #[Test]
     public function test_required_fields_are_marked()
     {
         $this->browse(function (Browser $browser) {
@@ -1195,8 +1243,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 47: Form has proper accessibility attributes
      *
-     * @test
      */
+
+    #[Test]
     public function test_form_has_accessibility_attributes()
     {
         $this->browse(function (Browser $browser) {
@@ -1220,8 +1269,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 48: Configuration uses consistent styling
      *
-     * @test
      */
+
+    #[Test]
     public function test_configuration_uses_consistent_styling()
     {
         $this->browse(function (Browser $browser) {
@@ -1244,8 +1294,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 49: Form prevents duplicate submissions
      *
-     * @test
      */
+
+    #[Test]
     public function test_form_prevents_duplicate_submissions()
     {
         $this->browse(function (Browser $browser) {
@@ -1269,8 +1320,9 @@ class ProjectConfigurationTest extends DuskTestCase
     /**
      * Test 50: Configuration page has proper meta tags
      *
-     * @test
      */
+
+    #[Test]
     public function test_configuration_has_proper_meta_tags()
     {
         $this->browse(function (Browser $browser) {

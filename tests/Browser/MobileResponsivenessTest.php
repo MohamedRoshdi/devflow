@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Project;
 use App\Models\User;
 use Laravel\Dusk\Browser;
@@ -22,8 +24,9 @@ class MobileResponsivenessTest extends DuskTestCase
     /**
      * Test responsive design across different devices
      *
-     * @test
      */
+
+    #[Test]
     public function test_responsive_design_across_devices()
     {
         $this->browse(function (Browser $browser) {
@@ -251,8 +254,9 @@ class MobileResponsivenessTest extends DuskTestCase
     /**
      * Test touch interactions on mobile
      *
-     * @test
      */
+
+    #[Test]
     public function test_touch_interactions()
     {
         $this->browse(function (Browser $browser) {
@@ -281,8 +285,9 @@ class MobileResponsivenessTest extends DuskTestCase
     /**
      * Test viewport meta tag
      *
-     * @test
      */
+
+    #[Test]
     public function test_viewport_meta_tag()
     {
         $this->browse(function (Browser $browser) {
@@ -301,8 +306,9 @@ class MobileResponsivenessTest extends DuskTestCase
     /**
      * Test font sizes on mobile
      *
-     * @test
      */
+
+    #[Test]
     public function test_readability_on_mobile()
     {
         $this->browse(function (Browser $browser) {
@@ -339,8 +345,9 @@ class MobileResponsivenessTest extends DuskTestCase
     /**
      * Test image responsiveness
      *
-     * @test
      */
+
+    #[Test]
     public function test_image_responsiveness()
     {
         $this->browse(function (Browser $browser) {

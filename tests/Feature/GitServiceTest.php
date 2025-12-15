@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
@@ -36,7 +38,7 @@ class GitServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function ssh_command_escapes_single_quotes_correctly()
     {
         $gitService = new GitService;
@@ -52,7 +54,7 @@ class GitServiceTest extends TestCase
         $this->assertStringContainsString("'echo '\\''test'\\'''", $command);
     }
 
-    /** @test */
+    #[Test]
     public function ssh_command_preserves_git_format_strings()
     {
         $gitService = new GitService;
@@ -73,7 +75,7 @@ class GitServiceTest extends TestCase
         $this->assertStringContainsString('%s', $sshCommand);
     }
 
-    /** @test */
+    #[Test]
     public function ssh_command_uses_single_quotes_wrapper()
     {
         $gitService = new GitService;
@@ -90,7 +92,7 @@ class GitServiceTest extends TestCase
         $this->assertStringNotContainsString('"ls -la"', $command);
     }
 
-    /** @test */
+    #[Test]
     public function get_latest_commits_returns_correct_structure()
     {
         // Fake the Process facade to simulate SSH response
@@ -111,7 +113,7 @@ class GitServiceTest extends TestCase
         $this->assertArrayHasKey('per_page', $result);
     }
 
-    /** @test */
+    #[Test]
     public function check_for_updates_returns_correct_structure()
     {
         // Fake the Process facade
@@ -135,7 +137,7 @@ class GitServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function get_latest_commits_handles_empty_repository()
     {
         // Fake repo doesn't exist - the check command returns 'not-exists'
@@ -152,7 +154,7 @@ class GitServiceTest extends TestCase
         $this->assertEquals(0, $result['total']);
     }
 
-    /** @test */
+    #[Test]
     public function pagination_calculates_skip_correctly()
     {
         $gitService = new GitService;
@@ -171,7 +173,7 @@ class GitServiceTest extends TestCase
         $this->assertEquals(3, $method->getNumberOfParameters());
     }
 
-    /** @test */
+    #[Test]
     public function commit_diff_returns_commits_between_hashes()
     {
         Process::fake([

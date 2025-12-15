@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Server;
 use App\Models\User;
 use Laravel\Dusk\Browser;
@@ -55,8 +57,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 1: Firewall manager page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_firewall_manager_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -83,8 +86,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 2: SSL manager page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_manager_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -111,8 +115,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 3: Security dashboard is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_dashboard_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -138,8 +143,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 4: SSH security settings are visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_security_settings_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -167,8 +173,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 5: Fail2ban status displays
      *
-     * @test
      */
+
+    #[Test]
     public function test_fail2ban_status_displays()
     {
         $this->browse(function (Browser $browser) {
@@ -196,8 +203,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 6: Security dashboard shows security metrics
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_dashboard_shows_metrics()
     {
         $this->browse(function (Browser $browser) {
@@ -224,8 +232,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 7: Firewall rules section is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_firewall_rules_section_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -253,8 +262,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 8: SSL certificates list is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_certificates_list_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -282,8 +292,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 9: SSH security configuration options are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_security_configuration_options_present()
     {
         $this->browse(function (Browser $browser) {
@@ -311,8 +322,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 10: Fail2ban jails are listed
      *
-     * @test
      */
+
+    #[Test]
     public function test_fail2ban_jails_listed()
     {
         $this->browse(function (Browser $browser) {
@@ -340,8 +352,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 11: Security scan page is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_scan_page_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -368,8 +381,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 12: Firewall add rule button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_firewall_add_rule_button_present()
     {
         $this->browse(function (Browser $browser) {
@@ -396,8 +410,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 13: SSL certificate renewal option is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_renewal_option_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -424,8 +439,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 14: SSH port configuration is editable
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_port_configuration_editable()
     {
         $this->browse(function (Browser $browser) {
@@ -451,8 +467,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 15: Fail2ban banned IPs are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_fail2ban_banned_ips_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -479,8 +496,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 16: Security dashboard navigation links work
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_dashboard_navigation_links()
     {
         $this->browse(function (Browser $browser) {
@@ -507,8 +525,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 17: Firewall status indicator is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_firewall_status_indicator_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -536,8 +555,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 18: SSL expiration warnings are visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_expiration_warnings_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -564,8 +584,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 19: SSH authentication methods are configurable
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_authentication_methods_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -592,8 +613,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 20: Fail2ban service control buttons are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_fail2ban_service_control_buttons_present()
     {
         $this->browse(function (Browser $browser) {
@@ -621,8 +643,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 21: Security score display is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_score_display_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -649,8 +672,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 22: Security recommendations are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_recommendations_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -677,8 +701,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 23: Port management interface is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_port_management_interface_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -705,8 +730,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 24: SSH key management page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_key_management_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -733,8 +759,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 25: Two-factor authentication settings exist
      *
-     * @test
      */
+
+    #[Test]
     public function test_two_factor_authentication_settings_exist()
     {
         $this->browse(function (Browser $browser) {
@@ -761,8 +788,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 26: Security audit logs are accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_audit_logs_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -789,8 +817,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 27: Intrusion detection alerts are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_intrusion_detection_alerts_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -817,8 +846,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 28: IP whitelist management is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_ip_whitelist_management_available()
     {
         $this->browse(function (Browser $browser) {
@@ -845,8 +875,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 29: IP blacklist management is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_ip_blacklist_management_available()
     {
         $this->browse(function (Browser $browser) {
@@ -873,8 +904,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 30: Security policy configuration page exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_policy_configuration_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -901,8 +933,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 31: Vulnerability scanning can be initiated
      *
-     * @test
      */
+
+    #[Test]
     public function test_vulnerability_scanning_can_be_initiated()
     {
         $this->browse(function (Browser $browser) {
@@ -929,8 +962,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 32: Security scan results are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_scan_results_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -957,8 +991,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 33: Firewall can enable/disable rules
      *
-     * @test
      */
+
+    #[Test]
     public function test_firewall_can_enable_disable_rules()
     {
         $this->browse(function (Browser $browser) {
@@ -985,8 +1020,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 34: SSL certificate auto-renewal settings visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_auto_renewal_settings_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -1013,8 +1049,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 35: SSH root login can be disabled
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_root_login_can_be_disabled()
     {
         $this->browse(function (Browser $browser) {
@@ -1041,8 +1078,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 36: Fail2ban ban time is configurable
      *
-     * @test
      */
+
+    #[Test]
     public function test_fail2ban_ban_time_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -1069,8 +1107,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 37: Security events timeline is shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_events_timeline_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -1097,8 +1136,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 38: Firewall rule priorities can be set
      *
-     * @test
      */
+
+    #[Test]
     public function test_firewall_rule_priorities_can_be_set()
     {
         $this->browse(function (Browser $browser) {
@@ -1125,8 +1165,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 39: SSL certificate validation status shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_certificate_validation_status_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -1153,8 +1194,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 40: SSH password authentication can be toggled
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_password_authentication_can_be_toggled()
     {
         $this->browse(function (Browser $browser) {
@@ -1181,8 +1223,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 41: Fail2ban max retry attempts configurable
      *
-     * @test
      */
+
+    #[Test]
     public function test_fail2ban_max_retry_attempts_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -1209,8 +1252,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 42: Security notifications preferences exist
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_notifications_preferences_exist()
     {
         $this->browse(function (Browser $browser) {
@@ -1237,8 +1281,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 43: Firewall logging is configurable
      *
-     * @test
      */
+
+    #[Test]
     public function test_firewall_logging_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -1265,8 +1310,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 44: SSL certificate chain is validated
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_certificate_chain_validated()
     {
         $this->browse(function (Browser $browser) {
@@ -1293,8 +1339,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 45: SSH key fingerprints are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_key_fingerprints_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -1321,8 +1368,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 46: Fail2ban unban functionality exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_fail2ban_unban_functionality_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -1349,8 +1397,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 47: Security compliance reports available
      *
-     * @test
      */
+
+    #[Test]
     public function test_security_compliance_reports_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1377,8 +1426,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 48: Firewall default policies can be set
      *
-     * @test
      */
+
+    #[Test]
     public function test_firewall_default_policies_can_be_set()
     {
         $this->browse(function (Browser $browser) {
@@ -1405,8 +1455,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 49: SSL certificate installation wizard exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_certificate_installation_wizard_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -1433,8 +1484,9 @@ class SecurityTest extends DuskTestCase
     /**
      * Test 50: SSH connection timeout is configurable
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_connection_timeout_configurable()
     {
         $this->browse(function (Browser $browser) {

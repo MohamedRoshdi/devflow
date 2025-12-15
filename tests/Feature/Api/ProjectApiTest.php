@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\ApiToken;
 use App\Models\Deployment;
 use App\Models\Project;
@@ -50,7 +52,7 @@ class ProjectApiTest extends TestCase
 
     // ==================== List Projects ====================
 
-    /** @test */
+    #[Test]
     public function it_can_list_all_projects(): void
     {
         Project::factory()->count(3)->create([
@@ -69,7 +71,7 @@ class ProjectApiTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_authentication_to_list_projects(): void
     {
         $response = $this->getJson('/api/v1/projects');
@@ -79,7 +81,7 @@ class ProjectApiTest extends TestCase
 
     // ==================== Create Project ====================
 
-    /** @test */
+    #[Test]
     public function it_can_create_a_project(): void
     {
         $projectData = [
@@ -104,7 +106,7 @@ class ProjectApiTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_required_fields_when_creating_project(): void
     {
         $response = $this->withHeaders($this->headers)
@@ -114,7 +116,7 @@ class ProjectApiTest extends TestCase
             ->assertJsonValidationErrors(['name', 'repository_url', 'server_id']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_repository_url_format(): void
     {
         $response = $this->withHeaders($this->headers)
@@ -130,7 +132,7 @@ class ProjectApiTest extends TestCase
 
     // ==================== Get Single Project ====================
 
-    /** @test */
+    #[Test]
     public function it_can_get_a_single_project(): void
     {
         $project = Project::factory()->create([
@@ -145,7 +147,7 @@ class ProjectApiTest extends TestCase
             ->assertJsonPath('data.id', $project->id);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_404_for_nonexistent_project(): void
     {
         $response = $this->withHeaders($this->headers)
@@ -156,7 +158,7 @@ class ProjectApiTest extends TestCase
 
     // ==================== Update Project ====================
 
-    /** @test */
+    #[Test]
     public function it_can_update_a_project(): void
     {
         $project = Project::factory()->create([
@@ -181,7 +183,7 @@ class ProjectApiTest extends TestCase
 
     // ==================== Delete Project ====================
 
-    /** @test */
+    #[Test]
     public function it_can_delete_a_project(): void
     {
         $project = Project::factory()->create([
@@ -202,7 +204,7 @@ class ProjectApiTest extends TestCase
 
     // ==================== Deploy Project ====================
 
-    /** @test */
+    #[Test]
     public function it_can_trigger_deployment(): void
     {
         $project = Project::factory()->create([
@@ -223,7 +225,7 @@ class ProjectApiTest extends TestCase
 
     // ==================== List Deployments ====================
 
-    /** @test */
+    #[Test]
     public function it_can_list_project_deployments(): void
     {
         $project = Project::factory()->create([

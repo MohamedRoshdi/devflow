@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\User;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Traits\LoginViaUI;
@@ -33,8 +35,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 1: API token manager page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_token_manager_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -61,8 +64,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 2: GitHub settings page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_settings_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -89,8 +93,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 3: Health check manager displays
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_manager_displays()
     {
         $this->browse(function (Browser $browser) {
@@ -117,8 +122,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 4: SSH key manager page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_key_manager_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -145,8 +151,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 5: System status page displays
      *
-     * @test
      */
+
+    #[Test]
     public function test_system_status_page_displays()
     {
         $this->browse(function (Browser $browser) {
@@ -173,8 +180,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 6: Storage settings accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_settings_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -201,8 +209,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 7: Queue monitor shows jobs
      *
-     * @test
      */
+
+    #[Test]
     public function test_queue_monitor_shows_jobs()
     {
         $this->browse(function (Browser $browser) {
@@ -229,8 +238,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 8: API token creation button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_token_creation_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -257,8 +267,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 9: GitHub OAuth connection status is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_oauth_connection_status_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -285,8 +296,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 10: Health check endpoints list is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_endpoints_list_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -313,8 +325,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 11: SSH key list displays existing keys
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_key_list_displays_existing_keys()
     {
         $this->browse(function (Browser $browser) {
@@ -341,8 +354,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 12: System metrics are displayed on status page
      *
-     * @test
      */
+
+    #[Test]
     public function test_system_metrics_displayed_on_status_page()
     {
         $this->browse(function (Browser $browser) {
@@ -369,8 +383,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 13: Storage usage statistics are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_usage_statistics_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -397,8 +412,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 14: Queue statistics are visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_queue_statistics_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -425,8 +441,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 15: API token permissions are configurable
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_token_permissions_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -453,8 +470,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 16: GitHub repository list is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_repository_list_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -481,8 +499,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 17: Add health check button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_add_health_check_button_present()
     {
         $this->browse(function (Browser $browser) {
@@ -509,8 +528,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 18: SSH key generation option is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_key_generation_option_available()
     {
         $this->browse(function (Browser $browser) {
@@ -537,8 +557,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 19: Service status indicators are shown on system status
      *
-     * @test
      */
+
+    #[Test]
     public function test_service_status_indicators_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -565,8 +586,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 20: Storage driver configuration is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_driver_configuration_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -593,8 +615,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 21: Queue worker status is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_queue_worker_status_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -621,8 +644,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 22: API token revocation option is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_api_token_revocation_option_available()
     {
         $this->browse(function (Browser $browser) {
@@ -649,8 +673,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 23: Health check frequency settings are editable
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_frequency_editable()
     {
         $this->browse(function (Browser $browser) {
@@ -677,8 +702,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 24: SSH key fingerprint is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_key_fingerprint_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -705,8 +731,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 25: System load averages are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_system_load_averages_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -733,8 +760,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 26: Navigation to settings pages from dashboard works
      *
-     * @test
      */
+
+    #[Test]
     public function test_navigation_to_settings_from_dashboard()
     {
         $this->browse(function (Browser $browser) {
@@ -767,8 +795,9 @@ class SettingsTest extends DuskTestCase
     /**
      * Test 27: Settings sections have proper navigation/tabs
      *
-     * @test
      */
+
+    #[Test]
     public function test_settings_sections_have_navigation()
     {
         $this->browse(function (Browser $browser) {

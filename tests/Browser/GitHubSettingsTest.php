@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\GitHubConnection;
 use App\Models\GitHubRepository;
 use App\Models\Project;
@@ -80,8 +82,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 1: GitHub settings page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_settings_page_loads_successfully(): void
     {
         $this->browse(function (Browser $browser) {
@@ -97,8 +100,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 2: Not connected state is displayed correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_not_connected_state_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -117,8 +121,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 3: Connect GitHub button is visible when not connected
      *
-     * @test
      */
+
+    #[Test]
     public function test_connect_button_visible_when_not_connected(): void
     {
         $this->browse(function (Browser $browser) {
@@ -136,8 +141,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 4: Benefits section displayed when not connected
      *
-     * @test
      */
+
+    #[Test]
     public function test_benefits_section_displayed_when_not_connected(): void
     {
         $this->browse(function (Browser $browser) {
@@ -157,8 +163,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 5: Connected state displays user information
      *
-     * @test
      */
+
+    #[Test]
     public function test_connected_state_displays_user_info(): void
     {
         $this->browse(function (Browser $browser) {
@@ -177,8 +184,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 6: Disconnect button shown when connected
      *
-     * @test
      */
+
+    #[Test]
     public function test_disconnect_button_shown_when_connected(): void
     {
         $this->browse(function (Browser $browser) {
@@ -196,8 +204,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 7: Repository statistics cards displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_statistics_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -219,8 +228,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 8: Repository list is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_list_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -240,8 +250,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 9: Sync repositories button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_sync_repositories_button_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -259,8 +270,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 10: Last sync timestamp displayed for repositories
      *
-     * @test
      */
+
+    #[Test]
     public function test_last_sync_timestamp_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -279,8 +291,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 11: Repository count shown in statistics
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_count_shown(): void
     {
         $this->browse(function (Browser $browser) {
@@ -299,8 +312,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 12: Search repositories input is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_search_repositories_input_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -318,8 +332,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 13: Search repositories functionality works
      *
-     * @test
      */
+
+    #[Test]
     public function test_search_repositories_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -341,8 +356,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 14: Visibility filter dropdown is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_visibility_filter_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -361,8 +377,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 15: Filter by public repositories
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_by_public_repositories(): void
     {
         $this->browse(function (Browser $browser) {
@@ -384,8 +401,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 16: Filter by private repositories
      *
-     * @test
      */
+
+    #[Test]
     public function test_filter_by_private_repositories(): void
     {
         $this->browse(function (Browser $browser) {
@@ -407,8 +425,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 17: Language filter dropdown is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_language_filter_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -427,8 +446,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 18: Repository visibility badges displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_visibility_badges_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -447,8 +467,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 19: Repository language badges displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_language_badges_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -467,8 +488,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 20: Link to project button visible for unlinked repos
      *
-     * @test
      */
+
+    #[Test]
     public function test_link_to_project_button_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -487,8 +509,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 21: Link to project modal opens
      *
-     * @test
      */
+
+    #[Test]
     public function test_link_to_project_modal_opens(): void
     {
         $this->browse(function (Browser $browser) {
@@ -509,8 +532,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 22: Unlink button shown for linked repositories
      *
-     * @test
      */
+
+    #[Test]
     public function test_unlink_button_shown_for_linked_repos(): void
     {
         $this->browse(function (Browser $browser) {
@@ -530,8 +554,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 23: Linked repository shows project name
      *
-     * @test
      */
+
+    #[Test]
     public function test_linked_repository_shows_project_name(): void
     {
         $this->browse(function (Browser $browser) {
@@ -551,8 +576,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 24: Repository description is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_description_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -572,8 +598,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 25: Repository stars count displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_stars_count_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -592,8 +619,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 26: Repository forks count displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_forks_count_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -612,8 +640,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 27: Empty state shown when no repositories
      *
-     * @test
      */
+
+    #[Test]
     public function test_empty_state_shown_when_no_repositories(): void
     {
         $this->browse(function (Browser $browser) {
@@ -631,8 +660,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 28: GitHub avatar is displayed when connected
      *
-     * @test
      */
+
+    #[Test]
     public function test_github_avatar_displayed_when_connected(): void
     {
         $this->browse(function (Browser $browser) {
@@ -650,8 +680,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 29: Connection timestamp displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_connection_timestamp_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -669,8 +700,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 30: Repository link opens in new tab
      *
-     * @test
      */
+
+    #[Test]
     public function test_repository_link_opens_in_new_tab(): void
     {
         $this->browse(function (Browser $browser) {
@@ -689,8 +721,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 31: Page is responsive on mobile devices
      *
-     * @test
      */
+
+    #[Test]
     public function test_page_responsive_on_mobile(): void
     {
         $this->browse(function (Browser $browser) {
@@ -709,8 +742,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 32: Page is responsive on tablet devices
      *
-     * @test
      */
+
+    #[Test]
     public function test_page_responsive_on_tablet(): void
     {
         $this->browse(function (Browser $browser) {
@@ -729,8 +763,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 33: Statistics update after filtering
      *
-     * @test
      */
+
+    #[Test]
     public function test_statistics_reflect_filtered_results(): void
     {
         $this->browse(function (Browser $browser) {
@@ -751,8 +786,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 34: Empty search shows appropriate message
      *
-     * @test
      */
+
+    #[Test]
     public function test_empty_search_shows_message(): void
     {
         $this->browse(function (Browser $browser) {
@@ -773,8 +809,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 35: Clearing filters shows all repositories
      *
-     * @test
      */
+
+    #[Test]
     public function test_clearing_filters_shows_all_repos(): void
     {
         $this->browse(function (Browser $browser) {
@@ -798,8 +835,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 36: Page requires authentication
      *
-     * @test
      */
+
+    #[Test]
     public function test_page_requires_authentication(): void
     {
         $this->browse(function (Browser $browser) {
@@ -817,8 +855,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 37: Hero section displayed with title and description
      *
-     * @test
      */
+
+    #[Test]
     public function test_hero_section_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -834,8 +873,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 38: Multiple repositories displayed in order
      *
-     * @test
      */
+
+    #[Test]
     public function test_multiple_repositories_displayed_in_order(): void
     {
         $this->browse(function (Browser $browser) {
@@ -858,8 +898,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 39: Language filter shows available languages
      *
-     * @test
      */
+
+    #[Test]
     public function test_language_filter_shows_available_languages(): void
     {
         $this->browse(function (Browser $browser) {
@@ -882,8 +923,9 @@ class GitHubSettingsTest extends DuskTestCase
     /**
      * Test 40: Connected state shows proper gradient background
      *
-     * @test
      */
+
+    #[Test]
     public function test_connected_state_shows_gradient_background(): void
     {
         $this->browse(function (Browser $browser) {

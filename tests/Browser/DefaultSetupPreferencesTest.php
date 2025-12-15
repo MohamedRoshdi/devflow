@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\User;
 use App\Models\UserSettings;
 use Laravel\Dusk\Browser;
@@ -51,8 +53,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 1: User can access default setup preferences page
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_access_default_setup_preferences_page(): void
     {
         $this->browse(function (Browser $browser) {
@@ -77,8 +80,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 2: Page displays hero section with title
      *
-     * @test
      */
+
+    #[Test]
     public function test_page_displays_hero_section_with_title(): void
     {
         $this->browse(function (Browser $browser) {
@@ -98,8 +102,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 3: Project creation defaults section is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_creation_defaults_section_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -119,8 +124,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 4: SSL certificate toggle is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_certificate_toggle_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -142,8 +148,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 5: User can toggle SSL certificate setting
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_toggle_ssl_certificate_setting(): void
     {
         $this->browse(function (Browser $browser) {
@@ -174,8 +181,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 6: Webhooks toggle is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhooks_toggle_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -197,8 +205,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 7: User can toggle webhooks setting
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_toggle_webhooks_setting(): void
     {
         $this->browse(function (Browser $browser) {
@@ -229,8 +238,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 8: Health checks toggle is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_checks_toggle_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -252,8 +262,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 9: User can toggle health checks setting
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_toggle_health_checks_setting(): void
     {
         $this->browse(function (Browser $browser) {
@@ -284,8 +295,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 10: Backups toggle is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_backups_toggle_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -307,8 +319,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 11: User can toggle backups setting
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_toggle_backups_setting(): void
     {
         $this->browse(function (Browser $browser) {
@@ -339,8 +352,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 12: Notifications toggle is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_notifications_toggle_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -362,8 +376,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 13: User can toggle notifications setting
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_toggle_notifications_setting(): void
     {
         $this->browse(function (Browser $browser) {
@@ -394,8 +409,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 14: Auto-deploy toggle is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_auto_deploy_toggle_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -417,8 +433,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 15: User can toggle auto-deploy setting
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_toggle_auto_deploy_setting(): void
     {
         $this->browse(function (Browser $browser) {
@@ -449,8 +466,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 16: UI preferences section is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_ui_preferences_section_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -470,8 +488,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 17: Theme selection is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_theme_selection_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -493,8 +512,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 18: Dark theme option is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_dark_theme_option_available(): void
     {
         $this->browse(function (Browser $browser) {
@@ -514,8 +534,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 19: Light theme option is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_light_theme_option_available(): void
     {
         $this->browse(function (Browser $browser) {
@@ -535,8 +556,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 20: User can select dark theme
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_select_dark_theme(): void
     {
         $this->browse(function (Browser $browser) {
@@ -567,8 +589,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 21: User can select light theme
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_select_light_theme(): void
     {
         $this->browse(function (Browser $browser) {
@@ -599,8 +622,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 22: Wizard tips toggle is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_wizard_tips_toggle_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -622,8 +646,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 23: User can toggle wizard tips setting
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_toggle_wizard_tips_setting(): void
     {
         $this->browse(function (Browser $browser) {
@@ -654,8 +679,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 24: Save preferences button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_save_preferences_button_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -677,8 +703,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 25: Cancel button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_cancel_button_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -698,8 +725,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 26: User can save preferences
      *
-     * @test
      */
+
+    #[Test]
     public function test_user_can_save_preferences(): void
     {
         $this->browse(function (Browser $browser) {
@@ -723,8 +751,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 27: Success message is displayed after save
      *
-     * @test
      */
+
+    #[Test]
     public function test_success_message_displayed_after_save(): void
     {
         $this->browse(function (Browser $browser) {
@@ -747,8 +776,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 28: Settings are persisted after save
      *
-     * @test
      */
+
+    #[Test]
     public function test_settings_persisted_after_save(): void
     {
         $this->browse(function (Browser $browser) {
@@ -784,8 +814,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 29: SSL description text is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_description_text_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -807,8 +838,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 30: Webhooks description text is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhooks_description_text_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -830,8 +862,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 31: Health checks description text is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_checks_description_text_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -853,8 +886,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 32: Backups description text is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_backups_description_text_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -876,8 +910,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 33: Notifications description text is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_notifications_description_text_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -899,8 +934,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 34: Auto-deploy description text is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_auto_deploy_description_text_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -922,8 +958,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 35: Wizard tips description text is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_wizard_tips_description_text_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -945,8 +982,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 36: Toggle switches have proper styling
      *
-     * @test
      */
+
+    #[Test]
     public function test_toggle_switches_have_proper_styling(): void
     {
         $this->browse(function (Browser $browser) {
@@ -969,8 +1007,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 37: Icons are displayed for each setting
      *
-     * @test
      */
+
+    #[Test]
     public function test_icons_displayed_for_each_setting(): void
     {
         $this->browse(function (Browser $browser) {
@@ -990,8 +1029,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 38: Page is responsive on mobile
      *
-     * @test
      */
+
+    #[Test]
     public function test_page_responsive_on_mobile(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1012,8 +1052,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 39: Page is responsive on tablet
      *
-     * @test
      */
+
+    #[Test]
     public function test_page_responsive_on_tablet(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1034,8 +1075,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 40: Save button shows loading state
      *
-     * @test
      */
+
+    #[Test]
     public function test_save_button_shows_loading_state(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1057,8 +1099,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 41: Settings load current user preferences
      *
-     * @test
      */
+
+    #[Test]
     public function test_settings_load_current_user_preferences(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1079,8 +1122,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 42: Multiple toggles can be changed before save
      *
-     * @test
      */
+
+    #[Test]
     public function test_multiple_toggles_can_be_changed_before_save(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1116,8 +1160,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 43: Page has gradient background styling
      *
-     * @test
      */
+
+    #[Test]
     public function test_page_has_gradient_background_styling(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1139,8 +1184,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 44: Settings sections have proper card styling
      *
-     * @test
      */
+
+    #[Test]
     public function test_settings_sections_have_card_styling(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1162,8 +1208,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 45: Dark mode toggle reflects system theme
      *
-     * @test
      */
+
+    #[Test]
     public function test_dark_mode_toggle_reflects_system_theme(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1184,8 +1231,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 46: Page requires authentication
      *
-     * @test
      */
+
+    #[Test]
     public function test_page_requires_authentication(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1203,8 +1251,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 47: Preferences apply to new project creation
      *
-     * @test
      */
+
+    #[Test]
     public function test_preferences_apply_to_new_project_creation(): void
     {
         $this->browse(function (Browser $browser) {
@@ -1227,8 +1276,9 @@ class DefaultSetupPreferencesTest extends DuskTestCase
     /**
      * Test 48: All toggle switches work independently
      *
-     * @test
      */
+
+    #[Test]
     public function test_all_toggle_switches_work_independently(): void
     {
         $this->browse(function (Browser $browser) {

@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\LogEntry;
 use App\Models\Project;
 use App\Models\Server;
@@ -171,8 +173,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 1: Page loads successfully
      *
-     * @test
      */
+
+    #[Test]
     public function test_page_loads_successfully(): void
     {
         $this->browse(function (Browser $browser) {
@@ -196,8 +199,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 2: Log entries are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_entries_are_displayed(): void
     {
         $this->browse(function (Browser $browser) {
@@ -223,8 +227,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 3: Log level filter works
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_level_filter_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -257,8 +262,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 4: Search field present
      *
-     * @test
      */
+
+    #[Test]
     public function test_search_field_present(): void
     {
         $this->browse(function (Browser $browser) {
@@ -281,8 +287,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 5: Search logs works
      *
-     * @test
      */
+
+    #[Test]
     public function test_search_logs_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -313,8 +320,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 6: Date range filter works
      *
-     * @test
      */
+
+    #[Test]
     public function test_date_range_filter_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -339,8 +347,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 7: Download logs button visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_download_logs_button_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -363,8 +372,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 8: Clear logs button visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_clear_logs_button_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -387,8 +397,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 9: Log entry details expandable
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_entry_details_expandable(): void
     {
         $this->browse(function (Browser $browser) {
@@ -413,8 +424,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 10: Pagination works
      *
-     * @test
      */
+
+    #[Test]
     public function test_pagination_works(): void
     {
         // Create more logs to ensure pagination
@@ -453,8 +465,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 11: Refresh button works
      *
-     * @test
      */
+
+    #[Test]
     public function test_refresh_button_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -478,8 +491,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 12: Log source selector works
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_source_selector_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -504,8 +518,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 13: Auto-refresh toggle works
      *
-     * @test
      */
+
+    #[Test]
     public function test_auto_refresh_toggle_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -530,8 +545,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 14: Log level badges colored
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_level_badges_colored(): void
     {
         $this->browse(function (Browser $browser) {
@@ -557,8 +573,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 15: Flash messages display
      *
-     * @test
      */
+
+    #[Test]
     public function test_flash_messages_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -584,8 +601,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 16: Statistics display correctly
      *
-     * @test
      */
+
+    #[Test]
     public function test_statistics_display_correctly(): void
     {
         $this->browse(function (Browser $browser) {
@@ -610,8 +628,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 17: Server filter works
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_filter_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -634,8 +653,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 18: Project filter works
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_filter_works(): void
     {
         $this->browse(function (Browser $browser) {
@@ -658,8 +678,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 19: Log timestamp display
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_timestamp_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -683,8 +704,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 20: Log message truncation works
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_message_truncation_works(): void
     {
         // Create a log with very long message
@@ -720,8 +742,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 21: Source badges colored
      *
-     * @test
      */
+
+    #[Test]
     public function test_source_badges_colored(): void
     {
         $this->browse(function (Browser $browser) {
@@ -747,8 +770,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 22: Log file path display
      *
-     * @test
      */
+
+    #[Test]
     public function test_log_file_path_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -773,8 +797,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 23: Line number display
      *
-     * @test
      */
+
+    #[Test]
     public function test_line_number_display(): void
     {
         $this->browse(function (Browser $browser) {
@@ -797,8 +822,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 24: Context data expandable
      *
-     * @test
      */
+
+    #[Test]
     public function test_context_data_expandable(): void
     {
         $this->browse(function (Browser $browser) {
@@ -822,8 +848,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 25: Clear filters functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_clear_filters_functionality(): void
     {
         $this->browse(function (Browser $browser) {
@@ -854,8 +881,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 26: Export logs functionality
      *
-     * @test
      */
+
+    #[Test]
     public function test_export_logs_functionality(): void
     {
         $this->browse(function (Browser $browser) {
@@ -879,8 +907,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 27: Sync now button visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_sync_now_button_visible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -903,8 +932,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 28: No logs message displayed when empty
      *
-     * @test
      */
+
+    #[Test]
     public function test_no_logs_message_displayed_when_empty(): void
     {
         // Temporarily delete all logs
@@ -934,8 +964,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 29: Loading state visible during operations
      *
-     * @test
      */
+
+    #[Test]
     public function test_loading_state_visible_during_operations(): void
     {
         $this->browse(function (Browser $browser) {
@@ -960,8 +991,9 @@ class LogViewerTest extends DuskTestCase
     /**
      * Test 30: Responsive layout works
      *
-     * @test
      */
+
+    #[Test]
     public function test_responsive_layout_works(): void
     {
         $this->browse(function (Browser $browser) {

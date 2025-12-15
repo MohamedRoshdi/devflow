@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\NotificationChannel;
 use App\Models\Project;
 use App\Models\User;
@@ -35,8 +37,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 1: Notification channels list page loads
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_channels_list_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -64,8 +67,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 2: Add notification channel button is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_add_notification_channel_button_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -92,8 +96,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 3: Notification channel providers are listed
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_channel_providers_listed()
     {
         $this->browse(function (Browser $browser) {
@@ -121,8 +126,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 4: Slack channel configuration is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_slack_channel_configuration_available()
     {
         $this->browse(function (Browser $browser) {
@@ -148,8 +154,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 5: Discord channel configuration is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_discord_channel_configuration_available()
     {
         $this->browse(function (Browser $browser) {
@@ -175,8 +182,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 6: Email channel configuration is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_email_channel_configuration_available()
     {
         $this->browse(function (Browser $browser) {
@@ -202,8 +210,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 7: Webhook channel configuration is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_channel_configuration_available()
     {
         $this->browse(function (Browser $browser) {
@@ -229,8 +238,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 8: Microsoft Teams channel configuration is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_teams_channel_configuration_available()
     {
         $this->browse(function (Browser $browser) {
@@ -256,8 +266,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 9: Test notification button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_test_button_present()
     {
         $this->browse(function (Browser $browser) {
@@ -283,8 +294,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 10: Deployment notification events are configurable
      *
-     * @test
      */
+
+    #[Test]
     public function test_deployment_notification_events_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -311,8 +323,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 11: Server notification events are configurable
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_notification_events_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -339,8 +352,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 12: SSL certificate notification events are configurable
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssl_notification_events_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -367,8 +381,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 13: Storage notification events are configurable
      *
-     * @test
      */
+
+    #[Test]
     public function test_storage_notification_events_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -395,8 +410,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 14: Backup notification events are configurable
      *
-     * @test
      */
+
+    #[Test]
     public function test_backup_notification_events_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -422,8 +438,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 15: Health check notification events are configurable
      *
-     * @test
      */
+
+    #[Test]
     public function test_health_check_notification_events_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -450,8 +467,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 16: Notification channel enable/disable toggle works
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_channel_toggle_works()
     {
         $this->browse(function (Browser $browser) {
@@ -478,8 +496,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 17: Notification channel deletion is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_channel_deletion_available()
     {
         $this->browse(function (Browser $browser) {
@@ -505,8 +524,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 18: Notification channel edit functionality exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_channel_edit_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -532,8 +552,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 19: Project-specific notification channels are supported
      *
-     * @test
      */
+
+    #[Test]
     public function test_project_specific_notification_channels_supported()
     {
         $this->browse(function (Browser $browser) {
@@ -559,8 +580,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 20: Notification logs page is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_logs_page_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -587,8 +609,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 21: Notification history displays sent notifications
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_history_displays_sent_notifications()
     {
         $this->browse(function (Browser $browser) {
@@ -615,8 +638,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 22: Notification status indicators are shown
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_status_indicators_shown()
     {
         $this->browse(function (Browser $browser) {
@@ -643,8 +667,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 23: Notification channel name is editable
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_channel_name_editable()
     {
         $this->browse(function (Browser $browser) {
@@ -670,8 +695,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 24: Webhook secret configuration is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_webhook_secret_configuration_available()
     {
         $this->browse(function (Browser $browser) {
@@ -697,8 +723,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 25: Multiple notification events can be selected
      *
-     * @test
      */
+
+    #[Test]
     public function test_multiple_notification_events_selectable()
     {
         $this->browse(function (Browser $browser) {
@@ -724,8 +751,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 26: Notification channel list shows provider icons
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_channel_list_shows_provider_icons()
     {
         $this->browse(function (Browser $browser) {
@@ -752,8 +780,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 27: Notification preferences can be configured
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_preferences_configurable()
     {
         $this->browse(function (Browser $browser) {
@@ -779,8 +808,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 28: Notification channel validation errors are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_channel_validation_errors_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -806,8 +836,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 29: Notification channel list supports pagination
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_channel_list_supports_pagination()
     {
         $this->browse(function (Browser $browser) {
@@ -834,8 +865,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 30: Notification logs can be filtered by type
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_logs_filterable_by_type()
     {
         $this->browse(function (Browser $browser) {
@@ -862,8 +894,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 31: Notification logs show timestamp information
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_logs_show_timestamp()
     {
         $this->browse(function (Browser $browser) {
@@ -890,8 +923,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 32: Notification channel count is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_channel_count_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -917,8 +951,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 33: Notification delivery status is tracked
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_delivery_status_tracked()
     {
         $this->browse(function (Browser $browser) {
@@ -945,8 +980,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 34: Notification retry mechanism is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_retry_mechanism_available()
     {
         $this->browse(function (Browser $browser) {
@@ -972,8 +1008,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 35: Notification channel description field is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_channel_description_field_available()
     {
         $this->browse(function (Browser $browser) {
@@ -999,8 +1036,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 36: Notification logs support date range filtering
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_logs_support_date_range_filtering()
     {
         $this->browse(function (Browser $browser) {
@@ -1027,8 +1065,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 37: Notification logs can be filtered by channel
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_logs_filterable_by_channel()
     {
         $this->browse(function (Browser $browser) {
@@ -1054,8 +1093,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 38: Notification logs show detailed error messages
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_logs_show_detailed_error_messages()
     {
         $this->browse(function (Browser $browser) {
@@ -1081,8 +1121,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 39: Notification logs display event type information
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_logs_display_event_type()
     {
         $this->browse(function (Browser $browser) {
@@ -1109,8 +1150,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 40: Notification channel statistics are displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_channel_statistics_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -1138,8 +1180,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 41: Clear filters button is available in notification logs
      *
-     * @test
      */
+
+    #[Test]
     public function test_clear_filters_button_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1165,8 +1208,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 42: Notification log details modal is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_log_details_modal_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -1192,8 +1236,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 43: Notification logs show payload information
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_logs_show_payload_information()
     {
         $this->browse(function (Browser $browser) {
@@ -1220,8 +1265,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 44: Notification channel type indicators are visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_channel_type_indicators_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -1249,8 +1295,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 45: Notification event selection supports select all
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_event_selection_supports_select_all()
     {
         $this->browse(function (Browser $browser) {
@@ -1276,8 +1323,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 46: Notification logs search functionality works
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_logs_search_functionality()
     {
         $this->browse(function (Browser $browser) {
@@ -1303,8 +1351,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 47: Real-time notification indicators are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_realtime_notification_indicators_present()
     {
         $this->browse(function (Browser $browser) {
@@ -1331,8 +1380,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 48: Notification sound toggle is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_sound_toggle_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1359,8 +1409,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 49: Desktop notification toggle is available
      *
-     * @test
      */
+
+    #[Test]
     public function test_desktop_notification_toggle_available()
     {
         $this->browse(function (Browser $browser) {
@@ -1387,8 +1438,9 @@ class NotificationsTest extends DuskTestCase
     /**
      * Test 50: Notification channel can be configured for all projects
      *
-     * @test
      */
+
+    #[Test]
     public function test_notification_channel_configurable_for_all_projects()
     {
         $this->browse(function (Browser $browser) {

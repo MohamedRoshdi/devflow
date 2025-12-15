@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
@@ -114,8 +116,9 @@ class ServerManagementTest extends DuskTestCase
     /**
      * Test 1: Servers list page loads with all servers
      *
-     * @test
      */
+
+    #[Test]
     public function test_servers_list_page_loads_with_all_servers()
     {
         $this->browse(function (Browser $browser) {
@@ -136,8 +139,9 @@ class ServerManagementTest extends DuskTestCase
     /**
      * Test 2: Server cards show correct info (name, IP, status)
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_cards_show_correct_info()
     {
         $this->browse(function (Browser $browser) {
@@ -163,8 +167,9 @@ class ServerManagementTest extends DuskTestCase
     /**
      * Test 3: Server creation page is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_add_server_page_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -183,8 +188,9 @@ class ServerManagementTest extends DuskTestCase
     /**
      * Test 4: Server creation form has all required fields
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_creation_form_has_all_required_fields()
     {
         $this->browse(function (Browser $browser) {
@@ -214,8 +220,9 @@ class ServerManagementTest extends DuskTestCase
     /**
      * Test 5: Server creation validates required fields
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_creation_validates_required_fields()
     {
         $this->browse(function (Browser $browser) {
@@ -234,8 +241,9 @@ class ServerManagementTest extends DuskTestCase
     /**
      * Test 6: Password vs SSH Key authentication toggle works
      *
-     * @test
      */
+
+    #[Test]
     public function test_password_vs_ssh_key_authentication_toggle()
     {
         $this->browse(function (Browser $browser) {
@@ -266,8 +274,9 @@ class ServerManagementTest extends DuskTestCase
     /**
      * Test 7: Test Connection button is present
      *
-     * @test
      */
+
+    #[Test]
     public function test_connection_button_present()
     {
         $this->browse(function (Browser $browser) {
@@ -291,8 +300,9 @@ class ServerManagementTest extends DuskTestCase
     /**
      * Test 8: Server detail page is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_detail_page_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -311,8 +321,9 @@ class ServerManagementTest extends DuskTestCase
     /**
      * Test 9: Server detail page shows server info
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_detail_page_shows_info()
     {
         $this->browse(function (Browser $browser) {
@@ -338,8 +349,9 @@ class ServerManagementTest extends DuskTestCase
     /**
      * Test 10: Server quick actions panel is visible
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_quick_actions_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -363,8 +375,9 @@ class ServerManagementTest extends DuskTestCase
     /**
      * Test 11: SSH Terminal section is mentioned
      *
-     * @test
      */
+
+    #[Test]
     public function test_ssh_terminal_section_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -392,8 +405,9 @@ class ServerManagementTest extends DuskTestCase
     /**
      * Test 12: Docker status is displayed
      *
-     * @test
      */
+
+    #[Test]
     public function test_docker_status_displayed()
     {
         $this->browse(function (Browser $browser) {
@@ -419,8 +433,9 @@ class ServerManagementTest extends DuskTestCase
     /**
      * Test 13: Server without Docker shows appropriate status
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_without_docker_status()
     {
         // Get a server without Docker
@@ -445,8 +460,9 @@ class ServerManagementTest extends DuskTestCase
     /**
      * Test 14: Server metrics/charts section exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_metrics_section_visible()
     {
         $this->browse(function (Browser $browser) {
@@ -475,8 +491,9 @@ class ServerManagementTest extends DuskTestCase
     /**
      * Test 15: Projects related to server are shown or linked
      *
-     * @test
      */
+
+    #[Test]
     public function test_projects_section_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -501,8 +518,9 @@ class ServerManagementTest extends DuskTestCase
     /**
      * Test 16: Server status indicators are present
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_status_indicators_present()
     {
         $this->browse(function (Browser $browser) {
@@ -529,8 +547,9 @@ class ServerManagementTest extends DuskTestCase
     /**
      * Test 17: Server search input exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_search_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -554,8 +573,9 @@ class ServerManagementTest extends DuskTestCase
     /**
      * Test 18: Server edit page is accessible
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_edit_accessible()
     {
         $this->browse(function (Browser $browser) {
@@ -580,8 +600,9 @@ class ServerManagementTest extends DuskTestCase
     /**
      * Test 19: Ping All Servers button exists
      *
-     * @test
      */
+
+    #[Test]
     public function test_ping_all_servers_button_exists()
     {
         $this->browse(function (Browser $browser) {
@@ -604,8 +625,9 @@ class ServerManagementTest extends DuskTestCase
     /**
      * Test 20: Server actions (Security, Backups, Metrics) links exist
      *
-     * @test
      */
+
+    #[Test]
     public function test_server_action_links_exist()
     {
         $this->browse(function (Browser $browser) {
