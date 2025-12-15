@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\ServerBackup;
 use App\Services\ServerBackupService;
 use App\Services\ServerConnectivityService;
@@ -41,7 +43,7 @@ class ServerBackupServiceTest extends TestCase
 
     // ==================== Full Backup Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_creates_full_backup_successfully(): void
     {
         // Arrange
@@ -63,7 +65,7 @@ class ServerBackupServiceTest extends TestCase
         $this->assertNotNull($backup->completed_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_backup_record_with_running_status_initially(): void
     {
         // Arrange
@@ -82,7 +84,7 @@ class ServerBackupServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_stores_backup_metadata_correctly(): void
     {
         // Arrange
@@ -100,7 +102,7 @@ class ServerBackupServiceTest extends TestCase
         $this->assertEquals('tar', $backup->metadata['method']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_full_backup_failure_gracefully(): void
     {
         // Arrange
@@ -115,7 +117,7 @@ class ServerBackupServiceTest extends TestCase
         $this->service->createFullBackup($server);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_backup_status_to_failed_on_error(): void
     {
         // Arrange
@@ -137,7 +139,7 @@ class ServerBackupServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_stores_error_message_on_backup_failure(): void
     {
         // Arrange
@@ -158,7 +160,7 @@ class ServerBackupServiceTest extends TestCase
         $this->assertStringContainsString('Connection timeout', $backup->error_message);
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_correct_backup_filename(): void
     {
         // Arrange
@@ -174,7 +176,7 @@ class ServerBackupServiceTest extends TestCase
         $this->assertStringContainsString('.tar.gz', $backup->storage_path);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_password_authentication_for_ssh(): void
     {
         // Arrange
@@ -196,7 +198,7 @@ class ServerBackupServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_ssh_key_authentication(): void
     {
         // Arrange
@@ -211,7 +213,7 @@ class ServerBackupServiceTest extends TestCase
         $this->assertEquals('completed', $backup->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_cleans_up_remote_backup_file_after_download(): void
     {
         // Arrange
@@ -230,7 +232,7 @@ class ServerBackupServiceTest extends TestCase
 
     // ==================== Incremental Backup Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_creates_incremental_backup_successfully(): void
     {
         // Arrange
@@ -248,7 +250,7 @@ class ServerBackupServiceTest extends TestCase
         $this->assertEquals($server->id, $backup->server_id);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_rsync_for_incremental_backup(): void
     {
         // Arrange
@@ -265,7 +267,7 @@ class ServerBackupServiceTest extends TestCase
         $this->assertTrue($backup->metadata['incremental']);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_incremental_backup_directory_structure(): void
     {
         // Arrange
@@ -280,7 +282,7 @@ class ServerBackupServiceTest extends TestCase
         $this->assertStringContainsString('incremental/5/', $backup->storage_path);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_incremental_backup_failure(): void
     {
         // Arrange
@@ -295,7 +297,7 @@ class ServerBackupServiceTest extends TestCase
         $this->service->createIncrementalBackup($server);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_incremental_backup_size(): void
     {
         // Arrange
@@ -312,7 +314,7 @@ class ServerBackupServiceTest extends TestCase
 
     // ==================== Snapshot Backup Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_creates_snapshot_backup_successfully(): void
     {
         // Arrange
@@ -329,7 +331,7 @@ class ServerBackupServiceTest extends TestCase
         $this->assertEquals('snapshot', $backup->type);
     }
 
-    /** @test */
+    #[Test]
     public function it_checks_lvm_availability_before_snapshot(): void
     {
         // Arrange
@@ -346,7 +348,7 @@ class ServerBackupServiceTest extends TestCase
         $this->service->createSnapshot($server);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_lvm_snapshot_with_correct_name(): void
     {
         // Arrange
@@ -362,7 +364,7 @@ class ServerBackupServiceTest extends TestCase
         $this->assertArrayHasKey('snapshot_name', $backup->metadata);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_snapshot_creation_failure(): void
     {
         // Arrange
@@ -386,7 +388,7 @@ class ServerBackupServiceTest extends TestCase
 
     // ==================== Restore Backup Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_restores_full_backup_successfully(): void
     {
         // Arrange
@@ -410,7 +412,7 @@ class ServerBackupServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_restores_incremental_backup_successfully(): void
     {
         // Arrange
@@ -438,7 +440,7 @@ class ServerBackupServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_when_restoring_incomplete_backup(): void
     {
         // Arrange
@@ -454,7 +456,7 @@ class ServerBackupServiceTest extends TestCase
         $this->service->restoreBackup($backup);
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_when_restoring_snapshot(): void
     {
         // Arrange
@@ -472,7 +474,7 @@ class ServerBackupServiceTest extends TestCase
 
     // ==================== Delete Backup Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_deletes_local_backup_file(): void
     {
         // Arrange
@@ -493,7 +495,7 @@ class ServerBackupServiceTest extends TestCase
         $this->assertDatabaseMissing('server_backups', ['id' => $backup->id]);
     }
 
-    /** @test */
+    #[Test]
     public function it_deletes_backup_record_from_database(): void
     {
         // Arrange
@@ -510,7 +512,7 @@ class ServerBackupServiceTest extends TestCase
         $this->assertDatabaseMissing('server_backups', ['id' => $backup->id]);
     }
 
-    /** @test */
+    #[Test]
     public function it_removes_lvm_snapshot_when_deleting_snapshot_backup(): void
     {
         // Arrange
@@ -534,7 +536,7 @@ class ServerBackupServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_backup_deletion(): void
     {
         // Arrange
@@ -553,7 +555,7 @@ class ServerBackupServiceTest extends TestCase
 
     // ==================== S3 Upload Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_uploads_backup_to_s3_successfully(): void
     {
         // Arrange
@@ -577,7 +579,7 @@ class ServerBackupServiceTest extends TestCase
         Storage::disk('s3')->assertExists("server-backups/{$server->id}/test_backup.tar.gz");
     }
 
-    /** @test */
+    #[Test]
     public function it_deletes_local_file_after_s3_upload(): void
     {
         // Arrange
@@ -597,7 +599,7 @@ class ServerBackupServiceTest extends TestCase
         Storage::disk('local')->assertMissing($backupPath);
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_when_uploading_non_local_backup(): void
     {
         // Arrange
@@ -613,7 +615,7 @@ class ServerBackupServiceTest extends TestCase
         $this->service->uploadToS3($backup);
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_when_backup_file_not_found(): void
     {
         // Arrange
@@ -632,7 +634,7 @@ class ServerBackupServiceTest extends TestCase
 
     // ==================== Backup Size Estimation Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_estimates_backup_size_successfully(): void
     {
         // Arrange
@@ -658,7 +660,7 @@ class ServerBackupServiceTest extends TestCase
         $this->assertEquals(1048576 + 10485760 + 5242880 + 2097152, $sizes['total']);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_zero_sizes_on_estimation_failure(): void
     {
         // Arrange
@@ -679,7 +681,7 @@ class ServerBackupServiceTest extends TestCase
         $this->assertEquals(['total' => 0], $sizes);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_zero_size_directories(): void
     {
         // Arrange
@@ -701,7 +703,7 @@ class ServerBackupServiceTest extends TestCase
 
     // ==================== Logging Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_logs_successful_full_backup(): void
     {
         // Arrange
@@ -721,7 +723,7 @@ class ServerBackupServiceTest extends TestCase
         }));
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_failed_backup_attempts(): void
     {
         // Arrange
@@ -741,7 +743,7 @@ class ServerBackupServiceTest extends TestCase
         Log::shouldHaveReceived('error')->with('Server full backup failed', Mockery::type('array'));
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_incremental_backup_completion(): void
     {
         // Arrange
@@ -760,7 +762,7 @@ class ServerBackupServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_snapshot_creation(): void
     {
         // Arrange

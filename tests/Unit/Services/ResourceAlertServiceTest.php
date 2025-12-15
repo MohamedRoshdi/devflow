@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\AlertHistory;
 use App\Models\ResourceAlert;
 use App\Models\ServerMetric;
@@ -45,7 +47,7 @@ class ResourceAlertServiceTest extends TestCase
 
     // ==================== checkServerResources Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_checks_server_resources_successfully_with_latest_metrics(): void
     {
         // Arrange
@@ -75,7 +77,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertInstanceOf(ServerMetric::class, $result['metrics']);
     }
 
-    /** @test */
+    #[Test]
     public function it_collects_fresh_metrics_when_latest_not_available(): void
     {
         // Arrange
@@ -106,7 +108,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertEquals(30.0, $result['cpu']);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_failure_when_no_metrics_available(): void
     {
         // Arrange
@@ -130,7 +132,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertEquals('Failed to collect server metrics', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exception_during_resource_check(): void
     {
         // Arrange
@@ -158,7 +160,7 @@ class ResourceAlertServiceTest extends TestCase
 
     // ==================== evaluateAlerts Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_evaluates_alerts_successfully(): void
     {
         // Arrange
@@ -196,7 +198,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertEquals(0, $result['resolved']);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_error_when_resource_check_fails(): void
     {
         // Arrange
@@ -222,7 +224,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertArrayHasKey('error', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_triggers_cpu_alert_when_threshold_exceeded(): void
     {
         // Arrange
@@ -259,7 +261,7 @@ class ResourceAlertServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_triggers_memory_alert_when_threshold_exceeded(): void
     {
         // Arrange
@@ -292,7 +294,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertEquals(1, $result['triggered']);
     }
 
-    /** @test */
+    #[Test]
     public function it_triggers_disk_alert_when_threshold_exceeded(): void
     {
         // Arrange
@@ -325,7 +327,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertEquals(1, $result['triggered']);
     }
 
-    /** @test */
+    #[Test]
     public function it_triggers_load_alert_when_threshold_exceeded(): void
     {
         // Arrange
@@ -358,7 +360,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertEquals(1, $result['triggered']);
     }
 
-    /** @test */
+    #[Test]
     public function it_resolves_alert_when_threshold_no_longer_exceeded(): void
     {
         // Arrange
@@ -398,7 +400,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertEquals(1, $result['resolved']);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_trigger_inactive_alerts(): void
     {
         // Arrange
@@ -430,7 +432,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertEquals(0, $result['triggered']);
     }
 
-    /** @test */
+    #[Test]
     public function it_respects_cooldown_period(): void
     {
         // Arrange
@@ -463,7 +465,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertEquals(0, $result['triggered']);
     }
 
-    /** @test */
+    #[Test]
     public function it_triggers_after_cooldown_period_expires(): void
     {
         // Arrange
@@ -497,7 +499,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertEquals(1, $result['triggered']);
     }
 
-    /** @test */
+    #[Test]
     public function it_evaluates_multiple_alerts_simultaneously(): void
     {
         // Arrange
@@ -548,7 +550,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertEquals(2, $result['triggered']);
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_alerts_with_null_current_value(): void
     {
         // Arrange
@@ -588,7 +590,7 @@ class ResourceAlertServiceTest extends TestCase
 
     // ==================== triggerAlert Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_triggers_alert_and_creates_history(): void
     {
         // Arrange
@@ -622,7 +624,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertNotNull($history->notified_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_last_triggered_at_when_alert_triggers(): void
     {
         // Arrange
@@ -644,7 +646,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertNotNull($alert->last_triggered_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_notification_failure_gracefully(): void
     {
         // Arrange
@@ -673,7 +675,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertEquals('triggered', $history->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_builds_correct_trigger_message_for_cpu_alert(): void
     {
         // Arrange
@@ -702,7 +704,7 @@ class ResourceAlertServiceTest extends TestCase
 
     // ==================== resolveAlert Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_resolves_alert_and_creates_history(): void
     {
         // Arrange
@@ -731,7 +733,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertEquals(60.0, $history->current_value);
     }
 
-    /** @test */
+    #[Test]
     public function it_builds_correct_resolve_message_for_cpu_alert(): void
     {
         // Arrange
@@ -756,7 +758,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertStringContainsString('65.50', $history->message);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_notification_failure_during_resolution(): void
     {
         // Arrange
@@ -787,7 +789,7 @@ class ResourceAlertServiceTest extends TestCase
 
     // ==================== shouldTriggerAlert Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_determines_alert_should_trigger_when_above_threshold(): void
     {
         // Arrange
@@ -806,7 +808,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertFalse($method->invoke($this->service, $alert, 80.0));
     }
 
-    /** @test */
+    #[Test]
     public function it_determines_alert_should_trigger_when_below_threshold(): void
     {
         // Arrange
@@ -827,7 +829,7 @@ class ResourceAlertServiceTest extends TestCase
 
     // ==================== canTrigger Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_can_trigger_alert_when_not_in_cooldown(): void
     {
         // Arrange
@@ -843,7 +845,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_cannot_trigger_alert_when_in_cooldown(): void
     {
         // Arrange
@@ -859,7 +861,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_trigger_alert_when_never_triggered_before(): void
     {
         // Arrange
@@ -877,7 +879,7 @@ class ResourceAlertServiceTest extends TestCase
 
     // ==================== wasAlertTriggered Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_detects_previously_triggered_alert(): void
     {
         // Arrange
@@ -902,7 +904,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_alert_was_not_triggered(): void
     {
         // Arrange
@@ -923,7 +925,7 @@ class ResourceAlertServiceTest extends TestCase
 
     // ==================== buildAlertMessage Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_builds_triggered_message_for_cpu_above_threshold(): void
     {
         // Arrange
@@ -949,7 +951,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertStringContainsString('> 80.00%', $message);
     }
 
-    /** @test */
+    #[Test]
     public function it_builds_triggered_message_for_memory_above_threshold(): void
     {
         // Arrange
@@ -973,7 +975,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertStringContainsString('91.00%', $message);
     }
 
-    /** @test */
+    #[Test]
     public function it_builds_triggered_message_for_disk_above_threshold(): void
     {
         // Arrange
@@ -997,7 +999,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertStringContainsString('95.50%', $message);
     }
 
-    /** @test */
+    #[Test]
     public function it_builds_triggered_message_for_load_above_threshold(): void
     {
         // Arrange
@@ -1022,7 +1024,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertStringNotContainsString('%', $message); // Load doesn't use percentage
     }
 
-    /** @test */
+    #[Test]
     public function it_builds_resolved_message_for_cpu_alert(): void
     {
         // Arrange
@@ -1047,7 +1049,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertStringContainsString('65.00%', $message);
     }
 
-    /** @test */
+    #[Test]
     public function it_builds_message_for_below_threshold_type(): void
     {
         // Arrange
@@ -1072,7 +1074,7 @@ class ResourceAlertServiceTest extends TestCase
 
     // ==================== testAlert Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_tests_alert_successfully(): void
     {
         // Arrange
@@ -1111,7 +1113,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertEquals(75.0, $result['current_value']);
     }
 
-    /** @test */
+    #[Test]
     public function it_tests_alert_with_fresh_metrics_when_latest_not_available(): void
     {
         // Arrange
@@ -1144,7 +1146,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertEquals(50.0, $result['current_value']);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_failure_when_testing_alert_without_metrics(): void
     {
         // Arrange
@@ -1174,7 +1176,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertStringContainsString('Failed to get server metrics', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exception_during_test_alert(): void
     {
         // Arrange
@@ -1201,7 +1203,7 @@ class ResourceAlertServiceTest extends TestCase
         $this->assertStringContainsString('Test error', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_test_prefix_in_test_alert_message(): void
     {
         // Arrange

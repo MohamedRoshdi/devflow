@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Domain;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\SSLCertificate;
 use App\Services\DomainService;
 use App\Services\SSLService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Mockery;
@@ -18,7 +20,7 @@ use Tests\TestCase;
 
 class DomainServiceTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     private DomainService $service;
     private SSLService $sslService;
@@ -41,7 +43,7 @@ class DomainServiceTest extends TestCase
     // DOMAIN SETUP TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_sets_up_domain_successfully(): void
     {
         Log::shouldReceive('info')->times(2);
@@ -72,7 +74,7 @@ class DomainServiceTest extends TestCase
         $this->assertTrue($domain->ssl_enabled);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_domain_format(): void
     {
         $project = Project::factory()->create();
@@ -84,7 +86,7 @@ class DomainServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_duplicate_domains(): void
     {
         $project = Project::factory()->create();
@@ -99,7 +101,7 @@ class DomainServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_clears_existing_primary_domains(): void
     {
         Log::shouldReceive('info')->times(2);
@@ -131,7 +133,7 @@ class DomainServiceTest extends TestCase
         $this->assertFalse($existingPrimary->fresh()->is_primary);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_domain_setup_failure(): void
     {
         Log::shouldReceive('info')->once();
@@ -155,7 +157,7 @@ class DomainServiceTest extends TestCase
     // DNS VERIFICATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_verifies_dns_successfully(): void
     {
         Log::shouldReceive('info')->times(2);
@@ -174,7 +176,7 @@ class DomainServiceTest extends TestCase
         $this->assertArrayHasKey('is_configured', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_dns_verification_without_server(): void
     {
         $project = Project::factory()->create(['server_id' => null]);
@@ -188,7 +190,7 @@ class DomainServiceTest extends TestCase
         $this->assertEquals('No server associated with project', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_dns_lookup_failure(): void
     {
         Log::shouldReceive('info')->once();
@@ -211,7 +213,7 @@ class DomainServiceTest extends TestCase
     // DOMAIN HEALTH CHECK TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_checks_domain_health(): void
     {
         $server = Server::factory()->create(['ip_address' => '127.0.0.1']);
@@ -233,7 +235,7 @@ class DomainServiceTest extends TestCase
         $this->assertArrayHasKey('overall_status', $healthResults[$domain->id]);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_expired_ssl(): void
     {
         $project = Project::factory()->create();
@@ -253,7 +255,7 @@ class DomainServiceTest extends TestCase
     // SSL RENEWAL TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_renews_ssl_certificate(): void
     {
         Log::shouldReceive('info')->times(2);
@@ -281,7 +283,7 @@ class DomainServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_ssl_renewal_failure(): void
     {
         Log::shouldReceive('info')->once();
@@ -307,7 +309,7 @@ class DomainServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_issues_new_ssl_when_none_exists(): void
     {
         Log::shouldReceive('info')->times(2);
@@ -335,7 +337,7 @@ class DomainServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_renewal_when_ssl_disabled(): void
     {
         Log::shouldReceive('warning')->once();
@@ -353,7 +355,7 @@ class DomainServiceTest extends TestCase
     // DOMAIN DELETION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_deletes_domain_successfully(): void
     {
         Log::shouldReceive('info')->times(2);
@@ -380,7 +382,7 @@ class DomainServiceTest extends TestCase
         $this->assertNull(Domain::find($domain->id));
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_domain_deletion_failure(): void
     {
         Log::shouldReceive('info')->once();
@@ -410,7 +412,7 @@ class DomainServiceTest extends TestCase
     // DNS CONFIGURATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_configures_cloudflare_dns(): void
     {
         Log::shouldReceive('info')->times(2);
@@ -425,7 +427,7 @@ class DomainServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_unsupported_dns_provider(): void
     {
         Log::shouldReceive('info')->once();
@@ -442,7 +444,7 @@ class DomainServiceTest extends TestCase
     // PROJECT DOMAINS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_gets_project_domains_with_health(): void
     {
         $server = Server::factory()->create();
@@ -464,7 +466,7 @@ class DomainServiceTest extends TestCase
     // VALIDATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_validates_domain_data(): void
     {
         $project = Project::factory()->create();
@@ -476,7 +478,7 @@ class DomainServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_ssl_provider(): void
     {
         $project = Project::factory()->create();
@@ -489,7 +491,7 @@ class DomainServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_dns_provider(): void
     {
         $project = Project::factory()->create();

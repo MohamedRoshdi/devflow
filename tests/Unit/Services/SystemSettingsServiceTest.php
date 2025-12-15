@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\SystemSetting;
 use App\Services\SystemSettingsService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Tests\TestCase;
 
 class SystemSettingsServiceTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     protected SystemSettingsService $service;
 
@@ -23,7 +25,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->service = new SystemSettingsService();
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_a_setting_value(): void
     {
         SystemSetting::factory()->create([
@@ -37,7 +39,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertEquals('DevFlow Pro', $value);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_default_when_setting_not_found(): void
     {
         $value = $this->service->get('nonexistent.key', 'default_value');
@@ -45,7 +47,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertEquals('default_value', $value);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_set_a_setting_value(): void
     {
         $setting = $this->service->set('app.name', 'My App', 'string');
@@ -56,7 +58,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertEquals('string', $setting->type);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_update_existing_setting(): void
     {
         SystemSetting::factory()->create([
@@ -70,7 +72,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertEquals('New Name', $this->service->get('app.name'));
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_settings_by_group(): void
     {
         SystemSetting::factory()->create([
@@ -100,7 +102,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertTrue($authSettings->every(fn ($s) => $s->group === 'auth'));
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_all_settings_grouped(): void
     {
         SystemSetting::factory()->create([
@@ -124,7 +126,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertTrue($grouped->has('auth'));
     }
 
-    /** @test */
+    #[Test]
     public function it_caches_all_grouped_settings(): void
     {
         SystemSetting::factory()->create([
@@ -141,7 +143,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertTrue(Cache::has('system_settings:all'));
     }
 
-    /** @test */
+    #[Test]
     public function it_can_check_if_registration_is_open(): void
     {
         SystemSetting::factory()->create([
@@ -156,7 +158,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertTrue($isOpen);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_check_if_feature_is_enabled(): void
     {
         SystemSetting::factory()->create([
@@ -171,7 +173,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertTrue($isEnabled);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_true_for_missing_feature_by_default(): void
     {
         $isEnabled = $this->service->isFeatureEnabled('nonexistent_feature');
@@ -179,7 +181,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertTrue($isEnabled);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_all_available_groups(): void
     {
         $groups = $this->service->getGroups();
@@ -192,7 +194,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertArrayHasKey('security', $groups);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_default_settings(): void
     {
         $defaults = $this->service->getDefaultSettings();
@@ -211,7 +213,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertArrayHasKey('is_public', $firstSetting);
     }
 
-    /** @test */
+    #[Test]
     public function default_settings_include_all_required_keys(): void
     {
         $defaults = $this->service->getDefaultSettings();
@@ -232,7 +234,7 @@ class SystemSettingsServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_can_bulk_update_settings(): void
     {
         SystemSetting::factory()->create([
@@ -256,7 +258,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertEquals('http://new.com', $this->service->get('app.url'));
     }
 
-    /** @test */
+    #[Test]
     public function bulk_update_clears_cache(): void
     {
         SystemSetting::factory()->create([
@@ -275,7 +277,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertFalse(Cache::has('system_settings:all'));
     }
 
-    /** @test */
+    #[Test]
     public function it_can_clear_cache(): void
     {
         SystemSetting::factory()->create([
@@ -293,7 +295,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertFalse(Cache::has('system_settings:all'));
     }
 
-    /** @test */
+    #[Test]
     public function set_clears_cache(): void
     {
         // Populate cache
@@ -311,7 +313,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertFalse(Cache::has('system_settings:all'));
     }
 
-    /** @test */
+    #[Test]
     public function it_can_export_settings_to_array(): void
     {
         SystemSetting::factory()->create([
@@ -335,7 +337,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertTrue($exported['app.debug']); // Should be boolean
     }
 
-    /** @test */
+    #[Test]
     public function it_can_import_settings_from_array(): void
     {
         SystemSetting::factory()->create([
@@ -359,7 +361,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertEquals('http://imported.com', $this->service->get('app.url'));
     }
 
-    /** @test */
+    #[Test]
     public function import_clears_cache(): void
     {
         SystemSetting::factory()->create([
@@ -377,7 +379,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertFalse(Cache::has('system_settings:all'));
     }
 
-    /** @test */
+    #[Test]
     public function it_can_update_env_file(): void
     {
         $envPath = base_path('.env');
@@ -401,7 +403,7 @@ class SystemSettingsServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_adds_new_key_to_env_file_if_not_exists(): void
     {
         $envPath = base_path('.env');
@@ -425,7 +427,7 @@ class SystemSettingsServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function update_env_file_returns_false_when_file_not_exists(): void
     {
         $nonExistentPath = base_path('.env.nonexistent');
@@ -441,7 +443,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_boolean_type_casting_in_set(): void
     {
         $setting = $this->service->set('app.debug', true, 'boolean');
@@ -452,7 +454,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertTrue($value);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_integer_type_casting_in_set(): void
     {
         $setting = $this->service->set('security.rate_limit', 100, 'integer');
@@ -463,7 +465,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertSame(100, $value);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_json_type_casting_in_set(): void
     {
         $data = ['key1' => 'value1', 'key2' => 'value2'];
@@ -475,7 +477,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertEquals($data, $value);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_sync_settings_with_env(): void
     {
         $envPath = base_path('.env');
@@ -512,7 +514,7 @@ class SystemSettingsServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function sync_with_env_handles_empty_keys_array(): void
     {
         $envPath = base_path('.env');
@@ -540,7 +542,7 @@ class SystemSettingsServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_update_non_existent_settings_in_bulk_update(): void
     {
         SystemSetting::factory()->create([
@@ -559,7 +561,7 @@ class SystemSettingsServiceTest extends TestCase
         $this->assertNull($this->service->get('nonexistent.key'));
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_import_non_existent_settings(): void
     {
         SystemSetting::factory()->create([

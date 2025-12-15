@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Livewire;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\Servers\ResourceAlertManager;
 use App\Models\AlertHistory;
 use App\Models\ResourceAlert;
@@ -12,14 +14,14 @@ use App\Models\ServerMetric;
 use App\Models\User;
 use App\Services\ResourceAlertService;
 use App\Services\ServerMetricsService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Livewire\Livewire;
 use Mockery;
 use Tests\TestCase;
 
 class ResourceAlertManagerTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     protected User $user;
 
@@ -37,7 +39,7 @@ class ResourceAlertManagerTest extends TestCase
     // Component Rendering & Initialization Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_renders_successfully(): void
     {
         Livewire::actingAs($this->user)
@@ -45,7 +47,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_initializes_with_default_values(): void
     {
         Livewire::actingAs($this->user)
@@ -62,7 +64,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertSet('showEditModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_loads_server_correctly(): void
     {
         $component = Livewire::actingAs($this->user)
@@ -75,7 +77,7 @@ class ResourceAlertManagerTest extends TestCase
     // Alert Listing & Display Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_displays_all_alerts_for_server(): void
     {
         ResourceAlert::factory()->count(3)->create(['server_id' => $this->server->id]);
@@ -87,7 +89,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertCount(3, $alerts);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_only_shows_alerts_for_specific_server(): void
     {
         $otherServer = Server::factory()->create();
@@ -102,7 +104,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertCount(2, $alerts);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_loads_alerts_with_latest_history(): void
     {
         $alert = ResourceAlert::factory()->create(['server_id' => $this->server->id]);
@@ -122,7 +124,7 @@ class ResourceAlertManagerTest extends TestCase
     // Create Alert Modal Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_open_create_modal(): void
     {
         Livewire::actingAs($this->user)
@@ -131,7 +133,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertSet('showCreateModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_close_create_modal(): void
     {
         Livewire::actingAs($this->user)
@@ -141,7 +143,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertSet('showCreateModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_resets_form_when_opening_create_modal(): void
     {
         Livewire::actingAs($this->user)
@@ -153,7 +155,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertSet('threshold_value', 80.00);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_clears_validation_errors_when_closing_modal(): void
     {
         Livewire::actingAs($this->user)
@@ -169,7 +171,7 @@ class ResourceAlertManagerTest extends TestCase
     // Alert Creation Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_create_alert_with_valid_data(): void
     {
         Livewire::actingAs($this->user)
@@ -193,7 +195,7 @@ class ResourceAlertManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_create_alert_for_memory(): void
     {
         Livewire::actingAs($this->user)
@@ -212,7 +214,7 @@ class ResourceAlertManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_create_alert_for_disk(): void
     {
         Livewire::actingAs($this->user)
@@ -231,7 +233,7 @@ class ResourceAlertManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_create_alert_for_load(): void
     {
         Livewire::actingAs($this->user)
@@ -250,7 +252,7 @@ class ResourceAlertManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_create_alert_with_below_threshold(): void
     {
         Livewire::actingAs($this->user)
@@ -268,7 +270,7 @@ class ResourceAlertManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_closes_modal_after_creating_alert(): void
     {
         Livewire::actingAs($this->user)
@@ -283,7 +285,7 @@ class ResourceAlertManagerTest extends TestCase
     // Alert Creation with Notification Channels Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_create_alert_with_email_notification(): void
     {
         Livewire::actingAs($this->user)
@@ -301,7 +303,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertEquals('admin@example.com', $alert->notification_channels['email']['email']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_create_alert_with_slack_notification(): void
     {
         Livewire::actingAs($this->user)
@@ -319,7 +321,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertEquals('https://hooks.slack.com/services/xxx', $alert->notification_channels['slack']['webhook_url']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_create_alert_with_discord_notification(): void
     {
         Livewire::actingAs($this->user)
@@ -337,7 +339,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertEquals('https://discord.com/api/webhooks/xxx', $alert->notification_channels['discord']['webhook_url']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_create_alert_with_multiple_notification_channels(): void
     {
         Livewire::actingAs($this->user)
@@ -360,7 +362,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertArrayHasKey('discord', $alert->notification_channels);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_does_not_include_disabled_notification_channels(): void
     {
         Livewire::actingAs($this->user)
@@ -381,7 +383,7 @@ class ResourceAlertManagerTest extends TestCase
     // Alert Creation Validation Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_validates_resource_type_is_required(): void
     {
         Livewire::actingAs($this->user)
@@ -391,7 +393,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertHasErrors(['resource_type']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_validates_resource_type_is_valid(): void
     {
         Livewire::actingAs($this->user)
@@ -401,7 +403,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertHasErrors(['resource_type']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_validates_threshold_type_is_required(): void
     {
         Livewire::actingAs($this->user)
@@ -411,7 +413,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertHasErrors(['threshold_type']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_validates_threshold_type_is_valid(): void
     {
         Livewire::actingAs($this->user)
@@ -421,7 +423,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertHasErrors(['threshold_type']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_validates_threshold_value_is_required(): void
     {
         Livewire::actingAs($this->user)
@@ -431,7 +433,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertHasErrors(['threshold_value']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_validates_threshold_value_is_numeric(): void
     {
         Livewire::actingAs($this->user)
@@ -441,7 +443,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertHasErrors(['threshold_value']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_validates_threshold_value_minimum(): void
     {
         Livewire::actingAs($this->user)
@@ -451,7 +453,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertHasErrors(['threshold_value']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_validates_threshold_value_maximum(): void
     {
         Livewire::actingAs($this->user)
@@ -461,7 +463,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertHasErrors(['threshold_value']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_validates_cooldown_minutes_is_required(): void
     {
         Livewire::actingAs($this->user)
@@ -471,7 +473,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertHasErrors(['cooldown_minutes']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_validates_cooldown_minutes_is_integer(): void
     {
         Livewire::actingAs($this->user)
@@ -481,7 +483,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertHasErrors(['cooldown_minutes']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_validates_cooldown_minutes_minimum(): void
     {
         Livewire::actingAs($this->user)
@@ -491,7 +493,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertHasErrors(['cooldown_minutes']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_validates_cooldown_minutes_maximum(): void
     {
         Livewire::actingAs($this->user)
@@ -501,7 +503,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertHasErrors(['cooldown_minutes']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_validates_email_address_when_enabled(): void
     {
         Livewire::actingAs($this->user)
@@ -512,7 +514,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertHasErrors(['email_address']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_validates_email_address_format(): void
     {
         Livewire::actingAs($this->user)
@@ -523,7 +525,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertHasErrors(['email_address']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_validates_slack_webhook_when_enabled(): void
     {
         Livewire::actingAs($this->user)
@@ -534,7 +536,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertHasErrors(['slack_webhook']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_validates_slack_webhook_is_url(): void
     {
         Livewire::actingAs($this->user)
@@ -545,7 +547,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertHasErrors(['slack_webhook']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_validates_discord_webhook_when_enabled(): void
     {
         Livewire::actingAs($this->user)
@@ -556,7 +558,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertHasErrors(['discord_webhook']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_validates_discord_webhook_is_url(): void
     {
         Livewire::actingAs($this->user)
@@ -571,7 +573,7 @@ class ResourceAlertManagerTest extends TestCase
     // Edit Alert Modal Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_open_edit_modal(): void
     {
         $alert = ResourceAlert::factory()->create(['server_id' => $this->server->id]);
@@ -583,7 +585,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertSet('editingAlert.id', $alert->id);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_close_edit_modal(): void
     {
         $alert = ResourceAlert::factory()->create(['server_id' => $this->server->id]);
@@ -596,7 +598,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertSet('editingAlert', null);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_loads_alert_data_when_opening_edit_modal(): void
     {
         $alert = ResourceAlert::factory()->create([
@@ -618,7 +620,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertSet('is_active', false);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_loads_email_notification_channel_when_editing(): void
     {
         $alert = ResourceAlert::factory()->create([
@@ -635,7 +637,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertSet('email_address', 'test@example.com');
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_loads_slack_notification_channel_when_editing(): void
     {
         $alert = ResourceAlert::factory()->create([
@@ -652,7 +654,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertSet('slack_webhook', 'https://hooks.slack.com/services/xxx');
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_loads_discord_notification_channel_when_editing(): void
     {
         $alert = ResourceAlert::factory()->create([
@@ -673,7 +675,7 @@ class ResourceAlertManagerTest extends TestCase
     // Update Alert Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_update_alert(): void
     {
         $alert = ResourceAlert::factory()->create([
@@ -694,7 +696,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertEquals(90.0, $alert->threshold_value);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_update_alert_resource_type(): void
     {
         $alert = ResourceAlert::factory()->create([
@@ -713,7 +715,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertEquals('memory', $alert->resource_type);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_update_alert_threshold_type(): void
     {
         $alert = ResourceAlert::factory()->create([
@@ -732,7 +734,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertEquals('below', $alert->threshold_type);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_update_alert_cooldown(): void
     {
         $alert = ResourceAlert::factory()->create([
@@ -751,7 +753,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertEquals(60, $alert->cooldown_minutes);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_update_alert_notification_channels(): void
     {
         $alert = ResourceAlert::factory()->create([
@@ -772,7 +774,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertEquals('new@example.com', $alert->notification_channels['email']['email']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_closes_modal_after_updating_alert(): void
     {
         $alert = ResourceAlert::factory()->create(['server_id' => $this->server->id]);
@@ -784,7 +786,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertSet('showEditModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_does_not_update_without_editing_alert(): void
     {
         Livewire::actingAs($this->user)
@@ -797,7 +799,7 @@ class ResourceAlertManagerTest extends TestCase
     // Delete Alert Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_delete_alert(): void
     {
         $alert = ResourceAlert::factory()->create(['server_id' => $this->server->id]);
@@ -811,7 +813,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertDatabaseMissing('resource_alerts', ['id' => $alert->id]);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_deletes_alert_with_history(): void
     {
         $alert = ResourceAlert::factory()->create(['server_id' => $this->server->id]);
@@ -832,7 +834,7 @@ class ResourceAlertManagerTest extends TestCase
     // Toggle Alert Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_toggle_alert_from_active_to_inactive(): void
     {
         $alert = ResourceAlert::factory()->create([
@@ -849,7 +851,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertFalse($alert->is_active);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_toggle_alert_from_inactive_to_active(): void
     {
         $alert = ResourceAlert::factory()->create([
@@ -866,7 +868,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertTrue($alert->is_active);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_shows_enabled_message_when_toggling_on(): void
     {
         $alert = ResourceAlert::factory()->create([
@@ -880,7 +882,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertDispatched('notify', message: 'Alert enabled successfully!');
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_shows_disabled_message_when_toggling_off(): void
     {
         $alert = ResourceAlert::factory()->create([
@@ -898,7 +900,7 @@ class ResourceAlertManagerTest extends TestCase
     // Test Alert Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_test_alert_successfully(): void
     {
         $alert = ResourceAlert::factory()->create(['server_id' => $this->server->id]);
@@ -918,7 +920,7 @@ class ResourceAlertManagerTest extends TestCase
             ->assertDispatched('notify', type: 'success', message: 'Test notification sent successfully!');
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_handles_test_alert_failure(): void
     {
         $alert = ResourceAlert::factory()->create(['server_id' => $this->server->id]);
@@ -942,7 +944,7 @@ class ResourceAlertManagerTest extends TestCase
     // Current Metrics Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_displays_current_metrics_when_available(): void
     {
         ServerMetric::factory()->create([
@@ -963,7 +965,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertEquals(2.5, $metrics['load']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_displays_zero_metrics_when_unavailable(): void
     {
         $mockMetricsService = Mockery::mock(ServerMetricsService::class);
@@ -982,7 +984,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertEquals(0, $metrics['load']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_refresh_metrics(): void
     {
         $mockMetricsService = Mockery::mock(ServerMetricsService::class);
@@ -1003,7 +1005,7 @@ class ResourceAlertManagerTest extends TestCase
     // Alert History Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_displays_alert_history(): void
     {
         $alert = ResourceAlert::factory()->create(['server_id' => $this->server->id]);
@@ -1019,7 +1021,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertCount(5, $history);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_paginates_alert_history(): void
     {
         AlertHistory::factory()->count(25)->create(['server_id' => $this->server->id]);
@@ -1031,7 +1033,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertEquals(10, $history->perPage());
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_orders_history_by_created_at_desc(): void
     {
         $alert = ResourceAlert::factory()->create(['server_id' => $this->server->id]);
@@ -1055,7 +1057,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertEquals($newHistory->id, $history->first()->id);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_only_shows_history_for_specific_server(): void
     {
         $otherServer = Server::factory()->create();
@@ -1074,7 +1076,7 @@ class ResourceAlertManagerTest extends TestCase
     // Component Integration Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_refreshes_alerts_after_creation(): void
     {
         $component = Livewire::actingAs($this->user)
@@ -1090,7 +1092,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertEquals($initialAlertsCount + 1, ResourceAlert::count());
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_refreshes_alerts_after_update(): void
     {
         $alert = ResourceAlert::factory()->create([
@@ -1108,7 +1110,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertEquals(90.0, $alert->threshold_value);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_refreshes_alerts_after_deletion(): void
     {
         $alert = ResourceAlert::factory()->create(['server_id' => $this->server->id]);
@@ -1123,7 +1125,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertEquals($initialCount - 1, ResourceAlert::count());
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_refreshes_alerts_after_toggle(): void
     {
         $alert = ResourceAlert::factory()->create([
@@ -1139,7 +1141,7 @@ class ResourceAlertManagerTest extends TestCase
         $this->assertFalse($alert->is_active);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_clears_form_after_closing_edit_modal(): void
     {
         $alert = ResourceAlert::factory()->create([

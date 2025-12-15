@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\ServerMetric;
 use App\Services\ServerMetricsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -21,7 +23,7 @@ class ServerMetricsServiceTest extends TestCase
         $this->service = new ServerMetricsService;
     }
 
-    /** @test */
+    #[Test]
     public function it_collects_metrics_from_online_server(): void
     {
         // Arrange
@@ -39,7 +41,7 @@ class ServerMetricsServiceTest extends TestCase
         $this->assertNotNull($metric->disk_usage);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_null_on_metrics_collection_failure(): void
     {
         // Arrange
@@ -53,7 +55,7 @@ class ServerMetricsServiceTest extends TestCase
         $this->assertNull($metric);
     }
 
-    /** @test */
+    #[Test]
     public function it_retrieves_metrics_history(): void
     {
         // Arrange
@@ -70,7 +72,7 @@ class ServerMetricsServiceTest extends TestCase
         $this->assertCount(5, $history);
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_metrics_history_by_period(): void
     {
         // Arrange
@@ -95,7 +97,7 @@ class ServerMetricsServiceTest extends TestCase
         $this->assertCount(3, $history);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_latest_metrics(): void
     {
         // Arrange
@@ -121,7 +123,7 @@ class ServerMetricsServiceTest extends TestCase
         $this->assertEquals(75.0, $result->cpu_usage);
     }
 
-    /** @test */
+    #[Test]
     public function it_sanitizes_decimal_values(): void
     {
         // Arrange
@@ -139,7 +141,7 @@ class ServerMetricsServiceTest extends TestCase
         $this->assertEquals(0.0, $metric->memory_usage); // Clamped to 0
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_process_output_correctly(): void
     {
         // Arrange
@@ -163,7 +165,7 @@ class ServerMetricsServiceTest extends TestCase
         $this->assertEquals(5.5, $processes[0]['mem']);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_top_processes_by_memory(): void
     {
         // Arrange
@@ -186,7 +188,7 @@ class ServerMetricsServiceTest extends TestCase
         $this->assertEquals(25.0, $processes[0]['mem']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_localhost_detection(): void
     {
         // Arrange
@@ -200,7 +202,7 @@ class ServerMetricsServiceTest extends TestCase
         $this->assertInstanceOf(ServerMetric::class, $metric);
     }
 
-    /** @test */
+    #[Test]
     public function it_truncates_long_command_strings(): void
     {
         // Arrange

@@ -12,11 +12,11 @@ use App\Http\Requests\Api\UpdateServerRequest;
 use App\Models\Project;
 use App\Models\Server;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 
 class FormRequestValidationTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     protected function validate(array $data, string $requestClass, ?int $routeId = null): \Illuminate\Validation\Validator
     {

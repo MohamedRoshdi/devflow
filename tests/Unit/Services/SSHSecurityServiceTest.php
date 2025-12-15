@@ -2,11 +2,13 @@
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\SecurityEvent;
 use App\Models\Server;
 use App\Models\SshConfiguration;
 use App\Services\Security\SSHSecurityService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
@@ -14,7 +16,7 @@ use Tests\TestCase;
 
 class SSHSecurityServiceTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     protected SSHSecurityService $service;
 
@@ -31,7 +33,7 @@ class SSHSecurityServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_current_ssh_config_successfully(): void
     {
         $sshConfigOutput = <<<'SSH'
@@ -62,7 +64,7 @@ SSH;
         $this->assertEquals(6, $result['config']['max_auth_tries']);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_ssh_configuration_record_when_getting_config(): void
     {
         $sshConfigOutput = <<<'SSH'
@@ -96,7 +98,7 @@ SSH;
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_failed_config_retrieval(): void
     {
         Process::fake([
@@ -114,7 +116,7 @@ SSH;
         $this->assertEquals('Unable to read SSH configuration', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_update_ssh_port(): void
     {
         Process::fake([
@@ -130,7 +132,7 @@ SSH;
         $this->assertContains('Port=2222', $result['changes']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_port_range(): void
     {
         Process::fake();
@@ -141,7 +143,7 @@ SSH;
         $this->assertStringContainsString('Port must be between 1 and 65535', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_port_minimum_range(): void
     {
         Process::fake();
@@ -152,7 +154,7 @@ SSH;
         $this->assertStringContainsString('Port must be between 1 and 65535', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_well_known_ports(): void
     {
         Process::fake();
@@ -163,7 +165,7 @@ SSH;
         $this->assertStringContainsString('Port must be 22 or above 1024', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_allows_port_22(): void
     {
         Process::fake([
@@ -177,7 +179,7 @@ SSH;
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_disable_root_login(): void
     {
         Process::fake([
@@ -192,7 +194,7 @@ SSH;
         $this->assertContains('PermitRootLogin=no', $result['changes']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_enable_root_login(): void
     {
         Process::fake([
@@ -207,7 +209,7 @@ SSH;
         $this->assertContains('PermitRootLogin=yes', $result['changes']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_disable_password_authentication(): void
     {
         Process::fake([
@@ -222,7 +224,7 @@ SSH;
         $this->assertContains('PasswordAuthentication=no', $result['changes']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_enable_password_authentication(): void
     {
         Process::fake([
@@ -237,7 +239,7 @@ SSH;
         $this->assertContains('PasswordAuthentication=yes', $result['changes']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_set_max_auth_tries(): void
     {
         Process::fake([
@@ -252,7 +254,7 @@ SSH;
         $this->assertContains('MaxAuthTries=3', $result['changes']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_max_auth_tries_range(): void
     {
         Process::fake();
@@ -263,7 +265,7 @@ SSH;
         $this->assertStringContainsString('MaxAuthTries must be between 1 and 10', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_max_auth_tries_minimum(): void
     {
         Process::fake();
@@ -274,7 +276,7 @@ SSH;
         $this->assertStringContainsString('MaxAuthTries must be between 1 and 10', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_fails_update_when_config_validation_fails(): void
     {
         Process::fake([
@@ -293,7 +295,7 @@ SSH;
         $this->assertStringContainsString('SSH configuration validation failed', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_security_event_when_config_updated(): void
     {
         $user = \App\Models\User::factory()->create();
@@ -314,7 +316,7 @@ SSH;
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_change_ssh_port_directly(): void
     {
         Process::fake([
@@ -329,7 +331,7 @@ SSH;
         $this->assertStringContainsString('Remember to update firewall rules', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_port_when_changing_port_directly(): void
     {
         Process::fake();
@@ -340,7 +342,7 @@ SSH;
         $this->assertStringContainsString('Port must be 22 or above 1024', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_toggle_root_login_off(): void
     {
         Process::fake([
@@ -354,7 +356,7 @@ SSH;
         $this->assertStringContainsString('disabled', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_toggle_root_login_on(): void
     {
         Process::fake([
@@ -368,7 +370,7 @@ SSH;
         $this->assertStringContainsString('enabled', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_toggle_password_auth_off(): void
     {
         Process::fake([
@@ -382,7 +384,7 @@ SSH;
         $this->assertStringContainsString('disabled', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_toggle_password_auth_on(): void
     {
         Process::fake([
@@ -396,7 +398,7 @@ SSH;
         $this->assertStringContainsString('enabled', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_harden_ssh_configuration(): void
     {
         Process::fake([
@@ -412,7 +414,7 @@ SSH;
         $this->assertStringContainsString('SSH key access', $result['warning']);
     }
 
-    /** @test */
+    #[Test]
     public function it_applies_all_hardening_rules(): void
     {
         $changes = [];
@@ -435,7 +437,7 @@ SSH;
         $this->assertCount(7, $result['changes']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_restart_ssh_service(): void
     {
         Process::fake([
@@ -449,7 +451,7 @@ SSH;
         $this->assertStringContainsString('restarted successfully', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_config_before_restarting_ssh(): void
     {
         Process::fake([
@@ -466,7 +468,7 @@ SSH;
         $this->assertStringContainsString('invalid', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_failed_ssh_restart(): void
     {
         Process::fake([
@@ -484,7 +486,7 @@ SSH;
         $this->assertStringContainsString('Failed to restart', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_validate_ssh_configuration(): void
     {
         Process::fake([
@@ -498,7 +500,7 @@ SSH;
         $this->assertStringContainsString('valid', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_invalid_ssh_configuration(): void
     {
         Process::fake([
@@ -516,7 +518,7 @@ SSH;
         $this->assertStringContainsString('errors', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_ssh_config_with_default_values(): void
     {
         $sshConfigOutput = '';
@@ -538,7 +540,7 @@ SSH;
         $this->assertEquals(6, $result['config']['max_auth_tries']);
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_ssh_config_with_prohibit_password_for_root(): void
     {
         $sshConfigOutput = 'PermitRootLogin prohibit-password';
@@ -556,7 +558,7 @@ SSH;
         $this->assertTrue($result['config']['root_login_enabled']);
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_ssh_config_with_without_password_for_root(): void
     {
         $sshConfigOutput = 'PermitRootLogin without-password';
@@ -574,7 +576,7 @@ SSH;
         $this->assertTrue($result['config']['root_login_enabled']);
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_ssh_config_ignoring_comments(): void
     {
         $sshConfigOutput = <<<'SSH'
@@ -598,7 +600,7 @@ SSH;
         $this->assertFalse($result['config']['root_login_enabled']);
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_x11_forwarding_and_login_grace_time(): void
     {
         $sshConfigOutput = <<<'SSH'
@@ -620,7 +622,7 @@ SSH;
         $this->assertEquals(60, $result['config']['login_grace_time']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exception_when_getting_config(): void
     {
         Log::shouldReceive('error')->once();
@@ -639,7 +641,7 @@ SSH;
         $this->assertArrayHasKey('error', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_multiple_config_values_at_once(): void
     {
         Process::fake([
@@ -659,7 +661,7 @@ SSH;
         $this->assertCount(4, $result['changes']);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_sudo_for_non_root_user(): void
     {
         $this->server->update(['username' => 'ubuntu']);
@@ -673,7 +675,7 @@ SSH;
         Process::assertRan(fn ($process) => str_contains($process->command, 'sudo'));
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_use_sudo_for_root_user(): void
     {
         $this->server->update(['username' => 'root']);
@@ -688,7 +690,7 @@ SSH;
         Process::assertRan(fn ($process) => ! str_contains($process->command, 'sudo'));
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_localhost_server_differently(): void
     {
         $this->server->update(['ip_address' => '127.0.0.1']);
@@ -703,7 +705,7 @@ SSH;
         Process::assertRan(fn ($process) => ! str_contains($process->command, 'ssh'));
     }
 
-    /** @test */
+    #[Test]
     public function it_appends_config_value_when_key_not_found(): void
     {
         Process::fake([

@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Livewire;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\Projects\ProjectEnvironment;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Livewire\Livewire;
 use Symfony\Component\Process\Process;
 use Tests\TestCase;
 
 class ProjectEnvironmentTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     protected User $user;
 
@@ -47,7 +49,7 @@ class ProjectEnvironmentTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function component_renders_successfully_for_authenticated_users(): void
     {
         Livewire::actingAs($this->user)
@@ -58,7 +60,7 @@ class ProjectEnvironmentTest extends TestCase
             ->assertSet('environment', 'production');
     }
 
-    /** @test */
+    #[Test]
     public function component_loads_environment_variables_on_mount(): void
     {
         Livewire::actingAs($this->user)
@@ -70,7 +72,7 @@ class ProjectEnvironmentTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function component_handles_project_without_env_variables(): void
     {
         $projectWithoutEnv = Project::factory()->create([
@@ -84,7 +86,7 @@ class ProjectEnvironmentTest extends TestCase
             ->assertSet('envVariables', []);
     }
 
-    /** @test */
+    #[Test]
     public function component_displays_environment_variables(): void
     {
         Livewire::actingAs($this->user)
@@ -95,9 +97,12 @@ class ProjectEnvironmentTest extends TestCase
             ->assertSee('DB_HOST');
     }
 
-    /** @test */
+    #[Test]
     public function user_can_update_environment(): void
     {
+        // Mock Process to prevent SSH execution
+        $this->mockSuccessfulCommand();
+
         Livewire::actingAs($this->user)
             ->test(ProjectEnvironment::class, ['project' => $this->project])
             ->set('environment', 'staging')
@@ -110,7 +115,7 @@ class ProjectEnvironmentTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function update_environment_validates_valid_environments(): void
     {
         Livewire::actingAs($this->user)
@@ -120,9 +125,12 @@ class ProjectEnvironmentTest extends TestCase
             ->assertHasErrors(['environment']);
     }
 
-    /** @test */
+    #[Test]
     public function update_environment_accepts_all_valid_environment_types(): void
     {
+        // Mock Process to prevent SSH execution
+        $this->mockSuccessfulCommand();
+
         $validEnvironments = ['local', 'development', 'staging', 'production'];
 
         foreach ($validEnvironments as $env) {
@@ -139,7 +147,7 @@ class ProjectEnvironmentTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function user_can_open_env_modal(): void
     {
         Livewire::actingAs($this->user)
@@ -151,7 +159,7 @@ class ProjectEnvironmentTest extends TestCase
             ->assertSet('editingEnvKey', null);
     }
 
-    /** @test */
+    #[Test]
     public function user_can_close_env_modal(): void
     {
         Livewire::actingAs($this->user)
@@ -163,7 +171,7 @@ class ProjectEnvironmentTest extends TestCase
             ->assertSet('showEnvModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function user_can_add_new_environment_variable(): void
     {
         Livewire::actingAs($this->user)
@@ -177,7 +185,7 @@ class ProjectEnvironmentTest extends TestCase
         $this->assertEquals('new value', $this->project->env_variables['NEW_KEY']);
     }
 
-    /** @test */
+    #[Test]
     public function add_env_variable_requires_key(): void
     {
         Livewire::actingAs($this->user)
@@ -188,7 +196,7 @@ class ProjectEnvironmentTest extends TestCase
             ->assertHasErrors(['newEnvKey']);
     }
 
-    /** @test */
+    #[Test]
     public function add_env_variable_accepts_empty_value(): void
     {
         Livewire::actingAs($this->user)
@@ -202,7 +210,7 @@ class ProjectEnvironmentTest extends TestCase
         $this->assertEquals('', $this->project->env_variables['EMPTY_KEY']);
     }
 
-    /** @test */
+    #[Test]
     public function add_env_variable_validates_max_key_length(): void
     {
         Livewire::actingAs($this->user)
@@ -213,7 +221,7 @@ class ProjectEnvironmentTest extends TestCase
             ->assertHasErrors(['newEnvKey']);
     }
 
-    /** @test */
+    #[Test]
     public function add_env_variable_validates_max_value_length(): void
     {
         Livewire::actingAs($this->user)
@@ -224,7 +232,7 @@ class ProjectEnvironmentTest extends TestCase
             ->assertHasErrors(['newEnvValue']);
     }
 
-    /** @test */
+    #[Test]
     public function add_env_variable_resets_form_fields_after_success(): void
     {
         Livewire::actingAs($this->user)
@@ -236,7 +244,7 @@ class ProjectEnvironmentTest extends TestCase
             ->assertSet('newEnvValue', '');
     }
 
-    /** @test */
+    #[Test]
     public function user_can_edit_existing_environment_variable(): void
     {
         Livewire::actingAs($this->user)
@@ -248,7 +256,7 @@ class ProjectEnvironmentTest extends TestCase
             ->assertSet('showEnvModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function user_can_update_environment_variable(): void
     {
         Livewire::actingAs($this->user)
@@ -263,7 +271,7 @@ class ProjectEnvironmentTest extends TestCase
         $this->assertEquals('Updated App Name', $this->project->env_variables['APP_NAME']);
     }
 
-    /** @test */
+    #[Test]
     public function update_env_variable_can_rename_key(): void
     {
         Livewire::actingAs($this->user)
@@ -278,7 +286,7 @@ class ProjectEnvironmentTest extends TestCase
         $this->assertEquals('Updated App', $this->project->env_variables['APPLICATION_NAME']);
     }
 
-    /** @test */
+    #[Test]
     public function user_can_delete_environment_variable(): void
     {
         Livewire::actingAs($this->user)
@@ -289,7 +297,7 @@ class ProjectEnvironmentTest extends TestCase
         $this->assertArrayNotHasKey('APP_DEBUG', $this->project->env_variables);
     }
 
-    /** @test */
+    #[Test]
     public function delete_env_variable_shows_success_message(): void
     {
         Livewire::actingAs($this->user)
@@ -299,7 +307,7 @@ class ProjectEnvironmentTest extends TestCase
         $this->assertEquals('Environment variable deleted successfully', session('message'));
     }
 
-    /** @test */
+    #[Test]
     public function delete_env_variable_handles_non_existent_key_gracefully(): void
     {
         Livewire::actingAs($this->user)
@@ -310,7 +318,7 @@ class ProjectEnvironmentTest extends TestCase
         $this->assertArrayNotHasKey('NON_EXISTENT_KEY', $this->project->env_variables);
     }
 
-    /** @test */
+    #[Test]
     public function component_can_parse_env_file_content(): void
     {
         $envContent = <<<'ENV'
@@ -344,7 +352,7 @@ ENV;
         $this->assertEquals('redis', $parsedVars['CACHE_DRIVER']);
     }
 
-    /** @test */
+    #[Test]
     public function parse_env_file_skips_comments(): void
     {
         $envContent = <<<'ENV'
@@ -363,7 +371,7 @@ ENV;
         $this->assertArrayNotHasKey('# This is a comment', $parsedVars);
     }
 
-    /** @test */
+    #[Test]
     public function parse_env_file_skips_empty_lines(): void
     {
         $envContent = <<<'ENV'
@@ -383,7 +391,7 @@ ENV;
         $this->assertCount(3, $parsedVars);
     }
 
-    /** @test */
+    #[Test]
     public function parse_env_file_removes_surrounding_quotes(): void
     {
         $envContent = <<<'ENV'
@@ -402,7 +410,7 @@ ENV;
         $this->assertEquals('simple', $parsedVars['NO_QUOTES']);
     }
 
-    /** @test */
+    #[Test]
     public function user_can_open_server_env_modal(): void
     {
         Livewire::actingAs($this->user)
@@ -414,7 +422,7 @@ ENV;
             ->assertSet('serverEnvValue', '');
     }
 
-    /** @test */
+    #[Test]
     public function user_can_close_server_env_modal(): void
     {
         Livewire::actingAs($this->user)
@@ -429,7 +437,7 @@ ENV;
             ->assertSet('editingServerEnvKey', null);
     }
 
-    /** @test */
+    #[Test]
     public function user_can_edit_server_environment_variable(): void
     {
         $component = Livewire::actingAs($this->user)
@@ -448,7 +456,7 @@ ENV;
             ->assertSet('showServerEnvModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function save_server_env_variable_validates_key_format(): void
     {
         Livewire::actingAs($this->user)
@@ -459,7 +467,7 @@ ENV;
             ->assertHasErrors(['serverEnvKey']);
     }
 
-    /** @test */
+    #[Test]
     public function save_server_env_variable_validates_key_naming_convention(): void
     {
         Livewire::actingAs($this->user)
@@ -470,9 +478,12 @@ ENV;
             ->assertHasErrors(['serverEnvKey']);
     }
 
-    /** @test */
+    #[Test]
     public function save_server_env_variable_accepts_valid_key_names(): void
     {
+        // Mock Process to prevent SSH execution
+        $this->mockSuccessfulCommand();
+
         $validKeys = ['APP_NAME', 'DB_HOST', 'CACHE_DRIVER', 'REDIS_HOST', 'MY_CUSTOM_VAR'];
 
         foreach ($validKeys as $key) {
@@ -485,7 +496,7 @@ ENV;
         }
     }
 
-    /** @test */
+    #[Test]
     public function save_server_env_variable_validates_key_required(): void
     {
         Livewire::actingAs($this->user)
@@ -496,7 +507,7 @@ ENV;
             ->assertHasErrors(['serverEnvKey']);
     }
 
-    /** @test */
+    #[Test]
     public function save_server_env_variable_validates_key_max_length(): void
     {
         Livewire::actingAs($this->user)
@@ -507,7 +518,7 @@ ENV;
             ->assertHasErrors(['serverEnvKey']);
     }
 
-    /** @test */
+    #[Test]
     public function save_server_env_variable_validates_value_max_length(): void
     {
         Livewire::actingAs($this->user)
@@ -518,9 +529,12 @@ ENV;
             ->assertHasErrors(['serverEnvValue']);
     }
 
-    /** @test */
+    #[Test]
     public function save_server_env_variable_converts_key_to_uppercase(): void
     {
+        // Mock Process to prevent SSH execution
+        $this->mockSuccessfulCommand();
+
         Livewire::actingAs($this->user)
             ->test(ProjectEnvironment::class, ['project' => $this->project])
             ->set('serverEnvKey', 'app_name')
@@ -531,7 +545,7 @@ ENV;
         // We can't test SSH execution here, but we verified the validation passes
     }
 
-    /** @test */
+    #[Test]
     public function component_handles_project_without_server(): void
     {
         $projectWithoutServer = Project::factory()->create([
@@ -546,7 +560,7 @@ ENV;
         $component->assertSet('projectId', $projectWithoutServer->id);
     }
 
-    /** @test */
+    #[Test]
     public function component_initializes_with_correct_default_values(): void
     {
         Livewire::actingAs($this->user)
@@ -562,7 +576,7 @@ ENV;
             ->assertSet('serverEnvValue', '');
     }
 
-    /** @test */
+    #[Test]
     public function component_uses_locked_attribute_for_project_id(): void
     {
         $component = Livewire::actingAs($this->user)
@@ -576,7 +590,7 @@ ENV;
         $component->assertSet('projectId', $this->project->id);
     }
 
-    /** @test */
+    #[Test]
     public function get_project_method_loads_server_relationship(): void
     {
         $component = Livewire::actingAs($this->user)
@@ -588,7 +602,7 @@ ENV;
         $this->assertEquals($this->server->id, $project->server->id);
     }
 
-    /** @test */
+    #[Test]
     public function component_handles_special_characters_in_env_values(): void
     {
         $specialValue = 'value with "quotes" and \'apostrophes\' and $pecial characters';
@@ -604,7 +618,7 @@ ENV;
         $this->assertEquals($specialValue, $this->project->env_variables['SPECIAL_VALUE']);
     }
 
-    /** @test */
+    #[Test]
     public function component_handles_multiline_env_values(): void
     {
         $multilineValue = "Line 1\nLine 2\nLine 3";
@@ -620,7 +634,7 @@ ENV;
         $this->assertEquals($multilineValue, $this->project->env_variables['MULTILINE']);
     }
 
-    /** @test */
+    #[Test]
     public function component_preserves_existing_variables_when_adding_new_one(): void
     {
         $originalCount = count($this->project->env_variables);
@@ -637,7 +651,7 @@ ENV;
         $this->assertEquals('additional value', $this->project->env_variables['ADDITIONAL_KEY']);
     }
 
-    /** @test */
+    #[Test]
     public function component_preserves_existing_variables_when_deleting_one(): void
     {
         $originalCount = count($this->project->env_variables);
@@ -652,7 +666,7 @@ ENV;
         $this->assertEquals('localhost', $this->project->env_variables['DB_HOST']);
     }
 
-    /** @test */
+    #[Test]
     public function parse_env_file_handles_equals_signs_in_values(): void
     {
         $envContent = "DATABASE_URL=mysql://user:pass@localhost/db?option=value";
@@ -665,7 +679,7 @@ ENV;
         $this->assertEquals('mysql://user:pass@localhost/db?option=value', $parsedVars['DATABASE_URL']);
     }
 
-    /** @test */
+    #[Test]
     public function parse_env_file_handles_empty_values(): void
     {
         $envContent = <<<'ENV'
@@ -683,7 +697,7 @@ ENV;
         $this->assertArrayHasKey('EMPTY_KEY', $parsedVars);
     }
 
-    /** @test */
+    #[Test]
     public function parse_env_file_trims_whitespace_from_keys_and_values(): void
     {
         $envContent = <<<'ENV'
@@ -700,9 +714,12 @@ ENV;
         $this->assertEquals('value with spaces', $parsedVars['KEY_WITH_SPACES']);
     }
 
-    /** @test */
+    #[Test]
     public function component_handles_environment_update_with_special_values(): void
     {
+        // Mock Process to prevent SSH execution
+        $this->mockSuccessfulCommand();
+
         foreach (['local', 'development', 'staging', 'production'] as $env) {
             $this->project->refresh();
 
@@ -720,9 +737,12 @@ ENV;
         }
     }
 
-    /** @test */
+    #[Test]
     public function update_environment_flashes_success_message(): void
     {
+        // Mock Process to prevent SSH execution
+        $this->mockSuccessfulCommand();
+
         Livewire::actingAs($this->user)
             ->test(ProjectEnvironment::class, ['project' => $this->project])
             ->set('environment', 'staging')
@@ -731,7 +751,7 @@ ENV;
         $this->assertEquals('Environment updated to Staging', session('message'));
     }
 
-    /** @test */
+    #[Test]
     public function add_env_variable_flashes_success_message(): void
     {
         Livewire::actingAs($this->user)
@@ -743,7 +763,7 @@ ENV;
         $this->assertEquals('Environment variable added successfully', session('message'));
     }
 
-    /** @test */
+    #[Test]
     public function update_env_variable_flashes_success_message(): void
     {
         Livewire::actingAs($this->user)

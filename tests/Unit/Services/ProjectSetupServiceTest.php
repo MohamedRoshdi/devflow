@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Events\ProjectSetupUpdated;
 use App\Models\Project;
 use App\Models\ProjectSetupTask;
@@ -36,7 +38,7 @@ class ProjectSetupServiceTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
+    #[Test]
     public function it_initializes_setup_with_all_tasks_when_all_config_enabled(): void
     {
         // Arrange
@@ -98,7 +100,7 @@ class ProjectSetupServiceTest extends TestCase
         Event::assertDispatched(ProjectSetupUpdated::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_initializes_setup_with_only_selected_tasks(): void
     {
         // Arrange
@@ -148,7 +150,7 @@ class ProjectSetupServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_initializes_setup_with_empty_config(): void
     {
         // Arrange
@@ -164,7 +166,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertCount(0, $project->setupTasks);
     }
 
-    /** @test */
+    #[Test]
     public function it_dispatches_event_after_initialization(): void
     {
         // Arrange
@@ -180,7 +182,7 @@ class ProjectSetupServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_executes_setup_and_updates_project_status(): void
     {
         // Arrange
@@ -201,7 +203,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertNotNull($project->setup_completed_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_marks_setup_as_in_progress_when_executing(): void
     {
         // Arrange
@@ -222,7 +224,7 @@ class ProjectSetupServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_executes_all_pending_tasks(): void
     {
         // Arrange
@@ -257,7 +259,7 @@ class ProjectSetupServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_task_failures_gracefully(): void
     {
         // Arrange
@@ -286,7 +288,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertEquals('failed', $project->setup_status);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_error_when_task_fails(): void
     {
         // Arrange
@@ -309,7 +311,7 @@ class ProjectSetupServiceTest extends TestCase
             ->once();
     }
 
-    /** @test */
+    #[Test]
     public function it_dispatches_event_when_task_fails(): void
     {
         // Arrange
@@ -328,7 +330,7 @@ class ProjectSetupServiceTest extends TestCase
         Event::assertDispatched(ProjectSetupUpdated::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_completes_ssl_setup_task_successfully(): void
     {
         // Arrange
@@ -356,7 +358,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertEquals('example.com', $task->result_data['domain']);
     }
 
-    /** @test */
+    #[Test]
     public function it_fails_ssl_setup_when_no_primary_domain(): void
     {
         // Arrange
@@ -377,7 +379,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertEquals('No primary domain found', $task->message);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_ssl_task_progress(): void
     {
         // Arrange
@@ -406,7 +408,7 @@ class ProjectSetupServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_completes_webhook_setup_task_successfully(): void
     {
         // Arrange
@@ -433,7 +435,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertTrue($project->webhook_enabled);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_existing_webhook_secret_if_present(): void
     {
         // Arrange
@@ -460,7 +462,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertEquals($existingSecret, $task->result_data['secret']);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_webhook_task_progress(): void
     {
         // Arrange
@@ -483,7 +485,7 @@ class ProjectSetupServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_completes_health_check_setup_task_successfully(): void
     {
         // Arrange
@@ -510,7 +512,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertEquals('https://example.com', $task->result_data['url']);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_health_check_record_when_model_exists(): void
     {
         // Arrange
@@ -540,7 +542,7 @@ class ProjectSetupServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_health_check_url_from_project_if_no_domain(): void
     {
         // Arrange
@@ -562,7 +564,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertEquals('https://custom-url.com', $task->result_data['url']);
     }
 
-    /** @test */
+    #[Test]
     public function it_completes_backup_setup_task_successfully(): void
     {
         // Arrange
@@ -586,7 +588,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertEquals('7 days', $task->result_data['retention']);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_backup_schedule_when_model_exists(): void
     {
         // Arrange
@@ -611,7 +613,7 @@ class ProjectSetupServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_completes_notifications_setup_task_successfully(): void
     {
         // Arrange
@@ -632,7 +634,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertEquals('Notifications ready to configure', $task->message);
     }
 
-    /** @test */
+    #[Test]
     public function it_completes_deployment_setup_task_when_job_exists(): void
     {
         // Arrange
@@ -652,7 +654,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertEquals(ProjectSetupTask::STATUS_COMPLETED, $task->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_dispatches_deploy_job_when_class_exists(): void
     {
         // Arrange
@@ -675,7 +677,7 @@ class ProjectSetupServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_marks_setup_as_completed_when_all_tasks_done(): void
     {
         // Arrange
@@ -702,7 +704,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertNotNull($project->setup_completed_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_marks_setup_as_failed_when_any_task_failed(): void
     {
         // Arrange
@@ -731,7 +733,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertNotNull($project->setup_completed_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_setup_progress_summary(): void
     {
         // Arrange
@@ -772,7 +774,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertEquals(50, $webhookTask['progress']);
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_task_labels_in_progress_summary(): void
     {
         // Arrange
@@ -791,7 +793,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertEquals('SSL Certificate', $progress['tasks'][0]['label']);
     }
 
-    /** @test */
+    #[Test]
     public function it_retries_failed_task_successfully(): void
     {
         // Arrange
@@ -820,7 +822,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertNotEquals('Previous error', $task->message);
     }
 
-    /** @test */
+    #[Test]
     public function it_resets_task_state_before_retry(): void
     {
         // Arrange
@@ -844,7 +846,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertEquals(100, $task->progress);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_retry_non_failed_tasks(): void
     {
         // Arrange
@@ -865,7 +867,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertEquals('Already completed', $task->message);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_project_status_when_retrying_task(): void
     {
         // Arrange
@@ -885,7 +887,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertEquals('completed', $project->setup_status);
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_pending_task_successfully(): void
     {
         // Arrange
@@ -906,7 +908,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertNotNull($task->message);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_skip_non_pending_tasks(): void
     {
         // Arrange
@@ -926,7 +928,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertEquals(ProjectSetupTask::STATUS_COMPLETED, $task->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_checks_completion_after_skipping_task(): void
     {
         // Arrange
@@ -947,7 +949,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertNotNull($project->setup_completed_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_missing_task_when_skipping(): void
     {
         // Arrange
@@ -959,7 +961,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertTrue(true);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_missing_task_when_retrying(): void
     {
         // Arrange
@@ -971,7 +973,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertTrue(true);
     }
 
-    /** @test */
+    #[Test]
     public function it_dispatches_events_throughout_execution(): void
     {
         // Arrange
@@ -998,7 +1000,7 @@ class ProjectSetupServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exception_in_task_execution(): void
     {
         // Arrange
@@ -1026,7 +1028,7 @@ class ProjectSetupServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_continues_executing_remaining_tasks_after_failure(): void
     {
         // Arrange
@@ -1063,7 +1065,7 @@ class ProjectSetupServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_marks_task_as_running_before_execution(): void
     {
         // Arrange
@@ -1083,7 +1085,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertNotNull($task->started_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_only_executes_pending_tasks(): void
     {
         // Arrange
@@ -1121,7 +1123,7 @@ class ProjectSetupServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_unknown_task_type(): void
     {
         // Arrange
@@ -1142,7 +1144,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertEquals('Unknown task type', $task->message);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_empty_progress_for_project_without_tasks(): void
     {
         // Arrange
@@ -1158,7 +1160,7 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertEmpty($progress['tasks']);
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_result_data_in_progress_summary(): void
     {
         // Arrange

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Server;
 use App\Services\ServerConnectivityService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -29,7 +31,7 @@ class ServerConnectivityServiceTest extends TestCase
     // SSH CONNECTION TESTING
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_tests_successful_ssh_connection(): void
     {
         // Arrange
@@ -55,7 +57,7 @@ class ServerConnectivityServiceTest extends TestCase
         $this->assertGreaterThanOrEqual(0, $result['latency_ms']);
     }
 
-    /** @test */
+    #[Test]
     public function it_tests_failed_ssh_connection(): void
     {
         // Arrange
@@ -80,7 +82,7 @@ class ServerConnectivityServiceTest extends TestCase
         $this->assertArrayHasKey('error', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_tests_connection_with_timeout(): void
     {
         // Arrange
@@ -104,7 +106,7 @@ class ServerConnectivityServiceTest extends TestCase
         $this->assertStringContainsString('timed out', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_connection_test_exception(): void
     {
         // Arrange
@@ -131,7 +133,7 @@ class ServerConnectivityServiceTest extends TestCase
         $this->assertArrayHasKey('error', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_measures_connection_latency(): void
     {
         // Arrange
@@ -158,7 +160,7 @@ class ServerConnectivityServiceTest extends TestCase
     // PASSWORD AUTHENTICATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_connects_with_password_authentication(): void
     {
         // Arrange
@@ -180,7 +182,7 @@ class ServerConnectivityServiceTest extends TestCase
         $this->assertTrue($result['reachable']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_invalid_password(): void
     {
         // Arrange
@@ -209,7 +211,7 @@ class ServerConnectivityServiceTest extends TestCase
     // SSH KEY AUTHENTICATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_connects_with_ssh_key_authentication(): void
     {
         // Arrange
@@ -233,7 +235,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertTrue($result['reachable']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_invalid_ssh_key(): void
     {
         // Arrange
@@ -262,7 +264,7 @@ MIIEpAIBAAKCAQEA...
     // LOCALHOST DETECTION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_detects_localhost_by_127_0_0_1(): void
     {
         // Arrange
@@ -279,7 +281,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertEquals(0, $result['latency_ms']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_localhost_by_ipv6(): void
     {
         // Arrange
@@ -296,7 +298,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertEquals(0, $result['latency_ms']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_localhost_by_name(): void
     {
         // Arrange
@@ -316,7 +318,7 @@ MIIEpAIBAAKCAQEA...
     // SERVER STATUS UPDATE TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_updates_server_status_to_online_on_successful_ping(): void
     {
         // Arrange
@@ -338,7 +340,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertNotNull($server->fresh()->last_ping_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_server_status_to_offline_on_failed_ping(): void
     {
         // Arrange
@@ -364,7 +366,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertNotNull($server->fresh()->last_ping_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_last_ping_timestamp(): void
     {
         // Arrange
@@ -384,7 +386,7 @@ MIIEpAIBAAKCAQEA...
     // SERVER INFO RETRIEVAL TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_retrieves_server_info_successfully(): void
     {
         // Arrange
@@ -411,7 +413,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertEquals(8, $result['cpu_cores']);
     }
 
-    /** @test */
+    #[Test]
     public function it_retrieves_local_server_info(): void
     {
         // Arrange
@@ -435,7 +437,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertArrayHasKey('memory_gb', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_extracts_numeric_values_from_output(): void
     {
         // Arrange
@@ -459,7 +461,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertEquals(1000, $result['disk_gb']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_server_info_retrieval_failure(): void
     {
         // Arrange
@@ -488,7 +490,7 @@ MIIEpAIBAAKCAQEA...
     // SERVER REBOOT TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_reboots_server_as_root_user(): void
     {
         // Arrange
@@ -510,7 +512,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertEquals('maintenance', $server->fresh()->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_reboots_server_with_password_sudo(): void
     {
         // Arrange
@@ -532,7 +534,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertEquals('maintenance', $server->fresh()->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_reboots_server_with_passwordless_sudo(): void
     {
         // Arrange
@@ -553,7 +555,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_reboot_failure(): void
     {
         // Arrange
@@ -583,7 +585,7 @@ MIIEpAIBAAKCAQEA...
     // SERVICE RESTART TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_restarts_nginx_service(): void
     {
         // Arrange
@@ -603,7 +605,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertStringContainsString('restarted successfully', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_restarts_docker_service(): void
     {
         // Arrange
@@ -622,7 +624,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_restarts_php_fpm_service(): void
     {
         // Arrange
@@ -641,7 +643,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_disallowed_service(): void
     {
         // Arrange
@@ -655,7 +657,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertStringContainsString('Service not allowed', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_restarts_service_with_sudo_password(): void
     {
         // Arrange
@@ -675,7 +677,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_service_restart_failure(): void
     {
         // Arrange
@@ -703,7 +705,7 @@ MIIEpAIBAAKCAQEA...
     // UPTIME RETRIEVAL TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_retrieves_server_uptime(): void
     {
         // Arrange
@@ -723,7 +725,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertEquals('up 5 days, 3 hours, 22 minutes', $result['uptime']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_uptime_retrieval_failure(): void
     {
         // Arrange
@@ -751,7 +753,7 @@ MIIEpAIBAAKCAQEA...
     // DISK USAGE TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_retrieves_disk_usage(): void
     {
         // Arrange
@@ -771,7 +773,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertEquals('75%', $result['usage']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_disk_usage_retrieval_failure(): void
     {
         // Arrange
@@ -799,7 +801,7 @@ MIIEpAIBAAKCAQEA...
     // MEMORY USAGE TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_retrieves_memory_usage(): void
     {
         // Arrange
@@ -819,7 +821,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertEquals('68.5%', $result['usage']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_memory_usage_retrieval_failure(): void
     {
         // Arrange
@@ -847,7 +849,7 @@ MIIEpAIBAAKCAQEA...
     // SYSTEM CACHE CLEARING TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_clears_system_cache_as_root(): void
     {
         // Arrange
@@ -867,7 +869,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertStringContainsString('cleared successfully', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_clears_system_cache_with_sudo(): void
     {
         // Arrange
@@ -887,7 +889,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_cache_clearing_failure(): void
     {
         // Arrange
@@ -915,7 +917,7 @@ MIIEpAIBAAKCAQEA...
     // PORT CONNECTIVITY TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_uses_custom_ssh_port(): void
     {
         // Arrange
@@ -935,7 +937,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertTrue($result['reachable']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_connection_to_non_standard_port(): void
     {
         // Arrange
@@ -963,7 +965,7 @@ MIIEpAIBAAKCAQEA...
     // NUMERIC VALUE EXTRACTION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_extracts_integer_from_mixed_output(): void
     {
         // Arrange
@@ -999,7 +1001,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertIsInt($result['cpu_cores']);
     }
 
-    /** @test */
+    #[Test]
     public function it_extracts_float_from_mixed_output(): void
     {
         // Arrange
@@ -1035,7 +1037,7 @@ MIIEpAIBAAKCAQEA...
         $this->assertIsFloat($result['memory_gb']);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_empty_array_for_non_numeric_output(): void
     {
         // Arrange

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Models;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Deployment;
 use App\Models\Tenant;
 use App\Models\TenantDeployment;
@@ -15,7 +17,7 @@ class TenantModelsTest extends TestCase
     // TenantDeployment Model Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function tenant_deployment_can_be_created_with_factory(): void
     {
         $tenantDeployment = TenantDeployment::factory()->create();
@@ -26,7 +28,7 @@ class TenantModelsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function tenant_deployment_belongs_to_tenant(): void
     {
         $tenant = Tenant::factory()->create();
@@ -36,7 +38,7 @@ class TenantModelsTest extends TestCase
         $this->assertEquals($tenant->id, $tenantDeployment->tenant->id);
     }
 
-    /** @test */
+    #[Test]
     public function tenant_deployment_belongs_to_deployment(): void
     {
         $deployment = Deployment::factory()->create();
@@ -46,7 +48,7 @@ class TenantModelsTest extends TestCase
         $this->assertEquals($deployment->id, $tenantDeployment->deployment->id);
     }
 
-    /** @test */
+    #[Test]
     public function tenant_deployment_has_fillable_attributes(): void
     {
         $tenantDeployment = TenantDeployment::factory()->create([
@@ -58,7 +60,7 @@ class TenantModelsTest extends TestCase
         $this->assertEquals('Deployment completed successfully', $tenantDeployment->output);
     }
 
-    /** @test */
+    #[Test]
     public function tenant_deployment_can_store_deployment_output(): void
     {
         $output = "Starting deployment...\nRunning migrations...\nDeployment complete.";
@@ -67,7 +69,7 @@ class TenantModelsTest extends TestCase
         $this->assertEquals($output, $tenantDeployment->output);
     }
 
-    /** @test */
+    #[Test]
     public function tenant_deployment_can_have_different_statuses(): void
     {
         $pending = TenantDeployment::factory()->create(['status' => 'pending']);
@@ -83,7 +85,7 @@ class TenantModelsTest extends TestCase
         $this->assertEquals('failed', $failed->status);
     }
 
-    /** @test */
+    #[Test]
     public function tenant_deployment_has_timestamps(): void
     {
         $tenantDeployment = TenantDeployment::factory()->create();
@@ -94,7 +96,7 @@ class TenantModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $tenantDeployment->updated_at);
     }
 
-    /** @test */
+    #[Test]
     public function multiple_tenant_deployments_can_belong_to_same_deployment(): void
     {
         $deployment = Deployment::factory()->create();
@@ -116,7 +118,7 @@ class TenantModelsTest extends TestCase
         $this->assertNotEquals($tenantDeployment1->tenant_id, $tenantDeployment2->tenant_id);
     }
 
-    /** @test */
+    #[Test]
     public function tenant_deployment_can_be_updated(): void
     {
         $tenantDeployment = TenantDeployment::factory()->create([

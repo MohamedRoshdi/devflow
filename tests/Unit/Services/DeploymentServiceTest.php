@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Jobs\DeployProjectJob;
 use App\Models\Deployment;
 use App\Models\Project;
@@ -11,7 +13,7 @@ use App\Models\User;
 use App\Services\DeploymentService;
 use App\Services\DockerService;
 use App\Services\GitService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
@@ -20,7 +22,7 @@ use Tests\TestCase;
 
 class DeploymentServiceTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     private DeploymentService $service;
     private DockerService $dockerService;
@@ -49,7 +51,7 @@ class DeploymentServiceTest extends TestCase
     // DEPLOYMENT CREATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_creates_deployment_successfully(): void
     {
         Queue::fake();
@@ -78,7 +80,7 @@ class DeploymentServiceTest extends TestCase
         Queue::assertPushed(DeployProjectJob::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_concurrent_deployments(): void
     {
         $user = User::factory()->create();
@@ -96,7 +98,7 @@ class DeploymentServiceTest extends TestCase
         $this->service->deploy($project, $user);
     }
 
-    /** @test */
+    #[Test]
     public function it_captures_environment_snapshot(): void
     {
         Queue::fake();
@@ -121,7 +123,7 @@ class DeploymentServiceTest extends TestCase
         $this->assertEquals('8.4', $deployment->environment_snapshot['php_version']);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_provided_commit_hash(): void
     {
         Queue::fake();
@@ -138,7 +140,7 @@ class DeploymentServiceTest extends TestCase
     // ACTIVE DEPLOYMENT CHECKS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_detects_active_deployment(): void
     {
         $project = Project::factory()->create();
@@ -151,7 +153,7 @@ class DeploymentServiceTest extends TestCase
         $this->assertTrue($this->service->hasActiveDeployment($project));
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_no_active_deployment(): void
     {
         $project = Project::factory()->create();
@@ -164,7 +166,7 @@ class DeploymentServiceTest extends TestCase
         $this->assertFalse($this->service->hasActiveDeployment($project));
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_active_deployment(): void
     {
         $project = Project::factory()->create();
@@ -182,7 +184,7 @@ class DeploymentServiceTest extends TestCase
         $this->assertEquals($activeDeployment->id, $result->id);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_null_when_no_active_deployment(): void
     {
         $project = Project::factory()->create();
@@ -196,7 +198,7 @@ class DeploymentServiceTest extends TestCase
     // DEPLOYMENT LOGS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_retrieves_deployment_logs(): void
     {
         $deployment = Deployment::factory()->create([
@@ -215,7 +217,7 @@ class DeploymentServiceTest extends TestCase
         $this->assertEquals(300, $result['duration_seconds']);
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_error_logs_in_failed_deployment(): void
     {
         $deployment = Deployment::factory()->create([
@@ -236,7 +238,7 @@ class DeploymentServiceTest extends TestCase
     // DEPLOYMENT CANCELLATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_cancels_pending_deployment(): void
     {
         $deployment = Deployment::factory()->create([
@@ -251,7 +253,7 @@ class DeploymentServiceTest extends TestCase
         $this->assertNotNull($deployment->fresh()->completed_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_cannot_cancel_completed_deployment(): void
     {
         Log::shouldReceive('warning')->once();
@@ -270,7 +272,7 @@ class DeploymentServiceTest extends TestCase
     // ROLLBACK TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_creates_rollback_deployment(): void
     {
         Queue::fake();
@@ -295,7 +297,7 @@ class DeploymentServiceTest extends TestCase
         Queue::assertPushed(DeployProjectJob::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_rollback_to_failed_deployment(): void
     {
         $user = User::factory()->create();
@@ -311,7 +313,7 @@ class DeploymentServiceTest extends TestCase
         $this->service->rollback($project, $targetDeployment, $user);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_rollback_to_different_project(): void
     {
         $user = User::factory()->create();
@@ -328,7 +330,7 @@ class DeploymentServiceTest extends TestCase
         $this->service->rollback($project1, $targetDeployment, $user);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_rollback_during_active_deployment(): void
     {
         $user = User::factory()->create();
@@ -355,7 +357,7 @@ class DeploymentServiceTest extends TestCase
     // BATCH DEPLOYMENT TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_batch_deploys_multiple_projects(): void
     {
         Queue::fake();
@@ -374,7 +376,7 @@ class DeploymentServiceTest extends TestCase
         $this->assertCount(3, $result['deployments']);
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_projects_without_server(): void
     {
         Log::shouldReceive('warning')->once();
@@ -388,7 +390,7 @@ class DeploymentServiceTest extends TestCase
         $this->assertEquals(1, $result['failed']);
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_projects_with_active_deployments(): void
     {
         Log::shouldReceive('warning')->once();
@@ -411,7 +413,7 @@ class DeploymentServiceTest extends TestCase
     // DEPLOYMENT STATISTICS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_calculates_deployment_stats(): void
     {
         $project = Project::factory()->create();
@@ -436,7 +438,7 @@ class DeploymentServiceTest extends TestCase
         $this->assertEquals(120.0, $stats['avg_duration']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_no_deployments_in_stats(): void
     {
         $project = Project::factory()->create();
@@ -454,7 +456,7 @@ class DeploymentServiceTest extends TestCase
     // UPDATE CHECK TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_checks_for_available_updates(): void
     {
         $project = Project::factory()->create();
@@ -478,7 +480,7 @@ class DeploymentServiceTest extends TestCase
         $this->assertEquals('def456', $result['remote_commit']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_update_check_failure(): void
     {
         $project = Project::factory()->create();
@@ -501,7 +503,7 @@ class DeploymentServiceTest extends TestCase
     // VALIDATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_validates_deployment_prerequisites(): void
     {
         $project = Project::factory()->create([
@@ -521,7 +523,7 @@ class DeploymentServiceTest extends TestCase
         $this->assertEmpty($result['errors']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_missing_server(): void
     {
         $project = Project::factory()->create([
@@ -536,7 +538,7 @@ class DeploymentServiceTest extends TestCase
         $this->assertContains('does not have a server assigned', $result['errors']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_offline_server(): void
     {
         $project = Project::factory()->create([
@@ -559,7 +561,7 @@ class DeploymentServiceTest extends TestCase
     // RECENT DEPLOYMENTS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_retrieves_recent_deployments(): void
     {
         $project = Project::factory()->create();
@@ -577,7 +579,7 @@ class DeploymentServiceTest extends TestCase
     // MANUAL STATUS CHANGE TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_marks_deployment_as_success(): void
     {
         Log::shouldReceive('info')->once();
@@ -595,7 +597,7 @@ class DeploymentServiceTest extends TestCase
         $this->assertNotNull($deployment->fresh()->duration_seconds);
     }
 
-    /** @test */
+    #[Test]
     public function it_marks_deployment_as_failed(): void
     {
         Log::shouldReceive('info')->once();

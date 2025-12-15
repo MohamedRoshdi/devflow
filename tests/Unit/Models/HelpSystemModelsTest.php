@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Models;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\HelpContent;
 use App\Models\HelpContentRelated;
 use App\Models\HelpContentTranslation;
@@ -18,7 +20,7 @@ class HelpSystemModelsTest extends TestCase
     // HelpContent Model Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function help_content_can_be_created_with_factory(): void
     {
         $helpContent = HelpContent::factory()->create();
@@ -29,7 +31,7 @@ class HelpSystemModelsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function help_content_casts_details_as_array(): void
     {
         $details = ['step1' => 'First step', 'step2' => 'Second step'];
@@ -39,7 +41,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertEquals($details, $helpContent->details);
     }
 
-    /** @test */
+    #[Test]
     public function help_content_casts_is_active_as_boolean(): void
     {
         $helpContent = HelpContent::factory()->create(['is_active' => true]);
@@ -48,7 +50,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertIsBool($helpContent->is_active);
     }
 
-    /** @test */
+    #[Test]
     public function help_content_has_many_translations(): void
     {
         $helpContent = HelpContent::factory()->create();
@@ -58,7 +60,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertInstanceOf(HelpContentTranslation::class, $helpContent->translations->first());
     }
 
-    /** @test */
+    #[Test]
     public function help_content_has_many_interactions(): void
     {
         $helpContent = HelpContent::factory()->create();
@@ -68,7 +70,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertInstanceOf(HelpInteraction::class, $helpContent->interactions->first());
     }
 
-    /** @test */
+    #[Test]
     public function help_content_has_many_related_contents(): void
     {
         $helpContent = HelpContent::factory()->create();
@@ -78,7 +80,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertInstanceOf(HelpContentRelated::class, $helpContent->relatedContents->first());
     }
 
-    /** @test */
+    #[Test]
     public function help_content_scope_active_filters_active_content(): void
     {
         HelpContent::factory()->create(['is_active' => true]);
@@ -89,7 +91,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertCount(2, $active);
     }
 
-    /** @test */
+    #[Test]
     public function help_content_scope_by_category_filters_by_category(): void
     {
         HelpContent::factory()->count(2)->create(['category' => 'deployment']);
@@ -100,7 +102,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertCount(3, $deploymentHelp);
     }
 
-    /** @test */
+    #[Test]
     public function help_content_scope_search_finds_in_title(): void
     {
         HelpContent::factory()->create(['title' => 'How to deploy a project']);
@@ -111,7 +113,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertCount(2, $results);
     }
 
-    /** @test */
+    #[Test]
     public function help_content_scope_search_finds_in_brief(): void
     {
         HelpContent::factory()->create(['brief' => 'Learn about database migrations']);
@@ -122,7 +124,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertCount(2, $results);
     }
 
-    /** @test */
+    #[Test]
     public function help_content_scope_search_finds_in_key(): void
     {
         HelpContent::factory()->create(['key' => 'deployment.setup']);
@@ -133,7 +135,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertCount(2, $results);
     }
 
-    /** @test */
+    #[Test]
     public function help_content_get_localized_brief_returns_english_by_default(): void
     {
         $helpContent = HelpContent::factory()->create(['brief' => 'English brief']);
@@ -142,7 +144,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertEquals('English brief', $helpContent->getLocalizedBrief());
     }
 
-    /** @test */
+    #[Test]
     public function help_content_get_localized_brief_returns_translation_when_available(): void
     {
         $helpContent = HelpContent::factory()->create(['brief' => 'English brief']);
@@ -156,7 +158,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertEquals('French brief', $helpContent->getLocalizedBrief());
     }
 
-    /** @test */
+    #[Test]
     public function help_content_get_localized_brief_falls_back_to_english(): void
     {
         $helpContent = HelpContent::factory()->create(['brief' => 'English brief']);
@@ -165,7 +167,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertEquals('English brief', $helpContent->getLocalizedBrief());
     }
 
-    /** @test */
+    #[Test]
     public function help_content_get_localized_details_returns_english_by_default(): void
     {
         $details = ['step1' => 'First', 'step2' => 'Second'];
@@ -175,7 +177,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertEquals($details, $helpContent->getLocalizedDetails());
     }
 
-    /** @test */
+    #[Test]
     public function help_content_get_localized_details_returns_translation_when_available(): void
     {
         $englishDetails = ['step1' => 'First', 'step2' => 'Second'];
@@ -192,7 +194,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertEquals($frenchDetails, $helpContent->getLocalizedDetails());
     }
 
-    /** @test */
+    #[Test]
     public function help_content_increment_view_count_increases_count(): void
     {
         $helpContent = HelpContent::factory()->create(['view_count' => 0]);
@@ -203,7 +205,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertEquals(1, $helpContent->view_count);
     }
 
-    /** @test */
+    #[Test]
     public function help_content_mark_helpful_increases_helpful_count(): void
     {
         $helpContent = HelpContent::factory()->create(['helpful_count' => 0]);
@@ -214,7 +216,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertEquals(1, $helpContent->helpful_count);
     }
 
-    /** @test */
+    #[Test]
     public function help_content_mark_not_helpful_increases_not_helpful_count(): void
     {
         $helpContent = HelpContent::factory()->create(['not_helpful_count' => 0]);
@@ -225,7 +227,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertEquals(1, $helpContent->not_helpful_count);
     }
 
-    /** @test */
+    #[Test]
     public function help_content_get_helpfulness_percentage_calculates_correctly(): void
     {
         $helpContent = HelpContent::factory()->create([
@@ -236,7 +238,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertEquals(80.0, $helpContent->getHelpfulnessPercentage());
     }
 
-    /** @test */
+    #[Test]
     public function help_content_get_helpfulness_percentage_returns_zero_when_no_votes(): void
     {
         $helpContent = HelpContent::factory()->create([
@@ -251,7 +253,7 @@ class HelpSystemModelsTest extends TestCase
     // HelpContentTranslation Model Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function help_content_translation_can_be_created_with_factory(): void
     {
         $translation = HelpContentTranslation::factory()->create();
@@ -262,7 +264,7 @@ class HelpSystemModelsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function help_content_translation_belongs_to_help_content(): void
     {
         $helpContent = HelpContent::factory()->create();
@@ -272,7 +274,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertEquals($helpContent->id, $translation->helpContent->id);
     }
 
-    /** @test */
+    #[Test]
     public function help_content_translation_casts_details_as_array(): void
     {
         $details = ['step1' => 'Premier pas', 'step2' => 'Deuxième pas'];
@@ -286,7 +288,7 @@ class HelpSystemModelsTest extends TestCase
     // HelpContentRelated Model Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function help_content_related_can_be_created_with_factory(): void
     {
         $related = HelpContentRelated::factory()->create();
@@ -297,7 +299,7 @@ class HelpSystemModelsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function help_content_related_belongs_to_help_content(): void
     {
         $helpContent = HelpContent::factory()->create();
@@ -307,7 +309,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertEquals($helpContent->id, $related->helpContent->id);
     }
 
-    /** @test */
+    #[Test]
     public function help_content_related_belongs_to_related_help_content(): void
     {
         $relatedHelpContent = HelpContent::factory()->create();
@@ -317,7 +319,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertEquals($relatedHelpContent->id, $related->relatedHelpContent->id);
     }
 
-    /** @test */
+    #[Test]
     public function help_content_related_casts_relevance_score_as_float(): void
     {
         $related = HelpContentRelated::factory()->create(['relevance_score' => 0.85]);
@@ -330,7 +332,7 @@ class HelpSystemModelsTest extends TestCase
     // HelpInteraction Model Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function help_interaction_can_be_created_with_factory(): void
     {
         $interaction = HelpInteraction::factory()->create();
@@ -341,7 +343,7 @@ class HelpSystemModelsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function help_interaction_belongs_to_user(): void
     {
         $user = User::factory()->create();
@@ -351,7 +353,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertEquals($user->id, $interaction->user->id);
     }
 
-    /** @test */
+    #[Test]
     public function help_interaction_belongs_to_help_content(): void
     {
         $helpContent = HelpContent::factory()->create();
@@ -361,7 +363,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertEquals($helpContent->id, $interaction->helpContent->id);
     }
 
-    /** @test */
+    #[Test]
     public function help_interaction_stores_interaction_type(): void
     {
         // Use 'view' which is the valid enum value (not 'viewed')
@@ -370,7 +372,7 @@ class HelpSystemModelsTest extends TestCase
         $this->assertEquals('view', $interaction->interaction_type);
     }
 
-    /** @test */
+    #[Test]
     public function help_interaction_stores_ip_address_and_user_agent(): void
     {
         $interaction = HelpInteraction::factory()->create([

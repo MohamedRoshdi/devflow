@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Livewire\Servers;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\Servers\ServerList;
 use App\Models\Server;
 use App\Models\ServerTag;
 use App\Models\User;
 use App\Services\BulkServerActionService;
 use App\Services\ServerConnectivityService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Process;
 use Livewire\Livewire;
@@ -19,7 +21,7 @@ use Tests\TestCase;
 
 class ServerListTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     protected User $user;
 
@@ -38,7 +40,7 @@ class ServerListTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
+    #[Test]
     public function component_renders_successfully(): void
     {
         Livewire::actingAs($this->user)
@@ -47,7 +49,7 @@ class ServerListTest extends TestCase
             ->assertViewIs('livewire.servers.server-list');
     }
 
-    /** @test */
+    #[Test]
     public function component_displays_servers(): void
     {
         $server = Server::factory()->create([
@@ -60,7 +62,7 @@ class ServerListTest extends TestCase
             ->assertSee('Production Server');
     }
 
-    /** @test */
+    #[Test]
     public function component_displays_multiple_servers(): void
     {
         Server::factory()->create(['user_id' => $this->user->id, 'name' => 'Server Alpha']);
@@ -74,7 +76,7 @@ class ServerListTest extends TestCase
             ->assertSee('Server Gamma');
     }
 
-    /** @test */
+    #[Test]
     public function search_filters_servers_by_name(): void
     {
         Server::factory()->create(['name' => 'Production Server']);
@@ -87,7 +89,7 @@ class ServerListTest extends TestCase
             ->assertDontSee('Development Server');
     }
 
-    /** @test */
+    #[Test]
     public function search_filters_servers_by_hostname(): void
     {
         Server::factory()->create(['name' => 'Server 1', 'hostname' => 'prod.example.com']);
@@ -100,7 +102,7 @@ class ServerListTest extends TestCase
             ->assertDontSee('Server 2');
     }
 
-    /** @test */
+    #[Test]
     public function search_filters_servers_by_ip_address(): void
     {
         Server::factory()->create(['name' => 'Server 1', 'ip_address' => '192.168.1.100']);
@@ -113,7 +115,7 @@ class ServerListTest extends TestCase
             ->assertDontSee('Server 2');
     }
 
-    /** @test */
+    #[Test]
     public function status_filter_works_correctly(): void
     {
         Server::factory()->create(['status' => 'online', 'name' => 'Online Server']);
@@ -128,7 +130,7 @@ class ServerListTest extends TestCase
             ->assertDontSee('Maintenance Server');
     }
 
-    /** @test */
+    #[Test]
     public function tag_filter_works_correctly(): void
     {
         $tag = ServerTag::factory()->create(['name' => 'Production']);
@@ -144,7 +146,7 @@ class ServerListTest extends TestCase
             ->assertDontSee('Untagged Server');
     }
 
-    /** @test */
+    #[Test]
     public function multiple_tag_filters_work_correctly(): void
     {
         $tag1 = ServerTag::factory()->create(['name' => 'Production']);
@@ -165,7 +167,7 @@ class ServerListTest extends TestCase
             ->assertDontSee('Server 3');
     }
 
-    /** @test */
+    #[Test]
     public function toggle_tag_filter_adds_and_removes_tags(): void
     {
         $tag = ServerTag::factory()->create();
@@ -178,7 +180,7 @@ class ServerListTest extends TestCase
             ->assertSet('tagFilter', []);
     }
 
-    /** @test */
+    #[Test]
     public function changing_filters_resets_pagination(): void
     {
         Server::factory()->count(20)->create();
@@ -190,7 +192,7 @@ class ServerListTest extends TestCase
         $component->assertSet('paginators.page', 1);
     }
 
-    /** @test */
+    #[Test]
     public function ping_server_updates_status_and_timestamp(): void
     {
         $server = Server::factory()->create([
@@ -217,7 +219,7 @@ class ServerListTest extends TestCase
         $this->assertNotNull($server->last_ping_at);
     }
 
-    /** @test */
+    #[Test]
     public function ping_server_handles_offline_status(): void
     {
         $server = Server::factory()->create([
@@ -241,7 +243,7 @@ class ServerListTest extends TestCase
         $this->assertEquals('offline', $server->status);
     }
 
-    /** @test */
+    #[Test]
     public function ping_all_servers_updates_all_server_statuses(): void
     {
         Server::factory()->count(3)->create();
@@ -260,7 +262,7 @@ class ServerListTest extends TestCase
             ->assertSessionHas('message');
     }
 
-    /** @test */
+    #[Test]
     public function delete_server_removes_from_database(): void
     {
         $server = Server::factory()->create(['user_id' => $this->user->id]);
@@ -273,7 +275,7 @@ class ServerListTest extends TestCase
         $this->assertDatabaseMissing('servers', ['id' => $server->id]);
     }
 
-    /** @test */
+    #[Test]
     public function delete_non_existent_server_handles_gracefully(): void
     {
         Livewire::actingAs($this->user)
@@ -282,7 +284,7 @@ class ServerListTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function reboot_server_calls_connectivity_service(): void
     {
         $server = Server::factory()->create(['user_id' => $this->user->id]);
@@ -301,7 +303,7 @@ class ServerListTest extends TestCase
             ->assertSessionHas('message', 'Server rebooted successfully');
     }
 
-    /** @test */
+    #[Test]
     public function toggle_server_selection_adds_and_removes_server(): void
     {
         $server = Server::factory()->create();
@@ -314,7 +316,7 @@ class ServerListTest extends TestCase
             ->assertSet('selectedServers', []);
     }
 
-    /** @test */
+    #[Test]
     public function toggle_select_all_selects_all_servers_on_page(): void
     {
         $servers = Server::factory()->count(3)->create();
@@ -327,7 +329,7 @@ class ServerListTest extends TestCase
             ->assertSet('selectAll', false);
     }
 
-    /** @test */
+    #[Test]
     public function clear_selection_resets_all_selections(): void
     {
         $server = Server::factory()->create();
@@ -342,7 +344,7 @@ class ServerListTest extends TestCase
             ->assertSet('showResultsModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function bulk_ping_requires_selected_servers(): void
     {
         Livewire::actingAs($this->user)
@@ -351,7 +353,7 @@ class ServerListTest extends TestCase
             ->assertSessionHas('error', 'No servers selected');
     }
 
-    /** @test */
+    #[Test]
     public function bulk_ping_executes_on_selected_servers(): void
     {
         $servers = Server::factory()->count(2)->create();
@@ -375,7 +377,7 @@ class ServerListTest extends TestCase
             ->assertSessionHas('message');
     }
 
-    /** @test */
+    #[Test]
     public function bulk_reboot_requires_selected_servers(): void
     {
         Livewire::actingAs($this->user)
@@ -384,7 +386,7 @@ class ServerListTest extends TestCase
             ->assertSessionHas('error', 'No servers selected');
     }
 
-    /** @test */
+    #[Test]
     public function bulk_reboot_executes_on_selected_servers(): void
     {
         $servers = Server::factory()->count(2)->create();
@@ -406,7 +408,7 @@ class ServerListTest extends TestCase
             ->assertSet('showResultsModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function bulk_install_docker_requires_selected_servers(): void
     {
         Livewire::actingAs($this->user)
@@ -415,7 +417,7 @@ class ServerListTest extends TestCase
             ->assertSessionHas('error', 'No servers selected');
     }
 
-    /** @test */
+    #[Test]
     public function bulk_install_docker_executes_on_selected_servers(): void
     {
         $servers = Server::factory()->count(2)->create();
@@ -437,7 +439,7 @@ class ServerListTest extends TestCase
             ->assertSet('showResultsModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function bulk_restart_service_requires_selected_servers(): void
     {
         Livewire::actingAs($this->user)
@@ -446,7 +448,7 @@ class ServerListTest extends TestCase
             ->assertSessionHas('error', 'No servers selected');
     }
 
-    /** @test */
+    #[Test]
     public function bulk_restart_service_executes_on_selected_servers(): void
     {
         $servers = Server::factory()->count(2)->create();
@@ -469,7 +471,7 @@ class ServerListTest extends TestCase
             ->assertSet('showResultsModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function close_results_modal_hides_modal(): void
     {
         Livewire::actingAs($this->user)
@@ -479,7 +481,7 @@ class ServerListTest extends TestCase
             ->assertSet('showResultsModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function refresh_servers_event_clears_cache_and_resets_page(): void
     {
         Livewire::actingAs($this->user)
@@ -488,7 +490,7 @@ class ServerListTest extends TestCase
             ->assertSet('paginators.page', 1);
     }
 
-    /** @test */
+    #[Test]
     public function add_current_server_creates_server_with_current_ip(): void
     {
         $connectivityService = Mockery::mock(ServerConnectivityService::class);
@@ -515,7 +517,7 @@ class ServerListTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function add_current_server_prevents_duplicates(): void
     {
         $ip = '192.168.1.100';
@@ -527,7 +529,7 @@ class ServerListTest extends TestCase
             ->assertSessionHas('error', 'This server is already added!');
     }
 
-    /** @test */
+    #[Test]
     public function pagination_displays_correct_number_of_servers(): void
     {
         Server::factory()->count(15)->create();
@@ -539,7 +541,7 @@ class ServerListTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function component_eager_loads_relationships(): void
     {
         $server = Server::factory()->create(['user_id' => $this->user->id]);
@@ -554,7 +556,7 @@ class ServerListTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function component_caches_tags_list(): void
     {
         ServerTag::factory()->count(3)->create();
@@ -568,7 +570,7 @@ class ServerListTest extends TestCase
         $this->assertTrue(Cache::has('server_tags_list'));
     }
 
-    /** @test */
+    #[Test]
     public function servers_are_ordered_by_latest_first(): void
     {
         $oldServer = Server::factory()->create([
@@ -588,7 +590,7 @@ class ServerListTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function unauthenticated_user_is_redirected(): void
     {
         Livewire::test(ServerList::class)

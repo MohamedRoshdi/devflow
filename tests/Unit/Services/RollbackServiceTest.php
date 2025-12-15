@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Events\DeploymentStatusUpdated;
 use App\Models\Deployment;
 use App\Models\Project;
@@ -42,7 +44,7 @@ class RollbackServiceTest extends TestCase
         Log::spy();
     }
 
-    /** @test */
+    #[Test]
     public function it_successfully_rolls_back_to_previous_deployment(): void
     {
         // Arrange
@@ -81,7 +83,7 @@ class RollbackServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_rollback_deployment_record(): void
     {
         // Arrange
@@ -113,7 +115,7 @@ class RollbackServiceTest extends TestCase
         $this->assertStringContainsString('Rollback to:', $rollbackDeployment->commit_message);
     }
 
-    /** @test */
+    #[Test]
     public function it_broadcasts_rollback_start_event(): void
     {
         // Arrange
@@ -140,7 +142,7 @@ class RollbackServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_broadcasts_rollback_success_event(): void
     {
         // Arrange
@@ -167,7 +169,7 @@ class RollbackServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_backs_up_current_state_before_rollback(): void
     {
         // Arrange
@@ -197,7 +199,7 @@ class RollbackServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_checks_out_target_commit(): void
     {
         // Arrange
@@ -225,7 +227,7 @@ class RollbackServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_restores_environment_variables(): void
     {
         // Arrange
@@ -257,7 +259,7 @@ class RollbackServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_rebuilds_docker_containers_after_checkout(): void
     {
         // Arrange
@@ -283,7 +285,7 @@ class RollbackServiceTest extends TestCase
         // Assert - PHPUnit mock expectation is verified automatically
     }
 
-    /** @test */
+    #[Test]
     public function it_performs_health_check_after_rollback(): void
     {
         // Arrange
@@ -310,7 +312,7 @@ class RollbackServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_rollback_failure_gracefully(): void
     {
         // Arrange
@@ -335,7 +337,7 @@ class RollbackServiceTest extends TestCase
         $this->assertStringContainsString('Failed to checkout', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_broadcasts_failure_event_on_rollback_error(): void
     {
         // Arrange
@@ -361,7 +363,7 @@ class RollbackServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_rollback_failure(): void
     {
         // Arrange
@@ -385,7 +387,7 @@ class RollbackServiceTest extends TestCase
         $this->assertArrayHasKey('error', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_deployment_status_on_failure(): void
     {
         // Arrange
@@ -412,7 +414,7 @@ class RollbackServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_available_rollback_points(): void
     {
         // Arrange
@@ -446,7 +448,7 @@ class RollbackServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_limits_rollback_points(): void
     {
         // Arrange
@@ -464,7 +466,7 @@ class RollbackServiceTest extends TestCase
         $this->assertCount(5, $rollbackPoints);
     }
 
-    /** @test */
+    #[Test]
     public function it_excludes_rollback_deployments_from_rollback_points(): void
     {
         // Arrange
@@ -494,7 +496,7 @@ class RollbackServiceTest extends TestCase
         $this->assertCount(4, $rollbackPoints); // 3 regular + 1 target (excludes rollback)
     }
 
-    /** @test */
+    #[Test]
     public function it_cannot_rollback_to_current_deployment(): void
     {
         // Arrange
@@ -519,7 +521,7 @@ class RollbackServiceTest extends TestCase
         $this->assertFalse($currentDeploymentPoint['can_rollback']);
     }
 
-    /** @test */
+    #[Test]
     public function it_cannot_rollback_to_deployment_without_commit_hash(): void
     {
         // Arrange
@@ -546,7 +548,7 @@ class RollbackServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_missing_project_in_deployment(): void
     {
         // Arrange
@@ -564,7 +566,7 @@ class RollbackServiceTest extends TestCase
         $this->assertStringContainsString('Project not found', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_docker_rebuild_failure(): void
     {
         // Arrange
@@ -592,7 +594,7 @@ class RollbackServiceTest extends TestCase
         $this->assertStringContainsString('Failed to rebuild Docker containers', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_health_check_failure(): void
     {
         // Arrange
@@ -623,7 +625,7 @@ class RollbackServiceTest extends TestCase
         $this->assertStringContainsString('Health check failed', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_rollback_duration(): void
     {
         // Arrange
@@ -649,7 +651,7 @@ class RollbackServiceTest extends TestCase
         $this->assertGreaterThanOrEqual(0, $rollbackDeployment->duration_seconds);
     }
 
-    /** @test */
+    #[Test]
     public function it_fetches_latest_git_changes_before_checkout(): void
     {
         // Arrange
@@ -675,7 +677,7 @@ class RollbackServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_ensures_correct_branch_before_reset(): void
     {
         // Arrange
@@ -702,7 +704,7 @@ class RollbackServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_configures_safe_directory_for_git(): void
     {
         // Arrange
@@ -728,7 +730,7 @@ class RollbackServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_git_stash_before_rollback(): void
     {
         // Arrange
@@ -755,7 +757,7 @@ class RollbackServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_escapes_special_characters_in_environment_values(): void
     {
         // Arrange
@@ -783,7 +785,7 @@ class RollbackServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_missing_environment_snapshot(): void
     {
         // Arrange
@@ -808,7 +810,7 @@ class RollbackServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_ssh_for_remote_server_commands(): void
     {
         // Arrange
@@ -841,7 +843,7 @@ class RollbackServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_ssh_key_authentication_when_available(): void
     {
         // Arrange
@@ -871,7 +873,7 @@ class RollbackServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_orders_rollback_points_by_most_recent(): void
     {
         // Arrange
@@ -896,7 +898,7 @@ class RollbackServiceTest extends TestCase
         $this->assertEquals($oldDeployment->id, $rollbackPoints[1]['id']);
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_deployment_metadata_in_rollback_points(): void
     {
         // Arrange
@@ -920,7 +922,7 @@ class RollbackServiceTest extends TestCase
         $this->assertEquals('John Doe', $rollbackPoints[0]['deployed_by']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_deployment_without_user(): void
     {
         // Arrange

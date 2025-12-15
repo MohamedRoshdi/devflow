@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Livewire;
 
+
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\Servers\ServerBackupManager;
 use App\Models\Server;
 use App\Models\ServerBackup;
 use App\Models\ServerBackupSchedule;
 use App\Models\User;
 use App\Services\ServerBackupService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Illuminate\Support\Facades\Log;
 use Livewire\Livewire;
 use Mockery;
@@ -33,12 +36,11 @@ use Tests\TestCase;
  * - Upload to S3 functionality
  * - Schedule toggling (activate/deactivate)
  * - Modal state management
- *
- * @covers \App\Livewire\Servers\ServerBackupManager
- */
+ * */
+#[CoversClass(\App\Livewire\Servers\ServerBackupManager::class)]
 class ServerBackupManagerTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     protected User $user;
 
@@ -59,7 +61,7 @@ class ServerBackupManagerTest extends TestCase
     // Component Rendering Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function component_renders_successfully_with_server(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -68,7 +70,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertSet('server.id', $this->server->id);
     }
 
-    /** @test */
+    #[Test]
     public function component_initializes_with_default_values(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -83,7 +85,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertSet('scheduleStorageDriver', 'local');
     }
 
-    /** @test */
+    #[Test]
     public function component_displays_backups_for_server(): void
     {
         $backups = ServerBackup::factory()->count(3)->create([
@@ -96,7 +98,7 @@ class ServerBackupManagerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function component_displays_schedules_for_server(): void
     {
         $schedules = ServerBackupSchedule::factory()->count(2)->create([
@@ -109,7 +111,7 @@ class ServerBackupManagerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function component_paginates_backups(): void
     {
         ServerBackup::factory()->count(15)->create([
@@ -126,7 +128,7 @@ class ServerBackupManagerTest extends TestCase
     // Backup Creation Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function can_create_full_backup(): void
     {
         $mockService = Mockery::mock(ServerBackupService::class);
@@ -147,7 +149,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertSet('storageDriver', 'local');
     }
 
-    /** @test */
+    #[Test]
     public function can_create_incremental_backup(): void
     {
         $mockService = Mockery::mock(ServerBackupService::class);
@@ -165,7 +167,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertSessionHas('message');
     }
 
-    /** @test */
+    #[Test]
     public function can_create_snapshot_backup(): void
     {
         $mockService = Mockery::mock(ServerBackupService::class);
@@ -183,7 +185,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertSessionHas('message');
     }
 
-    /** @test */
+    #[Test]
     public function create_backup_validates_backup_type(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -192,7 +194,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertHasErrors(['backupType' => 'in']);
     }
 
-    /** @test */
+    #[Test]
     public function create_backup_validates_storage_driver(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -201,7 +203,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertHasErrors(['storageDriver' => 'in']);
     }
 
-    /** @test */
+    #[Test]
     public function create_backup_handles_service_exceptions(): void
     {
         Log::shouldReceive('error')->once();
@@ -219,7 +221,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertSessionHas('error');
     }
 
-    /** @test */
+    #[Test]
     public function create_backup_resets_form_on_success(): void
     {
         $mockService = Mockery::mock(ServerBackupService::class);
@@ -241,7 +243,7 @@ class ServerBackupManagerTest extends TestCase
     // Backup Deletion Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function can_delete_backup(): void
     {
         $backup = ServerBackup::factory()->create([
@@ -260,7 +262,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertSessionHas('message', 'Backup deleted successfully.');
     }
 
-    /** @test */
+    #[Test]
     public function cannot_delete_backup_from_different_server(): void
     {
         $otherServer = Server::factory()->create();
@@ -275,7 +277,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertSessionHas('error');
     }
 
-    /** @test */
+    #[Test]
     public function delete_backup_handles_not_found(): void
     {
         Log::shouldReceive('error')->once();
@@ -285,7 +287,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertSessionHas('error');
     }
 
-    /** @test */
+    #[Test]
     public function delete_backup_handles_service_exceptions(): void
     {
         $backup = ServerBackup::factory()->create([
@@ -310,7 +312,7 @@ class ServerBackupManagerTest extends TestCase
     // Backup Restoration Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function can_restore_completed_backup(): void
     {
         $backup = ServerBackup::factory()->completed()->create([
@@ -329,7 +331,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertSessionHas('info', 'Backup restoration started. This may take several minutes and will require a server reboot.');
     }
 
-    /** @test */
+    #[Test]
     public function cannot_restore_incomplete_backup(): void
     {
         $backup = ServerBackup::factory()->running()->create([
@@ -343,7 +345,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertSessionHas('error');
     }
 
-    /** @test */
+    #[Test]
     public function cannot_restore_backup_from_different_server(): void
     {
         $otherServer = Server::factory()->create();
@@ -358,7 +360,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertSessionHas('error');
     }
 
-    /** @test */
+    #[Test]
     public function restore_backup_handles_service_exceptions(): void
     {
         $backup = ServerBackup::factory()->completed()->create([
@@ -383,7 +385,7 @@ class ServerBackupManagerTest extends TestCase
     // Schedule Creation Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function can_create_daily_schedule(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -407,7 +409,7 @@ class ServerBackupManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function can_create_weekly_schedule(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -429,7 +431,7 @@ class ServerBackupManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function can_create_monthly_schedule(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -451,7 +453,7 @@ class ServerBackupManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function create_schedule_validates_required_fields(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -468,7 +470,7 @@ class ServerBackupManagerTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function create_schedule_validates_type(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -477,7 +479,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertHasErrors(['scheduleType' => 'in']);
     }
 
-    /** @test */
+    #[Test]
     public function create_schedule_validates_frequency(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -486,7 +488,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertHasErrors(['scheduleFrequency' => 'in']);
     }
 
-    /** @test */
+    #[Test]
     public function create_schedule_validates_time_format(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -500,7 +502,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertHasErrors(['scheduleTime' => 'regex']);
     }
 
-    /** @test */
+    #[Test]
     public function create_schedule_validates_retention_days(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -514,7 +516,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertHasErrors(['retentionDays' => 'max']);
     }
 
-    /** @test */
+    #[Test]
     public function create_schedule_requires_day_of_week_for_weekly(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -525,7 +527,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertHasErrors(['scheduleDayOfWeek' => 'required']);
     }
 
-    /** @test */
+    #[Test]
     public function create_schedule_validates_day_of_week_range(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -541,7 +543,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertHasErrors(['scheduleDayOfWeek' => 'min']);
     }
 
-    /** @test */
+    #[Test]
     public function create_schedule_requires_day_of_month_for_monthly(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -552,7 +554,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertHasErrors(['scheduleDayOfMonth' => 'required']);
     }
 
-    /** @test */
+    #[Test]
     public function create_schedule_validates_day_of_month_range(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -568,7 +570,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertHasErrors(['scheduleDayOfMonth' => 'max']);
     }
 
-    /** @test */
+    #[Test]
     public function create_schedule_validates_storage_driver(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -577,7 +579,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertHasErrors(['scheduleStorageDriver' => 'in']);
     }
 
-    /** @test */
+    #[Test]
     public function create_schedule_resets_form_on_success(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -595,7 +597,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertSet('scheduleStorageDriver', 'local');
     }
 
-    /** @test */
+    #[Test]
     public function create_schedule_handles_exceptions(): void
     {
         Log::shouldReceive('error')->once();
@@ -614,7 +616,7 @@ class ServerBackupManagerTest extends TestCase
     // Schedule Management Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function can_toggle_schedule_activation(): void
     {
         $schedule = ServerBackupSchedule::factory()->active()->create([
@@ -631,7 +633,7 @@ class ServerBackupManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function can_toggle_schedule_deactivation(): void
     {
         $schedule = ServerBackupSchedule::factory()->inactive()->create([
@@ -648,7 +650,7 @@ class ServerBackupManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_toggle_schedule_from_different_server(): void
     {
         $otherServer = Server::factory()->create();
@@ -661,7 +663,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertSessionHas('error');
     }
 
-    /** @test */
+    #[Test]
     public function toggle_schedule_handles_not_found(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -669,7 +671,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertSessionHas('error');
     }
 
-    /** @test */
+    #[Test]
     public function can_delete_schedule(): void
     {
         $schedule = ServerBackupSchedule::factory()->create([
@@ -685,7 +687,7 @@ class ServerBackupManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_delete_schedule_from_different_server(): void
     {
         $otherServer = Server::factory()->create();
@@ -702,7 +704,7 @@ class ServerBackupManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function delete_schedule_handles_not_found(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -714,7 +716,7 @@ class ServerBackupManagerTest extends TestCase
     // Upload to S3 Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function can_upload_backup_to_s3(): void
     {
         $backup = ServerBackup::factory()->completed()->local()->create([
@@ -733,7 +735,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertSessionHas('message', 'Backup uploaded to S3 successfully.');
     }
 
-    /** @test */
+    #[Test]
     public function cannot_upload_backup_from_different_server_to_s3(): void
     {
         $otherServer = Server::factory()->create();
@@ -746,7 +748,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertSessionHas('error');
     }
 
-    /** @test */
+    #[Test]
     public function upload_to_s3_handles_service_exceptions(): void
     {
         $backup = ServerBackup::factory()->completed()->create([
@@ -765,7 +767,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertSessionHas('error');
     }
 
-    /** @test */
+    #[Test]
     public function upload_to_s3_handles_not_found(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -777,7 +779,7 @@ class ServerBackupManagerTest extends TestCase
     // Modal State Management Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function can_toggle_create_modal(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -788,7 +790,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertSet('showCreateModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function can_toggle_schedule_modal(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -803,7 +805,7 @@ class ServerBackupManagerTest extends TestCase
     // Event Handling Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function component_listens_to_backup_created_event(): void
     {
         $component = Livewire::test(ServerBackupManager::class, ['server' => $this->server]);
@@ -818,7 +820,7 @@ class ServerBackupManagerTest extends TestCase
     // Storage Provider Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function can_select_local_storage_driver(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -826,7 +828,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertSet('storageDriver', 'local');
     }
 
-    /** @test */
+    #[Test]
     public function can_select_s3_storage_driver(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -834,7 +836,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertSet('storageDriver', 's3');
     }
 
-    /** @test */
+    #[Test]
     public function can_select_local_schedule_storage_driver(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -842,7 +844,7 @@ class ServerBackupManagerTest extends TestCase
             ->assertSet('scheduleStorageDriver', 'local');
     }
 
-    /** @test */
+    #[Test]
     public function can_select_s3_schedule_storage_driver(): void
     {
         Livewire::test(ServerBackupManager::class, ['server' => $this->server])
@@ -854,7 +856,7 @@ class ServerBackupManagerTest extends TestCase
     // Edge Cases and Error Handling Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function component_only_shows_backups_for_current_server(): void
     {
         $otherServer = Server::factory()->create();
@@ -873,7 +875,7 @@ class ServerBackupManagerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function component_only_shows_schedules_for_current_server(): void
     {
         $otherServer = Server::factory()->create();
@@ -892,7 +894,7 @@ class ServerBackupManagerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function backups_are_ordered_by_created_at_desc(): void
     {
         $backup1 = ServerBackup::factory()->create([
@@ -920,7 +922,7 @@ class ServerBackupManagerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function schedules_are_ordered_by_created_at_desc(): void
     {
         $schedule1 = ServerBackupSchedule::factory()->create([

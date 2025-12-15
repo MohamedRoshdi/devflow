@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Tenant;
 use App\Services\DockerService;
 use App\Services\MultiTenantService;
@@ -42,7 +44,7 @@ class MultiTenantServiceTest extends TestCase
     // DEPLOY TO TENANTS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_when_project_is_not_multi_tenant(): void
     {
         // Arrange
@@ -56,7 +58,7 @@ class MultiTenantServiceTest extends TestCase
         $this->service->deployToTenants($project);
     }
 
-    /** @test */
+    #[Test]
     public function it_deploys_to_all_tenants_successfully(): void
     {
         // Arrange
@@ -88,7 +90,7 @@ class MultiTenantServiceTest extends TestCase
         $this->assertEquals('success', $result['deployments'][0]['status']);
     }
 
-    /** @test */
+    #[Test]
     public function it_deploys_to_specific_tenants_only(): void
     {
         // Arrange
@@ -119,7 +121,7 @@ class MultiTenantServiceTest extends TestCase
         $this->assertCount(2, $result['deployments']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_deployment_failures_gracefully(): void
     {
         // Arrange
@@ -158,7 +160,7 @@ class MultiTenantServiceTest extends TestCase
         $this->assertEquals('failed', $result['deployments'][1]['status']);
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_migrations_when_option_is_false(): void
     {
         // Arrange
@@ -187,7 +189,7 @@ class MultiTenantServiceTest extends TestCase
         Process::assertRanTimes('*migrate*', 0);
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_cache_clearing_when_option_is_false(): void
     {
         // Arrange
@@ -214,7 +216,7 @@ class MultiTenantServiceTest extends TestCase
         Process::assertRanTimes('*cache:clear*', 0);
     }
 
-    /** @test */
+    #[Test]
     public function it_fails_deployment_when_health_check_fails(): void
     {
         // Arrange
@@ -251,7 +253,7 @@ class MultiTenantServiceTest extends TestCase
     // GET ALL TENANTS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_gets_all_tenants_for_project(): void
     {
         // Arrange
@@ -276,7 +278,7 @@ class MultiTenantServiceTest extends TestCase
         $this->assertEquals('Tenant 1', $tenants[0]['name']);
     }
 
-    /** @test */
+    #[Test]
     public function it_caches_tenant_list(): void
     {
         // Arrange
@@ -299,7 +301,7 @@ class MultiTenantServiceTest extends TestCase
         Process::assertRanTimes('*tenant:list*', 1); // Should only run once due to cache
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_empty_array_when_tenant_list_fails(): void
     {
         // Arrange
@@ -320,7 +322,7 @@ class MultiTenantServiceTest extends TestCase
         $this->assertEmpty($tenants);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_invalid_json_from_tenant_list(): void
     {
         // Arrange
@@ -343,7 +345,7 @@ class MultiTenantServiceTest extends TestCase
     // GET TENANT STATISTICS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_calculates_tenant_statistics(): void
     {
         // Arrange
@@ -372,7 +374,7 @@ class MultiTenantServiceTest extends TestCase
         $this->assertEquals(3840, $stats['database_size']); // 512 + 1024 + 256 + 2048
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_zero_stats_for_no_tenants(): void
     {
         // Arrange
@@ -396,7 +398,7 @@ class MultiTenantServiceTest extends TestCase
         $this->assertEquals(0, $stats['database_size']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_missing_status_in_tenant_data(): void
     {
         // Arrange
@@ -423,7 +425,7 @@ class MultiTenantServiceTest extends TestCase
     // CREATE TENANT TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_creates_new_tenant_successfully(): void
     {
         // Arrange
@@ -452,7 +454,7 @@ class MultiTenantServiceTest extends TestCase
         $this->assertEquals('Tenant created successfully', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_initializes_tenant_with_seed_data(): void
     {
         // Arrange
@@ -482,7 +484,7 @@ class MultiTenantServiceTest extends TestCase
         Process::assertRan('*tenant:seed*');
     }
 
-    /** @test */
+    #[Test]
     public function it_configures_tenant_domain_during_creation(): void
     {
         // Arrange
@@ -512,7 +514,7 @@ class MultiTenantServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_tenant_creation_failure(): void
     {
         // Arrange
@@ -541,7 +543,7 @@ class MultiTenantServiceTest extends TestCase
         $this->assertStringContainsString('Failed to create tenant', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_missing_tenant_id_in_creation_output(): void
     {
         // Arrange
@@ -571,7 +573,7 @@ class MultiTenantServiceTest extends TestCase
     // UPDATE TENANT STATUS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_updates_tenant_status_to_active(): void
     {
         // Arrange
@@ -591,7 +593,7 @@ class MultiTenantServiceTest extends TestCase
         $this->assertEquals('Tenant status updated to active', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_tenant_status_to_suspended(): void
     {
         // Arrange
@@ -611,7 +613,7 @@ class MultiTenantServiceTest extends TestCase
         $this->assertEquals('Tenant status updated to suspended', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_tenant_status_update_failure(): void
     {
         // Arrange
@@ -633,7 +635,7 @@ class MultiTenantServiceTest extends TestCase
         $this->assertArrayHasKey('error', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_tenant_status_update_exception(): void
     {
         // Arrange
@@ -655,7 +657,7 @@ class MultiTenantServiceTest extends TestCase
     // TENANT CACHE CLEARING TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_clears_tenant_cache_including_redis(): void
     {
         // Arrange
@@ -686,7 +688,7 @@ class MultiTenantServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_redis_cache_clear_when_redis_db_not_configured(): void
     {
         // Arrange
@@ -718,7 +720,7 @@ class MultiTenantServiceTest extends TestCase
     // TENANT SERVICE RESTART TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_restarts_dedicated_queue_for_tenant(): void
     {
         // Arrange
@@ -751,7 +753,7 @@ class MultiTenantServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_restarts_tenant_specific_services(): void
     {
         // Arrange
@@ -788,7 +790,7 @@ class MultiTenantServiceTest extends TestCase
     // TENANT HEALTH CHECK TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_checks_tenant_health_with_http_endpoint(): void
     {
         // Arrange
@@ -818,7 +820,7 @@ class MultiTenantServiceTest extends TestCase
         $this->assertEquals(1, $result['successful']);
     }
 
-    /** @test */
+    #[Test]
     public function it_records_deployment_duration(): void
     {
         // Arrange
@@ -847,7 +849,7 @@ class MultiTenantServiceTest extends TestCase
         $this->assertGreaterThan(0, $result['deployments'][0]['duration']);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_correct_project_path(): void
     {
         // Arrange
@@ -892,7 +894,7 @@ class MultiTenantServiceTest extends TestCase
     // TENANT MIGRATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_runs_migrations_with_timeout(): void
     {
         // Arrange
@@ -922,7 +924,7 @@ class MultiTenantServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_migration_timeout_errors(): void
     {
         // Arrange
@@ -956,7 +958,7 @@ class MultiTenantServiceTest extends TestCase
     // TENANT INITIALIZATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_skips_seed_data_when_not_requested(): void
     {
         // Arrange
@@ -985,7 +987,7 @@ class MultiTenantServiceTest extends TestCase
         Process::assertRanTimes('*tenant:seed*', 0);
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_domain_configuration_when_not_provided(): void
     {
         // Arrange
@@ -1016,7 +1018,7 @@ class MultiTenantServiceTest extends TestCase
     // TENANT DATABASE CHECK TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_checks_tenant_database_connection_successfully(): void
     {
         // Arrange
@@ -1045,7 +1047,7 @@ class MultiTenantServiceTest extends TestCase
         $this->assertEquals(1, $result['successful']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_database_check_timeout(): void
     {
         // Arrange
@@ -1076,7 +1078,7 @@ class MultiTenantServiceTest extends TestCase
     // TENANT CONTEXT SWITCHING TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_switches_tenant_context_before_deployment(): void
     {
         // Arrange
@@ -1108,7 +1110,7 @@ class MultiTenantServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_tenant_context_switch_failure(): void
     {
         // Arrange
@@ -1141,7 +1143,7 @@ class MultiTenantServiceTest extends TestCase
     // MULTIPLE TENANT DEPLOYMENT TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_handles_mixed_success_and_failure_deployments(): void
     {
         // Arrange
@@ -1181,7 +1183,7 @@ class MultiTenantServiceTest extends TestCase
         $this->assertEquals(1, $result['failed']);
     }
 
-    /** @test */
+    #[Test]
     public function it_continues_deployment_after_single_tenant_failure(): void
     {
         // Arrange
@@ -1220,7 +1222,7 @@ class MultiTenantServiceTest extends TestCase
     // EDGE CASE TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_handles_empty_tenant_name_in_data(): void
     {
         // Arrange
@@ -1248,7 +1250,7 @@ class MultiTenantServiceTest extends TestCase
         $this->assertEquals(1, $result['successful']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_special_characters_in_tenant_names(): void
     {
         // Arrange
@@ -1275,7 +1277,7 @@ class MultiTenantServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_very_long_tenant_names(): void
     {
         // Arrange
@@ -1302,7 +1304,7 @@ class MultiTenantServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_null_storage_and_database_sizes_in_stats(): void
     {
         // Arrange

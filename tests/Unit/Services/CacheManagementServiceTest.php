@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Project;
 use App\Services\CacheManagementService;
 use App\Services\DockerService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Mockery;
@@ -15,7 +17,7 @@ use Tests\TestCase;
 
 class CacheManagementServiceTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     private CacheManagementService $service;
     private DockerService $dockerService;
@@ -38,7 +40,7 @@ class CacheManagementServiceTest extends TestCase
     // CACHE CLEARING TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_clears_all_caches_successfully(): void
     {
         Artisan::shouldReceive('call')
@@ -70,7 +72,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertTrue($result['event']);
     }
 
-    /** @test */
+    #[Test]
     public function it_clears_app_cache(): void
     {
         Artisan::shouldReceive('call')
@@ -82,7 +84,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_clears_config_cache(): void
     {
         Artisan::shouldReceive('call')
@@ -94,7 +96,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_clears_route_cache(): void
     {
         Artisan::shouldReceive('call')
@@ -106,7 +108,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_clears_view_cache(): void
     {
         Artisan::shouldReceive('call')
@@ -118,7 +120,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_clears_event_cache(): void
     {
         Artisan::shouldReceive('call')
@@ -134,7 +136,7 @@ class CacheManagementServiceTest extends TestCase
     // PROJECT CACHE TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_clears_project_cache(): void
     {
         $project = Project::factory()->create(['slug' => 'test-project']);
@@ -149,7 +151,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_project_cache_clear_failure(): void
     {
         \Log::shouldReceive('error')->once();
@@ -168,7 +170,7 @@ class CacheManagementServiceTest extends TestCase
     // CACHE REMEMBER TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_remembers_cached_value(): void
     {
         Cache::shouldReceive('remember')
@@ -181,7 +183,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertEquals('cached_value', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_remembers_with_custom_ttl(): void
     {
         Cache::shouldReceive('remember')
@@ -194,7 +196,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertEquals('cached_value', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_remembers_short_ttl(): void
     {
         Cache::shouldReceive('remember')
@@ -207,7 +209,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertEquals('cached_value', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_remembers_long_ttl(): void
     {
         Cache::shouldReceive('remember')
@@ -224,7 +226,7 @@ class CacheManagementServiceTest extends TestCase
     // CACHE INVALIDATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_forgets_cache_key(): void
     {
         Cache::shouldReceive('forget')
@@ -237,7 +239,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_forgets_multiple_keys(): void
     {
         Cache::shouldReceive('forget')
@@ -249,7 +251,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertEquals(3, $count);
     }
 
-    /** @test */
+    #[Test]
     public function it_invalidates_dashboard_cache(): void
     {
         Cache::shouldReceive('forget')
@@ -261,7 +263,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertEquals(7, $count);
     }
 
-    /** @test */
+    #[Test]
     public function it_invalidates_project_cache(): void
     {
         Cache::shouldReceive('forget')
@@ -273,7 +275,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_invalidates_server_cache(): void
     {
         Cache::shouldReceive('forget')
@@ -289,7 +291,7 @@ class CacheManagementServiceTest extends TestCase
     // CACHE WITH TAGS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_remembers_with_tags_on_redis(): void
     {
         config(['cache.default' => 'redis']);
@@ -309,7 +311,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertEquals('cached_value', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_falls_back_without_tags_on_file_cache(): void
     {
         config(['cache.default' => 'file']);
@@ -324,7 +326,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertEquals('cached_value', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_flushes_tags_on_redis(): void
     {
         config(['cache.default' => 'redis']);
@@ -342,7 +344,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_cannot_flush_tags_on_file_cache(): void
     {
         \Log::shouldReceive('warning')->once();
@@ -358,7 +360,7 @@ class CacheManagementServiceTest extends TestCase
     // CACHE OPERATIONS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_checks_cache_key_exists(): void
     {
         Cache::shouldReceive('has')
@@ -371,7 +373,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_cache_value(): void
     {
         Cache::shouldReceive('get')
@@ -384,7 +386,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertEquals('cached_value', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_puts_cache_value(): void
     {
         Cache::shouldReceive('put')
@@ -397,7 +399,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_stores_cache_forever(): void
     {
         Cache::shouldReceive('forever')
@@ -410,7 +412,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_increments_cache_value(): void
     {
         Cache::shouldReceive('increment')
@@ -423,7 +425,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertEquals(2, $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_decrements_cache_value(): void
     {
         Cache::shouldReceive('decrement')
@@ -436,7 +438,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertEquals(4, $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_adds_cache_value_if_not_exists(): void
     {
         Cache::shouldReceive('add')
@@ -449,7 +451,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_pulls_cache_value(): void
     {
         Cache::shouldReceive('pull')
@@ -466,7 +468,7 @@ class CacheManagementServiceTest extends TestCase
     // CACHE STATS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_gets_cache_stats_for_redis(): void
     {
         config(['cache.default' => 'redis']);
@@ -479,7 +481,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertTrue($stats['supported_features']['prefix_invalidation']);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_cache_stats_for_file(): void
     {
         config(['cache.default' => 'file']);
@@ -492,7 +494,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertFalse($stats['supported_features']['prefix_invalidation']);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_ttl_constants(): void
     {
         $constants = $this->service->getTTLConstants();
@@ -506,7 +508,7 @@ class CacheManagementServiceTest extends TestCase
     // CACHE WARMUP TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_warms_up_cache(): void
     {
         Cache::shouldReceive('remember')
@@ -519,7 +521,7 @@ class CacheManagementServiceTest extends TestCase
         $this->assertEquals(2, $result['cached_items']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_warmup_failure(): void
     {
         \Log::shouldReceive('error')->once();
@@ -537,7 +539,7 @@ class CacheManagementServiceTest extends TestCase
     // COMPLETE CACHE CLEAR TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_clears_all_caches_complete(): void
     {
         Artisan::shouldReceive('call')

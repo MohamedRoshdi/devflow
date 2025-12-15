@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Livewire;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\Logs\LogSourceManager;
 use App\Livewire\Logs\LogViewer;
 use App\Livewire\Logs\NotificationLogs;
@@ -59,7 +61,7 @@ class SettingsUtilityComponentsTest extends TestCase
 
     // ==================== API Token Manager Tests ====================
 
-    /** @test */
+    #[Test]
     public function api_token_manager_renders(): void
     {
         $user = User::factory()->create();
@@ -71,7 +73,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('showTokenModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function api_token_manager_loads_tokens(): void
     {
         $user = User::factory()->create();
@@ -82,7 +84,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertCount('tokens', 3);
     }
 
-    /** @test */
+    #[Test]
     public function api_token_manager_opens_create_modal(): void
     {
         $user = User::factory()->create();
@@ -95,7 +97,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('newTokenAbilities', []);
     }
 
-    /** @test */
+    #[Test]
     public function api_token_manager_validates_token_creation(): void
     {
         $user = User::factory()->create();
@@ -108,7 +110,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertHasErrors(['newTokenName', 'newTokenAbilities']);
     }
 
-    /** @test */
+    #[Test]
     public function api_token_manager_creates_token(): void
     {
         $user = User::factory()->create();
@@ -130,7 +132,7 @@ class SettingsUtilityComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function api_token_manager_creates_token_with_expiration(): void
     {
         $user = User::factory()->create();
@@ -147,7 +149,7 @@ class SettingsUtilityComponentsTest extends TestCase
         $this->assertTrue($token->expires_at->greaterThan(now()));
     }
 
-    /** @test */
+    #[Test]
     public function api_token_manager_revokes_token(): void
     {
         $user = User::factory()->create();
@@ -161,7 +163,7 @@ class SettingsUtilityComponentsTest extends TestCase
         $this->assertDatabaseMissing('api_tokens', ['id' => $token->id]);
     }
 
-    /** @test */
+    #[Test]
     public function api_token_manager_regenerates_token(): void
     {
         $user = User::factory()->create();
@@ -181,7 +183,7 @@ class SettingsUtilityComponentsTest extends TestCase
 
     // ==================== SSH Key Manager Tests ====================
 
-    /** @test */
+    #[Test]
     public function ssh_key_manager_renders(): void
     {
         $user = User::factory()->create();
@@ -192,7 +194,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('showCreateModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function ssh_key_manager_loads_keys(): void
     {
         $user = User::factory()->create();
@@ -203,7 +205,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertCount('keys', 2);
     }
 
-    /** @test */
+    #[Test]
     public function ssh_key_manager_opens_create_modal(): void
     {
         $user = User::factory()->create();
@@ -216,7 +218,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('newKeyType', 'ed25519');
     }
 
-    /** @test */
+    #[Test]
     public function ssh_key_manager_validates_key_generation(): void
     {
         $user = User::factory()->create();
@@ -229,7 +231,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertHasErrors(['newKeyName', 'newKeyType']);
     }
 
-    /** @test */
+    #[Test]
     public function ssh_key_manager_generates_key(): void
     {
         $user = User::factory()->create();
@@ -257,7 +259,7 @@ class SettingsUtilityComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function ssh_key_manager_imports_key(): void
     {
         $user = User::factory()->create();
@@ -284,7 +286,7 @@ class SettingsUtilityComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function ssh_key_manager_deletes_key(): void
     {
         $user = User::factory()->create();
@@ -301,7 +303,7 @@ class SettingsUtilityComponentsTest extends TestCase
 
     // ==================== GitHub Settings Tests ====================
 
-    /** @test */
+    #[Test]
     public function github_settings_renders(): void
     {
         $user = User::factory()->create();
@@ -314,7 +316,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('visibilityFilter', 'all');
     }
 
-    /** @test */
+    #[Test]
     public function github_settings_shows_connection(): void
     {
         $user = User::factory()->create();
@@ -330,7 +332,7 @@ class SettingsUtilityComponentsTest extends TestCase
         $this->assertNotNull($component->connection);
     }
 
-    /** @test */
+    #[Test]
     public function github_settings_syncs_repositories(): void
     {
         $user = User::factory()->create();
@@ -352,7 +354,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertDispatched('notification');
     }
 
-    /** @test */
+    #[Test]
     public function github_settings_links_repository_to_project(): void
     {
         $user = User::factory()->create();
@@ -375,7 +377,7 @@ class SettingsUtilityComponentsTest extends TestCase
         $this->assertEquals($project->id, $repository->project_id);
     }
 
-    /** @test */
+    #[Test]
     public function github_settings_unlinks_repository(): void
     {
         $user = User::factory()->create();
@@ -398,7 +400,7 @@ class SettingsUtilityComponentsTest extends TestCase
 
     // ==================== Storage Settings Tests ====================
 
-    /** @test */
+    #[Test]
     public function storage_settings_renders(): void
     {
         $user = User::factory()->create();
@@ -410,7 +412,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('activeTab', 's3');
     }
 
-    /** @test */
+    #[Test]
     public function storage_settings_opens_create_modal(): void
     {
         $user = User::factory()->create();
@@ -423,7 +425,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('driver', 's3');
     }
 
-    /** @test */
+    #[Test]
     public function storage_settings_validates_configuration(): void
     {
         $user = User::factory()->create();
@@ -436,7 +438,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertHasErrors(['name', 'driver']);
     }
 
-    /** @test */
+    #[Test]
     public function storage_settings_creates_configuration(): void
     {
         $user = User::factory()->create();
@@ -460,7 +462,7 @@ class SettingsUtilityComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function storage_settings_generates_encryption_key(): void
     {
         $user = User::factory()->create();
@@ -474,7 +476,7 @@ class SettingsUtilityComponentsTest extends TestCase
         $this->assertNotEmpty($component->encryption_key);
     }
 
-    /** @test */
+    #[Test]
     public function storage_settings_sets_default_storage(): void
     {
         $user = User::factory()->create();
@@ -489,7 +491,7 @@ class SettingsUtilityComponentsTest extends TestCase
         $this->assertTrue($config->is_default);
     }
 
-    /** @test */
+    #[Test]
     public function storage_settings_deletes_configuration(): void
     {
         $user = User::factory()->create();
@@ -505,7 +507,7 @@ class SettingsUtilityComponentsTest extends TestCase
 
     // ==================== Queue Monitor Tests ====================
 
-    /** @test */
+    #[Test]
     public function queue_monitor_renders(): void
     {
         $user = User::factory()->create();
@@ -525,7 +527,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('showJobDetails', false);
     }
 
-    /** @test */
+    #[Test]
     public function queue_monitor_refreshes_stats(): void
     {
         $user = User::factory()->create();
@@ -545,7 +547,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertDispatched('notification');
     }
 
-    /** @test */
+    #[Test]
     public function queue_monitor_retries_job(): void
     {
         $user = User::factory()->create();
@@ -563,7 +565,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertDispatched('notification');
     }
 
-    /** @test */
+    #[Test]
     public function queue_monitor_retries_all_failed_jobs(): void
     {
         $user = User::factory()->create();
@@ -581,7 +583,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertDispatched('notification');
     }
 
-    /** @test */
+    #[Test]
     public function queue_monitor_deletes_job(): void
     {
         $user = User::factory()->create();
@@ -599,7 +601,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertDispatched('notification');
     }
 
-    /** @test */
+    #[Test]
     public function queue_monitor_clears_all_failed_jobs(): void
     {
         $user = User::factory()->create();
@@ -619,7 +621,7 @@ class SettingsUtilityComponentsTest extends TestCase
 
     // ==================== Health Check Manager Tests ====================
 
-    /** @test */
+    #[Test]
     public function health_check_manager_renders(): void
     {
         $user = User::factory()->create();
@@ -632,7 +634,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('showCreateModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function health_check_manager_opens_create_modal(): void
     {
         $user = User::factory()->create();
@@ -647,7 +649,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('is_active', true);
     }
 
-    /** @test */
+    #[Test]
     public function health_check_manager_validates_health_check(): void
     {
         $user = User::factory()->create();
@@ -663,7 +665,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertHasErrors(['target_url', 'expected_status']);
     }
 
-    /** @test */
+    #[Test]
     public function health_check_manager_creates_health_check(): void
     {
         $user = User::factory()->create();
@@ -690,7 +692,7 @@ class SettingsUtilityComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function health_check_manager_deletes_health_check(): void
     {
         $user = User::factory()->create();
@@ -706,7 +708,7 @@ class SettingsUtilityComponentsTest extends TestCase
         $this->assertDatabaseMissing('health_checks', ['id' => $healthCheck->id]);
     }
 
-    /** @test */
+    #[Test]
     public function health_check_manager_runs_check(): void
     {
         $user = User::factory()->create();
@@ -721,7 +723,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertDispatched('notification');
     }
 
-    /** @test */
+    #[Test]
     public function health_check_manager_creates_notification_channel(): void
     {
         $user = User::factory()->create();
@@ -744,7 +746,7 @@ class SettingsUtilityComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function health_check_manager_tests_notification_channel(): void
     {
         $user = User::factory()->create();
@@ -761,7 +763,7 @@ class SettingsUtilityComponentsTest extends TestCase
 
     // ==================== System Status Tests ====================
 
-    /** @test */
+    #[Test]
     public function system_status_renders(): void
     {
         $user = User::factory()->create();
@@ -778,7 +780,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('isLoading', false);
     }
 
-    /** @test */
+    #[Test]
     public function system_status_loads_reverb_status(): void
     {
         $user = User::factory()->create();
@@ -794,7 +796,7 @@ class SettingsUtilityComponentsTest extends TestCase
         $this->assertArrayHasKey('running', $component->reverbStatus);
     }
 
-    /** @test */
+    #[Test]
     public function system_status_loads_cache_stats(): void
     {
         $user = User::factory()->create();
@@ -810,7 +812,7 @@ class SettingsUtilityComponentsTest extends TestCase
         $this->assertArrayHasKey('driver', $component->cacheStats);
     }
 
-    /** @test */
+    #[Test]
     public function system_status_refreshes_stats(): void
     {
         $user = User::factory()->create();
@@ -828,7 +830,7 @@ class SettingsUtilityComponentsTest extends TestCase
 
     // ==================== Default Setup Preferences Tests ====================
 
-    /** @test */
+    #[Test]
     public function default_setup_preferences_renders(): void
     {
         $user = User::factory()->create();
@@ -840,7 +842,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('isSaving', false);
     }
 
-    /** @test */
+    #[Test]
     public function default_setup_preferences_loads_settings(): void
     {
         $user = User::factory()->create();
@@ -858,7 +860,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('theme', 'dark');
     }
 
-    /** @test */
+    #[Test]
     public function default_setup_preferences_saves_settings(): void
     {
         $user = User::factory()->create();
@@ -880,7 +882,7 @@ class SettingsUtilityComponentsTest extends TestCase
 
     // ==================== Team List Tests ====================
 
-    /** @test */
+    #[Test]
     public function team_list_renders(): void
     {
         $user = User::factory()->create();
@@ -892,7 +894,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('showCreateModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function team_list_opens_create_modal(): void
     {
         $user = User::factory()->create();
@@ -906,7 +908,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('description', '');
     }
 
-    /** @test */
+    #[Test]
     public function team_list_validates_team_creation(): void
     {
         $user = User::factory()->create();
@@ -919,7 +921,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertHasErrors(['name']);
     }
 
-    /** @test */
+    #[Test]
     public function team_list_creates_team(): void
     {
         $user = User::factory()->create();
@@ -934,7 +936,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->call('createTeam');
     }
 
-    /** @test */
+    #[Test]
     public function team_list_switches_team(): void
     {
         $user = User::factory()->create();
@@ -950,7 +952,7 @@ class SettingsUtilityComponentsTest extends TestCase
         $this->assertEquals($team->id, $user->current_team_id);
     }
 
-    /** @test */
+    #[Test]
     public function team_list_deletes_team(): void
     {
         $user = User::factory()->create();
@@ -968,7 +970,7 @@ class SettingsUtilityComponentsTest extends TestCase
 
     // ==================== Team Settings Tests ====================
 
-    /** @test */
+    #[Test]
     public function team_settings_renders(): void
     {
         $user = User::factory()->create();
@@ -981,7 +983,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('activeTab', 'general');
     }
 
-    /** @test */
+    #[Test]
     public function team_settings_updates_team(): void
     {
         $user = User::factory()->create();
@@ -999,7 +1001,7 @@ class SettingsUtilityComponentsTest extends TestCase
         $this->assertEquals('Updated Team Name', $team->name);
     }
 
-    /** @test */
+    #[Test]
     public function team_settings_invites_member(): void
     {
         $user = User::factory()->create();
@@ -1017,7 +1019,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertDispatched('notification');
     }
 
-    /** @test */
+    #[Test]
     public function team_settings_removes_member(): void
     {
         $user = User::factory()->create();
@@ -1035,7 +1037,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertDispatched('notification');
     }
 
-    /** @test */
+    #[Test]
     public function team_settings_updates_member_role(): void
     {
         $user = User::factory()->create();
@@ -1055,7 +1057,7 @@ class SettingsUtilityComponentsTest extends TestCase
 
     // ==================== Team Switcher Tests ====================
 
-    /** @test */
+    #[Test]
     public function team_switcher_renders(): void
     {
         $user = User::factory()->create();
@@ -1069,7 +1071,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('showDropdown', false);
     }
 
-    /** @test */
+    #[Test]
     public function team_switcher_toggles_dropdown(): void
     {
         $user = User::factory()->create();
@@ -1082,7 +1084,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('showDropdown', false);
     }
 
-    /** @test */
+    #[Test]
     public function team_switcher_switches_team(): void
     {
         $user = User::factory()->create();
@@ -1102,7 +1104,7 @@ class SettingsUtilityComponentsTest extends TestCase
 
     // ==================== User List Tests ====================
 
-    /** @test */
+    #[Test]
     public function user_list_renders(): void
     {
         $user = User::factory()->create();
@@ -1114,7 +1116,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('showCreateModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function user_list_searches_users(): void
     {
         $user = User::factory()->create();
@@ -1127,7 +1129,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSee('John Doe');
     }
 
-    /** @test */
+    #[Test]
     public function user_list_creates_user(): void
     {
         $admin = User::factory()->create();
@@ -1147,7 +1149,7 @@ class SettingsUtilityComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function user_list_updates_user(): void
     {
         $admin = User::factory()->create();
@@ -1163,7 +1165,7 @@ class SettingsUtilityComponentsTest extends TestCase
         $this->assertEquals('New Name', $user->name);
     }
 
-    /** @test */
+    #[Test]
     public function user_list_deletes_user(): void
     {
         $admin = User::factory()->create();
@@ -1176,7 +1178,7 @@ class SettingsUtilityComponentsTest extends TestCase
         $this->assertDatabaseMissing('users', ['id' => $user->id]);
     }
 
-    /** @test */
+    #[Test]
     public function user_list_cannot_delete_self(): void
     {
         $user = User::factory()->create();
@@ -1190,7 +1192,7 @@ class SettingsUtilityComponentsTest extends TestCase
 
     // ==================== Log Viewer Tests ====================
 
-    /** @test */
+    #[Test]
     public function log_viewer_renders(): void
     {
         $user = User::factory()->create();
@@ -1202,7 +1204,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('level', 'all');
     }
 
-    /** @test */
+    #[Test]
     public function log_viewer_filters_by_server(): void
     {
         $user = User::factory()->create();
@@ -1216,7 +1218,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertCount('logs', 1);
     }
 
-    /** @test */
+    #[Test]
     public function log_viewer_filters_by_level(): void
     {
         $user = User::factory()->create();
@@ -1229,7 +1231,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertCount('logs', 1);
     }
 
-    /** @test */
+    #[Test]
     public function log_viewer_searches_logs(): void
     {
         $user = User::factory()->create();
@@ -1242,7 +1244,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertCount('logs', 1);
     }
 
-    /** @test */
+    #[Test]
     public function log_viewer_clears_filters(): void
     {
         $user = User::factory()->create();
@@ -1261,7 +1263,7 @@ class SettingsUtilityComponentsTest extends TestCase
 
     // ==================== Notification Logs Tests ====================
 
-    /** @test */
+    #[Test]
     public function notification_logs_renders(): void
     {
         $user = User::factory()->create();
@@ -1272,7 +1274,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('showDetails', false);
     }
 
-    /** @test */
+    #[Test]
     public function notification_logs_filters_by_status(): void
     {
         $user = User::factory()->create();
@@ -1285,7 +1287,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSee('success');
     }
 
-    /** @test */
+    #[Test]
     public function notification_logs_views_details(): void
     {
         $user = User::factory()->create();
@@ -1299,7 +1301,7 @@ class SettingsUtilityComponentsTest extends TestCase
         $this->assertNotEmpty($component->selectedLog);
     }
 
-    /** @test */
+    #[Test]
     public function notification_logs_clears_filters(): void
     {
         $user = User::factory()->create();
@@ -1315,7 +1317,7 @@ class SettingsUtilityComponentsTest extends TestCase
 
     // ==================== Webhook Logs Tests ====================
 
-    /** @test */
+    #[Test]
     public function webhook_logs_renders(): void
     {
         $user = User::factory()->create();
@@ -1326,7 +1328,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('showDetails', false);
     }
 
-    /** @test */
+    #[Test]
     public function webhook_logs_filters_by_provider(): void
     {
         $user = User::factory()->create();
@@ -1339,7 +1341,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSee('github');
     }
 
-    /** @test */
+    #[Test]
     public function webhook_logs_views_details(): void
     {
         $user = User::factory()->create();
@@ -1353,7 +1355,7 @@ class SettingsUtilityComponentsTest extends TestCase
         $this->assertNotEmpty($component->selectedDelivery);
     }
 
-    /** @test */
+    #[Test]
     public function webhook_logs_clears_filters(): void
     {
         $user = User::factory()->create();
@@ -1369,7 +1371,7 @@ class SettingsUtilityComponentsTest extends TestCase
 
     // ==================== Log Source Manager Tests ====================
 
-    /** @test */
+    #[Test]
     public function log_source_manager_renders(): void
     {
         $user = User::factory()->create();
@@ -1382,7 +1384,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('showAddModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function log_source_manager_opens_add_modal(): void
     {
         $user = User::factory()->create();
@@ -1397,7 +1399,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertSet('type', 'file');
     }
 
-    /** @test */
+    #[Test]
     public function log_source_manager_validates_source(): void
     {
         $user = User::factory()->create();
@@ -1412,7 +1414,7 @@ class SettingsUtilityComponentsTest extends TestCase
             ->assertHasErrors(['name', 'path']);
     }
 
-    /** @test */
+    #[Test]
     public function log_source_manager_adds_source(): void
     {
         $user = User::factory()->create();
@@ -1435,7 +1437,7 @@ class SettingsUtilityComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function log_source_manager_toggles_source(): void
     {
         $user = User::factory()->create();
@@ -1455,7 +1457,7 @@ class SettingsUtilityComponentsTest extends TestCase
         $this->assertFalse($source->is_active);
     }
 
-    /** @test */
+    #[Test]
     public function log_source_manager_removes_source(): void
     {
         $user = User::factory()->create();

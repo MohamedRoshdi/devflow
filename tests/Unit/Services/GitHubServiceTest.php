@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\GitHubConnection;
 use App\Models\GitHubRepository;
 use App\Models\User;
@@ -31,7 +33,7 @@ class GitHubServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_correct_github_oauth_authorization_url(): void
     {
         $state = 'random-state-string';
@@ -45,7 +47,7 @@ class GitHubServiceTest extends TestCase
         $this->assertStringContainsString('state='.$state, $url);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_oauth_callback_successfully(): void
     {
         Http::fake([
@@ -62,7 +64,7 @@ class GitHubServiceTest extends TestCase
         $this->assertEquals('repo,user', $result['scope']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_oauth_callback_with_missing_token_type(): void
     {
         Http::fake([
@@ -79,7 +81,7 @@ class GitHubServiceTest extends TestCase
         $this->assertEquals('repo', $result['scope']);
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_when_oauth_callback_fails_to_obtain_access_token(): void
     {
         Http::fake([
@@ -95,7 +97,7 @@ class GitHubServiceTest extends TestCase
         $this->githubService->handleCallback('invalid-code');
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_when_oauth_request_fails(): void
     {
         Http::fake([
@@ -107,7 +109,7 @@ class GitHubServiceTest extends TestCase
         $this->githubService->handleCallback('auth-code-123');
     }
 
-    /** @test */
+    #[Test]
     public function it_refreshes_access_token_successfully(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -133,7 +135,7 @@ class GitHubServiceTest extends TestCase
         $this->assertTrue($connection->token_expires_at->isFuture());
     }
 
-    /** @test */
+    #[Test]
     public function it_refreshes_token_without_new_refresh_token(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -157,7 +159,7 @@ class GitHubServiceTest extends TestCase
         $this->assertEquals('refresh_token_123', $connection->refresh_token); // Unchanged
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_when_refreshing_token_without_refresh_token(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -171,7 +173,7 @@ class GitHubServiceTest extends TestCase
         $this->githubService->refreshToken($connection);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_authenticated_user_information(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -196,7 +198,7 @@ class GitHubServiceTest extends TestCase
         $this->assertEquals('test@example.com', $result['email']);
     }
 
-    /** @test */
+    #[Test]
     public function it_lists_repositories_for_authenticated_user(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -244,7 +246,7 @@ class GitHubServiceTest extends TestCase
         $this->assertTrue($result[1]['private']);
     }
 
-    /** @test */
+    #[Test]
     public function it_lists_repositories_with_pagination_parameters(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -266,7 +268,7 @@ class GitHubServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_detailed_repository_information(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -296,7 +298,7 @@ class GitHubServiceTest extends TestCase
         $this->assertEquals(42, $result['stargazers_count']);
     }
 
-    /** @test */
+    #[Test]
     public function it_lists_branches_for_a_repository(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -332,7 +334,7 @@ class GitHubServiceTest extends TestCase
         $this->assertTrue($result[0]['protected']);
     }
 
-    /** @test */
+    #[Test]
     public function it_lists_commits_for_a_repository_branch(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -388,7 +390,7 @@ class GitHubServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_syncs_repositories_to_database_successfully(): void
     {
         $user = User::factory()->create();
@@ -433,7 +435,7 @@ class GitHubServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_syncs_multiple_pages_of_repositories(): void
     {
         $user = User::factory()->create();
@@ -487,7 +489,7 @@ class GitHubServiceTest extends TestCase
         $this->assertCount(150, GitHubRepository::where('github_connection_id', $connection->id)->get());
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_existing_repositories_during_sync(): void
     {
         $user = User::factory()->create();
@@ -540,7 +542,7 @@ class GitHubServiceTest extends TestCase
         $this->assertEquals('Updated description', $repository->description);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_webhook_for_repository(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -587,7 +589,7 @@ class GitHubServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_deletes_webhook_from_repository(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -606,7 +608,7 @@ class GitHubServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_automatically_refreshes_expired_token_before_making_request(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -641,7 +643,7 @@ class GitHubServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_token_refresh_when_token_not_expired(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -665,7 +667,7 @@ class GitHubServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_token_refresh_when_no_refresh_token_available(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -689,7 +691,7 @@ class GitHubServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_correct_headers_in_api_requests(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -709,7 +711,7 @@ class GitHubServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_and_logs_error_when_api_request_fails(): void
     {
         Log::shouldReceive('error')
@@ -735,7 +737,7 @@ class GitHubServiceTest extends TestCase
         $this->githubService->getUser($connection);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_404_error_for_repository_not_found(): void
     {
         Log::shouldReceive('error')
@@ -758,7 +760,7 @@ class GitHubServiceTest extends TestCase
         $this->githubService->getRepository($connection, 'testuser/nonexistent');
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_rate_limiting_error(): void
     {
         Log::shouldReceive('error')
@@ -781,7 +783,7 @@ class GitHubServiceTest extends TestCase
         $this->githubService->getUser($connection);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_server_errors(): void
     {
         Log::shouldReceive('error')
@@ -804,7 +806,7 @@ class GitHubServiceTest extends TestCase
         $this->githubService->getUser($connection);
     }
 
-    /** @test */
+    #[Test]
     public function it_supports_get_http_method(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -822,7 +824,7 @@ class GitHubServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_supports_post_http_method(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -840,7 +842,7 @@ class GitHubServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_supports_delete_http_method(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -858,7 +860,7 @@ class GitHubServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_empty_array_for_successful_delete_response(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -875,7 +877,7 @@ class GitHubServiceTest extends TestCase
         $this->assertTrue(true); // Assert no exception was thrown
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_network_exceptions(): void
     {
         Log::shouldReceive('error')
@@ -899,7 +901,7 @@ class GitHubServiceTest extends TestCase
         $this->githubService->getUser($connection);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_repositories_with_null_optional_fields(): void
     {
         $user = User::factory()->create();
@@ -940,7 +942,7 @@ class GitHubServiceTest extends TestCase
         $this->assertEquals(0, $repository->forks_count); // Default value
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_empty_array_when_api_response_has_no_json_body(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -957,7 +959,7 @@ class GitHubServiceTest extends TestCase
         $this->assertTrue(true);
     }
 
-    /** @test */
+    #[Test]
     public function it_syncs_private_and_public_repositories(): void
     {
         $user = User::factory()->create();
@@ -1012,7 +1014,7 @@ class GitHubServiceTest extends TestCase
         $this->assertTrue($privateRepo->private);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_commits_with_default_per_page_value(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -1030,7 +1032,7 @@ class GitHubServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_constructs_correct_api_urls(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -1054,7 +1056,7 @@ class GitHubServiceTest extends TestCase
         Http::assertSent(fn ($request) => $request->url() === 'https://api.github.com/repos/owner/repo/branches');
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_empty_repository_response_during_sync(): void
     {
         $user = User::factory()->create();
@@ -1073,7 +1075,7 @@ class GitHubServiceTest extends TestCase
         $this->assertCount(0, GitHubRepository::where('github_connection_id', $connection->id)->get());
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_webhook_creation_with_custom_events(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -1099,7 +1101,7 @@ class GitHubServiceTest extends TestCase
         $this->assertIsArray($result['events']);
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_for_unsupported_http_method(): void
     {
         Log::shouldReceive('error')->once();
@@ -1122,7 +1124,7 @@ class GitHubServiceTest extends TestCase
         $method->invoke($this->githubService, $connection, '/test', [], 'INVALID');
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_oauth_callback_with_empty_scope(): void
     {
         Http::fake([
@@ -1137,7 +1139,7 @@ class GitHubServiceTest extends TestCase
         $this->assertEquals('', $result['scope']); // Default empty string
     }
 
-    /** @test */
+    #[Test]
     public function it_syncs_repositories_with_different_languages(): void
     {
         $user = User::factory()->create();
@@ -1208,7 +1210,7 @@ class GitHubServiceTest extends TestCase
         $this->assertNotNull($pyRepo);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_refresh_token_without_expires_in(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -1232,7 +1234,7 @@ class GitHubServiceTest extends TestCase
         $this->assertNull($connection->token_expires_at); // No expires_in in response
     }
 
-    /** @test */
+    #[Test]
     public function it_lists_commits_with_pagination_parameters(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -1250,7 +1252,7 @@ class GitHubServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_api_request_with_put_method(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -1271,7 +1273,7 @@ class GitHubServiceTest extends TestCase
         $this->assertTrue($result['updated']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_api_request_with_patch_method(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -1292,7 +1294,7 @@ class GitHubServiceTest extends TestCase
         $this->assertTrue($result['patched']);
     }
 
-    /** @test */
+    #[Test]
     public function it_syncs_repositories_and_updates_synced_at_timestamp(): void
     {
         $user = User::factory()->create();
@@ -1340,7 +1342,7 @@ class GitHubServiceTest extends TestCase
         $this->assertTrue($repository->synced_at->isAfter($pastTime));
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_auth_url_with_special_characters_in_state(): void
     {
         $state = 'state-with-special!@#$%^&*()';
@@ -1350,7 +1352,7 @@ class GitHubServiceTest extends TestCase
         $this->assertStringContainsString('state='.urlencode($state), $url);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_webhook_deletion_failure(): void
     {
         Log::shouldReceive('error')
@@ -1373,7 +1375,7 @@ class GitHubServiceTest extends TestCase
         $this->githubService->deleteWebhook($connection, 'testuser/test-repo', 99999);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_repository_sync_with_master_branch(): void
     {
         $user = User::factory()->create();

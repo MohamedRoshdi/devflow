@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Http;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Http\Middleware\AuthenticateApiToken;
 use App\Http\Middleware\EnsureTeamAccess;
 use App\Http\Requests\Api\StoreProjectRequest;
@@ -28,7 +30,7 @@ class MiddlewareRequestsTest extends TestCase
     // AuthenticateApiToken Middleware Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function authenticate_api_token_allows_valid_token(): void
     {
         $user = User::factory()->create();
@@ -53,7 +55,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertEquals($user->id, auth()->id());
     }
 
-    /** @test */
+    #[Test]
     public function authenticate_api_token_blocks_missing_token(): void
     {
         $request = Request::create('/api/test', 'GET');
@@ -67,7 +69,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertStringContainsString('Unauthenticated', $json['message']);
     }
 
-    /** @test */
+    #[Test]
     public function authenticate_api_token_blocks_invalid_token(): void
     {
         $request = Request::create('/api/test', 'GET');
@@ -81,7 +83,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertEquals('invalid_token', $json['error']);
     }
 
-    /** @test */
+    #[Test]
     public function authenticate_api_token_blocks_expired_token(): void
     {
         $user = User::factory()->create();
@@ -108,7 +110,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertEquals('invalid_token', $json['error']);
     }
 
-    /** @test */
+    #[Test]
     public function authenticate_api_token_checks_required_ability(): void
     {
         $user = User::factory()->create();
@@ -135,7 +137,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertEquals('projects:write', $json['required_ability']);
     }
 
-    /** @test */
+    #[Test]
     public function authenticate_api_token_allows_with_correct_ability(): void
     {
         $user = User::factory()->create();
@@ -159,7 +161,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertEquals('OK', $response->getContent());
     }
 
-    /** @test */
+    #[Test]
     public function authenticate_api_token_blocks_when_user_not_found(): void
     {
         // Note: When a user is deleted, the API tokens are also deleted via cascade
@@ -193,7 +195,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertEquals('invalid_token', $json['error']);
     }
 
-    /** @test */
+    #[Test]
     public function authenticate_api_token_stores_token_in_request(): void
     {
         $user = User::factory()->create();
@@ -227,7 +229,7 @@ class MiddlewareRequestsTest extends TestCase
     // EnsureTeamAccess Middleware Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function ensure_team_access_allows_team_member(): void
     {
         $user = User::factory()->create();
@@ -249,7 +251,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertEquals('OK', $response->getContent());
     }
 
-    /** @test */
+    #[Test]
     public function ensure_team_access_blocks_non_member(): void
     {
         $user = User::factory()->create();
@@ -272,7 +274,7 @@ class MiddlewareRequestsTest extends TestCase
         $middleware->handle($request, fn ($req) => response('OK'));
     }
 
-    /** @test */
+    #[Test]
     public function ensure_team_access_redirects_when_unauthenticated(): void
     {
         $request = Request::create('/test-team/1', 'GET');
@@ -284,7 +286,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertEquals(302, $response->getStatusCode());
     }
 
-    /** @test */
+    #[Test]
     public function ensure_team_access_checks_specific_permission(): void
     {
         // Note: This test verifies the middleware attempts to check permissions,
@@ -296,7 +298,7 @@ class MiddlewareRequestsTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function ensure_team_access_allows_with_correct_permission(): void
     {
         // Note: This test verifies the middleware attempts to check permissions,
@@ -312,7 +314,7 @@ class MiddlewareRequestsTest extends TestCase
     // StoreServerRequest Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function store_server_request_requires_name(): void
     {
         $request = new StoreServerRequest;
@@ -322,7 +324,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertContains('required', $rules['name']);
     }
 
-    /** @test */
+    #[Test]
     public function store_server_request_validates_name_max_length(): void
     {
         $rules = (new StoreServerRequest)->rules();
@@ -336,7 +338,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertArrayHasKey('name', $validator->errors()->toArray());
     }
 
-    /** @test */
+    #[Test]
     public function store_server_request_requires_hostname(): void
     {
         $request = new StoreServerRequest;
@@ -346,7 +348,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertContains('required', $rules['hostname']);
     }
 
-    /** @test */
+    #[Test]
     public function store_server_request_requires_ip_address(): void
     {
         $request = new StoreServerRequest;
@@ -356,7 +358,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertContains('required', $rules['ip_address']);
     }
 
-    /** @test */
+    #[Test]
     public function store_server_request_validates_ip_address_format(): void
     {
         $rules = (new StoreServerRequest)->rules();
@@ -370,7 +372,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertArrayHasKey('ip_address', $validator->errors()->toArray());
     }
 
-    /** @test */
+    #[Test]
     public function store_server_request_validates_valid_ipv4_address(): void
     {
         $rules = (new StoreServerRequest)->rules();
@@ -383,7 +385,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertFalse($validator->fails());
     }
 
-    /** @test */
+    #[Test]
     public function store_server_request_validates_port_range(): void
     {
         $rules = (new StoreServerRequest)->rules();
@@ -396,7 +398,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertTrue($validator->fails());
     }
 
-    /** @test */
+    #[Test]
     public function store_server_request_validates_port_minimum(): void
     {
         $rules = (new StoreServerRequest)->rules();
@@ -409,7 +411,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertTrue($validator->fails());
     }
 
-    /** @test */
+    #[Test]
     public function store_server_request_requires_username(): void
     {
         $request = new StoreServerRequest;
@@ -419,7 +421,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertContains('required', $rules['username']);
     }
 
-    /** @test */
+    #[Test]
     public function store_server_request_validates_latitude_range(): void
     {
         $rules = (new StoreServerRequest)->rules();
@@ -432,7 +434,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertTrue($validator->fails());
     }
 
-    /** @test */
+    #[Test]
     public function store_server_request_validates_longitude_range(): void
     {
         $rules = (new StoreServerRequest)->rules();
@@ -445,7 +447,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertTrue($validator->fails());
     }
 
-    /** @test */
+    #[Test]
     public function store_server_request_validates_cpu_cores_minimum(): void
     {
         $rules = (new StoreServerRequest)->rules();
@@ -458,7 +460,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertTrue($validator->fails());
     }
 
-    /** @test */
+    #[Test]
     public function store_server_request_has_custom_attributes(): void
     {
         $request = new StoreServerRequest;
@@ -468,7 +470,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertEquals('IP address', $attributes['ip_address']);
     }
 
-    /** @test */
+    #[Test]
     public function store_server_request_authorization_returns_true(): void
     {
         $request = new StoreServerRequest;
@@ -479,7 +481,7 @@ class MiddlewareRequestsTest extends TestCase
     // UpdateServerRequest Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function update_server_request_uses_sometimes_for_name(): void
     {
         $server = Server::factory()->create();
@@ -501,7 +503,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertContains('sometimes', $rules['name']);
     }
 
-    /** @test */
+    #[Test]
     public function update_server_request_validates_status_enum(): void
     {
         $server = Server::factory()->create();
@@ -525,7 +527,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertTrue($validator->fails());
     }
 
-    /** @test */
+    #[Test]
     public function update_server_request_allows_valid_status(): void
     {
         $server = Server::factory()->create();
@@ -551,7 +553,7 @@ class MiddlewareRequestsTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function update_server_request_ignores_current_server_ip_uniqueness(): void
     {
         $server = Server::factory()->create(['ip_address' => '192.168.1.100']);
@@ -579,7 +581,7 @@ class MiddlewareRequestsTest extends TestCase
     // StoreProjectRequest Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function store_project_request_requires_name(): void
     {
         $request = new StoreProjectRequest;
@@ -589,7 +591,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertContains('required', $rules['name']);
     }
 
-    /** @test */
+    #[Test]
     public function store_project_request_requires_slug(): void
     {
         $request = new StoreProjectRequest;
@@ -599,7 +601,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertContains('required', $rules['slug']);
     }
 
-    /** @test */
+    #[Test]
     public function store_project_request_validates_slug_format(): void
     {
         $rules = (new StoreProjectRequest)->rules();
@@ -612,7 +614,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertTrue($validator->fails());
     }
 
-    /** @test */
+    #[Test]
     public function store_project_request_validates_valid_slug(): void
     {
         $rules = (new StoreProjectRequest)->rules();
@@ -625,7 +627,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertFalse($validator->fails());
     }
 
-    /** @test */
+    #[Test]
     public function store_project_request_requires_repository_url(): void
     {
         $request = new StoreProjectRequest;
@@ -635,7 +637,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertContains('required', $rules['repository_url']);
     }
 
-    /** @test */
+    #[Test]
     public function store_project_request_validates_repository_url_format(): void
     {
         $rules = (new StoreProjectRequest)->rules();
@@ -648,7 +650,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertTrue($validator->fails());
     }
 
-    /** @test */
+    #[Test]
     public function store_project_request_requires_branch(): void
     {
         $request = new StoreProjectRequest;
@@ -658,7 +660,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertContains('required', $rules['branch']);
     }
 
-    /** @test */
+    #[Test]
     public function store_project_request_requires_framework(): void
     {
         $request = new StoreProjectRequest;
@@ -668,7 +670,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertContains('required', $rules['framework']);
     }
 
-    /** @test */
+    #[Test]
     public function store_project_request_validates_framework_enum(): void
     {
         $rules = (new StoreProjectRequest)->rules();
@@ -681,7 +683,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertTrue($validator->fails());
     }
 
-    /** @test */
+    #[Test]
     public function store_project_request_allows_valid_frameworks(): void
     {
         $rules = (new StoreProjectRequest)->rules();
@@ -696,7 +698,7 @@ class MiddlewareRequestsTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function store_project_request_requires_project_type(): void
     {
         $request = new StoreProjectRequest;
@@ -706,7 +708,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertContains('required', $rules['project_type']);
     }
 
-    /** @test */
+    #[Test]
     public function store_project_request_validates_project_type_enum(): void
     {
         $rules = (new StoreProjectRequest)->rules();
@@ -721,7 +723,7 @@ class MiddlewareRequestsTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function store_project_request_validates_port_range(): void
     {
         $rules = (new StoreProjectRequest)->rules();
@@ -734,7 +736,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertTrue($validator->fails());
     }
 
-    /** @test */
+    #[Test]
     public function store_project_request_requires_server_id(): void
     {
         $request = new StoreProjectRequest;
@@ -744,7 +746,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertContains('required', $rules['server_id']);
     }
 
-    /** @test */
+    #[Test]
     public function store_project_request_validates_server_exists(): void
     {
         $rules = (new StoreProjectRequest)->rules();
@@ -757,7 +759,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertTrue($validator->fails());
     }
 
-    /** @test */
+    #[Test]
     public function store_project_request_validates_install_commands_array(): void
     {
         $rules = (new StoreProjectRequest)->rules();
@@ -770,7 +772,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertTrue($validator->fails());
     }
 
-    /** @test */
+    #[Test]
     public function store_project_request_validates_health_check_url_format(): void
     {
         $rules = (new StoreProjectRequest)->rules();
@@ -783,7 +785,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertTrue($validator->fails());
     }
 
-    /** @test */
+    #[Test]
     public function store_project_request_has_custom_attributes(): void
     {
         $request = new StoreProjectRequest;
@@ -797,7 +799,7 @@ class MiddlewareRequestsTest extends TestCase
     // UpdateProjectRequest Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function update_project_request_uses_sometimes_for_fields(): void
     {
         $project = Project::factory()->create();
@@ -817,7 +819,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertContains('sometimes', $rules['name']);
     }
 
-    /** @test */
+    #[Test]
     public function update_project_request_validates_status_enum(): void
     {
         $project = Project::factory()->create();
@@ -841,7 +843,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertTrue($validator->fails());
     }
 
-    /** @test */
+    #[Test]
     public function update_project_request_allows_valid_status(): void
     {
         $project = Project::factory()->create();
@@ -867,7 +869,7 @@ class MiddlewareRequestsTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function update_project_request_ignores_current_project_slug_uniqueness(): void
     {
         $project = Project::factory()->create(['slug' => 'my-project']);
@@ -891,7 +893,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertFalse($validator->fails());
     }
 
-    /** @test */
+    #[Test]
     public function update_project_request_validates_environment_enum(): void
     {
         $project = Project::factory()->create();
@@ -917,7 +919,7 @@ class MiddlewareRequestsTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function update_project_request_validates_build_commands_array_items(): void
     {
         $project = Project::factory()->create();
@@ -944,7 +946,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertTrue($validator->fails());
     }
 
-    /** @test */
+    #[Test]
     public function update_project_request_validates_max_command_length(): void
     {
         $project = Project::factory()->create();
@@ -968,7 +970,7 @@ class MiddlewareRequestsTest extends TestCase
         $this->assertTrue($validator->fails());
     }
 
-    /** @test */
+    #[Test]
     public function update_project_request_authorization_returns_true(): void
     {
         $request = new UpdateProjectRequest;

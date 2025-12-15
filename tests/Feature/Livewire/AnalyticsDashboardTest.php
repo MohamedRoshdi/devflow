@@ -29,6 +29,10 @@ class AnalyticsDashboardTest extends TestCase
 
     public function test_component_can_be_rendered(): void
     {
+        // Grant the view-analytics permission to the user
+        $permission = \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'view-analytics']);
+        $this->user->givePermissionTo($permission);
+
         Livewire::actingAs($this->user)
             ->test(AnalyticsDashboard::class)
             ->assertOk();
@@ -36,6 +40,10 @@ class AnalyticsDashboardTest extends TestCase
 
     public function test_component_displays_deployment_statistics(): void
     {
+        // Grant the view-analytics permission to the user
+        $permission = \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'view-analytics']);
+        $this->user->givePermissionTo($permission);
+
         Deployment::factory()->count(10)->create([
             'project_id' => $this->project->id,
             'status' => 'success',
@@ -48,29 +56,35 @@ class AnalyticsDashboardTest extends TestCase
 
         Livewire::actingAs($this->user)
             ->test(AnalyticsDashboard::class)
-            ->assertOk();
+            ->assertOk()
+            ->assertViewHas('deploymentStats');
     }
 
     public function test_date_range_filter_can_be_changed(): void
     {
+        // Grant the view-analytics permission to the user
+        $permission = \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'view-analytics']);
+        $this->user->givePermissionTo($permission);
+
         $component = Livewire::actingAs($this->user)
             ->test(AnalyticsDashboard::class);
 
-        if (property_exists($component->instance(), 'dateRange')) {
-            $component->set('dateRange', '30d')
-                ->assertSet('dateRange', '30d');
-        }
+        // The property is selectedPeriod, not dateRange
+        $component->set('selectedPeriod', '30days')
+            ->assertSet('selectedPeriod', '30days');
     }
 
     public function test_project_filter_can_be_applied(): void
     {
+        // Grant the view-analytics permission to the user
+        $permission = \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'view-analytics']);
+        $this->user->givePermissionTo($permission);
+
         $component = Livewire::actingAs($this->user)
             ->test(AnalyticsDashboard::class);
 
-        if (property_exists($component->instance(), 'selectedProject')) {
-            $component->set('selectedProject', $this->project->id)
-                ->assertSet('selectedProject', $this->project->id);
-        }
+        $component->set('selectedProject', (string) $this->project->id)
+            ->assertSet('selectedProject', (string) $this->project->id);
     }
 
     public function test_guest_cannot_access_analytics(): void

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Policies;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Deployment;
 use App\Models\Project;
 use App\Models\Server;
@@ -27,7 +29,7 @@ class PoliciesTest extends TestCase
     // ServerPolicy Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function server_policy_allows_any_authenticated_user_to_view_any_servers(): void
     {
         $user = User::factory()->create();
@@ -36,7 +38,7 @@ class PoliciesTest extends TestCase
         $this->assertTrue($policy->viewAny($user));
     }
 
-    /** @test */
+    #[Test]
     public function server_policy_allows_user_to_view_own_server(): void
     {
         $user = User::factory()->create();
@@ -46,7 +48,7 @@ class PoliciesTest extends TestCase
         $this->assertTrue($policy->view($user, $server));
     }
 
-    /** @test */
+    #[Test]
     public function server_policy_denies_user_to_view_others_server(): void
     {
         $user = User::factory()->create();
@@ -58,7 +60,7 @@ class PoliciesTest extends TestCase
         $this->assertFalse($policy->view($user, $server));
     }
 
-    /** @test */
+    #[Test]
     public function server_policy_allows_any_authenticated_user_to_create_server(): void
     {
         $user = User::factory()->create();
@@ -67,7 +69,7 @@ class PoliciesTest extends TestCase
         $this->assertTrue($policy->create($user));
     }
 
-    /** @test */
+    #[Test]
     public function server_policy_allows_user_to_update_own_server(): void
     {
         $user = User::factory()->create();
@@ -77,7 +79,7 @@ class PoliciesTest extends TestCase
         $this->assertTrue($policy->update($user, $server));
     }
 
-    /** @test */
+    #[Test]
     public function server_policy_denies_user_to_update_others_server(): void
     {
         $user = User::factory()->create();
@@ -89,7 +91,7 @@ class PoliciesTest extends TestCase
         $this->assertFalse($policy->update($user, $server));
     }
 
-    /** @test */
+    #[Test]
     public function server_policy_allows_user_to_delete_own_server(): void
     {
         $user = User::factory()->create();
@@ -99,7 +101,7 @@ class PoliciesTest extends TestCase
         $this->assertTrue($policy->delete($user, $server));
     }
 
-    /** @test */
+    #[Test]
     public function server_policy_denies_user_to_delete_others_server(): void
     {
         $user = User::factory()->create();
@@ -111,7 +113,7 @@ class PoliciesTest extends TestCase
         $this->assertFalse($policy->delete($user, $server));
     }
 
-    /** @test */
+    #[Test]
     public function server_policy_works_with_different_server_statuses(): void
     {
         $user = User::factory()->create();
@@ -133,7 +135,7 @@ class PoliciesTest extends TestCase
     // ProjectPolicy Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function project_policy_allows_any_authenticated_user_to_view_any_projects(): void
     {
         $user = User::factory()->create();
@@ -142,7 +144,7 @@ class PoliciesTest extends TestCase
         $this->assertTrue($policy->viewAny($user));
     }
 
-    /** @test */
+    #[Test]
     public function project_policy_allows_user_to_view_own_project(): void
     {
         $user = User::factory()->create();
@@ -156,7 +158,7 @@ class PoliciesTest extends TestCase
         $this->assertTrue($policy->view($user, $project));
     }
 
-    /** @test */
+    #[Test]
     public function project_policy_denies_user_to_view_others_project(): void
     {
         $user = User::factory()->create();
@@ -172,7 +174,7 @@ class PoliciesTest extends TestCase
         $this->assertFalse($policy->view($user, $project));
     }
 
-    /** @test */
+    #[Test]
     public function project_policy_allows_any_authenticated_user_to_create_project(): void
     {
         $user = User::factory()->create();
@@ -181,7 +183,7 @@ class PoliciesTest extends TestCase
         $this->assertTrue($policy->create($user));
     }
 
-    /** @test */
+    #[Test]
     public function project_policy_allows_user_to_update_own_project(): void
     {
         $user = User::factory()->create();
@@ -195,7 +197,7 @@ class PoliciesTest extends TestCase
         $this->assertTrue($policy->update($user, $project));
     }
 
-    /** @test */
+    #[Test]
     public function project_policy_denies_user_to_update_others_project(): void
     {
         $user = User::factory()->create();
@@ -211,7 +213,7 @@ class PoliciesTest extends TestCase
         $this->assertFalse($policy->update($user, $project));
     }
 
-    /** @test */
+    #[Test]
     public function project_policy_allows_user_to_delete_own_project(): void
     {
         $user = User::factory()->create();
@@ -225,7 +227,7 @@ class PoliciesTest extends TestCase
         $this->assertTrue($policy->delete($user, $project));
     }
 
-    /** @test */
+    #[Test]
     public function project_policy_denies_user_to_delete_others_project(): void
     {
         $user = User::factory()->create();
@@ -241,7 +243,7 @@ class PoliciesTest extends TestCase
         $this->assertFalse($policy->delete($user, $project));
     }
 
-    /** @test */
+    #[Test]
     public function project_policy_allows_user_to_deploy_own_project(): void
     {
         $user = User::factory()->create();
@@ -255,7 +257,7 @@ class PoliciesTest extends TestCase
         $this->assertTrue($policy->deploy($user, $project));
     }
 
-    /** @test */
+    #[Test]
     public function project_policy_denies_user_to_deploy_others_project(): void
     {
         $user = User::factory()->create();
@@ -271,7 +273,7 @@ class PoliciesTest extends TestCase
         $this->assertFalse($policy->deploy($user, $project));
     }
 
-    /** @test */
+    #[Test]
     public function project_policy_works_with_different_project_statuses(): void
     {
         $user = User::factory()->create();
@@ -302,7 +304,7 @@ class PoliciesTest extends TestCase
         $this->assertTrue($policy->delete($user, $stoppedProject));
     }
 
-    /** @test */
+    #[Test]
     public function project_policy_works_with_different_project_frameworks(): void
     {
         $user = User::factory()->create();
@@ -331,7 +333,7 @@ class PoliciesTest extends TestCase
     // DeploymentPolicy Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function deployment_policy_allows_any_authenticated_user_to_view_any_deployments(): void
     {
         $user = User::factory()->create();
@@ -340,7 +342,7 @@ class PoliciesTest extends TestCase
         $this->assertTrue($policy->viewAny($user));
     }
 
-    /** @test */
+    #[Test]
     public function deployment_policy_allows_user_to_view_own_deployment(): void
     {
         $user = User::factory()->create();
@@ -356,7 +358,7 @@ class PoliciesTest extends TestCase
         $this->assertTrue($policy->view($user, $deployment));
     }
 
-    /** @test */
+    #[Test]
     public function deployment_policy_denies_user_to_view_others_deployment(): void
     {
         $user = User::factory()->create();
@@ -374,7 +376,7 @@ class PoliciesTest extends TestCase
         $this->assertFalse($policy->view($user, $deployment));
     }
 
-    /** @test */
+    #[Test]
     public function deployment_policy_allows_any_authenticated_user_to_create_deployment(): void
     {
         $user = User::factory()->create();
@@ -383,7 +385,7 @@ class PoliciesTest extends TestCase
         $this->assertTrue($policy->create($user));
     }
 
-    /** @test */
+    #[Test]
     public function deployment_policy_allows_user_to_cancel_own_deployment(): void
     {
         $user = User::factory()->create();
@@ -399,7 +401,7 @@ class PoliciesTest extends TestCase
         $this->assertTrue($policy->cancel($user, $deployment));
     }
 
-    /** @test */
+    #[Test]
     public function deployment_policy_denies_user_to_cancel_others_deployment(): void
     {
         $user = User::factory()->create();
@@ -417,7 +419,7 @@ class PoliciesTest extends TestCase
         $this->assertFalse($policy->cancel($user, $deployment));
     }
 
-    /** @test */
+    #[Test]
     public function deployment_policy_allows_user_to_rollback_own_deployment(): void
     {
         $user = User::factory()->create();
@@ -433,7 +435,7 @@ class PoliciesTest extends TestCase
         $this->assertTrue($policy->rollback($user, $deployment));
     }
 
-    /** @test */
+    #[Test]
     public function deployment_policy_denies_user_to_rollback_others_deployment(): void
     {
         $user = User::factory()->create();
@@ -451,7 +453,7 @@ class PoliciesTest extends TestCase
         $this->assertFalse($policy->rollback($user, $deployment));
     }
 
-    /** @test */
+    #[Test]
     public function deployment_policy_works_with_different_deployment_statuses(): void
     {
         $user = User::factory()->create();
@@ -486,7 +488,7 @@ class PoliciesTest extends TestCase
         $this->assertTrue($policy->rollback($user, $successDeployment));
     }
 
-    /** @test */
+    #[Test]
     public function deployment_policy_works_with_deployments_on_different_branches(): void
     {
         $user = User::factory()->create();
@@ -518,7 +520,7 @@ class PoliciesTest extends TestCase
     // Cross-Policy Integration Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function owner_can_manage_server_but_others_cannot(): void
     {
         $owner = User::factory()->create(['email' => 'owner@example.com']);
@@ -537,7 +539,7 @@ class PoliciesTest extends TestCase
         $this->assertFalse($policy->delete($otherUser, $server));
     }
 
-    /** @test */
+    #[Test]
     public function owner_can_manage_project_but_others_cannot(): void
     {
         $owner = User::factory()->create(['email' => 'owner@example.com']);
@@ -560,7 +562,7 @@ class PoliciesTest extends TestCase
         $this->assertFalse($policy->update($otherUser, $project));
     }
 
-    /** @test */
+    #[Test]
     public function owner_can_manage_deployment_but_others_cannot(): void
     {
         $owner = User::factory()->create(['email' => 'owner@example.com']);
@@ -585,7 +587,7 @@ class PoliciesTest extends TestCase
         $this->assertFalse($policy->rollback($otherUser, $deployment));
     }
 
-    /** @test */
+    #[Test]
     public function each_user_can_only_access_their_own_resources(): void
     {
         // Create multiple users with their own resources
@@ -630,7 +632,7 @@ class PoliciesTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function policies_maintain_authorization_with_soft_deleted_projects(): void
     {
         $user = User::factory()->create();
@@ -647,7 +649,7 @@ class PoliciesTest extends TestCase
         $this->assertTrue($policy->update($user, $project));
     }
 
-    /** @test */
+    #[Test]
     public function policies_maintain_authorization_with_soft_deleted_servers(): void
     {
         $user = User::factory()->create();

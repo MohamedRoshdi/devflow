@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Models;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\FirewallRule;
 use App\Models\SecurityEvent;
 use App\Models\Server;
@@ -16,7 +18,7 @@ class SecurityModelsTest extends TestCase
     // FirewallRule Model Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function firewall_rule_can_be_created_with_factory(): void
     {
         $rule = FirewallRule::factory()->create();
@@ -27,7 +29,7 @@ class SecurityModelsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function firewall_rule_belongs_to_server(): void
     {
         $server = Server::factory()->create();
@@ -37,7 +39,7 @@ class SecurityModelsTest extends TestCase
         $this->assertEquals($server->id, $rule->server->id);
     }
 
-    /** @test */
+    #[Test]
     public function firewall_rule_casts_is_active_as_boolean(): void
     {
         $rule = FirewallRule::factory()->create(['is_active' => true]);
@@ -46,7 +48,7 @@ class SecurityModelsTest extends TestCase
         $this->assertIsBool($rule->is_active);
     }
 
-    /** @test */
+    #[Test]
     public function firewall_rule_casts_priority_as_integer(): void
     {
         $rule = FirewallRule::factory()->create(['priority' => 100]);
@@ -55,7 +57,7 @@ class SecurityModelsTest extends TestCase
         $this->assertEquals(100, $rule->priority);
     }
 
-    /** @test */
+    #[Test]
     public function firewall_rule_display_name_includes_port_and_protocol(): void
     {
         $rule = FirewallRule::factory()->create([
@@ -66,7 +68,7 @@ class SecurityModelsTest extends TestCase
         $this->assertStringContainsString('80/tcp', $rule->display_name);
     }
 
-    /** @test */
+    #[Test]
     public function firewall_rule_display_name_includes_from_ip(): void
     {
         $rule = FirewallRule::factory()->create([
@@ -79,7 +81,7 @@ class SecurityModelsTest extends TestCase
         $this->assertStringContainsString('from 192.168.1.100', $rule->display_name);
     }
 
-    /** @test */
+    #[Test]
     public function firewall_rule_display_name_returns_any_when_no_criteria(): void
     {
         $rule = FirewallRule::factory()->create([
@@ -90,7 +92,7 @@ class SecurityModelsTest extends TestCase
         $this->assertEquals('Any', $rule->display_name);
     }
 
-    /** @test */
+    #[Test]
     public function firewall_rule_to_ufw_command_generates_basic_allow_rule(): void
     {
         $rule = FirewallRule::factory()->create([
@@ -107,7 +109,7 @@ class SecurityModelsTest extends TestCase
         $this->assertStringContainsString('proto tcp', $command);
     }
 
-    /** @test */
+    #[Test]
     public function firewall_rule_to_ufw_command_includes_from_ip(): void
     {
         $rule = FirewallRule::factory()->create([
@@ -122,7 +124,7 @@ class SecurityModelsTest extends TestCase
         $this->assertStringContainsString('from 192.168.1.0/24', $command);
     }
 
-    /** @test */
+    #[Test]
     public function firewall_rule_to_ufw_command_handles_outbound_direction(): void
     {
         $rule = FirewallRule::factory()->create([
@@ -137,7 +139,7 @@ class SecurityModelsTest extends TestCase
         $this->assertStringContainsString('ufw allow out', $command);
     }
 
-    /** @test */
+    #[Test]
     public function firewall_rule_to_ufw_command_handles_any_protocol(): void
     {
         $rule = FirewallRule::factory()->create([
@@ -151,7 +153,7 @@ class SecurityModelsTest extends TestCase
         $this->assertStringNotContainsString('proto any', $command);
     }
 
-    /** @test */
+    #[Test]
     public function firewall_rule_to_ufw_command_handles_deny_action(): void
     {
         $rule = FirewallRule::factory()->create([
@@ -169,7 +171,7 @@ class SecurityModelsTest extends TestCase
     // SecurityEvent Model Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function security_event_can_be_created_with_factory(): void
     {
         $event = SecurityEvent::factory()->create();
@@ -180,7 +182,7 @@ class SecurityModelsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function security_event_belongs_to_server(): void
     {
         $server = Server::factory()->create();
@@ -190,7 +192,7 @@ class SecurityModelsTest extends TestCase
         $this->assertEquals($server->id, $event->server->id);
     }
 
-    /** @test */
+    #[Test]
     public function security_event_belongs_to_user(): void
     {
         $user = User::factory()->create();
@@ -200,7 +202,7 @@ class SecurityModelsTest extends TestCase
         $this->assertEquals($user->id, $event->user->id);
     }
 
-    /** @test */
+    #[Test]
     public function security_event_casts_metadata_as_array(): void
     {
         $metadata = ['key' => 'value', 'nested' => ['data' => 'test']];
@@ -210,7 +212,7 @@ class SecurityModelsTest extends TestCase
         $this->assertEquals($metadata, $event->metadata);
     }
 
-    /** @test */
+    #[Test]
     public function security_event_get_event_type_label_returns_correct_labels(): void
     {
         $firewallEnabled = SecurityEvent::factory()->create(['event_type' => SecurityEvent::TYPE_FIREWALL_ENABLED]);
@@ -238,7 +240,7 @@ class SecurityModelsTest extends TestCase
         $this->assertEquals('Security Scan', $securityScan->getEventTypeLabel());
     }
 
-    /** @test */
+    #[Test]
     public function security_event_get_event_type_label_handles_custom_types(): void
     {
         $event = SecurityEvent::factory()->create(['event_type' => 'custom_security_event']);
@@ -246,7 +248,7 @@ class SecurityModelsTest extends TestCase
         $this->assertEquals('Custom security event', $event->getEventTypeLabel());
     }
 
-    /** @test */
+    #[Test]
     public function security_event_event_type_color_returns_correct_colors(): void
     {
         $firewallEnabled = SecurityEvent::factory()->create(['event_type' => SecurityEvent::TYPE_FIREWALL_ENABLED]);
@@ -277,7 +279,7 @@ class SecurityModelsTest extends TestCase
         $this->assertEquals('gray', $unknown->event_type_color);
     }
 
-    /** @test */
+    #[Test]
     public function security_event_defines_type_constants(): void
     {
         $this->assertEquals('firewall_enabled', SecurityEvent::TYPE_FIREWALL_ENABLED);

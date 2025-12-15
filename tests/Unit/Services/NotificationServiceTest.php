@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Deployment;
 use App\Models\HealthCheck;
 use App\Models\HealthCheckResult;
@@ -41,7 +43,7 @@ class NotificationServiceTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_email_successfully(): void
     {
         // Arrange
@@ -59,7 +61,7 @@ class NotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_false_when_email_fails(): void
     {
         // Arrange
@@ -72,7 +74,7 @@ class NotificationServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_error_when_email_fails(): void
     {
         // Arrange
@@ -91,7 +93,7 @@ class NotificationServiceTest extends TestCase
             }));
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_slack_notification_successfully(): void
     {
         // Arrange
@@ -116,7 +118,7 @@ class NotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_false_when_slack_request_fails(): void
     {
         // Arrange
@@ -134,7 +136,7 @@ class NotificationServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_error_when_slack_notification_fails(): void
     {
         // Arrange
@@ -152,7 +154,7 @@ class NotificationServiceTest extends TestCase
             ->with('Slack notification failed', Mockery::type('array'));
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_rich_slack_notification_with_blocks(): void
     {
         // Arrange
@@ -189,7 +191,7 @@ class NotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_fails_slack_notification_when_webhook_url_missing(): void
     {
         // Arrange
@@ -205,7 +207,7 @@ class NotificationServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_slack_notification_attempt(): void
     {
         // Arrange
@@ -231,7 +233,7 @@ class NotificationServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_failed_slack_notification(): void
     {
         // Arrange
@@ -257,7 +259,7 @@ class NotificationServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_discord_notification_successfully(): void
     {
         // Arrange
@@ -281,7 +283,7 @@ class NotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_false_when_discord_request_fails(): void
     {
         // Arrange
@@ -299,7 +301,7 @@ class NotificationServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_error_when_discord_notification_fails(): void
     {
         // Arrange
@@ -317,7 +319,7 @@ class NotificationServiceTest extends TestCase
             ->with('Discord notification failed', Mockery::type('array'));
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_rich_discord_notification_with_embeds(): void
     {
         // Arrange
@@ -358,7 +360,7 @@ class NotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_correct_color_for_discord_embed_status(): void
     {
         // Arrange
@@ -394,7 +396,7 @@ class NotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_fails_discord_notification_when_webhook_url_missing(): void
     {
         // Arrange
@@ -410,7 +412,7 @@ class NotificationServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_webhook_notification_successfully(): void
     {
         // Arrange
@@ -439,7 +441,7 @@ class NotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_signature_in_webhook_when_secret_configured(): void
     {
         // Arrange
@@ -466,7 +468,7 @@ class NotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_webhook_without_signature_when_no_secret(): void
     {
         // Arrange
@@ -491,7 +493,7 @@ class NotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_fails_webhook_notification_when_url_missing(): void
     {
         // Arrange
@@ -507,7 +509,7 @@ class NotificationServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_notifies_health_check_failure(): void
     {
         // Arrange
@@ -548,7 +550,7 @@ class NotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_inactive_channels_for_health_check_failure(): void
     {
         // Arrange
@@ -577,7 +579,7 @@ class NotificationServiceTest extends TestCase
         Http::assertNothingSent();
     }
 
-    /** @test */
+    #[Test]
     public function it_notifies_health_check_recovery(): void
     {
         // Arrange
@@ -609,7 +611,7 @@ class NotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_test_notification_successfully(): void
     {
         // Arrange
@@ -632,7 +634,7 @@ class NotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_test_notification_via_email(): void
     {
         // Arrange
@@ -648,7 +650,7 @@ class NotificationServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_notifies_deployment_event_to_configured_channels(): void
     {
         // Arrange
@@ -683,7 +685,7 @@ class NotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_channels_by_project_for_deployment_events(): void
     {
         // Arrange
@@ -730,7 +732,7 @@ class NotificationServiceTest extends TestCase
         Queue::assertPushed(\Closure::class, 2);
     }
 
-    /** @test */
+    #[Test]
     public function it_supports_wildcard_event_matching(): void
     {
         // Arrange
@@ -752,7 +754,7 @@ class NotificationServiceTest extends TestCase
         Queue::assertPushed(\Closure::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_disabled_channels_for_deployment_events(): void
     {
         // Arrange
@@ -772,7 +774,7 @@ class NotificationServiceTest extends TestCase
         Queue::assertNothingPushed();
     }
 
-    /** @test */
+    #[Test]
     public function it_builds_comprehensive_deployment_message(): void
     {
         // Arrange
@@ -822,7 +824,7 @@ class NotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_formats_slack_message_with_emoji_for_failure(): void
     {
         // Arrange
@@ -845,7 +847,7 @@ class NotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_deployment_without_user(): void
     {
         // Arrange
@@ -882,7 +884,7 @@ class NotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_deployment_without_project(): void
     {
         // Arrange
@@ -916,7 +918,7 @@ class NotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_slack_blocks_with_deployment_fields(): void
     {
         // Arrange
@@ -956,7 +958,7 @@ class NotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_discord_embed_fields(): void
     {
         // Arrange
@@ -989,7 +991,7 @@ class NotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_notification_success(): void
     {
         // Arrange
@@ -1017,7 +1019,7 @@ class NotificationServiceTest extends TestCase
             }));
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_unknown_channel_type_gracefully(): void
     {
         // Arrange
@@ -1033,7 +1035,7 @@ class NotificationServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_truncates_webhook_url_in_error_logs(): void
     {
         // Arrange
@@ -1058,7 +1060,7 @@ class NotificationServiceTest extends TestCase
             }));
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_webhook_url_from_config_or_attribute(): void
     {
         // Arrange
@@ -1091,7 +1093,7 @@ class NotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_builds_failure_message_with_all_details(): void
     {
         // Arrange
@@ -1138,7 +1140,7 @@ class NotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_builds_recovery_message_correctly(): void
     {
         // Arrange

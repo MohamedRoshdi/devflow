@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Livewire;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Jobs\DeployProjectJob;
 use App\Jobs\ProcessProjectSetupJob;
 use App\Livewire\Deployments\DeploymentApprovals;
@@ -75,7 +77,7 @@ class ProjectDeploymentComponentsTest extends TestCase
     // ProjectList Component Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function project_list_renders_successfully(): void
     {
         Livewire::actingAs($this->user)
@@ -84,7 +86,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertViewIs('livewire.projects.project-list');
     }
 
-    /** @test */
+    #[Test]
     public function project_list_displays_projects(): void
     {
         $project = Project::factory()->create([
@@ -98,7 +100,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertSee('Test Project');
     }
 
-    /** @test */
+    #[Test]
     public function project_list_can_search_projects(): void
     {
         Project::factory()->create([
@@ -120,7 +122,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertDontSee('React App');
     }
 
-    /** @test */
+    #[Test]
     public function project_list_can_filter_by_status(): void
     {
         Project::factory()->create([
@@ -144,7 +146,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertDontSee('Stopped Project');
     }
 
-    /** @test */
+    #[Test]
     public function project_list_can_delete_project(): void
     {
         $project = Project::factory()->create([
@@ -159,7 +161,7 @@ class ProjectDeploymentComponentsTest extends TestCase
         $this->assertSoftDeleted('projects', ['id' => $project->id]);
     }
 
-    /** @test */
+    #[Test]
     public function project_list_refreshes_on_project_created_event(): void
     {
         Livewire::actingAs($this->user)
@@ -172,7 +174,7 @@ class ProjectDeploymentComponentsTest extends TestCase
     // ProjectShow Component Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function project_show_renders_successfully(): void
     {
         $project = Project::factory()->create([
@@ -186,7 +188,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertViewIs('livewire.projects.project-show');
     }
 
-    /** @test */
+    #[Test]
     public function project_show_can_switch_tabs(): void
     {
         $project = Project::factory()->create([
@@ -200,7 +202,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertSet('activeTab', 'git');
     }
 
-    /** @test */
+    #[Test]
     public function project_show_can_deploy_project(): void
     {
         $project = Project::factory()->create([
@@ -219,7 +221,7 @@ class ProjectDeploymentComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function project_show_can_start_project(): void
     {
         $project = Project::factory()->create([
@@ -245,7 +247,7 @@ class ProjectDeploymentComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function project_show_can_stop_project(): void
     {
         $project = Project::factory()->create([
@@ -271,7 +273,7 @@ class ProjectDeploymentComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function project_show_loads_commits_when_git_tab_prepared(): void
     {
         $project = Project::factory()->create([
@@ -307,7 +309,7 @@ class ProjectDeploymentComponentsTest extends TestCase
     // ProjectCreate Component Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function project_create_renders_successfully(): void
     {
         Livewire::actingAs($this->user)
@@ -316,7 +318,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertViewIs('livewire.projects.project-create');
     }
 
-    /** @test */
+    #[Test]
     public function project_create_auto_generates_slug_from_name(): void
     {
         Livewire::actingAs($this->user)
@@ -325,7 +327,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertSet('slug', 'my-laravel-app');
     }
 
-    /** @test */
+    #[Test]
     public function project_create_validates_required_fields(): void
     {
         Livewire::actingAs($this->user)
@@ -334,7 +336,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertHasErrors(['name', 'slug', 'server_id', 'repository_url', 'branch']);
     }
 
-    /** @test */
+    #[Test]
     public function project_create_can_navigate_wizard_steps(): void
     {
         Livewire::actingAs($this->user)
@@ -351,7 +353,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertSet('currentStep', 1);
     }
 
-    /** @test */
+    #[Test]
     public function project_create_can_create_project(): void
     {
         $this->mock(ProjectSetupService::class)
@@ -380,7 +382,7 @@ class ProjectDeploymentComponentsTest extends TestCase
         Queue::assertPushed(ProcessProjectSetupJob::class);
     }
 
-    /** @test */
+    #[Test]
     public function project_create_can_select_template(): void
     {
         $template = ProjectTemplate::factory()->create([
@@ -397,7 +399,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertSet('php_version', '8.3');
     }
 
-    /** @test */
+    #[Test]
     public function project_create_can_refresh_server_status(): void
     {
         $this->mock(ServerConnectivityService::class)
@@ -414,7 +416,7 @@ class ProjectDeploymentComponentsTest extends TestCase
     // ProjectEdit Component Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function project_edit_renders_successfully(): void
     {
         $project = Project::factory()->create([
@@ -428,7 +430,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertViewIs('livewire.projects.project-edit');
     }
 
-    /** @test */
+    #[Test]
     public function project_edit_loads_project_data(): void
     {
         $project = Project::factory()->create([
@@ -444,7 +446,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertSet('slug', 'test-project');
     }
 
-    /** @test */
+    #[Test]
     public function project_edit_can_update_project(): void
     {
         $project = Project::factory()->create([
@@ -466,7 +468,7 @@ class ProjectDeploymentComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function project_edit_validates_unique_slug(): void
     {
         $project1 = Project::factory()->create([
@@ -494,7 +496,7 @@ class ProjectDeploymentComponentsTest extends TestCase
     // ProjectConfiguration Component Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function project_configuration_renders_successfully(): void
     {
         $project = Project::factory()->create([
@@ -508,7 +510,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertViewIs('livewire.projects.project-configuration');
     }
 
-    /** @test */
+    #[Test]
     public function project_configuration_can_save_configuration(): void
     {
         $project = Project::factory()->create([
@@ -536,7 +538,7 @@ class ProjectDeploymentComponentsTest extends TestCase
     // ProjectEnvironment Component Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function project_environment_renders_successfully(): void
     {
         $project = Project::factory()->create([
@@ -550,7 +552,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertViewIs('livewire.projects.project-environment');
     }
 
-    /** @test */
+    #[Test]
     public function project_environment_can_update_environment(): void
     {
         $project = Project::factory()->create([
@@ -570,7 +572,7 @@ class ProjectDeploymentComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function project_environment_can_add_env_variable(): void
     {
         $project = Project::factory()->create([
@@ -589,7 +591,7 @@ class ProjectDeploymentComponentsTest extends TestCase
         $this->assertEquals('https://example.com', $project->env_variables['APP_URL']);
     }
 
-    /** @test */
+    #[Test]
     public function project_environment_can_delete_env_variable(): void
     {
         $project = Project::factory()->create([
@@ -611,7 +613,7 @@ class ProjectDeploymentComponentsTest extends TestCase
     // ProjectLogs Component Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function project_logs_renders_successfully(): void
     {
         $project = Project::factory()->create([
@@ -630,7 +632,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertViewIs('livewire.projects.project-logs');
     }
 
-    /** @test */
+    #[Test]
     public function project_logs_can_refresh_logs(): void
     {
         $project = Project::factory()->create([
@@ -649,7 +651,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertSet('loading', false);
     }
 
-    /** @test */
+    #[Test]
     public function project_logs_can_clear_logs(): void
     {
         $project = Project::factory()->create([
@@ -676,7 +678,7 @@ class ProjectDeploymentComponentsTest extends TestCase
     // ProjectDockerManagement Component Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function project_docker_management_renders_successfully(): void
     {
         $project = Project::factory()->create([
@@ -690,7 +692,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertViewIs('livewire.projects.project-docker-management');
     }
 
-    /** @test */
+    #[Test]
     public function project_docker_management_can_load_docker_info(): void
     {
         $project = Project::factory()->create([
@@ -713,7 +715,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertSet('loading', false);
     }
 
-    /** @test */
+    #[Test]
     public function project_docker_management_can_start_container(): void
     {
         $project = Project::factory()->create([
@@ -733,7 +735,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertSessionHas('message', 'Container started successfully!');
     }
 
-    /** @test */
+    #[Test]
     public function project_docker_management_can_stop_container(): void
     {
         $project = Project::factory()->create([
@@ -757,7 +759,7 @@ class ProjectDeploymentComponentsTest extends TestCase
     // ProjectWebhookSettings Component Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function project_webhook_settings_renders_successfully(): void
     {
         $project = Project::factory()->create([
@@ -771,7 +773,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertViewIs('livewire.projects.project-webhook-settings');
     }
 
-    /** @test */
+    #[Test]
     public function project_webhook_settings_can_toggle_webhook(): void
     {
         $project = Project::factory()->create([
@@ -791,7 +793,7 @@ class ProjectDeploymentComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function project_webhook_settings_can_regenerate_secret(): void
     {
         $project = Project::factory()->create([
@@ -812,7 +814,7 @@ class ProjectDeploymentComponentsTest extends TestCase
     // DatabaseBackupManager Component Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function database_backup_manager_renders_successfully(): void
     {
         $project = Project::factory()->create([
@@ -826,7 +828,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertViewIs('livewire.projects.database-backup-manager');
     }
 
-    /** @test */
+    #[Test]
     public function database_backup_manager_can_create_backup(): void
     {
         $project = Project::factory()->create([
@@ -845,7 +847,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->call('createBackup');
     }
 
-    /** @test */
+    #[Test]
     public function database_backup_manager_can_create_schedule(): void
     {
         $project = Project::factory()->create([
@@ -870,7 +872,7 @@ class ProjectDeploymentComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function database_backup_manager_can_toggle_schedule(): void
     {
         $project = Project::factory()->create([
@@ -893,7 +895,7 @@ class ProjectDeploymentComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function database_backup_manager_can_delete_backup(): void
     {
         $project = Project::factory()->create([
@@ -919,7 +921,7 @@ class ProjectDeploymentComponentsTest extends TestCase
     // FileBackupManager Component Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function file_backup_manager_renders_successfully(): void
     {
         $project = Project::factory()->create([
@@ -933,7 +935,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertViewIs('livewire.projects.file-backup-manager');
     }
 
-    /** @test */
+    #[Test]
     public function file_backup_manager_can_create_full_backup(): void
     {
         $project = Project::factory()->create([
@@ -953,7 +955,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->call('createBackup', $mockService);
     }
 
-    /** @test */
+    #[Test]
     public function file_backup_manager_can_add_exclude_pattern(): void
     {
         $project = Project::factory()->create([
@@ -973,7 +975,7 @@ class ProjectDeploymentComponentsTest extends TestCase
     // GitHubRepoPicker Component Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function github_repo_picker_renders_successfully(): void
     {
         Livewire::actingAs($this->user)
@@ -982,7 +984,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertViewIs('livewire.projects.github-repo-picker');
     }
 
-    /** @test */
+    #[Test]
     public function github_repo_picker_can_open_modal(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -996,7 +998,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertSet('isOpen', true);
     }
 
-    /** @test */
+    #[Test]
     public function github_repo_picker_can_select_repository(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -1021,7 +1023,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertSet('step', 'select-branch');
     }
 
-    /** @test */
+    #[Test]
     public function github_repo_picker_can_confirm_selection(): void
     {
         $connection = GitHubConnection::factory()->create([
@@ -1048,7 +1050,7 @@ class ProjectDeploymentComponentsTest extends TestCase
     // PipelineSettings Component Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function pipeline_settings_renders_successfully(): void
     {
         $project = Project::factory()->create([
@@ -1062,7 +1064,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertViewIs('livewire.projects.pipeline-settings');
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_settings_can_toggle_enabled(): void
     {
         $project = Project::factory()->create([
@@ -1086,7 +1088,7 @@ class ProjectDeploymentComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_settings_can_add_branch(): void
     {
         $project = Project::factory()->create([
@@ -1101,7 +1103,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertSet('auto_deploy_branches', [$project->branch, 'develop']);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_settings_can_remove_branch(): void
     {
         $project = Project::factory()->create([
@@ -1115,7 +1117,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->call('removeBranch', 1);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_settings_can_generate_webhook_secret(): void
     {
         $project = Project::factory()->create([
@@ -1137,7 +1139,7 @@ class ProjectDeploymentComponentsTest extends TestCase
     // DeploymentList Component Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function deployment_list_renders_successfully(): void
     {
         Livewire::actingAs($this->user)
@@ -1146,7 +1148,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertViewIs('livewire.deployments.deployment-list');
     }
 
-    /** @test */
+    #[Test]
     public function deployment_list_can_filter_by_status(): void
     {
         $project = Project::factory()->create([
@@ -1174,7 +1176,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_list_can_search_deployments(): void
     {
         $project = Project::factory()->create([
@@ -1199,7 +1201,7 @@ class ProjectDeploymentComponentsTest extends TestCase
     // DeploymentShow Component Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function deployment_show_renders_successfully(): void
     {
         $project = Project::factory()->create([
@@ -1219,7 +1221,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertViewIs('livewire.deployments.deployment-show');
     }
 
-    /** @test */
+    #[Test]
     public function deployment_show_can_refresh_deployment(): void
     {
         $project = Project::factory()->create([
@@ -1239,7 +1241,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_show_analyzes_progress_from_logs(): void
     {
         $project = Project::factory()->create([
@@ -1265,7 +1267,7 @@ class ProjectDeploymentComponentsTest extends TestCase
     // DeploymentApprovals Component Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function deployment_approvals_renders_successfully(): void
     {
         $mockService = $this->mock(DeploymentApprovalService::class);
@@ -1280,7 +1282,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertViewIs('livewire.deployments.deployment-approvals');
     }
 
-    /** @test */
+    #[Test]
     public function deployment_approvals_can_approve_deployment(): void
     {
         $project = Project::factory()->create([
@@ -1312,7 +1314,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->call('approve');
     }
 
-    /** @test */
+    #[Test]
     public function deployment_approvals_can_reject_deployment(): void
     {
         $project = Project::factory()->create([
@@ -1348,7 +1350,7 @@ class ProjectDeploymentComponentsTest extends TestCase
     // DeploymentComments Component Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function deployment_comments_renders_successfully(): void
     {
         $project = Project::factory()->create([
@@ -1368,7 +1370,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertViewIs('livewire.deployments.deployment-comments');
     }
 
-    /** @test */
+    #[Test]
     public function deployment_comments_can_add_comment(): void
     {
         $project = Project::factory()->create([
@@ -1394,7 +1396,7 @@ class ProjectDeploymentComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_comments_can_edit_comment(): void
     {
         $project = Project::factory()->create([
@@ -1426,7 +1428,7 @@ class ProjectDeploymentComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_comments_can_delete_comment(): void
     {
         $project = Project::factory()->create([
@@ -1458,7 +1460,7 @@ class ProjectDeploymentComponentsTest extends TestCase
     // DeploymentRollback Component Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function deployment_rollback_renders_successfully(): void
     {
         $project = Project::factory()->create([
@@ -1477,7 +1479,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertViewIs('livewire.deployments.deployment-rollback');
     }
 
-    /** @test */
+    #[Test]
     public function deployment_rollback_can_select_deployment_for_rollback(): void
     {
         $project = Project::factory()->create([
@@ -1513,7 +1515,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertSet('showRollbackModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_rollback_can_confirm_rollback(): void
     {
         $project = Project::factory()->create([
@@ -1548,7 +1550,7 @@ class ProjectDeploymentComponentsTest extends TestCase
     // ScheduledDeployments Component Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function scheduled_deployments_renders_successfully(): void
     {
         $project = Project::factory()->create([
@@ -1562,7 +1564,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertViewIs('livewire.deployments.scheduled-deployments');
     }
 
-    /** @test */
+    #[Test]
     public function scheduled_deployments_can_schedule_deployment(): void
     {
         $project = Project::factory()->create([
@@ -1587,7 +1589,7 @@ class ProjectDeploymentComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function scheduled_deployments_validates_future_time(): void
     {
         $project = Project::factory()->create([
@@ -1605,7 +1607,7 @@ class ProjectDeploymentComponentsTest extends TestCase
             ->assertHasErrors('scheduledDate');
     }
 
-    /** @test */
+    #[Test]
     public function scheduled_deployments_can_cancel_scheduled_deployment(): void
     {
         $project = Project::factory()->create([

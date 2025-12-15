@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Events;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Events\DeploymentCompleted;
 use App\Events\DeploymentFailed;
 use App\Events\DeploymentStarted;
@@ -11,13 +13,13 @@ use App\Models\Deployment;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class DeploymentEventsTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     protected User $user;
     protected Project $project;
@@ -44,7 +46,7 @@ class DeploymentEventsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_started_event_can_be_dispatched(): void
     {
         Event::fake();
@@ -60,7 +62,7 @@ class DeploymentEventsTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function deployment_completed_event_can_be_dispatched(): void
     {
         Event::fake();
@@ -76,7 +78,7 @@ class DeploymentEventsTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function deployment_failed_event_can_be_dispatched(): void
     {
         Event::fake();
@@ -93,7 +95,7 @@ class DeploymentEventsTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function deployment_events_are_broadcastable(): void
     {
         if (class_exists(DeploymentStarted::class)) {
@@ -108,7 +110,7 @@ class DeploymentEventsTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function deployment_event_contains_deployment_data(): void
     {
         if (class_exists(DeploymentStarted::class)) {

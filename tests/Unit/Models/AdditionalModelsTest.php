@@ -26,12 +26,12 @@ use App\Models\Server;
 use App\Models\Tenant;
 use App\Models\TenantDeployment;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Tests\TestCase;
 
 class AdditionalModelsTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     // ========================================
     // KubernetesCluster Model Tests

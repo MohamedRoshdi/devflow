@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\HealthCheck;
 use App\Models\HealthCheckResult;
 use App\Models\NotificationChannel;
@@ -30,7 +32,7 @@ class HealthCheckServiceTest extends TestCase
         $this->service = new HealthCheckService($this->notificationService);
     }
 
-    /** @test */
+    #[Test]
     public function it_performs_http_check_with_success(): void
     {
         // Arrange
@@ -55,7 +57,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertIsInt($result['response_time']);
     }
 
-    /** @test */
+    #[Test]
     public function it_performs_http_check_with_wrong_status_code(): void
     {
         // Arrange
@@ -80,7 +82,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertArrayHasKey('response_time', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_http_connection_exception(): void
     {
         // Arrange
@@ -104,7 +106,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertArrayHasKey('response_time', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_http_timeout(): void
     {
         // Arrange
@@ -128,7 +130,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertArrayHasKey('response_time', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_generic_http_exception(): void
     {
         // Arrange
@@ -151,7 +153,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertEquals('Unexpected error', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_performs_tcp_check_successfully(): void
     {
         // Arrange - Can't easily test real TCP without a server, so we'll test the structure
@@ -170,7 +172,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertContains($result['status'], ['success', 'failure']);
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_tcp_url_with_port(): void
     {
         // Arrange
@@ -188,7 +190,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertArrayHasKey('response_time', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_tcp_check_exceptions(): void
     {
         // Arrange - Use invalid port to trigger failure
@@ -207,7 +209,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertArrayHasKey('response_time', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_performs_ping_check_successfully(): void
     {
         // Arrange
@@ -232,7 +234,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertEquals(15, $result['response_time']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_ping_failure(): void
     {
         // Arrange
@@ -258,7 +260,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertArrayHasKey('response_time', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_ping_url_correctly(): void
     {
         // Arrange
@@ -282,7 +284,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertEquals('success', $result['status']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_ping_check_exceptions(): void
     {
         // Arrange
@@ -304,7 +306,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertEquals('Process execution failed', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_records_health_check_result(): void
     {
         // Arrange
@@ -332,7 +334,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertNotNull($check->last_check_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_records_health_check_failure_with_error(): void
     {
         // Arrange
@@ -356,7 +358,7 @@ class HealthCheckServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_check_status_to_healthy_on_success(): void
     {
         // Arrange
@@ -382,7 +384,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertNotNull($check->last_success_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_check_status_to_degraded_on_first_failure(): void
     {
         // Arrange
@@ -408,7 +410,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertNotNull($check->last_failure_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_check_status_to_down_after_five_failures(): void
     {
         // Arrange
@@ -433,7 +435,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertEquals(5, $check->consecutive_failures);
     }
 
-    /** @test */
+    #[Test]
     public function it_increments_consecutive_failures_correctly(): void
     {
         // Arrange
@@ -457,7 +459,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertEquals(3, $check->consecutive_failures);
     }
 
-    /** @test */
+    #[Test]
     public function it_notifies_on_failure_when_configured(): void
     {
         // Arrange
@@ -491,7 +493,7 @@ class HealthCheckServiceTest extends TestCase
         $this->service->updateHealthCheckStatus($check);
     }
 
-    /** @test */
+    #[Test]
     public function it_notifies_on_recovery_when_configured(): void
     {
         // Arrange
@@ -526,7 +528,7 @@ class HealthCheckServiceTest extends TestCase
         $this->service->updateHealthCheckStatus($check);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_notify_when_channel_is_inactive(): void
     {
         // Arrange
@@ -556,7 +558,7 @@ class HealthCheckServiceTest extends TestCase
         $this->service->updateHealthCheckStatus($check);
     }
 
-    /** @test */
+    #[Test]
     public function it_should_notify_returns_true_when_failure_configured(): void
     {
         // Arrange
@@ -577,7 +579,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_should_notify_returns_true_when_recovery_configured(): void
     {
         // Arrange
@@ -598,7 +600,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_should_notify_returns_false_when_not_configured(): void
     {
         // Arrange
@@ -621,7 +623,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertFalse($resultRecovery);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_status_changes(): void
     {
         // Arrange
@@ -649,7 +651,7 @@ class HealthCheckServiceTest extends TestCase
         $this->service->updateHealthCheckStatus($check);
     }
 
-    /** @test */
+    #[Test]
     public function it_runs_due_checks_successfully(): void
     {
         // Arrange
@@ -704,7 +706,7 @@ class HealthCheckServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_runs_check_with_never_checked_before(): void
     {
         // Arrange
@@ -729,7 +731,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertNotNull($check->last_check_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_run_check_exceptions_gracefully(): void
     {
         // Arrange
@@ -759,7 +761,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertEquals(0, $runCount);
     }
 
-    /** @test */
+    #[Test]
     public function it_runs_check_and_returns_result(): void
     {
         // Arrange
@@ -784,7 +786,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertNotNull($result->response_time_ms);
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_for_unknown_check_type(): void
     {
         // Arrange
@@ -814,7 +816,7 @@ class HealthCheckServiceTest extends TestCase
         $this->service->runCheck($check);
     }
 
-    /** @test */
+    #[Test]
     public function it_performs_ssl_expiry_check_structure(): void
     {
         // Arrange
@@ -833,7 +835,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertContains($result['status'], ['success', 'failure']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_ssl_check_exceptions(): void
     {
         // Arrange
@@ -851,7 +853,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertArrayHasKey('error', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_runtime_exception_when_result_not_found(): void
     {
         // Arrange
@@ -891,7 +893,7 @@ class HealthCheckServiceTest extends TestCase
         $customService->runCheck($check);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_notify_when_no_channels_configured(): void
     {
         // Arrange
@@ -912,7 +914,7 @@ class HealthCheckServiceTest extends TestCase
         $this->service->updateHealthCheckStatus($check);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_update_status_when_no_results_exist(): void
     {
         // Arrange
@@ -933,7 +935,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertEquals($originalFailures, $check->consecutive_failures);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_unknown_status_in_check_correctly(): void
     {
         // Arrange
@@ -969,7 +971,7 @@ class HealthCheckServiceTest extends TestCase
         $this->assertEquals('healthy', $check->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_url_for_ssl_check_with_port(): void
     {
         // Arrange

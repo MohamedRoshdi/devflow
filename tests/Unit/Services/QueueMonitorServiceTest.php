@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\FailedJob;
 use App\Services\QueueMonitorService;
 use Illuminate\Support\Facades\Artisan;
@@ -35,7 +37,7 @@ class QueueMonitorServiceTest extends TestCase
 
     // ==================== GET QUEUE STATISTICS TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_gets_comprehensive_queue_statistics(): void
     {
         // Arrange
@@ -63,7 +65,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertEquals(2, $stats['failed_jobs']);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_queue_statistics_when_no_jobs_exist(): void
     {
         // Arrange
@@ -82,7 +84,7 @@ class QueueMonitorServiceTest extends TestCase
 
     // ==================== PENDING JOBS COUNT TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_gets_pending_jobs_count(): void
     {
         // Arrange
@@ -96,7 +98,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertEquals(10, $count);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_zero_when_no_pending_jobs(): void
     {
         // Act
@@ -106,7 +108,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertEquals(0, $count);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_database_exception_for_pending_jobs(): void
     {
         // Arrange
@@ -123,7 +125,7 @@ class QueueMonitorServiceTest extends TestCase
 
     // ==================== PROCESSING JOBS COUNT TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_gets_processing_jobs_count(): void
     {
         // Arrange
@@ -137,7 +139,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertEquals(8, $count);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_zero_when_no_processing_jobs(): void
     {
         // Act
@@ -147,7 +149,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertEquals(0, $count);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_database_exception_for_processing_jobs(): void
     {
         // Arrange
@@ -164,7 +166,7 @@ class QueueMonitorServiceTest extends TestCase
 
     // ==================== FAILED JOBS COUNT TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_gets_failed_jobs_count(): void
     {
         // Arrange
@@ -177,7 +179,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertEquals(15, $count);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_zero_when_no_failed_jobs(): void
     {
         // Act
@@ -187,7 +189,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertEquals(0, $count);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exception_for_failed_jobs_count(): void
     {
         // This test is skipped because we cannot easily mock the FailedJob model
@@ -198,7 +200,7 @@ class QueueMonitorServiceTest extends TestCase
 
     // ==================== GET RECENT JOBS TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_gets_recent_jobs_with_default_limit(): void
     {
         // Arrange
@@ -212,7 +214,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertCount(50, $jobs); // Default limit
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_recent_jobs_with_custom_limit(): void
     {
         // Arrange
@@ -225,7 +227,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertCount(10, $jobs);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_jobs_ordered_by_created_at_descending(): void
     {
         // Arrange
@@ -238,7 +240,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertGreaterThanOrEqual($jobs[1]['created_at'], $jobs[0]['created_at']);
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_job_details_in_recent_jobs(): void
     {
         // Arrange
@@ -257,7 +259,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertArrayHasKey('job_class', $jobs[0]);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_empty_array_when_no_jobs_exist(): void
     {
         // Act
@@ -268,7 +270,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertEmpty($jobs);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exception_when_getting_recent_jobs(): void
     {
         // Arrange
@@ -286,7 +288,7 @@ class QueueMonitorServiceTest extends TestCase
 
     // ==================== GET FAILED JOBS TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_gets_failed_jobs_with_default_parameters(): void
     {
         // Arrange
@@ -300,7 +302,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertCount(50, $failedJobs); // Default limit
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_failed_jobs_with_custom_limit(): void
     {
         // Arrange
@@ -313,7 +315,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertCount(10, $failedJobs);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_failed_jobs_with_offset(): void
     {
         // Arrange
@@ -326,7 +328,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertCount(5, $failedJobs);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_failed_jobs_ordered_by_failed_at_descending(): void
     {
         // Arrange
@@ -350,7 +352,7 @@ class QueueMonitorServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_failed_job_details(): void
     {
         // Arrange
@@ -371,7 +373,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertArrayHasKey('failed_at_human', $failedJobs[0]);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_empty_array_when_no_failed_jobs(): void
     {
         // Act
@@ -382,7 +384,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertEmpty($failedJobs);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exception_when_getting_failed_jobs(): void
     {
         // This test is skipped because we cannot easily mock the FailedJob model
@@ -393,7 +395,7 @@ class QueueMonitorServiceTest extends TestCase
 
     // ==================== JOBS PER HOUR TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_gets_jobs_per_hour(): void
     {
         // Arrange
@@ -410,7 +412,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertEquals(13, $jobsPerHour);
     }
 
-    /** @test */
+    #[Test]
     public function it_caches_jobs_per_hour_calculation(): void
     {
         // Arrange
@@ -428,7 +430,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertEquals($firstCall, $secondCall);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_zero_jobs_per_hour_when_no_recent_jobs(): void
     {
         // Arrange
@@ -441,7 +443,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertEquals(0, $jobsPerHour);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exception_when_calculating_jobs_per_hour(): void
     {
         // Arrange
@@ -458,7 +460,7 @@ class QueueMonitorServiceTest extends TestCase
 
     // ==================== WORKER STATUS TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_detects_running_workers(): void
     {
         // Arrange
@@ -478,7 +480,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertEquals('Running (2 workers)', $status['status_text']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_horizon_workers(): void
     {
         // Arrange
@@ -496,7 +498,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertEquals(1, $status['worker_count']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_stopped_workers(): void
     {
         // Arrange
@@ -514,7 +516,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertEquals('Stopped', $status['status_text']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_process_failure_for_worker_status(): void
     {
         // Arrange
@@ -530,7 +532,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertEquals(0, $status['worker_count']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exception_when_checking_worker_status(): void
     {
         // Arrange
@@ -549,7 +551,7 @@ class QueueMonitorServiceTest extends TestCase
 
     // ==================== QUEUE BREAKDOWN TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_gets_queue_breakdown(): void
     {
         // Arrange
@@ -567,7 +569,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertEquals(3, $breakdown['notifications']);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_empty_array_when_no_queues(): void
     {
         // Act
@@ -578,7 +580,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertEmpty($breakdown);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exception_when_getting_queue_breakdown(): void
     {
         // Arrange
@@ -596,7 +598,7 @@ class QueueMonitorServiceTest extends TestCase
 
     // ==================== RETRY FAILED JOB TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_retries_specific_failed_job(): void
     {
         // Arrange
@@ -614,7 +616,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_false_when_failed_job_not_found(): void
     {
         // Act
@@ -624,7 +626,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exception_when_retrying_failed_job(): void
     {
         // Arrange
@@ -647,7 +649,7 @@ class QueueMonitorServiceTest extends TestCase
 
     // ==================== RETRY ALL FAILED JOBS TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_retries_all_failed_jobs(): void
     {
         // Arrange
@@ -665,7 +667,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exception_when_retrying_all_failed_jobs(): void
     {
         // Arrange
@@ -686,7 +688,7 @@ class QueueMonitorServiceTest extends TestCase
 
     // ==================== DELETE FAILED JOB TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_deletes_specific_failed_job(): void
     {
         // Arrange
@@ -704,7 +706,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_false_when_deleting_nonexistent_job(): void
     {
         // Act
@@ -714,7 +716,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exception_when_deleting_failed_job(): void
     {
         // Arrange
@@ -737,7 +739,7 @@ class QueueMonitorServiceTest extends TestCase
 
     // ==================== CLEAR ALL FAILED JOBS TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_clears_all_failed_jobs(): void
     {
         // Arrange
@@ -755,7 +757,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exception_when_clearing_all_failed_jobs(): void
     {
         // Arrange
@@ -776,7 +778,7 @@ class QueueMonitorServiceTest extends TestCase
 
     // ==================== PROCESSING RATE TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_calculates_processing_rate_statistics(): void
     {
         // Arrange
@@ -807,7 +809,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertEquals(2, $rate['failed_1hour']);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_success_rate_correctly(): void
     {
         // Arrange
@@ -825,7 +827,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertEquals(90.0, $rate['success_rate']);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_100_percent_success_rate_when_no_jobs(): void
     {
         // Act
@@ -835,7 +837,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertEquals(100, $rate['success_rate']);
     }
 
-    /** @test */
+    #[Test]
     public function it_caches_processing_rate_calculation(): void
     {
         // Arrange
@@ -853,7 +855,7 @@ class QueueMonitorServiceTest extends TestCase
         $this->assertEquals($firstCall, $secondCall);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exception_when_calculating_processing_rate(): void
     {
         // Arrange

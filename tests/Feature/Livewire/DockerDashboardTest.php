@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Livewire;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use App\Livewire\Docker\DockerDashboard;
 use App\Models\Server;
 use App\Models\User;
@@ -20,9 +21,8 @@ use Tests\TestCase;
  * Tests component rendering, Docker information display, container management,
  * resource usage display, image/volume/network listing, authorization,
  * and error handling for Docker API failures.
- *
- * @covers \App\Livewire\Docker\DockerDashboard
- */
+ * */
+#[CoversClass(\App\Livewire\Docker\DockerDashboard::class)]
 class DockerDashboardTest extends TestCase
 {
     use RefreshDatabase;

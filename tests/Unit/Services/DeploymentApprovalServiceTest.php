@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Deployment;
 use App\Models\DeploymentApproval;
 use App\Models\Project;
@@ -53,7 +55,7 @@ class DeploymentApprovalServiceTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_false_when_project_does_not_require_approval(): void
     {
         // Arrange
@@ -67,7 +69,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertFalse($requiresApproval);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_true_when_project_requires_approval(): void
     {
         // Arrange
@@ -84,7 +86,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertTrue($requiresApproval);
     }
 
-    /** @test */
+    #[Test]
     public function it_checks_environment_specific_approval_requirements(): void
     {
         // Arrange
@@ -104,7 +106,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertTrue($requiresApproval);
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_approval_for_non_matching_environments(): void
     {
         // Arrange
@@ -124,7 +126,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertFalse($requiresApproval);
     }
 
-    /** @test */
+    #[Test]
     public function it_checks_branch_specific_approval_requirements(): void
     {
         // Arrange
@@ -146,7 +148,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertTrue($requiresApproval);
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_approval_for_non_matching_branches(): void
     {
         // Arrange
@@ -168,7 +170,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertFalse($requiresApproval);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_approval_request_successfully(): void
     {
         // Arrange
@@ -191,7 +193,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $approval->requested_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_deployment_status_when_requesting_approval(): void
     {
         // Arrange
@@ -213,7 +215,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertEquals('pending_approval', $freshDeployment->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_approval_request_in_audit(): void
     {
         // Arrange
@@ -239,7 +241,7 @@ class DeploymentApprovalServiceTest extends TestCase
         // Assert - Expectations verified by Mockery (mock expectation is the assertion)
     }
 
-    /** @test */
+    #[Test]
     public function it_approves_deployment_successfully(): void
     {
         // Arrange
@@ -275,7 +277,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertNotNull($approval->responded_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_deployment_status_to_pending_when_approved(): void
     {
         // Arrange
@@ -308,7 +310,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertEquals('pending', $freshDeployment->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_approving_own_deployment(): void
     {
         // Arrange
@@ -334,7 +336,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->service->approve($approval, $user);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_approving_without_permission(): void
     {
         // Arrange
@@ -359,7 +361,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->service->approve($approval, $approver);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_approving_already_processed_approval(): void
     {
         // Arrange
@@ -386,7 +388,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->service->approve($approval, $approver);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_deployment_successfully(): void
     {
         // Arrange
@@ -421,7 +423,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertNotNull($approval->responded_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_deployment_status_to_failed_when_rejected(): void
     {
         // Arrange
@@ -455,7 +457,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertStringContainsString('Deployment rejected: Not ready', $deployment->error_message);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_rejecting_without_permission(): void
     {
         // Arrange
@@ -480,7 +482,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->service->reject($approval, $rejector, 'Rejected');
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_rejecting_already_processed_approval(): void
     {
         // Arrange
@@ -507,7 +509,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->service->reject($approval, $rejector, 'Rejected again');
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_pending_approvals_for_global_approver(): void
     {
         // Arrange
@@ -539,7 +541,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertTrue($pendingApprovals->every(fn ($a) => $a->status === 'pending'));
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_pending_approvals_for_project_approver(): void
     {
         // Arrange
@@ -574,7 +576,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertEquals($deployment1->id, $firstApproval->deployment_id);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_empty_collection_for_user_without_approval_permission(): void
     {
         // Arrange
@@ -595,7 +597,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertCount(0, $pendingApprovals);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_approval_statistics_for_all_projects(): void
     {
         // Arrange
@@ -625,7 +627,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertEquals(10, $stats['total']);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_approval_statistics_for_user_projects(): void
     {
         // Arrange
@@ -655,7 +657,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertEquals(2, $stats['pending']);
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_notifications_when_requesting_approval(): void
     {
         // Arrange
@@ -688,7 +690,7 @@ class DeploymentApprovalServiceTest extends TestCase
         Notification::assertNotSentTo($requester, DeploymentApprovalRequested::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_notification_when_deployment_is_approved(): void
     {
         // Arrange
@@ -719,7 +721,7 @@ class DeploymentApprovalServiceTest extends TestCase
         // Assert - Expectations verified by Mockery (mock expectation is the assertion)
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_notification_when_deployment_is_rejected(): void
     {
         // Arrange
@@ -750,7 +752,7 @@ class DeploymentApprovalServiceTest extends TestCase
         // Assert - Expectations verified by Mockery (mock expectation is the assertion)
     }
 
-    /** @test */
+    #[Test]
     public function it_allows_user_with_project_permission_to_approve(): void
     {
         // Arrange
@@ -783,7 +785,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertEquals('approved', $approval->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_approval_with_notes(): void
     {
         // Arrange
@@ -814,7 +816,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertEquals('All checks passed successfully', $approval->notes);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_approval_without_notes(): void
     {
         // Arrange
@@ -845,7 +847,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertNull($approval->notes);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_database_transaction_for_approval_request(): void
     {
         // Arrange
@@ -869,7 +871,7 @@ class DeploymentApprovalServiceTest extends TestCase
         DB::rollBack();
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_database_transaction_for_approval(): void
     {
         // Arrange
@@ -906,7 +908,7 @@ class DeploymentApprovalServiceTest extends TestCase
         DB::rollBack();
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_database_transaction_for_rejection(): void
     {
         // Arrange
@@ -943,7 +945,7 @@ class DeploymentApprovalServiceTest extends TestCase
         DB::rollBack();
     }
 
-    /** @test */
+    #[Test]
     public function it_records_approval_timestamp(): void
     {
         // Arrange
@@ -976,7 +978,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $approval->responded_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_records_rejection_timestamp(): void
     {
         // Arrange
@@ -1009,7 +1011,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $approval->responded_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_combines_environment_and_branch_approval_rules(): void
     {
         // Arrange
@@ -1033,7 +1035,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertTrue($requiresApproval);
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_approval_when_branch_doesnt_match_combined_rules(): void
     {
         // Arrange
@@ -1057,7 +1059,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertFalse($requiresApproval);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_null_project_gracefully(): void
     {
         // Arrange
@@ -1070,7 +1072,7 @@ class DeploymentApprovalServiceTest extends TestCase
         $this->assertFalse($requiresApproval);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_approval_action_in_audit(): void
     {
         // Arrange
@@ -1110,7 +1112,7 @@ class DeploymentApprovalServiceTest extends TestCase
         // Assert - Expectations verified by Mockery (mock expectation is the assertion)
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_rejection_action_in_audit(): void
     {
         // Arrange

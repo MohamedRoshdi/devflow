@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Server;
 use App\Models\SSHKey;
 use App\Models\User;
@@ -31,7 +33,7 @@ class SSHKeyServiceTest extends TestCase
     // SSH KEY GENERATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_generates_ed25519_key_pair_successfully(): void
     {
         // Arrange
@@ -73,7 +75,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertStringContainsString('PRIVATE KEY', $result['private_key']);
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_rsa_key_pair_with_4096_bits(): void
     {
         // Arrange
@@ -101,7 +103,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertStringContainsString('test-comment', $result['public_key']);
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_ecdsa_key_pair_with_521_bits(): void
     {
         // Arrange
@@ -128,7 +130,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertStringContainsString('ecdsa-sha2-nistp521', $result['public_key']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_unsupported_key_type(): void
     {
         // Act
@@ -140,7 +142,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertStringContainsString('Unsupported key type', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_ssh_keygen_command_failure(): void
     {
         // Arrange
@@ -169,7 +171,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertArrayHasKey('error', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_adds_default_comment_when_no_comment_provided(): void
     {
         // Arrange
@@ -196,7 +198,7 @@ class SSHKeyServiceTest extends TestCase
     // SSH KEY IMPORT TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_imports_valid_rsa_key_pair(): void
     {
         // Arrange
@@ -212,7 +214,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertArrayHasKey('fingerprint', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_imports_valid_ed25519_key_pair(): void
     {
         // Arrange
@@ -228,7 +230,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertArrayHasKey('fingerprint', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_imports_valid_ecdsa_key_pair(): void
     {
         // Arrange
@@ -244,7 +246,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertArrayHasKey('fingerprint', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_invalid_public_key_format(): void
     {
         // Arrange
@@ -260,7 +262,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertStringContainsString('Invalid public key format', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_invalid_private_key_format(): void
     {
         // Arrange
@@ -276,7 +278,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertStringContainsString('Invalid private key format', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_trims_whitespace_from_imported_keys(): void
     {
         // Arrange
@@ -295,7 +297,7 @@ class SSHKeyServiceTest extends TestCase
     // FINGERPRINT CALCULATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_calculates_fingerprint_for_public_key(): void
     {
         // Arrange
@@ -315,7 +317,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertIsString($fingerprint);
     }
 
-    /** @test */
+    #[Test]
     public function it_extracts_md5_fingerprint_from_ssh_keygen_output(): void
     {
         // Arrange
@@ -335,7 +337,7 @@ class SSHKeyServiceTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_falls_back_to_sha256_hash_when_ssh_keygen_fails(): void
     {
         // Arrange
@@ -357,7 +359,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertEquals(32, strlen($fingerprint)); // SHA256 truncated to 32 chars
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_empty_public_key_for_fingerprint(): void
     {
         // Arrange
@@ -375,7 +377,7 @@ class SSHKeyServiceTest extends TestCase
     // DEPLOY KEY TO SERVER TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_deploys_key_to_localhost_server(): void
     {
         // Arrange
@@ -409,7 +411,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertStringContainsString('deployed successfully', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_deploys_key_to_remote_server(): void
     {
         // Arrange
@@ -447,7 +449,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertStringContainsString('deployed successfully', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_deployment_failure_to_remote_server(): void
     {
         // Arrange
@@ -486,7 +488,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertArrayHasKey('error', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_when_key_already_exists_on_localhost(): void
     {
         // Arrange
@@ -518,7 +520,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertStringContainsString('already deployed', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_deploys_key_with_ssh_key_authentication(): void
     {
         // Arrange
@@ -555,7 +557,7 @@ class SSHKeyServiceTest extends TestCase
     // REMOVE KEY FROM SERVER TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_removes_key_from_localhost_server(): void
     {
         // Arrange
@@ -587,7 +589,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertStringContainsString('removed from server', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_removes_key_from_remote_server(): void
     {
         // Arrange
@@ -622,7 +624,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertStringContainsString('removed', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_removal_when_authorized_keys_file_not_found(): void
     {
         // Arrange
@@ -653,7 +655,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertStringContainsString('not found', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_removal_failure_from_remote_server(): void
     {
         // Arrange
@@ -695,7 +697,7 @@ class SSHKeyServiceTest extends TestCase
     // LOCALHOST DETECTION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_detects_127_0_0_1_as_localhost(): void
     {
         // Arrange
@@ -711,7 +713,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_ipv6_localhost(): void
     {
         // Arrange
@@ -727,7 +729,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_localhost_string_as_localhost(): void
     {
         // Arrange
@@ -743,7 +745,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_remote_ip_as_not_localhost(): void
     {
         // Arrange
@@ -763,7 +765,7 @@ class SSHKeyServiceTest extends TestCase
     // SSH COMMAND BUILDING TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_builds_ssh_command_with_default_options(): void
     {
         // Arrange
@@ -791,7 +793,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertStringContainsString('ls -la', $command);
     }
 
-    /** @test */
+    #[Test]
     public function it_builds_ssh_command_with_custom_port(): void
     {
         // Arrange
@@ -815,7 +817,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertStringContainsString('192.168.1.100', $command);
     }
 
-    /** @test */
+    #[Test]
     public function it_builds_ssh_command_with_private_key(): void
     {
         // Arrange
@@ -837,7 +839,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertStringContainsString('-i', $command);
     }
 
-    /** @test */
+    #[Test]
     public function it_escapes_special_characters_in_remote_command(): void
     {
         // Arrange
@@ -864,7 +866,7 @@ class SSHKeyServiceTest extends TestCase
     // EDGE CASES AND ERROR HANDLING TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_handles_exception_during_key_deployment(): void
     {
         // Arrange
@@ -888,7 +890,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertArrayHasKey('error', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exception_during_key_removal(): void
     {
         // Arrange
@@ -912,7 +914,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertArrayHasKey('error', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_empty_public_key_during_deployment(): void
     {
         // Arrange
@@ -938,7 +940,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertFalse($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_properly_cleans_up_temp_files_after_key_generation(): void
     {
         // This is tested implicitly in the generateKeyPair method
@@ -962,7 +964,7 @@ class SSHKeyServiceTest extends TestCase
         // Temp files should be cleaned up automatically
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_fingerprint_calculation_with_malformed_key(): void
     {
         // Arrange
@@ -984,7 +986,7 @@ class SSHKeyServiceTest extends TestCase
         $this->assertIsString($fingerprint);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_key_type_before_generation(): void
     {
         // Arrange - invalid key type

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\LogParsers;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use App\Services\LogParsers\DockerLogParser;
 use App\Services\LogParsers\GenericLogParser;
 use App\Services\LogParsers\LaravelLogParser;
@@ -14,17 +15,15 @@ use App\Services\LogParsers\PhpLogParser;
 use App\Services\LogParsers\SystemLogParser;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \App\Services\LogParsers\LogParserFactory
- * @covers \App\Services\LogParsers\NginxLogParser
- * @covers \App\Services\LogParsers\LaravelLogParser
- * @covers \App\Services\LogParsers\PhpLogParser
- * @covers \App\Services\LogParsers\MysqlLogParser
- * @covers \App\Services\LogParsers\SystemLogParser
- * @covers \App\Services\LogParsers\DockerLogParser
- * @covers \App\Services\LogParsers\GenericLogParser
- * @covers \App\Services\LogParsers\AbstractLogParser
- */
+#[CoversClass(\App\Services\LogParsers\LogParserFactory::class)]
+#[CoversClass(\App\Services\LogParsers\NginxLogParser::class)]
+#[CoversClass(\App\Services\LogParsers\LaravelLogParser::class)]
+#[CoversClass(\App\Services\LogParsers\PhpLogParser::class)]
+#[CoversClass(\App\Services\LogParsers\MysqlLogParser::class)]
+#[CoversClass(\App\Services\LogParsers\SystemLogParser::class)]
+#[CoversClass(\App\Services\LogParsers\DockerLogParser::class)]
+#[CoversClass(\App\Services\LogParsers\GenericLogParser::class)]
+#[CoversClass(\App\Services\LogParsers\AbstractLogParser::class)]
 final class LogParserFactoryTest extends TestCase
 {
     private LogParserFactory $factory;

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Deployment;
 use App\Models\Project;
 use App\Models\User;
@@ -14,7 +16,7 @@ use App\Services\ProjectManager\ProjectManagerService;
 use App\Services\RollbackService;
 use App\Services\SSLService;
 use App\Services\StorageService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Mockery;
@@ -22,7 +24,7 @@ use Tests\TestCase;
 
 class ProjectManagerServiceTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     private ProjectManagerService $service;
     private DockerService $dockerService;
@@ -63,7 +65,7 @@ class ProjectManagerServiceTest extends TestCase
     // PROJECT CREATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_creates_project_successfully(): void
     {
         Log::shouldReceive('info')->times(2);
@@ -86,7 +88,7 @@ class ProjectManagerServiceTest extends TestCase
         $this->assertNotNull($project->setup_completed_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_initializes_project_storage(): void
     {
         Log::shouldReceive('info')->times(2);
@@ -105,7 +107,7 @@ class ProjectManagerServiceTest extends TestCase
         $this->assertEquals(0, $project->storage_used_mb);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_project_creation_failure(): void
     {
         Log::shouldReceive('error')->once();
@@ -117,7 +119,7 @@ class ProjectManagerServiceTest extends TestCase
         $this->service->createProject([]);
     }
 
-    /** @test */
+    #[Test]
     public function it_rolls_back_on_project_creation_failure(): void
     {
         Log::shouldReceive('info')->once();
@@ -141,7 +143,7 @@ class ProjectManagerServiceTest extends TestCase
     // DEPLOYMENT TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_deploys_project_successfully(): void
     {
         Log::shouldReceive('info')->times(3);
@@ -182,7 +184,7 @@ class ProjectManagerServiceTest extends TestCase
         $this->assertNotNull($project->fresh()->last_deployed_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_concurrent_deployments(): void
     {
         $project = Project::factory()->create();
@@ -198,7 +200,7 @@ class ProjectManagerServiceTest extends TestCase
         $this->service->deployProject($project);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_deployment_failure(): void
     {
         Log::shouldReceive('info')->times(2);
@@ -226,7 +228,7 @@ class ProjectManagerServiceTest extends TestCase
         $this->service->deployProject($project);
     }
 
-    /** @test */
+    #[Test]
     public function it_deploys_standalone_container(): void
     {
         Log::shouldReceive('info')->times(3);
@@ -262,7 +264,7 @@ class ProjectManagerServiceTest extends TestCase
     // PROJECT HEALTH TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_gets_project_health_successfully(): void
     {
         $project = Project::factory()->create();
@@ -290,7 +292,7 @@ class ProjectManagerServiceTest extends TestCase
         $this->assertTrue($health['checks']['containers']['healthy']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_unhealthy_containers(): void
     {
         $project = Project::factory()->create();
@@ -312,7 +314,7 @@ class ProjectManagerServiceTest extends TestCase
         $this->assertFalse($health['checks']['containers']['healthy']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_ssl_expiry_warnings(): void
     {
         $project = Project::factory()->create();
@@ -335,7 +337,7 @@ class ProjectManagerServiceTest extends TestCase
         $this->assertNotEmpty($health['checks']['domains']['ssl_issues']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_storage_warnings(): void
     {
         $project = Project::factory()->create([
@@ -354,7 +356,7 @@ class ProjectManagerServiceTest extends TestCase
         $this->assertEquals('warning', $health['overall_status']);
     }
 
-    /** @test */
+    #[Test]
     public function it_extracts_recent_errors_from_logs(): void
     {
         $project = Project::factory()->create();
@@ -378,7 +380,7 @@ class ProjectManagerServiceTest extends TestCase
     // PROJECT CLEANUP TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_cleans_up_project_successfully(): void
     {
         Log::shouldReceive('info')->times(2);
@@ -406,7 +408,7 @@ class ProjectManagerServiceTest extends TestCase
         $this->assertArrayHasKey('operations', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_cleanup_failure(): void
     {
         Log::shouldReceive('info')->once();
@@ -427,7 +429,7 @@ class ProjectManagerServiceTest extends TestCase
     // PROJECT START/STOP TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_stops_project_successfully(): void
     {
         Log::shouldReceive('info')->once();
@@ -445,7 +447,7 @@ class ProjectManagerServiceTest extends TestCase
         $this->assertEquals('stopped', $project->fresh()->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_starts_project_successfully(): void
     {
         Log::shouldReceive('info')->once();
@@ -463,7 +465,7 @@ class ProjectManagerServiceTest extends TestCase
         $this->assertEquals('running', $project->fresh()->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_restarts_project_successfully(): void
     {
         Log::shouldReceive('info')->once();
@@ -484,7 +486,7 @@ class ProjectManagerServiceTest extends TestCase
         $this->assertEquals('running', $project->fresh()->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_restart_failure_on_stop(): void
     {
         Log::shouldReceive('info')->once();
@@ -504,7 +506,7 @@ class ProjectManagerServiceTest extends TestCase
     // ROLLBACK TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_performs_rollback_successfully(): void
     {
         Log::shouldReceive('info')->times(2);
@@ -533,7 +535,7 @@ class ProjectManagerServiceTest extends TestCase
         $this->assertEquals($newDeployment->id, $result->id);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_rollback_to_different_project(): void
     {
         $project1 = Project::factory()->create();
@@ -548,7 +550,7 @@ class ProjectManagerServiceTest extends TestCase
         $this->service->rollbackProject($project1, $deployment->id);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_rollback_failure(): void
     {
         Log::shouldReceive('info')->once();
@@ -570,7 +572,7 @@ class ProjectManagerServiceTest extends TestCase
         $this->service->rollbackProject($project, $deployment->id);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_rollback_points(): void
     {
         $project = Project::factory()->create();

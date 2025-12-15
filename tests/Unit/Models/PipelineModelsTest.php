@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Models;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\PipelineRun;
 use App\Models\PipelineStage;
 use App\Models\PipelineStageRun;
@@ -16,7 +18,7 @@ class PipelineModelsTest extends TestCase
     // PipelineStage Model Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_can_be_created_with_factory(): void
     {
         $stage = PipelineStage::factory()->create();
@@ -27,7 +29,7 @@ class PipelineModelsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_belongs_to_project(): void
     {
         $project = Project::factory()->create();
@@ -37,7 +39,7 @@ class PipelineModelsTest extends TestCase
         $this->assertEquals($project->id, $stage->project->id);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_has_many_stage_runs(): void
     {
         $stage = PipelineStage::factory()->create();
@@ -47,7 +49,7 @@ class PipelineModelsTest extends TestCase
         $this->assertInstanceOf(PipelineStageRun::class, $stage->stageRuns->first());
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_has_latest_run_relationship(): void
     {
         $stage = PipelineStage::factory()->create();
@@ -64,7 +66,7 @@ class PipelineModelsTest extends TestCase
         $this->assertEquals($latest->id, $stage->latestRun->id);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_casts_commands_as_array(): void
     {
         $commands = ['composer install', 'npm run build', 'php artisan migrate'];
@@ -74,7 +76,7 @@ class PipelineModelsTest extends TestCase
         $this->assertEquals($commands, $stage->commands);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_casts_environment_variables_as_array(): void
     {
         $envVars = ['NODE_ENV' => 'production', 'APP_DEBUG' => 'false'];
@@ -84,7 +86,7 @@ class PipelineModelsTest extends TestCase
         $this->assertEquals($envVars, $stage->environment_variables);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_casts_enabled_as_boolean(): void
     {
         $stage = PipelineStage::factory()->create(['enabled' => true]);
@@ -93,7 +95,7 @@ class PipelineModelsTest extends TestCase
         $this->assertIsBool($stage->enabled);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_casts_continue_on_failure_as_boolean(): void
     {
         $stage = PipelineStage::factory()->create(['continue_on_failure' => true]);
@@ -102,7 +104,7 @@ class PipelineModelsTest extends TestCase
         $this->assertIsBool($stage->continue_on_failure);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_casts_timeout_seconds_as_integer(): void
     {
         $stage = PipelineStage::factory()->create(['timeout_seconds' => 300]);
@@ -111,7 +113,7 @@ class PipelineModelsTest extends TestCase
         $this->assertEquals(300, $stage->timeout_seconds);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_casts_order_as_integer(): void
     {
         $stage = PipelineStage::factory()->create(['order' => 1]);
@@ -120,7 +122,7 @@ class PipelineModelsTest extends TestCase
         $this->assertEquals(1, $stage->order);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_scope_enabled_filters_enabled_stages(): void
     {
         PipelineStage::factory()->create(['enabled' => true]);
@@ -131,7 +133,7 @@ class PipelineModelsTest extends TestCase
         $this->assertCount(2, $enabled);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_scope_ordered_sorts_by_order_field(): void
     {
         $stage3 = PipelineStage::factory()->create(['order' => 3]);
@@ -144,7 +146,7 @@ class PipelineModelsTest extends TestCase
         $this->assertEquals($stage3->id, $ordered->last()->id);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_scope_by_type_filters_by_type(): void
     {
         PipelineStage::factory()->count(2)->create(['type' => 'pre_deploy']);
@@ -155,7 +157,7 @@ class PipelineModelsTest extends TestCase
         $this->assertCount(2, $preDeployStages);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_icon_attribute_returns_test_icon_for_test_stage(): void
     {
         $stage = PipelineStage::factory()->create(['name' => 'Run Tests']);
@@ -163,7 +165,7 @@ class PipelineModelsTest extends TestCase
         $this->assertEquals('flask', $stage->icon);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_icon_attribute_returns_build_icon_for_build_stage(): void
     {
         $stage = PipelineStage::factory()->create(['name' => 'Build Assets']);
@@ -171,7 +173,7 @@ class PipelineModelsTest extends TestCase
         $this->assertEquals('gear', $stage->icon);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_icon_attribute_returns_deploy_icon_for_deploy_stage(): void
     {
         $stage = PipelineStage::factory()->create(['name' => 'Deploy to Production']);
@@ -179,7 +181,7 @@ class PipelineModelsTest extends TestCase
         $this->assertEquals('rocket', $stage->icon);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_icon_attribute_returns_security_icon_for_security_stage(): void
     {
         $stage = PipelineStage::factory()->create(['name' => 'Security Scan']);
@@ -187,7 +189,7 @@ class PipelineModelsTest extends TestCase
         $this->assertEquals('shield', $stage->icon);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_icon_attribute_returns_package_icon_for_install_stage(): void
     {
         $stage = PipelineStage::factory()->create(['name' => 'Install Dependencies']);
@@ -195,7 +197,7 @@ class PipelineModelsTest extends TestCase
         $this->assertEquals('package', $stage->icon);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_icon_attribute_returns_database_icon_for_migration_stage(): void
     {
         $stage = PipelineStage::factory()->create(['name' => 'Run Migrations']);
@@ -203,7 +205,7 @@ class PipelineModelsTest extends TestCase
         $this->assertEquals('database', $stage->icon);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_icon_attribute_returns_default_code_icon(): void
     {
         $stage = PipelineStage::factory()->create(['name' => 'Custom Stage']);
@@ -211,7 +213,7 @@ class PipelineModelsTest extends TestCase
         $this->assertEquals('code', $stage->icon);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_color_attribute_returns_correct_colors(): void
     {
         $preDeploy = PipelineStage::factory()->create(['type' => 'pre_deploy']);
@@ -233,7 +235,7 @@ class PipelineModelsTest extends TestCase
     // PipelineStageRun Model Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_run_can_be_created_with_factory(): void
     {
         $run = PipelineStageRun::factory()->create();
@@ -244,7 +246,7 @@ class PipelineModelsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_run_belongs_to_pipeline_run(): void
     {
         $pipelineRun = PipelineRun::factory()->create();
@@ -254,7 +256,7 @@ class PipelineModelsTest extends TestCase
         $this->assertEquals($pipelineRun->id, $stageRun->pipelineRun->id);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_run_belongs_to_pipeline_stage(): void
     {
         $stage = PipelineStage::factory()->create();
@@ -264,7 +266,7 @@ class PipelineModelsTest extends TestCase
         $this->assertEquals($stage->id, $stageRun->pipelineStage->id);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_run_casts_datetime_attributes(): void
     {
         $run = PipelineStageRun::factory()->create([
@@ -276,7 +278,7 @@ class PipelineModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $run->completed_at);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_run_casts_duration_seconds_as_integer(): void
     {
         $run = PipelineStageRun::factory()->create(['duration_seconds' => 120]);
@@ -285,7 +287,7 @@ class PipelineModelsTest extends TestCase
         $this->assertEquals(120, $run->duration_seconds);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_run_mark_running_updates_status_and_started_at(): void
     {
         $run = PipelineStageRun::factory()->create(['status' => 'pending']);
@@ -297,7 +299,7 @@ class PipelineModelsTest extends TestCase
         $this->assertNotNull($run->started_at);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_run_mark_success_updates_status_and_completed_at(): void
     {
         $run = PipelineStageRun::factory()->create([
@@ -313,7 +315,7 @@ class PipelineModelsTest extends TestCase
         $this->assertGreaterThan(0, $run->duration_seconds);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_run_mark_failed_updates_status_and_error_message(): void
     {
         $run = PipelineStageRun::factory()->create([
@@ -330,7 +332,7 @@ class PipelineModelsTest extends TestCase
         $this->assertGreaterThan(0, $run->duration_seconds);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_run_mark_skipped_updates_status(): void
     {
         $run = PipelineStageRun::factory()->create(['status' => 'pending']);
@@ -342,7 +344,7 @@ class PipelineModelsTest extends TestCase
         $this->assertNotNull($run->completed_at);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_run_append_output_adds_line_to_output(): void
     {
         $run = PipelineStageRun::factory()->create(['output' => 'Line 1']);
@@ -354,7 +356,7 @@ class PipelineModelsTest extends TestCase
         $this->assertStringContainsString('Line 2', $run->output);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_run_append_output_handles_null_output(): void
     {
         $run = PipelineStageRun::factory()->create(['output' => null]);
@@ -365,7 +367,7 @@ class PipelineModelsTest extends TestCase
         $this->assertStringContainsString('First line', $run->output);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_run_is_running_returns_true_when_running(): void
     {
         $run = PipelineStageRun::factory()->create(['status' => 'running']);
@@ -373,7 +375,7 @@ class PipelineModelsTest extends TestCase
         $this->assertTrue($run->isRunning());
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_run_is_running_returns_false_when_not_running(): void
     {
         $run = PipelineStageRun::factory()->create(['status' => 'success']);
@@ -381,7 +383,7 @@ class PipelineModelsTest extends TestCase
         $this->assertFalse($run->isRunning());
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_run_is_success_returns_true_when_success(): void
     {
         $run = PipelineStageRun::factory()->create(['status' => 'success']);
@@ -389,7 +391,7 @@ class PipelineModelsTest extends TestCase
         $this->assertTrue($run->isSuccess());
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_run_is_failed_returns_true_when_failed(): void
     {
         $run = PipelineStageRun::factory()->create(['status' => 'failed']);
@@ -397,7 +399,7 @@ class PipelineModelsTest extends TestCase
         $this->assertTrue($run->isFailed());
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_run_is_skipped_returns_true_when_skipped(): void
     {
         $run = PipelineStageRun::factory()->create(['status' => 'skipped']);
@@ -405,7 +407,7 @@ class PipelineModelsTest extends TestCase
         $this->assertTrue($run->isSkipped());
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_run_status_color_returns_correct_colors(): void
     {
         $success = PipelineStageRun::factory()->create(['status' => 'success']);
@@ -424,7 +426,7 @@ class PipelineModelsTest extends TestCase
         $this->assertEquals('gray', $skipped->statusColor);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_run_status_icon_returns_correct_icons(): void
     {
         $success = PipelineStageRun::factory()->create(['status' => 'success']);
@@ -443,7 +445,7 @@ class PipelineModelsTest extends TestCase
         $this->assertEquals('minus-circle', $skipped->statusIcon);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_run_formatted_duration_returns_dash_when_null(): void
     {
         $run = PipelineStageRun::factory()->create(['duration_seconds' => null]);
@@ -451,7 +453,7 @@ class PipelineModelsTest extends TestCase
         $this->assertEquals('-', $run->formattedDuration);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_run_formatted_duration_returns_seconds_only_under_one_minute(): void
     {
         $run = PipelineStageRun::factory()->create(['duration_seconds' => 45]);
@@ -459,7 +461,7 @@ class PipelineModelsTest extends TestCase
         $this->assertEquals('45s', $run->formattedDuration);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_run_formatted_duration_returns_minutes_and_seconds(): void
     {
         $run = PipelineStageRun::factory()->create(['duration_seconds' => 125]);
@@ -467,7 +469,7 @@ class PipelineModelsTest extends TestCase
         $this->assertEquals('2m 5s', $run->formattedDuration);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_run_formatted_duration_handles_exact_minutes(): void
     {
         $run = PipelineStageRun::factory()->create(['duration_seconds' => 120]);

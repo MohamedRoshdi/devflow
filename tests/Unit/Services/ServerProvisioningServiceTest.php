@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\ProvisioningLog;
 use App\Models\Server;
 use App\Models\User;
@@ -49,7 +51,7 @@ class ServerProvisioningServiceTest extends TestCase
             ->willThrowException(new \RuntimeException('SSH command failed: Command\nError: Connection failed'));
     }
 
-    /** @test */
+    #[Test]
     public function it_provisions_server_with_default_options(): void
     {
         // Arrange
@@ -67,7 +69,7 @@ class ServerProvisioningServiceTest extends TestCase
         $this->assertContains('composer', $server->installed_packages);
     }
 
-    /** @test */
+    #[Test]
     public function it_sets_provisioning_status_when_starting(): void
     {
         // Arrange
@@ -82,7 +84,7 @@ class ServerProvisioningServiceTest extends TestCase
         $this->assertEquals('completed', $server->provision_status);
     }
 
-    /** @test */
+    #[Test]
     public function it_provisions_server_with_custom_options(): void
     {
         // Arrange
@@ -114,7 +116,7 @@ class ServerProvisioningServiceTest extends TestCase
         $this->assertContains('nodejs-18', $server->installed_packages);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_provisioning_failure_gracefully(): void
     {
         // Arrange
@@ -133,7 +135,7 @@ class ServerProvisioningServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_success_notification_on_completion(): void
     {
         // Arrange
@@ -148,7 +150,7 @@ class ServerProvisioningServiceTest extends TestCase
         Notification::assertSentTo($user, ServerProvisioningCompleted::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_failure_notification_on_error(): void
     {
         // Arrange
@@ -167,7 +169,7 @@ class ServerProvisioningServiceTest extends TestCase
         Notification::assertSentTo($user, ServerProvisioningCompleted::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_update_system_when_disabled(): void
     {
         // Arrange
@@ -184,7 +186,7 @@ class ServerProvisioningServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_system_packages(): void
     {
         // Arrange
@@ -203,7 +205,7 @@ class ServerProvisioningServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_log_when_updating_system(): void
     {
         // Arrange
@@ -224,7 +226,7 @@ class ServerProvisioningServiceTest extends TestCase
         $this->assertNotNull($log->completed_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_update_system_failure(): void
     {
         // Arrange
@@ -247,7 +249,7 @@ class ServerProvisioningServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_installs_nginx_successfully(): void
     {
         // Arrange
@@ -266,7 +268,7 @@ class ServerProvisioningServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_nginx_installation_failure(): void
     {
         // Arrange
@@ -288,7 +290,7 @@ class ServerProvisioningServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_installs_mysql_with_root_password(): void
     {
         // Arrange
@@ -308,7 +310,7 @@ class ServerProvisioningServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_escapes_special_characters_in_mysql_password(): void
     {
         // Arrange
@@ -323,7 +325,7 @@ class ServerProvisioningServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_mysql_installation_failure(): void
     {
         // Arrange
@@ -345,7 +347,7 @@ class ServerProvisioningServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_installs_php_with_default_version(): void
     {
         // Arrange
@@ -364,7 +366,7 @@ class ServerProvisioningServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_installs_php_with_custom_version(): void
     {
         // Arrange
@@ -383,7 +385,7 @@ class ServerProvisioningServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_php_installation_failure(): void
     {
         // Arrange
@@ -405,7 +407,7 @@ class ServerProvisioningServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_installs_composer_successfully(): void
     {
         // Arrange
@@ -424,7 +426,7 @@ class ServerProvisioningServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_composer_installation_failure(): void
     {
         // Arrange
@@ -446,7 +448,7 @@ class ServerProvisioningServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_installs_nodejs_with_default_version(): void
     {
         // Arrange
@@ -465,7 +467,7 @@ class ServerProvisioningServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_installs_nodejs_with_custom_version(): void
     {
         // Arrange
@@ -484,7 +486,7 @@ class ServerProvisioningServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_nodejs_installation_failure(): void
     {
         // Arrange
@@ -506,7 +508,7 @@ class ServerProvisioningServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_configures_firewall_with_default_ports(): void
     {
         // Arrange
@@ -528,7 +530,7 @@ class ServerProvisioningServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_configures_firewall_with_custom_ports(): void
     {
         // Arrange
@@ -546,7 +548,7 @@ class ServerProvisioningServiceTest extends TestCase
         $this->assertTrue($server->ufw_enabled);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_firewall_configuration_failure(): void
     {
         // Arrange
@@ -568,7 +570,7 @@ class ServerProvisioningServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_setups_swap_with_default_size(): void
     {
         // Arrange
@@ -587,7 +589,7 @@ class ServerProvisioningServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_setups_swap_with_custom_size(): void
     {
         // Arrange
@@ -601,7 +603,7 @@ class ServerProvisioningServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_swap_setup_failure(): void
     {
         // Arrange
@@ -623,7 +625,7 @@ class ServerProvisioningServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_secures_ssh_configuration(): void
     {
         // Arrange
@@ -642,7 +644,7 @@ class ServerProvisioningServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_ssh_security_configuration_failure(): void
     {
         // Arrange
@@ -664,7 +666,7 @@ class ServerProvisioningServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_provisioning_script_with_default_options(): void
     {
         // Act
@@ -679,7 +681,7 @@ class ServerProvisioningServiceTest extends TestCase
         $this->assertStringContainsString('nodejs', $script);
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_provisioning_script_with_custom_options(): void
     {
         // Arrange
@@ -709,7 +711,7 @@ class ServerProvisioningServiceTest extends TestCase
         $this->assertStringContainsString('mysql-server', $script);
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_script_without_mysql_when_disabled(): void
     {
         // Arrange
@@ -724,7 +726,7 @@ class ServerProvisioningServiceTest extends TestCase
         $this->assertStringNotContainsString('mysql-server', $script);
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_script_without_system_update_when_disabled(): void
     {
         // Arrange
@@ -748,7 +750,7 @@ class ServerProvisioningServiceTest extends TestCase
         $this->assertStringNotContainsString('apt-get autoremove', $script);
     }
 
-    /** @test */
+    #[Test]
     public function it_tracks_all_installed_packages(): void
     {
         // Arrange
@@ -781,7 +783,7 @@ class ServerProvisioningServiceTest extends TestCase
         $this->assertContains('ufw', $packages);
     }
 
-    /** @test */
+    #[Test]
     public function it_avoids_duplicate_packages_in_installed_list(): void
     {
         // Arrange
@@ -815,7 +817,7 @@ class ServerProvisioningServiceTest extends TestCase
         $this->assertContains('composer', $packages);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_provisioning_errors(): void
     {
         // Arrange
@@ -840,7 +842,7 @@ class ServerProvisioningServiceTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_provisioned_at_timestamp_on_success(): void
     {
         // Arrange
@@ -856,7 +858,7 @@ class ServerProvisioningServiceTest extends TestCase
         $this->assertNotNull($server->provisioned_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_completes_provisioning_even_when_notification_cannot_be_sent(): void
     {
         // Arrange
@@ -876,7 +878,7 @@ class ServerProvisioningServiceTest extends TestCase
         // Provisioning should complete successfully regardless of notification status
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_ssh_key_when_available(): void
     {
         // Arrange
@@ -893,7 +895,7 @@ class ServerProvisioningServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_ssh_password_when_no_key_available(): void
     {
         // Arrange
@@ -910,7 +912,7 @@ class ServerProvisioningServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_respects_custom_ssh_port(): void
     {
         // Arrange

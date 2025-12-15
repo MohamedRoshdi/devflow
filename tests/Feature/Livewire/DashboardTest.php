@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Livewire;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\Dashboard;
 use App\Models\Deployment;
 use App\Models\HealthCheck;
@@ -34,7 +36,7 @@ class DashboardTest extends TestCase
         $this->actingAs($this->user);
     }
 
-    /** @test */
+    #[Test]
     public function dashboard_component_renders_successfully()
     {
         Livewire::test(Dashboard::class)
@@ -42,7 +44,7 @@ class DashboardTest extends TestCase
             ->assertViewIs('livewire.dashboard');
     }
 
-    /** @test */
+    #[Test]
     public function load_stats_returns_expected_array_structure()
     {
         // Create test data
@@ -81,7 +83,7 @@ class DashboardTest extends TestCase
         $this->assertGreaterThanOrEqual(3, $stats['failed_deployments']);
     }
 
-    /** @test */
+    #[Test]
     public function load_stats_caches_results_for_60_seconds()
     {
         Cache::flush();
@@ -96,7 +98,7 @@ class DashboardTest extends TestCase
         $this->assertIsArray($stats);
     }
 
-    /** @test */
+    #[Test]
     public function load_recent_deployments_returns_collection()
     {
         Deployment::factory()->count(15)->create([
@@ -111,7 +113,7 @@ class DashboardTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Collection::class, $recentDeployments);
     }
 
-    /** @test */
+    #[Test]
     public function load_projects_returns_limited_projects()
     {
         // Create 10 projects
@@ -127,7 +129,7 @@ class DashboardTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Collection::class, $projects);
     }
 
-    /** @test */
+    #[Test]
     public function toggle_section_adds_section_to_collapsed_sections()
     {
         $component = Livewire::test(Dashboard::class)
@@ -140,7 +142,7 @@ class DashboardTest extends TestCase
             ->assertSet('collapsedSections', []);
     }
 
-    /** @test */
+    #[Test]
     public function toggle_section_handles_multiple_sections()
     {
         $component = Livewire::test(Dashboard::class)
@@ -154,7 +156,7 @@ class DashboardTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function clear_all_caches_dispatches_success_notification()
     {
         Livewire::test(Dashboard::class)
@@ -162,7 +164,7 @@ class DashboardTest extends TestCase
             ->assertDispatched('notification');
     }
 
-    /** @test */
+    #[Test]
     public function clear_all_caches_clears_dashboard_caches()
     {
         // Populate caches
@@ -179,7 +181,7 @@ class DashboardTest extends TestCase
         $this->assertFalse(Cache::has('dashboard_health_stats'));
     }
 
-    /** @test */
+    #[Test]
     public function refresh_dashboard_reloads_all_data()
     {
         Cache::flush();
@@ -202,7 +204,7 @@ class DashboardTest extends TestCase
         $this->assertEquals(6, $refreshedProjectsCount);
     }
 
-    /** @test */
+    #[Test]
     public function refresh_dashboard_clears_cache_before_loading()
     {
         // Populate cache with stale data
@@ -217,7 +219,7 @@ class DashboardTest extends TestCase
         $this->assertNotEquals(999, $stats['total_servers']);
     }
 
-    /** @test */
+    #[Test]
     public function load_deployment_timeline_returns_7_days_of_data()
     {
         // Create deployments across different days
@@ -248,7 +250,7 @@ class DashboardTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function deployment_timeline_includes_days_with_no_deployments()
     {
         // Only create deployments for today
@@ -268,7 +270,7 @@ class DashboardTest extends TestCase
         $this->assertGreaterThan(0, count($emptyDays));
     }
 
-    /** @test */
+    #[Test]
     public function load_ssl_stats_returns_correct_structure()
     {
         // Create SSL certificates with various statuses
@@ -296,7 +298,7 @@ class DashboardTest extends TestCase
         $this->assertEquals(1, $sslStats['failed']);
     }
 
-    /** @test */
+    #[Test]
     public function load_health_check_stats_returns_correct_structure()
     {
         $project = Project::factory()->create(['server_id' => $this->server->id]);
@@ -332,7 +334,7 @@ class DashboardTest extends TestCase
         $this->assertEquals(1, $healthStats['down']);
     }
 
-    /** @test */
+    #[Test]
     public function load_deployments_today_counts_correctly()
     {
         $project = Project::factory()->create(['server_id' => $this->server->id]);
@@ -356,7 +358,7 @@ class DashboardTest extends TestCase
         $this->assertEquals(5, $deploymentsToday);
     }
 
-    /** @test */
+    #[Test]
     public function load_recent_activity_merges_deployments_and_projects()
     {
         $project = Project::factory()->create([
@@ -386,7 +388,7 @@ class DashboardTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function load_more_activity_increases_activity_count()
     {
         $project = Project::factory()->create(['server_id' => $this->server->id]);
@@ -407,7 +409,7 @@ class DashboardTest extends TestCase
         $this->assertGreaterThan($initialCount, $newCount);
     }
 
-    /** @test */
+    #[Test]
     public function load_server_health_returns_metrics_for_online_servers()
     {
         // Create servers with metrics
@@ -443,7 +445,7 @@ class DashboardTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function load_queue_stats_returns_pending_and_failed_jobs()
     {
         // Create jobs table entries if needed (or mock)
@@ -469,7 +471,7 @@ class DashboardTest extends TestCase
         $this->assertArrayHasKey('failed', $queueStats);
     }
 
-    /** @test */
+    #[Test]
     public function load_security_score_calculates_average()
     {
         Server::factory()->count(3)->create([
@@ -490,7 +492,7 @@ class DashboardTest extends TestCase
         $this->assertLessThanOrEqual(100, $securityScore);
     }
 
-    /** @test */
+    #[Test]
     public function load_active_deployments_counts_pending_and_running()
     {
         $project = Project::factory()->create(['server_id' => $this->server->id]);
@@ -506,7 +508,7 @@ class DashboardTest extends TestCase
         $this->assertEquals(5, $activeDeployments); // 2 pending + 3 running
     }
 
-    /** @test */
+    #[Test]
     public function on_deployment_completed_refreshes_relevant_data()
     {
         Cache::put('dashboard_stats', ['test' => 'old_data'], 3600);
@@ -518,7 +520,7 @@ class DashboardTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function refresh_dashboard_event_triggers_reload()
     {
         $component = Livewire::test(Dashboard::class);
@@ -534,7 +536,7 @@ class DashboardTest extends TestCase
         $this->assertArrayHasKey('total_servers', $stats);
     }
 
-    /** @test */
+    #[Test]
     public function user_preferences_are_loaded_on_mount()
     {
         // Create user settings with collapsed sections
@@ -553,7 +555,7 @@ class DashboardTest extends TestCase
         $this->assertIsArray($collapsedSections);
     }
 
-    /** @test */
+    #[Test]
     public function dashboard_handles_missing_data_gracefully()
     {
         // Test with empty database
@@ -570,7 +572,7 @@ class DashboardTest extends TestCase
         $this->assertEquals(0, $stats['total_deployments']);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_timeline_calculates_percentages_correctly()
     {
         $project = Project::factory()->create(['server_id' => $this->server->id]);
@@ -597,7 +599,7 @@ class DashboardTest extends TestCase
         $this->assertEquals(33.3, $today['failed_percent']);
     }
 
-    /** @test */
+    #[Test]
     public function dashboard_caching_works_without_redis()
     {
         // Simulate Redis not being available by flushing cache
@@ -616,7 +618,7 @@ class DashboardTest extends TestCase
         $this->assertArrayHasKey('total_servers', $stats);
     }
 
-    /** @test */
+    #[Test]
     public function load_onboarding_status_caches_results_for_5_minutes()
     {
         Cache::flush();
@@ -643,7 +645,7 @@ class DashboardTest extends TestCase
         $this->assertArrayHasKey('domain_count', $cachedData);
     }
 
-    /** @test */
+    #[Test]
     public function load_onboarding_status_executes_single_optimized_query()
     {
         Cache::flush();
@@ -674,7 +676,7 @@ class DashboardTest extends TestCase
         DB::disableQueryLog();
     }
 
-    /** @test */
+    #[Test]
     public function load_onboarding_status_sets_correct_steps()
     {
         Cache::flush();
@@ -696,7 +698,7 @@ class DashboardTest extends TestCase
         $this->assertFalse($onboardingSteps['setup_domain']);
     }
 
-    /** @test */
+    #[Test]
     public function load_onboarding_status_identifies_new_user_correctly()
     {
         Cache::flush();
@@ -719,7 +721,7 @@ class DashboardTest extends TestCase
         $this->assertFalse($component->get('isNewUser'));
     }
 
-    /** @test */
+    #[Test]
     public function refresh_onboarding_status_clears_cache_and_reloads()
     {
         Cache::flush();
@@ -743,7 +745,7 @@ class DashboardTest extends TestCase
         $this->assertGreaterThan(0, $cachedData['project_count']);
     }
 
-    /** @test */
+    #[Test]
     public function clear_dashboard_cache_includes_onboarding_status()
     {
         // Populate onboarding cache
@@ -758,7 +760,7 @@ class DashboardTest extends TestCase
         $this->assertFalse(Cache::has('dashboard_stats'));
     }
 
-    /** @test */
+    #[Test]
     public function on_deployment_completed_refreshes_onboarding_status()
     {
         Cache::put('dashboard_onboarding_status', [
@@ -781,7 +783,7 @@ class DashboardTest extends TestCase
         $this->assertIsArray($onboardingSteps);
     }
 
-    /** @test */
+    #[Test]
     public function refresh_dashboard_includes_onboarding_status()
     {
         Cache::flush();

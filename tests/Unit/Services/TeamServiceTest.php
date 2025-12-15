@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Mail\TeamInvitation as TeamInvitationMail;
 use App\Models\Team;
 use App\Models\TeamInvitation;
@@ -29,7 +31,7 @@ class TeamServiceTest extends TestCase
         Mail::fake();
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_team_with_owner(): void
     {
         // Arrange
@@ -49,7 +51,7 @@ class TeamServiceTest extends TestCase
         $this->assertFalse($team->is_personal);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_team_with_custom_slug(): void
     {
         // Arrange
@@ -65,7 +67,7 @@ class TeamServiceTest extends TestCase
         $this->assertEquals('custom-slug', $team->slug);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_personal_team(): void
     {
         // Arrange
@@ -81,7 +83,7 @@ class TeamServiceTest extends TestCase
         $this->assertTrue($team->is_personal);
     }
 
-    /** @test */
+    #[Test]
     public function it_adds_owner_as_team_member(): void
     {
         // Arrange
@@ -103,7 +105,7 @@ class TeamServiceTest extends TestCase
         $this->assertNotNull($member->joined_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_sets_team_as_current_when_user_has_no_current_team(): void
     {
         // Arrange
@@ -119,7 +121,7 @@ class TeamServiceTest extends TestCase
         $this->assertEquals($team->id, $user->current_team_id);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_override_current_team_if_already_set(): void
     {
         // Arrange
@@ -136,7 +138,7 @@ class TeamServiceTest extends TestCase
         $this->assertEquals($existingTeam->id, $user->current_team_id);
     }
 
-    /** @test */
+    #[Test]
     public function it_invites_new_member_successfully(): void
     {
         // Arrange
@@ -161,7 +163,7 @@ class TeamServiceTest extends TestCase
         $this->assertTrue($invitation->expires_at->isFuture());
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_invitation_email(): void
     {
         // Arrange
@@ -183,7 +185,7 @@ class TeamServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_inviting_existing_team_member(): void
     {
         // Arrange
@@ -205,7 +207,7 @@ class TeamServiceTest extends TestCase
         $this->service->inviteMember($team, 'member@example.com', 'admin', $owner);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_duplicate_pending_invitations(): void
     {
         // Arrange
@@ -227,7 +229,7 @@ class TeamServiceTest extends TestCase
         $this->service->inviteMember($team, 'pending@example.com', 'admin', $owner);
     }
 
-    /** @test */
+    #[Test]
     public function it_allows_reinviting_if_previous_invitation_expired(): void
     {
         // Arrange
@@ -250,7 +252,7 @@ class TeamServiceTest extends TestCase
         $this->assertEquals('admin', $invitation->role);
     }
 
-    /** @test */
+    #[Test]
     public function it_allows_reinviting_if_previous_invitation_accepted(): void
     {
         // Arrange
@@ -273,7 +275,7 @@ class TeamServiceTest extends TestCase
         $this->assertInstanceOf(TeamInvitation::class, $invitation);
     }
 
-    /** @test */
+    #[Test]
     public function it_accepts_invitation_successfully(): void
     {
         // Arrange
@@ -311,7 +313,7 @@ class TeamServiceTest extends TestCase
         $this->assertNotNull($invitation->accepted_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_sets_accepted_team_as_current_if_user_has_none(): void
     {
         // Arrange
@@ -339,7 +341,7 @@ class TeamServiceTest extends TestCase
         $this->assertEquals($team->id, $newMember->current_team_id);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_override_current_team_when_accepting_invitation(): void
     {
         // Arrange
@@ -368,7 +370,7 @@ class TeamServiceTest extends TestCase
         $this->assertEquals($existingTeam->id, $newMember->current_team_id);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_accepting_expired_invitation(): void
     {
         // Arrange
@@ -392,7 +394,7 @@ class TeamServiceTest extends TestCase
         $this->service->acceptInvitation('expired-token');
     }
 
-    /** @test */
+    #[Test]
     public function it_removes_member_successfully(): void
     {
         // Arrange
@@ -418,7 +420,7 @@ class TeamServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_removing_team_owner(): void
     {
         // Arrange
@@ -439,7 +441,7 @@ class TeamServiceTest extends TestCase
         $this->service->removeMember($team, $owner);
     }
 
-    /** @test */
+    #[Test]
     public function it_unsets_current_team_when_removing_member(): void
     {
         // Arrange
@@ -464,7 +466,7 @@ class TeamServiceTest extends TestCase
         $this->assertNull($member->current_team_id);
     }
 
-    /** @test */
+    #[Test]
     public function it_switches_to_another_team_when_removing_current_team(): void
     {
         // Arrange
@@ -497,7 +499,7 @@ class TeamServiceTest extends TestCase
         $this->assertEquals($team2->id, $member->current_team_id);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_member_role_successfully(): void
     {
         // Arrange
@@ -524,7 +526,7 @@ class TeamServiceTest extends TestCase
         $this->assertEquals('admin', $updatedMember->role);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_changing_owner_role(): void
     {
         // Arrange
@@ -545,7 +547,7 @@ class TeamServiceTest extends TestCase
         $this->service->updateRole($team, $owner, 'admin');
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_role_when_updating(): void
     {
         // Arrange
@@ -567,7 +569,7 @@ class TeamServiceTest extends TestCase
         $this->service->updateRole($team, $member, 'invalid-role');
     }
 
-    /** @test */
+    #[Test]
     public function it_allows_valid_roles(): void
     {
         // Arrange
@@ -593,7 +595,7 @@ class TeamServiceTest extends TestCase
         $this->assertEquals('viewer', $member->fresh()->teams()->first()?->pivot?->role);
     }
 
-    /** @test */
+    #[Test]
     public function it_transfers_ownership_successfully(): void
     {
         // Arrange
@@ -633,7 +635,7 @@ class TeamServiceTest extends TestCase
         $this->assertEquals('owner', $newOwnerMember->role);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_transferring_ownership_to_non_member(): void
     {
         // Arrange
@@ -648,7 +650,7 @@ class TeamServiceTest extends TestCase
         $this->service->transferOwnership($team, $nonMember);
     }
 
-    /** @test */
+    #[Test]
     public function it_checks_user_access_with_permission(): void
     {
         // Arrange
@@ -668,7 +670,7 @@ class TeamServiceTest extends TestCase
         $this->assertTrue($this->service->canAccess($member, $team, 'manage_members'));
     }
 
-    /** @test */
+    #[Test]
     public function it_denies_access_for_non_members(): void
     {
         // Arrange
@@ -680,7 +682,7 @@ class TeamServiceTest extends TestCase
         $this->assertFalse($this->service->canAccess($nonMember, $team, 'view_projects'));
     }
 
-    /** @test */
+    #[Test]
     public function it_deletes_team_successfully(): void
     {
         // Arrange
@@ -701,7 +703,7 @@ class TeamServiceTest extends TestCase
         $this->assertSoftDeleted('teams', ['id' => $team->id]);
     }
 
-    /** @test */
+    #[Test]
     public function it_unsets_current_team_for_all_users_when_deleting(): void
     {
         // Arrange
@@ -722,7 +724,7 @@ class TeamServiceTest extends TestCase
         $this->assertNull($member->current_team_id);
     }
 
-    /** @test */
+    #[Test]
     public function it_cancels_invitation_successfully(): void
     {
         // Arrange
@@ -744,7 +746,7 @@ class TeamServiceTest extends TestCase
         $this->assertDatabaseMissing('team_invitations', ['id' => $invitation->id]);
     }
 
-    /** @test */
+    #[Test]
     public function it_resends_invitation_successfully(): void
     {
         // Arrange
@@ -772,7 +774,7 @@ class TeamServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_resending_accepted_invitation(): void
     {
         // Arrange
@@ -795,7 +797,7 @@ class TeamServiceTest extends TestCase
         $this->service->resendInvitation($invitation);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_database_transaction_for_team_creation(): void
     {
         // Arrange
@@ -822,7 +824,7 @@ class TeamServiceTest extends TestCase
         DB::rollBack();
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_database_transaction_for_accepting_invitation(): void
     {
         // Arrange
@@ -857,7 +859,7 @@ class TeamServiceTest extends TestCase
         DB::rollBack();
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_database_transaction_for_removing_member(): void
     {
         // Arrange
@@ -886,7 +888,7 @@ class TeamServiceTest extends TestCase
         DB::rollBack();
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_database_transaction_for_transferring_ownership(): void
     {
         // Arrange
@@ -920,7 +922,7 @@ class TeamServiceTest extends TestCase
         DB::rollBack();
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_database_transaction_for_deleting_team(): void
     {
         // Arrange
@@ -938,7 +940,7 @@ class TeamServiceTest extends TestCase
         DB::rollBack();
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_team_with_all_optional_fields(): void
     {
         // Arrange

@@ -4,19 +4,21 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Livewire;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\Kubernetes\ClusterManager;
 use App\Models\KubernetesCluster;
 use App\Models\Project;
 use App\Models\User;
 use App\Services\Kubernetes\KubernetesService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Livewire\Livewire;
 use Mockery;
 use Tests\TestCase;
 
 class ClusterManagerTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     protected User $user;
 
@@ -42,7 +44,7 @@ class ClusterManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function component_renders_successfully(): void
     {
         Livewire::actingAs($this->user)
@@ -53,7 +55,7 @@ class ClusterManagerTest extends TestCase
             ->assertSet('showDeployModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function component_displays_cluster_listing(): void
     {
         KubernetesCluster::factory()->create([
@@ -73,7 +75,7 @@ class ClusterManagerTest extends TestCase
             ->assertSee('Test Cluster');
     }
 
-    /** @test */
+    #[Test]
     public function component_displays_projects_list(): void
     {
         Project::factory()->create([
@@ -97,7 +99,7 @@ class ClusterManagerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function component_paginates_clusters(): void
     {
         KubernetesCluster::factory()->count(15)->create();
@@ -109,7 +111,7 @@ class ClusterManagerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function add_cluster_opens_modal(): void
     {
         Livewire::actingAs($this->user)
@@ -124,7 +126,7 @@ class ClusterManagerTest extends TestCase
             ->assertSet('editingCluster', null);
     }
 
-    /** @test */
+    #[Test]
     public function edit_cluster_loads_cluster_data(): void
     {
         $cluster = KubernetesCluster::factory()->create([
@@ -145,7 +147,7 @@ class ClusterManagerTest extends TestCase
             ->assertSet('isDefault', true); // isDefault maps to is_active
     }
 
-    /** @test */
+    #[Test]
     public function edit_cluster_handles_null_namespace(): void
     {
         $cluster = KubernetesCluster::factory()->create([
@@ -158,7 +160,7 @@ class ClusterManagerTest extends TestCase
             ->assertSet('namespace', 'default');
     }
 
-    /** @test */
+    #[Test]
     public function save_cluster_validates_required_fields(): void
     {
         Livewire::actingAs($this->user)
@@ -171,7 +173,7 @@ class ClusterManagerTest extends TestCase
             ->assertHasErrors(['name', 'endpoint', 'kubeconfig']);
     }
 
-    /** @test */
+    #[Test]
     public function save_cluster_validates_name_max_length(): void
     {
         Livewire::actingAs($this->user)
@@ -184,7 +186,7 @@ class ClusterManagerTest extends TestCase
             ->assertHasErrors(['name']);
     }
 
-    /** @test */
+    #[Test]
     public function save_cluster_validates_endpoint_is_url(): void
     {
         Livewire::actingAs($this->user)
@@ -197,7 +199,7 @@ class ClusterManagerTest extends TestCase
             ->assertHasErrors(['endpoint']);
     }
 
-    /** @test */
+    #[Test]
     public function save_cluster_validates_namespace_max_length(): void
     {
         Livewire::actingAs($this->user)
@@ -211,7 +213,7 @@ class ClusterManagerTest extends TestCase
             ->assertHasErrors(['namespace']);
     }
 
-    /** @test */
+    #[Test]
     public function save_cluster_creates_new_cluster_with_connection_test(): void
     {
         $this->partialMock(ClusterManager::class, function ($mock) {
@@ -241,7 +243,7 @@ class ClusterManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function save_cluster_fails_with_invalid_connection(): void
     {
         $this->partialMock(ClusterManager::class, function ($mock) {
@@ -261,7 +263,7 @@ class ClusterManagerTest extends TestCase
             ->assertHasErrors(['kubeconfig']);
     }
 
-    /** @test */
+    #[Test]
     public function save_cluster_defaults_namespace_to_default(): void
     {
         $this->partialMock(ClusterManager::class, function ($mock) {
@@ -285,7 +287,7 @@ class ClusterManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function save_cluster_encrypts_kubeconfig(): void
     {
         $this->partialMock(ClusterManager::class, function ($mock) {
@@ -310,7 +312,7 @@ class ClusterManagerTest extends TestCase
         $this->assertEquals($kubeconfigContent, $cluster->kubeconfig);
     }
 
-    /** @test */
+    #[Test]
     public function save_cluster_sets_is_default_and_clears_others(): void
     {
         KubernetesCluster::factory()->create([
@@ -344,7 +346,7 @@ class ClusterManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function save_cluster_updates_existing_cluster(): void
     {
         $cluster = KubernetesCluster::factory()->create([
@@ -370,7 +372,7 @@ class ClusterManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function delete_cluster_removes_cluster_without_projects(): void
     {
         $cluster = KubernetesCluster::factory()->create([
@@ -389,7 +391,7 @@ class ClusterManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function delete_cluster_prevents_deletion_when_in_use(): void
     {
         $cluster = KubernetesCluster::factory()->create();
@@ -415,7 +417,7 @@ class ClusterManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function test_cluster_connection_success(): void
     {
         $this->partialMock(ClusterManager::class, function ($mock) {
@@ -432,7 +434,7 @@ class ClusterManagerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function test_cluster_connection_failure(): void
     {
         Livewire::actingAs($this->user)
@@ -443,7 +445,7 @@ class ClusterManagerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function test_cluster_connection_handles_exception(): void
     {
         $cluster = KubernetesCluster::factory()->create([
@@ -459,7 +461,7 @@ class ClusterManagerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function show_deploy_to_cluster_opens_modal(): void
     {
         Livewire::actingAs($this->user)
@@ -471,7 +473,7 @@ class ClusterManagerTest extends TestCase
             ->assertSet('showDeployModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function deploy_to_kubernetes_validates_required_fields(): void
     {
         Livewire::actingAs($this->user)
@@ -482,7 +484,7 @@ class ClusterManagerTest extends TestCase
             ->assertHasErrors(['deploymentProject']);
     }
 
-    /** @test */
+    #[Test]
     public function deploy_to_kubernetes_validates_project_exists(): void
     {
         Livewire::actingAs($this->user)
@@ -493,7 +495,7 @@ class ClusterManagerTest extends TestCase
             ->assertHasErrors(['deploymentProject']);
     }
 
-    /** @test */
+    #[Test]
     public function deploy_to_kubernetes_validates_replicas_range(): void
     {
         Livewire::actingAs($this->user)
@@ -513,7 +515,7 @@ class ClusterManagerTest extends TestCase
             ->assertHasErrors(['replicas']);
     }
 
-    /** @test */
+    #[Test]
     public function deploy_to_kubernetes_validates_resource_requirements(): void
     {
         Livewire::actingAs($this->user)
@@ -533,7 +535,7 @@ class ClusterManagerTest extends TestCase
             ->assertHasErrors(['memoryLimit']);
     }
 
-    /** @test */
+    #[Test]
     public function deploy_to_kubernetes_successfully_deploys_project(): void
     {
         $mockService = Mockery::mock(KubernetesService::class);
@@ -578,7 +580,7 @@ class ClusterManagerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function deploy_to_kubernetes_handles_deployment_failure(): void
     {
         $mockService = Mockery::mock(KubernetesService::class);
@@ -605,7 +607,7 @@ class ClusterManagerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function deploy_to_kubernetes_handles_exception(): void
     {
         $mockService = Mockery::mock(KubernetesService::class);
@@ -631,7 +633,7 @@ class ClusterManagerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function deploy_to_kubernetes_resets_deployment_form_on_success(): void
     {
         $mockService = Mockery::mock(KubernetesService::class);
@@ -657,7 +659,7 @@ class ClusterManagerTest extends TestCase
             ->assertSet('maxReplicas', 10);
     }
 
-    /** @test */
+    #[Test]
     public function refresh_clusters_resets_pagination(): void
     {
         KubernetesCluster::factory()->count(15)->create();
@@ -669,7 +671,7 @@ class ClusterManagerTest extends TestCase
             ->assertSet('page', 1);
     }
 
-    /** @test */
+    #[Test]
     public function component_initializes_with_default_values(): void
     {
         Livewire::actingAs($this->user)
@@ -696,7 +698,7 @@ class ClusterManagerTest extends TestCase
             ->assertSet('serviceType', 'ClusterIP');
     }
 
-    /** @test */
+    #[Test]
     public function component_handles_deployment_with_default_resource_settings(): void
     {
         $mockService = Mockery::mock(KubernetesService::class);
@@ -728,7 +730,7 @@ class ClusterManagerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function component_includes_autoscaling_settings_in_deployment(): void
     {
         $mockService = Mockery::mock(KubernetesService::class);
@@ -756,7 +758,7 @@ class ClusterManagerTest extends TestCase
             ->call('deployToKubernetes');
     }
 
-    /** @test */
+    #[Test]
     public function reset_form_clears_all_cluster_fields(): void
     {
         $cluster = KubernetesCluster::factory()->create();
@@ -780,7 +782,7 @@ class ClusterManagerTest extends TestCase
             ->assertSet('editingCluster', null);
     }
 
-    /** @test */
+    #[Test]
     public function component_validates_boolean_fields_correctly(): void
     {
         Livewire::actingAs($this->user)
@@ -790,7 +792,7 @@ class ClusterManagerTest extends TestCase
             ->assertHasErrors(['isDefault']);
     }
 
-    /** @test */
+    #[Test]
     public function save_cluster_includes_project_name_in_success_message(): void
     {
         $mockService = Mockery::mock(KubernetesService::class);
@@ -811,7 +813,7 @@ class ClusterManagerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function component_supports_different_service_types(): void
     {
         $serviceTypes = ['ClusterIP', 'NodePort', 'LoadBalancer'];

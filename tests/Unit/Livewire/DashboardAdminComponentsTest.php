@@ -1035,23 +1035,26 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function register_validates_password_minimum_length(): void
     {
+        // Password uses Password::min(8)->mixedCase()->numbers()->symbols() rule
+        // A short password will fail validation (error key varies based on Laravel version)
         Livewire::test(Register::class)
             ->set('name', 'Test User')
             ->set('email', 'test@example.com')
             ->set('password', 'short')
             ->set('password_confirmation', 'short')
             ->call('register')
-            ->assertHasErrors(['password' => 'min']);
+            ->assertHasErrors('password');
     }
 
     #[Test]
     public function register_validates_password_confirmation(): void
     {
+        // Use a password that meets complexity requirements to isolate the confirmation test
         Livewire::test(Register::class)
             ->set('name', 'Test User')
             ->set('email', 'test@example.com')
-            ->set('password', 'password123')
-            ->set('password_confirmation', 'different')
+            ->set('password', 'Password123!')
+            ->set('password_confirmation', 'DifferentPass123!')
             ->call('register')
             ->assertHasErrors(['password' => 'confirmed']);
     }
@@ -1059,11 +1062,12 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function register_successful_with_valid_data(): void
     {
+        // Password must meet: min 8 chars, mixed case, numbers, symbols
         Livewire::test(Register::class)
             ->set('name', 'Test User')
             ->set('email', 'test@example.com')
-            ->set('password', 'password123')
-            ->set('password_confirmation', 'password123')
+            ->set('password', 'Password123!')
+            ->set('password_confirmation', 'Password123!')
             ->call('register')
             ->assertRedirect(route('dashboard'));
 
@@ -1078,15 +1082,16 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function register_hashes_password(): void
     {
+        // Password must meet: min 8 chars, mixed case, numbers, symbols
         Livewire::test(Register::class)
             ->set('name', 'Test User')
             ->set('email', 'test@example.com')
-            ->set('password', 'password123')
-            ->set('password_confirmation', 'password123')
+            ->set('password', 'Password123!')
+            ->set('password_confirmation', 'Password123!')
             ->call('register');
 
         $user = User::where('email', 'test@example.com')->first();
-        $this->assertTrue(Hash::check('password123', $user->password));
+        $this->assertTrue(Hash::check('Password123!', $user->password));
     }
 
     // ============================================

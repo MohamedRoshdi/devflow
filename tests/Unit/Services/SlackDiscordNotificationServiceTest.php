@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Deployment;
 use App\Models\Domain;
 use App\Models\NotificationChannel;
@@ -25,7 +27,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         Http::fake();
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_slack_deployment_started_notification(): void
     {
         // Arrange
@@ -67,7 +69,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_slack_deployment_completed_notification(): void
     {
         // Arrange
@@ -112,7 +114,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_slack_deployment_failed_notification_with_error(): void
     {
         // Arrange
@@ -151,7 +153,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_slack_rollback_completed_notification(): void
     {
         // Arrange
@@ -188,7 +190,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_slack_health_check_failed_notification(): void
     {
         // Arrange
@@ -228,7 +230,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_slack_ssl_expiring_notification(): void
     {
         // Arrange
@@ -265,7 +267,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_slack_storage_warning_notification(): void
     {
         // Arrange
@@ -303,7 +305,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_slack_security_alert_notification(): void
     {
         // Arrange
@@ -336,7 +338,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_discord_deployment_started_notification(): void
     {
         // Arrange
@@ -379,7 +381,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_discord_deployment_completed_notification(): void
     {
         // Arrange
@@ -424,7 +426,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_discord_deployment_failed_notification(): void
     {
         // Arrange
@@ -464,7 +466,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_discord_health_check_failed_notification(): void
     {
         // Arrange
@@ -502,7 +504,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_discord_ssl_expiring_notification_with_urgency_levels(): void
     {
         // Arrange
@@ -537,7 +539,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_discord_storage_warning_notification(): void
     {
         // Arrange
@@ -574,7 +576,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_discord_security_alert_notification(): void
     {
         // Arrange
@@ -606,7 +608,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_teams_deployment_notification(): void
     {
         // Arrange
@@ -645,7 +647,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_webhook_notification_without_signature(): void
     {
         // Arrange
@@ -681,7 +683,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_webhook_notification_with_signature(): void
     {
         // Arrange
@@ -711,7 +713,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exceptions_when_sending_notifications(): void
     {
         // Arrange
@@ -744,7 +746,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
             }));
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_disabled_channels(): void
     {
         // Arrange
@@ -769,7 +771,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         Http::assertNothingSent();
     }
 
-    /** @test */
+    #[Test]
     public function it_notifies_deployment_started(): void
     {
         // Arrange
@@ -796,7 +798,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_notifies_deployment_completed(): void
     {
         // Arrange
@@ -830,7 +832,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_notifies_deployment_failed(): void
     {
         // Arrange
@@ -860,7 +862,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_notifies_health_check_failure(): void
     {
         // Arrange
@@ -889,7 +891,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_notify_healthy_status(): void
     {
         // Arrange
@@ -912,7 +914,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         Http::assertNothingSent();
     }
 
-    /** @test */
+    #[Test]
     public function it_notifies_ssl_expiry(): void
     {
         // Arrange
@@ -939,7 +941,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_notifies_storage_warning(): void
     {
         // Arrange
@@ -967,7 +969,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_notifies_security_alert(): void
     {
         // Arrange
@@ -990,7 +992,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_tests_slack_channel_successfully(): void
     {
         // Arrange
@@ -1013,7 +1015,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_tests_discord_channel_successfully(): void
     {
         // Arrange
@@ -1036,7 +1038,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_tests_teams_channel_successfully(): void
     {
         // Arrange
@@ -1056,7 +1058,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_false_when_test_channel_fails(): void
     {
         // Arrange
@@ -1079,7 +1081,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         Log::shouldHaveReceived('error')->once();
     }
 
-    /** @test */
+    #[Test]
     public function it_formats_bytes_correctly(): void
     {
         // Arrange
@@ -1111,7 +1113,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_generic_slack_notification_for_unknown_types(): void
     {
         // Arrange
@@ -1139,7 +1141,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_generic_discord_notification_for_unknown_types(): void
     {
         // Arrange
@@ -1168,7 +1170,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_correct_slack_colors_for_different_statuses(): void
     {
         // Arrange
@@ -1198,7 +1200,7 @@ class SlackDiscordNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_correct_discord_colors_for_different_statuses(): void
     {
         // Arrange

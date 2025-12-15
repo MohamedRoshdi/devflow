@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Livewire;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\CICD\PipelineBuilder;
 use App\Models\PipelineStage;
 use App\Models\Project;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Tests\TestCase;
+use Tests\RefreshDatabaseTestCase;
 
-class PipelineBuilderTest extends TestCase
+class PipelineBuilderTest extends RefreshDatabaseTestCase
 {
-    use RefreshDatabase;
 
     protected User $userWithPermissions;
 
@@ -39,23 +39,28 @@ class PipelineBuilderTest extends TestCase
     }
 
     /**
-     * Mock the user's can() method to simulate permissions
+     * Give the user permissions using Laravel's Gate facade
      *
      * @param  User  $user
      * @param  array<string>  $permissions
      */
-    protected function mockUserPermissions(User $user, array $permissions): void
+    protected function giveUserPermissions(User $user, array $permissions): void
     {
-        $user->shouldReceive('can')
-            ->andReturnUsing(function (string $ability) use ($permissions) {
-                return in_array($ability, $permissions, true);
+        // Define gates for all possible permissions used in this test
+        $allPermissions = ['create-pipelines', 'edit-pipelines'];
+
+        foreach ($allPermissions as $permission) {
+            \Illuminate\Support\Facades\Gate::define($permission, function ($authUser) use ($user, $permissions, $permission) {
+                // Grant permission only if user has it and is the authenticated user
+                return $authUser->id === $user->id && in_array($permission, $permissions, true);
             });
+        }
     }
 
-    /** @test */
+    #[Test]
     public function component_renders_successfully_for_users_with_create_permission(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
@@ -64,10 +69,10 @@ class PipelineBuilderTest extends TestCase
             ->assertSet('project', fn ($project) => $project->id === $this->project->id);
     }
 
-    /** @test */
+    #[Test]
     public function component_renders_successfully_for_users_with_edit_permission(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['edit-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['edit-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
@@ -75,10 +80,10 @@ class PipelineBuilderTest extends TestCase
             ->assertViewIs('livewire.cicd.pipeline-builder');
     }
 
-    /** @test */
+    #[Test]
     public function component_blocks_users_without_permissions(): void
     {
-        $this->mockUserPermissions($this->userWithoutPermissions, []);
+        $this->giveUserPermissions($this->userWithoutPermissions, []);
 
         $this->expectException(HttpException::class);
         $this->expectExceptionMessage('You do not have permission to manage pipelines.');
@@ -87,7 +92,7 @@ class PipelineBuilderTest extends TestCase
             ->test(PipelineBuilder::class, ['project' => $this->project]);
     }
 
-    /** @test */
+    #[Test]
     public function component_blocks_unauthenticated_users(): void
     {
         $this->expectException(\TypeError::class);
@@ -95,10 +100,10 @@ class PipelineBuilderTest extends TestCase
         Livewire::test(PipelineBuilder::class, ['project' => $this->project]);
     }
 
-    /** @test */
+    #[Test]
     public function component_initializes_with_empty_stages_when_no_project(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class)
@@ -110,10 +115,10 @@ class PipelineBuilderTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function component_loads_existing_stages_for_project(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['edit-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['edit-pipelines']);
 
         // Create pipeline stages for the project
         $preDeployStage = PipelineStage::factory()->preDeploy()->create([
@@ -147,10 +152,10 @@ class PipelineBuilderTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function add_stage_opens_modal_with_correct_type(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
@@ -160,10 +165,10 @@ class PipelineBuilderTest extends TestCase
             ->assertSet('editingStageId', null);
     }
 
-    /** @test */
+    #[Test]
     public function add_stage_resets_form_fields(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
@@ -178,10 +183,10 @@ class PipelineBuilderTest extends TestCase
             ->assertSet('envVariables', []);
     }
 
-    /** @test */
+    #[Test]
     public function edit_stage_loads_stage_data_into_form(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['edit-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['edit-pipelines']);
 
         $stage = PipelineStage::factory()->create([
             'project_id' => $this->project->id,
@@ -206,10 +211,10 @@ class PipelineBuilderTest extends TestCase
             ->assertSet('envVariables', ['NODE_ENV' => 'production']);
     }
 
-    /** @test */
+    #[Test]
     public function save_stage_creates_new_stage_successfully(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
@@ -219,7 +224,7 @@ class PipelineBuilderTest extends TestCase
             ->set('timeoutSeconds', 300)
             ->set('continueOnFailure', false)
             ->call('saveStage')
-            ->assertDispatched('notification', function (array $data) {
+            ->assertDispatched('notification', function ($name, array $data) {
                 return $data['type'] === 'success' && $data['message'] === 'Stage created successfully!';
             })
             ->assertSet('showStageModal', false);
@@ -238,10 +243,10 @@ class PipelineBuilderTest extends TestCase
         $this->assertEquals(['composer install', 'composer dump-autoload'], $stage->commands);
     }
 
-    /** @test */
+    #[Test]
     public function save_stage_updates_existing_stage_successfully(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['edit-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['edit-pipelines']);
 
         $stage = PipelineStage::factory()->create([
             'project_id' => $this->project->id,
@@ -257,7 +262,7 @@ class PipelineBuilderTest extends TestCase
             ->set('commands', 'updated command')
             ->set('timeoutSeconds', 500)
             ->call('saveStage')
-            ->assertDispatched('notification', function (array $data) {
+            ->assertDispatched('notification', function ($name, array $data) {
                 return $data['type'] === 'success' && $data['message'] === 'Stage updated successfully!';
             });
 
@@ -269,27 +274,27 @@ class PipelineBuilderTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function save_stage_requires_project(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class)
             ->set('stageName', 'Test Stage')
             ->set('commands', 'test command')
             ->call('saveStage')
-            ->assertDispatched('notification', function (array $data) {
+            ->assertDispatched('notification', function ($name, array $data) {
                 return $data['type'] === 'error' && $data['message'] === 'Please select a project first';
             });
 
         $this->assertDatabaseCount('pipeline_stages', 0);
     }
 
-    /** @test */
+    #[Test]
     public function save_stage_validates_required_fields(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
@@ -299,10 +304,10 @@ class PipelineBuilderTest extends TestCase
             ->assertHasErrors(['stageName', 'commands']);
     }
 
-    /** @test */
+    #[Test]
     public function save_stage_validates_stage_type(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
@@ -313,10 +318,10 @@ class PipelineBuilderTest extends TestCase
             ->assertHasErrors(['stageType']);
     }
 
-    /** @test */
+    #[Test]
     public function save_stage_validates_timeout_range(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
@@ -335,10 +340,10 @@ class PipelineBuilderTest extends TestCase
             ->assertHasErrors(['timeoutSeconds']);
     }
 
-    /** @test */
+    #[Test]
     public function save_stage_filters_empty_commands(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
@@ -350,10 +355,10 @@ class PipelineBuilderTest extends TestCase
         $this->assertEquals(['command1', 'command2', 'command3'], $stage->commands);
     }
 
-    /** @test */
+    #[Test]
     public function save_stage_assigns_correct_order_for_new_stages(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         // Create existing stages
         PipelineStage::factory()->preDeploy()->create([
@@ -378,10 +383,10 @@ class PipelineBuilderTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function delete_stage_removes_stage_successfully(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['edit-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['edit-pipelines']);
 
         $stage = PipelineStage::factory()->create([
             'project_id' => $this->project->id,
@@ -391,7 +396,7 @@ class PipelineBuilderTest extends TestCase
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
             ->call('deleteStage', $stage->id)
-            ->assertDispatched('notification', function (array $data) {
+            ->assertDispatched('notification', function ($name, array $data) {
                 return $data['type'] === 'success' && $data['message'] === 'Stage deleted successfully';
             });
 
@@ -400,10 +405,10 @@ class PipelineBuilderTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function delete_stage_reorders_remaining_stages(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['edit-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['edit-pipelines']);
 
         $stage1 = PipelineStage::factory()->preDeploy()->create([
             'project_id' => $this->project->id,
@@ -432,10 +437,10 @@ class PipelineBuilderTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function toggle_stage_enables_disabled_stage(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['edit-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['edit-pipelines']);
 
         $stage = PipelineStage::factory()->create([
             'project_id' => $this->project->id,
@@ -445,7 +450,7 @@ class PipelineBuilderTest extends TestCase
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
             ->call('toggleStage', $stage->id)
-            ->assertDispatched('notification', function (array $data) {
+            ->assertDispatched('notification', function ($name, array $data) {
                 return $data['type'] === 'success' && $data['message'] === 'Stage enabled';
             });
 
@@ -455,10 +460,10 @@ class PipelineBuilderTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function toggle_stage_disables_enabled_stage(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['edit-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['edit-pipelines']);
 
         $stage = PipelineStage::factory()->create([
             'project_id' => $this->project->id,
@@ -468,7 +473,7 @@ class PipelineBuilderTest extends TestCase
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
             ->call('toggleStage', $stage->id)
-            ->assertDispatched('notification', function (array $data) {
+            ->assertDispatched('notification', function ($name, array $data) {
                 return $data['type'] === 'success' && $data['message'] === 'Stage disabled';
             });
 
@@ -478,10 +483,10 @@ class PipelineBuilderTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function update_stage_order_reorders_stages_correctly(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['edit-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['edit-pipelines']);
 
         $stage1 = PipelineStage::factory()->preDeploy()->create([
             'project_id' => $this->project->id,
@@ -514,10 +519,10 @@ class PipelineBuilderTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function add_env_variable_adds_variable_to_array(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
@@ -529,10 +534,10 @@ class PipelineBuilderTest extends TestCase
             ->assertSet('newEnvValue', '');
     }
 
-    /** @test */
+    #[Test]
     public function add_env_variable_requires_both_key_and_value(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
@@ -549,10 +554,10 @@ class PipelineBuilderTest extends TestCase
             ->assertSet('envVariables', []);
     }
 
-    /** @test */
+    #[Test]
     public function remove_env_variable_removes_variable_from_array(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
@@ -561,30 +566,30 @@ class PipelineBuilderTest extends TestCase
             ->assertSet('envVariables', ['KEY2' => 'value2']);
     }
 
-    /** @test */
+    #[Test]
     public function apply_template_requires_project(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class)
             ->call('applyTemplate', 'laravel')
-            ->assertDispatched('notification', function (array $data) {
+            ->assertDispatched('notification', function ($name, array $data) {
                 return $data['type'] === 'error' && $data['message'] === 'Please select a project first';
             });
 
         $this->assertDatabaseCount('pipeline_stages', 0);
     }
 
-    /** @test */
+    #[Test]
     public function apply_laravel_template_creates_correct_stages(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
             ->call('applyTemplate', 'laravel')
-            ->assertDispatched('notification', function (array $data) {
+            ->assertDispatched('notification', function ($name, array $data) {
                 return $data['type'] === 'success' && $data['message'] === 'Template applied successfully!';
             })
             ->assertSet('showTemplateModal', false);
@@ -616,15 +621,15 @@ class PipelineBuilderTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function apply_nodejs_template_creates_correct_stages(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
             ->call('applyTemplate', 'nodejs')
-            ->assertDispatched('notification', function (array $data) {
+            ->assertDispatched('notification', function ($name, array $data) {
                 return $data['type'] === 'success';
             });
 
@@ -645,15 +650,15 @@ class PipelineBuilderTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function apply_static_template_creates_correct_stages(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
             ->call('applyTemplate', 'static')
-            ->assertDispatched('notification', function (array $data) {
+            ->assertDispatched('notification', function ($name, array $data) {
                 return $data['type'] === 'success';
             });
 
@@ -664,10 +669,10 @@ class PipelineBuilderTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function apply_template_preserves_order_of_existing_stages(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         PipelineStage::factory()->preDeploy()->create([
             'project_id' => $this->project->id,
@@ -689,10 +694,10 @@ class PipelineBuilderTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function apply_invalid_template_creates_no_stages(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
@@ -701,10 +706,10 @@ class PipelineBuilderTest extends TestCase
         $this->assertDatabaseCount('pipeline_stages', 0);
     }
 
-    /** @test */
+    #[Test]
     public function stage_form_modal_state_management(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
@@ -717,10 +722,10 @@ class PipelineBuilderTest extends TestCase
             ->assertSet('showStageModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function template_modal_state_management(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
@@ -731,10 +736,10 @@ class PipelineBuilderTest extends TestCase
             ->assertSet('showTemplateModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function component_initializes_with_default_values(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
@@ -751,10 +756,10 @@ class PipelineBuilderTest extends TestCase
             ->assertSet('newEnvValue', '');
     }
 
-    /** @test */
+    #[Test]
     public function save_stage_persists_environment_variables(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
@@ -767,10 +772,10 @@ class PipelineBuilderTest extends TestCase
         $this->assertEquals(['API_KEY' => 'secret', 'DEBUG' => 'false'], $stage->environment_variables);
     }
 
-    /** @test */
+    #[Test]
     public function stages_are_grouped_by_type_correctly(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['edit-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['edit-pipelines']);
 
         PipelineStage::factory()->preDeploy()->create([
             'project_id' => $this->project->id,
@@ -802,10 +807,10 @@ class PipelineBuilderTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function load_stages_is_called_after_save(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         $component = Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
@@ -819,10 +824,10 @@ class PipelineBuilderTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function load_stages_is_called_after_delete(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['edit-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['edit-pipelines']);
 
         $stage = PipelineStage::factory()->create([
             'project_id' => $this->project->id,
@@ -838,10 +843,10 @@ class PipelineBuilderTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function load_stages_is_called_after_toggle(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['edit-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['edit-pipelines']);
 
         $stage = PipelineStage::factory()->create([
             'project_id' => $this->project->id,
@@ -854,10 +859,10 @@ class PipelineBuilderTest extends TestCase
             ->assertSet('stages.pre_deploy.0.enabled', false);
     }
 
-    /** @test */
+    #[Test]
     public function multiple_environment_variables_can_be_added(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
@@ -877,10 +882,10 @@ class PipelineBuilderTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function continue_on_failure_flag_persists(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
@@ -895,10 +900,10 @@ class PipelineBuilderTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function stage_name_max_length_validation(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
@@ -908,10 +913,10 @@ class PipelineBuilderTest extends TestCase
             ->assertHasErrors(['stageName']);
     }
 
-    /** @test */
+    #[Test]
     public function commands_string_is_properly_converted_to_array(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['create-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['create-pipelines']);
 
         Livewire::actingAs($this->userWithPermissions)
             ->test(PipelineBuilder::class, ['project' => $this->project])
@@ -926,10 +931,10 @@ class PipelineBuilderTest extends TestCase
         $this->assertEquals('php artisan migrate', $stage->commands[3]);
     }
 
-    /** @test */
+    #[Test]
     public function editing_stage_preserves_unmodified_fields(): void
     {
-        $this->mockUserPermissions($this->userWithPermissions, ['edit-pipelines']);
+        $this->giveUserPermissions($this->userWithPermissions, ['edit-pipelines']);
 
         $stage = PipelineStage::factory()->create([
             'project_id' => $this->project->id,

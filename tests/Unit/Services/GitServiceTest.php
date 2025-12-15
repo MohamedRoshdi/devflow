@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Project;
 use App\Models\Server;
 use App\Services\GitService;
@@ -20,7 +22,7 @@ class GitServiceTest extends TestCase
         $this->gitService = new GitService;
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_latest_commits_from_repository(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -50,7 +52,7 @@ class GitServiceTest extends TestCase
         $this->assertEquals('john@example.com', $result['commits'][0]['email']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_pagination_for_commit_history(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -74,7 +76,7 @@ class GitServiceTest extends TestCase
         $this->assertEquals(50, $result['total']);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_empty_commits_when_repository_not_cloned(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -91,7 +93,7 @@ class GitServiceTest extends TestCase
         $this->assertEquals(0, $result['total']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_fetch_failures_gracefully(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -113,7 +115,7 @@ class GitServiceTest extends TestCase
         $this->assertCount(1, $result['commits']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_git_log_command_failures(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -134,7 +136,7 @@ class GitServiceTest extends TestCase
         $this->assertStringContainsString('Failed to get commit history', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_current_commit_information(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -156,7 +158,7 @@ class GitServiceTest extends TestCase
         $this->assertArrayHasKey('date', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_null_when_repository_not_cloned_for_current_commit(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -171,7 +173,7 @@ class GitServiceTest extends TestCase
         $this->assertNull($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_null_when_git_log_fails_for_current_commit(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -187,7 +189,7 @@ class GitServiceTest extends TestCase
         $this->assertNull($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_check_for_updates(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -221,7 +223,7 @@ class GitServiceTest extends TestCase
         $this->assertEquals('Jane Smith', $result['remote_meta']['author']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_when_project_is_up_to_date(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -248,7 +250,7 @@ class GitServiceTest extends TestCase
         $this->assertEquals(0, $result['commits_behind']);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_default_values_when_repository_not_cloned_for_updates(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -267,7 +269,7 @@ class GitServiceTest extends TestCase
         $this->assertEquals(0, $result['commits_behind']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_fetch_failure_when_checking_for_updates(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -289,7 +291,7 @@ class GitServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_error_when_getting_local_commit_fails(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -309,7 +311,7 @@ class GitServiceTest extends TestCase
         $this->assertStringContainsString('Failed to get local commit', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_error_when_getting_remote_commit_fails(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -330,7 +332,7 @@ class GitServiceTest extends TestCase
         $this->assertStringContainsString('Failed to get remote commit', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_update_project_commit_information(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -355,7 +357,7 @@ class GitServiceTest extends TestCase
         $this->assertNotNull($project->last_commit_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_false_when_update_project_commit_info_fails(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -370,7 +372,7 @@ class GitServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_commit_diff_between_two_commits(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -395,7 +397,7 @@ class GitServiceTest extends TestCase
         $this->assertEquals('First commit', $result['commits'][0]['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_empty_commit_diff(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -413,7 +415,7 @@ class GitServiceTest extends TestCase
         $this->assertEquals(0, $result['count']);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_error_when_repository_not_cloned_for_diff(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -430,7 +432,7 @@ class GitServiceTest extends TestCase
         $this->assertStringContainsString('Repository not cloned yet', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_git_log_failure_for_commit_diff(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -448,7 +450,7 @@ class GitServiceTest extends TestCase
         $this->assertStringContainsString('Failed to get commit diff', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exceptions_gracefully_in_get_latest_commits(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -468,7 +470,7 @@ class GitServiceTest extends TestCase
         $this->assertEquals('Unexpected error', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exceptions_in_get_current_commit(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -485,7 +487,7 @@ class GitServiceTest extends TestCase
         $this->assertNull($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exceptions_in_check_for_updates(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -504,7 +506,7 @@ class GitServiceTest extends TestCase
         $this->assertEquals('Critical error', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exceptions_in_get_commit_diff(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -523,7 +525,7 @@ class GitServiceTest extends TestCase
         $this->assertEquals('System failure', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_builds_ssh_command_with_key_authentication(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -545,7 +547,7 @@ class GitServiceTest extends TestCase
         $this->assertStringContainsString('ls -la', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_escapes_single_quotes_in_ssh_commands(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -560,7 +562,7 @@ class GitServiceTest extends TestCase
         $this->assertStringContainsString("\\'", $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_checks_repository_existence_via_ssh(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -578,7 +580,7 @@ class GitServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_repository_not_cloned_via_ssh(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -596,7 +598,7 @@ class GitServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_always_uses_ssh_for_localhost(): void
     {
         $server = Server::factory()->create([
@@ -613,7 +615,7 @@ class GitServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_configures_safe_directory_before_git_operations(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -639,7 +641,7 @@ class GitServiceTest extends TestCase
         $this->assertTrue($safeDirectoryCalled, 'Safe directory configuration should be called');
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_timeout_for_git_operations(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -665,7 +667,7 @@ class GitServiceTest extends TestCase
         $this->assertTrue($timeoutFound, 'Timeout should be used for git fetch');
     }
 
-    /** @test */
+    #[Test]
     public function it_falls_back_to_head_when_origin_branch_not_available(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -687,7 +689,7 @@ class GitServiceTest extends TestCase
         $this->assertEquals('Fallback commit', $result['commits'][0]['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_multiline_commit_messages(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -707,7 +709,7 @@ with multiple lines of description'),
         $this->assertStringContainsString('feat: Add feature', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_formats_commit_dates_correctly(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -727,7 +729,7 @@ with multiple lines of description'),
         $this->assertMatchesRegularExpression('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['date']);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_short_hash_from_full_commit_hash(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -748,7 +750,7 @@ with multiple lines of description'),
         $this->assertEquals(7, strlen($result['short_hash']));
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_commit_messages_with_pipe_characters(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -765,7 +767,7 @@ with multiple lines of description'),
         $this->assertEquals('feat: Add feature | Fix bug | Update docs', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_metadata_parsing_failures_gracefully(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -789,7 +791,7 @@ with multiple lines of description'),
         $this->assertNull($result['remote_meta']);
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_empty_lines_from_commit_history(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -812,7 +814,7 @@ with multiple lines of description'),
         $this->assertCount(2, $result['commits']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_different_branch_names(): void
     {
         $server = Server::factory()->withSshKey()->create();

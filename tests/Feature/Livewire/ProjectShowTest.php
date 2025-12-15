@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Livewire;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Jobs\DeployProjectJob;
 use App\Livewire\Projects\ProjectShow;
 use App\Models\Deployment;
@@ -53,7 +55,7 @@ class ProjectShowTest extends TestCase
         $this->actingAs($this->user);
     }
 
-    /** @test */
+    #[Test]
     public function component_renders_successfully_with_project_data(): void
     {
         Livewire::test(ProjectShow::class, ['project' => $this->project])
@@ -63,7 +65,7 @@ class ProjectShowTest extends TestCase
             ->assertSee($this->project->branch);
     }
 
-    /** @test */
+    #[Test]
     public function component_requires_view_authorization(): void
     {
         $otherUser = User::factory()->create();
@@ -79,7 +81,7 @@ class ProjectShowTest extends TestCase
         Livewire::test(ProjectShow::class, ['project' => $otherProject]);
     }
 
-    /** @test */
+    #[Test]
     public function component_allows_owner_to_view_project(): void
     {
         Livewire::test(ProjectShow::class, ['project' => $this->project])
@@ -87,7 +89,7 @@ class ProjectShowTest extends TestCase
             ->assertSee($this->project->name);
     }
 
-    /** @test */
+    #[Test]
     public function component_allows_team_member_to_view_team_project(): void
     {
         $team = Team::factory()->create();
@@ -112,7 +114,7 @@ class ProjectShowTest extends TestCase
             ->assertSee($teamProject->name);
     }
 
-    /** @test */
+    #[Test]
     public function component_loads_with_eager_loaded_relationships(): void
     {
         Domain::factory()->create([
@@ -131,14 +133,14 @@ class ProjectShowTest extends TestCase
             ->assertSee('example.com');
     }
 
-    /** @test */
+    #[Test]
     public function default_active_tab_is_overview(): void
     {
         Livewire::test(ProjectShow::class, ['project' => $this->project])
             ->assertSet('activeTab', 'overview');
     }
 
-    /** @test */
+    #[Test]
     public function can_switch_to_git_tab(): void
     {
         $this->mock(GitService::class, function ($mock) {
@@ -168,7 +170,7 @@ class ProjectShowTest extends TestCase
             ->assertSet('activeTab', 'git');
     }
 
-    /** @test */
+    #[Test]
     public function tab_navigation_works_correctly(): void
     {
         Livewire::test(ProjectShow::class, ['project' => $this->project])
@@ -177,7 +179,7 @@ class ProjectShowTest extends TestCase
             ->assertSet('activeTab', 'overview');
     }
 
-    /** @test */
+    #[Test]
     public function git_tab_loads_commits_on_first_access(): void
     {
         $this->mock(GitService::class, function ($mock) {
@@ -218,7 +220,7 @@ class ProjectShowTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function recent_deployments_list_shows_with_pagination(): void
     {
         // Create multiple deployments
@@ -236,7 +238,7 @@ class ProjectShowTest extends TestCase
         $this->assertLessThanOrEqual(5, $deployments->count()); // deploymentsPerPage = 5
     }
 
-    /** @test */
+    #[Test]
     public function deploy_button_creates_new_deployment(): void
     {
         Queue::fake();
@@ -256,7 +258,7 @@ class ProjectShowTest extends TestCase
         Queue::assertPushed(DeployProjectJob::class);
     }
 
-    /** @test */
+    #[Test]
     public function deploy_button_prevents_concurrent_deployments(): void
     {
         // Create an active deployment
@@ -271,7 +273,7 @@ class ProjectShowTest extends TestCase
             ->assertRedirect(route('deployments.show', $activeDeployment));
     }
 
-    /** @test */
+    #[Test]
     public function start_project_updates_project_status(): void
     {
         $this->project->update(['status' => 'stopped']);
@@ -294,7 +296,7 @@ class ProjectShowTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function stop_project_updates_project_status(): void
     {
         $this->project->update(['status' => 'running']);
@@ -317,7 +319,7 @@ class ProjectShowTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function domain_information_displays_correctly(): void
     {
         $domain = Domain::factory()->create([
@@ -336,7 +338,7 @@ class ProjectShowTest extends TestCase
         $this->assertTrue($domains->contains($domain));
     }
 
-    /** @test */
+    #[Test]
     public function check_for_updates_queries_git_service(): void
     {
         $this->mock(GitService::class, function ($mock) {
@@ -357,7 +359,7 @@ class ProjectShowTest extends TestCase
             ->assertSet('checkingForUpdates', false);
     }
 
-    /** @test */
+    #[Test]
     public function refresh_git_data_reloads_commits_and_update_status(): void
     {
         $this->mock(GitService::class, function ($mock) {
@@ -382,7 +384,7 @@ class ProjectShowTest extends TestCase
             ->assertSet('updateStatusLoaded', true);
     }
 
-    /** @test */
+    #[Test]
     public function branch_selector_loads_available_branches(): void
     {
         $this->mock(GitService::class, function ($mock) {
@@ -409,7 +411,7 @@ class ProjectShowTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function branch_switch_updates_project_branch(): void
     {
         $this->mock(GitService::class, function ($mock) {
@@ -445,7 +447,7 @@ class ProjectShowTest extends TestCase
             ->assertSet('showBranchSelector', false);
     }
 
-    /** @test */
+    #[Test]
     public function cancel_branch_switch_resets_selected_branch(): void
     {
         Livewire::test(ProjectShow::class, ['project' => $this->project])
@@ -456,7 +458,7 @@ class ProjectShowTest extends TestCase
             ->assertSet('selectedBranch', 'main'); // Should reset to project branch
     }
 
-    /** @test */
+    #[Test]
     public function commit_pagination_works_correctly(): void
     {
         $this->mock(GitService::class, function ($mock) {
@@ -477,7 +479,7 @@ class ProjectShowTest extends TestCase
             ->assertSet('commitPage', 1);
     }
 
-    /** @test */
+    #[Test]
     public function auto_refresh_toggle_updates_state(): void
     {
         Livewire::test(ProjectShow::class, ['project' => $this->project])
@@ -488,7 +490,7 @@ class ProjectShowTest extends TestCase
             ->assertSet('autoRefreshEnabled', true);
     }
 
-    /** @test */
+    #[Test]
     public function auto_refresh_interval_can_be_set(): void
     {
         Livewire::test(ProjectShow::class, ['project' => $this->project])
@@ -496,7 +498,7 @@ class ProjectShowTest extends TestCase
             ->assertSet('autoRefreshInterval', 60);
     }
 
-    /** @test */
+    #[Test]
     public function auto_refresh_interval_respects_min_and_max_bounds(): void
     {
         Livewire::test(ProjectShow::class, ['project' => $this->project])
@@ -506,7 +508,7 @@ class ProjectShowTest extends TestCase
             ->assertSet('autoRefreshInterval', 300); // Should be clamped to 300
     }
 
-    /** @test */
+    #[Test]
     public function tab_parameter_sets_initial_active_tab(): void
     {
         Livewire::withQueryParams(['tab' => 'overview'])
@@ -515,7 +517,7 @@ class ProjectShowTest extends TestCase
             ->assertSet('activeTab', 'overview');
     }
 
-    /** @test */
+    #[Test]
     public function start_project_handles_docker_service_errors_gracefully(): void
     {
         $this->mock(DockerService::class, function ($mock) {
@@ -532,7 +534,7 @@ class ProjectShowTest extends TestCase
             ->assertSessionHas('error', 'Failed to start project: Container not found');
     }
 
-    /** @test */
+    #[Test]
     public function stop_project_handles_docker_service_errors_gracefully(): void
     {
         $this->mock(DockerService::class, function ($mock) {
@@ -549,7 +551,7 @@ class ProjectShowTest extends TestCase
             ->assertSessionHas('error', 'Failed to stop project: Container not running');
     }
 
-    /** @test */
+    #[Test]
     public function preload_update_status_is_called_on_mount(): void
     {
         $this->mock(GitService::class, function ($mock) {
@@ -567,7 +569,7 @@ class ProjectShowTest extends TestCase
             ->assertSet('updateStatusRequested', true);
     }
 
-    /** @test */
+    #[Test]
     public function component_displays_active_deployment_banner_when_deployment_is_running(): void
     {
         $activeDeployment = Deployment::factory()->create([
@@ -583,7 +585,7 @@ class ProjectShowTest extends TestCase
             ->assertSee('Running');
     }
 
-    /** @test */
+    #[Test]
     public function filtered_branches_property_filters_by_search_term(): void
     {
         $this->mock(GitService::class, function ($mock) {

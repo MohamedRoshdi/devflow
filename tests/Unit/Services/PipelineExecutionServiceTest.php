@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Deployment;
 use App\Models\PipelineRun;
 use App\Models\PipelineStage;
@@ -25,7 +27,7 @@ class PipelineExecutionServiceTest extends TestCase
         $this->service = new PipelineExecutionService;
     }
 
-    /** @test */
+    #[Test]
     public function it_executes_pipeline_successfully(): void
     {
         // Arrange
@@ -62,7 +64,7 @@ class PipelineExecutionServiceTest extends TestCase
         $this->assertCount(2, $pipelineRun->stageRuns);
     }
 
-    /** @test */
+    #[Test]
     public function it_stops_pipeline_on_stage_failure(): void
     {
         // Arrange
@@ -99,7 +101,7 @@ class PipelineExecutionServiceTest extends TestCase
         $this->assertCount(1, $pipelineRun->stageRuns); // Only first stage should run
     }
 
-    /** @test */
+    #[Test]
     public function it_continues_on_failure_if_configured(): void
     {
         // Arrange
@@ -136,7 +138,7 @@ class PipelineExecutionServiceTest extends TestCase
         $this->assertCount(2, $pipelineRun->stageRuns); // Both stages should run
     }
 
-    /** @test */
+    #[Test]
     public function it_executes_stages_in_correct_order(): void
     {
         // Arrange
@@ -178,7 +180,7 @@ class PipelineExecutionServiceTest extends TestCase
         $this->assertEquals('post_deploy', $stageRuns[2]->pipelineStage->type);
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_disabled_stages(): void
     {
         // Arrange
@@ -205,7 +207,7 @@ class PipelineExecutionServiceTest extends TestCase
         $this->assertCount(1, $pipelineRun->stageRuns); // Only enabled stage
     }
 
-    /** @test */
+    #[Test]
     public function it_executes_single_stage_successfully(): void
     {
         // Arrange
@@ -229,7 +231,7 @@ class PipelineExecutionServiceTest extends TestCase
         $this->assertEquals('success', $stageRun->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_stage_execution_failure(): void
     {
         // Arrange
@@ -253,7 +255,7 @@ class PipelineExecutionServiceTest extends TestCase
         $this->assertEquals('failed', $stageRun->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_stage_with_no_commands(): void
     {
         // Arrange
@@ -275,7 +277,7 @@ class PipelineExecutionServiceTest extends TestCase
         $this->assertEquals('skipped', $stageRun->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_progress_correctly(): void
     {
         // Arrange
@@ -309,7 +311,7 @@ class PipelineExecutionServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_cancels_pipeline(): void
     {
         // Arrange
@@ -347,7 +349,7 @@ class PipelineExecutionServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_performs_rollback_to_previous_deployment(): void
     {
         // Arrange

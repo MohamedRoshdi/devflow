@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\LogEntry;
 use App\Models\LogSource;
 use App\Models\Project;
@@ -40,7 +42,7 @@ class LogAggregationServiceTest extends TestCase
     // SYNC LOGS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_syncs_logs_successfully_from_multiple_sources(): void
     {
         // Arrange
@@ -87,7 +89,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertNotNull($source2->last_synced_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_sync_errors_gracefully(): void
     {
         // Arrange
@@ -120,7 +122,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertEquals('Connection failed', $result['errors'][0]['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_inactive_log_sources(): void
     {
         // Arrange
@@ -145,7 +147,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertEquals(0, $result['total_entries']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_empty_log_content(): void
     {
         // Arrange
@@ -175,7 +177,7 @@ class LogAggregationServiceTest extends TestCase
     // FETCH LOG FILE TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_fetches_log_file_successfully(): void
     {
         // Arrange
@@ -195,7 +197,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertEquals($expectedOutput, $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_fetches_log_file_with_custom_line_count(): void
     {
         // Arrange
@@ -215,7 +217,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertNotEmpty($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_fetch_log_file_failure(): void
     {
         // Arrange
@@ -239,7 +241,7 @@ class LogAggregationServiceTest extends TestCase
     // NGINX LOG PARSING TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_parses_nginx_error_log(): void
     {
         // Arrange
@@ -256,7 +258,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertInstanceOf(Carbon::class, $result[0]['logged_at']);
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_nginx_access_log(): void
     {
         // Arrange
@@ -272,7 +274,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertStringContainsString('GET /', $result[0]['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_multiple_nginx_error_levels(): void
     {
         // Arrange
@@ -294,7 +296,7 @@ class LogAggregationServiceTest extends TestCase
     // LARAVEL LOG PARSING TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_parses_laravel_log_entry(): void
     {
         // Arrange
@@ -311,7 +313,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertInstanceOf(Carbon::class, $result[0]['logged_at']);
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_laravel_log_with_stack_trace(): void
     {
         // Arrange
@@ -330,7 +332,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertEquals(42, $result[0]['line_number']);
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_multiple_laravel_log_entries(): void
     {
         // Arrange
@@ -352,7 +354,7 @@ class LogAggregationServiceTest extends TestCase
     // PHP LOG PARSING TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_parses_php_error_log_with_file_info(): void
     {
         // Arrange
@@ -383,7 +385,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertEquals(123, $entry->line_number);
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_php_generic_error_log(): void
     {
         // Arrange
@@ -416,7 +418,7 @@ class LogAggregationServiceTest extends TestCase
     // MYSQL LOG PARSING TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_parses_mysql_error_log(): void
     {
         // Arrange
@@ -449,7 +451,7 @@ class LogAggregationServiceTest extends TestCase
     // SYSTEM LOG PARSING TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_parses_system_log(): void
     {
         // Arrange
@@ -471,7 +473,7 @@ class LogAggregationServiceTest extends TestCase
     // DOCKER LOG PARSING TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_parses_docker_log_with_timestamp(): void
     {
         // Arrange
@@ -488,7 +490,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertInstanceOf(Carbon::class, $result[0]['logged_at']);
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_docker_log_without_timestamp(): void
     {
         // Arrange
@@ -507,7 +509,7 @@ class LogAggregationServiceTest extends TestCase
     // SEARCH LOGS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_searches_logs_by_server_id(): void
     {
         // Arrange
@@ -539,7 +541,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertEquals($server->id, $result->first()->server_id);
     }
 
-    /** @test */
+    #[Test]
     public function it_searches_logs_by_project_id(): void
     {
         // Arrange
@@ -569,7 +571,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertEquals($project->id, $result->first()->project_id);
     }
 
-    /** @test */
+    #[Test]
     public function it_searches_logs_by_source(): void
     {
         // Arrange
@@ -595,7 +597,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertEquals('laravel', $result->first()->source);
     }
 
-    /** @test */
+    #[Test]
     public function it_searches_logs_by_level(): void
     {
         // Arrange
@@ -621,7 +623,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertEquals('error', $result->first()->level);
     }
 
-    /** @test */
+    #[Test]
     public function it_searches_logs_by_search_term(): void
     {
         // Arrange
@@ -647,7 +649,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertStringContainsString('Database', $result->first()->message);
     }
 
-    /** @test */
+    #[Test]
     public function it_searches_logs_by_date_range(): void
     {
         // Arrange
@@ -676,7 +678,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertEquals('Recent error', $result->first()->message);
     }
 
-    /** @test */
+    #[Test]
     public function it_searches_logs_with_multiple_filters(): void
     {
         // Arrange
@@ -723,7 +725,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertStringContainsString('Database', $entry->message);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_logs_in_recent_order(): void
     {
         // Arrange
@@ -762,7 +764,7 @@ class LogAggregationServiceTest extends TestCase
     // CLEAN OLD LOGS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_cleans_old_logs(): void
     {
         // Arrange
@@ -789,7 +791,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertEquals('Recent error', LogEntry::first()->message);
     }
 
-    /** @test */
+    #[Test]
     public function it_cleans_old_logs_with_custom_retention(): void
     {
         // Arrange
@@ -822,7 +824,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertEquals(1, LogEntry::count());
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_delete_recent_logs(): void
     {
         // Arrange
@@ -852,7 +854,7 @@ class LogAggregationServiceTest extends TestCase
     // DOCKER LOGS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_fetches_docker_logs(): void
     {
         // Arrange
@@ -877,7 +879,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertEquals($expectedOutput, $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_docker_logs_fetch_failure(): void
     {
         // Arrange
@@ -906,7 +908,7 @@ class LogAggregationServiceTest extends TestCase
     // JOURNALD LOGS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_fetches_journald_logs(): void
     {
         // Arrange
@@ -931,7 +933,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertEquals($expectedOutput, $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_journald_logs_fetch_failure(): void
     {
         // Arrange
@@ -960,7 +962,7 @@ class LogAggregationServiceTest extends TestCase
     // LOG SOURCE TYPE TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_syncs_file_type_log_source(): void
     {
         // Arrange
@@ -985,7 +987,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertEquals(1, $result['total_entries']);
     }
 
-    /** @test */
+    #[Test]
     public function it_syncs_docker_type_log_source(): void
     {
         // Arrange
@@ -1009,7 +1011,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertEquals(1, $result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_syncs_journald_type_log_source(): void
     {
         // Arrange
@@ -1033,7 +1035,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertEquals(1, $result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_for_unsupported_log_type(): void
     {
         // Arrange
@@ -1061,7 +1063,7 @@ class LogAggregationServiceTest extends TestCase
     // LEVEL NORMALIZATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_normalizes_warning_levels(): void
     {
         // Arrange
@@ -1077,7 +1079,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertEquals('warning', $result2[0]['level']);
     }
 
-    /** @test */
+    #[Test]
     public function it_normalizes_error_levels(): void
     {
         // Arrange
@@ -1093,7 +1095,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertEquals('error', $result2[0]['level']);
     }
 
-    /** @test */
+    #[Test]
     public function it_normalizes_critical_levels(): void
     {
         // Arrange
@@ -1109,7 +1111,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertEquals('critical', $result2[0]['level']);
     }
 
-    /** @test */
+    #[Test]
     public function it_defaults_unknown_levels_to_info(): void
     {
         // Arrange
@@ -1126,7 +1128,7 @@ class LogAggregationServiceTest extends TestCase
     // EDGE CASE TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_handles_malformed_log_lines(): void
     {
         // Arrange
@@ -1139,7 +1141,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertEmpty($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_log_entries_with_server_and_project_associations(): void
     {
         // Arrange
@@ -1168,7 +1170,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertEquals($project->id, $entry->project_id);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_multiline_log_messages(): void
     {
         // Arrange
@@ -1186,7 +1188,7 @@ class LogAggregationServiceTest extends TestCase
         $this->assertStringContainsString('Line 3 of stack trace', $result[0]['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_empty_log_lines(): void
     {
         // Arrange

@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Server;
 use App\Services\MetricsCollectionService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
 use Tests\TestCase;
 
 class MetricsCollectionServiceTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     private MetricsCollectionService $service;
 
@@ -28,7 +30,7 @@ class MetricsCollectionServiceTest extends TestCase
     // SERVER METRICS COLLECTION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_collects_server_metrics(): void
     {
         $server = Server::factory()->create([
@@ -57,7 +59,7 @@ class MetricsCollectionServiceTest extends TestCase
         $this->assertArrayHasKey('uptime', $metrics);
     }
 
-    /** @test */
+    #[Test]
     public function it_collects_metrics_from_all_online_servers(): void
     {
         Server::factory()->count(3)->create(['status' => 'online']);
@@ -76,7 +78,7 @@ class MetricsCollectionServiceTest extends TestCase
     // CPU USAGE TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_gets_cpu_usage_using_top(): void
     {
         $server = Server::factory()->create();
@@ -90,7 +92,7 @@ class MetricsCollectionServiceTest extends TestCase
         $this->assertEquals(35.2, $metrics['cpu']);
     }
 
-    /** @test */
+    #[Test]
     public function it_falls_back_to_mpstat_for_cpu(): void
     {
         Log::shouldReceive('warning')->times(5); // For other failed metrics
@@ -112,7 +114,7 @@ class MetricsCollectionServiceTest extends TestCase
         $this->assertEquals(28.5, $metrics['cpu']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_cpu_collection_failure(): void
     {
         Log::shouldReceive('warning')->atLeast()->once();
@@ -134,7 +136,7 @@ class MetricsCollectionServiceTest extends TestCase
     // MEMORY USAGE TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_gets_memory_usage(): void
     {
         $server = Server::factory()->create();
@@ -157,7 +159,7 @@ class MetricsCollectionServiceTest extends TestCase
         $this->assertEquals(4000, $metrics['memory']['free_mb']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_memory_collection_failure(): void
     {
         Log::shouldReceive('warning')->atLeast()->once();
@@ -179,7 +181,7 @@ class MetricsCollectionServiceTest extends TestCase
     // DISK USAGE TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_gets_disk_usage(): void
     {
         $server = Server::factory()->create();
@@ -203,7 +205,7 @@ class MetricsCollectionServiceTest extends TestCase
         $this->assertEquals('/', $metrics['disk']['mount_point']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_disk_collection_failure(): void
     {
         Log::shouldReceive('warning')->atLeast()->once();
@@ -224,7 +226,7 @@ class MetricsCollectionServiceTest extends TestCase
     // NETWORK STATS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_gets_network_statistics(): void
     {
         $server = Server::factory()->create();
@@ -247,7 +249,7 @@ class MetricsCollectionServiceTest extends TestCase
         $this->assertEquals(1000, $metrics['network']['out_packets']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_network_collection_failure(): void
     {
         Log::shouldReceive('warning')->atLeast()->once();
@@ -268,7 +270,7 @@ class MetricsCollectionServiceTest extends TestCase
     // LOAD AVERAGE TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_gets_load_average(): void
     {
         $server = Server::factory()->create();
@@ -290,7 +292,7 @@ class MetricsCollectionServiceTest extends TestCase
         $this->assertEquals(0.9, $metrics['load']['load_15']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_load_average_failure(): void
     {
         Log::shouldReceive('warning')->atLeast()->once();
@@ -311,7 +313,7 @@ class MetricsCollectionServiceTest extends TestCase
     // UPTIME TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_gets_server_uptime(): void
     {
         $server = Server::factory()->create();
@@ -330,7 +332,7 @@ class MetricsCollectionServiceTest extends TestCase
         $this->assertEquals('up 5 days, 3 hours', $metrics['uptime']);
     }
 
-    /** @test */
+    #[Test]
     public function it_falls_back_to_basic_uptime(): void
     {
         Log::shouldReceive('warning')->atLeast()->once();
@@ -352,7 +354,7 @@ class MetricsCollectionServiceTest extends TestCase
     // SERVER HEALTH METRICS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_determines_healthy_server_status(): void
     {
         $server = Server::factory()->create();
@@ -374,7 +376,7 @@ class MetricsCollectionServiceTest extends TestCase
         $this->assertEquals(40.0, $health['disk']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_warning_server_status(): void
     {
         $server = Server::factory()->create();
@@ -393,7 +395,7 @@ class MetricsCollectionServiceTest extends TestCase
         $this->assertEquals('warning', $health['status']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_critical_server_status(): void
     {
         $server = Server::factory()->create();
@@ -416,7 +418,7 @@ class MetricsCollectionServiceTest extends TestCase
     // FORMATTED METRICS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_formats_metrics_for_dashboard(): void
     {
         Server::factory()->count(2)->create(['status' => 'online']);

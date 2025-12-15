@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Project;
 use App\Models\Server;
 use App\Services\DockerService;
 use App\Services\LogAggregationService;
 use App\Services\LogManagerService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Mockery;
@@ -17,7 +19,7 @@ use Tests\TestCase;
 
 class LogManagerServiceTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     private LogManagerService $service;
     private DockerService $dockerService;
@@ -46,7 +48,7 @@ class LogManagerServiceTest extends TestCase
     // GET RECENT ERRORS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_retrieves_recent_errors_for_laravel_project(): void
     {
         $server = Server::factory()->create();
@@ -86,7 +88,7 @@ class LogManagerServiceTest extends TestCase
         $this->assertCount(2, $errors);
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_errors_by_level(): void
     {
         $server = Server::factory()->create();
@@ -111,7 +113,7 @@ class LogManagerServiceTest extends TestCase
         $this->assertCount(3, $errors); // Only error, warning, critical
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_empty_logs(): void
     {
         $server = Server::factory()->create();
@@ -129,7 +131,7 @@ class LogManagerServiceTest extends TestCase
         $this->assertCount(0, $errors);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_log_fetch_exception(): void
     {
         Log::shouldReceive('error')->once();
@@ -152,7 +154,7 @@ class LogManagerServiceTest extends TestCase
     // LOG ROTATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_rotates_laravel_logs(): void
     {
         $server = Server::factory()->create(['username' => 'root']);
@@ -169,7 +171,7 @@ class LogManagerServiceTest extends TestCase
         $this->assertArrayHasKey('archived', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_rotation_failure(): void
     {
         Log::shouldReceive('error')->once();
@@ -189,7 +191,7 @@ class LogManagerServiceTest extends TestCase
     // LOG STATS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_gets_log_statistics(): void
     {
         $server = Server::factory()->create();
@@ -211,7 +213,7 @@ class LogManagerServiceTest extends TestCase
     // LOG SEARCH TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_searches_logs_for_pattern(): void
     {
         $server = Server::factory()->create();
@@ -236,7 +238,7 @@ class LogManagerServiceTest extends TestCase
         $this->assertInstanceOf(Collection::class, $results);
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_search_results_by_level(): void
     {
         $server = Server::factory()->create();
@@ -257,7 +259,7 @@ class LogManagerServiceTest extends TestCase
         $this->assertEquals('error', $results->first()['level']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_search_exception(): void
     {
         Log::shouldReceive('error')->once();
@@ -279,7 +281,7 @@ class LogManagerServiceTest extends TestCase
     // LOG EXPORT TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_exports_logs_as_archive(): void
     {
         $server = Server::factory()->create();
@@ -295,7 +297,7 @@ class LogManagerServiceTest extends TestCase
         $this->assertStringContainsString('test-project_logs', $archivePath);
     }
 
-    /** @test */
+    #[Test]
     public function it_exports_logs_with_date_filter(): void
     {
         $server = Server::factory()->create();
@@ -312,7 +314,7 @@ class LogManagerServiceTest extends TestCase
         $this->assertIsString($archivePath);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_export_failure(): void
     {
         $project = Project::factory()->create([
@@ -328,7 +330,7 @@ class LogManagerServiceTest extends TestCase
     // LOG CLEARING TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_clears_laravel_logs(): void
     {
         $server = Server::factory()->create();
@@ -347,7 +349,7 @@ class LogManagerServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_archives_before_clearing(): void
     {
         $server = Server::factory()->create();
@@ -361,7 +363,7 @@ class LogManagerServiceTest extends TestCase
         $this->assertIsBool($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_clear_failure(): void
     {
         Log::shouldReceive('error')->once();
@@ -385,7 +387,7 @@ class LogManagerServiceTest extends TestCase
     // LOG TAIL TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_tails_laravel_logs(): void
     {
         $server = Server::factory()->create();
@@ -408,7 +410,7 @@ class LogManagerServiceTest extends TestCase
         $this->assertStringContainsString('Log line 1', $result['logs']);
     }
 
-    /** @test */
+    #[Test]
     public function it_tails_non_laravel_logs(): void
     {
         $server = Server::factory()->create();
@@ -427,7 +429,7 @@ class LogManagerServiceTest extends TestCase
         $this->assertEquals('Symfony log content', $result['logs']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_empty_tail_logs(): void
     {
         $server = Server::factory()->create();
@@ -445,7 +447,7 @@ class LogManagerServiceTest extends TestCase
         $this->assertEquals('No logs available', $result['logs']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_tail_failure(): void
     {
         $server = Server::factory()->create();
@@ -467,7 +469,7 @@ class LogManagerServiceTest extends TestCase
     // GENERIC LOG PARSING TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_parses_generic_error_log_format(): void
     {
         $server = Server::factory()->create();

@@ -4,19 +4,21 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Livewire\Deployments;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\Deployments\DeploymentList;
 use App\Models\Deployment;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Illuminate\Support\Facades\Cache;
 use Livewire\Livewire;
 use Tests\TestCase;
 
 class DeploymentListTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     protected User $user;
 
@@ -38,7 +40,7 @@ class DeploymentListTest extends TestCase
         Cache::flush();
     }
 
-    /** @test */
+    #[Test]
     public function component_renders_successfully(): void
     {
         Livewire::actingAs($this->user)
@@ -47,7 +49,7 @@ class DeploymentListTest extends TestCase
             ->assertViewIs('livewire.deployments.deployment-list');
     }
 
-    /** @test */
+    #[Test]
     public function component_displays_deployments(): void
     {
         $deployment = Deployment::factory()->create([
@@ -63,7 +65,7 @@ class DeploymentListTest extends TestCase
             ->assertSee('Fix critical bug');
     }
 
-    /** @test */
+    #[Test]
     public function component_displays_multiple_deployments(): void
     {
         Deployment::factory()->create([
@@ -86,7 +88,7 @@ class DeploymentListTest extends TestCase
             ->assertSee('Second deployment');
     }
 
-    /** @test */
+    #[Test]
     public function search_filters_deployments_by_commit_message(): void
     {
         Deployment::factory()->create([
@@ -108,7 +110,7 @@ class DeploymentListTest extends TestCase
             ->assertDontSee('Fix bug');
     }
 
-    /** @test */
+    #[Test]
     public function search_filters_deployments_by_branch(): void
     {
         Deployment::factory()->create([
@@ -132,7 +134,7 @@ class DeploymentListTest extends TestCase
             ->assertDontSee('Main branch deployment');
     }
 
-    /** @test */
+    #[Test]
     public function search_filters_deployments_by_project_name(): void
     {
         $project1 = Project::factory()->create([
@@ -166,7 +168,7 @@ class DeploymentListTest extends TestCase
             ->assertDontSee('Deployment 2');
     }
 
-    /** @test */
+    #[Test]
     public function status_filter_works_correctly(): void
     {
         Deployment::factory()->create([
@@ -198,7 +200,7 @@ class DeploymentListTest extends TestCase
             ->assertDontSee('Running deployment');
     }
 
-    /** @test */
+    #[Test]
     public function project_filter_works_correctly(): void
     {
         $project1 = Project::factory()->create([
@@ -230,7 +232,7 @@ class DeploymentListTest extends TestCase
             ->assertDontSee('Project 2 deployment');
     }
 
-    /** @test */
+    #[Test]
     public function multiple_filters_can_be_applied_simultaneously(): void
     {
         $project1 = Project::factory()->create([
@@ -273,7 +275,7 @@ class DeploymentListTest extends TestCase
             ->assertDontSee('Develop success');
     }
 
-    /** @test */
+    #[Test]
     public function per_page_can_be_changed(): void
     {
         Deployment::factory()->count(20)->create([
@@ -289,7 +291,7 @@ class DeploymentListTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function per_page_is_validated_to_minimum(): void
     {
         Livewire::actingAs($this->user)
@@ -298,7 +300,7 @@ class DeploymentListTest extends TestCase
             ->assertSet('perPage', 15); // Reset to default
     }
 
-    /** @test */
+    #[Test]
     public function per_page_is_validated_to_maximum(): void
     {
         Livewire::actingAs($this->user)
@@ -307,7 +309,7 @@ class DeploymentListTest extends TestCase
             ->assertSet('perPage', 15); // Reset to default
     }
 
-    /** @test */
+    #[Test]
     public function per_page_accepts_valid_values(): void
     {
         Livewire::actingAs($this->user)
@@ -316,7 +318,7 @@ class DeploymentListTest extends TestCase
             ->assertSet('perPage', 20);
     }
 
-    /** @test */
+    #[Test]
     public function changing_status_filter_resets_pagination(): void
     {
         Deployment::factory()->count(20)->create([
@@ -330,7 +332,7 @@ class DeploymentListTest extends TestCase
             ->assertSet('paginators.page', 1);
     }
 
-    /** @test */
+    #[Test]
     public function changing_project_filter_resets_pagination(): void
     {
         Deployment::factory()->count(20)->create([
@@ -344,7 +346,7 @@ class DeploymentListTest extends TestCase
             ->assertSet('paginators.page', 1);
     }
 
-    /** @test */
+    #[Test]
     public function changing_search_resets_pagination(): void
     {
         Deployment::factory()->count(20)->create([
@@ -358,7 +360,7 @@ class DeploymentListTest extends TestCase
             ->assertSet('paginators.page', 1);
     }
 
-    /** @test */
+    #[Test]
     public function changing_per_page_resets_pagination(): void
     {
         Deployment::factory()->count(20)->create([
@@ -372,7 +374,7 @@ class DeploymentListTest extends TestCase
             ->assertSet('paginators.page', 1);
     }
 
-    /** @test */
+    #[Test]
     public function component_caches_deployment_statistics(): void
     {
         Deployment::factory()->create([
@@ -398,7 +400,7 @@ class DeploymentListTest extends TestCase
         $this->assertTrue(Cache::has('deployment_stats'));
     }
 
-    /** @test */
+    #[Test]
     public function component_caches_projects_dropdown_list(): void
     {
         Project::factory()->count(3)->create([
@@ -415,7 +417,7 @@ class DeploymentListTest extends TestCase
         $this->assertTrue(Cache::has('projects_dropdown_list'));
     }
 
-    /** @test */
+    #[Test]
     public function component_eager_loads_relationships(): void
     {
         Deployment::factory()->create([
@@ -435,7 +437,7 @@ class DeploymentListTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function component_only_selects_necessary_columns(): void
     {
         Deployment::factory()->create([
@@ -457,7 +459,7 @@ class DeploymentListTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function deployments_are_ordered_by_latest_first(): void
     {
         $oldDeployment = Deployment::factory()->create([
@@ -481,7 +483,7 @@ class DeploymentListTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function pagination_works_correctly(): void
     {
         Deployment::factory()->count(20)->create([
@@ -496,7 +498,7 @@ class DeploymentListTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function url_parameters_are_persisted(): void
     {
         Livewire::actingAs($this->user)
@@ -511,7 +513,7 @@ class DeploymentListTest extends TestCase
             ->assertPropertyWired('perPage');
     }
 
-    /** @test */
+    #[Test]
     public function empty_filters_show_all_deployments(): void
     {
         Deployment::factory()->count(3)->create([
@@ -529,7 +531,7 @@ class DeploymentListTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function component_displays_all_deployment_statuses(): void
     {
         Deployment::factory()->create([
@@ -568,14 +570,14 @@ class DeploymentListTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function unauthenticated_user_is_redirected(): void
     {
         Livewire::test(DeploymentList::class)
             ->assertUnauthorized();
     }
 
-    /** @test */
+    #[Test]
     public function statistics_show_correct_counts_for_each_status(): void
     {
         Deployment::factory()->count(5)->create([
@@ -606,7 +608,7 @@ class DeploymentListTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function projects_dropdown_is_ordered_alphabetically(): void
     {
         Project::factory()->create([

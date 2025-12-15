@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Domain;
 use App\Models\Project;
 use App\Models\Server;
@@ -11,7 +13,7 @@ use App\Models\ServerMetric;
 use App\Services\DockerService;
 use App\Services\Health\ProjectHealthScorer;
 use App\Services\ProjectHealthService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Mockery;
@@ -19,7 +21,7 @@ use Tests\TestCase;
 
 class ProjectHealthServiceTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     private ProjectHealthService $service;
     private DockerService $dockerService;
@@ -44,7 +46,7 @@ class ProjectHealthServiceTest extends TestCase
     // PROJECT HEALTH CHECK TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_checks_all_projects(): void
     {
         Cache::shouldReceive('remember')
@@ -68,7 +70,7 @@ class ProjectHealthServiceTest extends TestCase
         $this->assertCount(3, $results);
     }
 
-    /** @test */
+    #[Test]
     public function it_checks_single_project_health(): void
     {
         $project = Project::factory()->create();
@@ -90,7 +92,7 @@ class ProjectHealthServiceTest extends TestCase
         $this->assertArrayHasKey('issues', $health);
     }
 
-    /** @test */
+    #[Test]
     public function it_identifies_healthy_project(): void
     {
         $server = Server::factory()->create();
@@ -121,7 +123,7 @@ class ProjectHealthServiceTest extends TestCase
         $this->assertGreaterThanOrEqual(80, $health['health_score']);
     }
 
-    /** @test */
+    #[Test]
     public function it_identifies_unhealthy_project(): void
     {
         $project = Project::factory()->create(['status' => 'stopped']);
@@ -142,7 +144,7 @@ class ProjectHealthServiceTest extends TestCase
     // HTTP HEALTH CHECK TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_checks_http_health_successfully(): void
     {
         $project = Project::factory()->create([
@@ -163,7 +165,7 @@ class ProjectHealthServiceTest extends TestCase
         $this->assertNotNull($health['checks']['http']['response_time']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_http_failure(): void
     {
         $project = Project::factory()->create([
@@ -183,7 +185,7 @@ class ProjectHealthServiceTest extends TestCase
         $this->assertEquals(500, $health['checks']['http']['http_code']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_http_timeout(): void
     {
         $project = Project::factory()->create([
@@ -203,7 +205,7 @@ class ProjectHealthServiceTest extends TestCase
         $this->assertNotNull($health['checks']['http']['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_primary_domain_for_health_check(): void
     {
         $project = Project::factory()->create([
@@ -230,7 +232,7 @@ class ProjectHealthServiceTest extends TestCase
     // SSL HEALTH CHECK TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_checks_ssl_health_with_no_domains(): void
     {
         $project = Project::factory()->create();
@@ -244,7 +246,7 @@ class ProjectHealthServiceTest extends TestCase
         $this->assertFalse($health['checks']['ssl']['valid']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_expiring_ssl_certificate(): void
     {
         $server = Server::factory()->create();
@@ -268,7 +270,7 @@ class ProjectHealthServiceTest extends TestCase
     // DOCKER HEALTH CHECK TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_checks_running_docker_container(): void
     {
         $project = Project::factory()->create();
@@ -287,7 +289,7 @@ class ProjectHealthServiceTest extends TestCase
         $this->assertTrue($health['checks']['docker']['running']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_stopped_docker_container(): void
     {
         $project = Project::factory()->create();
@@ -306,7 +308,7 @@ class ProjectHealthServiceTest extends TestCase
         $this->assertFalse($health['checks']['docker']['running']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_docker_check_failure(): void
     {
         $project = Project::factory()->create();
@@ -327,7 +329,7 @@ class ProjectHealthServiceTest extends TestCase
     // DISK USAGE CHECK TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_checks_disk_usage_from_server_metrics(): void
     {
         $server = Server::factory()->create();
@@ -348,7 +350,7 @@ class ProjectHealthServiceTest extends TestCase
         $this->assertEquals(60, $health['checks']['disk']['usage_percent']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_critical_disk_usage(): void
     {
         $server = Server::factory()->create();
@@ -367,7 +369,7 @@ class ProjectHealthServiceTest extends TestCase
         $this->assertEquals('critical', $health['checks']['disk']['status']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_warning_disk_usage(): void
     {
         $server = Server::factory()->create();
@@ -390,7 +392,7 @@ class ProjectHealthServiceTest extends TestCase
     // DEPLOYMENT HEALTH CHECK TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_checks_successful_deployment(): void
     {
         $project = Project::factory()->create();
@@ -409,7 +411,7 @@ class ProjectHealthServiceTest extends TestCase
         $this->assertEquals('success', $health['checks']['deployment']['last_status']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_failed_deployment(): void
     {
         $project = Project::factory()->create();
@@ -428,7 +430,7 @@ class ProjectHealthServiceTest extends TestCase
         $this->assertNotNull($health['checks']['deployment']['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_no_deployments(): void
     {
         $project = Project::factory()->create();
@@ -445,7 +447,7 @@ class ProjectHealthServiceTest extends TestCase
     // SERVER HEALTH CHECK TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_checks_server_health(): void
     {
         $server = Server::factory()->create(['status' => 'online']);
@@ -467,7 +469,7 @@ class ProjectHealthServiceTest extends TestCase
         $this->assertGreaterThanOrEqual(80, $health['health_score']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_offline_server(): void
     {
         $server = Server::factory()->create(['status' => 'offline']);
@@ -481,7 +483,7 @@ class ProjectHealthServiceTest extends TestCase
         $this->assertContains('Server is offline', $health['issues']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_critical_server_resources(): void
     {
         $server = Server::factory()->create(['status' => 'online']);
@@ -502,7 +504,7 @@ class ProjectHealthServiceTest extends TestCase
         $this->assertNotEmpty($health['issues']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_missing_docker_installation(): void
     {
         $server = Server::factory()->create(['status' => 'online']);
@@ -526,7 +528,7 @@ class ProjectHealthServiceTest extends TestCase
     // CACHE INVALIDATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_invalidates_project_cache(): void
     {
         $project = Project::factory()->create();
@@ -540,7 +542,7 @@ class ProjectHealthServiceTest extends TestCase
         $this->assertTrue(true); // Assert called without exception
     }
 
-    /** @test */
+    #[Test]
     public function it_invalidates_all_project_caches(): void
     {
         Project::factory()->count(3)->create();
@@ -557,7 +559,7 @@ class ProjectHealthServiceTest extends TestCase
     // HEALTH SCORE CALCULATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_calculates_perfect_health_score(): void
     {
         $server = Server::factory()->create();
@@ -585,7 +587,7 @@ class ProjectHealthServiceTest extends TestCase
         $this->assertEquals(100, $health['health_score']);
     }
 
-    /** @test */
+    #[Test]
     public function it_deducts_points_for_slow_response(): void
     {
         $project = Project::factory()->create([

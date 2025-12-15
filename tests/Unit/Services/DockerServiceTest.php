@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Services\DockerService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Process;
@@ -26,7 +28,7 @@ class DockerServiceTest extends TestCase
     // DOCKER INSTALLATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_checks_docker_installation_on_server(): void
     {
         // Arrange
@@ -45,7 +47,7 @@ class DockerServiceTest extends TestCase
         $this->assertEquals('24.0.5', $result['version']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_docker_not_installed(): void
     {
         // Arrange
@@ -65,7 +67,7 @@ class DockerServiceTest extends TestCase
         $this->assertFalse($result['installed']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_docker_installation_check_exception(): void
     {
         // Arrange
@@ -80,7 +82,7 @@ class DockerServiceTest extends TestCase
         $this->assertArrayHasKey('error', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_installs_docker_on_server(): void
     {
         // Arrange
@@ -99,7 +101,7 @@ class DockerServiceTest extends TestCase
         $this->assertStringContainsString('installed successfully', $result['output']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_docker_installation_failure(): void
     {
         // Arrange
@@ -124,7 +126,7 @@ class DockerServiceTest extends TestCase
     // CONTAINER BUILD TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_builds_container_with_docker_compose(): void
     {
         // Arrange
@@ -146,7 +148,7 @@ class DockerServiceTest extends TestCase
         $this->assertEquals('docker-compose', $result['type']);
     }
 
-    /** @test */
+    #[Test]
     public function it_builds_standalone_container_with_dockerfile(): void
     {
         // Arrange
@@ -169,7 +171,7 @@ class DockerServiceTest extends TestCase
         $this->assertEquals('standalone', $result['type']);
     }
 
-    /** @test */
+    #[Test]
     public function it_builds_container_with_production_dockerfile(): void
     {
         // Arrange
@@ -191,7 +193,7 @@ class DockerServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_dockerfile_when_missing(): void
     {
         // Arrange
@@ -213,7 +215,7 @@ class DockerServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_container_build_failure(): void
     {
         // Arrange
@@ -241,7 +243,7 @@ class DockerServiceTest extends TestCase
     // CONTAINER START/STOP TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_starts_docker_compose_services(): void
     {
         // Arrange
@@ -264,7 +266,7 @@ class DockerServiceTest extends TestCase
         $this->assertStringContainsString('started', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_starts_standalone_container(): void
     {
         // Arrange
@@ -288,7 +290,7 @@ class DockerServiceTest extends TestCase
         $this->assertEquals(8080, $result['port']);
     }
 
-    /** @test */
+    #[Test]
     public function it_assigns_port_when_not_set(): void
     {
         // Arrange
@@ -311,7 +313,7 @@ class DockerServiceTest extends TestCase
         $this->assertNotNull($result['port']);
     }
 
-    /** @test */
+    #[Test]
     public function it_stops_docker_compose_services(): void
     {
         // Arrange
@@ -333,7 +335,7 @@ class DockerServiceTest extends TestCase
         $this->assertStringContainsString('stopped', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_stops_standalone_container(): void
     {
         // Arrange
@@ -357,7 +359,7 @@ class DockerServiceTest extends TestCase
     // CONTAINER LOGS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_retrieves_docker_compose_logs(): void
     {
         // Arrange
@@ -380,7 +382,7 @@ class DockerServiceTest extends TestCase
         $this->assertEquals('docker-compose', $result['source']);
     }
 
-    /** @test */
+    #[Test]
     public function it_retrieves_standalone_container_logs(): void
     {
         // Arrange
@@ -403,7 +405,7 @@ class DockerServiceTest extends TestCase
         $this->assertEquals('container', $result['source']);
     }
 
-    /** @test */
+    #[Test]
     public function it_retrieves_laravel_logs_from_container(): void
     {
         // Arrange
@@ -425,7 +427,7 @@ class DockerServiceTest extends TestCase
         $this->assertEquals('container', $result['source']);
     }
 
-    /** @test */
+    #[Test]
     public function it_falls_back_to_host_for_laravel_logs(): void
     {
         // Arrange
@@ -450,7 +452,7 @@ class DockerServiceTest extends TestCase
         $this->assertEquals('host', $result['source']);
     }
 
-    /** @test */
+    #[Test]
     public function it_clears_laravel_logs_successfully(): void
     {
         // Arrange
@@ -469,7 +471,7 @@ class DockerServiceTest extends TestCase
         $this->assertStringContainsString('cleared successfully', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_laravel_log_file_if_missing(): void
     {
         // Arrange
@@ -487,7 +489,7 @@ class DockerServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_downloads_laravel_logs_successfully(): void
     {
         // Arrange
@@ -514,7 +516,7 @@ class DockerServiceTest extends TestCase
     // CONTAINER STATUS & STATS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_retrieves_container_status(): void
     {
         // Arrange
@@ -537,7 +539,7 @@ class DockerServiceTest extends TestCase
         $this->assertEquals('running', $result['container']['State']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_non_existent_container(): void
     {
         // Arrange
@@ -557,7 +559,7 @@ class DockerServiceTest extends TestCase
         $this->assertNull($result['container']);
     }
 
-    /** @test */
+    #[Test]
     public function it_retrieves_container_statistics(): void
     {
         // Arrange
@@ -579,7 +581,7 @@ class DockerServiceTest extends TestCase
         $this->assertEquals('45.00%', $result['stats']['MemPerc']);
     }
 
-    /** @test */
+    #[Test]
     public function it_retrieves_container_resource_limits(): void
     {
         // Arrange
@@ -602,7 +604,7 @@ class DockerServiceTest extends TestCase
         $this->assertEquals(50000, $result['cpu_quota']);
     }
 
-    /** @test */
+    #[Test]
     public function it_sets_container_memory_limit(): void
     {
         // Arrange
@@ -622,7 +624,7 @@ class DockerServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_sets_container_cpu_shares(): void
     {
         // Arrange
@@ -646,7 +648,7 @@ class DockerServiceTest extends TestCase
     // VOLUME MANAGEMENT TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_lists_docker_volumes(): void
     {
         // Arrange
@@ -667,7 +669,7 @@ class DockerServiceTest extends TestCase
         $this->assertEquals('vol1', $result['volumes'][0]['Name']);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_docker_volume(): void
     {
         // Arrange
@@ -685,7 +687,7 @@ class DockerServiceTest extends TestCase
         $this->assertEquals('my-volume', $result['volume_name']);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_volume_with_driver_and_labels(): void
     {
         // Arrange
@@ -705,7 +707,7 @@ class DockerServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_deletes_docker_volume(): void
     {
         // Arrange
@@ -722,7 +724,7 @@ class DockerServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_retrieves_volume_information(): void
     {
         // Arrange
@@ -747,7 +749,7 @@ class DockerServiceTest extends TestCase
     // NETWORK MANAGEMENT TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_lists_docker_networks(): void
     {
         // Arrange
@@ -768,7 +770,7 @@ class DockerServiceTest extends TestCase
         $this->assertEquals('bridge', $result['networks'][0]['Name']);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_docker_network(): void
     {
         // Arrange
@@ -786,7 +788,7 @@ class DockerServiceTest extends TestCase
         $this->assertEquals('abc123def456', $result['network_id']);
     }
 
-    /** @test */
+    #[Test]
     public function it_deletes_docker_network(): void
     {
         // Arrange
@@ -803,7 +805,7 @@ class DockerServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_connects_container_to_network(): void
     {
         // Arrange
@@ -821,7 +823,7 @@ class DockerServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_disconnects_container_from_network(): void
     {
         // Arrange
@@ -843,7 +845,7 @@ class DockerServiceTest extends TestCase
     // IMAGE MANAGEMENT TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_lists_docker_images(): void
     {
         // Arrange
@@ -865,7 +867,7 @@ class DockerServiceTest extends TestCase
         $this->assertEquals('nginx', $result['images'][0]['Repository']);
     }
 
-    /** @test */
+    #[Test]
     public function it_lists_project_specific_images(): void
     {
         // Arrange
@@ -888,7 +890,7 @@ class DockerServiceTest extends TestCase
         $this->assertEquals('my-app', $result['images'][0]['Repository']);
     }
 
-    /** @test */
+    #[Test]
     public function it_deletes_docker_image(): void
     {
         // Arrange
@@ -907,7 +909,7 @@ class DockerServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_prunes_unused_images(): void
     {
         // Arrange
@@ -927,7 +929,7 @@ class DockerServiceTest extends TestCase
         $this->assertStringContainsString('1.2GB', $result['output']);
     }
 
-    /** @test */
+    #[Test]
     public function it_prunes_all_unused_images(): void
     {
         // Arrange
@@ -946,7 +948,7 @@ class DockerServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_pulls_docker_image(): void
     {
         // Arrange
@@ -969,7 +971,7 @@ class DockerServiceTest extends TestCase
     // DOCKER COMPOSE TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_checks_if_project_uses_docker_compose(): void
     {
         // Arrange
@@ -987,7 +989,7 @@ class DockerServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_checks_if_project_does_not_use_docker_compose(): void
     {
         // Arrange
@@ -1005,7 +1007,7 @@ class DockerServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_deploys_with_docker_compose(): void
     {
         // Arrange
@@ -1025,7 +1027,7 @@ class DockerServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_stops_compose_using_stop_compose_method(): void
     {
         // Arrange
@@ -1045,7 +1047,7 @@ class DockerServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_docker_compose_service_status(): void
     {
         // Arrange
@@ -1066,7 +1068,7 @@ class DockerServiceTest extends TestCase
         $this->assertCount(2, $result['services']);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_app_container_name(): void
     {
         // Arrange
@@ -1088,7 +1090,7 @@ class DockerServiceTest extends TestCase
     // CONTAINER EXECUTION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_executes_command_in_container(): void
     {
         // Arrange
@@ -1109,7 +1111,7 @@ class DockerServiceTest extends TestCase
         $this->assertStringContainsString('successfully', $result['output']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exec_command_failure(): void
     {
         // Arrange
@@ -1132,7 +1134,7 @@ class DockerServiceTest extends TestCase
         $this->assertStringContainsString('not found', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_container_processes(): void
     {
         // Arrange
@@ -1157,7 +1159,7 @@ class DockerServiceTest extends TestCase
     // BACKUP & RESTORE TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_exports_container_as_backup(): void
     {
         // Arrange
@@ -1179,7 +1181,7 @@ class DockerServiceTest extends TestCase
         $this->assertNotEmpty($result['image_id']);
     }
 
-    /** @test */
+    #[Test]
     public function it_saves_image_to_tar_file(): void
     {
         // Arrange
@@ -1197,7 +1199,7 @@ class DockerServiceTest extends TestCase
         $this->assertEquals('/tmp/backup.tar', $result['file_path']);
     }
 
-    /** @test */
+    #[Test]
     public function it_loads_image_from_tar_file(): void
     {
         // Arrange
@@ -1221,7 +1223,7 @@ class DockerServiceTest extends TestCase
     // DOCKER REGISTRY TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_logs_in_to_docker_registry(): void
     {
         // Arrange
@@ -1240,7 +1242,7 @@ class DockerServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_pushes_image_to_registry(): void
     {
         // Arrange
@@ -1259,7 +1261,7 @@ class DockerServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_tags_image_for_registry(): void
     {
         // Arrange
@@ -1280,7 +1282,7 @@ class DockerServiceTest extends TestCase
     // SYSTEM MANAGEMENT TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_gets_docker_system_info(): void
     {
         // Arrange
@@ -1301,7 +1303,7 @@ class DockerServiceTest extends TestCase
         $this->assertEquals(5, $result['info']['ContainersRunning']);
     }
 
-    /** @test */
+    #[Test]
     public function it_prunes_docker_system(): void
     {
         // Arrange
@@ -1321,7 +1323,7 @@ class DockerServiceTest extends TestCase
         $this->assertStringContainsString('2.5GB', $result['output']);
     }
 
-    /** @test */
+    #[Test]
     public function it_prunes_docker_system_with_volumes(): void
     {
         // Arrange
@@ -1340,7 +1342,7 @@ class DockerServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_docker_disk_usage(): void
     {
         // Arrange
@@ -1365,7 +1367,7 @@ class DockerServiceTest extends TestCase
     // LOCALHOST DETECTION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_detects_localhost_by_ip(): void
     {
         // Arrange
@@ -1382,7 +1384,7 @@ class DockerServiceTest extends TestCase
         $this->assertTrue($result['installed']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_localhost_ipv6(): void
     {
         // Arrange
@@ -1403,7 +1405,7 @@ class DockerServiceTest extends TestCase
     // ENVIRONMENT VARIABLE TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_builds_environment_variables_for_container(): void
     {
         // This tests the protected method indirectly through startContainer
@@ -1434,7 +1436,7 @@ class DockerServiceTest extends TestCase
     // ERROR HANDLING TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_handles_ssh_connection_failure(): void
     {
         // Arrange
@@ -1449,7 +1451,7 @@ class DockerServiceTest extends TestCase
         $this->assertArrayHasKey('error', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_timeout_during_docker_build(): void
     {
         // Arrange
@@ -1472,7 +1474,7 @@ class DockerServiceTest extends TestCase
         $this->assertFalse($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_container_not_running_for_exec(): void
     {
         // Arrange

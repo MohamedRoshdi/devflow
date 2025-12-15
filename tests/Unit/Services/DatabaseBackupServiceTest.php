@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\BackupSchedule;
 use App\Models\DatabaseBackup;
 use App\Models\Project;
@@ -28,7 +30,7 @@ class DatabaseBackupServiceTest extends TestCase
         Storage::fake('s3');
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_mysql_backup_successfully(): void
     {
         // Arrange
@@ -56,7 +58,7 @@ class DatabaseBackupServiceTest extends TestCase
         $this->assertNotNull($backup->checksum);
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_correct_backup_filename(): void
     {
         // Arrange
@@ -82,7 +84,7 @@ class DatabaseBackupServiceTest extends TestCase
         $this->assertMatchesRegularExpression('/\d{4}-\d{2}-\d{2}_\d{6}/', $backup->file_name);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_backup_failure_gracefully(): void
     {
         // Arrange
@@ -104,7 +106,7 @@ class DatabaseBackupServiceTest extends TestCase
         $backup = $this->service->createBackup($schedule);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_checksum_correctly(): void
     {
         // Arrange
@@ -129,7 +131,7 @@ class DatabaseBackupServiceTest extends TestCase
         $this->assertEquals(64, strlen($backup->checksum)); // SHA-256 produces 64 character hex string
     }
 
-    /** @test */
+    #[Test]
     public function it_verifies_backup_integrity(): void
     {
         // Arrange
@@ -154,7 +156,7 @@ class DatabaseBackupServiceTest extends TestCase
         @unlink($tempFile);
     }
 
-    /** @test */
+    #[Test]
     public function it_applies_retention_policy(): void
     {
         // Arrange
@@ -195,7 +197,7 @@ class DatabaseBackupServiceTest extends TestCase
         $this->assertLessThanOrEqual(7, $remainingBackups); // 2 daily + some weekly/monthly
     }
 
-    /** @test */
+    #[Test]
     public function it_supports_postgresql_backups(): void
     {
         // Arrange
@@ -220,7 +222,7 @@ class DatabaseBackupServiceTest extends TestCase
         $this->assertEquals('postgresql', $backup->database_type);
     }
 
-    /** @test */
+    #[Test]
     public function it_supports_sqlite_backups(): void
     {
         // Arrange
@@ -245,7 +247,7 @@ class DatabaseBackupServiceTest extends TestCase
         $this->assertEquals('sqlite', $backup->database_type);
     }
 
-    /** @test */
+    #[Test]
     public function it_deletes_backup_and_file(): void
     {
         // Arrange
@@ -269,7 +271,7 @@ class DatabaseBackupServiceTest extends TestCase
         @rmdir(dirname($tempFile));
     }
 
-    /** @test */
+    #[Test]
     public function it_restores_database_from_backup(): void
     {
         // Arrange
@@ -290,7 +292,7 @@ class DatabaseBackupServiceTest extends TestCase
         $this->assertTrue(true);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_restoring_incomplete_backup(): void
     {
         // Arrange
@@ -305,7 +307,7 @@ class DatabaseBackupServiceTest extends TestCase
         $this->service->restoreBackup($backup);
     }
 
-    /** @test */
+    #[Test]
     public function it_uploads_backup_to_s3(): void
     {
         // Arrange

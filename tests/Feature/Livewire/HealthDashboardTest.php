@@ -4,22 +4,19 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Livewire;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\Dashboard\HealthDashboard;
 use App\Models\Deployment;
 use App\Models\Domain;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
-use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\Client\Factory as HttpClient;
-use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Process;
 use Livewire\Livewire;
-use Mockery;
 use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
 
@@ -51,21 +48,25 @@ class HealthDashboardTest extends TestCase
         $this->actingAs($this->user);
     }
 
-    /** @test */
+    #[Test]
     public function dashboard_renders_for_authenticated_users_with_permission(): void
     {
+        Http::fake(['*' => Http::response('OK', 200)]);
+        Process::fake(['*' => Process::result(output: "CPU:30\nRAM:40\nDISK:50\nUPTIME:up 1 day")]);
+
         $component = Livewire::test(HealthDashboard::class);
 
         $component->assertStatus(200)
             ->assertViewIs('livewire.dashboard.health-dashboard');
 
-        $this->assertTrue($component->get('isLoading'));
+        // After mount(), loadHealthData() is called which sets isLoading to false
+        $this->assertFalse($component->get('isLoading'));
         $this->assertEquals('all', $component->get('filterStatus'));
-        $this->assertEquals([], $component->get('projectsHealth'));
-        $this->assertEquals([], $component->get('serversHealth'));
+        $this->assertIsArray($component->get('projectsHealth'));
+        $this->assertIsArray($component->get('serversHealth'));
     }
 
-    /** @test */
+    #[Test]
     public function dashboard_denies_access_for_users_without_permission(): void
     {
         $unauthorizedUser = User::factory()->create();
@@ -77,7 +78,7 @@ class HealthDashboardTest extends TestCase
         Livewire::test(HealthDashboard::class);
     }
 
-    /** @test */
+    #[Test]
     public function dashboard_denies_access_for_guests(): void
     {
         auth()->logout();
@@ -87,7 +88,7 @@ class HealthDashboardTest extends TestCase
         Livewire::test(HealthDashboard::class);
     }
 
-    /** @test */
+    #[Test]
     public function load_health_data_loads_projects_and_servers(): void
     {
         Http::fake([
@@ -127,7 +128,7 @@ class HealthDashboardTest extends TestCase
         $this->assertCount(1, $serversHealth);
     }
 
-    /** @test */
+    #[Test]
     public function overall_system_health_status_display_calculates_correctly(): void
     {
         Http::fake(['*' => Http::response('OK', 200)]);
@@ -157,7 +158,7 @@ class HealthDashboardTest extends TestCase
         $this->assertArrayHasKey('avg_score', $stats);
     }
 
-    /** @test */
+    #[Test]
     public function server_health_cards_display_metrics(): void
     {
         Process::fake([
@@ -186,7 +187,7 @@ class HealthDashboardTest extends TestCase
         $this->assertEquals('up 10 days', $serverHealth['uptime']);
     }
 
-    /** @test */
+    #[Test]
     public function project_health_indicators_show_correct_status(): void
     {
         Http::fake([
@@ -235,42 +236,33 @@ class HealthDashboardTest extends TestCase
         $this->assertGreaterThan($unhealthy['health_score'], $healthy['health_score']);
     }
 
-    /** @test */
+    #[Test]
     public function recent_health_check_results_are_cached(): void
     {
-        Cache::shouldReceive('remember')
-            ->once()
-            ->with(
-                Mockery::pattern('/^project_health_\d+$/'),
-                60,
-                Mockery::type('Closure')
-            )
-            ->andReturnUsing(fn ($key, $ttl, $callback) => $callback());
-
-        Cache::shouldReceive('remember')
-            ->once()
-            ->with(
-                Mockery::pattern('/^server_health_\d+$/'),
-                60,
-                Mockery::type('Closure')
-            )
-            ->andReturnUsing(fn ($key, $ttl, $callback) => $callback());
-
-        Cache::shouldReceive('forget')->andReturn(true);
-
         Http::fake(['*' => Http::response('OK', 200)]);
         Process::fake(['*' => Process::result(output: "CPU:30\nRAM:40\nDISK:50\nUPTIME:up 1 day")]);
 
-        Project::factory()->create([
+        $project = Project::factory()->create([
             'server_id' => $this->server->id,
             'health_check_url' => 'https://test.com',
         ]);
 
+        // Clear cache before test
+        Cache::flush();
+
+        // First call should cache the results
         Livewire::test(HealthDashboard::class)
             ->call('loadHealthData');
+
+        // Verify cache was set by checking if cache keys exist
+        $projectCacheKey = "project_health_{$project->id}";
+        $serverCacheKey = "server_health_{$this->server->id}";
+
+        $this->assertTrue(Cache::has($projectCacheKey));
+        $this->assertTrue(Cache::has($serverCacheKey));
     }
 
-    /** @test */
+    #[Test]
     public function alert_warning_indicators_show_for_high_resource_usage(): void
     {
         Process::fake([
@@ -289,7 +281,7 @@ class HealthDashboardTest extends TestCase
         $this->assertContains('High RAM usage', $serverHealth['issues']);
     }
 
-    /** @test */
+    #[Test]
     public function health_score_calculations_are_accurate(): void
     {
         Http::fake(['*' => Http::response('OK', 200)]);
@@ -319,7 +311,7 @@ class HealthDashboardTest extends TestCase
         $this->assertGreaterThanOrEqual(80, $projectHealth['health_score']);
     }
 
-    /** @test */
+    #[Test]
     public function refresh_functionality_clears_cache_and_reloads(): void
     {
         Http::fake(['*' => Http::response('OK', 200)]);
@@ -347,7 +339,7 @@ class HealthDashboardTest extends TestCase
         $this->assertNotEquals($initialTimestamp, $newTimestamp);
     }
 
-    /** @test */
+    #[Test]
     public function time_range_filtering_works_correctly(): void
     {
         Http::fake(['*' => Http::response('OK', 200)]);
@@ -398,7 +390,7 @@ class HealthDashboardTest extends TestCase
         $this->assertGreaterThanOrEqual(0, count($criticalProjects));
     }
 
-    /** @test */
+    #[Test]
     public function drill_down_to_specific_health_checks_shows_details(): void
     {
         Http::fake(['*' => Http::response('OK', 200)]);
@@ -443,7 +435,7 @@ class HealthDashboardTest extends TestCase
         $this->assertIsArray($projectHealth['issues']);
     }
 
-    /** @test */
+    #[Test]
     public function authorization_checks_are_enforced(): void
     {
         $userWithoutPermission = User::factory()->create();
@@ -454,7 +446,7 @@ class HealthDashboardTest extends TestCase
         Livewire::test(HealthDashboard::class);
     }
 
-    /** @test */
+    #[Test]
     public function error_handling_when_http_service_unavailable(): void
     {
         Http::fake([
@@ -477,7 +469,7 @@ class HealthDashboardTest extends TestCase
         $this->assertContains('Health check endpoint not responding', $projectHealth['issues']);
     }
 
-    /** @test */
+    #[Test]
     public function error_handling_when_server_unreachable(): void
     {
         Process::fake([
@@ -497,7 +489,7 @@ class HealthDashboardTest extends TestCase
         $this->assertContains('Failed to fetch metrics', $serverHealth['issues']);
     }
 
-    /** @test */
+    #[Test]
     public function handles_project_without_deployments(): void
     {
         Http::fake(['*' => Http::response('OK', 200)]);
@@ -519,7 +511,7 @@ class HealthDashboardTest extends TestCase
         $this->assertContains('No deployments yet', $projectHealth['issues']);
     }
 
-    /** @test */
+    #[Test]
     public function handles_project_with_failed_deployment(): void
     {
         Http::fake(['*' => Http::response('OK', 200)]);
@@ -546,7 +538,7 @@ class HealthDashboardTest extends TestCase
         $this->assertLessThan(100, $projectHealth['health_score']);
     }
 
-    /** @test */
+    #[Test]
     public function handles_project_without_health_check_url(): void
     {
         $project = Project::factory()->create([
@@ -566,7 +558,7 @@ class HealthDashboardTest extends TestCase
         $this->assertArrayHasKey('health_score', $projectHealth);
     }
 
-    /** @test */
+    #[Test]
     public function uses_domain_for_health_check_when_no_url_provided(): void
     {
         Http::fake(['*' => Http::response('OK', 200)]);
@@ -592,7 +584,7 @@ class HealthDashboardTest extends TestCase
         $this->assertNotEquals('unknown', $projectHealth['uptime_status']);
     }
 
-    /** @test */
+    #[Test]
     public function handles_offline_server(): void
     {
         $offlineServer = Server::factory()->create([
@@ -613,7 +605,7 @@ class HealthDashboardTest extends TestCase
         $this->assertLessThan(50, $serverHealth['health_score']);
     }
 
-    /** @test */
+    #[Test]
     public function server_health_score_accounts_for_resource_usage(): void
     {
         Process::fake([
@@ -633,7 +625,7 @@ class HealthDashboardTest extends TestCase
         $this->assertGreaterThan(0, count($serverHealth['issues']));
     }
 
-    /** @test */
+    #[Test]
     public function overall_stats_handles_empty_projects(): void
     {
         $component = Livewire::test(HealthDashboard::class)
@@ -649,7 +641,7 @@ class HealthDashboardTest extends TestCase
         $this->assertEquals(0, $stats['avg_score']);
     }
 
-    /** @test */
+    #[Test]
     public function response_time_tracking_works(): void
     {
         Http::fake([
@@ -674,7 +666,7 @@ class HealthDashboardTest extends TestCase
         $this->assertGreaterThanOrEqual(0, $projectHealth['response_time']);
     }
 
-    /** @test */
+    #[Test]
     public function slow_response_time_reduces_health_score(): void
     {
         // Mock a slow response
@@ -706,7 +698,7 @@ class HealthDashboardTest extends TestCase
         $this->assertIsInt($projectHealth['response_time']);
     }
 
-    /** @test */
+    #[Test]
     public function filter_status_changes_reflected_in_filtered_projects(): void
     {
         Http::fake(['*' => Http::response('OK', 200)]);
@@ -732,7 +724,7 @@ class HealthDashboardTest extends TestCase
         $this->assertLessThanOrEqual(5, count($healthyProjects));
     }
 
-    /** @test */
+    #[Test]
     public function last_checked_at_timestamp_is_set(): void
     {
         Http::fake(['*' => Http::response('OK', 200)]);
@@ -746,7 +738,7 @@ class HealthDashboardTest extends TestCase
         $this->assertNotNull($component->get('lastCheckedAt'));
     }
 
-    /** @test */
+    #[Test]
     public function component_handles_multiple_projects_and_servers(): void
     {
         Http::fake(['*' => Http::response('OK', 200)]);
@@ -766,11 +758,5 @@ class HealthDashboardTest extends TestCase
 
         $this->assertCount(5, $projectsHealth);
         $this->assertCount(2, $serversHealth);
-    }
-
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
     }
 }

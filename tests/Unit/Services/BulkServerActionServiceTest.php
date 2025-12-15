@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Services\BulkServerActionService;
 use App\Services\DockerInstallationService;
 use App\Services\ServerConnectivityService;
@@ -45,7 +47,7 @@ class BulkServerActionServiceTest extends TestCase
     // PING SERVERS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_pings_multiple_servers_successfully(): void
     {
         // Arrange
@@ -86,7 +88,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertEquals(38.7, $results[$server2->id]['latency_ms']);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_server_status_to_online_after_successful_ping(): void
     {
         // Arrange
@@ -111,7 +113,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertNotNull($server->fresh()->last_ping_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_server_status_to_offline_after_failed_ping(): void
     {
         // Arrange
@@ -135,7 +137,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertNotNull($server->fresh()->last_ping_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_mixed_success_and_failure_ping_results(): void
     {
         // Arrange
@@ -172,7 +174,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertEquals('offline', $server2->fresh()->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_ping_exception_and_logs_error(): void
     {
         // Arrange
@@ -198,7 +200,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertStringContainsString('Network error', $results[$server->id]['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_empty_server_collection_for_ping(): void
     {
         // Arrange
@@ -212,7 +214,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertEmpty($results);
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_latency_only_when_available(): void
     {
         // Arrange
@@ -236,7 +238,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertNull($results[$server->id]['latency_ms']);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_last_ping_at_timestamp_for_all_servers(): void
     {
         // Arrange
@@ -265,7 +267,7 @@ class BulkServerActionServiceTest extends TestCase
     // REBOOT SERVERS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_reboots_multiple_servers_successfully(): void
     {
         // Arrange
@@ -306,7 +308,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertEquals('Server 2', $results[$server2->id]['server_name']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_reboot_failure_for_individual_server(): void
     {
         // Arrange
@@ -330,7 +332,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertEquals('Reboot command failed', $results[$server->id]['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_reboot_exception_and_logs_error(): void
     {
         // Arrange
@@ -355,7 +357,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertStringContainsString('SSH connection timeout', $results[$server->id]['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_successful_reboot_operations(): void
     {
         // Arrange
@@ -379,7 +381,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->service->rebootServers($servers);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_empty_server_collection_for_reboot(): void
     {
         // Arrange
@@ -393,7 +395,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertEmpty($results);
     }
 
-    /** @test */
+    #[Test]
     public function it_continues_rebooting_remaining_servers_after_failure(): void
     {
         // Arrange
@@ -437,7 +439,7 @@ class BulkServerActionServiceTest extends TestCase
     // INSTALL DOCKER ON SERVERS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_installs_docker_on_multiple_servers_successfully(): void
     {
         // Arrange
@@ -485,7 +487,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertFalse($results[$server1->id]['already_installed']);
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_installation_when_docker_already_installed(): void
     {
         // Arrange
@@ -514,7 +516,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertStringContainsString('24.0.7', $results[$server->id]['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_docker_installation_failure(): void
     {
         // Arrange
@@ -543,7 +545,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertStringContainsString('Installation failed', $results[$server->id]['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_docker_installation_exception_and_logs_error(): void
     {
         // Arrange
@@ -567,7 +569,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertStringContainsString('Connection timeout', $results[$server->id]['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_empty_server_collection_for_docker_installation(): void
     {
         // Arrange
@@ -581,7 +583,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertEmpty($results);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_successful_docker_installations_with_version(): void
     {
         // Arrange
@@ -614,7 +616,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->service->installDockerOnServers($servers);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_docker_verification_returning_unknown_version(): void
     {
         // Arrange
@@ -639,7 +641,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertStringContainsString('unknown', $results[$server->id]['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_continues_installing_docker_on_remaining_servers_after_failure(): void
     {
         // Arrange
@@ -688,7 +690,7 @@ class BulkServerActionServiceTest extends TestCase
     // RESTART SERVICE ON SERVERS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_restarts_service_on_multiple_servers_successfully(): void
     {
         // Arrange
@@ -729,7 +731,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertEquals('nginx', $results[$server2->id]['service']);
     }
 
-    /** @test */
+    #[Test]
     public function it_restarts_different_services_on_servers(): void
     {
         // Arrange
@@ -755,7 +757,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertEquals('docker', $results[$server->id]['service']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_service_restart_failure(): void
     {
         // Arrange
@@ -779,7 +781,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertEquals('Service restart failed', $results[$server->id]['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_service_restart_exception_and_logs_error(): void
     {
         // Arrange
@@ -804,7 +806,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertStringContainsString('Service not found', $results[$server->id]['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_empty_server_collection_for_service_restart(): void
     {
         // Arrange
@@ -818,7 +820,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertEmpty($results);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_successful_service_restart_with_server_and_service_info(): void
     {
         // Arrange
@@ -845,7 +847,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->service->restartServiceOnServers($servers, 'redis');
     }
 
-    /** @test */
+    #[Test]
     public function it_continues_restarting_service_on_remaining_servers_after_failure(): void
     {
         // Arrange
@@ -885,7 +887,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertTrue($results[$server3->id]['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_service_name_in_all_results(): void
     {
         // Arrange
@@ -919,7 +921,7 @@ class BulkServerActionServiceTest extends TestCase
     // GET SUMMARY STATS TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_calculates_summary_stats_for_all_successful_operations(): void
     {
         // Arrange
@@ -938,7 +940,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertEquals(0, $stats['failed']);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_summary_stats_for_all_failed_operations(): void
     {
         // Arrange
@@ -956,7 +958,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertEquals(2, $stats['failed']);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_summary_stats_for_mixed_results(): void
     {
         // Arrange
@@ -977,7 +979,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertEquals(2, $stats['failed']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_empty_results_array_for_summary(): void
     {
         // Arrange
@@ -992,7 +994,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertEquals(0, $stats['failed']);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_correct_structure_for_summary_stats(): void
     {
         // Arrange
@@ -1013,7 +1015,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertIsInt($stats['failed']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_total_equals_sum_of_successful_and_failed(): void
     {
         // Arrange
@@ -1040,7 +1042,7 @@ class BulkServerActionServiceTest extends TestCase
     // INTEGRATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_can_ping_and_get_summary_stats(): void
     {
         // Arrange
@@ -1068,7 +1070,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertEquals(1, $stats['failed']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_install_docker_and_get_summary_stats(): void
     {
         // Arrange
@@ -1101,7 +1103,7 @@ class BulkServerActionServiceTest extends TestCase
         $this->assertEquals(1, $stats['failed']);
     }
 
-    /** @test */
+    #[Test]
     public function it_processes_large_collection_of_servers_efficiently(): void
     {
         // Arrange
@@ -1125,7 +1127,7 @@ class BulkServerActionServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_preserves_server_id_as_array_key_in_results(): void
     {
         // Arrange

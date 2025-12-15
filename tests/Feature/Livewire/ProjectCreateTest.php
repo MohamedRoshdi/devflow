@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Livewire;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Jobs\ProcessProjectSetupJob;
 use App\Livewire\Projects\ProjectCreate;
 use App\Models\Domain;
@@ -36,7 +38,7 @@ class ProjectCreateTest extends TestCase
         $this->actingAs($this->user);
     }
 
-    /** @test */
+    #[Test]
     public function component_renders_successfully_for_authenticated_users(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -44,7 +46,7 @@ class ProjectCreateTest extends TestCase
             ->assertViewIs('livewire.projects.project-create');
     }
 
-    /** @test */
+    #[Test]
     public function component_loads_servers_and_templates_on_mount(): void
     {
         $onlineServer = Server::factory()->online()->create();
@@ -61,7 +63,7 @@ class ProjectCreateTest extends TestCase
         $this->assertTrue($templates->contains($template));
     }
 
-    /** @test */
+    #[Test]
     public function component_loads_user_default_settings_on_mount(): void
     {
         UserSettings::create([
@@ -84,7 +86,7 @@ class ProjectCreateTest extends TestCase
         $this->assertTrue($component->get('enableAutoDeploy'));
     }
 
-    /** @test */
+    #[Test]
     public function wizard_starts_at_step_1(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -92,7 +94,7 @@ class ProjectCreateTest extends TestCase
             ->assertSet('totalSteps', 4);
     }
 
-    /** @test */
+    #[Test]
     public function next_step_advances_wizard_when_validation_passes(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -105,7 +107,7 @@ class ProjectCreateTest extends TestCase
             ->assertSet('currentStep', 2);
     }
 
-    /** @test */
+    #[Test]
     public function next_step_does_not_advance_when_validation_fails(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -115,7 +117,7 @@ class ProjectCreateTest extends TestCase
             ->assertHasErrors(['name']);
     }
 
-    /** @test */
+    #[Test]
     public function next_step_does_not_exceed_total_steps(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -137,7 +139,7 @@ class ProjectCreateTest extends TestCase
             ->assertSet('currentStep', 4);
     }
 
-    /** @test */
+    #[Test]
     public function previous_step_moves_wizard_back(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -152,7 +154,7 @@ class ProjectCreateTest extends TestCase
             ->assertSet('currentStep', 1);
     }
 
-    /** @test */
+    #[Test]
     public function previous_step_does_not_go_below_step_1(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -161,7 +163,7 @@ class ProjectCreateTest extends TestCase
             ->assertSet('currentStep', 1);
     }
 
-    /** @test */
+    #[Test]
     public function go_to_step_navigates_to_valid_step(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -177,7 +179,7 @@ class ProjectCreateTest extends TestCase
             ->assertSet('currentStep', 1);
     }
 
-    /** @test */
+    #[Test]
     public function go_to_step_does_not_navigate_to_future_steps(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -186,7 +188,7 @@ class ProjectCreateTest extends TestCase
             ->assertSet('currentStep', 1);
     }
 
-    /** @test */
+    #[Test]
     public function step_1_validates_required_name(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -199,7 +201,7 @@ class ProjectCreateTest extends TestCase
             ->assertHasErrors(['name' => 'required']);
     }
 
-    /** @test */
+    #[Test]
     public function step_1_validates_unique_slug(): void
     {
         Project::factory()->create(['slug' => 'existing-project']);
@@ -214,7 +216,7 @@ class ProjectCreateTest extends TestCase
             ->assertHasErrors(['slug' => 'unique']);
     }
 
-    /** @test */
+    #[Test]
     public function step_1_validates_server_exists(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -227,7 +229,7 @@ class ProjectCreateTest extends TestCase
             ->assertHasErrors(['server_id' => 'exists']);
     }
 
-    /** @test */
+    #[Test]
     public function step_1_validates_repository_url_format(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -240,7 +242,7 @@ class ProjectCreateTest extends TestCase
             ->assertHasErrors(['repository_url' => 'regex']);
     }
 
-    /** @test */
+    #[Test]
     public function step_1_accepts_https_repository_urls(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -254,7 +256,7 @@ class ProjectCreateTest extends TestCase
             ->assertSet('currentStep', 2);
     }
 
-    /** @test */
+    #[Test]
     public function step_1_accepts_ssh_repository_urls(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -268,7 +270,7 @@ class ProjectCreateTest extends TestCase
             ->assertSet('currentStep', 2);
     }
 
-    /** @test */
+    #[Test]
     public function step_1_validates_branch_name_format(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -281,7 +283,7 @@ class ProjectCreateTest extends TestCase
             ->assertHasErrors(['branch' => 'regex']);
     }
 
-    /** @test */
+    #[Test]
     public function step_1_accepts_valid_branch_names(): void
     {
         $validBranches = ['main', 'develop', 'feature/new-feature', 'release-v1.0', 'fix_bug-123'];
@@ -298,7 +300,7 @@ class ProjectCreateTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function updated_name_automatically_generates_slug(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -306,7 +308,7 @@ class ProjectCreateTest extends TestCase
             ->assertSet('slug', 'my-awesome-project');
     }
 
-    /** @test */
+    #[Test]
     public function step_2_validates_deployment_method(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -322,7 +324,7 @@ class ProjectCreateTest extends TestCase
             ->assertHasErrors(['deployment_method' => 'in']);
     }
 
-    /** @test */
+    #[Test]
     public function step_2_accepts_docker_deployment_method(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -339,7 +341,7 @@ class ProjectCreateTest extends TestCase
             ->assertSet('currentStep', 3);
     }
 
-    /** @test */
+    #[Test]
     public function step_2_accepts_standard_deployment_method(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -356,7 +358,7 @@ class ProjectCreateTest extends TestCase
             ->assertSet('currentStep', 3);
     }
 
-    /** @test */
+    #[Test]
     public function step_2_validates_root_directory_is_required(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -372,7 +374,7 @@ class ProjectCreateTest extends TestCase
             ->assertHasErrors(['root_directory' => 'required']);
     }
 
-    /** @test */
+    #[Test]
     public function step_3_has_no_required_validation(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -390,7 +392,7 @@ class ProjectCreateTest extends TestCase
             ->assertSet('currentStep', 4);
     }
 
-    /** @test */
+    #[Test]
     public function select_template_applies_template_settings(): void
     {
         $template = ProjectTemplate::factory()->create([
@@ -415,7 +417,7 @@ class ProjectCreateTest extends TestCase
             ->assertSet('build_command', 'npm run build');
     }
 
-    /** @test */
+    #[Test]
     public function select_template_with_null_clears_template(): void
     {
         $template = ProjectTemplate::factory()->create([
@@ -430,7 +432,7 @@ class ProjectCreateTest extends TestCase
             ->assertSet('selectedTemplateId', null);
     }
 
-    /** @test */
+    #[Test]
     public function clear_template_resets_template_fields(): void
     {
         $template = ProjectTemplate::factory()->create([
@@ -458,7 +460,7 @@ class ProjectCreateTest extends TestCase
             ->assertSet('build_command', '');
     }
 
-    /** @test */
+    #[Test]
     public function refresh_server_status_updates_server(): void
     {
         $this->mock(ServerConnectivityService::class, function ($mock) {
@@ -472,7 +474,7 @@ class ProjectCreateTest extends TestCase
             ->assertSessionHas('server_status_updated', 'Server status refreshed');
     }
 
-    /** @test */
+    #[Test]
     public function create_project_validates_all_required_fields(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -488,7 +490,7 @@ class ProjectCreateTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function create_project_successfully_creates_project_with_valid_data(): void
     {
         Queue::fake();
@@ -532,7 +534,7 @@ class ProjectCreateTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function create_project_assigns_next_available_port(): void
     {
         Project::factory()->create([
@@ -561,7 +563,7 @@ class ProjectCreateTest extends TestCase
         $this->assertEquals(8003, $project->port);
     }
 
-    /** @test */
+    #[Test]
     public function create_project_creates_default_domains(): void
     {
         Queue::fake();
@@ -587,7 +589,7 @@ class ProjectCreateTest extends TestCase
         $this->assertStringContainsString('test-project', $primaryDomain->domain);
     }
 
-    /** @test */
+    #[Test]
     public function create_project_dispatches_setup_job_when_setup_enabled(): void
     {
         Queue::fake();
@@ -606,7 +608,7 @@ class ProjectCreateTest extends TestCase
         Queue::assertPushed(ProcessProjectSetupJob::class);
     }
 
-    /** @test */
+    #[Test]
     public function create_project_stores_setup_config(): void
     {
         Queue::fake();
@@ -639,7 +641,7 @@ class ProjectCreateTest extends TestCase
         $this->assertTrue($setupConfig['deployment']);
     }
 
-    /** @test */
+    #[Test]
     public function create_project_sets_show_progress_modal(): void
     {
         Queue::fake();
@@ -656,7 +658,7 @@ class ProjectCreateTest extends TestCase
             ->assertSet('showProgressModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function create_project_stores_template_commands(): void
     {
         Queue::fake();
@@ -685,7 +687,7 @@ class ProjectCreateTest extends TestCase
         $this->assertEquals(['php artisan migrate'], $project->post_deploy_commands);
     }
 
-    /** @test */
+    #[Test]
     public function close_progress_and_redirect_navigates_to_project(): void
     {
         Queue::fake();
@@ -709,7 +711,7 @@ class ProjectCreateTest extends TestCase
             ->assertRedirect(route('projects.show', $createdProjectId));
     }
 
-    /** @test */
+    #[Test]
     public function get_frameworks_property_returns_expected_frameworks(): void
     {
         $component = Livewire::test(ProjectCreate::class);
@@ -724,7 +726,7 @@ class ProjectCreateTest extends TestCase
         $this->assertArrayHasKey('static', $frameworks);
     }
 
-    /** @test */
+    #[Test]
     public function get_php_versions_property_returns_expected_versions(): void
     {
         $component = Livewire::test(ProjectCreate::class);
@@ -738,7 +740,7 @@ class ProjectCreateTest extends TestCase
         $this->assertArrayHasKey('8.1', $phpVersions);
     }
 
-    /** @test */
+    #[Test]
     public function create_project_validates_latitude_range(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -754,7 +756,7 @@ class ProjectCreateTest extends TestCase
             ->assertHasErrors(['latitude' => 'between']);
     }
 
-    /** @test */
+    #[Test]
     public function create_project_validates_longitude_range(): void
     {
         Livewire::test(ProjectCreate::class)
@@ -770,7 +772,7 @@ class ProjectCreateTest extends TestCase
             ->assertHasErrors(['longitude' => 'between']);
     }
 
-    /** @test */
+    #[Test]
     public function create_project_accepts_valid_coordinates(): void
     {
         Queue::fake();
@@ -794,7 +796,7 @@ class ProjectCreateTest extends TestCase
         $this->assertEquals(-74.0060, (float) $project->longitude);
     }
 
-    /** @test */
+    #[Test]
     public function servers_are_ordered_by_status_priority(): void
     {
         Server::factory()->offline()->create(['name' => 'Offline Server']);
@@ -810,7 +812,7 @@ class ProjectCreateTest extends TestCase
         $this->assertGreaterThan(0, $onlineCount);
     }
 
-    /** @test */
+    #[Test]
     public function get_next_available_port_handles_full_range(): void
     {
         for ($i = 8001; $i <= 9000; $i++) {
@@ -837,7 +839,7 @@ class ProjectCreateTest extends TestCase
         $this->assertGreaterThan(9000, $project->port);
     }
 
-    /** @test */
+    #[Test]
     public function component_requires_authentication(): void
     {
         auth()->logout();
@@ -846,7 +848,7 @@ class ProjectCreateTest extends TestCase
             ->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function create_project_associates_with_current_user(): void
     {
         Queue::fake();
@@ -866,7 +868,7 @@ class ProjectCreateTest extends TestCase
         $this->assertEquals($this->user->id, $project->user_id);
     }
 
-    /** @test */
+    #[Test]
     public function create_project_does_not_dispatch_job_when_no_setup_options_enabled(): void
     {
         Queue::fake();
@@ -890,7 +892,7 @@ class ProjectCreateTest extends TestCase
         Queue::assertNotPushed(ProcessProjectSetupJob::class);
     }
 
-    /** @test */
+    #[Test]
     public function slug_uniqueness_ignores_soft_deleted_projects(): void
     {
         $deletedProject = Project::factory()->create(['slug' => 'test-project']);

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\SecurityEvent;
 use App\Models\SecurityScan;
 use App\Models\Server;
@@ -59,7 +61,7 @@ class SecurityScoreServiceTest extends TestCase
 
     // ==================== RUN SECURITY SCAN TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_runs_security_scan_successfully(): void
     {
         // Arrange
@@ -92,7 +94,7 @@ class SecurityScoreServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_security_scan_with_running_status(): void
     {
         // Arrange
@@ -116,7 +118,7 @@ class SecurityScoreServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_server_security_score_after_scan(): void
     {
         // Arrange
@@ -142,7 +144,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertNotNull($server->last_security_scan_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_security_event_after_successful_scan(): void
     {
         // Arrange
@@ -167,7 +169,7 @@ class SecurityScoreServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_scan_failure_gracefully(): void
     {
         // Arrange
@@ -193,7 +195,7 @@ class SecurityScoreServiceTest extends TestCase
 
     // ==================== CALCULATE SCORE TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_calculates_perfect_score_for_fully_secure_server(): void
     {
         // Arrange
@@ -212,7 +214,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertEquals(100, $score);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_low_score_for_insecure_server(): void
     {
         // Arrange
@@ -231,7 +233,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertLessThan(30, $score);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_score_between_0_and_100(): void
     {
         // Arrange
@@ -253,7 +255,7 @@ class SecurityScoreServiceTest extends TestCase
 
     // ==================== SCORE BREAKDOWN TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_returns_score_breakdown_with_all_components(): void
     {
         // Arrange
@@ -280,7 +282,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertArrayHasKey('updates', $breakdown);
     }
 
-    /** @test */
+    #[Test]
     public function it_shows_correct_firewall_score_breakdown(): void
     {
         // Arrange
@@ -301,7 +303,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertTrue($breakdown['firewall']['status']);
     }
 
-    /** @test */
+    #[Test]
     public function it_shows_correct_fail2ban_score_breakdown(): void
     {
         // Arrange
@@ -322,7 +324,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertTrue($breakdown['fail2ban']['status']);
     }
 
-    /** @test */
+    #[Test]
     public function it_shows_correct_ssh_port_score_breakdown(): void
     {
         // Arrange
@@ -345,7 +347,7 @@ class SecurityScoreServiceTest extends TestCase
 
     // ==================== FIREWALL SCORING TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_awards_full_points_when_firewall_is_enabled(): void
     {
         // Arrange
@@ -364,7 +366,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertGreaterThanOrEqual(20, $score);
     }
 
-    /** @test */
+    #[Test]
     public function it_awards_no_points_when_firewall_is_disabled(): void
     {
         // Arrange
@@ -385,7 +387,7 @@ class SecurityScoreServiceTest extends TestCase
 
     // ==================== FAIL2BAN SCORING TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_awards_full_points_when_fail2ban_is_enabled(): void
     {
         // Arrange
@@ -404,7 +406,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertGreaterThanOrEqual(15, $score);
     }
 
-    /** @test */
+    #[Test]
     public function it_awards_no_points_when_fail2ban_is_disabled(): void
     {
         // Arrange
@@ -425,7 +427,7 @@ class SecurityScoreServiceTest extends TestCase
 
     // ==================== SSH SECURITY SCORING TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_awards_points_for_non_standard_ssh_port(): void
     {
         // Arrange
@@ -444,7 +446,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertEquals(10, $breakdown['ssh_port']['score']);
     }
 
-    /** @test */
+    #[Test]
     public function it_awards_no_points_for_default_ssh_port(): void
     {
         // Arrange
@@ -463,7 +465,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertEquals(0, $breakdown['ssh_port']['score']);
     }
 
-    /** @test */
+    #[Test]
     public function it_awards_points_for_disabled_root_login(): void
     {
         // Arrange
@@ -483,7 +485,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertTrue($breakdown['root_login']['disabled']);
     }
 
-    /** @test */
+    #[Test]
     public function it_awards_no_points_for_enabled_root_login(): void
     {
         // Arrange
@@ -503,7 +505,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertFalse($breakdown['root_login']['disabled']);
     }
 
-    /** @test */
+    #[Test]
     public function it_awards_points_for_disabled_password_authentication(): void
     {
         // Arrange
@@ -523,7 +525,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertTrue($breakdown['password_auth']['disabled']);
     }
 
-    /** @test */
+    #[Test]
     public function it_awards_no_points_for_enabled_password_authentication(): void
     {
         // Arrange
@@ -545,7 +547,7 @@ class SecurityScoreServiceTest extends TestCase
 
     // ==================== OPEN PORTS SCORING TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_awards_maximum_points_for_three_or_fewer_open_ports(): void
     {
         // Arrange
@@ -569,7 +571,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertEquals(3, $breakdown['open_ports']['count']);
     }
 
-    /** @test */
+    #[Test]
     public function it_awards_partial_points_for_four_to_five_open_ports(): void
     {
         // Arrange
@@ -593,7 +595,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertEquals(5, $breakdown['open_ports']['count']);
     }
 
-    /** @test */
+    #[Test]
     public function it_awards_fewer_points_for_six_to_ten_open_ports(): void
     {
         // Arrange
@@ -617,7 +619,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertEquals(8, $breakdown['open_ports']['count']);
     }
 
-    /** @test */
+    #[Test]
     public function it_awards_no_points_for_more_than_ten_open_ports(): void
     {
         // Arrange
@@ -643,7 +645,7 @@ class SecurityScoreServiceTest extends TestCase
 
     // ==================== SECURITY UPDATES SCORING TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_awards_maximum_points_for_no_security_updates(): void
     {
         // Arrange
@@ -667,7 +669,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertEquals(0, $breakdown['updates']['pending']);
     }
 
-    /** @test */
+    #[Test]
     public function it_awards_partial_points_for_one_to_two_security_updates(): void
     {
         // Arrange
@@ -691,7 +693,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertEquals(2, $breakdown['updates']['pending']);
     }
 
-    /** @test */
+    #[Test]
     public function it_awards_fewer_points_for_three_to_five_security_updates(): void
     {
         // Arrange
@@ -715,7 +717,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertEquals(4, $breakdown['updates']['pending']);
     }
 
-    /** @test */
+    #[Test]
     public function it_awards_no_points_for_more_than_five_security_updates(): void
     {
         // Arrange
@@ -741,7 +743,7 @@ class SecurityScoreServiceTest extends TestCase
 
     // ==================== RECOMMENDATIONS TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_recommends_installing_firewall_when_not_installed(): void
     {
         // Arrange
@@ -767,7 +769,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertTrue($hasFirewallRecommendation);
     }
 
-    /** @test */
+    #[Test]
     public function it_recommends_enabling_firewall_when_installed_but_disabled(): void
     {
         // Arrange
@@ -792,7 +794,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertTrue($hasFirewallRecommendation);
     }
 
-    /** @test */
+    #[Test]
     public function it_recommends_installing_fail2ban_when_not_installed(): void
     {
         // Arrange
@@ -817,7 +819,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertTrue($hasFail2banRecommendation);
     }
 
-    /** @test */
+    #[Test]
     public function it_recommends_changing_default_ssh_port(): void
     {
         // Arrange
@@ -841,7 +843,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertTrue($hasSSHPortRecommendation);
     }
 
-    /** @test */
+    #[Test]
     public function it_recommends_disabling_root_login(): void
     {
         // Arrange
@@ -865,7 +867,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertTrue($hasRootLoginRecommendation);
     }
 
-    /** @test */
+    #[Test]
     public function it_recommends_disabling_password_authentication(): void
     {
         // Arrange
@@ -889,7 +891,7 @@ class SecurityScoreServiceTest extends TestCase
         $this->assertTrue($hasPasswordAuthRecommendation);
     }
 
-    /** @test */
+    #[Test]
     public function it_recommends_installing_security_updates(): void
     {
         // Arrange

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Project;
 use App\Models\Server;
 use App\Services\StorageService;
@@ -21,7 +23,7 @@ class StorageServiceTest extends TestCase
         $this->storageService = new StorageService;
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_project_storage_successfully(): void
     {
         $server = Server::factory()->create([
@@ -51,7 +53,7 @@ class StorageServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_zero_when_project_has_no_server(): void
     {
         $project = Project::factory()->create(['server_id' => null]);
@@ -61,7 +63,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(0, $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_correct_project_path_in_du_command(): void
     {
         $server = Server::factory()->create();
@@ -82,7 +84,7 @@ class StorageServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_failed_ssh_command_gracefully(): void
     {
         $server = Server::factory()->create();
@@ -104,7 +106,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(0, $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_exception_during_storage_calculation(): void
     {
         $server = Server::factory()->create();
@@ -127,7 +129,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(0, $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_project_storage_used_mb_field(): void
     {
         $server = Server::factory()->create();
@@ -147,7 +149,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(2048, $project->storage_used_mb);
     }
 
-    /** @test */
+    #[Test]
     public function it_trims_whitespace_from_du_output(): void
     {
         $server = Server::factory()->create();
@@ -165,7 +167,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(3072, $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_total_storage_used_correctly(): void
     {
         Project::factory()->create(['storage_used_mb' => 1024]);
@@ -182,7 +184,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(3.5, $result['percentage']);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_storage_percentage_correctly(): void
     {
         Project::factory()->create(['storage_used_mb' => 51200]); // 50 GB
@@ -196,7 +198,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(50.0, $result['percentage']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_zero_max_storage(): void
     {
         Project::factory()->create(['storage_used_mb' => 1024]);
@@ -208,7 +210,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(0, $result['percentage']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_zero_projects(): void
     {
         config(['app.max_storage_gb' => 100]);
@@ -221,7 +223,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(0, $result['percentage']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rounds_storage_values_correctly(): void
     {
         Project::factory()->create(['storage_used_mb' => 1536]); // 1.5 GB
@@ -234,7 +236,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(1.5, $result['percentage']);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_default_max_storage_when_not_configured(): void
     {
         Project::factory()->create(['storage_used_mb' => 10240]); // 10 GB
@@ -246,7 +248,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(100, $result['max_gb']); // Default value
     }
 
-    /** @test */
+    #[Test]
     public function it_cleans_up_project_storage_successfully(): void
     {
         $server = Server::factory()->create([
@@ -269,7 +271,7 @@ class StorageServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_executes_all_cleanup_commands(): void
     {
         $server = Server::factory()->create();
@@ -301,7 +303,7 @@ class StorageServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_recalculates_storage_after_cleanup(): void
     {
         $server = Server::factory()->create();
@@ -322,7 +324,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(512, $project->storage_used_mb);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_false_when_cleanup_fails_due_to_no_server(): void
     {
         $project = Project::factory()->create(['server_id' => null]);
@@ -332,7 +334,7 @@ class StorageServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_cleanup_exception_gracefully(): void
     {
         $server = Server::factory()->create();
@@ -355,7 +357,7 @@ class StorageServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_error_with_project_id_on_cleanup_failure(): void
     {
         $server = Server::factory()->create();
@@ -377,7 +379,7 @@ class StorageServiceTest extends TestCase
         $this->storageService->cleanupProjectStorage($project);
     }
 
-    /** @test */
+    #[Test]
     public function it_builds_ssh_command_with_basic_options(): void
     {
         $server = Server::factory()->create([
@@ -404,7 +406,7 @@ class StorageServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_builds_ssh_command_with_custom_port(): void
     {
         $server = Server::factory()->create([
@@ -428,7 +430,7 @@ class StorageServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_builds_ssh_command_with_ssh_key(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -448,7 +450,7 @@ class StorageServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_escapes_remote_command_properly(): void
     {
         $server = Server::factory()->create();
@@ -468,7 +470,7 @@ class StorageServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_large_storage_values(): void
     {
         $server = Server::factory()->create();
@@ -486,7 +488,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(1048576, $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_zero_storage_value(): void
     {
         $server = Server::factory()->create();
@@ -504,7 +506,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(0, $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_percentage_over_100_when_exceeding_limit(): void
     {
         Project::factory()->create(['storage_used_mb' => 153600]); // 150 GB
@@ -516,7 +518,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(150.0, $result['percentage']);
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_strict_host_checking_disabled(): void
     {
         $server = Server::factory()->create();
@@ -537,7 +539,7 @@ class StorageServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_multiple_projects_storage_calculation(): void
     {
         $server = Server::factory()->create();
@@ -566,7 +568,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(2048, $result2);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_cut_command_to_extract_size(): void
     {
         $server = Server::factory()->create();
@@ -586,7 +588,7 @@ class StorageServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_empty_process_output(): void
     {
         $server = Server::factory()->create();
@@ -604,7 +606,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(0, $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_runs_cleanup_commands_in_correct_order(): void
     {
         $server = Server::factory()->create();
@@ -627,7 +629,7 @@ class StorageServiceTest extends TestCase
         $this->assertGreaterThan(0, count($executedCommands));
     }
 
-    /** @test */
+    #[Test]
     public function it_continues_cleanup_even_if_one_command_fails(): void
     {
         $server = Server::factory()->create();
@@ -652,7 +654,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(5, $commandCount);
     }
 
-    /** @test */
+    #[Test]
     public function it_formats_total_storage_with_two_decimal_places(): void
     {
         Project::factory()->create(['storage_used_mb' => 1536]); // 1.5 GB
@@ -666,7 +668,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(2.0, $result['percentage']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_non_numeric_du_output_gracefully(): void
     {
         $server = Server::factory()->create();
@@ -685,7 +687,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(0, $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_error_with_correct_context_on_calculation_failure(): void
     {
         $server = Server::factory()->create();
@@ -707,7 +709,7 @@ class StorageServiceTest extends TestCase
         $this->storageService->calculateProjectStorage($project);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_storage_for_multiple_projects_independently(): void
     {
         $projects = Project::factory()->count(3)->create([
@@ -722,7 +724,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(1.46, $result['used_gb']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_projects_with_null_storage_values(): void
     {
         Project::factory()->create(['storage_used_mb' => null]);
@@ -736,7 +738,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(1024, $result['used_mb']);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_total_storage_with_fractional_percentages(): void
     {
         Project::factory()->create(['storage_used_mb' => 512]); // 0.5 GB
@@ -749,7 +751,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(0.05, $result['percentage']);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_consistent_storage_structure(): void
     {
         Project::factory()->create(['storage_used_mb' => 1024]);
@@ -765,7 +767,7 @@ class StorageServiceTest extends TestCase
         $this->assertArrayHasKey('percentage', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_very_small_storage_values(): void
     {
         Project::factory()->create(['storage_used_mb' => 1]);
@@ -779,7 +781,7 @@ class StorageServiceTest extends TestCase
         $this->assertEquals(0.0, $result['percentage']);
     }
 
-    /** @test */
+    #[Test]
     public function it_maintains_precision_in_storage_calculations(): void
     {
         // 1536 MB = 1.5 GB exactly

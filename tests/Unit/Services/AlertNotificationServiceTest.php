@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\AlertHistory;
 use App\Models\ResourceAlert;
 use App\Models\Server;
@@ -72,7 +74,7 @@ class AlertNotificationServiceTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_notifications_to_all_configured_channels(): void
     {
         // Arrange
@@ -93,7 +95,7 @@ class AlertNotificationServiceTest extends TestCase
         $this->assertTrue($results['discord']['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_channels_with_empty_configuration(): void
     {
         // Arrange
@@ -117,7 +119,7 @@ class AlertNotificationServiceTest extends TestCase
         $this->assertArrayHasKey('slack', $results);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_unknown_notification_channels(): void
     {
         // Arrange
@@ -137,7 +139,7 @@ class AlertNotificationServiceTest extends TestCase
         $this->assertStringContainsString('Unknown channel', $results['unknown_channel']['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_errors_when_notification_fails(): void
     {
         // Arrange
@@ -161,7 +163,7 @@ class AlertNotificationServiceTest extends TestCase
         $this->assertStringContainsString('Connection timeout', $results['slack']['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_continues_sending_to_other_channels_when_one_fails(): void
     {
         // Arrange
@@ -184,7 +186,7 @@ class AlertNotificationServiceTest extends TestCase
         $this->assertTrue($results['email']['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_email_notification_successfully(): void
     {
         // Arrange
@@ -198,7 +200,7 @@ class AlertNotificationServiceTest extends TestCase
         $this->assertEquals('Email sent', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_error_when_email_address_is_missing(): void
     {
         // Arrange
@@ -212,7 +214,7 @@ class AlertNotificationServiceTest extends TestCase
         $this->assertEquals('No email address configured', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_formats_email_message_for_triggered_alert(): void
     {
         // Arrange
@@ -225,7 +227,7 @@ class AlertNotificationServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_formats_email_message_for_resolved_alert(): void
     {
         // Arrange
@@ -243,7 +245,7 @@ class AlertNotificationServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_email_sending_exception(): void
     {
         // Arrange
@@ -258,7 +260,7 @@ class AlertNotificationServiceTest extends TestCase
         $this->assertStringContainsString('SMTP connection failed', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_slack_notification_successfully(): void
     {
         // Arrange
@@ -276,7 +278,7 @@ class AlertNotificationServiceTest extends TestCase
         $this->assertEquals('Slack notification sent', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_error_when_slack_webhook_url_is_missing(): void
     {
         // Arrange
@@ -290,7 +292,7 @@ class AlertNotificationServiceTest extends TestCase
         $this->assertEquals('No Slack webhook URL configured', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_slack_notification_with_correct_structure(): void
     {
         // Arrange
@@ -314,7 +316,7 @@ class AlertNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_alert_emoji_in_slack_notification(): void
     {
         // Arrange
@@ -336,7 +338,7 @@ class AlertNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_server_details_in_slack_notification(): void
     {
         // Arrange
@@ -363,7 +365,7 @@ class AlertNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_slack_api_error_response(): void
     {
         // Arrange
@@ -381,7 +383,7 @@ class AlertNotificationServiceTest extends TestCase
         $this->assertStringContainsString('Slack API error', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_slack_connection_exception(): void
     {
         // Arrange
@@ -399,7 +401,7 @@ class AlertNotificationServiceTest extends TestCase
         $this->assertStringContainsString('Connection timeout', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_discord_notification_successfully(): void
     {
         // Arrange
@@ -417,7 +419,7 @@ class AlertNotificationServiceTest extends TestCase
         $this->assertEquals('Discord notification sent', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_error_when_discord_webhook_url_is_missing(): void
     {
         // Arrange
@@ -431,7 +433,7 @@ class AlertNotificationServiceTest extends TestCase
         $this->assertEquals('No Discord webhook URL configured', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_discord_notification_with_correct_embed_structure(): void
     {
         // Arrange
@@ -456,7 +458,7 @@ class AlertNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_red_color_for_triggered_discord_notification(): void
     {
         // Arrange
@@ -478,7 +480,7 @@ class AlertNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_green_color_for_resolved_discord_notification(): void
     {
         // Arrange
@@ -505,7 +507,7 @@ class AlertNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_timestamp_in_discord_notification(): void
     {
         // Arrange
@@ -527,7 +529,7 @@ class AlertNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_footer_in_discord_notification(): void
     {
         // Arrange
@@ -549,7 +551,7 @@ class AlertNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_discord_api_error_response(): void
     {
         // Arrange
@@ -567,7 +569,7 @@ class AlertNotificationServiceTest extends TestCase
         $this->assertStringContainsString('Discord API error', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_discord_connection_exception(): void
     {
         // Arrange
@@ -585,7 +587,7 @@ class AlertNotificationServiceTest extends TestCase
         $this->assertStringContainsString('Network error', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_formats_cpu_value_with_percentage(): void
     {
         // Arrange
@@ -624,7 +626,7 @@ class AlertNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_formats_memory_value_with_percentage(): void
     {
         // Arrange
@@ -663,7 +665,7 @@ class AlertNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_formats_disk_value_with_percentage(): void
     {
         // Arrange
@@ -702,7 +704,7 @@ class AlertNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_formats_load_value_without_percentage(): void
     {
         // Arrange
@@ -742,7 +744,7 @@ class AlertNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_triggered_emoji_for_triggered_status(): void
     {
         // Arrange
@@ -763,7 +765,7 @@ class AlertNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_resolved_emoji_for_resolved_status(): void
     {
         // Arrange
@@ -789,7 +791,7 @@ class AlertNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_resource_type_label_in_notifications(): void
     {
         // Arrange
@@ -816,7 +818,7 @@ class AlertNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_threshold_display_in_notifications(): void
     {
         // Arrange
@@ -843,7 +845,7 @@ class AlertNotificationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_alert_message_in_email(): void
     {
         // Arrange
@@ -856,7 +858,7 @@ class AlertNotificationServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_server_ip_address_in_email(): void
     {
         // Arrange
@@ -869,7 +871,7 @@ class AlertNotificationServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_null_created_at_timestamp_gracefully(): void
     {
         // Arrange
@@ -892,7 +894,7 @@ class AlertNotificationServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_all_results_even_when_some_channels_fail(): void
     {
         // Arrange
@@ -911,7 +913,7 @@ class AlertNotificationServiceTest extends TestCase
         $this->assertArrayHasKey('discord', $results);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_alerts_with_no_notification_channels(): void
     {
         // Arrange

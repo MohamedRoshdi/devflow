@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Models;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Deployment;
 use App\Models\Project;
 use App\Models\Server;
@@ -17,7 +19,7 @@ class CoreModelsTest extends TestCase
     // USER MODEL TESTS
     // ========================================
 
-    /** @test */
+    #[Test]
     public function user_factory_creates_user(): void
     {
         $user = User::factory()->create();
@@ -28,7 +30,7 @@ class CoreModelsTest extends TestCase
         $this->assertNotNull($user->password);
     }
 
-    /** @test */
+    #[Test]
     public function user_has_projects_relationship(): void
     {
         $user = User::factory()->create();
@@ -38,7 +40,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(Project::class, $user->projects->first());
     }
 
-    /** @test */
+    #[Test]
     public function user_has_servers_relationship(): void
     {
         $user = User::factory()->create();
@@ -48,7 +50,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(Server::class, $user->servers->first());
     }
 
-    /** @test */
+    #[Test]
     public function user_has_deployments_relationship(): void
     {
         $user = User::factory()->create();
@@ -58,7 +60,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(Deployment::class, $user->deployments->first());
     }
 
-    /** @test */
+    #[Test]
     public function user_has_ssh_keys_relationship(): void
     {
         $user = User::factory()->create();
@@ -66,7 +68,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $user->sshKeys());
     }
 
-    /** @test */
+    #[Test]
     public function user_has_server_tags_relationship(): void
     {
         $user = User::factory()->create();
@@ -74,7 +76,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $user->serverTags());
     }
 
-    /** @test */
+    #[Test]
     public function user_has_api_tokens_relationship(): void
     {
         $user = User::factory()->create();
@@ -82,7 +84,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $user->apiTokens());
     }
 
-    /** @test */
+    #[Test]
     public function user_has_teams_relationship(): void
     {
         $user = User::factory()->create();
@@ -90,7 +92,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\BelongsToMany::class, $user->teams());
     }
 
-    /** @test */
+    #[Test]
     public function user_has_owned_teams_relationship(): void
     {
         $user = User::factory()->create();
@@ -98,7 +100,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $user->ownedTeams());
     }
 
-    /** @test */
+    #[Test]
     public function user_has_current_team_relationship(): void
     {
         $user = User::factory()->create();
@@ -106,7 +108,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\BelongsTo::class, $user->currentTeam());
     }
 
-    /** @test */
+    #[Test]
     public function user_has_team_invitations_relationship(): void
     {
         $user = User::factory()->create();
@@ -114,7 +116,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $user->teamInvitations());
     }
 
-    /** @test */
+    #[Test]
     public function user_has_settings_relationship(): void
     {
         $user = User::factory()->create();
@@ -122,7 +124,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasOne::class, $user->settings());
     }
 
-    /** @test */
+    #[Test]
     public function user_has_requested_approvals_relationship(): void
     {
         $user = User::factory()->create();
@@ -130,7 +132,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $user->requestedApprovals());
     }
 
-    /** @test */
+    #[Test]
     public function user_has_approved_deployments_relationship(): void
     {
         $user = User::factory()->create();
@@ -138,7 +140,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $user->approvedDeployments());
     }
 
-    /** @test */
+    #[Test]
     public function user_has_deployment_comments_relationship(): void
     {
         $user = User::factory()->create();
@@ -146,7 +148,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $user->deploymentComments());
     }
 
-    /** @test */
+    #[Test]
     public function user_has_audit_logs_relationship(): void
     {
         $user = User::factory()->create();
@@ -154,7 +156,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $user->auditLogs());
     }
 
-    /** @test */
+    #[Test]
     public function user_avatar_url_accessor_returns_default_when_no_avatar(): void
     {
         $user = User::factory()->create(['avatar' => null, 'name' => 'John Doe']);
@@ -163,7 +165,7 @@ class CoreModelsTest extends TestCase
         $this->assertStringContainsString('John+Doe', $user->avatar_url);
     }
 
-    /** @test */
+    #[Test]
     public function user_avatar_url_accessor_returns_storage_path_when_avatar_exists(): void
     {
         $user = User::factory()->create(['avatar' => 'avatars/test.jpg']);
@@ -171,7 +173,7 @@ class CoreModelsTest extends TestCase
         $this->assertStringContainsString('storage/avatars/test.jpg', $user->avatar_url);
     }
 
-    /** @test */
+    #[Test]
     public function user_casts_dates_correctly(): void
     {
         $user = User::factory()->create([
@@ -183,7 +185,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Carbon\Carbon::class, $user->last_login_at);
     }
 
-    /** @test */
+    #[Test]
     public function user_hides_sensitive_attributes(): void
     {
         $user = User::factory()->create();
@@ -197,7 +199,7 @@ class CoreModelsTest extends TestCase
     // SERVER MODEL TESTS
     // ========================================
 
-    /** @test */
+    #[Test]
     public function server_factory_creates_server(): void
     {
         $server = Server::factory()->create();
@@ -207,7 +209,7 @@ class CoreModelsTest extends TestCase
         $this->assertNotNull($server->ip_address);
     }
 
-    /** @test */
+    #[Test]
     public function server_belongs_to_user(): void
     {
         $user = User::factory()->create();
@@ -217,7 +219,7 @@ class CoreModelsTest extends TestCase
         $this->assertEquals($user->id, $server->user->id);
     }
 
-    /** @test */
+    #[Test]
     public function server_belongs_to_team(): void
     {
         $server = Server::factory()->create();
@@ -225,7 +227,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\BelongsTo::class, $server->team());
     }
 
-    /** @test */
+    #[Test]
     public function server_has_projects_relationship(): void
     {
         $server = Server::factory()->create();
@@ -235,7 +237,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(Project::class, $server->projects->first());
     }
 
-    /** @test */
+    #[Test]
     public function server_has_deployments_relationship(): void
     {
         $server = Server::factory()->create();
@@ -243,7 +245,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $server->deployments());
     }
 
-    /** @test */
+    #[Test]
     public function server_has_metrics_relationship(): void
     {
         $server = Server::factory()->create();
@@ -251,7 +253,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $server->metrics());
     }
 
-    /** @test */
+    #[Test]
     public function server_has_ssh_keys_relationship(): void
     {
         $server = Server::factory()->create();
@@ -259,7 +261,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\BelongsToMany::class, $server->sshKeys());
     }
 
-    /** @test */
+    #[Test]
     public function server_has_tags_relationship(): void
     {
         $server = Server::factory()->create();
@@ -267,7 +269,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\BelongsToMany::class, $server->tags());
     }
 
-    /** @test */
+    #[Test]
     public function server_has_ssl_certificates_relationship(): void
     {
         $server = Server::factory()->create();
@@ -275,7 +277,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $server->sslCertificates());
     }
 
-    /** @test */
+    #[Test]
     public function server_has_resource_alerts_relationship(): void
     {
         $server = Server::factory()->create();
@@ -283,7 +285,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $server->resourceAlerts());
     }
 
-    /** @test */
+    #[Test]
     public function server_has_alert_history_relationship(): void
     {
         $server = Server::factory()->create();
@@ -291,7 +293,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $server->alertHistory());
     }
 
-    /** @test */
+    #[Test]
     public function server_has_backups_relationship(): void
     {
         $server = Server::factory()->create();
@@ -299,7 +301,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $server->backups());
     }
 
-    /** @test */
+    #[Test]
     public function server_has_backup_schedules_relationship(): void
     {
         $server = Server::factory()->create();
@@ -307,7 +309,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $server->backupSchedules());
     }
 
-    /** @test */
+    #[Test]
     public function server_has_firewall_rules_relationship(): void
     {
         $server = Server::factory()->create();
@@ -315,7 +317,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $server->firewallRules());
     }
 
-    /** @test */
+    #[Test]
     public function server_has_security_events_relationship(): void
     {
         $server = Server::factory()->create();
@@ -323,7 +325,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $server->securityEvents());
     }
 
-    /** @test */
+    #[Test]
     public function server_has_ssh_configuration_relationship(): void
     {
         $server = Server::factory()->create();
@@ -331,7 +333,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasOne::class, $server->sshConfiguration());
     }
 
-    /** @test */
+    #[Test]
     public function server_has_security_scans_relationship(): void
     {
         $server = Server::factory()->create();
@@ -339,7 +341,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $server->securityScans());
     }
 
-    /** @test */
+    #[Test]
     public function server_has_latest_security_scan_relationship(): void
     {
         $server = Server::factory()->create();
@@ -347,7 +349,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasOne::class, $server->latestSecurityScan());
     }
 
-    /** @test */
+    #[Test]
     public function server_has_latest_metric_relationship(): void
     {
         $server = Server::factory()->create();
@@ -355,7 +357,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasOne::class, $server->latestMetric());
     }
 
-    /** @test */
+    #[Test]
     public function server_has_provisioning_logs_relationship(): void
     {
         $server = Server::factory()->create();
@@ -363,7 +365,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $server->provisioningLogs());
     }
 
-    /** @test */
+    #[Test]
     public function server_has_latest_provisioning_log_relationship(): void
     {
         $server = Server::factory()->create();
@@ -371,7 +373,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasOne::class, $server->latestProvisioningLog());
     }
 
-    /** @test */
+    #[Test]
     public function server_is_online_helper_works(): void
     {
         $onlineServer = Server::factory()->create(['status' => 'online']);
@@ -381,7 +383,7 @@ class CoreModelsTest extends TestCase
         $this->assertFalse($offlineServer->isOnline());
     }
 
-    /** @test */
+    #[Test]
     public function server_is_offline_helper_works(): void
     {
         $offlineServer = Server::factory()->create(['status' => 'offline']);
@@ -391,7 +393,7 @@ class CoreModelsTest extends TestCase
         $this->assertFalse($onlineServer->isOffline());
     }
 
-    /** @test */
+    #[Test]
     public function server_status_color_accessor_returns_correct_colors(): void
     {
         $onlineServer = Server::factory()->create(['status' => 'online']);
@@ -406,7 +408,7 @@ class CoreModelsTest extends TestCase
         $this->assertEquals('gray', $unknownServer->status_color);
     }
 
-    /** @test */
+    #[Test]
     public function server_security_score_color_accessor_returns_correct_colors(): void
     {
         $excellentServer = Server::factory()->create(['security_score' => 95]);
@@ -424,7 +426,7 @@ class CoreModelsTest extends TestCase
         $this->assertEquals('gray', $unknownServer->security_score_color);
     }
 
-    /** @test */
+    #[Test]
     public function server_security_risk_level_accessor_returns_correct_levels(): void
     {
         $excellentServer = Server::factory()->create(['security_score' => 95]);
@@ -442,7 +444,7 @@ class CoreModelsTest extends TestCase
         $this->assertEquals('unknown', $unknownServer->security_risk_level);
     }
 
-    /** @test */
+    #[Test]
     public function server_is_provisioned_helper_works(): void
     {
         $provisionedServer = Server::factory()->create(['provision_status' => 'completed']);
@@ -452,7 +454,7 @@ class CoreModelsTest extends TestCase
         $this->assertFalse($unprovisionedServer->isProvisioned());
     }
 
-    /** @test */
+    #[Test]
     public function server_is_provisioning_helper_works(): void
     {
         $provisioningServer = Server::factory()->create(['provision_status' => 'provisioning']);
@@ -462,7 +464,7 @@ class CoreModelsTest extends TestCase
         $this->assertFalse($completedServer->isProvisioning());
     }
 
-    /** @test */
+    #[Test]
     public function server_has_package_installed_helper_works(): void
     {
         $server = Server::factory()->create([
@@ -474,7 +476,7 @@ class CoreModelsTest extends TestCase
         $this->assertFalse($server->hasPackageInstalled('postgresql'));
     }
 
-    /** @test */
+    #[Test]
     public function server_has_package_installed_returns_false_when_packages_null(): void
     {
         $server = Server::factory()->create(['installed_packages' => null]);
@@ -482,7 +484,7 @@ class CoreModelsTest extends TestCase
         $this->assertFalse($server->hasPackageInstalled('docker'));
     }
 
-    /** @test */
+    #[Test]
     public function server_casts_attributes_correctly(): void
     {
         $server = Server::factory()->create([
@@ -507,7 +509,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Carbon\Carbon::class, $server->last_security_scan_at);
     }
 
-    /** @test */
+    #[Test]
     public function server_hides_sensitive_attributes(): void
     {
         $server = Server::factory()->create([
@@ -520,7 +522,7 @@ class CoreModelsTest extends TestCase
         $this->assertArrayNotHasKey('ssh_password', $array);
     }
 
-    /** @test */
+    #[Test]
     public function server_factory_online_state_works(): void
     {
         $server = Server::factory()->online()->create();
@@ -529,7 +531,7 @@ class CoreModelsTest extends TestCase
         $this->assertNotNull($server->last_ping_at);
     }
 
-    /** @test */
+    #[Test]
     public function server_factory_offline_state_works(): void
     {
         $server = Server::factory()->offline()->create();
@@ -537,7 +539,7 @@ class CoreModelsTest extends TestCase
         $this->assertEquals('offline', $server->status);
     }
 
-    /** @test */
+    #[Test]
     public function server_soft_deletes_work(): void
     {
         $server = Server::factory()->create();
@@ -553,7 +555,7 @@ class CoreModelsTest extends TestCase
     // PROJECT MODEL TESTS
     // ========================================
 
-    /** @test */
+    #[Test]
     public function project_factory_creates_project(): void
     {
         $project = Project::factory()->create();
@@ -564,7 +566,7 @@ class CoreModelsTest extends TestCase
         $this->assertNotNull($project->repository_url);
     }
 
-    /** @test */
+    #[Test]
     public function project_uses_slug_as_route_key(): void
     {
         $project = Project::factory()->create(['slug' => 'test-project']);
@@ -572,7 +574,7 @@ class CoreModelsTest extends TestCase
         $this->assertEquals('slug', $project->getRouteKeyName());
     }
 
-    /** @test */
+    #[Test]
     public function project_belongs_to_user(): void
     {
         $user = User::factory()->create();
@@ -582,7 +584,7 @@ class CoreModelsTest extends TestCase
         $this->assertEquals($user->id, $project->user->id);
     }
 
-    /** @test */
+    #[Test]
     public function project_belongs_to_team(): void
     {
         $project = Project::factory()->create();
@@ -590,7 +592,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\BelongsTo::class, $project->team());
     }
 
-    /** @test */
+    #[Test]
     public function project_belongs_to_server(): void
     {
         $server = Server::factory()->create();
@@ -600,7 +602,7 @@ class CoreModelsTest extends TestCase
         $this->assertEquals($server->id, $project->server->id);
     }
 
-    /** @test */
+    #[Test]
     public function project_belongs_to_template(): void
     {
         $project = Project::factory()->create();
@@ -608,7 +610,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\BelongsTo::class, $project->template());
     }
 
-    /** @test */
+    #[Test]
     public function project_has_deployments_relationship(): void
     {
         $project = Project::factory()->create();
@@ -618,7 +620,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(Deployment::class, $project->deployments->first());
     }
 
-    /** @test */
+    #[Test]
     public function project_has_domains_relationship(): void
     {
         $project = Project::factory()->create();
@@ -626,7 +628,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $project->domains());
     }
 
-    /** @test */
+    #[Test]
     public function project_has_analytics_relationship(): void
     {
         $project = Project::factory()->create();
@@ -634,7 +636,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $project->analytics());
     }
 
-    /** @test */
+    #[Test]
     public function project_has_tenants_relationship(): void
     {
         $project = Project::factory()->create();
@@ -642,7 +644,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $project->tenants());
     }
 
-    /** @test */
+    #[Test]
     public function project_has_pipelines_relationship(): void
     {
         $project = Project::factory()->create();
@@ -650,7 +652,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $project->pipelines());
     }
 
-    /** @test */
+    #[Test]
     public function project_has_storage_configurations_relationship(): void
     {
         $project = Project::factory()->create();
@@ -658,7 +660,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $project->storageConfigurations());
     }
 
-    /** @test */
+    #[Test]
     public function project_has_webhook_deliveries_relationship(): void
     {
         $project = Project::factory()->create();
@@ -666,7 +668,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $project->webhookDeliveries());
     }
 
-    /** @test */
+    #[Test]
     public function project_has_database_backups_relationship(): void
     {
         $project = Project::factory()->create();
@@ -674,7 +676,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $project->databaseBackups());
     }
 
-    /** @test */
+    #[Test]
     public function project_has_backup_schedules_relationship(): void
     {
         $project = Project::factory()->create();
@@ -682,7 +684,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $project->backupSchedules());
     }
 
-    /** @test */
+    #[Test]
     public function project_has_file_backups_relationship(): void
     {
         $project = Project::factory()->create();
@@ -690,7 +692,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $project->fileBackups());
     }
 
-    /** @test */
+    #[Test]
     public function project_has_setup_tasks_relationship(): void
     {
         $project = Project::factory()->create();
@@ -698,7 +700,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $project->setupTasks());
     }
 
-    /** @test */
+    #[Test]
     public function project_has_pipeline_stages_relationship(): void
     {
         $project = Project::factory()->create();
@@ -706,7 +708,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $project->pipelineStages());
     }
 
-    /** @test */
+    #[Test]
     public function project_has_pipeline_config_relationship(): void
     {
         $project = Project::factory()->create();
@@ -714,7 +716,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasOne::class, $project->pipelineConfig());
     }
 
-    /** @test */
+    #[Test]
     public function project_has_notification_channels_relationship(): void
     {
         $project = Project::factory()->create();
@@ -722,7 +724,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $project->notificationChannels());
     }
 
-    /** @test */
+    #[Test]
     public function project_has_audit_logs_morph_relationship(): void
     {
         $project = Project::factory()->create();
@@ -730,7 +732,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\MorphMany::class, $project->auditLogs());
     }
 
-    /** @test */
+    #[Test]
     public function project_is_setup_pending_helper_works(): void
     {
         $project = Project::factory()->create(['setup_status' => 'pending']);
@@ -740,7 +742,7 @@ class CoreModelsTest extends TestCase
         $this->assertFalse($completedProject->isSetupPending());
     }
 
-    /** @test */
+    #[Test]
     public function project_is_setup_in_progress_helper_works(): void
     {
         $project = Project::factory()->create(['setup_status' => 'in_progress']);
@@ -750,7 +752,7 @@ class CoreModelsTest extends TestCase
         $this->assertFalse($completedProject->isSetupInProgress());
     }
 
-    /** @test */
+    #[Test]
     public function project_is_setup_completed_helper_works(): void
     {
         $project = Project::factory()->create(['setup_status' => 'completed']);
@@ -760,7 +762,7 @@ class CoreModelsTest extends TestCase
         $this->assertFalse($pendingProject->isSetupCompleted());
     }
 
-    /** @test */
+    #[Test]
     public function project_is_setup_failed_helper_works(): void
     {
         $project = Project::factory()->create(['setup_status' => 'failed']);
@@ -770,7 +772,7 @@ class CoreModelsTest extends TestCase
         $this->assertFalse($completedProject->isSetupFailed());
     }
 
-    /** @test */
+    #[Test]
     public function project_generate_webhook_secret_creates_64_char_hex(): void
     {
         $project = Project::factory()->create();
@@ -780,7 +782,7 @@ class CoreModelsTest extends TestCase
         $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/', $secret);
     }
 
-    /** @test */
+    #[Test]
     public function project_is_running_helper_works(): void
     {
         $runningProject = Project::factory()->create(['status' => 'running']);
@@ -790,7 +792,7 @@ class CoreModelsTest extends TestCase
         $this->assertFalse($stoppedProject->isRunning());
     }
 
-    /** @test */
+    #[Test]
     public function project_is_stopped_helper_works(): void
     {
         $stoppedProject = Project::factory()->create(['status' => 'stopped']);
@@ -800,7 +802,7 @@ class CoreModelsTest extends TestCase
         $this->assertFalse($runningProject->isStopped());
     }
 
-    /** @test */
+    #[Test]
     public function project_status_color_accessor_returns_correct_colors(): void
     {
         $runningProject = Project::factory()->create(['status' => 'running']);
@@ -818,7 +820,7 @@ class CoreModelsTest extends TestCase
         $this->assertEquals('gray', $unknownProject->status_color);
     }
 
-    /** @test */
+    #[Test]
     public function project_latest_deployment_relationship_works(): void
     {
         $project = Project::factory()->create();
@@ -837,7 +839,7 @@ class CoreModelsTest extends TestCase
         $this->assertEquals($latestDeployment->id, $result->id);
     }
 
-    /** @test */
+    #[Test]
     public function project_casts_attributes_correctly(): void
     {
         $project = Project::factory()->create([
@@ -857,7 +859,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Carbon\Carbon::class, $project->last_deployed_at);
     }
 
-    /** @test */
+    #[Test]
     public function project_factory_running_state_works(): void
     {
         $project = Project::factory()->running()->create();
@@ -866,7 +868,7 @@ class CoreModelsTest extends TestCase
         $this->assertNotNull($project->last_deployed_at);
     }
 
-    /** @test */
+    #[Test]
     public function project_factory_stopped_state_works(): void
     {
         $project = Project::factory()->stopped()->create();
@@ -874,7 +876,7 @@ class CoreModelsTest extends TestCase
         $this->assertEquals('stopped', $project->status);
     }
 
-    /** @test */
+    #[Test]
     public function project_factory_laravel_state_works(): void
     {
         $project = Project::factory()->laravel()->create();
@@ -883,7 +885,7 @@ class CoreModelsTest extends TestCase
         $this->assertEquals('8.4', $project->php_version);
     }
 
-    /** @test */
+    #[Test]
     public function project_soft_deletes_work(): void
     {
         $project = Project::factory()->create();
@@ -899,7 +901,7 @@ class CoreModelsTest extends TestCase
     // DEPLOYMENT MODEL TESTS
     // ========================================
 
-    /** @test */
+    #[Test]
     public function deployment_factory_creates_deployment(): void
     {
         $deployment = Deployment::factory()->create();
@@ -909,7 +911,7 @@ class CoreModelsTest extends TestCase
         $this->assertNotNull($deployment->status);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_belongs_to_user(): void
     {
         $user = User::factory()->create();
@@ -919,7 +921,7 @@ class CoreModelsTest extends TestCase
         $this->assertEquals($user->id, $deployment->user->id);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_belongs_to_project(): void
     {
         $project = Project::factory()->create();
@@ -929,7 +931,7 @@ class CoreModelsTest extends TestCase
         $this->assertEquals($project->id, $deployment->project->id);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_belongs_to_server(): void
     {
         $server = Server::factory()->create();
@@ -939,7 +941,7 @@ class CoreModelsTest extends TestCase
         $this->assertEquals($server->id, $deployment->server->id);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_has_rollback_of_relationship(): void
     {
         $originalDeployment = Deployment::factory()->create();
@@ -951,7 +953,7 @@ class CoreModelsTest extends TestCase
         $this->assertEquals($originalDeployment->id, $rollbackDeployment->rollbackOf->id);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_has_rollbacks_relationship(): void
     {
         $deployment = Deployment::factory()->create();
@@ -962,7 +964,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(Deployment::class, $deployment->rollbacks->first());
     }
 
-    /** @test */
+    #[Test]
     public function deployment_has_approvals_relationship(): void
     {
         $deployment = Deployment::factory()->create();
@@ -970,7 +972,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $deployment->approvals());
     }
 
-    /** @test */
+    #[Test]
     public function deployment_has_pending_approval_relationship(): void
     {
         $deployment = Deployment::factory()->create();
@@ -978,7 +980,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasOne::class, $deployment->pendingApproval());
     }
 
-    /** @test */
+    #[Test]
     public function deployment_has_comments_relationship(): void
     {
         $deployment = Deployment::factory()->create();
@@ -986,7 +988,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $deployment->comments());
     }
 
-    /** @test */
+    #[Test]
     public function deployment_has_audit_logs_morph_relationship(): void
     {
         $deployment = Deployment::factory()->create();
@@ -994,7 +996,7 @@ class CoreModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\MorphMany::class, $deployment->auditLogs());
     }
 
-    /** @test */
+    #[Test]
     public function deployment_is_running_helper_works(): void
     {
         $runningDeployment = Deployment::factory()->create(['status' => 'running']);
@@ -1004,7 +1006,7 @@ class CoreModelsTest extends TestCase
         $this->assertFalse($successDeployment->isRunning());
     }
 
-    /** @test */
+    #[Test]
     public function deployment_is_success_helper_works(): void
     {
         $successDeployment = Deployment::factory()->create(['status' => 'success']);
@@ -1014,7 +1016,7 @@ class CoreModelsTest extends TestCase
         $this->assertFalse($failedDeployment->isSuccess());
     }
 
-    /** @test */
+    #[Test]
     public function deployment_is_failed_helper_works(): void
     {
         $failedDeployment = Deployment::factory()->create(['status' => 'failed']);
@@ -1024,7 +1026,7 @@ class CoreModelsTest extends TestCase
         $this->assertFalse($successDeployment->isFailed());
     }
 
-    /** @test */
+    #[Test]
     public function deployment_status_color_accessor_returns_correct_colors(): void
     {
         $successDeployment = Deployment::factory()->create(['status' => 'success']);
@@ -1042,7 +1044,7 @@ class CoreModelsTest extends TestCase
         $this->assertEquals('gray', $unknownDeployment->status_color);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_status_icon_accessor_returns_correct_icons(): void
     {
         $successDeployment = Deployment::factory()->create(['status' => 'success']);
@@ -1060,7 +1062,7 @@ class CoreModelsTest extends TestCase
         $this->assertEquals('question-mark-circle', $unknownDeployment->status_icon);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_requires_approval_helper_works_when_project_requires_approval(): void
     {
         $project = Project::factory()->create(['requires_approval' => true]);
@@ -1069,7 +1071,7 @@ class CoreModelsTest extends TestCase
         $this->assertTrue($deployment->requiresApproval());
     }
 
-    /** @test */
+    #[Test]
     public function deployment_requires_approval_helper_works_when_project_does_not_require_approval(): void
     {
         $project = Project::factory()->create(['requires_approval' => false]);
@@ -1078,7 +1080,7 @@ class CoreModelsTest extends TestCase
         $this->assertFalse($deployment->requiresApproval());
     }
 
-    /** @test */
+    #[Test]
     public function deployment_casts_attributes_correctly(): void
     {
         $deployment = Deployment::factory()->create([
@@ -1096,7 +1098,7 @@ class CoreModelsTest extends TestCase
         $this->assertIsInt($deployment->duration_seconds);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_factory_success_state_works(): void
     {
         $deployment = Deployment::factory()->success()->create();
@@ -1107,7 +1109,7 @@ class CoreModelsTest extends TestCase
         $this->assertNull($deployment->error_message);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_factory_failed_state_works(): void
     {
         $deployment = Deployment::factory()->failed()->create();
@@ -1117,7 +1119,7 @@ class CoreModelsTest extends TestCase
         $this->assertNotNull($deployment->error_log);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_factory_pending_state_works(): void
     {
         $deployment = Deployment::factory()->pending()->create();
@@ -1127,7 +1129,7 @@ class CoreModelsTest extends TestCase
         $this->assertNull($deployment->completed_at);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_factory_running_state_works(): void
     {
         $deployment = Deployment::factory()->running()->create();

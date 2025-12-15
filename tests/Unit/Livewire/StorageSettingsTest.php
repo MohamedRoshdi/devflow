@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Livewire;
 
+
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\Settings\StorageSettings;
 use App\Models\Project;
 use App\Models\StorageConfiguration;
 use App\Models\User;
 use App\Services\Backup\RemoteStorageService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Illuminate\Support\Facades\Crypt;
 use Livewire\Livewire;
 use Mockery;
@@ -33,12 +36,11 @@ use Tests\TestCase;
  * - Delete configuration
  * - Error handling for invalid credentials
  * - Modal operations (open/close)
- *
- * @covers \App\Livewire\Settings\StorageSettings
- */
+ * */
+#[CoversClass(\App\Livewire\Settings\StorageSettings::class)]
 class StorageSettingsTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     protected User $user;
 
@@ -57,7 +59,7 @@ class StorageSettingsTest extends TestCase
     // Component Rendering Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function storage_settings_component_renders_for_authenticated_user(): void
     {
         Livewire::test(StorageSettings::class)
@@ -65,7 +67,7 @@ class StorageSettingsTest extends TestCase
             ->assertViewIs('livewire.settings.storage-settings');
     }
 
-    /** @test */
+    #[Test]
     public function storage_settings_component_initializes_with_default_values(): void
     {
         $component = Livewire::test(StorageSettings::class);
@@ -89,7 +91,7 @@ class StorageSettingsTest extends TestCase
     // Storage Configuration Listing Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function storage_configs_computed_property_returns_configurations(): void
     {
         StorageConfiguration::factory()->count(3)->create();
@@ -103,7 +105,7 @@ class StorageSettingsTest extends TestCase
         $this->assertEquals('Default Storage', $configs->first()->name);
     }
 
-    /** @test */
+    #[Test]
     public function storage_configs_ordered_by_default_first_then_name(): void
     {
         StorageConfiguration::factory()->create(['name' => 'Zebra Storage', 'is_default' => false]);
@@ -118,7 +120,7 @@ class StorageSettingsTest extends TestCase
         $this->assertEquals('Alpha Storage', $configs->skip(1)->first()->name);
     }
 
-    /** @test */
+    #[Test]
     public function projects_computed_property_returns_ordered_projects(): void
     {
         Project::factory()->create(['name' => 'Zebra Project']);
@@ -136,7 +138,7 @@ class StorageSettingsTest extends TestCase
     // Modal Operations Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function open_create_modal_resets_all_fields(): void
     {
         $component = Livewire::test(StorageSettings::class)
@@ -154,7 +156,7 @@ class StorageSettingsTest extends TestCase
             ->assertSet('activeTab', 's3');
     }
 
-    /** @test */
+    #[Test]
     public function open_edit_modal_loads_s3_configuration(): void
     {
         $config = StorageConfiguration::factory()->s3()->create([
@@ -186,7 +188,7 @@ class StorageSettingsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function open_edit_modal_loads_gcs_configuration(): void
     {
         $config = StorageConfiguration::factory()->gcs()->create([
@@ -207,7 +209,7 @@ class StorageSettingsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function open_edit_modal_loads_ftp_configuration(): void
     {
         $config = StorageConfiguration::factory()->ftp()->create([
@@ -229,7 +231,7 @@ class StorageSettingsTest extends TestCase
             ->assertSet('ftp_ssl', false);
     }
 
-    /** @test */
+    #[Test]
     public function open_edit_modal_loads_sftp_configuration(): void
     {
         $config = StorageConfiguration::factory()->sftp()->create([
@@ -249,7 +251,7 @@ class StorageSettingsTest extends TestCase
             ->assertSet('sftp_port', '22');
     }
 
-    /** @test */
+    #[Test]
     public function open_edit_modal_loads_encryption_settings(): void
     {
         $config = StorageConfiguration::factory()->withEncryption()->s3()->create();
@@ -268,7 +270,7 @@ class StorageSettingsTest extends TestCase
     // S3 Configuration Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function can_create_s3_storage_configuration(): void
     {
         $component = Livewire::test(StorageSettings::class)
@@ -296,7 +298,7 @@ class StorageSettingsTest extends TestCase
         $this->assertEquals('wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY', $config->credentials['secret_access_key']);
     }
 
-    /** @test */
+    #[Test]
     public function can_update_s3_storage_configuration(): void
     {
         $config = StorageConfiguration::factory()->s3()->create([
@@ -321,7 +323,7 @@ class StorageSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function s3_configuration_validates_required_fields(): void
     {
         Livewire::test(StorageSettings::class)
@@ -331,7 +333,7 @@ class StorageSettingsTest extends TestCase
             ->assertHasErrors(['name']);
     }
 
-    /** @test */
+    #[Test]
     public function s3_configuration_accepts_custom_endpoint(): void
     {
         Livewire::test(StorageSettings::class)
@@ -350,7 +352,7 @@ class StorageSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function s3_configuration_stores_path_prefix(): void
     {
         Livewire::test(StorageSettings::class)
@@ -373,7 +375,7 @@ class StorageSettingsTest extends TestCase
     // GCS Configuration Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function can_create_gcs_storage_configuration(): void
     {
         $serviceAccountJson = json_encode([
@@ -406,7 +408,7 @@ class StorageSettingsTest extends TestCase
         $this->assertEquals('test-project', $config->credentials['service_account_json']['project_id']);
     }
 
-    /** @test */
+    #[Test]
     public function gcs_configuration_validates_required_fields(): void
     {
         Livewire::test(StorageSettings::class)
@@ -420,7 +422,7 @@ class StorageSettingsTest extends TestCase
     // FTP Configuration Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function can_create_ftp_storage_configuration(): void
     {
         $component = Livewire::test(StorageSettings::class)
@@ -453,7 +455,7 @@ class StorageSettingsTest extends TestCase
         $this->assertFalse($config->credentials['ssl']);
     }
 
-    /** @test */
+    #[Test]
     public function ftp_configuration_with_ssl_enabled(): void
     {
         Livewire::test(StorageSettings::class)
@@ -477,7 +479,7 @@ class StorageSettingsTest extends TestCase
     // SFTP Configuration Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function can_create_sftp_storage_configuration_with_password(): void
     {
         $component = Livewire::test(StorageSettings::class)
@@ -506,7 +508,7 @@ class StorageSettingsTest extends TestCase
         $this->assertEquals('/var/backups', $config->credentials['path']);
     }
 
-    /** @test */
+    #[Test]
     public function can_create_sftp_storage_configuration_with_private_key(): void
     {
         $privateKey = "-----BEGIN RSA PRIVATE KEY-----\nMOCK_PRIVATE_KEY\n-----END RSA PRIVATE KEY-----";
@@ -536,7 +538,7 @@ class StorageSettingsTest extends TestCase
     // Encryption Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function can_generate_encryption_key(): void
     {
         $component = Livewire::test(StorageSettings::class)
@@ -552,7 +554,7 @@ class StorageSettingsTest extends TestCase
             ->assertDispatched('notification');
     }
 
-    /** @test */
+    #[Test]
     public function encryption_key_is_stored_when_enabled(): void
     {
         $encryptionKey = base64_encode(random_bytes(32));
@@ -573,7 +575,7 @@ class StorageSettingsTest extends TestCase
         $this->assertEquals($encryptionKey, $config->encryption_key);
     }
 
-    /** @test */
+    #[Test]
     public function encryption_key_is_not_stored_when_disabled(): void
     {
         Livewire::test(StorageSettings::class)
@@ -596,7 +598,7 @@ class StorageSettingsTest extends TestCase
     // Connection Testing Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function test_connection_calls_remote_storage_service(): void
     {
         $config = StorageConfiguration::factory()->s3()->create();
@@ -625,7 +627,7 @@ class StorageSettingsTest extends TestCase
             ->assertDispatched('notification');
     }
 
-    /** @test */
+    #[Test]
     public function test_connection_handles_failure(): void
     {
         $config = StorageConfiguration::factory()->s3()->create();
@@ -652,7 +654,7 @@ class StorageSettingsTest extends TestCase
             ->assertDispatched('notification');
     }
 
-    /** @test */
+    #[Test]
     public function test_connection_sets_testing_flag(): void
     {
         $config = StorageConfiguration::factory()->s3()->create();
@@ -674,7 +676,7 @@ class StorageSettingsTest extends TestCase
             ->assertSet('isTesting', false);
     }
 
-    /** @test */
+    #[Test]
     public function test_connection_handles_exception(): void
     {
         $config = StorageConfiguration::factory()->s3()->create();
@@ -698,7 +700,7 @@ class StorageSettingsTest extends TestCase
     // Set As Default Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function can_set_configuration_as_default(): void
     {
         $currentDefault = StorageConfiguration::factory()->default()->create();
@@ -719,7 +721,7 @@ class StorageSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function only_one_configuration_can_be_default(): void
     {
         $config1 = StorageConfiguration::factory()->default()->create();
@@ -737,7 +739,7 @@ class StorageSettingsTest extends TestCase
         $this->assertFalse($config2->fresh()->is_default);
     }
 
-    /** @test */
+    #[Test]
     public function set_as_default_handles_nonexistent_configuration(): void
     {
         $component = Livewire::test(StorageSettings::class)
@@ -750,7 +752,7 @@ class StorageSettingsTest extends TestCase
     // Delete Configuration Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function can_delete_storage_configuration(): void
     {
         $config = StorageConfiguration::factory()->create(['name' => 'To Be Deleted']);
@@ -764,7 +766,7 @@ class StorageSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function delete_handles_nonexistent_configuration(): void
     {
         $component = Livewire::test(StorageSettings::class)
@@ -777,7 +779,7 @@ class StorageSettingsTest extends TestCase
     // Project Association Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function can_create_storage_configuration_for_specific_project(): void
     {
         $project = Project::factory()->create(['name' => 'Test Project']);
@@ -798,7 +800,7 @@ class StorageSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function can_create_global_storage_configuration(): void
     {
         Livewire::test(StorageSettings::class)
@@ -817,7 +819,7 @@ class StorageSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function project_id_validates_existence(): void
     {
         Livewire::test(StorageSettings::class)
@@ -836,7 +838,7 @@ class StorageSettingsTest extends TestCase
     // Validation Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function name_is_required(): void
     {
         Livewire::test(StorageSettings::class)
@@ -846,7 +848,7 @@ class StorageSettingsTest extends TestCase
             ->assertHasErrors(['name']);
     }
 
-    /** @test */
+    #[Test]
     public function driver_is_required(): void
     {
         Livewire::test(StorageSettings::class)
@@ -856,7 +858,7 @@ class StorageSettingsTest extends TestCase
             ->assertHasErrors(['driver']);
     }
 
-    /** @test */
+    #[Test]
     public function driver_must_be_valid_option(): void
     {
         Livewire::test(StorageSettings::class)
@@ -866,7 +868,7 @@ class StorageSettingsTest extends TestCase
             ->assertHasErrors(['driver']);
     }
 
-    /** @test */
+    #[Test]
     public function name_has_max_length_validation(): void
     {
         Livewire::test(StorageSettings::class)
@@ -876,7 +878,7 @@ class StorageSettingsTest extends TestCase
             ->assertHasErrors(['name']);
     }
 
-    /** @test */
+    #[Test]
     public function bucket_has_max_length_validation(): void
     {
         Livewire::test(StorageSettings::class)
@@ -890,7 +892,7 @@ class StorageSettingsTest extends TestCase
             ->assertHasErrors(['bucket']);
     }
 
-    /** @test */
+    #[Test]
     public function region_has_max_length_validation(): void
     {
         Livewire::test(StorageSettings::class)
@@ -904,7 +906,7 @@ class StorageSettingsTest extends TestCase
             ->assertHasErrors(['region']);
     }
 
-    /** @test */
+    #[Test]
     public function endpoint_has_max_length_validation(): void
     {
         Livewire::test(StorageSettings::class)
@@ -919,7 +921,7 @@ class StorageSettingsTest extends TestCase
             ->assertHasErrors(['endpoint']);
     }
 
-    /** @test */
+    #[Test]
     public function path_prefix_has_max_length_validation(): void
     {
         Livewire::test(StorageSettings::class)
@@ -938,7 +940,7 @@ class StorageSettingsTest extends TestCase
     // Save Functionality Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function save_closes_modal_on_success(): void
     {
         $component = Livewire::test(StorageSettings::class)
@@ -954,7 +956,7 @@ class StorageSettingsTest extends TestCase
         $component->assertSet('showModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function save_resets_form_on_success(): void
     {
         $component = Livewire::test(StorageSettings::class)
@@ -974,7 +976,7 @@ class StorageSettingsTest extends TestCase
             ->assertSet('s3_secret_key', '');
     }
 
-    /** @test */
+    #[Test]
     public function save_refreshes_storage_configs_list(): void
     {
         $initialCount = StorageConfiguration::count();
@@ -991,7 +993,7 @@ class StorageSettingsTest extends TestCase
         $this->assertEquals($initialCount + 1, StorageConfiguration::count());
     }
 
-    /** @test */
+    #[Test]
     public function save_dispatches_correct_notification_for_create(): void
     {
         Livewire::test(StorageSettings::class)
@@ -1008,7 +1010,7 @@ class StorageSettingsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function save_dispatches_correct_notification_for_update(): void
     {
         $config = StorageConfiguration::factory()->s3()->create();
@@ -1023,7 +1025,7 @@ class StorageSettingsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function save_handles_exception_gracefully(): void
     {
         Livewire::test(StorageSettings::class)
@@ -1037,7 +1039,7 @@ class StorageSettingsTest extends TestCase
     // Credentials Storage Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function credentials_are_encrypted_in_database(): void
     {
         Livewire::test(StorageSettings::class)
@@ -1058,7 +1060,7 @@ class StorageSettingsTest extends TestCase
         $this->assertEquals('AKIAIOSFODNN7EXAMPLE', $decryptedCredentials['access_key_id']);
     }
 
-    /** @test */
+    #[Test]
     public function empty_optional_fields_are_stored_as_null(): void
     {
         Livewire::test(StorageSettings::class)
@@ -1081,7 +1083,7 @@ class StorageSettingsTest extends TestCase
     // Active Tab Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function active_tab_changes_based_on_driver(): void
     {
         $s3Config = StorageConfiguration::factory()->s3()->create();
@@ -1101,7 +1103,7 @@ class StorageSettingsTest extends TestCase
     // Edge Cases and Error Handling Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function handles_malformed_json_in_gcs_service_account(): void
     {
         $config = StorageConfiguration::factory()->gcs()->create();
@@ -1115,7 +1117,7 @@ class StorageSettingsTest extends TestCase
         $this->assertNotNull($updatedConfig);
     }
 
-    /** @test */
+    #[Test]
     public function handles_zero_port_numbers(): void
     {
         Livewire::test(StorageSettings::class)
@@ -1131,7 +1133,7 @@ class StorageSettingsTest extends TestCase
         $this->assertEquals(0, $config->credentials['port']);
     }
 
-    /** @test */
+    #[Test]
     public function handles_very_large_port_numbers(): void
     {
         Livewire::test(StorageSettings::class)
@@ -1147,7 +1149,7 @@ class StorageSettingsTest extends TestCase
         $this->assertEquals(65535, $config->credentials['port']);
     }
 
-    /** @test */
+    #[Test]
     public function local_driver_stores_minimal_configuration(): void
     {
         Livewire::test(StorageSettings::class)

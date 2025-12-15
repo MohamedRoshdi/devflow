@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Livewire;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\MultiTenant\TenantManager;
 use App\Models\Project;
 use App\Models\Tenant;

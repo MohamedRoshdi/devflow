@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Controllers;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Jobs\DeployProjectJob;
 use App\Models\ApiToken;
 use App\Models\Deployment;
@@ -105,7 +107,7 @@ class ControllersTest extends TestCase
     // ProjectController Tests (API V1)
     // ========================================
 
-    /** @test */
+    #[Test]
     public function project_index_returns_projects_list(): void
     {
         Project::factory()->count(3)->create(['user_id' => $this->user->id, 'server_id' => $this->server->id]);
@@ -120,7 +122,7 @@ class ControllersTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function project_index_filters_by_status(): void
     {
         // Set up project from setUp to a different status to avoid interference
@@ -135,7 +137,7 @@ class ControllersTest extends TestCase
         $this->assertEquals(1, count($response->json('data')));
     }
 
-    /** @test */
+    #[Test]
     public function project_index_searches_by_name(): void
     {
         Project::factory()->create(['user_id' => $this->user->id, 'server_id' => $this->server->id, 'name' => 'Test Project Alpha']);
@@ -147,7 +149,7 @@ class ControllersTest extends TestCase
         $this->assertEquals(1, count($response->json('data')));
     }
 
-    /** @test */
+    #[Test]
     public function project_store_creates_new_project(): void
     {
         $response = $this->withApiToken()->postJson('/api/v1/projects', [
@@ -170,7 +172,7 @@ class ControllersTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function project_store_validates_required_fields(): void
     {
         $response = $this->withApiToken()->postJson('/api/v1/projects', []);
@@ -179,7 +181,7 @@ class ControllersTest extends TestCase
             ->assertJsonValidationErrors(['name', 'slug', 'repository_url', 'branch', 'framework', 'project_type', 'server_id']);
     }
 
-    /** @test */
+    #[Test]
     public function project_store_validates_slug_format(): void
     {
         $response = $this->withApiToken()->postJson('/api/v1/projects', [
@@ -196,7 +198,7 @@ class ControllersTest extends TestCase
             ->assertJsonValidationErrors(['slug']);
     }
 
-    /** @test */
+    #[Test]
     public function project_store_generates_webhook_secret_when_enabled(): void
     {
         $response = $this->withApiToken()->postJson('/api/v1/projects', [
@@ -216,7 +218,7 @@ class ControllersTest extends TestCase
         $this->assertNotNull($project->webhook_secret);
     }
 
-    /** @test */
+    #[Test]
     public function project_show_returns_single_project(): void
     {
         $response = $this->withApiToken()->getJson("/api/v1/projects/{$this->project->slug}");
@@ -225,7 +227,7 @@ class ControllersTest extends TestCase
             ->assertJsonStructure(['data' => ['id', 'name', 'slug', 'status']]);
     }
 
-    /** @test */
+    #[Test]
     public function project_show_denies_access_to_non_owners(): void
     {
         // Projects are restricted to owners, team members, and admins per ProjectPolicy
@@ -236,7 +238,7 @@ class ControllersTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function project_update_modifies_project(): void
     {
         $response = $this->withApiToken()->patchJson("/api/v1/projects/{$this->project->slug}", [
@@ -252,7 +254,7 @@ class ControllersTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function project_update_denies_access_to_non_owners(): void
     {
         // Projects are restricted to owners, team members, and admins per ProjectPolicy
@@ -265,7 +267,7 @@ class ControllersTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function project_destroy_deletes_project(): void
     {
         $response = $this->withApiToken()->deleteJson("/api/v1/projects/{$this->project->slug}");
@@ -278,7 +280,7 @@ class ControllersTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function project_destroy_denies_access_to_non_owners(): void
     {
         // Only the owner can delete projects per ProjectPolicy
@@ -298,7 +300,7 @@ class ControllersTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function project_deploy_creates_deployment(): void
     {
         $response = $this->withApiToken()->postJson("/api/v1/projects/{$this->project->slug}/deploy", [
@@ -315,7 +317,7 @@ class ControllersTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function project_deploy_prevents_concurrent_deployments(): void
     {
         Deployment::factory()->create([
@@ -329,7 +331,7 @@ class ControllersTest extends TestCase
             ->assertJson(['error' => 'deployment_in_progress']);
     }
 
-    /** @test */
+    #[Test]
     public function unauthenticated_project_request_returns_401(): void
     {
         $response = $this->getJson('/api/v1/projects');
@@ -341,7 +343,7 @@ class ControllersTest extends TestCase
     // ServerController Tests (API V1)
     // ========================================
 
-    /** @test */
+    #[Test]
     public function server_index_returns_servers_list(): void
     {
         Server::factory()->count(3)->create(['user_id' => $this->user->id]);
@@ -356,7 +358,7 @@ class ControllersTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function server_index_filters_by_status(): void
     {
         // Create additional servers with explicit statuses
@@ -372,7 +374,7 @@ class ControllersTest extends TestCase
         $this->assertGreaterThanOrEqual(1, $onlineCount);
     }
 
-    /** @test */
+    #[Test]
     public function server_store_creates_new_server(): void
     {
         $response = $this->withApiToken()->postJson('/api/v1/servers', [
@@ -393,7 +395,7 @@ class ControllersTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function server_store_validates_required_fields(): void
     {
         $response = $this->withApiToken()->postJson('/api/v1/servers', []);
@@ -402,7 +404,7 @@ class ControllersTest extends TestCase
             ->assertJsonValidationErrors(['name', 'hostname', 'ip_address', 'username']);
     }
 
-    /** @test */
+    #[Test]
     public function server_store_validates_ip_address_format(): void
     {
         $response = $this->withApiToken()->postJson('/api/v1/servers', [
@@ -416,7 +418,7 @@ class ControllersTest extends TestCase
             ->assertJsonValidationErrors(['ip_address']);
     }
 
-    /** @test */
+    #[Test]
     public function server_store_validates_unique_ip_address(): void
     {
         Server::factory()->create(['user_id' => $this->user->id, 'ip_address' => '192.168.1.50']);
@@ -432,7 +434,7 @@ class ControllersTest extends TestCase
             ->assertJsonValidationErrors(['ip_address']);
     }
 
-    /** @test */
+    #[Test]
     public function server_show_returns_single_server(): void
     {
         $response = $this->withApiToken()->getJson("/api/v1/servers/{$this->server->id}");
@@ -441,7 +443,7 @@ class ControllersTest extends TestCase
             ->assertJsonStructure(['data' => ['id', 'name', 'ip_address', 'status']]);
     }
 
-    /** @test */
+    #[Test]
     public function server_update_modifies_server(): void
     {
         $response = $this->withApiToken()->patchJson("/api/v1/servers/{$this->server->id}", [
@@ -456,7 +458,7 @@ class ControllersTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function server_destroy_deletes_server_without_projects(): void
     {
         $emptyServer = Server::factory()->create(['user_id' => $this->user->id]);
@@ -471,7 +473,7 @@ class ControllersTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function server_destroy_prevents_deletion_with_active_projects(): void
     {
         // $this->server already has a project from setUp
@@ -486,7 +488,7 @@ class ControllersTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function server_metrics_returns_metrics_data(): void
     {
         ServerMetric::factory()->count(5)->create(['server_id' => $this->server->id]);
@@ -504,7 +506,7 @@ class ControllersTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function server_metrics_filters_by_time_range(): void
     {
         ServerMetric::factory()->count(10)->create(['server_id' => $this->server->id]);
@@ -519,7 +521,7 @@ class ControllersTest extends TestCase
     // DeploymentController Tests (API V1)
     // ========================================
 
-    /** @test */
+    #[Test]
     public function deployment_index_returns_deployments_list(): void
     {
         Deployment::factory()->count(3)->create(['project_id' => $this->project->id]);
@@ -534,7 +536,7 @@ class ControllersTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_index_filters_by_status(): void
     {
         Deployment::factory()->create(['project_id' => $this->project->id, 'status' => 'success']);
@@ -546,7 +548,7 @@ class ControllersTest extends TestCase
         $this->assertEquals(1, count($response->json('data')));
     }
 
-    /** @test */
+    #[Test]
     public function deployment_store_creates_new_deployment(): void
     {
         $response = $this->withApiToken()->postJson("/api/v1/projects/{$this->project->slug}/deployments", [
@@ -564,7 +566,7 @@ class ControllersTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_store_prevents_concurrent_deployments(): void
     {
         Deployment::factory()->create([
@@ -578,7 +580,7 @@ class ControllersTest extends TestCase
             ->assertJson(['error' => 'deployment_in_progress']);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_show_returns_single_deployment(): void
     {
         $deployment = Deployment::factory()->create(['project_id' => $this->project->id]);
@@ -589,7 +591,7 @@ class ControllersTest extends TestCase
             ->assertJsonStructure(['data' => ['id', 'status', 'branch']]);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_rollback_creates_rollback_deployment(): void
     {
         $deployment = Deployment::factory()->create([
@@ -610,7 +612,7 @@ class ControllersTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_rollback_only_allows_successful_deployments(): void
     {
         $deployment = Deployment::factory()->create([
@@ -624,7 +626,7 @@ class ControllersTest extends TestCase
             ->assertJson(['error' => 'invalid_deployment_status']);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_rollback_prevents_concurrent_deployments(): void
     {
         $successfulDeployment = Deployment::factory()->create([
@@ -647,7 +649,7 @@ class ControllersTest extends TestCase
     // ServerMetricsController Tests (API)
     // ========================================
 
-    /** @test */
+    #[Test]
     public function server_metrics_index_returns_latest_metrics(): void
     {
         // These routes use Sanctum auth, not custom API token auth
@@ -659,7 +661,7 @@ class ControllersTest extends TestCase
             ->assertJsonStructure(['data']);
     }
 
-    /** @test */
+    #[Test]
     public function server_metrics_index_denies_access_to_non_owners(): void
     {
         // Servers are restricted to owners, team members, and admins per ServerPolicy
@@ -670,7 +672,7 @@ class ControllersTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function server_metrics_store_creates_metric_record(): void
     {
         $response = $this->actingAs($this->user)->postJson("/api/servers/{$this->server->id}/metrics", [
@@ -693,7 +695,7 @@ class ControllersTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function server_metrics_store_validates_required_fields(): void
     {
         $response = $this->actingAs($this->user)->postJson("/api/servers/{$this->server->id}/metrics", []);
@@ -702,7 +704,7 @@ class ControllersTest extends TestCase
             ->assertJsonValidationErrors(['cpu_usage', 'memory_usage', 'disk_usage']);
     }
 
-    /** @test */
+    #[Test]
     public function server_metrics_store_validates_percentage_range(): void
     {
         $response = $this->actingAs($this->user)->postJson("/api/servers/{$this->server->id}/metrics", [
@@ -715,7 +717,7 @@ class ControllersTest extends TestCase
             ->assertJsonValidationErrors(['cpu_usage', 'memory_usage']);
     }
 
-    /** @test */
+    #[Test]
     public function server_metrics_store_updates_server_status(): void
     {
         $this->server->update(['status' => 'offline']);
@@ -736,7 +738,7 @@ class ControllersTest extends TestCase
     // DeploymentWebhookController Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function deployment_webhook_handles_valid_token(): void
     {
         Bus::fake();
@@ -767,7 +769,7 @@ class ControllersTest extends TestCase
         Bus::assertDispatched(DeployProjectJob::class);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_webhook_rejects_invalid_token(): void
     {
         $response = $this->postJson('/api/webhooks/deploy/invalid-token', []);
@@ -776,7 +778,7 @@ class ControllersTest extends TestCase
             ->assertJson(['error' => 'Invalid webhook token']);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_webhook_rejects_when_auto_deploy_disabled(): void
     {
         $webhookSecret = 'test-webhook-secret-token-456';
@@ -792,7 +794,7 @@ class ControllersTest extends TestCase
             ->assertJson(['error' => 'Auto-deploy is not enabled']);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_webhook_parses_github_payload(): void
     {
         Bus::fake();
@@ -822,7 +824,7 @@ class ControllersTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_webhook_parses_gitlab_payload(): void
     {
         Bus::fake();
@@ -851,7 +853,7 @@ class ControllersTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_webhook_parses_bitbucket_payload(): void
     {
         Bus::fake();
@@ -893,7 +895,7 @@ class ControllersTest extends TestCase
     // GitHubAuthController Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function github_redirect_generates_auth_url(): void
     {
         $this->actingAs($this->user);
@@ -909,7 +911,7 @@ class ControllersTest extends TestCase
         $this->assertNotNull(session('github_oauth_state'));
     }
 
-    /** @test */
+    #[Test]
     public function github_callback_creates_connection(): void
     {
         $this->actingAs($this->user);
@@ -947,7 +949,7 @@ class ControllersTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function github_callback_rejects_invalid_state(): void
     {
         $this->actingAs($this->user);
@@ -960,7 +962,7 @@ class ControllersTest extends TestCase
             ->assertSessionHas('error');
     }
 
-    /** @test */
+    #[Test]
     public function github_callback_handles_user_denial(): void
     {
         $this->actingAs($this->user);
@@ -973,7 +975,7 @@ class ControllersTest extends TestCase
             ->assertSessionHas('error', 'GitHub authorization was denied.');
     }
 
-    /** @test */
+    #[Test]
     public function github_disconnect_removes_connection(): void
     {
         $this->actingAs($this->user);
@@ -993,7 +995,7 @@ class ControllersTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function github_disconnect_handles_no_connection(): void
     {
         $this->actingAs($this->user);
@@ -1008,7 +1010,7 @@ class ControllersTest extends TestCase
     // TeamInvitationController Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function team_invitation_show_displays_valid_invitation(): void
     {
         $team = Team::factory()->create(['owner_id' => $this->user->id]);
@@ -1025,7 +1027,7 @@ class ControllersTest extends TestCase
             ->assertViewHas('expired', false);
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_show_handles_accepted_invitation(): void
     {
         $team = Team::factory()->create(['owner_id' => $this->user->id]);
@@ -1041,7 +1043,7 @@ class ControllersTest extends TestCase
             ->assertSessionHas('error');
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_show_handles_expired_invitation(): void
     {
         $team = Team::factory()->create(['owner_id' => $this->user->id]);
@@ -1058,7 +1060,7 @@ class ControllersTest extends TestCase
             ->assertViewHas('expired', true);
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_accept_requires_authentication(): void
     {
         $team = Team::factory()->create(['owner_id' => $this->user->id]);
@@ -1073,7 +1075,7 @@ class ControllersTest extends TestCase
         $response->assertRedirect(route('login'));
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_accept_adds_user_to_team(): void
     {
         $this->actingAs($this->user);
@@ -1097,7 +1099,7 @@ class ControllersTest extends TestCase
             ->assertSessionHas('success');
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_accept_handles_errors(): void
     {
         $this->actingAs($this->user);
@@ -1123,7 +1125,7 @@ class ControllersTest extends TestCase
     // WebhookController Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function webhook_github_requires_valid_secret(): void
     {
         $response = $this->postJson('/webhooks/github/invalid-secret', []);
@@ -1132,7 +1134,7 @@ class ControllersTest extends TestCase
             ->assertJson(['error' => 'Invalid webhook secret']);
     }
 
-    /** @test */
+    #[Test]
     public function webhook_github_requires_webhook_enabled(): void
     {
         $this->project->update([
@@ -1146,7 +1148,7 @@ class ControllersTest extends TestCase
             ->assertJson(['error' => 'Invalid webhook secret']);
     }
 
-    /** @test */
+    #[Test]
     public function webhook_github_verifies_signature(): void
     {
         Log::shouldReceive('warning')->once();
@@ -1176,7 +1178,7 @@ class ControllersTest extends TestCase
             ->assertJson(['error' => 'Invalid signature']);
     }
 
-    /** @test */
+    #[Test]
     public function webhook_github_ignores_non_push_events(): void
     {
         Log::shouldReceive('info')->once();
@@ -1203,7 +1205,7 @@ class ControllersTest extends TestCase
             ->assertJson(['message' => 'Event acknowledged but not processed']);
     }
 
-    /** @test */
+    #[Test]
     public function webhook_github_triggers_deployment_on_push(): void
     {
         Queue::fake();
@@ -1246,7 +1248,7 @@ class ControllersTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function webhook_gitlab_verifies_token(): void
     {
         Log::shouldReceive('warning')->once();
@@ -1272,7 +1274,7 @@ class ControllersTest extends TestCase
             ->assertJson(['error' => 'Invalid token']);
     }
 
-    /** @test */
+    #[Test]
     public function webhook_gitlab_triggers_deployment(): void
     {
         Queue::fake();
@@ -1309,7 +1311,7 @@ class ControllersTest extends TestCase
             ->assertJsonStructure(['message', 'deployment_id']);
     }
 
-    /** @test */
+    #[Test]
     public function webhook_handles_exceptions_gracefully(): void
     {
         Log::shouldReceive('error')->once();

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Livewire;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\Deployments\DeploymentApprovals;
 use App\Models\Deployment;
 use App\Models\DeploymentApproval;
@@ -11,7 +13,7 @@ use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
 use App\Services\DeploymentApprovalService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Livewire\Livewire;
 use Mockery;
 use Spatie\Permission\Models\Permission;
@@ -19,7 +21,7 @@ use Tests\TestCase;
 
 class DeploymentApprovalsTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     protected User $user;
 
@@ -47,7 +49,7 @@ class DeploymentApprovalsTest extends TestCase
         Permission::create(['name' => 'approve_all_deployments']);
     }
 
-    /** @test */
+    #[Test]
     public function component_renders_successfully_for_authenticated_users(): void
     {
         Livewire::actingAs($this->user)
@@ -56,14 +58,14 @@ class DeploymentApprovalsTest extends TestCase
             ->assertViewIs('livewire.deployments.deployment-approvals');
     }
 
-    /** @test */
+    #[Test]
     public function unauthenticated_user_cannot_access_component(): void
     {
         Livewire::test(DeploymentApprovals::class)
             ->assertUnauthorized();
     }
 
-    /** @test */
+    #[Test]
     public function component_displays_pending_approvals_list(): void
     {
         $deployment = Deployment::factory()->create([
@@ -85,7 +87,7 @@ class DeploymentApprovalsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function component_displays_multiple_pending_approvals(): void
     {
         $deployment1 = Deployment::factory()->create([
@@ -121,7 +123,7 @@ class DeploymentApprovalsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function approve_modal_opens_correctly(): void
     {
         $deployment = Deployment::factory()->create([
@@ -143,7 +145,7 @@ class DeploymentApprovalsTest extends TestCase
             ->assertSet('approvalNotes', '');
     }
 
-    /** @test */
+    #[Test]
     public function reject_modal_opens_correctly(): void
     {
         $deployment = Deployment::factory()->create([
@@ -165,7 +167,7 @@ class DeploymentApprovalsTest extends TestCase
             ->assertSet('rejectionReason', '');
     }
 
-    /** @test */
+    #[Test]
     public function deployment_can_be_approved_successfully(): void
     {
         $this->approver->givePermissionTo('approve_all_deployments');
@@ -205,7 +207,7 @@ class DeploymentApprovalsTest extends TestCase
         $this->assertNotNull($freshApproval->responded_at);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_can_be_approved_without_notes(): void
     {
         $this->approver->givePermissionTo('approve_all_deployments');
@@ -238,7 +240,7 @@ class DeploymentApprovalsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_can_be_rejected_with_reason(): void
     {
         $this->approver->givePermissionTo('approve_all_deployments');
@@ -278,7 +280,7 @@ class DeploymentApprovalsTest extends TestCase
         $this->assertNotNull($freshApproval->responded_at);
     }
 
-    /** @test */
+    #[Test]
     public function rejection_requires_reason(): void
     {
         $this->approver->givePermissionTo('approve_all_deployments');
@@ -302,7 +304,7 @@ class DeploymentApprovalsTest extends TestCase
             ->assertHasErrors(['rejectionReason' => 'required']);
     }
 
-    /** @test */
+    #[Test]
     public function approval_notes_are_optional_and_limited_to_1000_characters(): void
     {
         $this->approver->givePermissionTo('approve_all_deployments');
@@ -328,7 +330,7 @@ class DeploymentApprovalsTest extends TestCase
             ->assertHasErrors(['approvalNotes' => 'max']);
     }
 
-    /** @test */
+    #[Test]
     public function rejection_reason_is_limited_to_1000_characters(): void
     {
         $this->approver->givePermissionTo('approve_all_deployments');
@@ -354,7 +356,7 @@ class DeploymentApprovalsTest extends TestCase
             ->assertHasErrors(['rejectionReason' => 'max']);
     }
 
-    /** @test */
+    #[Test]
     public function user_can_only_approve_deployments_for_their_projects(): void
     {
         // Create a user with limited approval permissions
@@ -394,7 +396,7 @@ class DeploymentApprovalsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function user_with_approve_all_permission_can_approve_any_deployment(): void
     {
         $globalApprover = User::factory()->create();
@@ -428,7 +430,7 @@ class DeploymentApprovalsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function approval_notification_is_dispatched_on_successful_approval(): void
     {
         $this->approver->givePermissionTo('approve_all_deployments');
@@ -455,7 +457,7 @@ class DeploymentApprovalsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function rejection_notification_is_dispatched_on_successful_rejection(): void
     {
         $this->approver->givePermissionTo('approve_all_deployments');
@@ -483,7 +485,7 @@ class DeploymentApprovalsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function status_updates_to_approved_after_approval(): void
     {
         $this->approver->givePermissionTo('approve_all_deployments');
@@ -511,7 +513,7 @@ class DeploymentApprovalsTest extends TestCase
         $this->assertEquals($this->approver->id, $freshApproval->approved_by);
     }
 
-    /** @test */
+    #[Test]
     public function status_updates_to_rejected_after_rejection(): void
     {
         $this->approver->givePermissionTo('approve_all_deployments');
@@ -540,7 +542,7 @@ class DeploymentApprovalsTest extends TestCase
         $this->assertEquals($this->approver->id, $freshApproval->approved_by);
     }
 
-    /** @test */
+    #[Test]
     public function empty_state_shows_when_no_pending_approvals(): void
     {
         Livewire::actingAs($this->user)
@@ -550,7 +552,7 @@ class DeploymentApprovalsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function status_filter_works_correctly(): void
     {
         $deployment1 = Deployment::factory()->create([
@@ -592,7 +594,7 @@ class DeploymentApprovalsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function project_filter_works_correctly(): void
     {
         $project2 = Project::factory()->create([
@@ -631,7 +633,7 @@ class DeploymentApprovalsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function search_filters_approvals_by_project_name(): void
     {
         $project1 = Project::factory()->create([
@@ -677,7 +679,7 @@ class DeploymentApprovalsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function search_filters_approvals_by_requester_name(): void
     {
         $requester1 = User::factory()->create(['name' => 'John Doe']);
@@ -714,7 +716,7 @@ class DeploymentApprovalsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function search_filters_approvals_by_branch_name(): void
     {
         $deployment1 = Deployment::factory()->create([
@@ -750,7 +752,7 @@ class DeploymentApprovalsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function changing_status_filter_resets_pagination(): void
     {
         DeploymentApproval::factory()->count(25)->pending()->create([
@@ -767,7 +769,7 @@ class DeploymentApprovalsTest extends TestCase
             ->assertSet('paginators.page', 1);
     }
 
-    /** @test */
+    #[Test]
     public function changing_project_filter_resets_pagination(): void
     {
         DeploymentApproval::factory()->count(25)->pending()->create([
@@ -784,7 +786,7 @@ class DeploymentApprovalsTest extends TestCase
             ->assertSet('paginators.page', 1);
     }
 
-    /** @test */
+    #[Test]
     public function changing_search_resets_pagination(): void
     {
         DeploymentApproval::factory()->count(25)->pending()->create([
@@ -801,7 +803,7 @@ class DeploymentApprovalsTest extends TestCase
             ->assertSet('paginators.page', 1);
     }
 
-    /** @test */
+    #[Test]
     public function component_listens_to_approval_requested_event(): void
     {
         Livewire::actingAs($this->user)
@@ -812,7 +814,7 @@ class DeploymentApprovalsTest extends TestCase
             ->assertNotSet('stats');
     }
 
-    /** @test */
+    #[Test]
     public function approvals_are_eager_loaded_with_relationships(): void
     {
         $deployment = Deployment::factory()->create([
@@ -839,7 +841,7 @@ class DeploymentApprovalsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function approvals_are_ordered_by_latest_first(): void
     {
         $oldDeployment = Deployment::factory()->create([
@@ -872,7 +874,7 @@ class DeploymentApprovalsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function pagination_works_correctly(): void
     {
         DeploymentApproval::factory()->count(25)->pending()->create([
@@ -890,7 +892,7 @@ class DeploymentApprovalsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function user_with_approve_all_permission_sees_all_projects(): void
     {
         $globalApprover = User::factory()->create();
@@ -915,7 +917,7 @@ class DeploymentApprovalsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function user_with_limited_permission_sees_only_their_projects(): void
     {
         $limitedApprover = User::factory()->create();
@@ -941,7 +943,7 @@ class DeploymentApprovalsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function approval_clears_selected_data_after_successful_approval(): void
     {
         $this->approver->givePermissionTo('approve_all_deployments');
@@ -967,7 +969,7 @@ class DeploymentApprovalsTest extends TestCase
             ->assertSet('approvalNotes', '');
     }
 
-    /** @test */
+    #[Test]
     public function rejection_clears_selected_data_after_successful_rejection(): void
     {
         $this->approver->givePermissionTo('approve_all_deployments');
@@ -993,7 +995,7 @@ class DeploymentApprovalsTest extends TestCase
             ->assertSet('rejectionReason', '');
     }
 
-    /** @test */
+    #[Test]
     public function error_notification_is_dispatched_on_approval_failure(): void
     {
         $deployment = Deployment::factory()->create([
@@ -1016,7 +1018,7 @@ class DeploymentApprovalsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function error_notification_is_dispatched_on_rejection_failure(): void
     {
         $deployment = Deployment::factory()->create([
@@ -1040,7 +1042,7 @@ class DeploymentApprovalsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function component_displays_approval_statistics(): void
     {
         DeploymentApproval::factory()->count(3)->pending()->create([

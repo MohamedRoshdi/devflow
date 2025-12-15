@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\PipelineConfig;
 use App\Models\Project;
 use App\Models\WebhookDelivery;
@@ -30,7 +32,7 @@ class WebhookServiceTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
+    #[Test]
     public function it_verifies_github_signature_successfully(): void
     {
         // Arrange
@@ -46,7 +48,7 @@ class WebhookServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_invalid_github_signature(): void
     {
         // Arrange
@@ -61,7 +63,7 @@ class WebhookServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_github_signature_without_sha256_prefix(): void
     {
         // Arrange
@@ -77,7 +79,7 @@ class WebhookServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_empty_github_signature(): void
     {
         // Arrange
@@ -91,7 +93,7 @@ class WebhookServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_timing_safe_comparison_for_github_signature(): void
     {
         // Arrange - Create signature with different secret
@@ -109,7 +111,7 @@ class WebhookServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_verifies_gitlab_token_successfully(): void
     {
         // Arrange
@@ -123,7 +125,7 @@ class WebhookServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_invalid_gitlab_token(): void
     {
         // Arrange
@@ -137,7 +139,7 @@ class WebhookServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_timing_safe_comparison_for_gitlab_token(): void
     {
         // Arrange - Use similar but different tokens to test timing-safe comparison
@@ -151,7 +153,7 @@ class WebhookServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_github_push_payload_successfully(): void
     {
         // Arrange
@@ -188,7 +190,7 @@ class WebhookServiceTest extends TestCase
         $this->assertEquals('John Doe', $result['pusher']);
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_github_payload_with_after_commit_fallback(): void
     {
         // Arrange - Payload without head_commit but with after
@@ -212,7 +214,7 @@ class WebhookServiceTest extends TestCase
         $this->assertNull($result['commit_message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_github_payload_with_missing_optional_fields(): void
     {
         // Arrange - Minimal payload
@@ -232,7 +234,7 @@ class WebhookServiceTest extends TestCase
         $this->assertNull($result['pusher']);
     }
 
-    /** @test */
+    #[Test]
     public function it_extracts_branch_from_github_ref_correctly(): void
     {
         // Arrange
@@ -247,7 +249,7 @@ class WebhookServiceTest extends TestCase
         $this->assertEquals('feature/user-authentication', $result['branch']);
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_gitlab_push_payload_successfully(): void
     {
         // Arrange
@@ -286,7 +288,7 @@ class WebhookServiceTest extends TestCase
         $this->assertEquals('Alice Smith', $result['pusher']);
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_gitlab_payload_with_checkout_sha_only(): void
     {
         // Arrange
@@ -308,7 +310,7 @@ class WebhookServiceTest extends TestCase
         $this->assertNull($result['commit_message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_gitlab_payload_with_repository_fallback(): void
     {
         // Arrange - Using repository instead of project
@@ -333,7 +335,7 @@ class WebhookServiceTest extends TestCase
         $this->assertEquals('Bob Builder', $result['sender']);
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_gitlab_payload_with_missing_optional_fields(): void
     {
         // Arrange - Minimal payload
@@ -353,7 +355,7 @@ class WebhookServiceTest extends TestCase
         $this->assertNull($result['pusher']);
     }
 
-    /** @test */
+    #[Test]
     public function it_triggers_deployment_when_conditions_are_met(): void
     {
         // Arrange
@@ -369,7 +371,7 @@ class WebhookServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_trigger_deployment_when_webhooks_disabled(): void
     {
         // Arrange
@@ -393,7 +395,7 @@ class WebhookServiceTest extends TestCase
             }));
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_trigger_deployment_when_branch_does_not_match(): void
     {
         // Arrange
@@ -416,7 +418,7 @@ class WebhookServiceTest extends TestCase
             }));
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_pipeline_config_when_enabled(): void
     {
         // Arrange
@@ -461,7 +463,7 @@ class WebhookServiceTest extends TestCase
             }), Mockery::type('array'));
     }
 
-    /** @test */
+    #[Test]
     public function it_triggers_deployment_when_pipeline_config_conditions_met(): void
     {
         // Arrange
@@ -498,7 +500,7 @@ class WebhookServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_falls_back_to_branch_matching_when_pipeline_config_disabled(): void
     {
         // Arrange
@@ -529,7 +531,7 @@ class WebhookServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_webhook_delivery_record_successfully(): void
     {
         // Arrange
@@ -565,7 +567,7 @@ class WebhookServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_webhook_delivery_record_without_signature(): void
     {
         // Arrange
@@ -591,7 +593,7 @@ class WebhookServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_delivery_status_to_success(): void
     {
         // Arrange
@@ -630,7 +632,7 @@ class WebhookServiceTest extends TestCase
         $this->assertEquals($deployment->id, $delivery->deployment_id);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_delivery_status_to_failed(): void
     {
         // Arrange
@@ -657,7 +659,7 @@ class WebhookServiceTest extends TestCase
         $this->assertNull($delivery->deployment_id);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_github_event_type_from_header(): void
     {
         // Arrange
@@ -670,7 +672,7 @@ class WebhookServiceTest extends TestCase
         $this->assertEquals('push', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_unknown_when_github_event_header_missing(): void
     {
         // Act
@@ -680,7 +682,7 @@ class WebhookServiceTest extends TestCase
         $this->assertEquals('unknown', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_gitlab_event_type_from_payload(): void
     {
         // Arrange
@@ -696,7 +698,7 @@ class WebhookServiceTest extends TestCase
         $this->assertEquals('push', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_unknown_when_gitlab_object_kind_missing(): void
     {
         // Arrange
@@ -711,7 +713,7 @@ class WebhookServiceTest extends TestCase
         $this->assertEquals('unknown', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_processes_github_push_event(): void
     {
         // Act
@@ -721,7 +723,7 @@ class WebhookServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_processes_gitlab_push_event(): void
     {
         // Act
@@ -731,7 +733,7 @@ class WebhookServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_processes_gitlab_push_hook_event(): void
     {
         // Act
@@ -741,7 +743,7 @@ class WebhookServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_processes_bitbucket_repo_push_event(): void
     {
         // Act
@@ -751,7 +753,7 @@ class WebhookServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_process_github_pull_request_event(): void
     {
         // Act
@@ -761,7 +763,7 @@ class WebhookServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_process_gitlab_merge_request_event(): void
     {
         // Act
@@ -771,7 +773,7 @@ class WebhookServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_process_unknown_provider(): void
     {
         // Act
@@ -781,7 +783,7 @@ class WebhookServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_complex_github_payload_with_all_fields(): void
     {
         // Arrange
@@ -828,7 +830,7 @@ class WebhookServiceTest extends TestCase
         $this->assertEquals('John Doe', $result['pusher']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_edge_case_with_empty_commits_array_in_gitlab(): void
     {
         // Arrange
@@ -851,7 +853,7 @@ class WebhookServiceTest extends TestCase
         $this->assertNull($result['commit_message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_webhook_ignored_when_pipeline_config_not_met(): void
     {
         // Arrange
@@ -900,7 +902,7 @@ class WebhookServiceTest extends TestCase
             );
     }
 
-    /** @test */
+    #[Test]
     public function it_correctly_strips_refs_heads_prefix_from_various_branch_formats(): void
     {
         // Test various branch name formats
@@ -924,7 +926,7 @@ class WebhookServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_webhook_delivery_update_with_null_deployment_id(): void
     {
         // Arrange

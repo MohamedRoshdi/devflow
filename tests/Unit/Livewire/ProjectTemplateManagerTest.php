@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Livewire;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\Admin\ProjectTemplateManager;
 use App\Models\ProjectTemplate;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class ProjectTemplateManagerTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     protected User $admin;
 
@@ -42,7 +44,7 @@ class ProjectTemplateManagerTest extends TestCase
         $this->regularUser->assignRole('user');
     }
 
-    /** @test */
+    #[Test]
     public function component_renders_successfully_for_super_admin(): void
     {
         Livewire::actingAs($this->superAdmin)
@@ -53,7 +55,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('showCreateModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function component_renders_successfully_for_admin(): void
     {
         Livewire::actingAs($this->admin)
@@ -62,7 +64,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertViewIs('livewire.admin.project-template-manager');
     }
 
-    /** @test */
+    #[Test]
     public function component_blocks_regular_users(): void
     {
         $this->expectException(\Symfony\Component\HttpKernel\Exception\HttpException::class);
@@ -72,7 +74,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->test(ProjectTemplateManager::class);
     }
 
-    /** @test */
+    #[Test]
     public function component_blocks_unauthenticated_users(): void
     {
         $this->expectException(\Symfony\Component\HttpKernel\Exception\HttpException::class);
@@ -80,7 +82,7 @@ class ProjectTemplateManagerTest extends TestCase
         Livewire::test(ProjectTemplateManager::class);
     }
 
-    /** @test */
+    #[Test]
     public function templates_computed_property_returns_all_templates(): void
     {
         ProjectTemplate::factory()->count(3)->create();
@@ -92,7 +94,7 @@ class ProjectTemplateManagerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function templates_are_ordered_by_system_flag_then_name(): void
     {
         ProjectTemplate::factory()->create(['name' => 'Zebra', 'is_system' => false]);
@@ -107,7 +109,7 @@ class ProjectTemplateManagerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function search_filters_templates_by_name(): void
     {
         ProjectTemplate::factory()->create(['name' => 'Laravel Template']);
@@ -123,7 +125,7 @@ class ProjectTemplateManagerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function framework_filter_filters_templates_by_framework(): void
     {
         ProjectTemplate::factory()->laravel()->create();
@@ -139,7 +141,7 @@ class ProjectTemplateManagerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function framework_filter_all_shows_all_templates(): void
     {
         ProjectTemplate::factory()->laravel()->create();
@@ -153,7 +155,7 @@ class ProjectTemplateManagerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function search_and_filter_work_together(): void
     {
         ProjectTemplate::factory()->create(['name' => 'Laravel API', 'framework' => 'laravel']);
@@ -170,7 +172,7 @@ class ProjectTemplateManagerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function updated_name_generates_slug_automatically(): void
     {
         Livewire::actingAs($this->admin)
@@ -179,7 +181,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('slug', 'my-custom-template');
     }
 
-    /** @test */
+    #[Test]
     public function slug_generation_handles_special_characters(): void
     {
         Livewire::actingAs($this->admin)
@@ -188,7 +190,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('slug', 'laravel-vue-project');
     }
 
-    /** @test */
+    #[Test]
     public function slug_is_not_regenerated_when_editing_template(): void
     {
         $template = ProjectTemplate::factory()->create([
@@ -203,7 +205,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('slug', 'original-slug');
     }
 
-    /** @test */
+    #[Test]
     public function open_create_modal_resets_form_and_shows_modal(): void
     {
         Livewire::actingAs($this->admin)
@@ -217,7 +219,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('editingTemplateId', null);
     }
 
-    /** @test */
+    #[Test]
     public function open_edit_modal_loads_template_data(): void
     {
         $template = ProjectTemplate::factory()->create([
@@ -244,7 +246,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('is_active', false);
     }
 
-    /** @test */
+    #[Test]
     public function open_edit_modal_loads_template_commands(): void
     {
         $template = ProjectTemplate::factory()->create([
@@ -261,7 +263,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('post_deploy_commands', ['php artisan migrate']);
     }
 
-    /** @test */
+    #[Test]
     public function open_edit_modal_loads_environment_template(): void
     {
         $template = ProjectTemplate::factory()->create([
@@ -274,7 +276,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('env_template', ['APP_NAME' => 'Test', 'APP_ENV' => 'production']);
     }
 
-    /** @test */
+    #[Test]
     public function create_template_validates_required_fields(): void
     {
         Livewire::actingAs($this->admin)
@@ -283,7 +285,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertHasErrors(['name', 'slug', 'framework']);
     }
 
-    /** @test */
+    #[Test]
     public function create_template_validates_slug_format(): void
     {
         Livewire::actingAs($this->admin)
@@ -295,7 +297,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertHasErrors(['slug']);
     }
 
-    /** @test */
+    #[Test]
     public function create_template_validates_framework_value(): void
     {
         Livewire::actingAs($this->admin)
@@ -307,7 +309,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertHasErrors(['framework']);
     }
 
-    /** @test */
+    #[Test]
     public function create_template_validates_php_version(): void
     {
         Livewire::actingAs($this->admin)
@@ -320,7 +322,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertHasErrors(['php_version']);
     }
 
-    /** @test */
+    #[Test]
     public function create_template_validates_description_length(): void
     {
         Livewire::actingAs($this->admin)
@@ -333,7 +335,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertHasErrors(['description']);
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_create_template_with_valid_data(): void
     {
         Livewire::actingAs($this->admin)
@@ -356,7 +358,7 @@ class ProjectTemplateManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function create_template_sets_user_id_to_authenticated_user(): void
     {
         Livewire::actingAs($this->admin)
@@ -372,7 +374,7 @@ class ProjectTemplateManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function create_template_sets_is_system_to_false(): void
     {
         Livewire::actingAs($this->admin)
@@ -388,7 +390,7 @@ class ProjectTemplateManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function create_template_with_all_optional_fields(): void
     {
         Livewire::actingAs($this->admin)
@@ -419,7 +421,7 @@ class ProjectTemplateManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function create_template_stores_commands_arrays(): void
     {
         Livewire::actingAs($this->admin)
@@ -439,7 +441,7 @@ class ProjectTemplateManagerTest extends TestCase
         $this->assertEquals(['php artisan migrate'], $template->post_deploy_commands);
     }
 
-    /** @test */
+    #[Test]
     public function create_template_stores_environment_template(): void
     {
         Livewire::actingAs($this->admin)
@@ -455,7 +457,7 @@ class ProjectTemplateManagerTest extends TestCase
         $this->assertEquals(['APP_NAME' => 'Test', 'APP_DEBUG' => 'false'], $template->env_template);
     }
 
-    /** @test */
+    #[Test]
     public function create_template_resets_form_after_success(): void
     {
         Livewire::actingAs($this->admin)
@@ -471,7 +473,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('framework', 'laravel');
     }
 
-    /** @test */
+    #[Test]
     public function update_template_validates_required_fields(): void
     {
         $template = ProjectTemplate::factory()->create();
@@ -485,7 +487,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertHasErrors(['name', 'slug']);
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_update_non_system_template(): void
     {
         $template = ProjectTemplate::factory()->create([
@@ -509,7 +511,7 @@ class ProjectTemplateManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_update_system_template(): void
     {
         $template = ProjectTemplate::factory()->system()->create([
@@ -529,7 +531,7 @@ class ProjectTemplateManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function update_template_resets_form_after_success(): void
     {
         $template = ProjectTemplate::factory()->create();
@@ -543,7 +545,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('editingTemplateId', null);
     }
 
-    /** @test */
+    #[Test]
     public function open_delete_modal_sets_template_id(): void
     {
         $template = ProjectTemplate::factory()->create();
@@ -555,7 +557,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('showDeleteModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_open_delete_modal_for_system_template(): void
     {
         $template = ProjectTemplate::factory()->system()->create();
@@ -567,7 +569,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('showDeleteModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_delete_non_system_template(): void
     {
         $template = ProjectTemplate::factory()->create(['is_system' => false]);
@@ -584,7 +586,7 @@ class ProjectTemplateManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_delete_system_template(): void
     {
         $template = ProjectTemplate::factory()->system()->create();
@@ -600,7 +602,7 @@ class ProjectTemplateManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function clone_template_creates_copy_with_modified_name_and_slug(): void
     {
         $original = ProjectTemplate::factory()->create([
@@ -624,7 +626,7 @@ class ProjectTemplateManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function clone_template_copies_all_configuration(): void
     {
         $original = ProjectTemplate::factory()->create([
@@ -646,7 +648,7 @@ class ProjectTemplateManagerTest extends TestCase
         $this->assertEquals($original->php_version, $clone->php_version);
     }
 
-    /** @test */
+    #[Test]
     public function clone_system_template_creates_non_system_copy(): void
     {
         $systemTemplate = ProjectTemplate::factory()->system()->create([
@@ -664,7 +666,7 @@ class ProjectTemplateManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function open_preview_modal_sets_template_id(): void
     {
         $template = ProjectTemplate::factory()->create();
@@ -676,7 +678,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('showPreviewModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function toggle_template_status_activates_inactive_template(): void
     {
         $template = ProjectTemplate::factory()->inactive()->create();
@@ -692,7 +694,7 @@ class ProjectTemplateManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function toggle_template_status_deactivates_active_template(): void
     {
         $template = ProjectTemplate::factory()->active()->create();
@@ -708,7 +710,7 @@ class ProjectTemplateManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function add_install_command_appends_to_array(): void
     {
         Livewire::actingAs($this->admin)
@@ -719,7 +721,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('newInstallCommand', '');
     }
 
-    /** @test */
+    #[Test]
     public function add_install_command_appends_multiple_commands(): void
     {
         Livewire::actingAs($this->admin)
@@ -731,7 +733,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('install_commands', ['composer install', 'npm install']);
     }
 
-    /** @test */
+    #[Test]
     public function add_install_command_ignores_empty_string(): void
     {
         Livewire::actingAs($this->admin)
@@ -741,7 +743,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('install_commands', []);
     }
 
-    /** @test */
+    #[Test]
     public function remove_install_command_removes_by_index(): void
     {
         Livewire::actingAs($this->admin)
@@ -751,7 +753,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('install_commands', ['composer install', 'yarn install']);
     }
 
-    /** @test */
+    #[Test]
     public function add_build_command_appends_to_array(): void
     {
         Livewire::actingAs($this->admin)
@@ -762,7 +764,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('newBuildCommand', '');
     }
 
-    /** @test */
+    #[Test]
     public function remove_build_command_removes_by_index(): void
     {
         Livewire::actingAs($this->admin)
@@ -772,7 +774,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('build_commands', ['npm run production']);
     }
 
-    /** @test */
+    #[Test]
     public function add_post_deploy_command_appends_to_array(): void
     {
         Livewire::actingAs($this->admin)
@@ -783,7 +785,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('newPostDeployCommand', '');
     }
 
-    /** @test */
+    #[Test]
     public function remove_post_deploy_command_removes_by_index(): void
     {
         Livewire::actingAs($this->admin)
@@ -793,7 +795,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('post_deploy_commands', ['php artisan migrate']);
     }
 
-    /** @test */
+    #[Test]
     public function add_env_variable_adds_to_template(): void
     {
         Livewire::actingAs($this->admin)
@@ -806,7 +808,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('newEnvValue', '');
     }
 
-    /** @test */
+    #[Test]
     public function add_env_variable_requires_both_key_and_value(): void
     {
         Livewire::actingAs($this->admin)
@@ -817,7 +819,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('env_template', []);
     }
 
-    /** @test */
+    #[Test]
     public function add_multiple_env_variables(): void
     {
         Livewire::actingAs($this->admin)
@@ -831,7 +833,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('env_template', ['APP_NAME' => 'MyApp', 'APP_ENV' => 'production']);
     }
 
-    /** @test */
+    #[Test]
     public function remove_env_variable_removes_by_key(): void
     {
         Livewire::actingAs($this->admin)
@@ -841,7 +843,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('env_template', ['APP_NAME' => 'Test', 'APP_DEBUG' => 'false']);
     }
 
-    /** @test */
+    #[Test]
     public function templates_include_user_relationship(): void
     {
         $user = User::factory()->create();
@@ -856,7 +858,7 @@ class ProjectTemplateManagerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function component_initializes_with_default_values(): void
     {
         Livewire::actingAs($this->admin)
@@ -874,7 +876,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('is_active', true);
     }
 
-    /** @test */
+    #[Test]
     public function default_values_for_arrays_are_empty(): void
     {
         Livewire::actingAs($this->admin)
@@ -885,7 +887,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('env_template', []);
     }
 
-    /** @test */
+    #[Test]
     public function create_template_handles_null_optional_values_correctly(): void
     {
         Livewire::actingAs($this->admin)
@@ -905,7 +907,7 @@ class ProjectTemplateManagerTest extends TestCase
         $this->assertNull($template->color);
     }
 
-    /** @test */
+    #[Test]
     public function create_template_handles_empty_arrays_as_null(): void
     {
         Livewire::actingAs($this->admin)
@@ -921,7 +923,7 @@ class ProjectTemplateManagerTest extends TestCase
         $this->assertNull($template->install_commands);
     }
 
-    /** @test */
+    #[Test]
     public function framework_validation_accepts_all_valid_frameworks(): void
     {
         $frameworks = ['laravel', 'react', 'vue', 'nodejs', 'php', 'python', 'docker', 'custom'];
@@ -942,7 +944,7 @@ class ProjectTemplateManagerTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function php_version_validation_accepts_all_valid_versions(): void
     {
         $versions = ['8.1', '8.2', '8.3', '8.4'];
@@ -959,7 +961,7 @@ class ProjectTemplateManagerTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function slug_must_match_regex_pattern(): void
     {
         $invalidSlugs = ['Invalid Slug', 'invalid_slug', 'INVALID', 'invalid.slug'];
@@ -975,7 +977,7 @@ class ProjectTemplateManagerTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function slug_accepts_valid_patterns(): void
     {
         $validSlugs = ['valid-slug', 'valid123', 'my-template-123', 'a'];
@@ -991,7 +993,7 @@ class ProjectTemplateManagerTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function super_admin_has_same_permissions_as_admin(): void
     {
         $template = ProjectTemplate::factory()->create();
@@ -1009,7 +1011,7 @@ class ProjectTemplateManagerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function templates_computed_property_is_cached(): void
     {
         ProjectTemplate::factory()->count(5)->create();
@@ -1031,7 +1033,7 @@ class ProjectTemplateManagerTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function create_template_invalidates_templates_cache(): void
     {
         Livewire::actingAs($this->admin)
@@ -1048,7 +1050,7 @@ class ProjectTemplateManagerTest extends TestCase
         $this->assertDatabaseCount('project_templates', 1);
     }
 
-    /** @test */
+    #[Test]
     public function name_can_be_maximum_length(): void
     {
         $maxName = str_repeat('a', 255);
@@ -1062,7 +1064,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertHasNoErrors(['name']);
     }
 
-    /** @test */
+    #[Test]
     public function name_cannot_exceed_maximum_length(): void
     {
         $tooLongName = str_repeat('a', 256);
@@ -1076,7 +1078,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertHasErrors(['name']);
     }
 
-    /** @test */
+    #[Test]
     public function component_handles_template_not_found_gracefully(): void
     {
         $this->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);
@@ -1086,7 +1088,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->call('openEditModal', 99999);
     }
 
-    /** @test */
+    #[Test]
     public function open_edit_modal_handles_null_values_correctly(): void
     {
         $template = ProjectTemplate::factory()->create([
@@ -1109,7 +1111,7 @@ class ProjectTemplateManagerTest extends TestCase
             ->assertSet('health_check_path', '');
     }
 
-    /** @test */
+    #[Test]
     public function open_edit_modal_handles_null_command_arrays(): void
     {
         $template = ProjectTemplate::factory()->create([

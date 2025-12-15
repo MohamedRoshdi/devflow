@@ -8,14 +8,14 @@ use App\Models\Project;
 use App\Models\StorageConfiguration;
 use App\Services\Backup\RemoteStorageService;
 use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class RemoteStorageServiceTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     protected RemoteStorageService $service;
 

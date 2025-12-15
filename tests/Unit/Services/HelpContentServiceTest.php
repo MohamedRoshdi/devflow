@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\HelpContent;
 use App\Models\HelpContentRelated;
 use App\Models\HelpInteraction;
 use App\Services\HelpContentService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Mockery;
@@ -16,7 +18,7 @@ use Tests\TestCase;
 
 class HelpContentServiceTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     protected HelpContentService $service;
 
@@ -36,7 +38,7 @@ class HelpContentServiceTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_help_content_by_key(): void
     {
         // Arrange
@@ -54,7 +56,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertEquals($helpContent->id, $result->id);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_null_when_help_content_not_found(): void
     {
         // Act
@@ -64,7 +66,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertNull($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_return_inactive_help_content(): void
     {
         // Arrange
@@ -80,7 +82,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertNull($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_caches_help_content_by_key(): void
     {
         // Arrange
@@ -98,7 +100,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertTrue(Cache::has('help_content_cached-help'));
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_help_content_by_category(): void
     {
         // Arrange
@@ -122,7 +124,7 @@ class HelpContentServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_caches_help_content_by_category(): void
     {
         // Arrange
@@ -140,7 +142,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertTrue(Cache::has('help_content_category_servers'));
     }
 
-    /** @test */
+    #[Test]
     public function it_searches_help_content(): void
     {
         // Arrange
@@ -176,7 +178,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertEquals('project-deployment', $result->first()->key);
     }
 
-    /** @test */
+    #[Test]
     public function it_limits_search_results_to_10(): void
     {
         // Arrange
@@ -192,7 +194,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertCount(10, $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_cache_search_results(): void
     {
         // Arrange
@@ -209,7 +211,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertFalse(Cache::has('help_content_search_Searchable'));
     }
 
-    /** @test */
+    #[Test]
     public function it_records_view_successfully(): void
     {
         // Arrange
@@ -236,7 +238,7 @@ class HelpContentServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_records_view_without_user_id(): void
     {
         // Arrange
@@ -262,7 +264,7 @@ class HelpContentServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_record_view_for_non_existent_key(): void
     {
         // Arrange
@@ -279,7 +281,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertEquals($initialCount, HelpInteraction::count());
     }
 
-    /** @test */
+    #[Test]
     public function it_records_helpful_feedback_successfully(): void
     {
         // Arrange
@@ -305,7 +307,7 @@ class HelpContentServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_record_helpful_for_non_existent_key(): void
     {
         // Arrange
@@ -322,7 +324,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertEquals($initialCount, HelpInteraction::count());
     }
 
-    /** @test */
+    #[Test]
     public function it_records_not_helpful_feedback_successfully(): void
     {
         // Arrange
@@ -348,7 +350,7 @@ class HelpContentServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_popular_help_content(): void
     {
         // Arrange
@@ -376,7 +378,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertEquals(50, $result->last()->view_count);
     }
 
-    /** @test */
+    #[Test]
     public function it_limits_popular_help_results(): void
     {
         // Arrange
@@ -391,7 +393,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertCount(5, $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_caches_popular_help_results(): void
     {
         // Arrange
@@ -408,7 +410,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertTrue(Cache::has('popular_help_10'));
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_include_inactive_help_in_popular_results(): void
     {
         // Arrange
@@ -429,7 +431,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertTrue($result->first()->is_active);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_most_helpful_content(): void
     {
         // Arrange
@@ -460,7 +462,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertEquals(90, $result->first()->helpful_count);
     }
 
-    /** @test */
+    #[Test]
     public function it_limits_most_helpful_results(): void
     {
         // Arrange
@@ -476,7 +478,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertCount(5, $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_caches_most_helpful_results(): void
     {
         // Arrange
@@ -494,7 +496,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertTrue(Cache::has('most_helpful_help_10'));
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_related_help_content(): void
     {
         // Arrange
@@ -526,7 +528,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertEquals($relatedHelp1->id, $result->first()->id);
     }
 
-    /** @test */
+    #[Test]
     public function it_limits_related_help_results(): void
     {
         // Arrange
@@ -551,7 +553,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertCount(3, $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_empty_collection_when_no_related_help_found(): void
     {
         // Arrange
@@ -568,7 +570,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertCount(0, $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_empty_collection_for_non_existent_help_key(): void
     {
         // Act
@@ -579,7 +581,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertCount(0, $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_clears_all_cache(): void
     {
         // Arrange
@@ -596,7 +598,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertFalse(Cache::has('popular_help_10'));
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_cache_retrieval_correctly(): void
     {
         // Arrange
@@ -620,7 +622,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertEquals($result1->id, $result2->id);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_different_cache_keys_for_different_limits(): void
     {
         // Arrange
@@ -638,7 +640,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertTrue(Cache::has('popular_help_10'));
     }
 
-    /** @test */
+    #[Test]
     public function it_records_interactions_with_correct_metadata(): void
     {
         // Arrange
@@ -663,7 +665,7 @@ class HelpContentServiceTest extends TestCase
         $this->assertEquals('TestAgent/1.0', $interaction->user_agent);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_multiple_views_from_same_user(): void
     {
         // Arrange

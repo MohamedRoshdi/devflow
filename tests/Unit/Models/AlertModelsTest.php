@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Models;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\AlertHistory;
 use App\Models\ResourceAlert;
 use App\Models\Server;
@@ -15,7 +17,7 @@ class AlertModelsTest extends TestCase
     // AlertHistory Model Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function alert_history_can_be_created_with_factory(): void
     {
         $alertHistory = AlertHistory::factory()->create();
@@ -26,7 +28,7 @@ class AlertModelsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function alert_history_belongs_to_resource_alert(): void
     {
         $resourceAlert = ResourceAlert::factory()->create();
@@ -36,7 +38,7 @@ class AlertModelsTest extends TestCase
         $this->assertEquals($resourceAlert->id, $alertHistory->resourceAlert->id);
     }
 
-    /** @test */
+    #[Test]
     public function alert_history_belongs_to_server(): void
     {
         $server = Server::factory()->create();
@@ -46,7 +48,7 @@ class AlertModelsTest extends TestCase
         $this->assertEquals($server->id, $alertHistory->server->id);
     }
 
-    /** @test */
+    #[Test]
     public function alert_history_casts_decimal_attributes_correctly(): void
     {
         $alertHistory = AlertHistory::factory()->create([
@@ -58,7 +60,7 @@ class AlertModelsTest extends TestCase
         $this->assertEquals('80.00', $alertHistory->threshold_value);
     }
 
-    /** @test */
+    #[Test]
     public function alert_history_casts_notified_at_as_datetime(): void
     {
         $alertHistory = AlertHistory::factory()->create([
@@ -68,7 +70,7 @@ class AlertModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $alertHistory->notified_at);
     }
 
-    /** @test */
+    #[Test]
     public function alert_history_is_triggered_returns_true_when_triggered(): void
     {
         $alertHistory = AlertHistory::factory()->create(['status' => 'triggered']);
@@ -76,7 +78,7 @@ class AlertModelsTest extends TestCase
         $this->assertTrue($alertHistory->isTriggered());
     }
 
-    /** @test */
+    #[Test]
     public function alert_history_is_triggered_returns_false_when_not_triggered(): void
     {
         $alertHistory = AlertHistory::factory()->create(['status' => 'resolved']);
@@ -84,7 +86,7 @@ class AlertModelsTest extends TestCase
         $this->assertFalse($alertHistory->isTriggered());
     }
 
-    /** @test */
+    #[Test]
     public function alert_history_is_resolved_returns_true_when_resolved(): void
     {
         $alertHistory = AlertHistory::factory()->create(['status' => 'resolved']);
@@ -92,7 +94,7 @@ class AlertModelsTest extends TestCase
         $this->assertTrue($alertHistory->isResolved());
     }
 
-    /** @test */
+    #[Test]
     public function alert_history_is_resolved_returns_false_when_not_resolved(): void
     {
         $alertHistory = AlertHistory::factory()->create(['status' => 'triggered']);
@@ -100,7 +102,7 @@ class AlertModelsTest extends TestCase
         $this->assertFalse($alertHistory->isResolved());
     }
 
-    /** @test */
+    #[Test]
     public function alert_history_status_color_returns_correct_colors(): void
     {
         $triggered = AlertHistory::factory()->create(['status' => 'triggered']);
@@ -114,7 +116,7 @@ class AlertModelsTest extends TestCase
         $this->assertEquals('gray', $unknown->status_color);
     }
 
-    /** @test */
+    #[Test]
     public function alert_history_resource_type_icon_returns_correct_icons(): void
     {
         $cpu = AlertHistory::factory()->create(['resource_type' => 'cpu']);
@@ -134,7 +136,7 @@ class AlertModelsTest extends TestCase
         $this->assertEquals('heroicon-o-bell-alert', $unknown->resource_type_icon);
     }
 
-    /** @test */
+    #[Test]
     public function alert_history_scope_triggered_filters_triggered_alerts(): void
     {
         AlertHistory::factory()->create(['status' => 'triggered']);
@@ -145,7 +147,7 @@ class AlertModelsTest extends TestCase
         $this->assertCount(2, $triggered);
     }
 
-    /** @test */
+    #[Test]
     public function alert_history_scope_resolved_filters_resolved_alerts(): void
     {
         AlertHistory::factory()->create(['status' => 'resolved']);
@@ -156,7 +158,7 @@ class AlertModelsTest extends TestCase
         $this->assertCount(2, $resolved);
     }
 
-    /** @test */
+    #[Test]
     public function alert_history_scope_for_server_filters_by_server_id(): void
     {
         $server = Server::factory()->create();
@@ -167,7 +169,7 @@ class AlertModelsTest extends TestCase
         $this->assertCount(3, $serverAlerts);
     }
 
-    /** @test */
+    #[Test]
     public function alert_history_scope_recent_filters_by_hours(): void
     {
         AlertHistory::factory()->create(['created_at' => now()->subHours(48)]);
@@ -182,7 +184,7 @@ class AlertModelsTest extends TestCase
     // ResourceAlert Model Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function resource_alert_can_be_created_with_factory(): void
     {
         $resourceAlert = ResourceAlert::factory()->create();
@@ -193,7 +195,7 @@ class AlertModelsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_belongs_to_server(): void
     {
         $server = Server::factory()->create();
@@ -203,7 +205,7 @@ class AlertModelsTest extends TestCase
         $this->assertEquals($server->id, $resourceAlert->server->id);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_has_many_alert_history_records(): void
     {
         $resourceAlert = ResourceAlert::factory()->create();
@@ -213,7 +215,7 @@ class AlertModelsTest extends TestCase
         $this->assertInstanceOf(AlertHistory::class, $resourceAlert->history->first());
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_has_latest_history_relationship(): void
     {
         $resourceAlert = ResourceAlert::factory()->create();
@@ -230,7 +232,7 @@ class AlertModelsTest extends TestCase
         $this->assertEquals($latest->id, $resourceAlert->latestHistory->id);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_casts_notification_channels_as_array(): void
     {
         $channels = ['email', 'slack', 'discord'];
@@ -240,7 +242,7 @@ class AlertModelsTest extends TestCase
         $this->assertEquals($channels, $resourceAlert->notification_channels);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_casts_boolean_attributes_correctly(): void
     {
         $resourceAlert = ResourceAlert::factory()->create(['is_active' => true]);
@@ -249,7 +251,7 @@ class AlertModelsTest extends TestCase
         $this->assertIsBool($resourceAlert->is_active);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_casts_threshold_value_as_decimal(): void
     {
         $resourceAlert = ResourceAlert::factory()->create(['threshold_value' => 85.75]);
@@ -257,7 +259,7 @@ class AlertModelsTest extends TestCase
         $this->assertEquals('85.75', $resourceAlert->threshold_value);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_casts_cooldown_minutes_as_integer(): void
     {
         $resourceAlert = ResourceAlert::factory()->create(['cooldown_minutes' => 30]);
@@ -266,7 +268,7 @@ class AlertModelsTest extends TestCase
         $this->assertEquals(30, $resourceAlert->cooldown_minutes);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_casts_last_triggered_at_as_datetime(): void
     {
         $resourceAlert = ResourceAlert::factory()->create(['last_triggered_at' => now()]);
@@ -274,7 +276,7 @@ class AlertModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $resourceAlert->last_triggered_at);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_resource_type_icon_returns_correct_icons(): void
     {
         $cpu = ResourceAlert::factory()->create(['resource_type' => 'cpu']);
@@ -290,7 +292,7 @@ class AlertModelsTest extends TestCase
         $this->assertEquals('heroicon-o-chart-bar', $load->resource_type_icon);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_resource_type_label_returns_correct_labels(): void
     {
         $cpu = ResourceAlert::factory()->create(['resource_type' => 'cpu']);
@@ -306,7 +308,7 @@ class AlertModelsTest extends TestCase
         $this->assertEquals('Load Average', $load->resource_type_label);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_threshold_display_returns_formatted_string_for_above(): void
     {
         $cpuAlert = ResourceAlert::factory()->create([
@@ -318,7 +320,7 @@ class AlertModelsTest extends TestCase
         $this->assertEquals('> 85.00%', $cpuAlert->threshold_display);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_threshold_display_returns_formatted_string_for_below(): void
     {
         $cpuAlert = ResourceAlert::factory()->create([
@@ -330,7 +332,7 @@ class AlertModelsTest extends TestCase
         $this->assertEquals('< 20.00%', $cpuAlert->threshold_display);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_threshold_display_handles_load_without_percentage(): void
     {
         $loadAlert = ResourceAlert::factory()->create([
@@ -342,7 +344,7 @@ class AlertModelsTest extends TestCase
         $this->assertEquals('> 5.00', $loadAlert->threshold_display);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_is_in_cooldown_returns_true_when_in_cooldown(): void
     {
         $resourceAlert = ResourceAlert::factory()->create([
@@ -353,7 +355,7 @@ class AlertModelsTest extends TestCase
         $this->assertTrue($resourceAlert->isInCooldown());
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_is_in_cooldown_returns_false_when_not_in_cooldown(): void
     {
         $resourceAlert = ResourceAlert::factory()->create([
@@ -364,7 +366,7 @@ class AlertModelsTest extends TestCase
         $this->assertFalse($resourceAlert->isInCooldown());
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_is_in_cooldown_returns_false_when_never_triggered(): void
     {
         $resourceAlert = ResourceAlert::factory()->create([
@@ -375,7 +377,7 @@ class AlertModelsTest extends TestCase
         $this->assertFalse($resourceAlert->isInCooldown());
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_cooldown_remaining_minutes_returns_correct_value(): void
     {
         $resourceAlert = ResourceAlert::factory()->create([
@@ -389,7 +391,7 @@ class AlertModelsTest extends TestCase
         $this->assertLessThanOrEqual(30, $remaining);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_cooldown_remaining_minutes_returns_null_when_not_in_cooldown(): void
     {
         $resourceAlert = ResourceAlert::factory()->create([
@@ -400,7 +402,7 @@ class AlertModelsTest extends TestCase
         $this->assertNull($resourceAlert->cooldown_remaining_minutes);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_scope_active_filters_active_alerts(): void
     {
         ResourceAlert::factory()->create(['is_active' => true]);
@@ -411,7 +413,7 @@ class AlertModelsTest extends TestCase
         $this->assertCount(2, $active);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_scope_for_server_filters_by_server_id(): void
     {
         $server = Server::factory()->create();
@@ -422,7 +424,7 @@ class AlertModelsTest extends TestCase
         $this->assertCount(3, $serverAlerts);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_scope_for_resource_type_filters_by_type(): void
     {
         ResourceAlert::factory()->count(2)->create(['resource_type' => 'cpu']);

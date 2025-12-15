@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Models;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\ApiToken;
 use App\Models\AuditLog;
 use App\Models\NotificationChannel;
@@ -22,7 +24,7 @@ class TeamAuthModelsTest extends TestCase
     // Team Model Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function team_can_be_created_with_factory(): void
     {
         $team = Team::factory()->create();
@@ -32,7 +34,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertNotNull($team->slug);
     }
 
-    /** @test */
+    #[Test]
     public function team_automatically_generates_slug_on_creation(): void
     {
         $team = Team::factory()->create(['name' => 'Test Team Name']);
@@ -40,7 +42,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals('test-team-name', $team->slug);
     }
 
-    /** @test */
+    #[Test]
     public function team_generates_unique_slug_when_duplicate_exists(): void
     {
         Team::factory()->create(['name' => 'DevFlow', 'slug' => 'devflow']);
@@ -49,7 +51,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals('devflow-1', $team2->slug);
     }
 
-    /** @test */
+    #[Test]
     public function team_has_owner_relationship(): void
     {
         $owner = User::factory()->create();
@@ -59,7 +61,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals($owner->id, $team->owner->id);
     }
 
-    /** @test */
+    #[Test]
     public function team_has_members_relationship(): void
     {
         $team = Team::factory()->create();
@@ -74,7 +76,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals($user->id, $team->members->first()->id);
     }
 
-    /** @test */
+    #[Test]
     public function team_has_team_members_relationship(): void
     {
         $team = Team::factory()->create();
@@ -84,7 +86,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertInstanceOf(TeamMember::class, $team->teamMembers->first());
     }
 
-    /** @test */
+    #[Test]
     public function team_has_invitations_relationship(): void
     {
         $team = Team::factory()->create();
@@ -94,7 +96,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertInstanceOf(TeamInvitation::class, $team->invitations->first());
     }
 
-    /** @test */
+    #[Test]
     public function team_has_projects_relationship(): void
     {
         $team = Team::factory()->create();
@@ -104,7 +106,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertInstanceOf(Project::class, $team->projects->first());
     }
 
-    /** @test */
+    #[Test]
     public function team_has_servers_relationship(): void
     {
         $team = Team::factory()->create();
@@ -114,7 +116,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertInstanceOf(Server::class, $team->servers->first());
     }
 
-    /** @test */
+    #[Test]
     public function team_has_member_method_returns_true_when_user_is_member(): void
     {
         $team = Team::factory()->create();
@@ -125,7 +127,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertTrue($team->hasMember($user));
     }
 
-    /** @test */
+    #[Test]
     public function team_has_member_method_returns_false_when_user_is_not_member(): void
     {
         $team = Team::factory()->create();
@@ -134,7 +136,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertFalse($team->hasMember($user));
     }
 
-    /** @test */
+    #[Test]
     public function team_get_member_role_returns_correct_role(): void
     {
         $team = Team::factory()->create();
@@ -145,7 +147,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals('admin', $team->getMemberRole($user));
     }
 
-    /** @test */
+    #[Test]
     public function team_get_member_role_returns_null_for_non_member(): void
     {
         $team = Team::factory()->create();
@@ -154,7 +156,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertNull($team->getMemberRole($user));
     }
 
-    /** @test */
+    #[Test]
     public function team_is_owner_returns_true_for_owner(): void
     {
         $owner = User::factory()->create();
@@ -163,7 +165,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertTrue($team->isOwner($owner));
     }
 
-    /** @test */
+    #[Test]
     public function team_is_owner_returns_false_for_non_owner(): void
     {
         $owner = User::factory()->create();
@@ -173,7 +175,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertFalse($team->isOwner($user));
     }
 
-    /** @test */
+    #[Test]
     public function team_avatar_url_accessor_returns_storage_path_when_avatar_exists(): void
     {
         $team = Team::factory()->create(['avatar' => 'avatars/team.jpg']);
@@ -181,7 +183,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertStringContainsString('storage/avatars/team.jpg', $team->avatar_url);
     }
 
-    /** @test */
+    #[Test]
     public function team_avatar_url_accessor_generates_initials_avatar_when_no_avatar(): void
     {
         $team = Team::factory()->create(['name' => 'DevFlow Pro', 'avatar' => null]);
@@ -190,7 +192,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertStringContainsString('name=DP', $team->avatar_url);
     }
 
-    /** @test */
+    #[Test]
     public function team_settings_are_cast_to_array(): void
     {
         $settings = ['theme' => 'dark', 'notifications' => true];
@@ -200,7 +202,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals('dark', $team->settings['theme']);
     }
 
-    /** @test */
+    #[Test]
     public function team_is_personal_is_cast_to_boolean(): void
     {
         $team = Team::factory()->create(['is_personal' => true]);
@@ -209,7 +211,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertTrue($team->is_personal);
     }
 
-    /** @test */
+    #[Test]
     public function team_soft_deletes(): void
     {
         $team = Team::factory()->create();
@@ -224,7 +226,7 @@ class TeamAuthModelsTest extends TestCase
     // TeamMember Model Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function team_member_can_be_created_with_factory(): void
     {
         $teamMember = TeamMember::factory()->create();
@@ -234,7 +236,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertNotNull($teamMember->user_id);
     }
 
-    /** @test */
+    #[Test]
     public function team_member_has_team_relationship(): void
     {
         $team = Team::factory()->create();
@@ -244,7 +246,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals($team->id, $teamMember->team->id);
     }
 
-    /** @test */
+    #[Test]
     public function team_member_has_user_relationship(): void
     {
         $user = User::factory()->create();
@@ -254,7 +256,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals($user->id, $teamMember->user->id);
     }
 
-    /** @test */
+    #[Test]
     public function team_member_has_inviter_relationship(): void
     {
         $inviter = User::factory()->create();
@@ -264,7 +266,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals($inviter->id, $teamMember->inviter->id);
     }
 
-    /** @test */
+    #[Test]
     public function team_member_permissions_are_cast_to_array(): void
     {
         $permissions = ['deploy_projects', 'manage_servers'];
@@ -274,7 +276,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertCount(2, $teamMember->permissions);
     }
 
-    /** @test */
+    #[Test]
     public function team_member_joined_at_is_cast_to_datetime(): void
     {
         $teamMember = TeamMember::factory()->create(['joined_at' => now()]);
@@ -282,7 +284,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $teamMember->joined_at);
     }
 
-    /** @test */
+    #[Test]
     public function team_member_has_permission_returns_true_for_owner_role(): void
     {
         $teamMember = TeamMember::factory()->create(['role' => 'owner']);
@@ -290,7 +292,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertTrue($teamMember->hasPermission('any_permission'));
     }
 
-    /** @test */
+    #[Test]
     public function team_member_has_permission_returns_true_for_admin_role(): void
     {
         $teamMember = TeamMember::factory()->create(['role' => 'admin']);
@@ -298,7 +300,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertTrue($teamMember->hasPermission('any_permission'));
     }
 
-    /** @test */
+    #[Test]
     public function team_member_has_permission_checks_custom_permissions(): void
     {
         // Use 'member' role but with custom permissions - these override default role permissions
@@ -311,7 +313,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertFalse($teamMember->hasPermission('delete_servers'));
     }
 
-    /** @test */
+    #[Test]
     public function team_member_has_permission_uses_default_member_permissions(): void
     {
         $teamMember = TeamMember::factory()->create(['role' => 'member', 'permissions' => null]);
@@ -321,7 +323,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertFalse($teamMember->hasPermission('delete_projects'));
     }
 
-    /** @test */
+    #[Test]
     public function team_member_has_permission_uses_default_viewer_permissions(): void
     {
         $teamMember = TeamMember::factory()->create(['role' => 'viewer', 'permissions' => null]);
@@ -334,7 +336,7 @@ class TeamAuthModelsTest extends TestCase
     // TeamInvitation Model Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function team_invitation_can_be_created_with_factory(): void
     {
         $invitation = TeamInvitation::factory()->create();
@@ -344,7 +346,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertNotNull($invitation->token);
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_automatically_generates_token_on_creation(): void
     {
         $invitation = TeamInvitation::factory()->create(['token' => null]);
@@ -353,7 +355,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals(64, strlen($invitation->token));
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_automatically_sets_expires_at_on_creation(): void
     {
         $invitation = TeamInvitation::factory()->create(['expires_at' => null]);
@@ -362,7 +364,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertTrue($invitation->expires_at->isFuture());
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_has_team_relationship(): void
     {
         $team = Team::factory()->create();
@@ -372,7 +374,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals($team->id, $invitation->team->id);
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_has_inviter_relationship(): void
     {
         $inviter = User::factory()->create();
@@ -382,7 +384,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals($inviter->id, $invitation->inviter->id);
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_expires_at_is_cast_to_datetime(): void
     {
         $invitation = TeamInvitation::factory()->create();
@@ -390,7 +392,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $invitation->expires_at);
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_accepted_at_is_cast_to_datetime(): void
     {
         $invitation = TeamInvitation::factory()->create(['accepted_at' => now()]);
@@ -398,7 +400,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $invitation->accepted_at);
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_is_expired_returns_true_when_expired(): void
     {
         $invitation = TeamInvitation::factory()->create([
@@ -408,7 +410,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertTrue($invitation->isExpired());
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_is_expired_returns_false_when_not_expired(): void
     {
         $invitation = TeamInvitation::factory()->create([
@@ -418,7 +420,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertFalse($invitation->isExpired());
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_is_accepted_returns_true_when_accepted(): void
     {
         $invitation = TeamInvitation::factory()->create([
@@ -428,7 +430,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertTrue($invitation->isAccepted());
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_is_accepted_returns_false_when_not_accepted(): void
     {
         $invitation = TeamInvitation::factory()->create([
@@ -438,7 +440,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertFalse($invitation->isAccepted());
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_is_pending_returns_true_when_pending(): void
     {
         $invitation = TeamInvitation::factory()->create([
@@ -449,7 +451,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertTrue($invitation->isPending());
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_is_pending_returns_false_when_expired(): void
     {
         $invitation = TeamInvitation::factory()->create([
@@ -460,7 +462,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertFalse($invitation->isPending());
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_is_pending_returns_false_when_accepted(): void
     {
         $invitation = TeamInvitation::factory()->create([
@@ -475,7 +477,7 @@ class TeamAuthModelsTest extends TestCase
     // ApiToken Model Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function api_token_can_be_created_with_factory(): void
     {
         $token = ApiToken::factory()->create();
@@ -485,7 +487,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertNotNull($token->token);
     }
 
-    /** @test */
+    #[Test]
     public function api_token_has_user_relationship(): void
     {
         $user = User::factory()->create();
@@ -495,7 +497,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals($user->id, $token->user->id);
     }
 
-    /** @test */
+    #[Test]
     public function api_token_has_team_relationship(): void
     {
         $team = Team::factory()->create();
@@ -505,7 +507,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals($team->id, $token->team->id);
     }
 
-    /** @test */
+    #[Test]
     public function api_token_abilities_are_cast_to_array(): void
     {
         $abilities = ['projects:read', 'servers:write'];
@@ -515,7 +517,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertCount(2, $token->abilities);
     }
 
-    /** @test */
+    #[Test]
     public function api_token_last_used_at_is_cast_to_datetime(): void
     {
         $token = ApiToken::factory()->create(['last_used_at' => now()]);
@@ -523,7 +525,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $token->last_used_at);
     }
 
-    /** @test */
+    #[Test]
     public function api_token_expires_at_is_cast_to_datetime(): void
     {
         $token = ApiToken::factory()->create(['expires_at' => now()->addMonth()]);
@@ -531,7 +533,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $token->expires_at);
     }
 
-    /** @test */
+    #[Test]
     public function api_token_hides_token_in_array(): void
     {
         $token = ApiToken::factory()->create(['token' => 'secret_token_value']);
@@ -541,7 +543,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertArrayNotHasKey('token', $array);
     }
 
-    /** @test */
+    #[Test]
     public function api_token_can_method_returns_true_when_abilities_empty(): void
     {
         $token = ApiToken::factory()->create(['abilities' => null]);
@@ -549,7 +551,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertTrue($token->can('any_ability'));
     }
 
-    /** @test */
+    #[Test]
     public function api_token_can_method_returns_true_for_specific_ability(): void
     {
         $token = ApiToken::factory()->create(['abilities' => ['projects:read', 'servers:write']]);
@@ -557,7 +559,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertTrue($token->can('projects:read'));
     }
 
-    /** @test */
+    #[Test]
     public function api_token_can_method_returns_false_for_missing_ability(): void
     {
         $token = ApiToken::factory()->create(['abilities' => ['projects:read']]);
@@ -565,7 +567,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertFalse($token->can('servers:delete'));
     }
 
-    /** @test */
+    #[Test]
     public function api_token_can_method_supports_wildcard_abilities(): void
     {
         $token = ApiToken::factory()->create(['abilities' => ['projects:*']]);
@@ -576,7 +578,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertFalse($token->can('servers:read'));
     }
 
-    /** @test */
+    #[Test]
     public function api_token_can_method_supports_super_admin_wildcard(): void
     {
         $token = ApiToken::factory()->create(['abilities' => ['*']]);
@@ -586,7 +588,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertTrue($token->can('any:ability'));
     }
 
-    /** @test */
+    #[Test]
     public function api_token_has_expired_returns_false_when_no_expiry(): void
     {
         $token = ApiToken::factory()->create(['expires_at' => null]);
@@ -594,7 +596,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertFalse($token->hasExpired());
     }
 
-    /** @test */
+    #[Test]
     public function api_token_has_expired_returns_true_when_expired(): void
     {
         $token = ApiToken::factory()->create(['expires_at' => now()->subDay()]);
@@ -602,7 +604,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertTrue($token->hasExpired());
     }
 
-    /** @test */
+    #[Test]
     public function api_token_has_expired_returns_false_when_not_expired(): void
     {
         $token = ApiToken::factory()->create(['expires_at' => now()->addDay()]);
@@ -610,7 +612,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertFalse($token->hasExpired());
     }
 
-    /** @test */
+    #[Test]
     public function api_token_update_last_used_at_updates_timestamp(): void
     {
         $token = ApiToken::factory()->create(['last_used_at' => null]);
@@ -620,7 +622,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertNotNull($token->fresh()->last_used_at);
     }
 
-    /** @test */
+    #[Test]
     public function api_token_active_scope_includes_non_expired_tokens(): void
     {
         ApiToken::factory()->create(['expires_at' => now()->addDay()]);
@@ -636,7 +638,7 @@ class TeamAuthModelsTest extends TestCase
     // AuditLog Model Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function audit_log_can_be_created(): void
     {
         $auditLog = AuditLog::create([
@@ -653,7 +655,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertModelExists($auditLog);
     }
 
-    /** @test */
+    #[Test]
     public function audit_log_has_user_relationship(): void
     {
         $user = User::factory()->create();
@@ -668,7 +670,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals($user->id, $auditLog->user->id);
     }
 
-    /** @test */
+    #[Test]
     public function audit_log_has_auditable_polymorphic_relationship(): void
     {
         $project = Project::factory()->create();
@@ -683,7 +685,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals($project->id, $auditLog->auditable->id);
     }
 
-    /** @test */
+    #[Test]
     public function audit_log_old_values_are_cast_to_array(): void
     {
         $oldValues = ['status' => 'draft'];
@@ -700,7 +702,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals('draft', $auditLog->old_values['status']);
     }
 
-    /** @test */
+    #[Test]
     public function audit_log_new_values_are_cast_to_array(): void
     {
         $newValues = ['status' => 'active'];
@@ -717,7 +719,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals('active', $auditLog->new_values['status']);
     }
 
-    /** @test */
+    #[Test]
     public function audit_log_action_name_accessor_returns_formatted_action(): void
     {
         $auditLog = AuditLog::create([
@@ -730,7 +732,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals('project created', $auditLog->action_name);
     }
 
-    /** @test */
+    #[Test]
     public function audit_log_action_category_accessor_returns_category(): void
     {
         $auditLog = AuditLog::create([
@@ -743,7 +745,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals('deployment', $auditLog->action_category);
     }
 
-    /** @test */
+    #[Test]
     public function audit_log_action_type_accessor_returns_type(): void
     {
         $auditLog = AuditLog::create([
@@ -756,7 +758,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals('updated', $auditLog->action_type);
     }
 
-    /** @test */
+    #[Test]
     public function audit_log_model_name_accessor_returns_model_basename(): void
     {
         $auditLog = AuditLog::create([
@@ -769,7 +771,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals('Project', $auditLog->model_name);
     }
 
-    /** @test */
+    #[Test]
     public function audit_log_changes_summary_accessor_returns_changes(): void
     {
         $auditLog = AuditLog::create([
@@ -793,7 +795,7 @@ class TeamAuthModelsTest extends TestCase
     // NotificationChannel Model Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function notification_channel_can_be_created_with_factory(): void
     {
         $channel = NotificationChannel::factory()->create();
@@ -802,7 +804,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertNotNull($channel->type);
     }
 
-    /** @test */
+    #[Test]
     public function notification_channel_has_user_relationship(): void
     {
         // Test the relationship method exists and returns correct type
@@ -818,7 +820,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals($user->id, $channel->user->id);
     }
 
-    /** @test */
+    #[Test]
     public function notification_channel_has_project_relationship(): void
     {
         $project = Project::factory()->create();
@@ -828,7 +830,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals($project->id, $channel->project->id);
     }
 
-    /** @test */
+    #[Test]
     public function notification_channel_config_is_cast_to_array(): void
     {
         $config = ['webhook_url' => 'https://example.com/webhook'];
@@ -838,7 +840,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals('https://example.com/webhook', $channel->config['webhook_url']);
     }
 
-    /** @test */
+    #[Test]
     public function notification_channel_is_active_is_cast_to_boolean(): void
     {
         // Use make() instead of create() to test cast without database persistence
@@ -849,7 +851,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertTrue($channel->is_active);
     }
 
-    /** @test */
+    #[Test]
     public function notification_channel_enabled_is_cast_to_boolean(): void
     {
         $channel = NotificationChannel::factory()->create(['enabled' => false]);
@@ -858,7 +860,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertFalse($channel->enabled);
     }
 
-    /** @test */
+    #[Test]
     public function notification_channel_events_are_cast_to_array(): void
     {
         $events = ['deployment.success', 'deployment.failed'];
@@ -868,7 +870,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertCount(2, $channel->events);
     }
 
-    /** @test */
+    #[Test]
     public function notification_channel_metadata_is_cast_to_array(): void
     {
         $metadata = ['color' => 'blue', 'icon' => 'bell'];
@@ -878,7 +880,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals('blue', $channel->metadata['color']);
     }
 
-    /** @test */
+    #[Test]
     public function notification_channel_webhook_secret_is_encrypted_on_set(): void
     {
         $channel = NotificationChannel::factory()->create(['webhook_secret' => 'my_secret']);
@@ -886,7 +888,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertNotEquals('my_secret', $channel->getAttributes()['webhook_secret']);
     }
 
-    /** @test */
+    #[Test]
     public function notification_channel_webhook_secret_is_decrypted_on_get(): void
     {
         $channel = NotificationChannel::factory()->create(['webhook_secret' => 'my_secret']);
@@ -894,7 +896,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals('my_secret', $channel->webhook_secret);
     }
 
-    /** @test */
+    #[Test]
     public function notification_channel_webhook_secret_is_hidden_in_array(): void
     {
         $channel = NotificationChannel::factory()->create(['webhook_secret' => 'my_secret']);
@@ -904,7 +906,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertArrayNotHasKey('webhook_secret', $array);
     }
 
-    /** @test */
+    #[Test]
     public function notification_channel_should_notify_for_event_returns_true_when_enabled_and_event_matches(): void
     {
         $channel = NotificationChannel::factory()->create([
@@ -915,7 +917,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertTrue($channel->shouldNotifyForEvent('deployment.success'));
     }
 
-    /** @test */
+    #[Test]
     public function notification_channel_should_notify_for_event_returns_false_when_disabled(): void
     {
         $channel = NotificationChannel::factory()->create([
@@ -926,7 +928,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertFalse($channel->shouldNotifyForEvent('deployment.success'));
     }
 
-    /** @test */
+    #[Test]
     public function notification_channel_should_notify_for_event_returns_false_when_event_not_in_list(): void
     {
         $channel = NotificationChannel::factory()->create([
@@ -937,7 +939,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertFalse($channel->shouldNotifyForEvent('deployment.failed'));
     }
 
-    /** @test */
+    #[Test]
     public function notification_channel_type_icon_accessor_returns_correct_icon_for_email(): void
     {
         $channel = NotificationChannel::factory()->create(['type' => 'email']);
@@ -945,7 +947,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals('envelope', $channel->type_icon);
     }
 
-    /** @test */
+    #[Test]
     public function notification_channel_type_icon_accessor_returns_correct_icon_for_slack(): void
     {
         $channel = NotificationChannel::factory()->create(['type' => 'slack']);
@@ -953,7 +955,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals('chat-bubble-left-right', $channel->type_icon);
     }
 
-    /** @test */
+    #[Test]
     public function notification_channel_type_icon_accessor_returns_default_icon(): void
     {
         $channel = NotificationChannel::factory()->create(['type' => 'unknown']);
@@ -961,7 +963,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals('bell', $channel->type_icon);
     }
 
-    /** @test */
+    #[Test]
     public function notification_channel_type_label_accessor_returns_correct_label(): void
     {
         $channel = NotificationChannel::factory()->create(['type' => 'slack']);
@@ -969,7 +971,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals('Slack', $channel->type_label);
     }
 
-    /** @test */
+    #[Test]
     public function notification_channel_config_summary_accessor_returns_email_summary(): void
     {
         $channel = NotificationChannel::factory()->create([
@@ -980,7 +982,7 @@ class TeamAuthModelsTest extends TestCase
         $this->assertEquals('test@example.com', $channel->config_summary);
     }
 
-    /** @test */
+    #[Test]
     public function notification_channel_config_summary_accessor_returns_webhook_summary(): void
     {
         $channel = NotificationChannel::factory()->create([

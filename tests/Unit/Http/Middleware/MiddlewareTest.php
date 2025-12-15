@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Http\Middleware;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Http\Middleware\AuthenticateApiToken;
 use App\Http\Middleware\EnsureTeamAccess;
 use App\Models\ApiToken;
 use App\Models\Team;
 use App\Models\TeamMember;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
@@ -18,7 +20,7 @@ use Tests\TestCase;
 
 class MiddlewareTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     protected User $user;
     protected Team $team;
@@ -40,7 +42,7 @@ class MiddlewareTest extends TestCase
 
     // ==================== AuthenticateApiToken Middleware Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_allows_request_with_valid_api_token(): void
     {
         $token = ApiToken::factory()->create([
@@ -60,7 +62,7 @@ class MiddlewareTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_request_without_api_token(): void
     {
         $request = Request::create('/api/v1/projects', 'GET');
@@ -73,7 +75,7 @@ class MiddlewareTest extends TestCase
         $this->assertEquals(401, $response->getStatusCode());
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_request_with_invalid_api_token(): void
     {
         $request = Request::create('/api/v1/projects', 'GET');
@@ -87,7 +89,7 @@ class MiddlewareTest extends TestCase
         $this->assertEquals(401, $response->getStatusCode());
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_request_with_expired_api_token(): void
     {
         $token = ApiToken::factory()->create([
@@ -109,7 +111,7 @@ class MiddlewareTest extends TestCase
 
     // ==================== EnsureTeamAccess Middleware Tests ====================
 
-    /** @test */
+    #[Test]
     public function it_allows_team_owner_access(): void
     {
         $this->actingAs($this->user);
@@ -133,7 +135,7 @@ class MiddlewareTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    /** @test */
+    #[Test]
     public function it_allows_team_member_access(): void
     {
         $member = User::factory()->create();
@@ -164,7 +166,7 @@ class MiddlewareTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    /** @test */
+    #[Test]
     public function it_denies_non_team_member_access(): void
     {
         $nonMember = User::factory()->create();

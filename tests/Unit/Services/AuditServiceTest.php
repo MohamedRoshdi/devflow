@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\AuditLog;
 use App\Models\Deployment;
 use App\Models\Project;
@@ -26,7 +28,7 @@ class AuditServiceTest extends TestCase
 
     // ==================== LOG METHOD TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_logs_action_with_authenticated_user(): void
     {
         // Arrange
@@ -54,7 +56,7 @@ class AuditServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_action_without_authenticated_user(): void
     {
         // Arrange
@@ -73,7 +75,7 @@ class AuditServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_action_with_old_and_new_values(): void
     {
         // Arrange
@@ -93,7 +95,7 @@ class AuditServiceTest extends TestCase
         $this->assertEquals($newValues, $log->new_values);
     }
 
-    /** @test */
+    #[Test]
     public function it_sanitizes_sensitive_data_when_logging(): void
     {
         // Arrange
@@ -130,7 +132,7 @@ class AuditServiceTest extends TestCase
         $this->assertEquals('Server Updated', $log->new_values['name']);
     }
 
-    /** @test */
+    #[Test]
     public function it_sanitizes_password_confirmation(): void
     {
         // Arrange
@@ -153,7 +155,7 @@ class AuditServiceTest extends TestCase
         $this->assertEquals('test@example.com', $log->new_values['email']);
     }
 
-    /** @test */
+    #[Test]
     public function it_sanitizes_all_sensitive_keys(): void
     {
         // Arrange
@@ -181,7 +183,7 @@ class AuditServiceTest extends TestCase
         $this->assertEquals('visible', $log->new_values['public_data']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_null_values_when_logging(): void
     {
         // Arrange
@@ -198,7 +200,7 @@ class AuditServiceTest extends TestCase
         $this->assertNull($log->new_values);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_actions_for_different_model_types(): void
     {
         // Arrange
@@ -220,7 +222,7 @@ class AuditServiceTest extends TestCase
 
     // ==================== GET LOGS FOR MODEL TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_gets_logs_for_specific_model(): void
     {
         // Arrange
@@ -247,7 +249,7 @@ class AuditServiceTest extends TestCase
         $this->assertTrue($logs->every(fn ($log) => $log->auditable_type === Project::class));
     }
 
-    /** @test */
+    #[Test]
     public function it_limits_logs_for_model(): void
     {
         // Arrange
@@ -268,7 +270,7 @@ class AuditServiceTest extends TestCase
         $this->assertCount(25, $logs);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_logs_with_user_relationship(): void
     {
         // Arrange
@@ -288,7 +290,7 @@ class AuditServiceTest extends TestCase
         $this->assertEquals('Test User', $logs->first()->user->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_logs_in_latest_first_order(): void
     {
         // Arrange
@@ -315,7 +317,7 @@ class AuditServiceTest extends TestCase
 
     // ==================== GET LOGS BY USER TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_gets_logs_by_user(): void
     {
         // Arrange
@@ -344,7 +346,7 @@ class AuditServiceTest extends TestCase
         $this->assertTrue($user2Logs->every(fn ($log) => $log->user_id === $user2->id));
     }
 
-    /** @test */
+    #[Test]
     public function it_limits_logs_by_user(): void
     {
         // Arrange
@@ -365,7 +367,7 @@ class AuditServiceTest extends TestCase
         $this->assertCount(50, $logs);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_logs_by_user_with_auditable_relationship(): void
     {
         // Arrange
@@ -387,7 +389,7 @@ class AuditServiceTest extends TestCase
 
     // ==================== GET LOGS BY ACTION TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_gets_logs_by_action(): void
     {
         // Arrange
@@ -413,7 +415,7 @@ class AuditServiceTest extends TestCase
         $this->assertTrue($updatedLogs->every(fn ($log) => $log->action === 'project.updated'));
     }
 
-    /** @test */
+    #[Test]
     public function it_limits_logs_by_action(): void
     {
         // Arrange
@@ -434,7 +436,7 @@ class AuditServiceTest extends TestCase
         $this->assertCount(30, $logs);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_logs_by_action_with_relationships(): void
     {
         // Arrange
@@ -458,7 +460,7 @@ class AuditServiceTest extends TestCase
 
     // ==================== GET LOGS FILTERED TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_filters_logs_by_user_id(): void
     {
         // Arrange
@@ -481,7 +483,7 @@ class AuditServiceTest extends TestCase
         $this->assertEquals($user1->id, $logs->first()->user_id);
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_logs_by_action_with_like(): void
     {
         // Arrange
@@ -502,7 +504,7 @@ class AuditServiceTest extends TestCase
         $this->assertTrue($logs->every(fn ($log) => str_contains($log->action, 'created')));
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_logs_by_action_category(): void
     {
         // Arrange
@@ -529,7 +531,7 @@ class AuditServiceTest extends TestCase
         $this->assertTrue($serverLogs->every(fn ($log) => str_starts_with($log->action, 'server.')));
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_logs_by_model_type(): void
     {
         // Arrange
@@ -554,7 +556,7 @@ class AuditServiceTest extends TestCase
         $this->assertTrue($serverLogs->every(fn ($log) => $log->auditable_type === Server::class));
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_logs_by_date_range(): void
     {
         // Arrange
@@ -590,7 +592,7 @@ class AuditServiceTest extends TestCase
         $this->assertNotContains($log1->id, $ids);
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_logs_by_from_date_only(): void
     {
         // Arrange
@@ -613,7 +615,7 @@ class AuditServiceTest extends TestCase
         $this->assertEquals($newLog->id, $logs->first()->id);
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_logs_by_to_date_only(): void
     {
         // Arrange
@@ -636,7 +638,7 @@ class AuditServiceTest extends TestCase
         $this->assertEquals($oldLog->id, $logs->first()->id);
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_logs_by_ip_address(): void
     {
         // Arrange
@@ -671,7 +673,7 @@ class AuditServiceTest extends TestCase
         $this->assertEquals('192.168.1.100', $logs->first()->ip_address);
     }
 
-    /** @test */
+    #[Test]
     public function it_applies_custom_limit_when_filtering(): void
     {
         // Arrange
@@ -692,7 +694,7 @@ class AuditServiceTest extends TestCase
         $this->assertCount(15, $logs);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_default_limit_when_not_specified(): void
     {
         // Arrange
@@ -713,7 +715,7 @@ class AuditServiceTest extends TestCase
         $this->assertCount(100, $logs); // Default limit is 100
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_logs_with_multiple_criteria(): void
     {
         // Arrange
@@ -750,7 +752,7 @@ class AuditServiceTest extends TestCase
 
     // ==================== GET ACTIVITY STATS TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_calculates_activity_statistics(): void
     {
         // Arrange
@@ -784,7 +786,7 @@ class AuditServiceTest extends TestCase
         $this->assertEquals(1, $stats['by_model_type'][Server::class]);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_stats_with_date_range_filter(): void
     {
         // Arrange
@@ -817,7 +819,7 @@ class AuditServiceTest extends TestCase
         $this->assertArrayHasKey('project.updated', $stats['by_action']);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_empty_stats_when_no_logs(): void
     {
         // Act
@@ -830,7 +832,7 @@ class AuditServiceTest extends TestCase
         $this->assertEmpty($stats['by_model_type']);
     }
 
-    /** @test */
+    #[Test]
     public function it_excludes_null_users_from_user_stats(): void
     {
         // Arrange
@@ -856,7 +858,7 @@ class AuditServiceTest extends TestCase
 
     // ==================== EXPORT TO CSV TESTS ====================
 
-    /** @test */
+    #[Test]
     public function it_exports_logs_to_csv(): void
     {
         // Arrange
@@ -880,7 +882,7 @@ class AuditServiceTest extends TestCase
         $this->assertGreaterThan(1, count($lines));
     }
 
-    /** @test */
+    #[Test]
     public function it_exports_logs_with_system_user_when_no_user(): void
     {
         // Arrange
@@ -896,7 +898,7 @@ class AuditServiceTest extends TestCase
         $this->assertStringContainsString('System', $csv);
     }
 
-    /** @test */
+    #[Test]
     public function it_exports_logs_with_na_for_null_ip(): void
     {
         // Arrange
@@ -921,7 +923,7 @@ class AuditServiceTest extends TestCase
         $this->assertStringContainsString('N/A', $csv);
     }
 
-    /** @test */
+    #[Test]
     public function it_exports_filtered_logs_to_csv(): void
     {
         // Arrange
@@ -946,7 +948,7 @@ class AuditServiceTest extends TestCase
         $this->assertStringNotContainsString('project.updated', $csv);
     }
 
-    /** @test */
+    #[Test]
     public function it_exports_multiple_logs_to_csv(): void
     {
         // Arrange
@@ -970,7 +972,7 @@ class AuditServiceTest extends TestCase
         $this->assertStringContainsString('Project', $csv); // Model type
     }
 
-    /** @test */
+    #[Test]
     public function it_exports_csv_with_changes_summary(): void
     {
         // Arrange
@@ -993,7 +995,7 @@ class AuditServiceTest extends TestCase
         $this->assertStringContainsString('name', $csv);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_empty_csv_when_no_logs(): void
     {
         // Act

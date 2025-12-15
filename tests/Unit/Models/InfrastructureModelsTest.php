@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Models;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Domain;
 use App\Models\HealthCheck;
 use App\Models\HealthCheckResult;
@@ -21,7 +23,7 @@ class InfrastructureModelsTest extends TestCase
     // Domain Model Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function domain_can_be_created_with_factory(): void
     {
         $domain = Domain::factory()->create();
@@ -32,7 +34,7 @@ class InfrastructureModelsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function domain_belongs_to_project(): void
     {
         $project = Project::factory()->create();
@@ -42,7 +44,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals($project->id, $domain->project->id);
     }
 
-    /** @test */
+    #[Test]
     public function domain_casts_boolean_attributes_correctly(): void
     {
         $domain = Domain::factory()->create([
@@ -58,7 +60,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertTrue($domain->dns_configured);
     }
 
-    /** @test */
+    #[Test]
     public function domain_casts_datetime_attributes_correctly(): void
     {
         $domain = Domain::factory()->create([
@@ -70,7 +72,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $domain->ssl_expires_at);
     }
 
-    /** @test */
+    #[Test]
     public function domain_casts_metadata_as_array(): void
     {
         $metadata = ['key' => 'value', 'nested' => ['data' => 'test']];
@@ -80,7 +82,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals($metadata, $domain->metadata);
     }
 
-    /** @test */
+    #[Test]
     public function domain_has_ssl_returns_true_when_ssl_enabled(): void
     {
         $domain = Domain::factory()->create(['ssl_enabled' => true]);
@@ -88,7 +90,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertTrue($domain->hasSsl());
     }
 
-    /** @test */
+    #[Test]
     public function domain_has_ssl_returns_false_when_ssl_disabled(): void
     {
         $domain = Domain::factory()->create(['ssl_enabled' => false]);
@@ -96,7 +98,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertFalse($domain->hasSsl());
     }
 
-    /** @test */
+    #[Test]
     public function domain_ssl_expires_soon_returns_true_when_expiring_within_30_days(): void
     {
         $domain = Domain::factory()->create([
@@ -106,7 +108,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertTrue($domain->sslExpiresSoon());
     }
 
-    /** @test */
+    #[Test]
     public function domain_ssl_expires_soon_returns_false_when_expiring_after_30_days(): void
     {
         $domain = Domain::factory()->create([
@@ -116,7 +118,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertFalse($domain->sslExpiresSoon());
     }
 
-    /** @test */
+    #[Test]
     public function domain_ssl_expires_soon_returns_false_when_no_expiry_date(): void
     {
         $domain = Domain::factory()->create([
@@ -126,7 +128,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertFalse($domain->sslExpiresSoon());
     }
 
-    /** @test */
+    #[Test]
     public function domain_ssl_is_expired_returns_true_when_past_expiry_date(): void
     {
         $domain = Domain::factory()->create([
@@ -136,7 +138,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertTrue($domain->sslIsExpired());
     }
 
-    /** @test */
+    #[Test]
     public function domain_ssl_is_expired_returns_false_when_not_expired(): void
     {
         $domain = Domain::factory()->create([
@@ -146,7 +148,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertFalse($domain->sslIsExpired());
     }
 
-    /** @test */
+    #[Test]
     public function domain_status_color_returns_red_when_ssl_expired(): void
     {
         $domain = Domain::factory()->create([
@@ -156,7 +158,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals('red', $domain->status_color);
     }
 
-    /** @test */
+    #[Test]
     public function domain_status_color_returns_yellow_when_ssl_expires_soon(): void
     {
         $domain = Domain::factory()->create([
@@ -166,7 +168,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals('yellow', $domain->status_color);
     }
 
-    /** @test */
+    #[Test]
     public function domain_status_color_returns_green_when_active(): void
     {
         $domain = Domain::factory()->create([
@@ -177,7 +179,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals('green', $domain->status_color);
     }
 
-    /** @test */
+    #[Test]
     public function domain_uses_soft_deletes(): void
     {
         $domain = Domain::factory()->create();
@@ -190,7 +192,7 @@ class InfrastructureModelsTest extends TestCase
     // SSLCertificate Model Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function ssl_certificate_can_be_created_with_factory(): void
     {
         $cert = SSLCertificate::factory()->create();
@@ -201,7 +203,7 @@ class InfrastructureModelsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_certificate_belongs_to_server(): void
     {
         $server = Server::factory()->create();
@@ -211,7 +213,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals($server->id, $cert->server->id);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_certificate_belongs_to_domain(): void
     {
         $domain = Domain::factory()->create();
@@ -221,7 +223,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals($domain->id, $cert->domain->id);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_certificate_casts_datetime_attributes(): void
     {
         $cert = SSLCertificate::factory()->create([
@@ -235,7 +237,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $cert->last_renewal_attempt);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_certificate_is_expired_returns_true_when_past_expiry(): void
     {
         $cert = SSLCertificate::factory()->create([
@@ -245,7 +247,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertTrue($cert->isExpired());
     }
 
-    /** @test */
+    #[Test]
     public function ssl_certificate_is_expired_returns_false_when_not_expired(): void
     {
         $cert = SSLCertificate::factory()->create([
@@ -255,7 +257,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertFalse($cert->isExpired());
     }
 
-    /** @test */
+    #[Test]
     public function ssl_certificate_is_expiring_soon_returns_true_within_default_7_days(): void
     {
         $cert = SSLCertificate::factory()->create([
@@ -265,7 +267,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertTrue($cert->isExpiringSoon());
     }
 
-    /** @test */
+    #[Test]
     public function ssl_certificate_is_expiring_soon_accepts_custom_days_parameter(): void
     {
         $cert = SSLCertificate::factory()->create([
@@ -276,7 +278,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertFalse($cert->isExpiringSoon(7));
     }
 
-    /** @test */
+    #[Test]
     public function ssl_certificate_is_expiring_soon_returns_false_when_expired(): void
     {
         $cert = SSLCertificate::factory()->create([
@@ -286,7 +288,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertFalse($cert->isExpiringSoon());
     }
 
-    /** @test */
+    #[Test]
     public function ssl_certificate_needs_renewal_returns_true_when_conditions_met(): void
     {
         $cert = SSLCertificate::factory()->create([
@@ -298,7 +300,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertTrue($cert->needsRenewal());
     }
 
-    /** @test */
+    #[Test]
     public function ssl_certificate_needs_renewal_returns_false_when_auto_renew_disabled(): void
     {
         $cert = SSLCertificate::factory()->create([
@@ -309,7 +311,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertFalse($cert->needsRenewal());
     }
 
-    /** @test */
+    #[Test]
     public function ssl_certificate_needs_renewal_returns_false_when_revoked(): void
     {
         $cert = SSLCertificate::factory()->create([
@@ -321,7 +323,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertFalse($cert->needsRenewal());
     }
 
-    /** @test */
+    #[Test]
     public function ssl_certificate_days_until_expiry_returns_correct_days(): void
     {
         $cert = SSLCertificate::factory()->create([
@@ -331,7 +333,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEqualsWithDelta(45, $cert->daysUntilExpiry(), 1);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_certificate_days_until_expiry_returns_zero_when_expired(): void
     {
         $cert = SSLCertificate::factory()->create([
@@ -341,7 +343,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals(0, $cert->daysUntilExpiry());
     }
 
-    /** @test */
+    #[Test]
     public function ssl_certificate_days_until_expiry_returns_null_when_no_expiry_date(): void
     {
         $cert = SSLCertificate::factory()->create([
@@ -351,7 +353,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertNull($cert->daysUntilExpiry());
     }
 
-    /** @test */
+    #[Test]
     public function ssl_certificate_get_status_badge_class_returns_correct_classes(): void
     {
         $expiredCert = SSLCertificate::factory()->create(['expires_at' => now()->subDays(5)]);
@@ -364,7 +366,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals('bg-green-500/20 text-green-400 border-green-500/30', $issuedCert->getStatusBadgeClass());
     }
 
-    /** @test */
+    #[Test]
     public function ssl_certificate_get_status_label_returns_correct_labels(): void
     {
         $expiredCert = SSLCertificate::factory()->create(['expires_at' => now()->subDays(5)]);
@@ -381,7 +383,7 @@ class InfrastructureModelsTest extends TestCase
     // HealthCheck Model Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function health_check_can_be_created_with_factory(): void
     {
         $healthCheck = HealthCheck::factory()->create();
@@ -392,7 +394,7 @@ class InfrastructureModelsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function health_check_belongs_to_project(): void
     {
         $project = Project::factory()->create();
@@ -402,7 +404,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals($project->id, $healthCheck->project->id);
     }
 
-    /** @test */
+    #[Test]
     public function health_check_belongs_to_server(): void
     {
         $server = Server::factory()->create();
@@ -412,7 +414,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals($server->id, $healthCheck->server->id);
     }
 
-    /** @test */
+    #[Test]
     public function health_check_has_many_results(): void
     {
         $healthCheck = HealthCheck::factory()->create();
@@ -422,7 +424,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertInstanceOf(HealthCheckResult::class, $healthCheck->results->first());
     }
 
-    /** @test */
+    #[Test]
     public function health_check_has_recent_results_relationship(): void
     {
         $healthCheck = HealthCheck::factory()->create();
@@ -431,7 +433,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertLessThanOrEqual(10, $healthCheck->recentResults->count());
     }
 
-    /** @test */
+    #[Test]
     public function health_check_belongs_to_many_notification_channels(): void
     {
         // Skip: NotificationChannel factory uses user_id but table created by 2024 migration doesn't have it
@@ -439,7 +441,7 @@ class InfrastructureModelsTest extends TestCase
         $this->markTestSkipped('NotificationChannel migration conflict - table schema mismatch');
     }
 
-    /** @test */
+    #[Test]
     public function health_check_is_due_returns_true_when_active_and_never_checked(): void
     {
         $healthCheck = HealthCheck::factory()->create([
@@ -450,7 +452,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertTrue($healthCheck->isDue());
     }
 
-    /** @test */
+    #[Test]
     public function health_check_is_due_returns_false_when_inactive(): void
     {
         $healthCheck = HealthCheck::factory()->create([
@@ -461,7 +463,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertFalse($healthCheck->isDue());
     }
 
-    /** @test */
+    #[Test]
     public function health_check_is_due_returns_true_when_interval_passed(): void
     {
         $healthCheck = HealthCheck::factory()->create([
@@ -473,7 +475,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertTrue($healthCheck->isDue());
     }
 
-    /** @test */
+    #[Test]
     public function health_check_is_due_returns_false_when_interval_not_passed(): void
     {
         $healthCheck = HealthCheck::factory()->create([
@@ -485,7 +487,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertFalse($healthCheck->isDue());
     }
 
-    /** @test */
+    #[Test]
     public function health_check_display_name_includes_project_name(): void
     {
         $project = Project::factory()->create(['name' => 'Test Project']);
@@ -497,7 +499,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals('Test Project - Http', $healthCheck->display_name);
     }
 
-    /** @test */
+    #[Test]
     public function health_check_display_name_includes_server_name(): void
     {
         $server = Server::factory()->create(['name' => 'Test Server']);
@@ -510,7 +512,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals('Test Server - Ping', $healthCheck->display_name);
     }
 
-    /** @test */
+    #[Test]
     public function health_check_status_color_returns_correct_colors(): void
     {
         $healthy = HealthCheck::factory()->create(['status' => 'healthy']);
@@ -523,7 +525,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals('red', $down->status_color);
     }
 
-    /** @test */
+    #[Test]
     public function health_check_status_icon_returns_correct_icons(): void
     {
         $healthy = HealthCheck::factory()->create(['status' => 'healthy']);
@@ -540,7 +542,7 @@ class InfrastructureModelsTest extends TestCase
     // HealthCheckResult Model Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function health_check_result_can_be_created_with_factory(): void
     {
         $result = HealthCheckResult::factory()->create();
@@ -551,7 +553,7 @@ class InfrastructureModelsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function health_check_result_belongs_to_health_check(): void
     {
         $healthCheck = HealthCheck::factory()->create();
@@ -561,28 +563,28 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals($healthCheck->id, $result->healthCheck->id);
     }
 
-    /** @test */
+    #[Test]
     public function health_check_result_does_not_use_timestamps(): void
     {
         $result = new HealthCheckResult;
         $this->assertFalse($result->timestamps);
     }
 
-    /** @test */
+    #[Test]
     public function health_check_result_is_success_returns_true_when_success(): void
     {
         $result = HealthCheckResult::factory()->create(['status' => 'success']);
         $this->assertTrue($result->isSuccess());
     }
 
-    /** @test */
+    #[Test]
     public function health_check_result_is_success_returns_false_when_not_success(): void
     {
         $result = HealthCheckResult::factory()->create(['status' => 'failure']);
         $this->assertFalse($result->isSuccess());
     }
 
-    /** @test */
+    #[Test]
     public function health_check_result_is_failure_returns_true_for_failure_and_timeout(): void
     {
         $failure = HealthCheckResult::factory()->create(['status' => 'failure']);
@@ -592,7 +594,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertTrue($timeout->isFailure());
     }
 
-    /** @test */
+    #[Test]
     public function health_check_result_status_color_returns_correct_colors(): void
     {
         $success = HealthCheckResult::factory()->create(['status' => 'success']);
@@ -605,21 +607,21 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals('red', $failure->status_color);
     }
 
-    /** @test */
+    #[Test]
     public function health_check_result_formatted_response_time_returns_milliseconds(): void
     {
         $result = HealthCheckResult::factory()->create(['response_time_ms' => 250]);
         $this->assertEquals('250ms', $result->formatted_response_time);
     }
 
-    /** @test */
+    #[Test]
     public function health_check_result_formatted_response_time_returns_seconds(): void
     {
         $result = HealthCheckResult::factory()->create(['response_time_ms' => 2500]);
         $this->assertEquals('2.5s', $result->formatted_response_time);
     }
 
-    /** @test */
+    #[Test]
     public function health_check_result_formatted_response_time_returns_na_when_null(): void
     {
         $result = HealthCheckResult::factory()->create(['response_time_ms' => null]);
@@ -630,7 +632,7 @@ class InfrastructureModelsTest extends TestCase
     // LogEntry Model Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function log_entry_can_be_created_with_factory(): void
     {
         $logEntry = LogEntry::factory()->create();
@@ -641,7 +643,7 @@ class InfrastructureModelsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function log_entry_belongs_to_server(): void
     {
         $server = Server::factory()->create();
@@ -651,7 +653,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals($server->id, $logEntry->server->id);
     }
 
-    /** @test */
+    #[Test]
     public function log_entry_belongs_to_project(): void
     {
         $project = Project::factory()->create();
@@ -661,7 +663,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals($project->id, $logEntry->project->id);
     }
 
-    /** @test */
+    #[Test]
     public function log_entry_casts_context_as_array(): void
     {
         $context = ['user_id' => 1, 'action' => 'login'];
@@ -671,7 +673,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals($context, $logEntry->context);
     }
 
-    /** @test */
+    #[Test]
     public function log_entry_scope_by_level_filters_correctly(): void
     {
         LogEntry::factory()->create(['level' => 'error']);
@@ -682,7 +684,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertCount(2, $errors);
     }
 
-    /** @test */
+    #[Test]
     public function log_entry_scope_by_source_filters_correctly(): void
     {
         LogEntry::factory()->create(['source' => 'nginx']);
@@ -693,7 +695,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertCount(2, $nginxLogs);
     }
 
-    /** @test */
+    #[Test]
     public function log_entry_scope_by_server_filters_correctly(): void
     {
         $server = Server::factory()->create();
@@ -704,7 +706,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertCount(3, $serverLogs);
     }
 
-    /** @test */
+    #[Test]
     public function log_entry_scope_by_project_filters_correctly(): void
     {
         $project = Project::factory()->create();
@@ -715,7 +717,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertCount(2, $projectLogs);
     }
 
-    /** @test */
+    #[Test]
     public function log_entry_scope_search_finds_in_message_and_file_path(): void
     {
         LogEntry::factory()->create(['message' => 'Database connection error']);
@@ -726,7 +728,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertCount(2, $results);
     }
 
-    /** @test */
+    #[Test]
     public function log_entry_scope_date_range_filters_correctly(): void
     {
         LogEntry::factory()->create(['logged_at' => now()->subDays(10)]);
@@ -737,7 +739,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertCount(2, $recent);
     }
 
-    /** @test */
+    #[Test]
     public function log_entry_scope_recent_orders_by_logged_at_desc(): void
     {
         $oldest = LogEntry::factory()->create(['logged_at' => now()->subDays(3)]);
@@ -748,7 +750,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals($newest->id, $logs->first()->id);
     }
 
-    /** @test */
+    #[Test]
     public function log_entry_level_color_returns_correct_colors(): void
     {
         $debug = LogEntry::factory()->create(['level' => 'debug']);
@@ -764,7 +766,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals('purple', $critical->level_color);
     }
 
-    /** @test */
+    #[Test]
     public function log_entry_source_badge_color_returns_correct_colors(): void
     {
         $nginx = LogEntry::factory()->create(['source' => 'nginx']);
@@ -777,7 +779,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals('blue', $mysql->source_badge_color);
     }
 
-    /** @test */
+    #[Test]
     public function log_entry_truncated_message_truncates_long_messages(): void
     {
         $longMessage = str_repeat('a', 200);
@@ -787,7 +789,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertStringEndsWith('...', $logEntry->truncated_message);
     }
 
-    /** @test */
+    #[Test]
     public function log_entry_truncated_message_does_not_truncate_short_messages(): void
     {
         $shortMessage = 'Short message';
@@ -796,7 +798,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals($shortMessage, $logEntry->truncated_message);
     }
 
-    /** @test */
+    #[Test]
     public function log_entry_location_combines_file_path_and_line_number(): void
     {
         $logEntry = LogEntry::factory()->create([
@@ -807,7 +809,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals('/var/www/app.php:42', $logEntry->location);
     }
 
-    /** @test */
+    #[Test]
     public function log_entry_location_returns_file_path_only_when_no_line_number(): void
     {
         $logEntry = LogEntry::factory()->create([
@@ -822,7 +824,7 @@ class InfrastructureModelsTest extends TestCase
     // LogSource Model Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function log_source_can_be_created_with_factory(): void
     {
         $logSource = LogSource::factory()->create();
@@ -833,7 +835,7 @@ class InfrastructureModelsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function log_source_belongs_to_server(): void
     {
         $server = Server::factory()->create();
@@ -843,7 +845,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals($server->id, $logSource->server->id);
     }
 
-    /** @test */
+    #[Test]
     public function log_source_belongs_to_project(): void
     {
         $project = Project::factory()->create();
@@ -853,7 +855,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals($project->id, $logSource->project->id);
     }
 
-    /** @test */
+    #[Test]
     public function log_source_scope_active_filters_only_active_sources(): void
     {
         LogSource::factory()->create(['is_active' => true]);
@@ -864,7 +866,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertCount(2, $activeSources);
     }
 
-    /** @test */
+    #[Test]
     public function log_source_scope_for_server_filters_by_server_id(): void
     {
         $server = Server::factory()->create();
@@ -875,7 +877,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertCount(2, $serverSources);
     }
 
-    /** @test */
+    #[Test]
     public function log_source_scope_for_project_filters_by_project_id(): void
     {
         $project = Project::factory()->create();
@@ -886,7 +888,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertCount(3, $projectSources);
     }
 
-    /** @test */
+    #[Test]
     public function log_source_display_name_includes_project_name(): void
     {
         $project = Project::factory()->create(['name' => 'My Project']);
@@ -898,7 +900,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals('Laravel Logs (My Project)', $logSource->display_name);
     }
 
-    /** @test */
+    #[Test]
     public function log_source_display_name_includes_server_name(): void
     {
         $server = Server::factory()->create(['name' => 'Production Server']);
@@ -911,7 +913,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertEquals('Nginx Logs (Production Server)', $logSource->display_name);
     }
 
-    /** @test */
+    #[Test]
     public function log_source_predefined_templates_returns_array(): void
     {
         $templates = LogSource::predefinedTemplates();
@@ -923,7 +925,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertArrayHasKey('docker', $templates);
     }
 
-    /** @test */
+    #[Test]
     public function log_source_predefined_templates_have_required_keys(): void
     {
         $templates = LogSource::predefinedTemplates();
@@ -936,7 +938,7 @@ class InfrastructureModelsTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function log_source_casts_is_active_as_boolean(): void
     {
         $logSource = LogSource::factory()->create(['is_active' => true]);
@@ -944,7 +946,7 @@ class InfrastructureModelsTest extends TestCase
         $this->assertIsBool($logSource->is_active);
     }
 
-    /** @test */
+    #[Test]
     public function log_source_casts_last_synced_at_as_datetime(): void
     {
         $logSource = LogSource::factory()->create(['last_synced_at' => now()]);

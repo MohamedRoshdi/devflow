@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Livewire;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\Servers\ResourceAlertManager;
 use App\Livewire\Servers\Security\Fail2banManager;
 use App\Livewire\Servers\Security\FirewallManager;
@@ -56,7 +58,7 @@ class ServerComponentsTest extends TestCase
     // ServerList Component Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function server_list_renders_for_authenticated_user(): void
     {
         Livewire::actingAs($this->user)
@@ -64,7 +66,7 @@ class ServerComponentsTest extends TestCase
             ->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function server_list_shows_all_servers(): void
     {
         $server1 = Server::factory()->create(['name' => 'Test Server 1']);
@@ -76,7 +78,7 @@ class ServerComponentsTest extends TestCase
             ->assertSee('Test Server 2');
     }
 
-    /** @test */
+    #[Test]
     public function server_list_can_filter_by_search(): void
     {
         Server::factory()->create(['name' => 'Production Server']);
@@ -89,7 +91,7 @@ class ServerComponentsTest extends TestCase
             ->assertDontSee('Development Server');
     }
 
-    /** @test */
+    #[Test]
     public function server_list_can_filter_by_status(): void
     {
         Server::factory()->create(['status' => 'online']);
@@ -101,7 +103,7 @@ class ServerComponentsTest extends TestCase
             ->assertPropertyWired('statusFilter');
     }
 
-    /** @test */
+    #[Test]
     public function server_list_can_ping_single_server(): void
     {
         Process::fake([
@@ -117,7 +119,7 @@ class ServerComponentsTest extends TestCase
         $this->assertNotNull($this->server->last_ping_at);
     }
 
-    /** @test */
+    #[Test]
     public function server_list_can_ping_all_servers(): void
     {
         Process::fake();
@@ -130,7 +132,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('isPingingAll', false);
     }
 
-    /** @test */
+    #[Test]
     public function server_list_can_delete_server(): void
     {
         $server = Server::factory()->create();
@@ -143,7 +145,7 @@ class ServerComponentsTest extends TestCase
         $this->assertDatabaseMissing('servers', ['id' => $serverId]);
     }
 
-    /** @test */
+    #[Test]
     public function server_list_can_reboot_server(): void
     {
         Process::fake();
@@ -154,7 +156,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function server_list_can_add_current_server(): void
     {
         Process::fake();
@@ -165,7 +167,7 @@ class ServerComponentsTest extends TestCase
             ->assertDispatched('server-created');
     }
 
-    /** @test */
+    #[Test]
     public function server_list_can_toggle_server_selection(): void
     {
         Livewire::actingAs($this->user)
@@ -174,7 +176,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('selectedServers', [$this->server->id]);
     }
 
-    /** @test */
+    #[Test]
     public function server_list_can_toggle_select_all(): void
     {
         Livewire::actingAs($this->user)
@@ -183,7 +185,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('selectAll', true);
     }
 
-    /** @test */
+    #[Test]
     public function server_list_can_clear_selection(): void
     {
         Livewire::actingAs($this->user)
@@ -194,7 +196,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('selectAll', false);
     }
 
-    /** @test */
+    #[Test]
     public function server_list_can_bulk_ping(): void
     {
         Process::fake();
@@ -208,7 +210,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('showResultsModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function server_list_bulk_ping_requires_selection(): void
     {
         Livewire::actingAs($this->user)
@@ -217,7 +219,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function server_list_can_bulk_reboot(): void
     {
         Process::fake();
@@ -229,7 +231,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('showResultsModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function server_list_can_bulk_install_docker(): void
     {
         Process::fake();
@@ -241,7 +243,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('showResultsModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function server_list_can_toggle_tag_filter(): void
     {
         $tag = ServerTag::factory()->create();
@@ -252,7 +254,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('tagFilter', [$tag->id]);
     }
 
-    /** @test */
+    #[Test]
     public function server_list_can_close_results_modal(): void
     {
         Livewire::actingAs($this->user)
@@ -266,7 +268,7 @@ class ServerComponentsTest extends TestCase
     // ServerShow Component Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function server_show_renders_for_authorized_user(): void
     {
         Livewire::actingAs($this->user)
@@ -274,7 +276,7 @@ class ServerComponentsTest extends TestCase
             ->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function server_show_loads_metrics(): void
     {
         ServerMetric::factory()->count(5)->create(['server_id' => $this->server->id]);
@@ -284,7 +286,7 @@ class ServerComponentsTest extends TestCase
             ->assertPropertyWired('recentMetrics');
     }
 
-    /** @test */
+    #[Test]
     public function server_show_can_ping_server(): void
     {
         Process::fake([
@@ -300,7 +302,7 @@ class ServerComponentsTest extends TestCase
         $this->assertNotNull($this->server->last_ping_at);
     }
 
-    /** @test */
+    #[Test]
     public function server_show_can_check_docker_status(): void
     {
         Process::fake();
@@ -311,7 +313,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function server_show_can_install_docker(): void
     {
         Process::fake();
@@ -322,7 +324,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('dockerInstalling', true);
     }
 
-    /** @test */
+    #[Test]
     public function server_show_can_reboot_server(): void
     {
         Process::fake();
@@ -333,7 +335,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function server_show_can_restart_service(): void
     {
         Process::fake();
@@ -344,7 +346,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function server_show_can_clear_system_cache(): void
     {
         Process::fake();
@@ -355,7 +357,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function server_show_checks_docker_install_progress(): void
     {
         Cache::put("docker_install_{$this->server->id}", [
@@ -369,7 +371,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('dockerInstalling', true);
     }
 
-    /** @test */
+    #[Test]
     public function server_show_can_clear_docker_install_status(): void
     {
         Cache::put("docker_install_{$this->server->id}", [
@@ -388,7 +390,7 @@ class ServerComponentsTest extends TestCase
     // ServerCreate Component Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function server_create_renders(): void
     {
         Livewire::actingAs($this->user)
@@ -396,7 +398,7 @@ class ServerComponentsTest extends TestCase
             ->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function server_create_validates_required_fields(): void
     {
         Livewire::actingAs($this->user)
@@ -405,7 +407,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasErrors(['name', 'ip_address', 'port', 'username']);
     }
 
-    /** @test */
+    #[Test]
     public function server_create_validates_ip_address(): void
     {
         Livewire::actingAs($this->user)
@@ -415,7 +417,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasErrors(['ip_address']);
     }
 
-    /** @test */
+    #[Test]
     public function server_create_can_create_server_with_password(): void
     {
         Process::fake();
@@ -437,7 +439,7 @@ class ServerComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function server_create_can_create_server_with_key(): void
     {
         Process::fake();
@@ -454,7 +456,7 @@ class ServerComponentsTest extends TestCase
             ->assertRedirect();
     }
 
-    /** @test */
+    #[Test]
     public function server_create_can_test_connection(): void
     {
         Process::fake([
@@ -473,7 +475,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function server_create_validates_auth_method_requirements(): void
     {
         Livewire::actingAs($this->user)
@@ -491,7 +493,7 @@ class ServerComponentsTest extends TestCase
     // ServerEdit Component Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function server_edit_renders_for_authorized_user(): void
     {
         Livewire::actingAs($this->user)
@@ -499,7 +501,7 @@ class ServerComponentsTest extends TestCase
             ->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function server_edit_loads_server_data(): void
     {
         Livewire::actingAs($this->user)
@@ -508,7 +510,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('ip_address', $this->server->ip_address);
     }
 
-    /** @test */
+    #[Test]
     public function server_edit_can_update_server(): void
     {
         Process::fake();
@@ -523,7 +525,7 @@ class ServerComponentsTest extends TestCase
         $this->assertEquals('Updated Server Name', $this->server->name);
     }
 
-    /** @test */
+    #[Test]
     public function server_edit_validates_required_fields(): void
     {
         Livewire::actingAs($this->user)
@@ -533,7 +535,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasErrors(['name']);
     }
 
-    /** @test */
+    #[Test]
     public function server_edit_can_test_connection(): void
     {
         Process::fake();
@@ -544,7 +546,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function server_edit_can_update_credentials(): void
     {
         Process::fake();
@@ -561,7 +563,7 @@ class ServerComponentsTest extends TestCase
     // ServerProvisioning Component Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function server_provisioning_renders(): void
     {
         Livewire::actingAs($this->user)
@@ -569,7 +571,7 @@ class ServerComponentsTest extends TestCase
             ->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function server_provisioning_has_default_options(): void
     {
         Livewire::actingAs($this->user)
@@ -579,7 +581,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('phpVersion', '8.4');
     }
 
-    /** @test */
+    #[Test]
     public function server_provisioning_can_open_modal(): void
     {
         Livewire::actingAs($this->user)
@@ -588,7 +590,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('showProvisioningModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function server_provisioning_can_close_modal(): void
     {
         Livewire::actingAs($this->user)
@@ -598,7 +600,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('showProvisioningModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function server_provisioning_validates_options(): void
     {
         Livewire::actingAs($this->user)
@@ -608,7 +610,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasErrors(['phpVersion']);
     }
 
-    /** @test */
+    #[Test]
     public function server_provisioning_can_start_provisioning(): void
     {
         Process::fake();
@@ -619,7 +621,7 @@ class ServerComponentsTest extends TestCase
             ->assertDispatched('provisioning-started');
     }
 
-    /** @test */
+    #[Test]
     public function server_provisioning_can_refresh_status(): void
     {
         Livewire::actingAs($this->user)
@@ -632,7 +634,7 @@ class ServerComponentsTest extends TestCase
     // ServerMetricsDashboard Component Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function server_metrics_dashboard_renders(): void
     {
         Livewire::actingAs($this->user)
@@ -640,7 +642,7 @@ class ServerComponentsTest extends TestCase
             ->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function server_metrics_dashboard_loads_metrics(): void
     {
         ServerMetric::factory()->count(10)->create(['server_id' => $this->server->id]);
@@ -650,7 +652,7 @@ class ServerComponentsTest extends TestCase
             ->assertPropertyWired('metrics');
     }
 
-    /** @test */
+    #[Test]
     public function server_metrics_dashboard_can_refresh_metrics(): void
     {
         Process::fake();
@@ -661,7 +663,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('isCollecting', false);
     }
 
-    /** @test */
+    #[Test]
     public function server_metrics_dashboard_can_set_period(): void
     {
         Livewire::actingAs($this->user)
@@ -670,7 +672,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('period', '24h');
     }
 
-    /** @test */
+    #[Test]
     public function server_metrics_dashboard_can_toggle_live_mode(): void
     {
         Livewire::actingAs($this->user)
@@ -680,7 +682,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('liveMode', false);
     }
 
-    /** @test */
+    #[Test]
     public function server_metrics_dashboard_can_switch_process_view(): void
     {
         Process::fake();
@@ -691,7 +693,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('processView', 'memory');
     }
 
-    /** @test */
+    #[Test]
     public function server_metrics_dashboard_can_refresh_processes(): void
     {
         Process::fake();
@@ -702,7 +704,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function server_metrics_dashboard_computes_chart_data(): void
     {
         ServerMetric::factory()->count(5)->create(['server_id' => $this->server->id]);
@@ -717,7 +719,7 @@ class ServerComponentsTest extends TestCase
         $this->assertArrayHasKey('memory', $chartData);
     }
 
-    /** @test */
+    #[Test]
     public function server_metrics_dashboard_computes_alert_status(): void
     {
         ServerMetric::factory()->create([
@@ -738,7 +740,7 @@ class ServerComponentsTest extends TestCase
     // ServerBackupManager Component Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function server_backup_manager_renders(): void
     {
         Livewire::actingAs($this->user)
@@ -746,7 +748,7 @@ class ServerComponentsTest extends TestCase
             ->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function server_backup_manager_can_create_backup(): void
     {
         Process::fake();
@@ -759,7 +761,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('showCreateModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function server_backup_manager_validates_backup_type(): void
     {
         Livewire::actingAs($this->user)
@@ -769,7 +771,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasErrors(['backupType']);
     }
 
-    /** @test */
+    #[Test]
     public function server_backup_manager_can_delete_backup(): void
     {
         $backup = ServerBackup::factory()->create(['server_id' => $this->server->id]);
@@ -780,7 +782,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function server_backup_manager_can_restore_backup(): void
     {
         $backup = ServerBackup::factory()->create([
@@ -794,7 +796,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function server_backup_manager_can_create_schedule(): void
     {
         Livewire::actingAs($this->user)
@@ -814,7 +816,7 @@ class ServerComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function server_backup_manager_can_toggle_schedule(): void
     {
         $schedule = ServerBackupSchedule::factory()->create([
@@ -831,7 +833,7 @@ class ServerComponentsTest extends TestCase
         $this->assertFalse($schedule->is_active);
     }
 
-    /** @test */
+    #[Test]
     public function server_backup_manager_can_delete_schedule(): void
     {
         $schedule = ServerBackupSchedule::factory()->create(['server_id' => $this->server->id]);
@@ -848,7 +850,7 @@ class ServerComponentsTest extends TestCase
     // ServerTagManager Component Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function server_tag_manager_renders(): void
     {
         Livewire::actingAs($this->user)
@@ -856,7 +858,7 @@ class ServerComponentsTest extends TestCase
             ->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function server_tag_manager_loads_tags(): void
     {
         ServerTag::factory()->count(3)->create();
@@ -866,7 +868,7 @@ class ServerComponentsTest extends TestCase
             ->assertPropertyWired('tags');
     }
 
-    /** @test */
+    #[Test]
     public function server_tag_manager_can_create_tag(): void
     {
         Livewire::actingAs($this->user)
@@ -882,7 +884,7 @@ class ServerComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function server_tag_manager_validates_tag_name(): void
     {
         Livewire::actingAs($this->user)
@@ -892,7 +894,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasErrors(['newTagName']);
     }
 
-    /** @test */
+    #[Test]
     public function server_tag_manager_validates_unique_tag_name(): void
     {
         ServerTag::factory()->create(['name' => 'Production']);
@@ -905,7 +907,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasErrors(['newTagName']);
     }
 
-    /** @test */
+    #[Test]
     public function server_tag_manager_can_edit_tag(): void
     {
         $tag = ServerTag::factory()->create();
@@ -917,7 +919,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('showEditModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function server_tag_manager_can_update_tag(): void
     {
         $tag = ServerTag::factory()->create(['name' => 'Old Name']);
@@ -933,7 +935,7 @@ class ServerComponentsTest extends TestCase
         $this->assertEquals('New Name', $tag->name);
     }
 
-    /** @test */
+    #[Test]
     public function server_tag_manager_can_delete_tag(): void
     {
         $tag = ServerTag::factory()->create();
@@ -946,7 +948,7 @@ class ServerComponentsTest extends TestCase
         $this->assertDatabaseMissing('server_tags', ['id' => $tag->id]);
     }
 
-    /** @test */
+    #[Test]
     public function server_tag_manager_can_close_edit_modal(): void
     {
         Livewire::actingAs($this->user)
@@ -960,7 +962,7 @@ class ServerComponentsTest extends TestCase
     // ServerTagAssignment Component Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function server_tag_assignment_renders(): void
     {
         Livewire::actingAs($this->user)
@@ -968,7 +970,7 @@ class ServerComponentsTest extends TestCase
             ->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function server_tag_assignment_loads_available_tags(): void
     {
         ServerTag::factory()->count(3)->create(['user_id' => $this->user->id]);
@@ -978,7 +980,7 @@ class ServerComponentsTest extends TestCase
             ->assertPropertyWired('availableTags');
     }
 
-    /** @test */
+    #[Test]
     public function server_tag_assignment_can_toggle_tag(): void
     {
         $tag = ServerTag::factory()->create(['user_id' => $this->user->id]);
@@ -989,7 +991,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('selectedTags', [$tag->id]);
     }
 
-    /** @test */
+    #[Test]
     public function server_tag_assignment_can_save_tags(): void
     {
         $tag1 = ServerTag::factory()->create(['user_id' => $this->user->id]);
@@ -1008,7 +1010,7 @@ class ServerComponentsTest extends TestCase
     // SSHTerminal Component Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function ssh_terminal_renders(): void
     {
         Livewire::actingAs($this->user)
@@ -1016,7 +1018,7 @@ class ServerComponentsTest extends TestCase
             ->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function ssh_terminal_can_execute_command(): void
     {
         Process::fake([
@@ -1031,7 +1033,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('isExecuting', false);
     }
 
-    /** @test */
+    #[Test]
     public function ssh_terminal_stores_command_history(): void
     {
         Process::fake();
@@ -1046,7 +1048,7 @@ class ServerComponentsTest extends TestCase
         $this->assertEquals('whoami', $history[0]['command']);
     }
 
-    /** @test */
+    #[Test]
     public function ssh_terminal_can_clear_history(): void
     {
         Livewire::actingAs($this->user)
@@ -1056,7 +1058,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('history', []);
     }
 
-    /** @test */
+    #[Test]
     public function ssh_terminal_can_rerun_command(): void
     {
         $component = Livewire::actingAs($this->user)
@@ -1072,7 +1074,7 @@ class ServerComponentsTest extends TestCase
     // SSLManager Component Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function ssl_manager_renders(): void
     {
         Livewire::actingAs($this->user)
@@ -1080,7 +1082,7 @@ class ServerComponentsTest extends TestCase
             ->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_manager_can_open_issue_modal(): void
     {
         Livewire::actingAs($this->user)
@@ -1089,7 +1091,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('showIssueModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_manager_can_close_issue_modal(): void
     {
         Livewire::actingAs($this->user)
@@ -1099,7 +1101,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('showIssueModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_manager_validates_domain(): void
     {
         Livewire::actingAs($this->user)
@@ -1109,7 +1111,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasErrors(['newDomain']);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_manager_validates_email(): void
     {
         Livewire::actingAs($this->user)
@@ -1120,7 +1122,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasErrors(['newEmail']);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_manager_can_install_certbot(): void
     {
         Process::fake();
@@ -1131,7 +1133,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('installingCertbot', false);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_manager_can_delete_certificate(): void
     {
         $certificate = SSLCertificate::factory()->create(['server_id' => $this->server->id]);
@@ -1144,7 +1146,7 @@ class ServerComponentsTest extends TestCase
         $this->assertDatabaseMissing('ssl_certificates', ['id' => $certificate->id]);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_manager_can_toggle_auto_renew(): void
     {
         $certificate = SSLCertificate::factory()->create([
@@ -1161,7 +1163,7 @@ class ServerComponentsTest extends TestCase
         $this->assertTrue($certificate->auto_renew);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_manager_can_setup_auto_renewal(): void
     {
         Process::fake();
@@ -1176,7 +1178,7 @@ class ServerComponentsTest extends TestCase
     // ResourceAlertManager Component Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_renders(): void
     {
         Livewire::actingAs($this->user)
@@ -1184,7 +1186,7 @@ class ServerComponentsTest extends TestCase
             ->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_open_create_modal(): void
     {
         Livewire::actingAs($this->user)
@@ -1193,7 +1195,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('showCreateModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_close_create_modal(): void
     {
         Livewire::actingAs($this->user)
@@ -1203,7 +1205,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('showCreateModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_validates_alert_fields(): void
     {
         Livewire::actingAs($this->user)
@@ -1213,7 +1215,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasErrors(['resource_type']);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_create_alert(): void
     {
         Livewire::actingAs($this->user)
@@ -1232,7 +1234,7 @@ class ServerComponentsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_edit_alert(): void
     {
         $alert = ResourceAlert::factory()->create(['server_id' => $this->server->id]);
@@ -1244,7 +1246,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('editingAlert.id', $alert->id);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_update_alert(): void
     {
         $alert = ResourceAlert::factory()->create([
@@ -1263,7 +1265,7 @@ class ServerComponentsTest extends TestCase
         $this->assertEquals(90.0, $alert->threshold_value);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_delete_alert(): void
     {
         $alert = ResourceAlert::factory()->create(['server_id' => $this->server->id]);
@@ -1276,7 +1278,7 @@ class ServerComponentsTest extends TestCase
         $this->assertDatabaseMissing('resource_alerts', ['id' => $alert->id]);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_toggle_alert(): void
     {
         $alert = ResourceAlert::factory()->create([
@@ -1293,7 +1295,7 @@ class ServerComponentsTest extends TestCase
         $this->assertFalse($alert->is_active);
     }
 
-    /** @test */
+    #[Test]
     public function resource_alert_manager_can_refresh_metrics(): void
     {
         Process::fake();
@@ -1308,7 +1310,7 @@ class ServerComponentsTest extends TestCase
     // ServerSecurityDashboard Component Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function server_security_dashboard_renders(): void
     {
         Livewire::actingAs($this->user)
@@ -1316,7 +1318,7 @@ class ServerComponentsTest extends TestCase
             ->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function server_security_dashboard_loads_security_status(): void
     {
         Process::fake();
@@ -1327,7 +1329,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('isLoading', false);
     }
 
-    /** @test */
+    #[Test]
     public function server_security_dashboard_can_run_security_scan(): void
     {
         Process::fake();
@@ -1338,7 +1340,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('isScanning', false);
     }
 
-    /** @test */
+    #[Test]
     public function server_security_dashboard_can_refresh_status(): void
     {
         Process::fake();
@@ -1353,7 +1355,7 @@ class ServerComponentsTest extends TestCase
     // FirewallManager Component Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function firewall_manager_renders(): void
     {
         Livewire::actingAs($this->user)
@@ -1361,7 +1363,7 @@ class ServerComponentsTest extends TestCase
             ->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function firewall_manager_loads_firewall_status(): void
     {
         Process::fake();
@@ -1372,7 +1374,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('isLoading', false);
     }
 
-    /** @test */
+    #[Test]
     public function firewall_manager_can_enable_firewall(): void
     {
         Process::fake();
@@ -1383,7 +1385,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function firewall_manager_can_disable_firewall(): void
     {
         Process::fake();
@@ -1394,7 +1396,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function firewall_manager_can_open_add_rule_modal(): void
     {
         Livewire::actingAs($this->user)
@@ -1403,7 +1405,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('showAddRuleModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function firewall_manager_can_close_add_rule_modal(): void
     {
         Livewire::actingAs($this->user)
@@ -1413,7 +1415,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('showAddRuleModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function firewall_manager_validates_rule_fields(): void
     {
         Livewire::actingAs($this->user)
@@ -1423,7 +1425,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasErrors(['rulePort']);
     }
 
-    /** @test */
+    #[Test]
     public function firewall_manager_can_add_rule(): void
     {
         Process::fake();
@@ -1437,7 +1439,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function firewall_manager_can_delete_rule(): void
     {
         Process::fake();
@@ -1448,7 +1450,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function firewall_manager_can_install_ufw(): void
     {
         Process::fake();
@@ -1459,7 +1461,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function firewall_manager_shows_confirm_disable_dialog(): void
     {
         Livewire::actingAs($this->user)
@@ -1472,7 +1474,7 @@ class ServerComponentsTest extends TestCase
     // Fail2banManager Component Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function fail2ban_manager_renders(): void
     {
         Livewire::actingAs($this->user)
@@ -1480,7 +1482,7 @@ class ServerComponentsTest extends TestCase
             ->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function fail2ban_manager_loads_status(): void
     {
         Process::fake();
@@ -1491,7 +1493,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('isLoading', false);
     }
 
-    /** @test */
+    #[Test]
     public function fail2ban_manager_can_select_jail(): void
     {
         Process::fake();
@@ -1502,7 +1504,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('selectedJail', 'nginx');
     }
 
-    /** @test */
+    #[Test]
     public function fail2ban_manager_can_unban_ip(): void
     {
         Process::fake();
@@ -1513,7 +1515,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function fail2ban_manager_can_start_fail2ban(): void
     {
         Process::fake();
@@ -1524,7 +1526,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function fail2ban_manager_can_stop_fail2ban(): void
     {
         Process::fake();
@@ -1535,7 +1537,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function fail2ban_manager_can_install_fail2ban(): void
     {
         Process::fake();
@@ -1550,7 +1552,7 @@ class ServerComponentsTest extends TestCase
     // SSHSecurityManager Component Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function ssh_security_manager_renders(): void
     {
         Livewire::actingAs($this->user)
@@ -1558,7 +1560,7 @@ class ServerComponentsTest extends TestCase
             ->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function ssh_security_manager_loads_ssh_config(): void
     {
         Process::fake();
@@ -1569,7 +1571,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('isLoading', false);
     }
 
-    /** @test */
+    #[Test]
     public function ssh_security_manager_can_toggle_root_login(): void
     {
         Process::fake();
@@ -1580,7 +1582,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function ssh_security_manager_can_toggle_password_auth(): void
     {
         Process::fake();
@@ -1591,7 +1593,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function ssh_security_manager_can_change_port(): void
     {
         Process::fake();
@@ -1603,7 +1605,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function ssh_security_manager_can_harden_ssh(): void
     {
         Process::fake();
@@ -1614,7 +1616,7 @@ class ServerComponentsTest extends TestCase
             ->assertHasNoErrors();
     }
 
-    /** @test */
+    #[Test]
     public function ssh_security_manager_can_restart_ssh(): void
     {
         Process::fake();
@@ -1629,7 +1631,7 @@ class ServerComponentsTest extends TestCase
     // SecurityScanDashboard Component Tests
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function security_scan_dashboard_renders(): void
     {
         Livewire::actingAs($this->user)
@@ -1637,7 +1639,7 @@ class ServerComponentsTest extends TestCase
             ->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function security_scan_dashboard_can_run_scan(): void
     {
         Process::fake();
@@ -1648,7 +1650,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('isScanning', false);
     }
 
-    /** @test */
+    #[Test]
     public function security_scan_dashboard_can_view_scan_details(): void
     {
         $scan = SecurityScan::factory()->create(['server_id' => $this->server->id]);
@@ -1660,7 +1662,7 @@ class ServerComponentsTest extends TestCase
             ->assertSet('selectedScan.id', $scan->id);
     }
 
-    /** @test */
+    #[Test]
     public function security_scan_dashboard_can_close_details(): void
     {
         Livewire::actingAs($this->user)

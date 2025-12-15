@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Server;
 use App\Models\SSLCertificate;
 use App\Services\SSLService;
@@ -27,7 +29,7 @@ class SSLServiceTest extends TestCase
     // Certbot Installation Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function it_can_check_if_certbot_is_installed(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -41,7 +43,7 @@ class SSLServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_false_when_certbot_is_not_installed(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -55,7 +57,7 @@ class SSLServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_certbot_check_exception_gracefully(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -75,7 +77,7 @@ class SSLServiceTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_can_install_certbot_on_ubuntu_server(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -98,7 +100,7 @@ class SSLServiceTest extends TestCase
         $this->assertArrayHasKey('output', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_success_when_certbot_is_already_installed(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -113,7 +115,7 @@ class SSLServiceTest extends TestCase
         $this->assertEquals('Certbot is already installed', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_certbot_installation_failure(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -132,7 +134,7 @@ class SSLServiceTest extends TestCase
         $this->assertArrayHasKey('error', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_certbot_installation_exception(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -153,7 +155,7 @@ class SSLServiceTest extends TestCase
     // Certificate Issuance Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function it_can_issue_ssl_certificate_successfully(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -186,7 +188,7 @@ class SSLServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_installs_certbot_before_issuing_certificate_if_not_installed(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -209,7 +211,7 @@ class SSLServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_error_when_certbot_installation_fails_before_issuance(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -227,7 +229,7 @@ class SSLServiceTest extends TestCase
         $this->assertStringContainsString('Failed to install certbot', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_certificate_issuance_failure(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -253,7 +255,7 @@ class SSLServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_existing_certificate_on_reissuance(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -283,7 +285,7 @@ class SSLServiceTest extends TestCase
         $this->assertEquals(1, SSLCertificate::where('domain_name', $domain)->count());
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_sudo_for_non_root_users(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -302,7 +304,7 @@ class SSLServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_certificate_issuance_exception(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -323,7 +325,7 @@ class SSLServiceTest extends TestCase
     // Certificate Renewal Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function it_can_renew_ssl_certificate_successfully(): void
     {
         Carbon::setTestNow('2026-01-01 12:00:00');
@@ -354,7 +356,7 @@ class SSLServiceTest extends TestCase
         $this->assertNull($certificate->renewal_error);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_certificate_not_yet_due_for_renewal(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -377,7 +379,7 @@ class SSLServiceTest extends TestCase
         $this->assertStringContainsString('Certificate renewed successfully', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_certificate_renewal_failure(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -402,7 +404,7 @@ class SSLServiceTest extends TestCase
         $this->assertNotNull($certificate->renewal_error);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_last_renewal_attempt_timestamp(): void
     {
         Carbon::setTestNow('2026-01-15 14:30:00');
@@ -428,7 +430,7 @@ class SSLServiceTest extends TestCase
         $this->assertEquals('2026-01-15 14:30:00', $certificate->last_renewal_attempt->format('Y-m-d H:i:s'));
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_certificate_renewal_exception(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -456,7 +458,7 @@ class SSLServiceTest extends TestCase
     // Certificate Revocation Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function it_can_revoke_ssl_certificate_successfully(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -481,7 +483,7 @@ class SSLServiceTest extends TestCase
         $this->assertEquals('revoked', $certificate->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_certificate_revocation_failure(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -503,7 +505,7 @@ class SSLServiceTest extends TestCase
         $this->assertArrayHasKey('error', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_sudo_for_non_root_users_on_revocation(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -522,7 +524,7 @@ class SSLServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_certificate_revocation_exception(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -546,7 +548,7 @@ class SSLServiceTest extends TestCase
     // Certificate Status Check Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function it_can_check_certificate_status_and_update_expiry(): void
     {
         Carbon::setTestNow('2026-01-01 12:00:00');
@@ -575,7 +577,7 @@ class SSLServiceTest extends TestCase
         $this->assertEquals('issued', $certificate->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_marks_certificate_as_expired_when_checking_status(): void
     {
         Carbon::setTestNow('2026-06-01 12:00:00');
@@ -601,7 +603,7 @@ class SSLServiceTest extends TestCase
         $this->assertEquals('expired', $certificate->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_certificate_not_found_during_status_check(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -621,7 +623,7 @@ class SSLServiceTest extends TestCase
         $this->assertStringContainsString('Certificate not found or invalid', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_certificate_status_check_exception(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -645,7 +647,7 @@ class SSLServiceTest extends TestCase
     // Certificate Info Retrieval Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function it_can_get_certificate_info_with_expiry_date(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -663,7 +665,7 @@ class SSLServiceTest extends TestCase
         $this->assertArrayHasKey('days_until_expiry', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_not_found_when_certificate_does_not_exist(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -679,7 +681,7 @@ class SSLServiceTest extends TestCase
         $this->assertFalse($result['found']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_invalid_certificate_format(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -695,7 +697,7 @@ class SSLServiceTest extends TestCase
         $this->assertFalse($result['found']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_get_certificate_info_exception(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -717,7 +719,7 @@ class SSLServiceTest extends TestCase
     // Auto-Renewal Setup Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function it_detects_auto_renewal_already_configured_via_systemd(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -734,7 +736,7 @@ class SSLServiceTest extends TestCase
         $this->assertEquals('Auto-renewal is already configured', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_auto_renewal_already_configured_via_cron(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -752,7 +754,7 @@ class SSLServiceTest extends TestCase
         $this->assertEquals('Auto-renewal is already configured', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_setup_auto_renewal_cron_job(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -771,7 +773,7 @@ class SSLServiceTest extends TestCase
         $this->assertEquals('Auto-renewal configured successfully', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_auto_renewal_setup_failure(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -791,7 +793,7 @@ class SSLServiceTest extends TestCase
         $this->assertArrayHasKey('error', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_auto_renewal_setup_exception(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -812,7 +814,7 @@ class SSLServiceTest extends TestCase
     // SSH Command Building Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function it_builds_ssh_command_with_password_authentication(): void
     {
         $server = Server::factory()->create([
@@ -839,7 +841,7 @@ class SSLServiceTest extends TestCase
         $this->assertStringContainsString('-p 22', $command);
     }
 
-    /** @test */
+    #[Test]
     public function it_builds_ssh_command_with_key_authentication(): void
     {
         $server = Server::factory()->withSshKey()->create([
@@ -862,7 +864,7 @@ class SSLServiceTest extends TestCase
         $this->assertStringContainsString('BatchMode=yes', $command);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_base64_encoding_for_long_scripts(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -880,7 +882,7 @@ class SSLServiceTest extends TestCase
         $this->assertStringContainsString('base64', $command);
     }
 
-    /** @test */
+    #[Test]
     public function it_suppresses_warnings_when_requested(): void
     {
         $server = Server::factory()->withSshKey()->create();
@@ -899,7 +901,7 @@ class SSLServiceTest extends TestCase
     // Sudo Prefix Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function it_returns_empty_sudo_prefix_for_root_user(): void
     {
         $server = Server::factory()->create([
@@ -916,7 +918,7 @@ class SSLServiceTest extends TestCase
         $this->assertEquals('', $prefix);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_sudo_with_password_for_non_root_user_with_password(): void
     {
         $server = Server::factory()->create([
@@ -935,7 +937,7 @@ class SSLServiceTest extends TestCase
         $this->assertStringContainsString('echo', $prefix);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_plain_sudo_for_non_root_user_without_password(): void
     {
         $server = Server::factory()->create([
@@ -953,7 +955,7 @@ class SSLServiceTest extends TestCase
         $this->assertEquals('sudo ', $prefix);
     }
 
-    /** @test */
+    #[Test]
     public function it_escapes_special_characters_in_sudo_password(): void
     {
         $server = Server::factory()->create([
@@ -975,7 +977,7 @@ class SSLServiceTest extends TestCase
     // Integration Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function it_handles_complete_certificate_lifecycle(): void
     {
         Carbon::setTestNow('2026-01-01 12:00:00');

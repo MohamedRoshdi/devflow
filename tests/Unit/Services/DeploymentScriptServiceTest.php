@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Deployment;
 use App\Models\DeploymentScript;
 use App\Models\Domain;
@@ -40,67 +42,67 @@ class DeploymentScriptServiceTest extends TestCase
      * Service needs refactoring to match model schema.
      */
 
-    /** @test */
+    #[Test]
     public function it_validates_required_name_field(): void
     {
         $this->markTestSkipped('Service createScript method incompatible with current model schema');
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_required_content_field(): void
     {
         $this->markTestSkipped('Service createScript method incompatible with current model schema');
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_script_type_enum(): void
     {
         $this->markTestSkipped('Service createScript method incompatible with current model schema');
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_script_language_enum(): void
     {
         $this->markTestSkipped('Service createScript method incompatible with current model schema');
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_timeout_minimum_constraint(): void
     {
         $this->markTestSkipped('Service createScript method incompatible with current model schema');
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_timeout_maximum_constraint(): void
     {
         $this->markTestSkipped('Service createScript method incompatible with current model schema');
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_max_retries_minimum(): void
     {
         $this->markTestSkipped('Service createScript method incompatible with current model schema');
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_max_retries_maximum(): void
     {
         $this->markTestSkipped('Service createScript method incompatible with current model schema');
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_variables_must_be_array(): void
     {
         $this->markTestSkipped('Service createScript method incompatible with current model schema');
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_hooks_must_be_array(): void
     {
         $this->markTestSkipped('Service createScript method incompatible with current model schema');
     }
 
-    /** @test */
+    #[Test]
     public function it_executes_bash_script_successfully(): void
     {
         $project = $this->createTestProject([
@@ -137,7 +139,7 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertArrayHasKey('execution_time', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_script_execution_failure(): void
     {
         $project = $this->createTestProject();
@@ -155,7 +157,7 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertArrayHasKey('error', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_substitutes_project_name_variable(): void
     {
         $project = $this->createTestProject([
@@ -179,7 +181,7 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_substitutes_project_slug_variable(): void
     {
         $project = $this->createTestProject([
@@ -203,7 +205,7 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_substitutes_branch_variable(): void
     {
         $project = $this->createTestProject([
@@ -227,7 +229,7 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_substitutes_commit_hash_variable(): void
     {
         $project = $this->createTestProject();
@@ -249,7 +251,7 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_substitutes_deployment_id_variable(): void
     {
         $project = $this->createTestProject();
@@ -270,7 +272,7 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_substitutes_php_version_variable(): void
     {
         $project = $this->createTestProject([
@@ -294,7 +296,7 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_substitutes_framework_variable(): void
     {
         $project = $this->createTestProject([
@@ -318,7 +320,7 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_substitutes_domain_variable(): void
     {
         $project = $this->createTestProject();
@@ -343,7 +345,7 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_substitutes_additional_runtime_variables(): void
     {
         $project = $this->createTestProject();
@@ -367,10 +369,11 @@ class DeploymentScriptServiceTest extends TestCase
     }
 
     /**
-     * @test
      * NOTE: This test is skipped due to mismatch between DeploymentScriptService (uses 'content' field)
      * and DeploymentScript model (uses 'script' field). Service needs refactoring to match model schema.
      */
+
+    #[Test]
     public function it_generates_laravel_deployment_template(): void
     {
         $this->markTestSkipped('Service uses "content" field but model uses "script" field - requires service refactoring');
@@ -389,43 +392,43 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertStringContainsString('php artisan migrate', $script->content);
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_nodejs_deployment_template(): void
     {
         $this->markTestSkipped('Service uses "content" field but model uses "script" field - requires service refactoring');
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_database_backup_template(): void
     {
         $this->markTestSkipped('Service uses "content" field but model uses "script" field - requires service refactoring');
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_rollback_template(): void
     {
         $this->markTestSkipped('Service uses "content" field but model uses "script" field - requires service refactoring');
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_health_check_template(): void
     {
         $this->markTestSkipped('Service uses "content" field but model uses "script" field - requires service refactoring');
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_cache_warmer_template(): void
     {
         $this->markTestSkipped('Service uses "content" field but model uses "script" field - requires service refactoring');
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_for_invalid_template(): void
     {
         $this->markTestSkipped('Service uses "content" field but model uses "script" field - requires service refactoring');
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_all_available_templates(): void
     {
         $templates = $this->service->getAvailableTemplates();
@@ -439,7 +442,7 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertArrayHasKey('cache_warmer', $templates);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_execution_time_in_results(): void
     {
         $project = $this->createTestProject();
@@ -460,7 +463,7 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertGreaterThanOrEqual(0, $result['execution_time']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_timeout_correctly(): void
     {
         $project = $this->createTestProject();
@@ -486,7 +489,7 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertFalse($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_cleans_up_temp_file_after_execution(): void
     {
         $project = $this->createTestProject();
@@ -507,7 +510,7 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertEmpty($tempFiles);
     }
 
-    /** @test */
+    #[Test]
     public function it_executes_python_script_with_correct_interpreter(): void
     {
         $project = $this->createTestProject();
@@ -526,7 +529,7 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_executes_php_script_with_correct_interpreter(): void
     {
         $project = $this->createTestProject();
@@ -545,7 +548,7 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_executes_node_script_with_correct_interpreter(): void
     {
         $project = $this->createTestProject();
@@ -565,7 +568,7 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_exit_code_in_result(): void
     {
         $project = $this->createTestProject();
@@ -585,7 +588,7 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertEquals(0, $result['exit_code']);
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_output_in_result(): void
     {
         $project = $this->createTestProject();
@@ -605,7 +608,7 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertEquals('Expected output', trim($result['output']));
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_error_output_in_result_on_failure(): void
     {
         $project = $this->createTestProject();
@@ -625,7 +628,7 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertEquals('Error occurred', trim($result['error']));
     }
 
-    /** @test */
+    #[Test]
     public function it_substitutes_timestamp_variable(): void
     {
         $project = $this->createTestProject();
@@ -644,7 +647,7 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_substitutes_docker_image_variable(): void
     {
         $project = $this->createTestProject([
@@ -666,7 +669,7 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_substitutes_project_path_variable(): void
     {
         $project = $this->createTestProject([

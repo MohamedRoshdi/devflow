@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Livewire\Projects;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\Projects\ProjectList;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\Team;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Livewire\Livewire;
 use Tests\TestCase;
 
 class ProjectListTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     protected User $user;
 
@@ -29,7 +31,7 @@ class ProjectListTest extends TestCase
         $this->server = Server::factory()->create(['status' => 'online']);
     }
 
-    /** @test */
+    #[Test]
     public function component_renders_successfully(): void
     {
         Livewire::actingAs($this->user)
@@ -38,7 +40,7 @@ class ProjectListTest extends TestCase
             ->assertViewIs('livewire.projects.project-list');
     }
 
-    /** @test */
+    #[Test]
     public function component_displays_projects(): void
     {
         $project = Project::factory()->create([
@@ -53,7 +55,7 @@ class ProjectListTest extends TestCase
             ->assertSee('Test Project');
     }
 
-    /** @test */
+    #[Test]
     public function component_displays_multiple_projects(): void
     {
         Project::factory()->create([
@@ -74,7 +76,7 @@ class ProjectListTest extends TestCase
             ->assertSee('Project Beta');
     }
 
-    /** @test */
+    #[Test]
     public function search_filters_projects_by_name(): void
     {
         Project::factory()->create([
@@ -96,7 +98,7 @@ class ProjectListTest extends TestCase
             ->assertDontSee('React Application');
     }
 
-    /** @test */
+    #[Test]
     public function search_filters_projects_by_slug(): void
     {
         Project::factory()->create([
@@ -120,7 +122,7 @@ class ProjectListTest extends TestCase
             ->assertDontSee('Project Two');
     }
 
-    /** @test */
+    #[Test]
     public function search_is_case_insensitive(): void
     {
         Project::factory()->create([
@@ -135,7 +137,7 @@ class ProjectListTest extends TestCase
             ->assertSee('Production Server');
     }
 
-    /** @test */
+    #[Test]
     public function status_filter_works_correctly(): void
     {
         Project::factory()->create([
@@ -159,7 +161,7 @@ class ProjectListTest extends TestCase
             ->assertDontSee('Stopped Project');
     }
 
-    /** @test */
+    #[Test]
     public function server_filter_works_correctly(): void
     {
         $server1 = Server::factory()->create(['name' => 'Server 1']);
@@ -184,7 +186,7 @@ class ProjectListTest extends TestCase
             ->assertDontSee('Project on Server 2');
     }
 
-    /** @test */
+    #[Test]
     public function multiple_filters_can_be_applied_simultaneously(): void
     {
         $server1 = Server::factory()->create();
@@ -221,7 +223,7 @@ class ProjectListTest extends TestCase
             ->assertDontSee('Stopped Laravel App');
     }
 
-    /** @test */
+    #[Test]
     public function pagination_works_correctly(): void
     {
         Project::factory()->count(15)->create([
@@ -236,7 +238,7 @@ class ProjectListTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function refresh_projects_event_resets_pagination(): void
     {
         Livewire::actingAs($this->user)
@@ -245,7 +247,7 @@ class ProjectListTest extends TestCase
             ->assertSet('paginators.page', 1);
     }
 
-    /** @test */
+    #[Test]
     public function project_owner_can_delete_their_project(): void
     {
         $project = Project::factory()->create([
@@ -262,7 +264,7 @@ class ProjectListTest extends TestCase
         $this->assertDatabaseMissing('projects', ['id' => $project->id]);
     }
 
-    /** @test */
+    #[Test]
     public function non_owner_cannot_delete_project(): void
     {
         $otherUser = User::factory()->create();
@@ -279,7 +281,7 @@ class ProjectListTest extends TestCase
         $this->assertDatabaseHas('projects', ['id' => $project->id]);
     }
 
-    /** @test */
+    #[Test]
     public function team_owner_can_delete_team_project(): void
     {
         $team = Team::factory()->create();
@@ -302,7 +304,7 @@ class ProjectListTest extends TestCase
         $this->assertDatabaseMissing('projects', ['id' => $project->id]);
     }
 
-    /** @test */
+    #[Test]
     public function team_member_cannot_delete_team_project(): void
     {
         $team = Team::factory()->create();
@@ -325,7 +327,7 @@ class ProjectListTest extends TestCase
         $this->assertDatabaseHas('projects', ['id' => $project->id]);
     }
 
-    /** @test */
+    #[Test]
     public function delete_non_existent_project_shows_error(): void
     {
         Livewire::actingAs($this->user)
@@ -334,14 +336,14 @@ class ProjectListTest extends TestCase
             ->assertSessionHas('error', 'Project not found');
     }
 
-    /** @test */
+    #[Test]
     public function unauthenticated_user_is_redirected(): void
     {
         Livewire::test(ProjectList::class)
             ->assertUnauthorized();
     }
 
-    /** @test */
+    #[Test]
     public function component_eager_loads_relationships(): void
     {
         Project::factory()->create([
@@ -360,7 +362,7 @@ class ProjectListTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function component_displays_server_dropdown(): void
     {
         $server1 = Server::factory()->create(['name' => 'Production Server']);
@@ -374,7 +376,7 @@ class ProjectListTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function projects_are_ordered_by_latest_first(): void
     {
         $oldProject = Project::factory()->create([
@@ -398,7 +400,7 @@ class ProjectListTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function empty_search_shows_all_projects(): void
     {
         Project::factory()->count(3)->create([
@@ -414,7 +416,7 @@ class ProjectListTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function component_only_selects_necessary_columns(): void
     {
         Project::factory()->create([

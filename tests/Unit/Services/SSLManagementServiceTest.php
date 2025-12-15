@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Domain;
 use App\Models\Project;
 use App\Models\SSLCertificate;
@@ -35,7 +37,7 @@ class SSLManagementServiceTest extends TestCase
         Notification::fake();
     }
 
-    /** @test */
+    #[Test]
     public function it_successfully_issues_new_ssl_certificate(): void
     {
         // Arrange
@@ -70,7 +72,7 @@ class SSLManagementServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_installs_certbot_if_not_present(): void
     {
         // Arrange
@@ -97,7 +99,7 @@ class SSLManagementServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_user_email_for_certificate_registration(): void
     {
         // Arrange
@@ -121,7 +123,7 @@ class SSLManagementServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_certificate_expiry_date_correctly(): void
     {
         // Arrange
@@ -146,7 +148,7 @@ class SSLManagementServiceTest extends TestCase
         $this->assertInstanceOf(Carbon::class, $certificate->expires_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_enables_auto_renewal_by_default(): void
     {
         // Arrange
@@ -171,7 +173,7 @@ class SSLManagementServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_when_domain_has_no_server(): void
     {
         // Arrange
@@ -184,7 +186,7 @@ class SSLManagementServiceTest extends TestCase
         $this->service->issueCertificate($domain);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_certificate_issuance_failure_gracefully(): void
     {
         // Arrange
@@ -208,7 +210,7 @@ class SSLManagementServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_certificate_issuance_failure(): void
     {
         // Arrange
@@ -235,7 +237,7 @@ class SSLManagementServiceTest extends TestCase
             }));
     }
 
-    /** @test */
+    #[Test]
     public function it_successfully_renews_existing_certificate(): void
     {
         // Arrange
@@ -268,7 +270,7 @@ class SSLManagementServiceTest extends TestCase
         $this->assertNull($certificate->renewal_error);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_last_renewal_attempt_timestamp(): void
     {
         // Arrange
@@ -292,7 +294,7 @@ class SSLManagementServiceTest extends TestCase
         $this->assertNotNull($certificate->last_renewal_attempt);
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_notification_after_successful_renewal(): void
     {
         // Arrange
@@ -314,7 +316,7 @@ class SSLManagementServiceTest extends TestCase
         Notification::assertSentTo($user, SSLCertificateRenewed::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_when_renewing_nonexistent_certificate(): void
     {
         // Arrange
@@ -329,7 +331,7 @@ class SSLManagementServiceTest extends TestCase
         $this->service->renewCertificate($domain);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_certificate_renewal_failure(): void
     {
         // Arrange
@@ -353,7 +355,7 @@ class SSLManagementServiceTest extends TestCase
         $this->assertNotNull($certificate->renewal_error);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_certificate_renewal_failure(): void
     {
         // Arrange
@@ -384,7 +386,7 @@ class SSLManagementServiceTest extends TestCase
             }));
     }
 
-    /** @test */
+    #[Test]
     public function it_checks_certificate_expiry_date(): void
     {
         // Arrange
@@ -408,7 +410,7 @@ class SSLManagementServiceTest extends TestCase
         $this->assertEqualsWithDelta(60, $result->diffInDays(now()), 1);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_null_when_checking_expiry_for_disabled_ssl(): void
     {
         // Arrange
@@ -421,7 +423,7 @@ class SSLManagementServiceTest extends TestCase
         $this->assertNull($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_null_when_expiry_check_fails(): void
     {
         // Arrange
@@ -442,7 +444,7 @@ class SSLManagementServiceTest extends TestCase
         $this->assertNull($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_warning_when_expiry_check_fails(): void
     {
         // Arrange
@@ -465,7 +467,7 @@ class SSLManagementServiceTest extends TestCase
             ->with('Failed to check SSL certificate expiry', \Mockery::any());
     }
 
-    /** @test */
+    #[Test]
     public function it_sets_up_auto_renewal_cron_job(): void
     {
         // Arrange
@@ -485,7 +487,7 @@ class SSLManagementServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_cron_setup_if_already_exists(): void
     {
         // Arrange
@@ -505,7 +507,7 @@ class SSLManagementServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_when_auto_renewal_setup_fails(): void
     {
         // Arrange
@@ -517,7 +519,7 @@ class SSLManagementServiceTest extends TestCase
         $this->service->setupAutoRenewal($server);
     }
 
-    /** @test */
+    #[Test]
     public function it_retrieves_expiring_certificates(): void
     {
         // Arrange
@@ -563,7 +565,7 @@ class SSLManagementServiceTest extends TestCase
         $this->assertCount(2, $expiringCerts);
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_null_expiry_dates_in_expiring_certificates(): void
     {
         // Arrange
@@ -583,7 +585,7 @@ class SSLManagementServiceTest extends TestCase
         $this->assertCount(1, $expiringCerts);
     }
 
-    /** @test */
+    #[Test]
     public function it_orders_expiring_certificates_by_expiry_date(): void
     {
         // Arrange
@@ -611,7 +613,7 @@ class SSLManagementServiceTest extends TestCase
         $this->assertEquals($cert1->id, $expiringCerts->last()->id);
     }
 
-    /** @test */
+    #[Test]
     public function it_bulk_renews_expiring_certificates_successfully(): void
     {
         // Arrange
@@ -648,7 +650,7 @@ class SSLManagementServiceTest extends TestCase
         $this->assertCount(0, $results['failed']);
     }
 
-    /** @test */
+    #[Test]
     public function it_tracks_failed_renewals_in_bulk_operation(): void
     {
         // Arrange
@@ -677,7 +679,7 @@ class SSLManagementServiceTest extends TestCase
         $this->assertArrayHasKey('error', $results['failed'][0]);
     }
 
-    /** @test */
+    #[Test]
     public function it_successfully_revokes_certificate(): void
     {
         // Arrange
@@ -709,7 +711,7 @@ class SSLManagementServiceTest extends TestCase
         $this->assertEquals('inactive', $domain->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_when_revoking_certificate_fails(): void
     {
         // Arrange
@@ -725,7 +727,7 @@ class SSLManagementServiceTest extends TestCase
         $this->service->revokeCertificate($domain);
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_certificate_revocation_failure(): void
     {
         // Arrange
@@ -749,7 +751,7 @@ class SSLManagementServiceTest extends TestCase
             ->with('Failed to revoke SSL certificate', \Mockery::any());
     }
 
-    /** @test */
+    #[Test]
     public function it_retrieves_certificate_information(): void
     {
         // Arrange
@@ -777,7 +779,7 @@ class SSLManagementServiceTest extends TestCase
         $this->assertEquals('info.com', $info['domain']);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_null_when_certificate_info_unavailable(): void
     {
         // Arrange
@@ -798,7 +800,7 @@ class SSLManagementServiceTest extends TestCase
         $this->assertNull($info);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_ssh_key_authentication_when_available(): void
     {
         // Arrange
@@ -822,7 +824,7 @@ class SSLManagementServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_password_authentication_when_no_key_available(): void
     {
         // Arrange
@@ -846,7 +848,7 @@ class SSLManagementServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_correct_ssh_port(): void
     {
         // Arrange
@@ -869,7 +871,7 @@ class SSLManagementServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_ssh_security_options(): void
     {
         // Arrange
@@ -890,7 +892,7 @@ class SSLManagementServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_ssh_timeout_correctly(): void
     {
         // Arrange
@@ -910,7 +912,7 @@ class SSLManagementServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_executes_certbot_with_nginx_plugin(): void
     {
         // Arrange
@@ -933,7 +935,7 @@ class SSLManagementServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_non_interactive_mode_for_certbot(): void
     {
         // Arrange
@@ -954,7 +956,7 @@ class SSLManagementServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_stores_certificate_paths_correctly(): void
     {
         // Arrange
@@ -980,7 +982,7 @@ class SSLManagementServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_domain_ssl_timestamps(): void
     {
         // Arrange
@@ -1004,7 +1006,7 @@ class SSLManagementServiceTest extends TestCase
         $this->assertNotNull($domain->ssl_expires_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_certbot_installation_failure(): void
     {
         // Arrange
@@ -1021,7 +1023,7 @@ class SSLManagementServiceTest extends TestCase
         $this->service->issueCertificate($domain);
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_domains_without_auto_renew_in_expiring_list(): void
     {
         // Arrange
@@ -1041,7 +1043,7 @@ class SSLManagementServiceTest extends TestCase
         $this->assertCount(0, $expiringCerts);
     }
 
-    /** @test */
+    #[Test]
     public function it_extracts_certificate_field_information(): void
     {
         // Arrange
@@ -1060,7 +1062,7 @@ class SSLManagementServiceTest extends TestCase
         $this->assertEquals('CN=example.com', $subject);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_null_when_field_not_found_in_certificate(): void
     {
         // Arrange

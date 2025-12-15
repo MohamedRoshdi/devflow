@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Events\DashboardUpdated;
 use App\Events\DeploymentCompleted;
 use App\Events\DeploymentFailed;
@@ -44,7 +46,7 @@ class EventsNotificationsTest extends TestCase
     // DashboardUpdated Event Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function dashboard_updated_event_can_be_instantiated(): void
     {
         $event = new DashboardUpdated('stats', ['total_projects' => 10]);
@@ -54,7 +56,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals(['total_projects' => 10], $event->data);
     }
 
-    /** @test */
+    #[Test]
     public function dashboard_updated_event_implements_should_broadcast(): void
     {
         $event = new DashboardUpdated('stats', []);
@@ -62,7 +64,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertInstanceOf(ShouldBroadcast::class, $event);
     }
 
-    /** @test */
+    #[Test]
     public function dashboard_updated_event_broadcasts_on_dashboard_channel(): void
     {
         $event = new DashboardUpdated('server_health', ['status' => 'healthy']);
@@ -74,7 +76,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals('dashboard', $channels[0]->name);
     }
 
-    /** @test */
+    #[Test]
     public function dashboard_updated_event_broadcasts_correct_data(): void
     {
         $data = ['cpu' => 45, 'memory' => 60];
@@ -87,7 +89,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertArrayHasKey('timestamp', $broadcastData);
     }
 
-    /** @test */
+    #[Test]
     public function dashboard_updated_event_can_be_dispatched(): void
     {
         Event::fake();
@@ -101,7 +103,7 @@ class EventsNotificationsTest extends TestCase
     // DeploymentCompleted Event Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function deployment_completed_event_can_be_instantiated(): void
     {
         $deployment = Deployment::factory()->create();
@@ -112,7 +114,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals($deployment->id, $event->deployment->id);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_completed_event_implements_should_broadcast(): void
     {
         $deployment = Deployment::factory()->create();
@@ -121,7 +123,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertInstanceOf(ShouldBroadcast::class, $event);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_completed_event_broadcasts_on_dashboard_channel(): void
     {
         $deployment = Deployment::factory()->create();
@@ -134,7 +136,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals('dashboard', $channels[0]->name);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_completed_event_broadcasts_deployment_data(): void
     {
         $project = Project::factory()->create(['name' => 'Test Project']);
@@ -154,7 +156,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals('main', $broadcastData['branch']);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_completed_event_can_be_dispatched(): void
     {
         Event::fake();
@@ -169,7 +171,7 @@ class EventsNotificationsTest extends TestCase
     // DeploymentFailed Event Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function deployment_failed_event_can_be_instantiated(): void
     {
         $deployment = Deployment::factory()->create();
@@ -180,7 +182,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals($deployment->id, $event->deployment->id);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_failed_event_implements_should_broadcast(): void
     {
         $deployment = Deployment::factory()->create();
@@ -189,7 +191,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertInstanceOf(ShouldBroadcast::class, $event);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_failed_event_broadcasts_error_message(): void
     {
         $deployment = Deployment::factory()->failed()->create();
@@ -205,7 +207,7 @@ class EventsNotificationsTest extends TestCase
     // DeploymentLogUpdated Event Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function deployment_log_updated_event_can_be_instantiated(): void
     {
         $event = new DeploymentLogUpdated(1, 'Deployment started', 'info');
@@ -216,7 +218,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals('info', $event->level);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_log_updated_event_broadcasts_on_deployment_logs_channel(): void
     {
         $event = new DeploymentLogUpdated(42, 'Running tests', 'info');
@@ -227,7 +229,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals('deployment-logs.42', $channels[0]->name);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_log_updated_event_includes_timestamp(): void
     {
         $event = new DeploymentLogUpdated(1, 'Log line', 'error');
@@ -235,7 +237,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertNotEmpty($event->timestamp);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_log_updated_event_broadcasts_log_data(): void
     {
         $event = new DeploymentLogUpdated(5, 'Build completed', 'success');
@@ -251,7 +253,7 @@ class EventsNotificationsTest extends TestCase
     // DeploymentStarted Event Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function deployment_started_event_can_be_instantiated(): void
     {
         $deployment = Deployment::factory()->create();
@@ -262,7 +264,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals($deployment->id, $event->deployment->id);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_started_event_implements_should_broadcast(): void
     {
         $deployment = Deployment::factory()->create();
@@ -271,7 +273,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertInstanceOf(ShouldBroadcast::class, $event);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_started_event_broadcasts_started_at_timestamp(): void
     {
         $deployment = Deployment::factory()->create([
@@ -289,7 +291,7 @@ class EventsNotificationsTest extends TestCase
     // DeploymentStatusUpdated Event Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function deployment_status_updated_event_can_be_instantiated(): void
     {
         $deployment = Deployment::factory()->create();
@@ -302,7 +304,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals('info', $event->type);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_status_updated_event_broadcasts_on_private_channels(): void
     {
         $user = User::factory()->create();
@@ -316,7 +318,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertInstanceOf(PrivateChannel::class, $channels[1]);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_status_updated_event_has_custom_broadcast_name(): void
     {
         $deployment = Deployment::factory()->create();
@@ -325,7 +327,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals('deployment.status.updated', $event->broadcastAs());
     }
 
-    /** @test */
+    #[Test]
     public function deployment_status_updated_event_broadcasts_complete_data(): void
     {
         $project = Project::factory()->create(['name' => 'My Project']);
@@ -344,7 +346,7 @@ class EventsNotificationsTest extends TestCase
     // PipelineStageUpdated Event Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_updated_event_can_be_instantiated(): void
     {
         $event = new PipelineStageUpdated(1, 2, 'build', 'running', 'Building...', 50);
@@ -358,7 +360,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals(50, $event->progressPercent);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_updated_event_broadcasts_on_pipeline_channel(): void
     {
         $event = new PipelineStageUpdated(123, 1, 'test', 'success', 'Tests passed', 100);
@@ -369,7 +371,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals('pipeline.123', $channels[0]->name);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_updated_event_includes_status_color(): void
     {
         $event = new PipelineStageUpdated(1, 1, 'deploy', 'success', 'Deployed', 100);
@@ -379,7 +381,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals('check-circle', $broadcastData['status_icon']);
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_updated_event_has_custom_broadcast_name(): void
     {
         $event = new PipelineStageUpdated(1, 1, 'test', 'running', 'Testing', 25);
@@ -387,7 +389,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals('pipeline.stage.updated', $event->broadcastAs());
     }
 
-    /** @test */
+    #[Test]
     public function pipeline_stage_updated_event_sets_timestamp_automatically(): void
     {
         $event = new PipelineStageUpdated(1, 1, 'build', 'pending', 'Waiting', 0);
@@ -399,7 +401,7 @@ class EventsNotificationsTest extends TestCase
     // ProjectSetupUpdated Event Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function project_setup_updated_event_can_be_instantiated(): void
     {
         $project = Project::factory()->create();
@@ -410,7 +412,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals($project->id, $event->project->id);
     }
 
-    /** @test */
+    #[Test]
     public function project_setup_updated_event_broadcasts_on_private_project_channel(): void
     {
         $project = Project::factory()->create();
@@ -422,7 +424,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertInstanceOf(PrivateChannel::class, $channels[0]);
     }
 
-    /** @test */
+    #[Test]
     public function project_setup_updated_event_has_custom_broadcast_name(): void
     {
         $project = Project::factory()->create();
@@ -431,7 +433,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals('setup.updated', $event->broadcastAs());
     }
 
-    /** @test */
+    #[Test]
     public function project_setup_updated_event_broadcasts_setup_tasks(): void
     {
         $project = Project::factory()->create();
@@ -453,7 +455,7 @@ class EventsNotificationsTest extends TestCase
     // ServerMetricsUpdated Event Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function server_metrics_updated_event_can_be_instantiated(): void
     {
         $server = Server::factory()->create();
@@ -466,7 +468,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals($metric->id, $event->metric->id);
     }
 
-    /** @test */
+    #[Test]
     public function server_metrics_updated_event_implements_should_broadcast(): void
     {
         $server = Server::factory()->create();
@@ -476,7 +478,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertInstanceOf(ShouldBroadcast::class, $event);
     }
 
-    /** @test */
+    #[Test]
     public function server_metrics_updated_event_broadcasts_on_server_metrics_channel(): void
     {
         $server = Server::factory()->create();
@@ -489,7 +491,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals('server-metrics.'.$server->id, $channels[0]->name);
     }
 
-    /** @test */
+    #[Test]
     public function server_metrics_updated_event_broadcasts_metric_data(): void
     {
         $server = Server::factory()->create(['name' => 'Production Server']);
@@ -510,7 +512,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals(50.0, $broadcastData['metrics']['disk_usage']);
     }
 
-    /** @test */
+    #[Test]
     public function server_metrics_updated_event_includes_alerts_for_critical_cpu(): void
     {
         $server = Server::factory()->create();
@@ -527,7 +529,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals('cpu', $broadcastData['alerts'][0]['metric']);
     }
 
-    /** @test */
+    #[Test]
     public function server_metrics_updated_event_includes_alerts_for_high_memory(): void
     {
         $server = Server::factory()->create();
@@ -545,7 +547,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals('critical', $cpuAlert['type']);
     }
 
-    /** @test */
+    #[Test]
     public function server_metrics_updated_event_includes_alerts_for_high_disk(): void
     {
         $server = Server::factory()->create();
@@ -567,7 +569,7 @@ class EventsNotificationsTest extends TestCase
     // DeploymentApprovalRequested Notification Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function deployment_approval_notification_can_be_instantiated(): void
     {
         $approval = DeploymentApproval::factory()->create();
@@ -578,7 +580,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals($approval->id, $notification->approval->id);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_approval_notification_returns_mail_and_database_channels(): void
     {
         $approval = DeploymentApproval::factory()->create();
@@ -591,7 +593,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertContains('database', $channels);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_approval_notification_creates_mail_message(): void
     {
         $user = User::factory()->create(['name' => 'John Doe']);
@@ -612,7 +614,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertStringContainsString('John Doe', $mail->greeting);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_approval_notification_returns_array_data(): void
     {
         $project = Project::factory()->create(['name' => 'Web App']);
@@ -634,7 +636,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals('Web App', $data['project_name']);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_approval_notification_can_be_sent(): void
     {
         Notification::fake();
@@ -650,7 +652,7 @@ class EventsNotificationsTest extends TestCase
     // ServerProvisioningCompleted Notification Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function server_provisioning_notification_can_be_instantiated(): void
     {
         $server = Server::factory()->create();
@@ -662,7 +664,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertTrue($notification->success);
     }
 
-    /** @test */
+    #[Test]
     public function server_provisioning_notification_returns_mail_and_database_channels(): void
     {
         $server = Server::factory()->create();
@@ -675,7 +677,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertContains('database', $channels);
     }
 
-    /** @test */
+    #[Test]
     public function server_provisioning_notification_creates_success_mail(): void
     {
         $server = Server::factory()->create([
@@ -690,7 +692,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals('Server Provisioned Successfully: Production Server', $mail->subject);
     }
 
-    /** @test */
+    #[Test]
     public function server_provisioning_notification_creates_failure_mail(): void
     {
         $server = Server::factory()->create(['name' => 'Test Server']);
@@ -702,7 +704,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals('Server Provisioning Failed: Test Server', $mail->subject);
     }
 
-    /** @test */
+    #[Test]
     public function server_provisioning_notification_returns_database_data(): void
     {
         $server = Server::factory()->create(['name' => 'Dev Server']);
@@ -716,7 +718,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertTrue($data['success']);
     }
 
-    /** @test */
+    #[Test]
     public function server_provisioning_notification_database_includes_error_on_failure(): void
     {
         $server = Server::factory()->create();
@@ -734,7 +736,7 @@ class EventsNotificationsTest extends TestCase
     // SSLCertificateExpiring Notification Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function ssl_expiring_notification_can_be_instantiated(): void
     {
         $certificate = SSLCertificate::factory()->create();
@@ -745,7 +747,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals($certificate->id, $notification->certificate->id);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_expiring_notification_returns_mail_and_database_channels(): void
     {
         $certificate = SSLCertificate::factory()->create();
@@ -758,7 +760,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertContains('database', $channels);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_expiring_notification_creates_mail_message(): void
     {
         // We'll verify the notification properties instead of calling toMail
@@ -777,7 +779,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertInstanceOf(SSLCertificateExpiring::class, $notification);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_expiring_notification_returns_database_data(): void
     {
         $server = Server::factory()->create(['name' => 'API Server']);
@@ -797,7 +799,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals('API Server', $data['server_name']);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_expiring_notification_includes_urgency_level(): void
     {
         $certificate = SSLCertificate::factory()->create([
@@ -815,7 +817,7 @@ class EventsNotificationsTest extends TestCase
     // SSLCertificateRenewed Notification Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function ssl_renewed_notification_can_be_instantiated(): void
     {
         $certificate = SSLCertificate::factory()->create();
@@ -826,7 +828,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals($certificate->id, $notification->certificate->id);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_renewed_notification_returns_mail_and_database_channels(): void
     {
         $certificate = SSLCertificate::factory()->create();
@@ -839,7 +841,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertContains('database', $channels);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_renewed_notification_creates_mail_message(): void
     {
         // We'll verify the notification properties instead of calling toMail
@@ -858,7 +860,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertInstanceOf(SSLCertificateRenewed::class, $notification);
     }
 
-    /** @test */
+    #[Test]
     public function ssl_renewed_notification_returns_database_data(): void
     {
         $server = Server::factory()->create(['name' => 'Staging']);
@@ -881,7 +883,7 @@ class EventsNotificationsTest extends TestCase
     // UserMentionedInComment Notification Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function user_mentioned_notification_can_be_instantiated(): void
     {
         $comment = DeploymentComment::factory()->create();
@@ -892,7 +894,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals($comment->id, $notification->comment->id);
     }
 
-    /** @test */
+    #[Test]
     public function user_mentioned_notification_returns_mail_and_database_channels(): void
     {
         $comment = DeploymentComment::factory()->create();
@@ -905,7 +907,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertContains('database', $channels);
     }
 
-    /** @test */
+    #[Test]
     public function user_mentioned_notification_creates_mail_message(): void
     {
         $author = User::factory()->create(['name' => 'Jane Smith']);
@@ -924,7 +926,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals('Jane Smith mentioned you in a comment', $mail->subject);
     }
 
-    /** @test */
+    #[Test]
     public function user_mentioned_notification_returns_array_data(): void
     {
         $author = User::factory()->create(['name' => 'Alice']);
@@ -945,7 +947,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals('Alice', $data['author_name']);
     }
 
-    /** @test */
+    #[Test]
     public function user_mentioned_notification_can_be_sent(): void
     {
         Notification::fake();
@@ -961,7 +963,7 @@ class EventsNotificationsTest extends TestCase
     // TeamInvitation Mail Tests
     // ========================================
 
-    /** @test */
+    #[Test]
     public function team_invitation_mail_can_be_instantiated(): void
     {
         $invitation = TeamInvitationModel::factory()->create();
@@ -972,7 +974,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals($invitation->id, $mail->invitation->id);
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_mail_has_correct_envelope(): void
     {
         $invitation = TeamInvitationModel::factory()->create();
@@ -984,7 +986,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertStringContainsString('DevFlow Pro', $envelope->subject);
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_mail_has_correct_content(): void
     {
         $invitation = TeamInvitationModel::factory()->create(['role' => 'member']);
@@ -999,7 +1001,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertEquals('Member', $content->with['role']);
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_mail_includes_accept_url(): void
     {
         $invitation = TeamInvitationModel::factory()->create();
@@ -1011,7 +1013,7 @@ class EventsNotificationsTest extends TestCase
         $this->assertStringContainsString($invitation->token, $content->with['acceptUrl']);
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_mail_can_be_sent(): void
     {
         Mail::fake();
@@ -1022,7 +1024,7 @@ class EventsNotificationsTest extends TestCase
         Mail::assertSent(TeamInvitation::class);
     }
 
-    /** @test */
+    #[Test]
     public function team_invitation_mail_passes_correct_data(): void
     {
         Mail::fake();

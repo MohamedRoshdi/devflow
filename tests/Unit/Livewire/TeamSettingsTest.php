@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Livewire;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\Teams\TeamSettings;
 use App\Mail\TeamInvitation as TeamInvitationMail;
 use App\Models\Team;
@@ -11,7 +13,7 @@ use App\Models\TeamInvitation;
 use App\Models\TeamMember;
 use App\Models\User;
 use App\Services\TeamService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -20,7 +22,7 @@ use Tests\TestCase;
 
 class TeamSettingsTest extends TestCase
 {
-    use RefreshDatabase;
+    
 
     protected User $owner;
 
@@ -82,7 +84,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function component_renders_successfully_for_authenticated_team_members(): void
     {
         Livewire::actingAs($this->owner)
@@ -93,7 +95,7 @@ class TeamSettingsTest extends TestCase
             ->assertSet('description', 'Test team description');
     }
 
-    /** @test */
+    #[Test]
     public function component_blocks_non_team_members(): void
     {
         $outsider = User::factory()->create();
@@ -105,7 +107,7 @@ class TeamSettingsTest extends TestCase
             ->test(TeamSettings::class, ['team' => $this->team]);
     }
 
-    /** @test */
+    #[Test]
     public function owner_can_update_team_name(): void
     {
         Livewire::actingAs($this->owner)
@@ -122,7 +124,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_update_team_name(): void
     {
         Livewire::actingAs($this->admin)
@@ -139,7 +141,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function member_cannot_update_team_settings(): void
     {
         Livewire::actingAs($this->member)
@@ -156,7 +158,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function viewer_cannot_update_team_settings(): void
     {
         Livewire::actingAs($this->viewer)
@@ -173,7 +175,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function owner_can_update_team_description(): void
     {
         Livewire::actingAs($this->owner)
@@ -190,7 +192,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function team_name_validation_requires_name(): void
     {
         Livewire::actingAs($this->owner)
@@ -200,7 +202,7 @@ class TeamSettingsTest extends TestCase
             ->assertHasErrors(['name']);
     }
 
-    /** @test */
+    #[Test]
     public function team_name_cannot_exceed_max_length(): void
     {
         Livewire::actingAs($this->owner)
@@ -210,7 +212,7 @@ class TeamSettingsTest extends TestCase
             ->assertHasErrors(['name']);
     }
 
-    /** @test */
+    #[Test]
     public function team_description_cannot_exceed_max_length(): void
     {
         Livewire::actingAs($this->owner)
@@ -220,7 +222,7 @@ class TeamSettingsTest extends TestCase
             ->assertHasErrors(['description']);
     }
 
-    /** @test */
+    #[Test]
     public function owner_can_upload_team_avatar(): void
     {
         Storage::fake('public');
@@ -240,7 +242,7 @@ class TeamSettingsTest extends TestCase
         Storage::disk('public')->assertExists($this->team->avatar);
     }
 
-    /** @test */
+    #[Test]
     public function component_displays_all_team_members(): void
     {
         Livewire::actingAs($this->owner)
@@ -251,7 +253,7 @@ class TeamSettingsTest extends TestCase
             ->assertSee('Team Viewer');
     }
 
-    /** @test */
+    #[Test]
     public function members_computed_property_returns_correct_data(): void
     {
         Livewire::actingAs($this->owner)
@@ -265,7 +267,7 @@ class TeamSettingsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function owner_cannot_be_edited_in_member_list(): void
     {
         Livewire::actingAs($this->owner)
@@ -277,7 +279,7 @@ class TeamSettingsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function non_owner_members_can_be_edited(): void
     {
         Livewire::actingAs($this->owner)
@@ -289,7 +291,7 @@ class TeamSettingsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function owner_can_open_invite_modal(): void
     {
         Livewire::actingAs($this->owner)
@@ -298,7 +300,7 @@ class TeamSettingsTest extends TestCase
             ->assertSet('showInviteModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_open_invite_modal(): void
     {
         Livewire::actingAs($this->admin)
@@ -307,7 +309,7 @@ class TeamSettingsTest extends TestCase
             ->assertSet('showInviteModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function member_cannot_open_invite_modal(): void
     {
         Livewire::actingAs($this->member)
@@ -319,7 +321,7 @@ class TeamSettingsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function viewer_cannot_open_invite_modal(): void
     {
         Livewire::actingAs($this->viewer)
@@ -331,7 +333,7 @@ class TeamSettingsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function close_invite_modal_resets_fields(): void
     {
         Livewire::actingAs($this->owner)
@@ -345,7 +347,7 @@ class TeamSettingsTest extends TestCase
             ->assertSet('inviteRole', 'member');
     }
 
-    /** @test */
+    #[Test]
     public function owner_can_invite_new_member(): void
     {
         Mail::fake();
@@ -371,7 +373,7 @@ class TeamSettingsTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_invite_new_member(): void
     {
         Mail::fake();
@@ -393,7 +395,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function invitation_requires_valid_email(): void
     {
         Livewire::actingAs($this->owner)
@@ -404,7 +406,7 @@ class TeamSettingsTest extends TestCase
             ->assertHasErrors(['inviteEmail']);
     }
 
-    /** @test */
+    #[Test]
     public function invitation_requires_valid_role(): void
     {
         Livewire::actingAs($this->owner)
@@ -415,7 +417,7 @@ class TeamSettingsTest extends TestCase
             ->assertHasErrors(['inviteRole']);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_invite_existing_team_member(): void
     {
         Mail::fake();
@@ -432,7 +434,7 @@ class TeamSettingsTest extends TestCase
         Mail::assertNotSent(TeamInvitationMail::class);
     }
 
-    /** @test */
+    #[Test]
     public function component_displays_pending_invitations(): void
     {
         TeamInvitation::factory()->create([
@@ -455,7 +457,7 @@ class TeamSettingsTest extends TestCase
             ->assertSee('pending2@example.com');
     }
 
-    /** @test */
+    #[Test]
     public function invitations_computed_property_filters_expired_invitations(): void
     {
         TeamInvitation::factory()->expired()->create([
@@ -478,7 +480,7 @@ class TeamSettingsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function invitations_computed_property_filters_accepted_invitations(): void
     {
         TeamInvitation::factory()->accepted()->create([
@@ -501,7 +503,7 @@ class TeamSettingsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function owner_can_cancel_invitation(): void
     {
         $invitation = TeamInvitation::factory()->create([
@@ -522,7 +524,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_cancel_invitation(): void
     {
         $invitation = TeamInvitation::factory()->create([
@@ -543,7 +545,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function member_cannot_cancel_invitation(): void
     {
         $invitation = TeamInvitation::factory()->create([
@@ -564,7 +566,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_cancel_invitation_from_different_team(): void
     {
         $otherTeam = Team::factory()->create();
@@ -579,7 +581,7 @@ class TeamSettingsTest extends TestCase
             ->call('cancelInvitation', $invitation->id);
     }
 
-    /** @test */
+    #[Test]
     public function owner_can_resend_invitation(): void
     {
         Mail::fake();
@@ -600,7 +602,7 @@ class TeamSettingsTest extends TestCase
         Mail::assertSent(TeamInvitationMail::class);
     }
 
-    /** @test */
+    #[Test]
     public function owner_can_remove_non_owner_member(): void
     {
         Livewire::actingAs($this->owner)
@@ -616,7 +618,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_remove_non_owner_member(): void
     {
         Livewire::actingAs($this->admin)
@@ -632,7 +634,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function member_cannot_remove_other_members(): void
     {
         Livewire::actingAs($this->member)
@@ -648,7 +650,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_remove_team_owner(): void
     {
         Livewire::actingAs($this->admin)
@@ -664,7 +666,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function owner_can_update_member_role(): void
     {
         Livewire::actingAs($this->owner)
@@ -681,7 +683,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_update_member_role(): void
     {
         Livewire::actingAs($this->admin)
@@ -698,7 +700,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function member_cannot_update_roles(): void
     {
         Livewire::actingAs($this->member)
@@ -715,7 +717,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_change_owner_role(): void
     {
         Livewire::actingAs($this->admin)
@@ -732,7 +734,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function only_owner_can_open_transfer_modal(): void
     {
         Livewire::actingAs($this->owner)
@@ -741,7 +743,7 @@ class TeamSettingsTest extends TestCase
             ->assertSet('showTransferModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function admin_cannot_open_transfer_modal(): void
     {
         Livewire::actingAs($this->admin)
@@ -753,7 +755,7 @@ class TeamSettingsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function close_transfer_modal_resets_fields(): void
     {
         Livewire::actingAs($this->owner)
@@ -765,7 +767,7 @@ class TeamSettingsTest extends TestCase
             ->assertSet('newOwnerId', null);
     }
 
-    /** @test */
+    #[Test]
     public function owner_can_transfer_ownership(): void
     {
         Livewire::actingAs($this->owner)
@@ -794,7 +796,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function non_owner_cannot_transfer_ownership(): void
     {
         Livewire::actingAs($this->admin)
@@ -808,7 +810,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function transfer_ownership_requires_new_owner(): void
     {
         Livewire::actingAs($this->owner)
@@ -820,7 +822,7 @@ class TeamSettingsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function potential_owners_excludes_current_owner(): void
     {
         Livewire::actingAs($this->owner)
@@ -832,7 +834,7 @@ class TeamSettingsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function only_owner_can_open_delete_modal(): void
     {
         Livewire::actingAs($this->owner)
@@ -841,7 +843,7 @@ class TeamSettingsTest extends TestCase
             ->assertSet('showDeleteModal', true);
     }
 
-    /** @test */
+    #[Test]
     public function admin_cannot_open_delete_modal(): void
     {
         Livewire::actingAs($this->admin)
@@ -853,7 +855,7 @@ class TeamSettingsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function member_cannot_open_delete_modal(): void
     {
         Livewire::actingAs($this->member)
@@ -865,7 +867,7 @@ class TeamSettingsTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function close_delete_modal_resets_fields(): void
     {
         Livewire::actingAs($this->owner)
@@ -877,7 +879,7 @@ class TeamSettingsTest extends TestCase
             ->assertSet('deleteConfirmation', '');
     }
 
-    /** @test */
+    #[Test]
     public function owner_can_delete_team_with_correct_confirmation(): void
     {
         Livewire::actingAs($this->owner)
@@ -894,7 +896,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function delete_team_requires_exact_name_match(): void
     {
         Livewire::actingAs($this->owner)
@@ -912,7 +914,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function non_owner_cannot_delete_team(): void
     {
         Livewire::actingAs($this->admin)
@@ -926,7 +928,7 @@ class TeamSettingsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function active_tab_can_be_changed(): void
     {
         Livewire::actingAs($this->owner)
@@ -938,7 +940,7 @@ class TeamSettingsTest extends TestCase
             ->assertSet('activeTab', 'danger');
     }
 
-    /** @test */
+    #[Test]
     public function component_initializes_with_team_data(): void
     {
         Livewire::actingAs($this->owner)
@@ -951,7 +953,7 @@ class TeamSettingsTest extends TestCase
             ->assertSet('showDeleteModal', false);
     }
 
-    /** @test */
+    #[Test]
     public function component_handles_team_without_description(): void
     {
         $teamWithoutDescription = Team::factory()->create([
@@ -969,7 +971,7 @@ class TeamSettingsTest extends TestCase
             ->assertSet('description', '');
     }
 
-    /** @test */
+    #[Test]
     public function update_team_handles_exceptions_gracefully(): void
     {
         // Simulate an error by using invalid data that would cause an exception

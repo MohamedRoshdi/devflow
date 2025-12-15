@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Services;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Services\DockerInstallationService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
@@ -25,7 +27,7 @@ class DockerInstallationServiceTest extends TestCase
     // DOCKER INSTALLATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_installs_docker_on_debian_server_with_root_user(): void
     {
         // Arrange
@@ -49,7 +51,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertArrayHasKey('version', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_installs_docker_on_ubuntu_server_with_password_auth(): void
     {
         // Arrange
@@ -74,7 +76,7 @@ class DockerInstallationServiceTest extends TestCase
             ->with('Starting Docker installation', ['server_id' => $server->id]);
     }
 
-    /** @test */
+    #[Test]
     public function it_installs_docker_on_centos_server(): void
     {
         // Arrange
@@ -96,7 +98,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_installs_docker_on_fedora_server(): void
     {
         // Arrange
@@ -119,7 +121,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertArrayHasKey('output', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_installs_docker_with_passwordless_sudo(): void
     {
         // Arrange
@@ -141,7 +143,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_server_record_after_successful_installation(): void
     {
         // Arrange
@@ -163,7 +165,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertNotNull($server->docker_version);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_docker_installation_failure(): void
     {
         // Arrange
@@ -187,7 +189,7 @@ class DockerInstallationServiceTest extends TestCase
             ->with('Docker installation failed', \Mockery::type('array'));
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_installation_script_timeout(): void
     {
         // Arrange
@@ -208,7 +210,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertFalse($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_truncates_long_error_messages(): void
     {
         // Arrange
@@ -231,7 +233,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertLessThanOrEqual(203, strlen($result['message'])); // 200 chars + "..."
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_installation_exception(): void
     {
         // Arrange
@@ -251,7 +253,7 @@ class DockerInstallationServiceTest extends TestCase
             ->with('Docker installation exception', \Mockery::type('array'));
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_verification_failure_after_installation(): void
     {
         // Arrange
@@ -275,7 +277,7 @@ class DockerInstallationServiceTest extends TestCase
     // DOCKER VERIFICATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_verifies_docker_installation_successfully(): void
     {
         // Arrange
@@ -296,7 +298,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertStringContainsString('Docker version', $result['output']);
     }
 
-    /** @test */
+    #[Test]
     public function it_extracts_docker_version_from_output(): void
     {
         // Arrange
@@ -315,7 +317,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertEquals('25.0.1', $result['version']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_docker_not_installed_during_verification(): void
     {
         // Arrange
@@ -337,7 +339,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertNull($result['version']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_verification_exception(): void
     {
         // Arrange
@@ -355,7 +357,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertEquals('Connection timeout', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_malformed_docker_version_output(): void
     {
         // Arrange
@@ -379,7 +381,7 @@ class DockerInstallationServiceTest extends TestCase
     // DOCKER COMPOSE TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_checks_docker_compose_installation(): void
     {
         // Arrange
@@ -399,7 +401,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertEquals('2.20.2', $result['version']);
     }
 
-    /** @test */
+    #[Test]
     public function it_extracts_compose_version_without_v_prefix(): void
     {
         // Arrange
@@ -419,7 +421,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertEquals('1.29.2', $result['version']);
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_docker_compose_not_installed(): void
     {
         // Arrange
@@ -440,7 +442,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertFalse($result['installed']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_compose_check_exception(): void
     {
         // Arrange
@@ -457,7 +459,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertEquals('Network error', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_verifies_docker_compose_already_installed(): void
     {
         // Arrange
@@ -478,7 +480,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertEquals('2.21.0', $result['version']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_docker_compose_not_available_after_docker_install(): void
     {
         // Arrange
@@ -499,7 +501,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertStringContainsString('not installed with Docker', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_docker_compose_install_exception(): void
     {
         // Arrange
@@ -520,7 +522,7 @@ class DockerInstallationServiceTest extends TestCase
     // DOCKER INFO TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_retrieves_docker_system_information(): void
     {
         // Arrange
@@ -549,7 +551,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertEquals(5, $result['info']['ContainersRunning']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_docker_info_failure(): void
     {
         // Arrange
@@ -571,7 +573,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertStringContainsString('Failed to get Docker info', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_docker_info_exception(): void
     {
         // Arrange
@@ -588,7 +590,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertEquals('SSH timeout', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_malformed_docker_info_json(): void
     {
         // Arrange
@@ -612,7 +614,7 @@ class DockerInstallationServiceTest extends TestCase
     // SSH COMMAND BUILDING TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_builds_ssh_command_with_password_authentication(): void
     {
         // Arrange
@@ -635,7 +637,7 @@ class DockerInstallationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_builds_ssh_command_with_key_authentication(): void
     {
         // Arrange
@@ -660,7 +662,7 @@ class DockerInstallationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_base64_encoding_for_long_scripts(): void
     {
         // Arrange
@@ -681,7 +683,7 @@ class DockerInstallationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_suppresses_warnings_when_requested(): void
     {
         // Arrange
@@ -702,7 +704,7 @@ class DockerInstallationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_ssh_connection_options(): void
     {
         // Arrange
@@ -729,7 +731,7 @@ class DockerInstallationServiceTest extends TestCase
     // INSTALLATION SCRIPT GENERATION TESTS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_generates_script_for_root_user_without_sudo(): void
     {
         // Arrange
@@ -751,7 +753,7 @@ class DockerInstallationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_script_with_sudo_for_non_root_with_password(): void
     {
         // Arrange
@@ -774,7 +776,7 @@ class DockerInstallationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_detects_debian_testing_and_uses_bookworm(): void
     {
         // Arrange
@@ -797,7 +799,7 @@ class DockerInstallationServiceTest extends TestCase
     // EDGE CASES AND ERROR SCENARIOS
     // ==========================================
 
-    /** @test */
+    #[Test]
     public function it_handles_empty_error_and_output(): void
     {
         // Arrange
@@ -819,7 +821,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertStringContainsString('Unknown error', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_network_interruption_during_installation(): void
     {
         // Arrange
@@ -841,7 +843,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertStringContainsString('Could not resolve host', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_package_manager_lock(): void
     {
         // Arrange
@@ -863,7 +865,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertStringContainsString('lock', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_unsupported_os_detection(): void
     {
         // Arrange
@@ -884,7 +886,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertFalse($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_permission_denied_errors(): void
     {
         // Arrange
@@ -906,7 +908,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertStringContainsString('Permission denied', $result['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_ssh_key_escaping_with_special_characters(): void
     {
         // Arrange
@@ -929,7 +931,7 @@ class DockerInstallationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_custom_ssh_port(): void
     {
         // Arrange
@@ -952,7 +954,7 @@ class DockerInstallationServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_correct_timeout_for_installation(): void
     {
         // Arrange - This test verifies the timeout is set to 600 seconds (10 minutes)
@@ -973,7 +975,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertFalse($result['success']);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_correct_timeout_for_verification(): void
     {
         // Arrange - This test verifies the timeout is set to 30 seconds
@@ -996,7 +998,7 @@ class DockerInstallationServiceTest extends TestCase
         $this->assertFalse($result['installed']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_partial_installation_output(): void
     {
         // Arrange

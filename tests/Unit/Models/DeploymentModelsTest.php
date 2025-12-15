@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Models;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\Deployment;
 use App\Models\DeploymentApproval;
 use App\Models\DeploymentComment;
@@ -16,7 +18,7 @@ class DeploymentModelsTest extends TestCase
     // DeploymentApproval Model Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function deployment_approval_can_be_created_with_factory(): void
     {
         $approval = DeploymentApproval::factory()->create();
@@ -27,7 +29,7 @@ class DeploymentModelsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_approval_belongs_to_deployment(): void
     {
         $deployment = Deployment::factory()->create();
@@ -37,7 +39,7 @@ class DeploymentModelsTest extends TestCase
         $this->assertEquals($deployment->id, $approval->deployment->id);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_approval_belongs_to_requester(): void
     {
         $user = User::factory()->create();
@@ -47,7 +49,7 @@ class DeploymentModelsTest extends TestCase
         $this->assertEquals($user->id, $approval->requester->id);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_approval_belongs_to_approver(): void
     {
         $user = User::factory()->create();
@@ -57,7 +59,7 @@ class DeploymentModelsTest extends TestCase
         $this->assertEquals($user->id, $approval->approver->id);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_approval_casts_datetime_attributes(): void
     {
         $approval = DeploymentApproval::factory()->create([
@@ -69,7 +71,7 @@ class DeploymentModelsTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $approval->responded_at);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_approval_is_pending_returns_true_when_pending(): void
     {
         $approval = DeploymentApproval::factory()->create(['status' => 'pending']);
@@ -77,7 +79,7 @@ class DeploymentModelsTest extends TestCase
         $this->assertTrue($approval->isPending());
     }
 
-    /** @test */
+    #[Test]
     public function deployment_approval_is_pending_returns_false_when_not_pending(): void
     {
         $approval = DeploymentApproval::factory()->create(['status' => 'approved']);
@@ -85,7 +87,7 @@ class DeploymentModelsTest extends TestCase
         $this->assertFalse($approval->isPending());
     }
 
-    /** @test */
+    #[Test]
     public function deployment_approval_is_approved_returns_true_when_approved(): void
     {
         $approval = DeploymentApproval::factory()->create(['status' => 'approved']);
@@ -93,7 +95,7 @@ class DeploymentModelsTest extends TestCase
         $this->assertTrue($approval->isApproved());
     }
 
-    /** @test */
+    #[Test]
     public function deployment_approval_is_approved_returns_false_when_not_approved(): void
     {
         $approval = DeploymentApproval::factory()->create(['status' => 'rejected']);
@@ -101,7 +103,7 @@ class DeploymentModelsTest extends TestCase
         $this->assertFalse($approval->isApproved());
     }
 
-    /** @test */
+    #[Test]
     public function deployment_approval_is_rejected_returns_true_when_rejected(): void
     {
         $approval = DeploymentApproval::factory()->create(['status' => 'rejected']);
@@ -109,7 +111,7 @@ class DeploymentModelsTest extends TestCase
         $this->assertTrue($approval->isRejected());
     }
 
-    /** @test */
+    #[Test]
     public function deployment_approval_is_rejected_returns_false_when_not_rejected(): void
     {
         $approval = DeploymentApproval::factory()->create(['status' => 'approved']);
@@ -117,7 +119,7 @@ class DeploymentModelsTest extends TestCase
         $this->assertFalse($approval->isRejected());
     }
 
-    /** @test */
+    #[Test]
     public function deployment_approval_status_color_returns_correct_colors(): void
     {
         $approved = DeploymentApproval::factory()->create(['status' => 'approved']);
@@ -134,7 +136,7 @@ class DeploymentModelsTest extends TestCase
         $this->assertEquals('gray', $unknown->status_color);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_approval_status_icon_returns_correct_icons(): void
     {
         $approved = DeploymentApproval::factory()->create(['status' => 'approved']);
@@ -155,7 +157,7 @@ class DeploymentModelsTest extends TestCase
     // DeploymentComment Model Tests
     // ========================
 
-    /** @test */
+    #[Test]
     public function deployment_comment_can_be_created_with_factory(): void
     {
         $comment = DeploymentComment::factory()->create();
@@ -166,7 +168,7 @@ class DeploymentModelsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_comment_belongs_to_deployment(): void
     {
         $deployment = Deployment::factory()->create();
@@ -176,7 +178,7 @@ class DeploymentModelsTest extends TestCase
         $this->assertEquals($deployment->id, $comment->deployment->id);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_comment_belongs_to_user(): void
     {
         $user = User::factory()->create();
@@ -186,7 +188,7 @@ class DeploymentModelsTest extends TestCase
         $this->assertEquals($user->id, $comment->user->id);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_comment_casts_mentions_as_array(): void
     {
         $mentions = [1, 2, 3];
@@ -196,7 +198,7 @@ class DeploymentModelsTest extends TestCase
         $this->assertEquals($mentions, $comment->mentions);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_comment_extract_mentions_finds_usernames(): void
     {
         $user1 = User::factory()->create(['name' => 'JohnDoe']);
@@ -213,7 +215,7 @@ class DeploymentModelsTest extends TestCase
         $this->assertContains($user2->id, $mentions);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_comment_extract_mentions_returns_empty_array_when_no_mentions(): void
     {
         $comment = DeploymentComment::factory()->create([
@@ -226,7 +228,7 @@ class DeploymentModelsTest extends TestCase
         $this->assertEmpty($mentions);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_comment_formatted_content_highlights_mentions(): void
     {
         $user = User::factory()->create(['name' => 'JohnDoe']);
@@ -241,7 +243,7 @@ class DeploymentModelsTest extends TestCase
         $this->assertStringContainsString('<span class="text-blue-600 font-semibold">@JohnDoe</span>', $formatted);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_comment_formatted_content_returns_original_when_no_mentions(): void
     {
         $comment = DeploymentComment::factory()->create([
@@ -254,7 +256,7 @@ class DeploymentModelsTest extends TestCase
         $this->assertEquals('This is a regular comment', $formatted);
     }
 
-    /** @test */
+    #[Test]
     public function deployment_comment_formatted_content_handles_multiple_mentions(): void
     {
         $user1 = User::factory()->create(['name' => 'Alice']);

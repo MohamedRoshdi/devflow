@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Livewire;
 
+
+use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\Projects\ProjectConfiguration;
 use App\Models\Project;
 use App\Models\User;
@@ -40,7 +42,7 @@ class ProjectConfigurationTest extends TestCase
         $this->actingAs($this->user);
     }
 
-    /** @test */
+    #[Test]
     public function component_renders_successfully_for_authenticated_users(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -48,7 +50,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertViewIs('livewire.projects.project-configuration');
     }
 
-    /** @test */
+    #[Test]
     public function component_loads_project_data_on_mount(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -65,7 +67,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertSet('auto_deploy', false);
     }
 
-    /** @test */
+    #[Test]
     public function component_loads_project_with_null_values(): void
     {
         $projectWithNulls = Project::factory()->create([
@@ -81,7 +83,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertSet('health_check_url', '');
     }
 
-    /** @test */
+    #[Test]
     public function updated_name_automatically_generates_slug(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -89,7 +91,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertSet('slug', 'new-amazing-project');
     }
 
-    /** @test */
+    #[Test]
     public function updated_name_handles_special_characters_in_slug(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -97,7 +99,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertSet('slug', 'project-with-special-chars');
     }
 
-    /** @test */
+    #[Test]
     public function updated_name_handles_unicode_characters_in_slug(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -105,7 +107,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertSet('slug', 'proiekt-tiest-mshrw');
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_validates_required_name(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -114,7 +116,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertHasErrors(['name' => 'required']);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_validates_name_max_length(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -123,7 +125,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertHasErrors(['name' => 'max']);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_validates_required_slug(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -132,7 +134,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertHasErrors(['slug' => 'required']);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_validates_slug_format(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -141,7 +143,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertHasErrors(['slug' => 'regex']);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_validates_slug_with_uppercase(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -150,7 +152,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertHasErrors(['slug' => 'regex']);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_validates_slug_with_special_characters(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -159,7 +161,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertHasErrors(['slug' => 'regex']);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_accepts_valid_slug_format(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -174,7 +176,7 @@ class ProjectConfigurationTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_validates_slug_uniqueness(): void
     {
         Project::factory()->create([
@@ -188,7 +190,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertHasErrors(['slug' => 'unique']);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_allows_keeping_same_slug(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -203,7 +205,7 @@ class ProjectConfigurationTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_ignores_soft_deleted_slug(): void
     {
         $deletedProject = Project::factory()->create([
@@ -219,7 +221,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertHasNoErrors(['slug']);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_validates_repository_url_format_https(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -228,7 +230,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertHasErrors(['repository_url' => 'regex']);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_accepts_https_repository_url(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -237,7 +239,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertHasNoErrors(['repository_url']);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_accepts_ssh_repository_url(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -246,7 +248,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertHasNoErrors(['repository_url']);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_accepts_gitlab_repository_url(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -255,7 +257,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertHasNoErrors(['repository_url']);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_accepts_bitbucket_repository_url(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -264,7 +266,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertHasNoErrors(['repository_url']);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_accepts_empty_repository_url(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -273,7 +275,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertHasNoErrors(['repository_url']);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_validates_required_branch(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -282,7 +284,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertHasErrors(['branch' => 'required']);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_validates_branch_max_length(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -291,7 +293,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertHasErrors(['branch' => 'max']);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_validates_required_root_directory(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -300,7 +302,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertHasErrors(['root_directory' => 'required']);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_validates_health_check_url_format(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -309,7 +311,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertHasErrors(['health_check_url' => 'url']);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_accepts_valid_health_check_url(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -318,7 +320,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertHasNoErrors(['health_check_url']);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_validates_health_check_url_max_length(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -327,7 +329,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertHasErrors(['health_check_url' => 'max']);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_accepts_empty_health_check_url(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -336,7 +338,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertHasNoErrors(['health_check_url']);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_validates_auto_deploy_is_boolean(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -345,7 +347,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertHasErrors(['auto_deploy' => 'boolean']);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_accepts_true_for_auto_deploy(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -356,7 +358,7 @@ class ProjectConfigurationTest extends TestCase
         $this->assertTrue($this->project->fresh()->auto_deploy);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_accepts_false_for_auto_deploy(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -367,7 +369,7 @@ class ProjectConfigurationTest extends TestCase
         $this->assertFalse($this->project->fresh()->auto_deploy);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_updates_project_successfully(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -399,7 +401,7 @@ class ProjectConfigurationTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_stores_null_for_empty_optional_fields(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -419,7 +421,7 @@ class ProjectConfigurationTest extends TestCase
         $this->assertNull($freshProject->health_check_url);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_sets_success_flash_message(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -429,7 +431,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertSessionHas('message', 'Project configuration updated successfully!');
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_redirects_to_project_show(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -439,7 +441,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertRedirect(route('projects.show', $this->project->fresh()));
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_handles_exception_gracefully(): void
     {
         $this->project->delete();
@@ -451,7 +453,7 @@ class ProjectConfigurationTest extends TestCase
             ->assertSessionHas('error');
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_validates_all_fields_together(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -474,7 +476,7 @@ class ProjectConfigurationTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function component_displays_available_frameworks(): void
     {
         $component = Livewire::test(ProjectConfiguration::class, ['project' => $this->project]);
@@ -492,7 +494,7 @@ class ProjectConfigurationTest extends TestCase
         $this->assertEquals('Laravel', $frameworks['laravel']);
     }
 
-    /** @test */
+    #[Test]
     public function component_displays_available_php_versions(): void
     {
         $component = Livewire::test(ProjectConfiguration::class, ['project' => $this->project]);
@@ -508,7 +510,7 @@ class ProjectConfigurationTest extends TestCase
         $this->assertArrayHasKey('7.4', $phpVersions);
     }
 
-    /** @test */
+    #[Test]
     public function component_displays_available_node_versions(): void
     {
         $component = Livewire::test(ProjectConfiguration::class, ['project' => $this->project]);
@@ -522,7 +524,7 @@ class ProjectConfigurationTest extends TestCase
         $this->assertArrayHasKey('16', $nodeVersions);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_allows_selecting_different_frameworks(): void
     {
         $frameworks = ['laravel', 'nodejs', 'react', 'vue', 'nextjs', 'nuxt', 'static'];
@@ -539,7 +541,7 @@ class ProjectConfigurationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_allows_selecting_different_php_versions(): void
     {
         $phpVersions = ['8.4', '8.3', '8.2', '8.1', '8.0', '7.4'];
@@ -556,7 +558,7 @@ class ProjectConfigurationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_allows_selecting_different_node_versions(): void
     {
         $nodeVersions = ['22', '20', '18', '16'];
@@ -573,7 +575,7 @@ class ProjectConfigurationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_allows_various_root_directory_formats(): void
     {
         $directories = ['/', '/var/www', '/app', './public', 'dist'];
@@ -590,7 +592,7 @@ class ProjectConfigurationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_allows_various_branch_names(): void
     {
         $branches = ['main', 'master', 'develop', 'feature/new-feature', 'release-1.0', 'hotfix_bug'];
@@ -607,7 +609,7 @@ class ProjectConfigurationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function project_id_is_locked_and_cannot_be_modified(): void
     {
         $component = Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -620,7 +622,7 @@ class ProjectConfigurationTest extends TestCase
         $this->assertEquals($originalProjectId, $component->get('projectId'));
     }
 
-    /** @test */
+    #[Test]
     public function component_loads_project_relationship(): void
     {
         $component = Livewire::test(ProjectConfiguration::class, ['project' => $this->project]);
@@ -631,7 +633,7 @@ class ProjectConfigurationTest extends TestCase
         $this->assertEquals($this->project->id, $loadedProject->id);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_preserves_fields_not_in_form(): void
     {
         $this->project->update([
@@ -651,7 +653,7 @@ class ProjectConfigurationTest extends TestCase
         $this->assertEquals($this->user->id, $freshProject->user_id);
     }
 
-    /** @test */
+    #[Test]
     public function save_configuration_with_minimum_required_fields(): void
     {
         Livewire::test(ProjectConfiguration::class, ['project' => $this->project])
@@ -674,7 +676,7 @@ class ProjectConfigurationTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function component_default_values_match_model_defaults(): void
     {
         $newProject = Project::factory()->create([
