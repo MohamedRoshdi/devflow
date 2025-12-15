@@ -1,23 +1,20 @@
 services:
-  # Application container for Dusk tests
+  # Application container for Dusk tests (PHP-FPM + Nginx)
   app:
     build:
       context: .
       dockerfile: Dockerfile.dusk
-      args:
-        - PHP_VERSION=8.4
+    container_name: devflow_dusk_app
     working_dir: /var/www/html
     volumes:
-      - .:/var/www/html
-      - ./storage/app:/var/www/html/storage/app
-      - ./storage/logs:/var/www/html/storage/logs
+      # Mount test screenshots and console logs for debugging
       - ./tests/Browser/screenshots:/var/www/html/tests/Browser/screenshots
       - ./tests/Browser/console:/var/www/html/tests/Browser/console
+      - ./storage/logs:/var/www/html/storage/logs
     environment:
       - APP_ENV=testing
-      - APP_KEY=base64:rqMi9mHNcwOiRQDKuYPa2+ytWEKvlhGeNbixjGWsVsQ=
       - APP_DEBUG=true
-      - APP_URL=http://app:9000
+      - APP_URL=http://10.128.1.10
       - DB_CONNECTION=mysql
       - DB_HOST=mysql
       - DB_PORT=3306
@@ -30,39 +27,56 @@ services:
       - TELESCOPE_ENABLED=false
       - DUSK_DRIVER_URL=http://selenium:4444
     ports:
-      - "9000:9000"
+      - "8088:80"
     depends_on:
       mysql:
         condition: service_healthy
       selenium:
-        condition: service_started
+        condition: service_healthy
     networks:
-      - dusk-network
-    command: php -S 0.0.0.0:9000 -t public
+      dusk-network:
+        ipv4_address: 10.128.1.10
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/up"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   # Selenium Chrome standalone container
   selenium:
     image: selenium/standalone-chrome:latest
+    container_name: devflow_dusk_selenium
     hostname: selenium
     shm_size: 2gb
     ports:
       - "4444:4444"
-      - "7900:7900"  # VNC port for viewing tests in real-time
+      - "7900:7900"  # noVNC port for viewing tests in real-time
     environment:
       - SE_NODE_MAX_SESSIONS=5
       - SE_NODE_SESSION_TIMEOUT=300
       - SE_VNC_NO_PASSWORD=1
       - SE_SCREEN_WIDTH=1920
       - SE_SCREEN_HEIGHT=1080
+      - SE_START_VNC=true
       - JAVA_OPTS=-Dwebdriver.chrome.whitelistedIps=
+    extra_hosts:
+      - "app:10.128.1.10"
     volumes:
       - /dev/shm:/dev/shm
     networks:
       - dusk-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4444/wd/hub/status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   # MySQL database for tests
   mysql:
     image: mysql:8.0
+    container_name: devflow_dusk_mysql
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=devflow_dusk
@@ -72,6 +86,16 @@ services:
       - "33061:3306"
     volumes:
       - dusk-mysql-data:/var/lib/mysql
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      # Performance optimizations for testing
+      - --innodb_buffer_pool_size=256M
+      - --innodb_flush_log_at_trx_commit=2
+      - --sync_binlog=0
+      - --innodb_doublewrite=0
+      - --skip-log-bin
     networks:
       - dusk-network
     healthcheck:
@@ -80,9 +104,24 @@ services:
       timeout: 3s
       retries: 10
 
+  # Redis for caching (optional, but useful for some tests)
+  redis:
+    image: redis:7-alpine
+    container_name: devflow_dusk_redis
+    networks:
+      - dusk-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
 networks:
   dusk-network:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 10.128.0.0/16
 
 volumes:
   dusk-mysql-data:

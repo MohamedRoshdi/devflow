@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [6.7.0] - 2025-12-15
+
+### Docker Browser Testing Infrastructure
+
+Complete overhaul of the Dusk browser testing setup for reliable, easy-to-use browser tests.
+
+#### New Docker Configuration
+- **Dockerfile.dusk**: Complete rewrite using PHP 8.4-FPM + Nginx + Supervisor
+  - Proper multi-process management with supervisord
+  - All required PHP extensions pre-installed
+  - Automatic APP_KEY generation during build
+
+- **docker-compose.dusk.yml**: Production-ready multi-container setup
+  - Static IP configuration (10.128.0.0/16 subnet) for reliable Chrome connectivity
+  - Proper health checks for all services
+  - MySQL 8.0 with performance optimizations for testing
+  - Selenium standalone Chrome with VNC support for visual debugging
+
+#### New Configuration Files
+- `docker/dusk/nginx.conf`: Nginx config with increased timeouts for browser tests
+- `docker/dusk/php.ini`: PHP config (512M memory, 300s execution timeout)
+- `docker/dusk/php-fpm.conf`: FPM pool configuration (20 max children)
+- `docker/dusk/supervisord.conf`: Process manager for nginx + php-fpm
+
+#### New Scripts
+- `scripts/dusk.sh`: Easy-to-use shell script for running browser tests
+  - `./scripts/dusk.sh build` - Build Docker images
+  - `./scripts/dusk.sh up` - Start containers
+  - `./scripts/dusk.sh test` - Run all Dusk tests
+  - `./scripts/dusk.sh vnc` - Show VNC URL for watching tests
+  - `./scripts/dusk.sh down` - Stop containers
+
+#### Updated Files
+- `Makefile.dusk`: Updated port references (8088)
+- `run-dusk-tests.sh`: Updated for new Docker setup
+- `tests/DuskTestCase.php`: Added Chrome flags for better Docker compatibility
+- `.env.dusk.docker`: New environment file for Docker testing
+
+#### Access Points
+- Application: http://localhost:8088
+- Selenium Grid: http://localhost:4444
+- VNC Viewer: http://localhost:7900 (no password)
+
+---
+
 ## [6.6.0] - 2025-12-15
 
 ### Security Enhancements

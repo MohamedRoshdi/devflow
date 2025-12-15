@@ -153,7 +153,7 @@ print_success "Selenium is ready"
 # Wait for application to be ready
 print_info "Waiting for application to be ready..."
 TRIES=0
-until curl -sSf http://localhost:9000 > /dev/null 2>&1; do
+until curl -sSf http://localhost:8088/up > /dev/null 2>&1; do
     TRIES=$((TRIES+1))
     if [ $TRIES -ge $MAX_TRIES ]; then
         print_error "Application failed to start within expected time"
@@ -201,7 +201,7 @@ fi
 if [ -n "$GROUP" ]; then
     print_info "Group: $GROUP"
 fi
-print_info "VNC Viewer: http://localhost:7900 (password: secret)"
+print_info "VNC Viewer: http://localhost:7900 (no password)"
 print_info "You can view tests running in real-time!"
 echo ""
 

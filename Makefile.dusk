@@ -22,9 +22,9 @@ dusk-up: ## Start Docker containers for Dusk testing
 	@echo "Waiting for services to be ready..."
 	@sleep 10
 	@echo "✓ Dusk environment is ready!"
-	@echo "  - Application: http://localhost:9000"
+	@echo "  - Application: http://localhost:8088"
 	@echo "  - Selenium Grid: http://localhost:4444"
-	@echo "  - VNC Viewer: http://localhost:7900 (password: secret)"
+	@echo "  - VNC Viewer: http://localhost:7900 (no password)"
 
 dusk-down: ## Stop and remove Docker containers
 	@echo "Stopping Dusk testing environment..."
