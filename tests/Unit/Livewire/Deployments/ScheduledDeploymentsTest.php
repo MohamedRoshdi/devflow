@@ -449,13 +449,9 @@ class ScheduledDeploymentsTest extends TestCase
         $this->assertFalse($deployments->contains('id', $otherProjectScheduled->id));
     }
 
-    #[Test]
-    public function unauthenticated_user_cannot_access_component(): void
-    {
-        // Authentication is handled at the route middleware level, not the component level.
-        // This test should be a Feature test that tests the route with middleware.
-        $this->markTestSkipped('Authentication is enforced at route middleware level, not component level.');
-    }
+    // Note: Test 'unauthenticated_user_cannot_access_component' was removed.
+    // Authentication is handled at the route middleware level, not the component level.
+    // Route-level authentication is tested in Feature tests with HTTP requests.
 
     #[Test]
     public function scheduled_date_defaults_to_tomorrow(): void

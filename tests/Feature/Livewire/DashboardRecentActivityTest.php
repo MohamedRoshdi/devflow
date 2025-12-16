@@ -416,14 +416,9 @@ class DashboardRecentActivityTest extends TestCase
         $this->assertIsArray($activity);
     }
 
-    /**
-     * @skip Database schema requires user_id to be NOT NULL on deployments table.
-     * This test scenario (deployment without user) is not supported by the schema.
-     */
-    public function test_handles_deployment_without_user(): void
-    {
-        $this->markTestSkipped('Database schema requires user_id on deployments - cannot test null user scenario');
-    }
+    // Note: Test 'test_handles_deployment_without_user' was removed.
+    // Database schema requires user_id to be NOT NULL on deployments table.
+    // This test scenario (deployment without user) is not supported by the schema.
 
     public function test_handles_project_without_server(): void
     {

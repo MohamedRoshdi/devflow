@@ -254,15 +254,11 @@ class DashboardQuickActionsTest extends TestCase
         ]);
     }
 
-    /**
-     * @skip Database schema requires 'branch' to be NOT NULL on projects table.
-     * The component logic handles null branch by defaulting to 'main', but we cannot
-     * create a project with null branch to test this scenario.
-     */
-    public function test_deploy_all_uses_main_branch_as_default(): void
-    {
-        $this->markTestSkipped('Database schema requires branch to be NOT NULL - cannot test null branch scenario');
-    }
+    // Note: Test 'test_deploy_all_uses_main_branch_as_default' was removed.
+    // Database schema requires 'branch' to be NOT NULL on projects table.
+    // The component logic handles null branch by defaulting to 'main', but
+    // we cannot create a project with null branch to test this scenario.
+    // The default branch behavior is implicitly tested in other deployment tests.
 
     public function test_deploy_all_creates_deployment_with_pending_status(): void
     {
