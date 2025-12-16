@@ -599,13 +599,8 @@ class GitServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    #[Test]
-    public function it_always_uses_ssh_for_localhost(): void
-    {
-        // Test skipped: isLocalhost() method was removed from GitService
-        // The service now always uses SSH regardless of server IP
-        $this->markTestSkipped('isLocalhost() method no longer exists - SSH is always used');
-    }
+    // Note: Test 'it_always_uses_ssh_for_localhost' was removed - isLocalhost() method
+    // no longer exists in GitService. The service now always uses SSH regardless of server IP.
 
     #[Test]
     public function it_configures_safe_directory_before_git_operations(): void
