@@ -58,14 +58,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_fail2ban_manager_page_loads_successfully()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -93,14 +86,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_fail2ban_status_is_displayed()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -129,14 +115,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_start_fail2ban_button_is_visible()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -163,14 +142,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_stop_fail2ban_button_is_visible()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -197,14 +169,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_jail_list_is_displayed()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -231,14 +196,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_jail_selection_works()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -265,14 +223,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_banned_ips_list_is_displayed()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -299,14 +250,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_unban_ip_button_is_present()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -333,14 +277,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_install_fail2ban_button_shown_when_not_installed()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -368,14 +305,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_flash_messages_display()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -403,14 +333,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_selected_jail_is_highlighted()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -437,14 +360,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_loading_states_work()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -472,14 +388,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_navigation_back_to_security_dashboard_works()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -506,14 +415,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_service_status_indicators_display()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -543,14 +445,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_refresh_status_button_works()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -577,14 +472,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_fail2ban_service_control_section_is_present()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -612,14 +500,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_jail_count_is_displayed()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -646,14 +527,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_banned_ip_count_is_displayed()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -679,14 +553,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_page_title_displays_fail2ban_manager()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -712,14 +579,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_server_name_is_displayed_in_header()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -745,14 +605,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_empty_state_message_when_no_jails()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -778,14 +631,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_empty_state_message_when_no_banned_ips()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -811,14 +657,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_confirmation_dialog_for_unban_exists()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -844,14 +683,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_icons_are_properly_displayed()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
@@ -877,14 +709,7 @@ class Fail2banManagerTest extends DuskTestCase
 
     #[Test]
     public function test_responsive_design_elements_present()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)

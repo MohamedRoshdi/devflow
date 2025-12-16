@@ -56,12 +56,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_page_loads_successfully_with_server(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -96,12 +91,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_server_name_displayed(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -117,12 +107,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_server_ip_address_shown(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -138,12 +123,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_server_status_indicator_visible(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -159,12 +139,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_edit_server_button_visible(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -180,12 +155,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_back_button_visible(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -201,12 +171,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_quick_actions_section_present(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -222,12 +187,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_metrics_link_visible(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -243,12 +203,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_security_link_visible(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -264,12 +219,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_backups_link_visible(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -285,12 +235,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_docker_link_visible(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -315,12 +260,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_ssl_link_visible(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -336,12 +276,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_projects_section_displayed(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -357,12 +292,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_projects_list_shows_server_projects(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -386,12 +316,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_resource_usage_shown(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -407,12 +332,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_connection_status_indicator(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -428,12 +348,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_server_os_info_displayed(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -455,12 +370,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_cpu_ram_disk_info_shown(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -484,12 +394,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_server_information_section_present(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -509,12 +414,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_flash_messages_display(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             // Manually set a flash message by visiting with session
@@ -536,12 +436,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_ping_server_button_functional(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -561,12 +456,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_docker_status_card_displayed(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -590,12 +480,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_status_card_shows_correct_badge(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -615,12 +500,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_recent_deployments_section_present(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -636,12 +516,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_reboot_server_button_visible(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -660,12 +535,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_clear_cache_button_visible(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -684,12 +554,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_services_dropdown_visible(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -708,12 +573,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_ssh_terminal_section_present(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -729,12 +589,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_metrics_data_displays_when_available(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        // Create a metric for the server
+    {        // Create a metric for the server
         ServerMetric::create([
             'server_id' => $this->server->id,
             'cpu_usage' => 45.5,
@@ -827,12 +682,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_server_hostname_displayed(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -848,12 +698,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_server_port_displayed(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))
@@ -869,12 +714,7 @@ class ServerShowTest extends DuskTestCase
      *     */
     #[Group('server-show')]
     public function test_server_username_displayed(): void
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available in database');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user);
 
             $browser->visit(route('servers.show', $this->server))

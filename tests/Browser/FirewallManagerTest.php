@@ -58,12 +58,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_firewall_manager_page_loads_successfully()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -89,12 +84,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_firewall_status_is_displayed()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -123,12 +113,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_enable_firewall_button_is_visible()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -155,12 +140,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_disable_firewall_button_is_visible()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -187,12 +167,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_add_rule_button_is_present()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -218,12 +193,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_add_rule_modal_opens()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -249,12 +219,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_add_rule_form_has_port_field()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -280,12 +245,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_add_rule_form_has_protocol_field()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -311,12 +271,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_protocol_dropdown_has_options()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -343,12 +298,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_add_rule_form_has_action_field()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -374,12 +324,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_action_dropdown_has_options()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -407,12 +352,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_add_rule_form_has_from_ip_field()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -439,12 +379,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_add_rule_form_has_description_field()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -471,12 +406,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_rule_list_is_displayed()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -503,12 +433,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_delete_rule_buttons_are_present()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -535,12 +460,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_install_ufw_button_shown_when_not_installed()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -566,12 +486,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_flash_messages_display()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -597,12 +512,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_form_validation_works()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -628,12 +538,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_navigation_back_to_security_dashboard_works()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -659,12 +564,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_refresh_button_is_present()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -690,12 +590,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_ufw_status_indicator_is_visible()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -721,12 +616,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_rules_table_structure_is_present()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -753,12 +643,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_modal_cancel_button_works()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -784,12 +669,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_confirm_disable_modal_exists()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -815,12 +695,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_server_name_is_displayed_in_header()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -846,12 +721,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_loading_states_are_handled()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -877,12 +747,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_rule_action_badges_are_styled()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -910,12 +775,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_empty_state_message_is_shown()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -941,12 +801,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_debug_output_section_exists()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
@@ -973,12 +828,7 @@ class FirewallManagerTest extends DuskTestCase
 
     #[Test]
     public function test_firewall_hero_section_is_displayed()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for firewall testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)

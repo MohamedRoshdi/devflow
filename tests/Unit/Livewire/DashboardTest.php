@@ -719,18 +719,15 @@ class DashboardTest extends TestCase
     #[Test]
     public function load_queue_stats_returns_pending_and_failed_jobs(): void
     {
-        try {
-            DB::table('jobs')->insert([
-                'queue' => 'default',
-                'payload' => json_encode(['test' => 'data']),
-                'attempts' => 0,
-                'reserved_at' => null,
-                'available_at' => now()->timestamp,
-                'created_at' => now()->timestamp,
-            ]);
-        } catch (\Exception $e) {
-            $this->markTestSkipped('Jobs table not available');
-        }
+        // Insert a test job into the jobs table
+        DB::table('jobs')->insert([
+            'queue' => 'default',
+            'payload' => json_encode(['test' => 'data']),
+            'attempts' => 0,
+            'reserved_at' => null,
+            'available_at' => now()->timestamp,
+            'created_at' => now()->timestamp,
+        ]);
 
         $component = Livewire::test(Dashboard::class)
             ->call('loadQueueStats');

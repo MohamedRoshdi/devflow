@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Events;
 
-
 use PHPUnit\Framework\Attributes\Test;
 use App\Events\DeploymentCompleted;
 use App\Events\DeploymentFailed;
@@ -13,14 +12,11 @@ use App\Models\Deployment;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
-
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class DeploymentEventsTest extends TestCase
 {
-    
-
     protected User $user;
     protected Project $project;
     protected Deployment $deployment;
@@ -51,15 +47,11 @@ class DeploymentEventsTest extends TestCase
     {
         Event::fake();
 
-        if (class_exists(DeploymentStarted::class)) {
-            event(new DeploymentStarted($this->deployment));
+        event(new DeploymentStarted($this->deployment));
 
-            Event::assertDispatched(DeploymentStarted::class, function ($event) {
-                return $event->deployment->id === $this->deployment->id;
-            });
-        } else {
-            $this->markTestSkipped('DeploymentStarted event not implemented');
-        }
+        Event::assertDispatched(DeploymentStarted::class, function ($event) {
+            return $event->deployment->id === $this->deployment->id;
+        });
     }
 
     #[Test]
@@ -67,15 +59,11 @@ class DeploymentEventsTest extends TestCase
     {
         Event::fake();
 
-        if (class_exists(DeploymentCompleted::class)) {
-            event(new DeploymentCompleted($this->deployment));
+        event(new DeploymentCompleted($this->deployment));
 
-            Event::assertDispatched(DeploymentCompleted::class, function ($event) {
-                return $event->deployment->id === $this->deployment->id;
-            });
-        } else {
-            $this->markTestSkipped('DeploymentCompleted event not implemented');
-        }
+        Event::assertDispatched(DeploymentCompleted::class, function ($event) {
+            return $event->deployment->id === $this->deployment->id;
+        });
     }
 
     #[Test]
@@ -83,43 +71,34 @@ class DeploymentEventsTest extends TestCase
     {
         Event::fake();
 
-        if (class_exists(DeploymentFailed::class)) {
-            event(new DeploymentFailed($this->deployment, 'Test error message'));
+        event(new DeploymentFailed($this->deployment, 'Test error message'));
 
-            Event::assertDispatched(DeploymentFailed::class, function ($event) {
-                return $event->deployment->id === $this->deployment->id &&
-                       $event->error === 'Test error message';
-            });
-        } else {
-            $this->markTestSkipped('DeploymentFailed event not implemented');
-        }
+        Event::assertDispatched(DeploymentFailed::class, function ($event) {
+            return $event->deployment->id === $this->deployment->id &&
+                   $event->error === 'Test error message';
+        });
     }
 
     #[Test]
     public function deployment_events_are_broadcastable(): void
     {
-        if (class_exists(DeploymentStarted::class)) {
-            $event = new DeploymentStarted($this->deployment);
+        $event = new DeploymentStarted($this->deployment);
 
-            if (method_exists($event, 'broadcastOn')) {
-                $channels = $event->broadcastOn();
-                $this->assertNotEmpty($channels);
-            }
+        if (method_exists($event, 'broadcastOn')) {
+            $channels = $event->broadcastOn();
+            $this->assertNotEmpty($channels);
         } else {
-            $this->markTestSkipped('DeploymentStarted event not implemented');
+            // Event doesn't implement broadcasting, that's okay
+            $this->assertTrue(true);
         }
     }
 
     #[Test]
     public function deployment_event_contains_deployment_data(): void
     {
-        if (class_exists(DeploymentStarted::class)) {
-            $event = new DeploymentStarted($this->deployment);
+        $event = new DeploymentStarted($this->deployment);
 
-            $this->assertSame($this->deployment, $event->deployment);
-            $this->assertEquals($this->deployment->id, $event->deployment->id);
-        } else {
-            $this->markTestSkipped('DeploymentStarted event not implemented');
-        }
+        $this->assertSame($this->deployment, $event->deployment);
+        $this->assertEquals($this->deployment->id, $event->deployment->id);
     }
 }

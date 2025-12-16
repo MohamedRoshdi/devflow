@@ -81,12 +81,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_project_environment_page_loads()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -111,12 +106,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_environment_variables_section_visible()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -141,12 +131,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_add_environment_variable_button_present()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -171,12 +156,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_environment_variable_key_field_works()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -201,12 +181,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_environment_variable_value_field_works()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -231,12 +206,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_save_environment_variables_works()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -262,12 +232,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_delete_environment_variable_works()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -293,12 +258,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_environment_variables_list_displays()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -325,12 +285,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_masked_values_for_secrets()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -357,12 +312,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_show_hide_value_toggle()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -388,12 +338,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_validation_for_duplicate_keys()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -419,12 +364,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_import_from_env_file_option()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -450,12 +390,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_export_environment_variables_option()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -481,12 +416,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_environment_sync_status_visible()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -512,12 +442,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_success_flash_messages_displayed()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -543,12 +468,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_error_flash_messages_displayed()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -574,12 +494,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_environment_selector_displays_options()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -605,12 +520,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_server_environment_variables_section_exists()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -635,12 +545,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_environment_variable_modal_opens()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -666,12 +571,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_environment_variable_modal_closes()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -697,12 +597,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_environment_type_badge_displays()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -730,12 +625,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_refresh_server_environment_button()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -760,12 +650,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_environment_variables_proper_formatting()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -791,12 +676,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_edit_environment_variable_functionality()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -822,12 +702,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_warning_messages_for_sensitive_operations()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -854,12 +729,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_textarea_for_multiline_values()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -885,12 +755,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_loading_states_indicated()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -916,12 +781,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_error_states_displayed()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -947,12 +807,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_variable_count_displayed()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
@@ -978,12 +833,7 @@ class ProjectEnvironmentTest extends DuskTestCase
 
     #[Test]
     public function test_confirm_dialog_for_delete()
-    {
-        if (! $this->project) {
-            $this->markTestSkipped('No project available for testing');
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)

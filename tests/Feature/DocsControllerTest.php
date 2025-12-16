@@ -556,12 +556,6 @@ MD;
     {
         $this->actingAsUser();
 
-        // Only run this test if the actual file exists
-        $deploymentsFile = resource_path('docs/categories/deployments.md');
-        if (!File::exists($deploymentsFile)) {
-            $this->markTestSkipped('Deployments documentation file does not exist');
-        }
-
         $response = $this->get(route('docs.show', ['category' => 'deployments']));
 
         $response->assertOk()
@@ -574,12 +568,6 @@ MD;
     public function user_can_view_actual_domains_documentation(): void
     {
         $this->actingAsUser();
-
-        // Only run this test if the actual file exists
-        $domainsFile = resource_path('docs/categories/domains.md');
-        if (!File::exists($domainsFile)) {
-            $this->markTestSkipped('Domains documentation file does not exist');
-        }
 
         $response = $this->get(route('docs.show', ['category' => 'domains']));
 

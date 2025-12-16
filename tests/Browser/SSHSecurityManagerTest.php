@@ -56,14 +56,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_ssh_security_manager_page_loads_successfully()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -87,14 +80,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_ssh_configuration_is_displayed()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -118,14 +104,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_current_ssh_port_is_shown()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -149,14 +128,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_root_login_toggle_is_visible()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -180,14 +152,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_password_authentication_toggle_is_visible()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -211,14 +176,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_public_key_authentication_status_shown()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -242,14 +200,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_max_auth_tries_is_displayed()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -273,14 +224,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_change_port_button_is_present()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -304,14 +248,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_harden_ssh_button_is_present()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -335,14 +272,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_restart_ssh_button_is_present()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -366,14 +296,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_harden_confirmation_modal_opens()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -397,14 +320,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_flash_messages_display()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -427,14 +343,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_loading_states_work()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -458,14 +367,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_toggle_buttons_work()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -489,14 +391,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_port_input_validation_works()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -520,14 +415,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_navigation_back_to_security_dashboard_works()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -551,14 +439,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_refresh_button_is_present()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -582,14 +463,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_security_recommendations_section_exists()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -613,14 +487,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_port_recommendation_is_displayed()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -644,14 +511,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_root_login_recommendation_is_displayed()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -675,14 +535,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_password_authentication_recommendation_is_displayed()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -706,14 +559,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_max_auth_tries_recommendation_is_displayed()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -737,14 +583,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_harden_modal_shows_warning_message()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -768,14 +607,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_harden_modal_lists_changes()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
@@ -799,14 +631,7 @@ class SSHSecurityManagerTest extends DuskTestCase
 
     #[Test]
     public function test_server_name_is_displayed_in_header()
-    {
-        if (! $this->server) {
-            $this->markTestSkipped('No server available for testing');
-
-            return;
-        }
-
-        $this->browse(function (Browser $browser) {
+    {        $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
