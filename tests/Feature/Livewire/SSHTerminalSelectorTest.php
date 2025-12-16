@@ -43,14 +43,7 @@ class SSHTerminalSelectorTest extends TestCase
             });
     }
 
-    /**
-     * @skip Server status ENUM doesn't include 'deleted'. Valid values: online, offline, maintenance, error.
-     * If soft delete behavior is needed, the model should use SoftDeletes trait instead.
-     */
-    public function test_component_excludes_deleted_servers(): void
-    {
-        $this->markTestSkipped('Server status ENUM does not support deleted value. Use SoftDeletes trait for this functionality.');
-    }
+    // Note: test_component_excludes_deleted_servers removed - Server status ENUM doesn't include 'deleted'
 
     public function test_component_orders_servers_by_name(): void
     {
@@ -155,13 +148,7 @@ class SSHTerminalSelectorTest extends TestCase
             });
     }
 
-    /**
-     * @skip Server status ENUM doesn't include 'inactive'. Valid values: online, offline, maintenance, error.
-     */
-    public function test_includes_inactive_servers(): void
-    {
-        $this->markTestSkipped('Server status ENUM does not support inactive value.');
-    }
+    // Note: test_includes_inactive_servers removed - Server status ENUM doesn't include 'inactive'
 
     public function test_includes_maintenance_servers(): void
     {
@@ -185,13 +172,7 @@ class SSHTerminalSelectorTest extends TestCase
             });
     }
 
-    /**
-     * @skip Server status ENUM doesn't include 'deleted' or 'inactive'. Valid values: online, offline, maintenance, error.
-     */
-    public function test_only_excludes_deleted_status(): void
-    {
-        $this->markTestSkipped('Server status ENUM does not support deleted or inactive values.');
-    }
+    // Note: test_only_excludes_deleted_status removed - Server status ENUM doesn't include 'deleted'
 
     // ==================== EDGE CASES ====================
 
@@ -204,13 +185,7 @@ class SSHTerminalSelectorTest extends TestCase
             ->assertViewHas('selectedServer', null);
     }
 
-    /**
-     * @skip Server status ENUM doesn't include 'deleted'. Valid values: online, offline, maintenance, error.
-     */
-    public function test_can_select_deleted_server_id(): void
-    {
-        $this->markTestSkipped('Server status ENUM does not support deleted value.');
-    }
+    // Note: test_can_select_deleted_server_id removed - Server status ENUM doesn't include 'deleted'
 
     public function test_server_list_updates_when_server_created(): void
     {
@@ -228,13 +203,7 @@ class SSHTerminalSelectorTest extends TestCase
             });
     }
 
-    /**
-     * @skip Server status ENUM doesn't include 'deleted'. Valid values: online, offline, maintenance, error.
-     */
-    public function test_server_list_excludes_newly_deleted_server(): void
-    {
-        $this->markTestSkipped('Server status ENUM does not support deleted value.');
-    }
+    // Note: test_server_list_excludes_newly_deleted_server removed - Server status ENUM doesn't include 'deleted'
 
     // ==================== SERVER DATA TESTS ====================
 

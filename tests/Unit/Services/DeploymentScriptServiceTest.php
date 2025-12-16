@@ -35,71 +35,109 @@ class DeploymentScriptServiceTest extends TestCase
         ], $attributes));
     }
 
-    /**
-     * NOTE: createScript validation tests are skipped due to mismatch between
-     * DeploymentScriptService (uses 'content', 'type', 'description', 'hooks', etc.)
-     * and DeploymentScript model (uses 'script', 'is_template', etc.)
-     * Service needs refactoring to match model schema.
-     */
+    // ===== VALIDATION TESTS =====
 
     #[Test]
     public function it_validates_required_name_field(): void
     {
-        $this->markTestSkipped('Service createScript method incompatible with current model schema');
+        $this->expectException(ValidationException::class);
+
+        $this->service->createScript([
+            'script' => 'echo "test"',
+            // name is missing
+        ]);
     }
 
     #[Test]
-    public function it_validates_required_content_field(): void
+    public function it_validates_required_script_field(): void
     {
-        $this->markTestSkipped('Service createScript method incompatible with current model schema');
-    }
+        $this->expectException(ValidationException::class);
 
-    #[Test]
-    public function it_validates_script_type_enum(): void
-    {
-        $this->markTestSkipped('Service createScript method incompatible with current model schema');
+        $this->service->createScript([
+            'name' => 'Test Script',
+            // script is missing
+        ]);
     }
 
     #[Test]
     public function it_validates_script_language_enum(): void
     {
-        $this->markTestSkipped('Service createScript method incompatible with current model schema');
+        $this->expectException(ValidationException::class);
+
+        $this->service->createScript([
+            'name' => 'Test Script',
+            'script' => 'echo "test"',
+            'language' => 'invalid_language',
+        ]);
     }
 
     #[Test]
     public function it_validates_timeout_minimum_constraint(): void
     {
-        $this->markTestSkipped('Service createScript method incompatible with current model schema');
+        $this->expectException(ValidationException::class);
+
+        $this->service->createScript([
+            'name' => 'Test Script',
+            'script' => 'echo "test"',
+            'timeout' => 5, // minimum is 10
+        ]);
     }
 
     #[Test]
     public function it_validates_timeout_maximum_constraint(): void
     {
-        $this->markTestSkipped('Service createScript method incompatible with current model schema');
-    }
+        $this->expectException(ValidationException::class);
 
-    #[Test]
-    public function it_validates_max_retries_minimum(): void
-    {
-        $this->markTestSkipped('Service createScript method incompatible with current model schema');
-    }
-
-    #[Test]
-    public function it_validates_max_retries_maximum(): void
-    {
-        $this->markTestSkipped('Service createScript method incompatible with current model schema');
+        $this->service->createScript([
+            'name' => 'Test Script',
+            'script' => 'echo "test"',
+            'timeout' => 5000, // maximum is 3600
+        ]);
     }
 
     #[Test]
     public function it_validates_variables_must_be_array(): void
     {
-        $this->markTestSkipped('Service createScript method incompatible with current model schema');
+        $this->expectException(ValidationException::class);
+
+        $this->service->createScript([
+            'name' => 'Test Script',
+            'script' => 'echo "test"',
+            'variables' => 'not_an_array',
+        ]);
     }
 
     #[Test]
-    public function it_validates_hooks_must_be_array(): void
+    public function it_validates_tags_must_be_array(): void
     {
-        $this->markTestSkipped('Service createScript method incompatible with current model schema');
+        $this->expectException(ValidationException::class);
+
+        $this->service->createScript([
+            'name' => 'Test Script',
+            'script' => 'echo "test"',
+            'tags' => 'not_an_array',
+        ]);
+    }
+
+    #[Test]
+    public function it_creates_script_with_valid_data(): void
+    {
+        Process::fake();
+
+        $script = $this->service->createScript([
+            'name' => 'My Test Script',
+            'script' => 'echo "Hello World"',
+            'language' => 'bash',
+            'timeout' => 300,
+            'is_template' => false,
+            'tags' => ['test', 'deployment'],
+        ]);
+
+        $this->assertInstanceOf(DeploymentScript::class, $script);
+        $this->assertEquals('My Test Script', $script->name);
+        $this->assertEquals('echo "Hello World"', $script->script);
+        $this->assertEquals('bash', $script->language);
+        $this->assertEquals(300, $script->timeout);
     }
 
     #[Test]
@@ -368,19 +406,17 @@ class DeploymentScriptServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /**
-     * NOTE: This test is skipped due to mismatch between DeploymentScriptService (uses 'content' field)
-     * and DeploymentScript model (uses 'script' field). Service needs refactoring to match model schema.
-     */
+    // ===== TEMPLATE GENERATION TESTS =====
 
     #[Test]
     public function it_generates_laravel_deployment_template(): void
     {
-        $this->markTestSkipped('Service uses "content" field but model uses "script" field - requires service refactoring');
-
         $project = $this->createTestProject([
+            'name' => 'My Laravel App',
             'framework' => 'laravel',
         ]);
+
+        Domain::factory()->create(['project_id' => $project->id]);
 
         $this->mockSuccessfulCommand();
 
@@ -388,44 +424,102 @@ class DeploymentScriptServiceTest extends TestCase
 
         $this->assertInstanceOf(DeploymentScript::class, $script);
         $this->assertStringContainsString('Laravel Deployment', $script->name);
-        $this->assertStringContainsString('composer install', $script->content);
-        $this->assertStringContainsString('php artisan migrate', $script->content);
+        $this->assertStringContainsString('composer install', $script->script);
+        $this->assertStringContainsString('php artisan migrate', $script->script);
     }
 
     #[Test]
     public function it_generates_nodejs_deployment_template(): void
     {
-        $this->markTestSkipped('Service uses "content" field but model uses "script" field - requires service refactoring');
+        $project = $this->createTestProject([
+            'name' => 'My Node App',
+            'framework' => 'nodejs',
+        ]);
+
+        Domain::factory()->create(['project_id' => $project->id]);
+
+        $this->mockSuccessfulCommand();
+
+        $script = $this->service->generateFromTemplate('node_deployment', $project);
+
+        $this->assertInstanceOf(DeploymentScript::class, $script);
+        $this->assertStringContainsString('Node.js Deployment', $script->name);
+        $this->assertStringContainsString('npm', $script->script);
     }
 
     #[Test]
     public function it_generates_database_backup_template(): void
     {
-        $this->markTestSkipped('Service uses "content" field but model uses "script" field - requires service refactoring');
+        $project = $this->createTestProject(['name' => 'My App']);
+
+        Domain::factory()->create(['project_id' => $project->id]);
+
+        $this->mockSuccessfulCommand();
+
+        $script = $this->service->generateFromTemplate('database_backup', $project);
+
+        $this->assertInstanceOf(DeploymentScript::class, $script);
+        $this->assertStringContainsString('Database Backup', $script->name);
+        $this->assertStringContainsString('mysqldump', $script->script);
     }
 
     #[Test]
     public function it_generates_rollback_template(): void
     {
-        $this->markTestSkipped('Service uses "content" field but model uses "script" field - requires service refactoring');
+        $project = $this->createTestProject(['name' => 'My App']);
+
+        Domain::factory()->create(['project_id' => $project->id]);
+
+        $this->mockSuccessfulCommand();
+
+        $script = $this->service->generateFromTemplate('rollback', $project);
+
+        $this->assertInstanceOf(DeploymentScript::class, $script);
+        $this->assertStringContainsString('Rollback', $script->name);
+        $this->assertStringContainsString('git reset', $script->script);
     }
 
     #[Test]
     public function it_generates_health_check_template(): void
     {
-        $this->markTestSkipped('Service uses "content" field but model uses "script" field - requires service refactoring');
+        $project = $this->createTestProject(['name' => 'My App']);
+
+        Domain::factory()->create(['project_id' => $project->id]);
+
+        $this->mockSuccessfulCommand();
+
+        $script = $this->service->generateFromTemplate('health_check', $project);
+
+        $this->assertInstanceOf(DeploymentScript::class, $script);
+        $this->assertStringContainsString('Health Check', $script->name);
+        $this->assertStringContainsString('curl', $script->script);
     }
 
     #[Test]
     public function it_generates_cache_warmer_template(): void
     {
-        $this->markTestSkipped('Service uses "content" field but model uses "script" field - requires service refactoring');
+        $project = $this->createTestProject(['name' => 'My App']);
+
+        Domain::factory()->create(['project_id' => $project->id]);
+
+        $this->mockSuccessfulCommand();
+
+        $script = $this->service->generateFromTemplate('cache_warmer', $project);
+
+        $this->assertInstanceOf(DeploymentScript::class, $script);
+        $this->assertStringContainsString('Cache Warmer', $script->name);
+        $this->assertEquals('python', $script->language);
     }
 
     #[Test]
     public function it_throws_exception_for_invalid_template(): void
     {
-        $this->markTestSkipped('Service uses "content" field but model uses "script" field - requires service refactoring');
+        $project = $this->createTestProject(['name' => 'My App']);
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("Template 'nonexistent_template' not found");
+
+        $this->service->generateFromTemplate('nonexistent_template', $project);
     }
 
     #[Test]
@@ -689,5 +783,35 @@ class DeploymentScriptServiceTest extends TestCase
         $result = $this->service->executeScript($project, $script, $deployment);
 
         $this->assertTrue($result['success']);
+    }
+
+    // ===== HELPER METHODS =====
+
+    /**
+     * Mock a successful command execution
+     */
+    protected function mockSuccessfulCommand(string $output = 'Success'): void
+    {
+        Process::fake([
+            '*' => Process::result(
+                output: $output,
+                errorOutput: '',
+                exitCode: 0
+            ),
+        ]);
+    }
+
+    /**
+     * Mock a failed command execution
+     */
+    protected function mockFailedCommand(string $error = 'Error'): void
+    {
+        Process::fake([
+            '*' => Process::result(
+                output: '',
+                errorOutput: $error,
+                exitCode: 1
+            ),
+        ]);
     }
 }

@@ -38,16 +38,13 @@ class DeploymentScriptService
 
         $script = DeploymentScript::create([
             'name' => $validated['name'],
-            'description' => $validated['description'] ?? null,
-            'type' => $validated['type'] ?? 'deployment',
             'language' => $validated['language'] ?? 'bash',
-            'content' => $validated['content'],
+            'script' => $validated['script'],
             'variables' => $validated['variables'] ?? [],
-            'hooks' => $validated['hooks'] ?? [],
+            'run_as' => $validated['run_as'] ?? 'www-data',
             'timeout' => $validated['timeout'] ?? 600,
-            'retry_on_failure' => $validated['retry_on_failure'] ?? false,
-            'max_retries' => $validated['max_retries'] ?? 3,
-            'enabled' => $validated['enabled'] ?? true,
+            'is_template' => $validated['is_template'] ?? false,
+            'tags' => $validated['tags'] ?? [],
         ]);
 
         // Validate script syntax if possible
@@ -118,7 +115,7 @@ class DeploymentScriptService
         Deployment $deployment,
         array $additionalVars = []
     ): string {
-        $content = $script->content;
+        $content = $script->script;
 
         // Default variable values
         $variables = [
@@ -147,7 +144,7 @@ class DeploymentScriptService
 
         // Replace variables in content
         foreach ($variables as $key => $value) {
-            $content = str_replace($key, $value, $content);
+            $content = str_replace($key, (string) $value, $content);
         }
 
         // Add script header based on language
@@ -255,16 +252,13 @@ class DeploymentScriptService
     {
         $validator = Validator::make($data, [
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'type' => 'nullable|in:deployment,rollback,maintenance,backup,custom',
             'language' => 'nullable|in:bash,sh,python,php,node,ruby',
-            'content' => 'required|string',
+            'script' => 'required|string',
             'variables' => 'nullable|array',
-            'hooks' => 'nullable|array',
+            'run_as' => 'nullable|string|max:100',
             'timeout' => 'nullable|integer|min:10|max:3600',
-            'retry_on_failure' => 'nullable|boolean',
-            'max_retries' => 'nullable|integer|min:1|max:10',
-            'enabled' => 'nullable|boolean',
+            'is_template' => 'nullable|boolean',
+            'tags' => 'nullable|array',
         ]);
 
         return $validator->validate();
@@ -275,7 +269,7 @@ class DeploymentScriptService
      */
     protected function validateScriptSyntax(DeploymentScript $script): bool
     {
-        $tempPath = $this->createTempScriptFile($script->content, $script->language);
+        $tempPath = $this->createTempScriptFile($script->script, $script->language);
 
         try {
             switch ($script->language) {
@@ -396,7 +390,7 @@ class DeploymentScriptService
 
         // Customize template for project
         $templateData['name'] = "{$project->name} - {$templateData['name']}";
-        $templateData['content'] = $this->customizeTemplateForProject($templateData['content'], $project);
+        $templateData['script'] = $this->customizeTemplateForProject($templateData['script'], $project);
 
         return $this->createScript($templateData);
     }
@@ -409,51 +403,51 @@ class DeploymentScriptService
         return [
             'laravel_deployment' => [
                 'name' => 'Laravel Deployment',
-                'description' => 'Standard Laravel deployment with migrations and cache clearing',
-                'type' => 'deployment',
                 'language' => 'bash',
-                'content' => $this->getLaravelDeploymentTemplate(),
+                'script' => $this->getLaravelDeploymentTemplate(),
                 'timeout' => 600,
+                'is_template' => true,
+                'tags' => ['deployment', 'laravel'],
             ],
             'node_deployment' => [
                 'name' => 'Node.js Deployment',
-                'description' => 'Node.js application deployment with PM2',
-                'type' => 'deployment',
                 'language' => 'bash',
-                'content' => $this->getNodeDeploymentTemplate(),
+                'script' => $this->getNodeDeploymentTemplate(),
                 'timeout' => 600,
+                'is_template' => true,
+                'tags' => ['deployment', 'nodejs'],
             ],
             'database_backup' => [
                 'name' => 'Database Backup',
-                'description' => 'MySQL database backup script',
-                'type' => 'backup',
                 'language' => 'bash',
-                'content' => $this->getDatabaseBackupTemplate(),
+                'script' => $this->getDatabaseBackupTemplate(),
                 'timeout' => 1800,
+                'is_template' => true,
+                'tags' => ['backup', 'database'],
             ],
             'rollback' => [
                 'name' => 'Emergency Rollback',
-                'description' => 'Quick rollback to previous version',
-                'type' => 'rollback',
                 'language' => 'bash',
-                'content' => $this->getRollbackTemplate(),
+                'script' => $this->getRollbackTemplate(),
                 'timeout' => 300,
+                'is_template' => true,
+                'tags' => ['rollback'],
             ],
             'health_check' => [
                 'name' => 'Health Check',
-                'description' => 'Comprehensive health check script',
-                'type' => 'custom',
                 'language' => 'bash',
-                'content' => $this->getHealthCheckTemplate(),
+                'script' => $this->getHealthCheckTemplate(),
                 'timeout' => 60,
+                'is_template' => true,
+                'tags' => ['health', 'monitoring'],
             ],
             'cache_warmer' => [
                 'name' => 'Cache Warmer',
-                'description' => 'Pre-warm application cache',
-                'type' => 'custom',
                 'language' => 'python',
-                'content' => $this->getCacheWarmerTemplate(),
+                'script' => $this->getCacheWarmerTemplate(),
                 'timeout' => 300,
+                'is_template' => true,
+                'tags' => ['cache', 'performance'],
             ],
         ];
     }
@@ -785,30 +779,34 @@ PYTHON;
     /**
      * Customize template for specific project
      */
-    protected function customizeTemplateForProject(string $template, Project $project): string
+    protected function customizeTemplateForProject(string $scriptContent, Project $project): string
     {
         // Add project-specific customizations
         if ($project->framework === 'laravel') {
             // Add Laravel-specific commands
-            $template = str_replace(
+            $scriptContent = str_replace(
                 'php artisan migrate --force',
                 "php artisan migrate --force\nphp artisan db:seed --class=ProductionSeeder --force",
-                $template
+                $scriptContent
             );
         }
 
-        if ($project->uses_docker) {
+        // Check if project uses Docker (check metadata or deployment_method)
+        $usesDocker = ($project->metadata['uses_docker'] ?? false) ||
+                      ($project->deployment_method === 'docker');
+
+        if ($usesDocker) {
             // Wrap commands in docker-compose exec
             $result = preg_replace(
                 '/^(composer|php|npm|node)/m',
                 'docker-compose exec -T app $1',
-                $template
+                $scriptContent
             );
             if ($result !== null) {
-                $template = $result;
+                $scriptContent = $result;
             }
         }
 
-        return $template;
+        return $scriptContent;
     }
 }

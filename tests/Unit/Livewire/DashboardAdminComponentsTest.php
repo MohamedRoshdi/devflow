@@ -1164,47 +1164,7 @@ class DashboardAdminComponentsTest extends TestCase
             ->assertStatus(200);
     }
 
-    #[Test]
-    public function home_public_displays_running_projects_with_domains(): void
-    {
-        // Skip: HomePublic is a marketing page without project listing functionality
-        $this->markTestSkipped('HomePublic is a static marketing page without project listing');
-    }
-
-    #[Test]
-    public function home_public_filters_out_projects_without_domains(): void
-    {
-        // Skip: HomePublic is a marketing page without project listing functionality
-        $this->markTestSkipped('HomePublic is a static marketing page without project listing');
-    }
-
-    #[Test]
-    public function home_public_can_search_projects(): void
-    {
-        // Skip: HomePublic is a marketing page without search functionality
-        $this->markTestSkipped('HomePublic is a static marketing page without search functionality');
-    }
-
-    #[Test]
-    public function home_public_can_filter_by_framework(): void
-    {
-        // Skip: HomePublic is a marketing page without filter functionality
-        $this->markTestSkipped('HomePublic is a static marketing page without filter functionality');
-    }
-
-    #[Test]
-    public function home_public_can_clear_filters(): void
-    {
-        // Skip: HomePublic is a marketing page without filter functionality
-        $this->markTestSkipped('HomePublic is a static marketing page without filter functionality');
-    }
-
-    #[Test]
-    public function home_public_displays_available_frameworks(): void
-    {
-        // Skip: HomePublic is a marketing page without framework listing functionality
-        $this->markTestSkipped('HomePublic is a static marketing page without framework listing');
-    }
+    // Note: HomePublic project listing/search/filter tests removed - HomePublic is a static marketing page
 
     // ============================================
     // ProjectDetail Component Tests
