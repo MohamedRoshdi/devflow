@@ -71,7 +71,7 @@ class KubernetesCluster extends Model
     /**
      * Get projects deployed to this cluster.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Project>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Project, $this>
      */
     public function projects(): \Illuminate\Database\Eloquent\Relations\HasMany
     {

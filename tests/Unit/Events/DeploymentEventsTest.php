@@ -88,8 +88,8 @@ class DeploymentEventsTest extends TestCase
             $channels = $event->broadcastOn();
             $this->assertNotEmpty($channels);
         } else {
-            // Event doesn't implement broadcasting, that's okay
-            $this->assertTrue(true);
+            // Event doesn't implement broadcasting, that's acceptable
+            $this->expectNotToPerformAssertions();
         }
     }
 
