@@ -24,7 +24,7 @@ use Tests\TestCase;
 
 class PenetrationTest extends TestCase
 {
-    use RefreshDatabase;
+    // use RefreshDatabase; // Commented to use DatabaseTransactions from base TestCase
 
     protected array $xssPayloads = [
         '<script>alert("XSS")</script>',

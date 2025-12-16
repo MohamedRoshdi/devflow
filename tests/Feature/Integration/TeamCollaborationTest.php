@@ -31,7 +31,7 @@ use Tests\TestCase;
  */
 class TeamCollaborationTest extends TestCase
 {
-    use RefreshDatabase;
+    // use RefreshDatabase; // Commented to use DatabaseTransactions from base TestCase
 
     protected User $owner;
 

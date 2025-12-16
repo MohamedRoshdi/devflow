@@ -108,7 +108,7 @@ class DatabaseBackupManager extends Component
             ->where('is_active', true)
             ->count();
 
-        $totalSize = DatabaseBackup::where('project_id', $this->project->id)
+        $totalSize = (int) DatabaseBackup::where('project_id', $this->project->id)
             ->where('status', 'completed')
             ->sum('file_size');
 

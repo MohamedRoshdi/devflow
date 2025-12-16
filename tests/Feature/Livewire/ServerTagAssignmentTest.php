@@ -14,7 +14,7 @@ use Tests\TestCase;
 
 class ServerTagAssignmentTest extends TestCase
 {
-    use RefreshDatabase;
+    // use RefreshDatabase; // Commented to use DatabaseTransactions from base TestCase
 
     private User $user;
     private Server $server;
@@ -23,7 +23,7 @@ class ServerTagAssignmentTest extends TestCase
     {
         parent::setUp();
         $this->user = User::factory()->create();
-        $this->server = Server::factory()->create(['status' => 'active']);
+        $this->server = Server::factory()->create(['status' => 'online']);
     }
 
     // ==================== RENDERING TESTS ====================
@@ -297,7 +297,7 @@ class ServerTagAssignmentTest extends TestCase
 
     public function test_tags_are_server_specific(): void
     {
-        $server2 = Server::factory()->create(['status' => 'active']);
+        $server2 = Server::factory()->create(['status' => 'online']);
         $tag = ServerTag::factory()->create(['user_id' => $this->user->id]);
 
         $this->server->tags()->attach($tag->id);
@@ -315,7 +315,7 @@ class ServerTagAssignmentTest extends TestCase
 
     public function test_saving_tags_does_not_affect_other_servers(): void
     {
-        $server2 = Server::factory()->create(['status' => 'active']);
+        $server2 = Server::factory()->create(['status' => 'online']);
         $tags = ServerTag::factory()->count(2)->create(['user_id' => $this->user->id]);
         $tagIds = $tags->pluck('id')->toArray();
 
@@ -380,7 +380,7 @@ class ServerTagAssignmentTest extends TestCase
 
     public function test_can_assign_same_tag_to_multiple_servers(): void
     {
-        $server2 = Server::factory()->create(['status' => 'active']);
+        $server2 = Server::factory()->create(['status' => 'online']);
         $tag = ServerTag::factory()->create(['user_id' => $this->user->id]);
 
         Livewire::actingAs($this->user)

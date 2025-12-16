@@ -34,7 +34,7 @@ use Illuminate\Support\Facades\Notification;
  */
 class WorkflowIntegrationTest extends TestCase
 {
-    use RefreshDatabase;
+    // use RefreshDatabase; // Commented to use DatabaseTransactions from base TestCase
 
     protected User $user;
     protected Server $server;

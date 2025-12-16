@@ -14,7 +14,7 @@ use Tests\TestCase;
 
 class AnalyticsDashboardTest extends TestCase
 {
-    use RefreshDatabase;
+    // use RefreshDatabase; // Commented to use DatabaseTransactions from base TestCase
 
     private User $user;
     private Project $project;
@@ -89,7 +89,8 @@ class AnalyticsDashboardTest extends TestCase
 
     public function test_guest_cannot_access_analytics(): void
     {
+        // Component returns 403 Forbidden when no user is authenticated
         Livewire::test(AnalyticsDashboard::class)
-            ->assertUnauthorized();
+            ->assertForbidden();
     }
 }

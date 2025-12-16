@@ -22,7 +22,7 @@ use Tests\TestCase;
  */
 class DeploymentListTest extends TestCase
 {
-    use RefreshDatabase;
+    // use RefreshDatabase; // Commented to use DatabaseTransactions from base TestCase
 
     private User $user;
 
@@ -149,6 +149,9 @@ class DeploymentListTest extends TestCase
 
     /**
      * Test: Filter deployments by status - success
+     *
+     * Note: Uses unique commit messages to avoid matching static text
+     * like "Successful deployments:" or "Failed deployments:" in aria-labels.
      */
     public function test_filter_deployments_by_status_success(): void
     {
@@ -157,7 +160,7 @@ class DeploymentListTest extends TestCase
             'user_id' => $this->user->id,
             'server_id' => $this->server->id,
             'status' => 'success',
-            'commit_message' => 'Successful deployment',
+            'commit_message' => 'DEP_SUCCESS_MSG_001',
         ]);
 
         Deployment::factory()->create([
@@ -165,18 +168,20 @@ class DeploymentListTest extends TestCase
             'user_id' => $this->user->id,
             'server_id' => $this->server->id,
             'status' => 'failed',
-            'commit_message' => 'Failed deployment',
+            'commit_message' => 'DEP_FAILED_MSG_002',
         ]);
 
         Livewire::actingAs($this->user)
             ->test(DeploymentList::class)
             ->set('statusFilter', 'success')
-            ->assertSee('Successful deployment')
-            ->assertDontSee('Failed deployment');
+            ->assertSee('DEP_SUCCESS_MSG_001')
+            ->assertDontSee('DEP_FAILED_MSG_002');
     }
 
     /**
      * Test: Filter deployments by status - failed
+     *
+     * Note: Uses unique commit messages to avoid matching static text.
      */
     public function test_filter_deployments_by_status_failed(): void
     {
@@ -185,7 +190,7 @@ class DeploymentListTest extends TestCase
             'user_id' => $this->user->id,
             'server_id' => $this->server->id,
             'status' => 'success',
-            'commit_message' => 'Successful deployment',
+            'commit_message' => 'DEP_SUCCESS_MSG_003',
         ]);
 
         Deployment::factory()->create([
@@ -193,18 +198,20 @@ class DeploymentListTest extends TestCase
             'user_id' => $this->user->id,
             'server_id' => $this->server->id,
             'status' => 'failed',
-            'commit_message' => 'Failed deployment',
+            'commit_message' => 'DEP_FAILED_MSG_004',
         ]);
 
         Livewire::actingAs($this->user)
             ->test(DeploymentList::class)
             ->set('statusFilter', 'failed')
-            ->assertSee('Failed deployment')
-            ->assertDontSee('Successful deployment');
+            ->assertSee('DEP_FAILED_MSG_004')
+            ->assertDontSee('DEP_SUCCESS_MSG_003');
     }
 
     /**
      * Test: Filter deployments by status - running
+     *
+     * Note: Uses unique commit messages to avoid matching static text.
      */
     public function test_filter_deployments_by_status_running(): void
     {
@@ -212,25 +219,27 @@ class DeploymentListTest extends TestCase
             'project_id' => $this->userProject->id,
             'user_id' => $this->user->id,
             'server_id' => $this->server->id,
-            'commit_message' => 'Running deployment',
+            'commit_message' => 'DEP_RUNNING_MSG_005',
         ]);
 
         Deployment::factory()->success()->create([
             'project_id' => $this->userProject->id,
             'user_id' => $this->user->id,
             'server_id' => $this->server->id,
-            'commit_message' => 'Completed deployment',
+            'commit_message' => 'DEP_COMPLETE_MSG_006',
         ]);
 
         Livewire::actingAs($this->user)
             ->test(DeploymentList::class)
             ->set('statusFilter', 'running')
-            ->assertSee('Running deployment')
-            ->assertDontSee('Completed deployment');
+            ->assertSee('DEP_RUNNING_MSG_005')
+            ->assertDontSee('DEP_COMPLETE_MSG_006');
     }
 
     /**
      * Test: Filter deployments by status - pending
+     *
+     * Note: Uses unique commit messages to avoid matching static text.
      */
     public function test_filter_deployments_by_status_pending(): void
     {
@@ -238,21 +247,21 @@ class DeploymentListTest extends TestCase
             'project_id' => $this->userProject->id,
             'user_id' => $this->user->id,
             'server_id' => $this->server->id,
-            'commit_message' => 'Pending deployment',
+            'commit_message' => 'DEP_PENDING_MSG_007',
         ]);
 
         Deployment::factory()->success()->create([
             'project_id' => $this->userProject->id,
             'user_id' => $this->user->id,
             'server_id' => $this->server->id,
-            'commit_message' => 'Completed deployment',
+            'commit_message' => 'DEP_COMPLETE_MSG_008',
         ]);
 
         Livewire::actingAs($this->user)
             ->test(DeploymentList::class)
             ->set('statusFilter', 'pending')
-            ->assertSee('Pending deployment')
-            ->assertDontSee('Completed deployment');
+            ->assertSee('DEP_PENDING_MSG_007')
+            ->assertDontSee('DEP_COMPLETE_MSG_008');
     }
 
     /**

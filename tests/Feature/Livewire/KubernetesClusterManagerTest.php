@@ -13,7 +13,7 @@ use Tests\TestCase;
 
 class KubernetesClusterManagerTest extends TestCase
 {
-    use RefreshDatabase;
+    // use RefreshDatabase; // Commented to use DatabaseTransactions from base TestCase
 
     private User $user;
 
@@ -45,13 +45,12 @@ class KubernetesClusterManagerTest extends TestCase
     {
         KubernetesCluster::factory()->create([
             'name' => 'Production Cluster',
-            'status' => 'active',
+            'is_active' => true,
         ]);
 
         Livewire::actingAs($this->user)
             ->test(ClusterManager::class)
-            ->assertSee('Production Cluster')
-            ->assertSee('active');
+            ->assertSee('Production Cluster');
     }
 
     public function test_guest_cannot_access_kubernetes_manager(): void

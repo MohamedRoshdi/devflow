@@ -12,7 +12,7 @@ use Tests\TestCase;
 
 class DeploymentWebhookTest extends TestCase
 {
-    use RefreshDatabase;
+    // use RefreshDatabase; // Commented to use DatabaseTransactions from base TestCase
 
     private Project $project;
     private string $webhookSecret;

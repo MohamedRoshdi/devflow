@@ -14,7 +14,7 @@ use Tests\TestCase;
 
 class SecurityAuditLogTest extends TestCase
 {
-    use RefreshDatabase;
+    // use RefreshDatabase; // Commented to use DatabaseTransactions from base TestCase
 
     private User $user;
 

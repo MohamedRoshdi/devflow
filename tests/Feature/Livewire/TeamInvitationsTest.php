@@ -16,7 +16,7 @@ use Tests\TestCase;
 
 class TeamInvitationsTest extends TestCase
 {
-    use RefreshDatabase;
+    // use RefreshDatabase; // Commented to use DatabaseTransactions from base TestCase
 
     private User $owner;
 

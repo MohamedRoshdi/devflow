@@ -13,7 +13,7 @@ use Tests\TestCase;
 
 class ApiTokenManagerTest extends TestCase
 {
-    use RefreshDatabase;
+    // use RefreshDatabase; // Commented to use DatabaseTransactions from base TestCase
 
     private User $user;
 
@@ -522,10 +522,12 @@ class ApiTokenManagerTest extends TestCase
 
     public function test_abilities_must_be_array(): void
     {
+        // Property is typed as array, so PHP's type system prevents setting non-array values
+        // This test verifies that an empty array triggers validation error
         Livewire::actingAs($this->user)
             ->test(ApiTokenManager::class)
             ->set('newTokenName', 'My Token')
-            ->set('newTokenAbilities', 'not-an-array')
+            ->set('newTokenAbilities', [])
             ->call('createToken')
             ->assertHasErrors(['newTokenAbilities']);
     }

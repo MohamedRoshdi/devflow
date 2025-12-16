@@ -22,7 +22,7 @@ use Tests\TestCase;
 
 class HealthDashboardTest extends TestCase
 {
-    use RefreshDatabase;
+    // use RefreshDatabase; // Commented to use DatabaseTransactions from base TestCase
 
     protected User $user;
 

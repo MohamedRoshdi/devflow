@@ -19,7 +19,7 @@ use Tests\TestCase;
 
 class AuthorizationTest extends TestCase
 {
-    use RefreshDatabase;
+    // use RefreshDatabase; // Commented to use DatabaseTransactions from base TestCase
 
     protected User $admin;
     protected User $user;

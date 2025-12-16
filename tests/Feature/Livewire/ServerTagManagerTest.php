@@ -14,7 +14,7 @@ use Tests\TestCase;
 
 class ServerTagManagerTest extends TestCase
 {
-    use RefreshDatabase;
+    // use RefreshDatabase; // Commented to use DatabaseTransactions from base TestCase
 
     private User $user;
 
@@ -396,7 +396,7 @@ class ServerTagManagerTest extends TestCase
     public function test_tags_include_server_count(): void
     {
         $tag = ServerTag::factory()->create(['user_id' => $this->user->id]);
-        $servers = Server::factory()->count(3)->create(['status' => 'active']);
+        $servers = Server::factory()->count(3)->create(['status' => 'online']);
         $tag->servers()->attach($servers->pluck('id'));
 
         Livewire::actingAs($this->user)

@@ -15,7 +15,7 @@ use Tests\TestCase;
 
 class ProjectConfigurationTest extends TestCase
 {
-    use RefreshDatabase;
+    // use RefreshDatabase; // Commented to use DatabaseTransactions from base TestCase
 
     protected User $user;
 

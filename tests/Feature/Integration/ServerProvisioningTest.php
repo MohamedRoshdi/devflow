@@ -39,7 +39,7 @@ use Tests\TestCase;
 #[Group('provisioning')]
 class ServerProvisioningTest extends TestCase
 {
-    use RefreshDatabase;
+    // use RefreshDatabase; // Commented to use DatabaseTransactions from base TestCase
 
     protected User $user;
     protected ServerProvisioningService $provisioningService;
