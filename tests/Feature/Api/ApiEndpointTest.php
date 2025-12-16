@@ -398,9 +398,10 @@ class ApiEndpointTest extends TestCase
         $project = Project::factory()->create([
             'user_id' => $this->user->id,
             'auto_deploy' => false,
+            'webhook_secret' => 'test-webhook-token-disabled',
         ]);
 
-        $response = $this->postJson("/api/webhooks/deploy/{$project->slug}", [
+        $response = $this->postJson("/api/webhooks/deploy/{$project->webhook_secret}", [
             'ref' => 'refs/heads/main',
         ]);
 
@@ -419,9 +420,10 @@ class ApiEndpointTest extends TestCase
             'user_id' => $this->user->id,
             'auto_deploy' => true,
             'branch' => 'main',
+            'webhook_secret' => 'test-webhook-token-github',
         ]);
 
-        $response = $this->postJson("/api/webhooks/deploy/{$project->slug}", [
+        $response = $this->postJson("/api/webhooks/deploy/{$project->webhook_secret}", [
             'ref' => 'refs/heads/main',
             'after' => 'abc123def456',
             'head_commit' => [
@@ -453,9 +455,10 @@ class ApiEndpointTest extends TestCase
             'user_id' => $this->user->id,
             'auto_deploy' => true,
             'branch' => 'main',
+            'webhook_secret' => 'test-webhook-token-gitlab',
         ]);
 
-        $response = $this->postJson("/api/webhooks/deploy/{$project->slug}", [
+        $response = $this->postJson("/api/webhooks/deploy/{$project->webhook_secret}", [
             'object_kind' => 'push',
             'ref' => 'refs/heads/main',
             'checkout_sha' => 'xyz789abc123',
@@ -488,9 +491,10 @@ class ApiEndpointTest extends TestCase
             'user_id' => $this->user->id,
             'auto_deploy' => true,
             'branch' => 'develop',
+            'webhook_secret' => 'test-webhook-token-bitbucket',
         ]);
 
-        $response = $this->postJson("/api/webhooks/deploy/{$project->slug}", [
+        $response = $this->postJson("/api/webhooks/deploy/{$project->webhook_secret}", [
             'push' => [
                 'changes' => [
                     [

@@ -8,6 +8,29 @@ declare(strict_types=1);
  * Pre-warms database connections and caches to improve test performance
  */
 
+// Create a temporary writable storage path for testing
+$tempStoragePath = sys_get_temp_dir() . '/devflow-tests-storage';
+if (!is_dir($tempStoragePath)) {
+    mkdir($tempStoragePath, 0777, true);
+}
+if (!is_dir($tempStoragePath . '/framework/cache')) {
+    mkdir($tempStoragePath . '/framework/cache', 0777, true);
+}
+if (!is_dir($tempStoragePath . '/framework/views')) {
+    mkdir($tempStoragePath . '/framework/views', 0777, true);
+}
+if (!is_dir($tempStoragePath . '/framework/sessions')) {
+    mkdir($tempStoragePath . '/framework/sessions', 0777, true);
+}
+if (!is_dir($tempStoragePath . '/logs')) {
+    mkdir($tempStoragePath . '/logs', 0777, true);
+}
+
+// Set environment variable before Laravel boots
+putenv('LARAVEL_STORAGE_PATH=' . $tempStoragePath);
+$_ENV['LARAVEL_STORAGE_PATH'] = $tempStoragePath;
+$_SERVER['LARAVEL_STORAGE_PATH'] = $tempStoragePath;
+
 // Load Composer autoloader
 $autoloadPath = __DIR__ . '/../vendor/autoload.php';
 if (!file_exists($autoloadPath)) {

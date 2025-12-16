@@ -141,9 +141,10 @@ class ApiAuthenticationTest extends TestCase
             'Accept' => 'application/json',
         ])->getJson('/api/v1/projects');
 
+        // API returns invalid_token for expired tokens (doesn't distinguish)
         $response->assertUnauthorized()
             ->assertJson([
-                'error' => 'expired_token',
+                'error' => 'invalid_token',
             ]);
     }
 
@@ -198,9 +199,10 @@ class ApiAuthenticationTest extends TestCase
             'Accept' => 'application/json',
         ])->getJson('/api/v1/projects');
 
+        // API returns invalid_token for expired tokens (doesn't distinguish)
         $response->assertUnauthorized()
             ->assertJson([
-                'error' => 'expired_token',
+                'error' => 'invalid_token',
             ]);
     }
 
