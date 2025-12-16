@@ -34,8 +34,21 @@ class FirewallManagerTest extends DuskTestCase
             ]
         );
 
-        // Get the first server for testing
-        $this->server = Server::first();
+        // Create or get a server for testing
+        $this->server = Server::first() ?? Server::create([
+            'user_id' => $this->user->id,
+            'name' => 'Test Firewall Server',
+            'hostname' => 'firewall-test.devflow.test',
+            'ip_address' => '192.168.1.101',
+            'port' => 22,
+            'username' => 'root',
+            'status' => 'online',
+            'os' => 'Ubuntu 22.04',
+            'cpu_cores' => 4,
+            'memory_gb' => 8,
+            'disk_gb' => 100,
+            'docker_installed' => true,
+        ]);
     }
 
     /**

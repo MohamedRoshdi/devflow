@@ -29,9 +29,26 @@ class ServerShowTest extends DuskTestCase
                 'name' => 'Test Admin',
                 'password' => bcrypt('password'),
                 'email_verified_at' => now(),
+                'notification_sound' => true,
+                'desktop_notifications' => false,
             ]
         );
-        $this->server = Server::first();
+
+        // Create or get a server for testing
+        $this->server = Server::first() ?? Server::create([
+            'user_id' => $this->user->id,
+            'name' => 'Test Server',
+            'hostname' => 'test-server.devflow.test',
+            'ip_address' => '192.168.1.100',
+            'port' => 22,
+            'username' => 'root',
+            'status' => 'online',
+            'os' => 'Ubuntu 22.04',
+            'cpu_cores' => 4,
+            'memory_gb' => 8,
+            'disk_gb' => 100,
+            'docker_installed' => true,
+        ]);
     }
 
     /**

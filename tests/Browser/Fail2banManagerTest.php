@@ -34,8 +34,21 @@ class Fail2banManagerTest extends DuskTestCase
             ]
         );
 
-        // Get first available server
-        $this->server = Server::first();
+        // Create or get a server for testing
+        $this->server = Server::first() ?? Server::create([
+            'user_id' => $this->user->id,
+            'name' => 'Test Fail2ban Server',
+            'hostname' => 'fail2ban-test.devflow.test',
+            'ip_address' => '192.168.1.103',
+            'port' => 22,
+            'username' => 'root',
+            'status' => 'online',
+            'os' => 'Ubuntu 22.04',
+            'cpu_cores' => 4,
+            'memory_gb' => 8,
+            'disk_gb' => 100,
+            'docker_installed' => true,
+        ]);
     }
 
     /**
