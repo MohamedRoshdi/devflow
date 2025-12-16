@@ -76,8 +76,9 @@ class DockerDashboardTest extends TestCase
      */
     public function test_guest_cannot_access_docker_dashboard(): void
     {
-        // Skip - component initializes and tries to load Docker data before auth check causes timeout
-        $this->markTestSkipped('Test times out - component initializes Docker connection before auth check completes');
+        // Guest should receive 401 Unauthorized response
+        Livewire::test(DockerDashboard::class, ['server' => $this->server])
+            ->assertStatus(401);
     }
 
     /**

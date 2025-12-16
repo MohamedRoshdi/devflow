@@ -3,20 +3,16 @@
 namespace Tests\Feature\Livewire;
 
 
-use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\Dashboard;
 use App\Models\Deployment;
-use App\Models\HealthCheck;
 use App\Models\Project;
 use App\Models\Server;
-use App\Models\ServerMetric;
-use App\Models\SSLCertificate;
 use App\Models\User;
 use App\Models\UserSettings;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class DashboardTest extends TestCase
@@ -45,14 +41,6 @@ class DashboardTest extends TestCase
     }
 
     #[Test]
-    public function load_stats_returns_expected_array_structure()
-    {
-        // Dashboard component has been refactored - stats are now in DashboardStats child component
-        // This test should be moved to DashboardStatsTest
-        $this->markTestSkipped('Stats moved to DashboardStats child component - see DashboardStatsTest');
-    }
-
-    #[Test]
     public function load_stats_caches_results_for_60_seconds()
     {
         Cache::flush();
@@ -65,20 +53,6 @@ class DashboardTest extends TestCase
         // Verify cache TTL (should be around 60 seconds)
         $stats = Cache::get('dashboard_stats');
         $this->assertIsArray($stats);
-    }
-
-    #[Test]
-    public function load_recent_deployments_returns_collection()
-    {
-        // Dashboard component has been refactored - recentDeployments moved to DashboardRecentActivity
-        $this->markTestSkipped('recentDeployments moved to DashboardRecentActivity child component');
-    }
-
-    #[Test]
-    public function load_projects_returns_limited_projects()
-    {
-        // Dashboard component has been refactored - projects property no longer exists
-        $this->markTestSkipped('projects property moved to separate widget or removed from Dashboard');
     }
 
     #[Test]
@@ -106,20 +80,6 @@ class DashboardTest extends TestCase
             ->assertSet('collapsedSections', function ($sections) {
                 return count($sections) === 1 && $sections[0] === 'deployments';
             });
-    }
-
-    #[Test]
-    public function clear_all_caches_dispatches_success_notification()
-    {
-        // Dashboard component no longer has clearAllCaches method - moved to DashboardQuickActions
-        $this->markTestSkipped('clearAllCaches moved to DashboardQuickActions child component');
-    }
-
-    #[Test]
-    public function clear_all_caches_clears_dashboard_caches()
-    {
-        // Dashboard component no longer has clearAllCaches method - moved to DashboardQuickActions
-        $this->markTestSkipped('clearAllCaches moved to DashboardQuickActions child component');
     }
 
     #[Test]
@@ -215,62 +175,6 @@ class DashboardTest extends TestCase
         // Check that days without deployments have 0 counts
         $emptyDays = array_filter($timeline, fn ($entry) => $entry['total'] === 0);
         $this->assertGreaterThan(0, count($emptyDays));
-    }
-
-    #[Test]
-    public function load_ssl_stats_returns_correct_structure()
-    {
-        // SSL stats moved to DashboardStats child component
-        $this->markTestSkipped('sslStats moved to DashboardStats child component - see DashboardStatsTest');
-    }
-
-    #[Test]
-    public function load_health_check_stats_returns_correct_structure()
-    {
-        // Health check stats moved to DashboardStats child component
-        $this->markTestSkipped('healthCheckStats moved to DashboardStats child component - see DashboardStatsTest');
-    }
-
-    #[Test]
-    public function load_deployments_today_counts_correctly()
-    {
-        // deploymentsToday moved to DashboardStats child component
-        $this->markTestSkipped('deploymentsToday moved to DashboardStats child component - see DashboardStatsTest');
-    }
-
-    #[Test]
-    public function load_recent_activity_merges_deployments_and_projects()
-    {
-        // recentActivity moved to DashboardRecentActivity child component
-        $this->markTestSkipped('recentActivity moved to DashboardRecentActivity child component');
-    }
-
-    #[Test]
-    public function load_more_activity_increases_activity_count()
-    {
-        // loadMoreActivity moved to DashboardRecentActivity child component
-        $this->markTestSkipped('loadMoreActivity moved to DashboardRecentActivity child component');
-    }
-
-    #[Test]
-    public function load_server_health_returns_metrics_for_online_servers()
-    {
-        // serverHealth moved to DashboardServerHealth child component
-        $this->markTestSkipped('serverHealth moved to DashboardServerHealth child component - see DashboardServerHealthTest');
-    }
-
-    #[Test]
-    public function load_queue_stats_returns_pending_and_failed_jobs()
-    {
-        // queueStats moved to DashboardStats child component
-        $this->markTestSkipped('queueStats moved to DashboardStats child component - see DashboardStatsTest');
-    }
-
-    #[Test]
-    public function load_security_score_calculates_average()
-    {
-        // overallSecurityScore moved to DashboardStats child component
-        $this->markTestSkipped('overallSecurityScore moved to DashboardStats child component - see DashboardStatsTest');
     }
 
     #[Test]

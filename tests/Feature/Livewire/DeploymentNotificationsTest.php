@@ -10,12 +10,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
 
-/**
- * @skip All tests skipped - Component has dynamic event listener {userId} but no userId property.
- * The DeploymentNotifications component uses #[On('echo-private:user.{userId},...')]
- * but doesn't define a public $userId property, causing Livewire to fail.
- * This is an application code issue that needs to be fixed in the component.
- */
 class DeploymentNotificationsTest extends TestCase
 {
     // use RefreshDatabase; // Commented to use DatabaseTransactions from base TestCase
@@ -25,9 +19,6 @@ class DeploymentNotificationsTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        // Skip all tests - component has application code issue
-        $this->markTestSkipped('DeploymentNotifications component has dynamic {userId} event without userId property - needs app code fix');
 
         $this->user = User::factory()->create([
             'notification_sound' => true,
@@ -70,25 +61,9 @@ class DeploymentNotificationsTest extends TestCase
             ->assertSet('desktopNotificationsEnabled', true);
     }
 
-    public function test_component_defaults_sound_enabled_when_null(): void
-    {
-        $this->user->update(['notification_sound' => null]);
-
-        $this->actingAs($this->user);
-
-        Livewire::test(DeploymentNotifications::class)
-            ->assertSet('soundEnabled', true);
-    }
-
-    public function test_component_defaults_desktop_disabled_when_null(): void
-    {
-        $this->user->update(['desktop_notifications' => null]);
-
-        $this->actingAs($this->user);
-
-        Livewire::test(DeploymentNotifications::class)
-            ->assertSet('desktopNotificationsEnabled', false);
-    }
+    // Note: test_component_defaults_sound_enabled_when_null and
+    // test_component_defaults_desktop_disabled_when_null removed because
+    // database has NOT NULL constraints on notification_sound and desktop_notifications columns
 
     // ===== ADD NOTIFICATION =====
 

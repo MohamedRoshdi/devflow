@@ -28,6 +28,9 @@ class User extends Authenticatable
         'last_login_at',
         'current_team_id',
         'show_inline_help',
+        'notification_sound',
+        'desktop_notifications',
+        'notification_preferences',
     ];
 
     protected $hidden = [
@@ -42,6 +45,9 @@ class User extends Authenticatable
             'last_login_at' => 'datetime',
             'password' => 'hashed',
             'show_inline_help' => 'boolean',
+            'notification_sound' => 'boolean',
+            'desktop_notifications' => 'boolean',
+            'notification_preferences' => 'array',
         ];
     }
 

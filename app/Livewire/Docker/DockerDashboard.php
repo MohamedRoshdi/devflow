@@ -47,6 +47,11 @@ class DockerDashboard extends Component
 
     public function mount(Server $server): void
     {
+        // Ensure user is authenticated before loading Docker data
+        if (! auth()->check()) {
+            abort(401);
+        }
+
         // All servers are shared across all users
         $this->server = $server;
         $this->loadInitialData();

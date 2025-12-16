@@ -66,6 +66,7 @@ class Project extends Model
         'last_commit_at',
         'requires_approval',
         'approval_settings',
+        'kubernetes_cluster_id',
     ];
 
     protected function casts(): array
@@ -205,6 +206,14 @@ class Project extends Model
     public function server(): BelongsTo
     {
         return $this->belongsTo(Server::class);
+    }
+
+    /**
+     * @return BelongsTo<KubernetesCluster, $this>
+     */
+    public function kubernetesCluster(): BelongsTo
+    {
+        return $this->belongsTo(KubernetesCluster::class);
     }
 
     /**

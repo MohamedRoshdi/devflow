@@ -12,6 +12,11 @@ use Livewire\Component;
 class DeploymentNotifications extends Component
 {
     /**
+     * User ID for dynamic event listener placeholder.
+     */
+    public ?int $userId = null;
+
+    /**
      * @var Collection<int, array<string, mixed>>
      */
     public Collection $notifications;
@@ -23,6 +28,7 @@ class DeploymentNotifications extends Component
     public function mount(): void
     {
         $this->notifications = collect();
+        $this->userId = auth()->id();
         $this->soundEnabled = auth()->user()->notification_sound ?? true;
         $this->desktopNotificationsEnabled = auth()->user()->desktop_notifications ?? false;
     }

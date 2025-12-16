@@ -67,4 +67,14 @@ class KubernetesCluster extends Model
     {
         return $value ? decrypt($value) : null;
     }
+
+    /**
+     * Get projects deployed to this cluster.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Project>
+     */
+    public function projects(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Project::class);
+    }
 }
