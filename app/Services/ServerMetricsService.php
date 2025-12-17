@@ -236,12 +236,12 @@ class ServerMetricsService
             $escapedPassword = escapeshellarg($server->ssh_password);
 
             return sprintf(
-                'sshpass -p %s ssh %s %s@%s "%s" 2>/dev/null',
+                'sshpass -p %s ssh %s %s@%s %s 2>/dev/null',
                 $escapedPassword,
                 implode(' ', $sshOptions),
                 $server->username,
                 $server->ip_address,
-                addslashes($remoteCommand)
+                escapeshellarg($remoteCommand)
             );
         }
 
@@ -256,11 +256,11 @@ class ServerMetricsService
         }
 
         return sprintf(
-            'ssh %s %s@%s "%s" 2>/dev/null',
+            'ssh %s %s@%s %s 2>/dev/null',
             implode(' ', $sshOptions),
             $server->username,
             $server->ip_address,
-            addslashes($remoteCommand)
+            escapeshellarg($remoteCommand)
         );
     }
 

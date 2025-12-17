@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [6.9.0] - 2025-12-17
+
+### Security
+
+#### HIGH Severity Fixes
+- **Fixed SSH command injection vulnerability** - Replaced `addslashes()` with `escapeshellarg()` across 12 service files
+  - `addslashes()` is designed for SQL/string escaping, not shell escaping
+  - `escapeshellarg()` properly wraps commands in single quotes and escapes special characters
+  - Affected files:
+    - `app/Services/Docker/Concerns/ExecutesRemoteCommands.php`
+    - `app/Services/DatabaseBackupService.php`
+    - `app/Services/FileBackupService.php`
+    - `app/Services/ServerBackupService.php`
+    - `app/Services/SSLManagementService.php`
+    - `app/Services/ServerProvisioningService.php`
+    - `app/Services/MetricsCollectionService.php`
+    - `app/Services/ServerConnectivityService.php`
+    - `app/Services/StorageService.php`
+    - `app/Services/LogManagerService.php`
+    - `app/Services/ServerMetricsService.php`
+    - `app/Services/Docker/DockerContainerService.php`
+
+- **Fixed timing attack vulnerability in webhook secret lookup** - Added `findProjectByWebhookSecret()` method to `WebhookController`
+  - Previous implementation allowed timing attacks to enumerate valid webhook secrets
+  - New implementation uses `hash_equals()` for constant-time comparison
+  - Iterates through all projects without early exit to maintain constant time
+
+### Refactored
+
+#### Service Locator Anti-Pattern Fix
+- **Refactored `WithServerActions` trait** to use Livewire's boot method pattern instead of scattered `app()` calls
+  - Added `bootWithServerActions()` method for centralized dependency injection
+  - Replaced 5 `app(ServerConnectivityService::class)` calls with single property injection
+  - Improved testability by making dependencies explicit and mockable
+  - File: `app/Livewire/Traits/WithServerActions.php`
+
+---
+
 ## [6.8.9] - 2025-12-17
 
 ### Refactored

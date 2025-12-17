@@ -13,10 +13,29 @@ use Illuminate\Support\Facades\Cache;
  *
  * Provides reusable server action methods including ping, reboot, and server detection.
  * Used by components that need to interact with servers.
+ *
+ * Uses Livewire's boot method pattern for dependency injection instead of service locator.
  */
 trait WithServerActions
 {
     public bool $isPingingAll = false;
+
+    /**
+     * The server connectivity service instance.
+     * Injected via Livewire's boot method pattern.
+     */
+    protected ServerConnectivityService $serverConnectivityService;
+
+    /**
+     * Boot the trait and inject dependencies.
+     *
+     * Livewire automatically calls boot{TraitName}() when the component boots.
+     * This replaces the service locator anti-pattern (app() calls) with proper DI.
+     */
+    public function bootWithServerActions(): void
+    {
+        $this->serverConnectivityService = app(ServerConnectivityService::class);
+    }
 
     /**
      * Ping all servers to update their status (runs in background)
@@ -31,11 +50,9 @@ trait WithServerActions
             return;
         }
 
-        $connectivityService = app(ServerConnectivityService::class);
-
         foreach ($this->accessibleServers as $server) {
             // Quick ping to update status (async-like behavior with timeout)
-            $connectivityService->pingAndUpdateStatus($server);
+            $this->serverConnectivityService->pingAndUpdateStatus($server);
         }
     }
 
@@ -50,13 +67,11 @@ trait WithServerActions
     {
         $this->isPingingAll = true;
 
-        $connectivityService = app(ServerConnectivityService::class);
-
         $online = 0;
         $offline = 0;
 
         foreach ($this->accessibleServers as $server) {
-            $result = $connectivityService->pingAndUpdateStatus($server);
+            $result = $this->serverConnectivityService->pingAndUpdateStatus($server);
             if ($result) {
                 $online++;
             } else {
@@ -85,8 +100,7 @@ trait WithServerActions
             return;
         }
 
-        $connectivityService = app(ServerConnectivityService::class);
-        $result = $connectivityService->testConnection($server);
+        $result = $this->serverConnectivityService->testConnection($server);
 
         $server->update([
             'status' => $result['reachable'] ? 'online' : 'offline',
@@ -119,8 +133,7 @@ trait WithServerActions
             return;
         }
 
-        $connectivityService = app(ServerConnectivityService::class);
-        $result = $connectivityService->rebootServer($server);
+        $result = $this->serverConnectivityService->rebootServer($server);
 
         // Clear caches after reboot
         unset($this->accessibleServers, $this->serversQuery);
@@ -168,8 +181,7 @@ trait WithServerActions
             ]);
 
             // Get server info
-            $connectivityService = app(ServerConnectivityService::class);
-            $serverInfo = $connectivityService->getServerInfo($server);
+            $serverInfo = $this->serverConnectivityService->getServerInfo($server);
 
             if (! empty($serverInfo)) {
                 $server->update([

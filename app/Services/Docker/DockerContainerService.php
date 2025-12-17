@@ -172,10 +172,13 @@ class DockerContainerService
         // Generate Dockerfile if project doesn't have one
         $dockerfile = $this->dockerfileGenerator->generate($project);
 
+        // Properly escape single quotes for shell single-quoted string
+        $escapedDockerfile = str_replace("'", "'\\''", $dockerfile);
+
         return sprintf(
             "cd %s && echo '%s' > Dockerfile && docker build -t %s .",
             $projectPath,
-            addslashes($dockerfile),
+            $escapedDockerfile,
             escapeshellarg($slug)
         );
     }
@@ -341,8 +344,8 @@ class DockerContainerService
 
         if ($project->env_variables && is_array($project->env_variables)) {
             foreach ($project->env_variables as $key => $value) {
-                $escapedValue = addslashes($value);
-                $envFlags .= " -e {$key}=\"{$escapedValue}\"";
+                // Use escapeshellarg for proper shell escaping of environment values
+                $envFlags .= ' -e '.escapeshellarg("{$key}={$value}");
             }
         }
 

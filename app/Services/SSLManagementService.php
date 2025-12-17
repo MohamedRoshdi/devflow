@@ -452,12 +452,12 @@ class SSLManagementService
         if ($server->ssh_password) {
             $escapedPassword = escapeshellarg($server->ssh_password);
             $command = sprintf(
-                'sshpass -p %s ssh %s %s@%s "%s" 2>&1',
+                'sshpass -p %s ssh %s %s@%s %s 2>&1',
                 $escapedPassword,
                 implode(' ', $sshOptions),
                 $server->username,
                 $server->ip_address,
-                addslashes($remoteCommand)
+                escapeshellarg($remoteCommand)
             );
         } else {
             $sshOptions[] = '-o BatchMode=yes';
@@ -470,11 +470,11 @@ class SSLManagementService
             }
 
             $command = sprintf(
-                'ssh %s %s@%s "%s" 2>&1',
+                'ssh %s %s@%s %s 2>&1',
                 implode(' ', $sshOptions),
                 $server->username,
                 $server->ip_address,
-                addslashes($remoteCommand)
+                escapeshellarg($remoteCommand)
             );
         }
 

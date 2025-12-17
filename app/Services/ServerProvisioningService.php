@@ -197,9 +197,11 @@ class ServerProvisioningService
         ]);
 
         try {
+            // Properly escape the MySQL password for shell execution
+            $escapedPassword = str_replace("'", "'\\''", $rootPassword);
             $commands = [
                 'DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server',
-                sprintf('mysql -e "ALTER USER \'root\'@\'localhost\' IDENTIFIED WITH mysql_native_password BY \'%s\';"', addslashes($rootPassword)),
+                sprintf("mysql -e \"ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '%s';\"", $escapedPassword),
                 'systemctl enable mysql',
                 'systemctl start mysql',
             ];
@@ -564,12 +566,12 @@ class ServerProvisioningService
         if ($server->ssh_password) {
             $escapedPassword = escapeshellarg($server->ssh_password);
             $command = sprintf(
-                'sshpass -p %s ssh %s %s@%s "%s" 2>&1',
+                'sshpass -p %s ssh %s %s@%s %s 2>&1',
                 $escapedPassword,
                 implode(' ', $sshOptions),
                 $server->username,
                 $server->ip_address,
-                addslashes($remoteCommand)
+                escapeshellarg($remoteCommand)
             );
         } else {
             $sshOptions[] = '-o BatchMode=yes';
@@ -582,11 +584,11 @@ class ServerProvisioningService
             }
 
             $command = sprintf(
-                'ssh %s %s@%s "%s" 2>&1',
+                'ssh %s %s@%s %s 2>&1',
                 implode(' ', $sshOptions),
                 $server->username,
                 $server->ip_address,
-                addslashes($remoteCommand)
+                escapeshellarg($remoteCommand)
             );
         }
 

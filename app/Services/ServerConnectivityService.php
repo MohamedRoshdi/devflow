@@ -511,12 +511,12 @@ class ServerConnectivityService
             $escapedPassword = escapeshellarg($server->ssh_password);
 
             return sprintf(
-                'sshpass -p %s ssh %s %s@%s "%s" %s',
+                'sshpass -p %s ssh %s %s@%s %s %s',
                 $escapedPassword,
                 implode(' ', $sshOptions),
                 $server->username,
                 $server->ip_address,
-                addslashes($remoteCommand),
+                escapeshellarg($remoteCommand),
                 $stderrRedirect
             );
         }
@@ -532,11 +532,11 @@ class ServerConnectivityService
         }
 
         return sprintf(
-            'ssh %s %s@%s "%s" %s',
+            'ssh %s %s@%s %s %s',
             implode(' ', $sshOptions),
             $server->username,
             $server->ip_address,
-            addslashes($remoteCommand),
+            escapeshellarg($remoteCommand),
             $stderrRedirect
         );
     }

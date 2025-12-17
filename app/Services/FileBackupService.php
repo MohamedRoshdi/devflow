@@ -715,12 +715,12 @@ class FileBackupService
 
         if ($server->ssh_password) {
             return sprintf(
-                'sshpass -p %s ssh %s %s@%s "%s"',
+                'sshpass -p %s ssh %s %s@%s %s',
                 escapeshellarg($server->ssh_password),
                 implode(' ', $sshOptions),
                 $server->username,
                 $server->ip_address,
-                addslashes($remoteCommand)
+                escapeshellarg($remoteCommand)
             );
         }
 
@@ -734,11 +734,11 @@ class FileBackupService
         }
 
         return sprintf(
-            'ssh %s %s@%s "%s"',
+            'ssh %s %s@%s %s',
             implode(' ', $sshOptions),
             $server->username,
             $server->ip_address,
-            addslashes($remoteCommand)
+            escapeshellarg($remoteCommand)
         );
     }
 

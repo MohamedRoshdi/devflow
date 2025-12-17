@@ -213,11 +213,11 @@ trait ExecutesRemoteCommands
         }
 
         return sprintf(
-            'ssh %s %s@%s "%s"',
+            'ssh %s %s@%s %s',
             implode(' ', $sshOptions),
             $server->username,
             $server->ip_address,
-            addslashes($remoteCommand)
+            escapeshellarg($remoteCommand)
         );
     }
 }
