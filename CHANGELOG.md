@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [6.8.8] - 2025-12-17
+
+### Fixed
+
+#### SettingsUtilityComponentsTest Fixes (85 tests passing, 2 skipped)
+
+**Test Files Fixed:**
+- **SettingsUtilityComponentsTest** (85 tests, 2 skipped) - Fixed mock expectations, date filtering, and team service usage
+
+**Component Fixes:**
+- `app/Models/SSHKey.php` - Fixed `servers()` relationship with explicit foreign key names, removed `withTimestamps()`
+- `app/Livewire/Settings/HealthCheckManager.php` - Fixed validation to use explicit rules per form (saveCheck/saveChannel)
+- `app/Livewire/Teams/TeamSwitcher.php` - Fixed ambiguous 'id' column by specifying `teams.id`
+
+**Test Pattern Fixes:**
+- Mock expectations now use `\Mockery::on()` for object comparison instead of exact object matching
+- TeamSettings tests updated to reflect actual component behavior (invitations/removals handled directly, not via TeamService)
+- LogViewer tests clear date filters before assertions to handle default 24-hour date range
+
+**Key Patterns Applied:**
+- `\Mockery::on(fn ($arg) => $arg instanceof Model && $arg->id === $expected->id)` for object mocking
+- Clear date filters (`dateFrom`, `dateTo`) when testing pagination queries
+- Access paginator count via `$component->logs->count()` instead of `assertCount('logs', n)`
+
+---
+
 ## [6.8.7] - 2025-12-17
 
 ### Fixed

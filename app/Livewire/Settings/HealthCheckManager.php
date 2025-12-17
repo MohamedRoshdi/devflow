@@ -177,7 +177,16 @@ class HealthCheckManager extends Component
 
     public function saveCheck(): void
     {
-        $this->validate();
+        $this->validate([
+            'project_id' => 'nullable|exists:projects,id',
+            'server_id' => 'nullable|exists:servers,id',
+            'check_type' => 'required|in:http,tcp,ping,ssl_expiry',
+            'target_url' => 'required|string|max:500',
+            'expected_status' => 'required|integer|min:100|max:599',
+            'interval_minutes' => 'required|integer|min:1|max:1440',
+            'timeout_seconds' => 'required|integer|min:5|max:300',
+            'is_active' => 'required|boolean',
+        ]);
 
         try {
             $data = [
@@ -253,7 +262,14 @@ class HealthCheckManager extends Component
 
     public function saveChannel(): void
     {
-        $this->validate();
+        $this->validate([
+            'channel_type' => 'required|in:email,slack,discord',
+            'channel_name' => 'required|string|max:255',
+            'channel_email' => 'required_if:channel_type,email|email|nullable',
+            'channel_slack_webhook' => 'required_if:channel_type,slack|url|nullable',
+            'channel_discord_webhook' => 'required_if:channel_type,discord|url|nullable',
+            'channel_is_active' => 'required|boolean',
+        ]);
 
         try {
             $config = match ($this->channel_type) {

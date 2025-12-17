@@ -44,9 +44,8 @@ class SSHKey extends Model
 
     public function servers()
     {
-        return $this->belongsToMany(Server::class, 'server_ssh_key')
-            ->withPivot('deployed_at')
-            ->withTimestamps();
+        return $this->belongsToMany(Server::class, 'server_ssh_key', 'ssh_key_id', 'server_id')
+            ->withPivot('deployed_at');
     }
 
     // Accessors

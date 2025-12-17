@@ -51,7 +51,7 @@ class TeamSwitcher extends Component
         }
 
         return $user->teams()
-            ->where('id', '!=', $user->current_team_id)
+            ->where('teams.id', '!=', $user->current_team_id)
             ->with('members')
             ->get()
             ->map(function (Team $team) use ($user) {
