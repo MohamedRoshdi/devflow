@@ -37,10 +37,6 @@ class GitHubRepoPicker extends Component
 
     public string $step = 'select-repo'; // select-repo, select-branch
 
-    public function __construct(
-        private readonly GitHubService $gitHubService
-    ) {}
-
     #[Computed]
     public function connection(): ?GitHubConnection
     {
@@ -95,7 +91,8 @@ class GitHubRepoPicker extends Component
             $repository = GitHubRepository::with(['connection'])->findOrFail($repoId);
 
             // Load branches from GitHub
-            $branches = $this->gitHubService->listBranches($this->connection, $repository->full_name);
+            $gitHubService = app(GitHubService::class);
+            $branches = $gitHubService->listBranches($this->connection, $repository->full_name);
 
             $this->branches = collect($branches)->map(fn ($branch) => [
                 'name' => $branch['name'],

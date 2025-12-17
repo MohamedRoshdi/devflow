@@ -7,7 +7,6 @@ namespace Database\Factories;
 use App\Models\Project;
 use App\Models\StorageConfiguration;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Crypt;
 
 class StorageConfigurationFactory extends Factory
 {
@@ -33,9 +32,15 @@ class StorageConfigurationFactory extends Factory
         ];
     }
 
-    private function getCredentialsForDriver(string $driver): string
+    /**
+     * Get credentials for a specific driver as array.
+     * The model's setCredentialsAttribute will handle encryption.
+     *
+     * @return array<string, mixed>
+     */
+    private function getCredentialsForDriver(string $driver): array
     {
-        $credentials = match ($driver) {
+        return match ($driver) {
             's3' => [
                 'access_key_id' => 'AKIA'.strtoupper($this->faker->bothify('???????????????')),
                 'secret_access_key' => $this->faker->bothify('****************************************'),
@@ -70,8 +75,6 @@ class StorageConfigurationFactory extends Factory
             ],
             default => [],
         };
-
-        return Crypt::encryptString(json_encode($credentials));
     }
 
     public function forProject(Project $project): static

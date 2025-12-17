@@ -36,10 +36,6 @@ class LogSourceManager extends Component
 
     public ?string $testResult = null;
 
-    public function __construct(
-        private readonly LogAggregationService $logService
-    ) {}
-
     public function mount(Server $server): void
     {
         $this->server = $server;
@@ -177,9 +173,10 @@ class LogSourceManager extends Component
         $this->validate();
 
         try {
+            $logService = app(LogAggregationService::class);
             $content = match ($this->type) {
-                'file' => $this->logService->fetchLogFile($this->server, $this->path, 10),
-                'docker' => $this->logService->parseDockerLog($this->path, ''),
+                'file' => $logService->fetchLogFile($this->server, $this->path, 10),
+                'docker' => $logService->parseDockerLog($this->path, ''),
                 default => throw new \InvalidArgumentException('Unsupported type'),
             };
 
@@ -205,7 +202,8 @@ class LogSourceManager extends Component
             $originalActive = $source->is_active;
             $source->update(['is_active' => true]);
 
-            $results = $this->logService->syncLogs($this->server);
+            $logService = app(LogAggregationService::class);
+            $results = $logService->syncLogs($this->server);
 
             if (! $originalActive) {
                 $source->update(['is_active' => false]);

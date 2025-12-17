@@ -121,10 +121,10 @@ class PipelineBuilder extends Component
 
         $this->validate();
 
-        $commandsArray = array_filter(
+        $commandsArray = array_values(array_filter(
             array_map('trim', explode("\n", $this->commands)),
             fn ($cmd) => ! empty($cmd)
-        );
+        ));
 
         $data = [
             'project_id' => $this->project->id,

@@ -12,9 +12,9 @@ use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
 use App\Livewire\Dashboard;
 use App\Livewire\Dashboard\HealthDashboard;
-use App\Livewire\DashboardOptimized;
 use App\Livewire\Home\HomePublic;
 use App\Livewire\Home\ProjectDetail;
+use Spatie\Permission\Models\Permission;
 use App\Models\Deployment;
 use App\Models\Domain;
 use App\Models\HealthCheck;
@@ -43,6 +43,12 @@ class DashboardAdminComponentsTest extends TestCase
 
         // Mock Process facade to prevent actual SSH calls
         Process::fake();
+
+        // Clear dashboard caches to ensure fresh data for each test
+        Cache::forget('dashboard_stats');
+        Cache::forget('dashboard_ssl_stats');
+        Cache::forget('dashboard_health_stats');
+        Cache::forget('dashboard_queue_stats');
     }
 
     // ============================================
@@ -88,6 +94,7 @@ class DashboardAdminComponentsTest extends TestCase
 
         Livewire::actingAs($user)
             ->test(Dashboard::class)
+            ->call('loadDashboardData')
             ->assertSet('stats.total_servers', 7)
             ->assertSet('stats.online_servers', 5)
             ->assertSet('stats.total_projects', 3)
@@ -113,9 +120,10 @@ class DashboardAdminComponentsTest extends TestCase
         ]);
 
         $component = Livewire::actingAs($user)
-            ->test(Dashboard::class);
+            ->test(Dashboard::class)
+            ->call('loadDashboardData');
 
-        $this->assertCount(10, $component->recentDeployments);
+        $this->assertCount(10, $component->get('recentDeployments'));
     }
 
     #[Test]
@@ -148,12 +156,14 @@ class DashboardAdminComponentsTest extends TestCase
         ]);
 
         $component = Livewire::actingAs($user)
-            ->test(Dashboard::class);
+            ->test(Dashboard::class)
+            ->call('loadSSLStats');
 
-        $this->assertEquals(8, $component->sslStats['total_certificates']);
-        $this->assertEquals(7, $component->sslStats['active_certificates']);
-        $this->assertEquals(2, $component->sslStats['expiring_soon']);
-        $this->assertEquals(1, $component->sslStats['expired']);
+        $sslStats = $component->get('sslStats');
+        $this->assertEquals(8, $sslStats['total_certificates']);
+        $this->assertEquals(7, $sslStats['active_certificates']);
+        $this->assertEquals(2, $sslStats['expiring_soon']);
+        $this->assertEquals(1, $sslStats['expired']);
     }
 
     #[Test]
@@ -185,13 +195,15 @@ class DashboardAdminComponentsTest extends TestCase
         ]);
 
         $component = Livewire::actingAs($user)
-            ->test(Dashboard::class);
+            ->test(Dashboard::class)
+            ->call('loadHealthCheckStats');
 
-        $this->assertEquals(6, $component->healthCheckStats['total_checks']);
-        $this->assertEquals(6, $component->healthCheckStats['active_checks']);
-        $this->assertEquals(3, $component->healthCheckStats['healthy']);
-        $this->assertEquals(2, $component->healthCheckStats['degraded']);
-        $this->assertEquals(1, $component->healthCheckStats['down']);
+        $healthCheckStats = $component->get('healthCheckStats');
+        $this->assertEquals(6, $healthCheckStats['total_checks']);
+        $this->assertEquals(6, $healthCheckStats['active_checks']);
+        $this->assertEquals(3, $healthCheckStats['healthy']);
+        $this->assertEquals(2, $healthCheckStats['degraded']);
+        $this->assertEquals(1, $healthCheckStats['down']);
     }
 
     #[Test]
@@ -218,6 +230,7 @@ class DashboardAdminComponentsTest extends TestCase
 
         Livewire::actingAs($user)
             ->test(Dashboard::class)
+            ->call('loadDeploymentsToday')
             ->assertSet('deploymentsToday', 5);
     }
 
@@ -238,9 +251,10 @@ class DashboardAdminComponentsTest extends TestCase
         ]);
 
         $component = Livewire::actingAs($user)
-            ->test(Dashboard::class);
+            ->test(Dashboard::class)
+            ->call('loadDashboardData');
 
-        $this->assertNotEmpty($component->recentActivity);
+        $this->assertNotEmpty($component->get('recentActivity'));
     }
 
     #[Test]
@@ -258,10 +272,12 @@ class DashboardAdminComponentsTest extends TestCase
         ]);
 
         $component = Livewire::actingAs($user)
-            ->test(Dashboard::class);
+            ->test(Dashboard::class)
+            ->call('loadDashboardData');
 
-        $this->assertNotEmpty($component->serverHealth);
-        $this->assertEquals(45.5, $component->serverHealth[0]['cpu_usage']);
+        $serverHealth = $component->get('serverHealth');
+        $this->assertNotEmpty($serverHealth);
+        $this->assertEquals(45.5, $serverHealth[0]['cpu_usage']);
     }
 
     #[Test]
@@ -273,10 +289,12 @@ class DashboardAdminComponentsTest extends TestCase
         DB::table('jobs')->insert(['queue' => 'default', 'payload' => '', 'attempts' => 0, 'reserved_at' => null, 'available_at' => now()->timestamp, 'created_at' => now()->timestamp]);
 
         $component = Livewire::actingAs($user)
-            ->test(Dashboard::class);
+            ->test(Dashboard::class)
+            ->call('loadQueueStats');
 
-        $this->assertArrayHasKey('pending', $component->queueStats);
-        $this->assertArrayHasKey('failed', $component->queueStats);
+        $queueStats = $component->get('queueStats');
+        $this->assertArrayHasKey('pending', $queueStats);
+        $this->assertArrayHasKey('failed', $queueStats);
     }
 
     #[Test]
@@ -287,9 +305,10 @@ class DashboardAdminComponentsTest extends TestCase
         Server::factory()->create(['status' => 'online', 'security_score' => 90]);
 
         $component = Livewire::actingAs($user)
-            ->test(Dashboard::class);
+            ->test(Dashboard::class)
+            ->call('loadSecurityScore');
 
-        $this->assertGreaterThan(0, $component->overallSecurityScore);
+        $this->assertGreaterThan(0, $component->get('overallSecurityScore'));
     }
 
     #[Test]
@@ -322,6 +341,7 @@ class DashboardAdminComponentsTest extends TestCase
 
         Livewire::actingAs($user)
             ->test(Dashboard::class)
+            ->call('loadDashboardData')
             ->assertSet('activeDeployments', 5);
     }
 
@@ -347,9 +367,10 @@ class DashboardAdminComponentsTest extends TestCase
         }
 
         $component = Livewire::actingAs($user)
-            ->test(Dashboard::class);
+            ->test(Dashboard::class)
+            ->call('loadDashboardData');
 
-        $this->assertCount(7, $component->deploymentTimeline);
+        $this->assertCount(7, $component->get('deploymentTimeline'));
     }
 
     #[Test]
@@ -389,10 +410,11 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function dashboard_can_deploy_all_projects(): void
     {
+        \Illuminate\Support\Facades\Queue::fake();
         $user = User::factory()->create();
         $server = Server::factory()->create();
         Project::factory()->count(3)->create([
-            'status' => 'active',
+            'status' => 'running',
             'server_id' => $server->id,
         ]);
 
@@ -430,7 +452,8 @@ class DashboardAdminComponentsTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $newOrder = ['deployment_timeline', 'stats_cards', 'quick_actions', 'activity_server_grid'];
+        // New order must include all widgets from DEFAULT_WIDGET_ORDER
+        $newOrder = ['deployment_timeline', 'stats_cards', 'quick_actions', 'activity_server_grid', 'getting_started'];
 
         Livewire::actingAs($user)
             ->test(Dashboard::class)
@@ -487,50 +510,15 @@ class DashboardAdminComponentsTest extends TestCase
     }
 
     // ============================================
-    // DashboardOptimized Component Tests
-    // ============================================
-
-    #[Test]
-    public function dashboard_optimized_component_renders_correctly(): void
-    {
-        $user = User::factory()->create();
-
-        Livewire::actingAs($user)
-            ->test(DashboardOptimized::class)
-            ->assertStatus(200)
-            ->assertViewIs('livewire.dashboard');
-    }
-
-    #[Test]
-    public function dashboard_optimized_uses_cache_for_stats(): void
-    {
-        $user = User::factory()->create();
-        $server = Server::factory()->count(5)->create();
-
-        Livewire::actingAs($user)
-            ->test(DashboardOptimized::class)
-            ->assertStatus(200);
-    }
-
-    #[Test]
-    public function dashboard_optimized_clears_cache_correctly(): void
-    {
-        $user = User::factory()->create();
-
-        Livewire::actingAs($user)
-            ->test(DashboardOptimized::class)
-            ->call('clearDashboardCache')
-            ->assertStatus(200);
-    }
-
-    // ============================================
     // HealthDashboard Component Tests
     // ============================================
 
     #[Test]
     public function health_dashboard_component_renders_correctly(): void
     {
+        Permission::findOrCreate('view-health-checks', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-health-checks');
 
         Livewire::actingAs($user)
             ->test(HealthDashboard::class)
@@ -541,7 +529,9 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function health_dashboard_loads_projects_health(): void
     {
+        Permission::findOrCreate('view-health-checks', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-health-checks');
         $project = Project::factory()->create(['status' => 'running']);
         $server = Server::factory()->create();
 
@@ -553,19 +543,23 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function health_dashboard_loads_servers_health(): void
     {
+        Permission::findOrCreate('view-health-checks', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-health-checks');
         Server::factory()->count(3)->create(['status' => 'online']);
 
         $component = Livewire::actingAs($user)
             ->test(HealthDashboard::class);
 
-        $this->assertCount(3, $component->serversHealth);
+        $this->assertCount(3, $component->get('serversHealth'));
     }
 
     #[Test]
     public function health_dashboard_can_refresh_health(): void
     {
+        Permission::findOrCreate('view-health-checks', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-health-checks');
 
         Livewire::actingAs($user)
             ->test(HealthDashboard::class)
@@ -576,7 +570,9 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function health_dashboard_filters_projects_by_status(): void
     {
+        Permission::findOrCreate('view-health-checks', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-health-checks');
 
         Livewire::actingAs($user)
             ->test(HealthDashboard::class)
@@ -587,7 +583,9 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function health_dashboard_calculates_overall_stats(): void
     {
+        Permission::findOrCreate('view-health-checks', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-health-checks');
 
         Livewire::actingAs($user)
             ->test(HealthDashboard::class)
@@ -597,7 +595,9 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function health_dashboard_checks_http_health(): void
     {
+        Permission::findOrCreate('view-health-checks', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-health-checks');
 
         Http::fake([
             '*' => Http::response('OK', 200),
@@ -742,7 +742,9 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function audit_log_viewer_component_renders_correctly(): void
     {
+        Permission::findOrCreate('view-audit-logs', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-audit-logs');
 
         Livewire::actingAs($user)
             ->test(AuditLogViewer::class)
@@ -753,7 +755,9 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function audit_log_viewer_can_search_logs(): void
     {
+        Permission::findOrCreate('view-audit-logs', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-audit-logs');
 
         Livewire::actingAs($user)
             ->test(AuditLogViewer::class)
@@ -764,7 +768,9 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function audit_log_viewer_can_filter_by_user(): void
     {
+        Permission::findOrCreate('view-audit-logs', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-audit-logs');
 
         Livewire::actingAs($user)
             ->test(AuditLogViewer::class)
@@ -775,7 +781,9 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function audit_log_viewer_can_filter_by_action(): void
     {
+        Permission::findOrCreate('view-audit-logs', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-audit-logs');
 
         Livewire::actingAs($user)
             ->test(AuditLogViewer::class)
@@ -786,7 +794,9 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function audit_log_viewer_can_filter_by_model_type(): void
     {
+        Permission::findOrCreate('view-audit-logs', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-audit-logs');
 
         Livewire::actingAs($user)
             ->test(AuditLogViewer::class)
@@ -797,7 +807,9 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function audit_log_viewer_can_filter_by_date_range(): void
     {
+        Permission::findOrCreate('view-audit-logs', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-audit-logs');
 
         Livewire::actingAs($user)
             ->test(AuditLogViewer::class)
@@ -810,7 +822,9 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function audit_log_viewer_can_toggle_expand_log(): void
     {
+        Permission::findOrCreate('view-audit-logs', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-audit-logs');
 
         Livewire::actingAs($user)
             ->test(AuditLogViewer::class)
@@ -823,7 +837,9 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function audit_log_viewer_can_clear_filters(): void
     {
+        Permission::findOrCreate('view-audit-logs', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-audit-logs');
 
         Livewire::actingAs($user)
             ->test(AuditLogViewer::class)
@@ -837,7 +853,9 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function audit_log_viewer_resets_page_on_search_update(): void
     {
+        Permission::findOrCreate('view-audit-logs', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-audit-logs');
 
         $component = Livewire::actingAs($user)
             ->test(AuditLogViewer::class);
@@ -1062,12 +1080,17 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function register_successful_with_valid_data(): void
     {
+        // Fake HTTP to bypass HaveIBeenPwned API check in Password::uncompromised()
+        Http::fake(['*' => Http::response('', 200)]);
+
         // Password must meet: min 8 chars, mixed case, numbers, symbols
+        $password = 'Xkj@92!mZqLp#45';
+
         Livewire::test(Register::class)
             ->set('name', 'Test User')
             ->set('email', 'test@example.com')
-            ->set('password', 'Password123!')
-            ->set('password_confirmation', 'Password123!')
+            ->set('password', $password)
+            ->set('password_confirmation', $password)
             ->call('register')
             ->assertRedirect(route('dashboard'));
 
@@ -1082,16 +1105,21 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function register_hashes_password(): void
     {
+        // Fake HTTP to bypass HaveIBeenPwned API check in Password::uncompromised()
+        Http::fake(['*' => Http::response('', 200)]);
+
         // Password must meet: min 8 chars, mixed case, numbers, symbols
+        $password = 'Xkj@92!mZqLp#45';
+
         Livewire::test(Register::class)
             ->set('name', 'Test User')
             ->set('email', 'test@example.com')
-            ->set('password', 'Password123!')
-            ->set('password_confirmation', 'Password123!')
+            ->set('password', $password)
+            ->set('password_confirmation', $password)
             ->call('register');
 
         $user = User::where('email', 'test@example.com')->first();
-        $this->assertTrue(Hash::check('Password123!', $user->password));
+        $this->assertTrue(Hash::check($password, $user->password));
     }
 
     // ============================================
@@ -1238,7 +1266,9 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function analytics_dashboard_component_renders_correctly(): void
     {
+        Permission::findOrCreate('view-analytics', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-analytics');
 
         Livewire::actingAs($user)
             ->test(AnalyticsDashboard::class)
@@ -1249,7 +1279,9 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function analytics_dashboard_has_default_period(): void
     {
+        Permission::findOrCreate('view-analytics', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-analytics');
 
         Livewire::actingAs($user)
             ->test(AnalyticsDashboard::class)
@@ -1259,7 +1291,9 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function analytics_dashboard_can_change_period(): void
     {
+        Permission::findOrCreate('view-analytics', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-analytics');
 
         Livewire::actingAs($user)
             ->test(AnalyticsDashboard::class)
@@ -1270,7 +1304,9 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function analytics_dashboard_loads_deployment_stats(): void
     {
+        Permission::findOrCreate('view-analytics', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-analytics');
         $server = Server::factory()->create();
         $project = Project::factory()->create([
             'server_id' => $server->id,
@@ -1300,7 +1336,9 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function analytics_dashboard_loads_server_metrics(): void
     {
+        Permission::findOrCreate('view-analytics', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-analytics');
         $server = Server::factory()->create();
 
         ServerMetric::factory()->count(5)->create([
@@ -1319,7 +1357,9 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function analytics_dashboard_loads_project_analytics(): void
     {
+        Permission::findOrCreate('view-analytics', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-analytics');
         $server = Server::factory()->create();
         Project::factory()->count(5)->create([
             'status' => 'running',
@@ -1339,7 +1379,9 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function analytics_dashboard_can_filter_by_project(): void
     {
+        Permission::findOrCreate('view-analytics', 'web');
         $user = User::factory()->create();
+        $user->givePermissionTo('view-analytics');
         $project = Project::factory()->create();
 
         Livewire::actingAs($user)

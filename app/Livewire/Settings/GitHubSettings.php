@@ -31,10 +31,6 @@ class GitHubSettings extends Component
 
     public bool $showLinkModal = false;
 
-    public function __construct(
-        private readonly GitHubService $gitHubService
-    ) {}
-
     #[Computed]
     public function connection(): ?GitHubConnection
     {
@@ -118,7 +114,8 @@ class GitHubSettings extends Component
         $this->syncProgress = 0;
 
         try {
-            $count = $this->gitHubService->syncRepositories($this->connection);
+            $gitHubService = app(GitHubService::class);
+            $count = $gitHubService->syncRepositories($this->connection);
 
             $this->syncing = false;
             $this->syncProgress = 100;

@@ -1004,9 +1004,9 @@ class StorageSettingsTest extends TestCase
             ->set('s3_access_key', 'AKIAIOSFODNN7EXAMPLE')
             ->set('s3_secret_key', 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY')
             ->call('save')
-            ->assertDispatched('notification', function ($event) {
-                return $event['type'] === 'success'
-                    && str_contains($event['message'], 'created');
+            ->assertDispatched('notification', function ($name, array $params) {
+                return $params[0]['type'] === 'success'
+                    && str_contains($params[0]['message'], 'created');
             });
     }
 
@@ -1019,9 +1019,9 @@ class StorageSettingsTest extends TestCase
             ->call('openEditModal', $config->id)
             ->set('name', 'Updated Name')
             ->call('save')
-            ->assertDispatched('notification', function ($event) {
-                return $event['type'] === 'success'
-                    && str_contains($event['message'], 'updated');
+            ->assertDispatched('notification', function ($name, array $params) {
+                return $params[0]['type'] === 'success'
+                    && str_contains($params[0]['message'], 'updated');
             });
     }
 
