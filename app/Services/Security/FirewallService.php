@@ -9,7 +9,7 @@ use App\Models\SecurityEvent;
 use App\Models\Server;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Process;
 
 class FirewallService
 {
@@ -460,26 +460,22 @@ class FirewallService
             $isLocalhost = $this->isLocalhost($server->ip_address);
 
             if ($isLocalhost) {
-                $process = Process::fromShellCommandline($command);
-                $process->setTimeout($timeout);
-                $process->run();
+                $result = Process::timeout($timeout)->run($command);
 
                 return [
-                    'success' => $process->isSuccessful(),
-                    'output' => trim($process->getOutput()),
-                    'error' => $process->getErrorOutput(),
+                    'success' => $result->successful(),
+                    'output' => trim($result->output()),
+                    'error' => $result->errorOutput(),
                 ];
             }
 
             $sshCommand = $this->buildSSHCommand($server, $command);
-            $process = Process::fromShellCommandline($sshCommand);
-            $process->setTimeout($timeout);
-            $process->run();
+            $result = Process::timeout($timeout)->run($sshCommand);
 
             return [
-                'success' => $process->isSuccessful(),
-                'output' => trim($process->getOutput()),
-                'error' => $process->getErrorOutput(),
+                'success' => $result->successful(),
+                'output' => trim($result->output()),
+                'error' => $result->errorOutput(),
             ];
         } catch (\Exception $e) {
             return [
