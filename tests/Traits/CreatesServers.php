@@ -17,10 +17,13 @@ trait CreatesServers
 
     /**
      * Create an online server.
+     *
+     * Uses localhost IP to bypass SSH wrapping in tests,
+     * allowing Process::fake() patterns to match direct commands.
      */
     protected function createOnlineServer(array $attributes = []): Server
     {
-        return Server::factory()->online()->create($attributes);
+        return Server::factory()->online()->localhost()->create($attributes);
     }
 
     /**
@@ -33,10 +36,13 @@ trait CreatesServers
 
     /**
      * Create a server with Docker installed.
+     *
+     * Uses localhost IP to bypass SSH wrapping in tests,
+     * allowing Process::fake() patterns to match direct commands.
      */
     protected function createServerWithDocker(array $attributes = []): Server
     {
-        return Server::factory()->withDocker()->create($attributes);
+        return Server::factory()->withDocker()->localhost()->create($attributes);
     }
 
     /**

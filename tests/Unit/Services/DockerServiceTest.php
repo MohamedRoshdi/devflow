@@ -21,7 +21,7 @@ class DockerServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new DockerService;
+        $this->service = app(DockerService::class);
     }
 
     // ==========================================
@@ -70,8 +70,8 @@ class DockerServiceTest extends TestCase
     #[Test]
     public function it_handles_docker_installation_check_exception(): void
     {
-        // Arrange
-        $server = $this->createOnlineServer();
+        // Arrange - use non-localhost IP to test SSH failure handling
+        $server = $this->createOnlineServer(['ip_address' => '192.168.1.100']);
         $this->mockSshFailure('Connection timeout');
 
         // Act
@@ -157,7 +157,7 @@ class DockerServiceTest extends TestCase
 
         Process::fake([
             '*test -f*docker-compose.yml*' => Process::result(output: 'standalone'),
-            '*if \[ -f Dockerfile \]*' => Process::result(output: 'Dockerfile'),
+            '*if [ -f Dockerfile ]*' => Process::result(output: 'Dockerfile'),
             '*docker build*' => Process::result(
                 output: 'Successfully built abc123'
             ),
@@ -180,7 +180,7 @@ class DockerServiceTest extends TestCase
 
         Process::fake([
             '*test -f*docker-compose.yml*' => Process::result(output: 'standalone'),
-            '*if \[ -f Dockerfile \]*' => Process::result(output: 'Dockerfile.production'),
+            '*if [ -f Dockerfile ]*' => Process::result(output: 'Dockerfile.production'),
             '*docker build -f Dockerfile.production*' => Process::result(
                 output: 'Successfully built def456'
             ),
@@ -202,7 +202,7 @@ class DockerServiceTest extends TestCase
 
         Process::fake([
             '*test -f*docker-compose.yml*' => Process::result(output: 'standalone'),
-            '*if \[ -f Dockerfile \]*' => Process::result(output: 'missing'),
+            '*if [ -f Dockerfile ]*' => Process::result(output: 'missing'),
             '*echo*Dockerfile*docker build*' => Process::result(
                 output: 'Successfully built with generated Dockerfile'
             ),
@@ -438,7 +438,7 @@ class DockerServiceTest extends TestCase
             '*docker exec*tail*laravel.log*' => Process::result(
                 output: 'Laravel log not found inside container'
             ),
-            '*if \[ -f*laravel.log*' => Process::result(
+            '*if [ -f*laravel.log*' => Process::result(
                 output: '[2024-01-01 00:00:00] production.ERROR: Host error'
             ),
         ]);
@@ -1015,7 +1015,7 @@ class DockerServiceTest extends TestCase
         $project = $this->createProjectForServer($server);
 
         Process::fake([
-            '*docker-compose up -d --build*' => Process::result(
+            '*docker compose up -d --build*' => Process::result(
                 output: 'Creating network... Creating services...'
             ),
         ]);
@@ -1035,7 +1035,7 @@ class DockerServiceTest extends TestCase
         $project = $this->createRunningProject(['server_id' => $server->id]);
 
         Process::fake([
-            '*docker-compose down*' => Process::result(
+            '*docker compose down*' => Process::result(
                 output: 'Stopping services... Removing containers...'
             ),
         ]);
@@ -1055,7 +1055,7 @@ class DockerServiceTest extends TestCase
         $project = $this->createRunningProject(['server_id' => $server->id]);
 
         Process::fake([
-            '*docker-compose ps --format json*' => Process::result(
+            '*docker compose ps --format json*' => Process::result(
                 output: '[{"Service":"app","Status":"Up 10 minutes"},{"Service":"db","Status":"Up 10 minutes"}]'
             ),
         ]);

@@ -98,6 +98,19 @@ QyNTUxOQAAACBHK2rHd48lqfvvGlr+fVZnUfmv0tnFzWN7jAw7E7VUUQAAAJBMR1QOTERW
     }
 
     /**
+     * Indicate that the server is localhost.
+     *
+     * This is useful for tests where SSH wrapping should be bypassed,
+     * allowing Process::fake() patterns to match direct commands.
+     */
+    public function localhost(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'ip_address' => '127.0.0.1',
+        ]);
+    }
+
+    /**
      * Indicate that Docker is not installed.
      */
     public function withoutDocker(): static

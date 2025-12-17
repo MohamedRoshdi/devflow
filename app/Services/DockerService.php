@@ -6,2147 +6,554 @@ namespace App\Services;
 
 use App\Models\Project;
 use App\Models\Server;
-use Symfony\Component\Process\Process;
+use App\Services\Docker\DockerComposeService;
+use App\Services\Docker\DockerContainerService;
+use App\Services\Docker\DockerfileGenerator;
+use App\Services\Docker\DockerImageService;
+use App\Services\Docker\DockerLogService;
+use App\Services\Docker\DockerNetworkService;
+use App\Services\Docker\DockerRegistryService;
+use App\Services\Docker\DockerSystemService;
+use App\Services\Docker\DockerVolumeService;
 
+/**
+ * Docker service facade for managing Docker containers, images, volumes, and networks.
+ *
+ * This service acts as a facade, delegating all operations to specialized sub-services:
+ * - DockerContainerService: Container lifecycle management
+ * - DockerComposeService: Docker Compose operations
+ * - DockerImageService: Image management
+ * - DockerVolumeService: Volume operations
+ * - DockerNetworkService: Network operations
+ * - DockerRegistryService: Registry operations
+ * - DockerSystemService: System-level operations
+ * - DockerLogService: Log management
+ * - DockerfileGenerator: Dockerfile generation
+ *
+ * All public methods maintain backward compatibility with existing consumers.
+ */
 class DockerService
 {
-    /**
-     * Cache of temporary SSH key files per server ID
-     * @var array<int, string>
-     */
-    protected array $sshKeyFiles = [];
+    public function __construct(
+        private readonly DockerContainerService $containerService,
+        private readonly DockerComposeService $composeService,
+        private readonly DockerImageService $imageService,
+        private readonly DockerVolumeService $volumeService,
+        private readonly DockerNetworkService $networkService,
+        private readonly DockerRegistryService $registryService,
+        private readonly DockerSystemService $systemService,
+        private readonly DockerLogService $logService,
+        private readonly DockerfileGenerator $dockerfileGenerator,
+    ) {}
+
+    // ==========================================
+    // SYSTEM OPERATIONS
+    // ==========================================
 
     /**
-     * Cleanup temporary SSH key files on destruction
+     * Check if Docker is installed on the server
+     *
+     * @return array{installed: bool, version?: string, error?: string}
      */
-    public function __destruct()
-    {
-        foreach ($this->sshKeyFiles as $keyFile) {
-            if (file_exists($keyFile)) {
-                @unlink($keyFile);
-            }
-        }
-    }
-
     public function checkDockerInstallation(Server $server): array
     {
-        try {
-            $process = $this->executeRemoteCommand($server, 'docker --version', false);
-
-            if ($process->isSuccessful()) {
-                $output = $process->getOutput();
-                preg_match('/Docker version (.+?),/', $output, $matches);
-
-                return [
-                    'installed' => true,
-                    'version' => $matches[1] ?? 'unknown',
-                ];
-            }
-
-            return ['installed' => false];
-        } catch (\Exception $e) {
-            return ['installed' => false, 'error' => $e->getMessage()];
-        }
+        return $this->systemService->checkDockerInstallation($server);
     }
 
-    protected function isLocalhost(Server $server): bool
-    {
-        $localIPs = ['127.0.0.1', '::1', 'localhost'];
-
-        if (in_array($server->ip_address, $localIPs)) {
-            return true;
-        }
-
-        // Check if IP matches server's own IP
-        try {
-            $publicIP = trim(file_get_contents('http://api.ipify.org'));
-            if ($server->ip_address === $publicIP) {
-                return true;
-            }
-        } catch (\Exception $e) {
-            // Ignore
-        }
-
-        return false;
-    }
-
+    /**
+     * Install Docker on the server
+     *
+     * @return array{success: bool, output?: string, error?: string}
+     */
     public function installDocker(Server $server): array
     {
-        try {
-            $script = <<<'BASH'
-            curl -fsSL https://get.docker.com -o get-docker.sh && \
-            sh get-docker.sh && \
-            systemctl start docker && \
-            systemctl enable docker && \
-            usermod -aG docker $USER
-            BASH;
-
-            $process = $this->executeRemoteCommandWithTimeout(
-                $server,
-                $script,
-                config('devflow.timeouts.docker_install', 300),
-                false
-            );
-
-            if ($process->isSuccessful()) {
-                return [
-                    'success' => true,
-                    'output' => $process->getOutput(),
-                ];
-            }
-
-            return [
-                'success' => false,
-                'error' => $process->getErrorOutput(),
-            ];
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'error' => $e->getMessage()];
-        }
+        return $this->systemService->installDocker($server);
     }
+
+    /**
+     * Get Docker system information
+     *
+     * @return array{success: bool, info?: array<string, mixed>, error?: string}
+     */
+    public function getSystemInfo(Server $server): array
+    {
+        return $this->systemService->getSystemInfo($server);
+    }
+
+    /**
+     * Clean up Docker system (remove unused data)
+     *
+     * @return array{success: bool, output?: string, error?: string}
+     */
+    public function systemPrune(Server $server, bool $volumes = false): array
+    {
+        return $this->systemService->systemPrune($server, $volumes);
+    }
+
+    /**
+     * Get Docker disk usage
+     *
+     * @return array{success: bool, usage?: array<int, mixed>, error?: string}
+     */
+    public function getDiskUsage(Server $server): array
+    {
+        return $this->systemService->getDiskUsage($server);
+    }
+
+    // ==========================================
+    // CONTAINER OPERATIONS
+    // ==========================================
 
     /**
      * Build Docker container for a project
      *
-     * This method delegates to either docker-compose build or standalone
-     * container build based on project configuration.
-     *
-     * @param Project $project The project to build containers for
      * @return array{success: bool, output?: string, error?: string, type?: string}
      */
     public function buildContainer(Project $project): array
     {
-        try {
-            $server = $project->server;
-
-            if ($this->detectComposeUsage($server, $project)) {
-                return $this->buildDockerComposeContainer($server, $project);
-            }
-
-            return $this->buildStandaloneContainer($server, $project);
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'error' => $e->getMessage(),
-            ];
-        }
-    }
-
-    /**
-     * Detect if project uses docker-compose
-     *
-     * Checks for the presence of docker-compose.yml file in the project directory.
-     *
-     * @param Server $server The server hosting the project
-     * @param Project $project The project to check
-     * @return bool True if docker-compose.yml exists, false otherwise
-     */
-    protected function detectComposeUsage(Server $server, Project $project): bool
-    {
-        $slug = $project->validated_slug;
-        $projectPath = "/var/www/{$slug}";
-
-        $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
-        $checkCommand = $this->isLocalhost($server)
-            ? $checkComposeCmd
-            : $this->buildSSHCommand($server, $checkComposeCmd);
-
-        $checkProcess = Process::fromShellCommandline($checkCommand);
-        $checkProcess->run();
-
-        return trim($checkProcess->getOutput()) === 'compose';
-    }
-
-    /**
-     * Build container using docker-compose
-     *
-     * Executes docker compose build with --no-cache and --pull flags to ensure
-     * fresh builds with latest base images.
-     *
-     * @param Server $server The server hosting the project
-     * @param Project $project The project to build
-     * @return array{success: bool, output?: string, error?: string, type?: string}
-     */
-    protected function buildDockerComposeContainer(Server $server, Project $project): array
-    {
-        $slug = $project->validated_slug;
-        $projectPath = "/var/www/{$slug}";
-
-        // Use docker compose build for projects with docker-compose.yml
-        // --no-cache ensures fresh build, --pull gets latest base images
-        $buildCommand = "cd {$projectPath} && docker compose build --no-cache --pull";
-
-        $command = $this->isLocalhost($server)
-            ? $buildCommand
-            : $this->buildSSHCommand($server, $buildCommand);
-
-        $process = Process::fromShellCommandline($command);
-        $process->setTimeout(config('devflow.timeouts.docker_compose_build', 1200));
-        $process->run();
-
-        if ($process->isSuccessful()) {
-            return [
-                'success' => true,
-                'output' => $process->getOutput(),
-                'type' => 'docker-compose',
-            ];
-        }
-
-        return [
-            'success' => false,
-            'error' => $process->getErrorOutput() ?: $process->getOutput(),
-        ];
-    }
-
-    /**
-     * Build standalone Docker container
-     *
-     * Detects and uses project's Dockerfile (or Dockerfile.production), or generates
-     * a Dockerfile if none exists. Builds with --no-cache and --pull flags.
-     *
-     * @param Server $server The server hosting the project
-     * @param Project $project The project to build
-     * @return array{success: bool, output?: string, error?: string, type?: string}
-     */
-    protected function buildStandaloneContainer(Server $server, Project $project): array
-    {
-        $slug = $project->validated_slug;
-        $projectPath = "/var/www/{$slug}";
-
-        // Check for Dockerfile
-        $checkDockerfileCommand = "cd {$projectPath} && if [ -f Dockerfile ]; then echo 'Dockerfile'; elif [ -f Dockerfile.production ]; then echo 'Dockerfile.production'; else echo 'missing'; fi";
-        $checkCommand = $this->isLocalhost($server)
-            ? $checkDockerfileCommand
-            : $this->buildSSHCommand($server, $checkDockerfileCommand);
-
-        $checkProcess = Process::fromShellCommandline($checkCommand);
-        $checkProcess->run();
-        $dockerfileType = trim($checkProcess->getOutput());
-
-        // Build Docker image (--no-cache ensures fresh build, --pull gets latest base images)
-        $buildCommand = $this->prepareBuildCommand($project, $projectPath, $slug, $dockerfileType);
-
-        $command = $this->isLocalhost($server)
-            ? $buildCommand
-            : $this->buildSSHCommand($server, $buildCommand);
-
-        $process = Process::fromShellCommandline($command);
-        $process->setTimeout(config('devflow.timeouts.docker_build', 600));
-        $process->run();
-
-        if ($process->isSuccessful()) {
-            return [
-                'success' => true,
-                'output' => $process->getOutput(),
-                'type' => 'standalone',
-            ];
-        }
-
-        return [
-            'success' => false,
-            'error' => $process->getErrorOutput(),
-        ];
-    }
-
-    /**
-     * Prepare build command based on Dockerfile type
-     *
-     * @param Project $project The project to build
-     * @param string $projectPath Absolute path to project directory
-     * @param string $slug Validated project slug
-     * @param string $dockerfileType Type of Dockerfile: 'Dockerfile', 'Dockerfile.production', or 'missing'
-     * @return string The complete build command
-     */
-    protected function prepareBuildCommand(Project $project, string $projectPath, string $slug, string $dockerfileType): string
-    {
-        if ($dockerfileType === 'Dockerfile') {
-            // Use project's Dockerfile
-            return sprintf(
-                'cd %s && docker build --no-cache --pull -t %s .',
-                $projectPath,
-                $slug
-            );
-        }
-
-        if ($dockerfileType === 'Dockerfile.production') {
-            // Use project's Dockerfile.production
-            return sprintf(
-                'cd %s && docker build --no-cache --pull -f Dockerfile.production -t %s .',
-                $projectPath,
-                $slug
-            );
-        }
-
-        // Generate Dockerfile if project doesn't have one
-        $dockerfile = $this->generateDockerfile($project);
-        return sprintf(
-            "cd %s && echo '%s' > Dockerfile && docker build --no-cache --pull -t %s .",
-            $projectPath,
-            addslashes($dockerfile),
-            $slug
-        );
+        return $this->containerService->buildContainer($project);
     }
 
     /**
      * Start container for a project
      *
-     * Delegates to either Docker Compose or standalone container mode based on project configuration.
-     *
-     * @param Project $project The project to start containers for
      * @return array{success: bool, output?: string, message?: string, error?: string, container_id?: string, port?: int}
      */
     public function startContainer(Project $project): array
     {
-        try {
-            $server = $project->server;
-            if ($server === null) {
-                return [
-                    'success' => false,
-                    'error' => 'Project has no associated server',
-                ];
-            }
-
-            $slug = $project->validated_slug;
-            $projectPath = "/var/www/{$slug}";
-
-            // Determine if project uses docker-compose
-            $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
-            $checkProcess = $this->executeRemoteCommand($server, $checkComposeCmd, false);
-            $usesCompose = trim($checkProcess->getOutput()) === 'compose';
-
-            if ($usesCompose) {
-                return $this->startDockerComposeContainers($server, $project);
-            }
-
-            return $this->startStandaloneContainer($server, $project);
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'error' => $e->getMessage(),
-            ];
-        }
+        return $this->containerService->startContainer($project);
     }
 
     /**
-     * Start containers using Docker Compose
+     * Stop container for a project
      *
-     * Handles cleanup of orphaned containers and starts all services defined in docker-compose.yml.
-     *
-     * @param Server $server The server where the project is hosted
-     * @param Project $project The project to start
      * @return array{success: bool, output?: string, message?: string, error?: string}
      */
-    protected function startDockerComposeContainers(Server $server, Project $project): array
-    {
-        $slug = $project->validated_slug;
-        $projectPath = "/var/www/{$slug}";
-
-        // Cleanup orphaned containers before starting
-        $this->cleanupOrphanedContainers($server, $project);
-
-        // Start Docker Compose services
-        $startCommand = "cd {$projectPath} && docker compose up -d --remove-orphans";
-
-        $process = $this->executeRemoteCommandWithTimeout(
-            $server,
-            $startCommand,
-            config('devflow.timeouts.docker_compose_start', 300),
-            false
-        );
-
-        if ($process->isSuccessful()) {
-            return [
-                'success' => true,
-                'output' => $process->getOutput(),
-                'message' => 'Docker Compose services started',
-            ];
-        }
-
-        return [
-            'success' => false,
-            'error' => $process->getErrorOutput() ?: $process->getOutput(),
-        ];
-    }
-
-    /**
-     * Start a standalone Docker container
-     *
-     * Creates and starts a single container using docker run with appropriate port mappings
-     * and environment variables.
-     *
-     * @param Server $server The server where the project is hosted
-     * @param Project $project The project to start
-     * @return array{success: bool, container_id?: string, port?: int, error?: string}
-     */
-    protected function startStandaloneContainer(Server $server, Project $project): array
-    {
-        // Clean up any existing container with the same name
-        $cleanupResult = $this->cleanupExistingContainer($project);
-        if (! $cleanupResult['success']) {
-            \Log::warning(
-                "Failed to cleanup existing container for {$project->slug}: " .
-                ($cleanupResult['error'] ?? 'Unknown error')
-            );
-        }
-
-        // Determine port configuration
-        $port = $project->port ?? (8000 + $project->id);
-        $containerPort = $this->detectContainerPort($project);
-
-        // Build environment variables
-        $envVars = $this->buildEnvironmentVariables($project);
-
-        // Build and execute start command
-        $validatedSlug = $project->validated_slug;
-        $escapedSlug = escapeshellarg($validatedSlug);
-        $startCommand = sprintf(
-            'docker run -d --name %s -p %d:%d%s %s',
-            $escapedSlug,
-            $port,
-            $containerPort,
-            $envVars,
-            $escapedSlug
-        );
-
-        $process = $this->executeRemoteCommand($server, $startCommand, false);
-
-        if ($process->isSuccessful()) {
-            // Update project with the port if not set
-            if (! $project->port) {
-                $project->update(['port' => $port]);
-            }
-
-            return [
-                'success' => true,
-                'container_id' => trim($process->getOutput()),
-                'port' => $port,
-            ];
-        }
-
-        return [
-            'success' => false,
-            'error' => $process->getErrorOutput(),
-        ];
-    }
-
-    /**
-     * Cleanup orphaned Docker Compose containers
-     *
-     * Removes orphaned containers in three steps:
-     * 1. Run docker compose down --remove-orphans
-     * 2. Remove containers matching project slug pattern
-     * 3. Remove containers with explicit container_name from docker-compose.yml
-     *
-     * @param Server $server The server where the project is hosted
-     * @param Project $project The project to cleanup containers for
-     * @return void
-     */
-    protected function cleanupOrphanedContainers(Server $server, Project $project): void
-    {
-        $slug = $project->validated_slug;
-        $projectPath = "/var/www/{$slug}";
-
-        // Step 1: Standard docker compose cleanup
-        $cleanupCommand = "cd {$projectPath} && docker compose down --remove-orphans 2>/dev/null; true";
-        $this->executeRemoteCommandWithTimeout(
-            $server,
-            $cleanupCommand,
-            config('devflow.timeouts.docker_compose_cleanup', 180),
-            false
-        );
-
-        // Step 2: Remove containers by name pattern
-        // This catches containers like {slug}-elasticsearch from failed deploys
-        $escapedSlugForGrep = preg_quote($slug, '/');
-        $orphanCleanupCommand = "docker ps -a --format '{{.Names}}' | grep -E '^{$escapedSlugForGrep}[-_]' | xargs -r docker rm -f 2>/dev/null; true";
-        $this->executeRemoteCommand($server, $orphanCleanupCommand, false);
-
-        // Step 3: Remove containers with explicit container_name
-        // Parse docker-compose.yml to get container_name directives and remove those containers
-        $parseContainerNamesCmd = "cd {$projectPath} && grep -E '^\\s+container_name:' docker-compose.yml 2>/dev/null | sed 's/.*container_name:\\s*[\"'\\'']\\?\\([^\"'\\''\n]*\\)[\"'\\'']\\?/\\1/' | xargs -r -I {} docker rm -f {} 2>/dev/null; true";
-        $this->executeRemoteCommand($server, $parseContainerNamesCmd, false);
-    }
-
-    /**
-     * Build environment variables string for docker run command
-     */
-    protected function buildEnvironmentVariables(Project $project): string
-    {
-        $envFlags = '';
-
-        // Add APP_ENV from project environment
-        $appEnv = $project->environment ?? 'production';
-        $envFlags .= " -e APP_ENV={$appEnv}";
-
-        // Add APP_DEBUG based on environment
-        $appDebug = in_array($appEnv, ['local', 'development']) ? 'true' : 'false';
-        $envFlags .= " -e APP_DEBUG={$appDebug}";
-
-        // Add custom environment variables
-        if ($project->env_variables && is_array($project->env_variables)) {
-            foreach ($project->env_variables as $key => $value) {
-                // Escape special characters in value
-                $escapedValue = addslashes($value);
-                $envFlags .= " -e {$key}=\"{$escapedValue}\"";
-            }
-        }
-
-        return $envFlags;
-    }
-
-    protected function cleanupExistingContainer(Project $project): array
-    {
-        try {
-            $server = $project->server;
-            $slug = $project->validated_slug;            $escapedSlug = escapeshellarg($slug);
-
-            // Stop and remove any existing container with this name
-            $cleanupCommand = sprintf(
-                'docker stop %s 2>/dev/null || true && docker rm -f %s 2>/dev/null || true',
-                $escapedSlug,
-                $escapedSlug
-            );
-
-            $process = $this->executeRemoteCommand($server, $cleanupCommand, false);
-
-            return [
-                'success' => true,
-                'output' => $process->getOutput(),
-            ];
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'error' => $e->getMessage(),
-            ];
-        }
-    }
-
-    /**
-     * Detect the internal port used by the container
-     */
-    protected function detectContainerPort(Project $project): int
-    {
-        // For Laravel/PHP projects with Dockerfile.production, use port 80 (nginx + PHP-FPM)
-        // For Node.js projects, typically use port 3000
-        // For static sites with nginx, use port 80
-
-        if (in_array($project->framework, ['Laravel', 'Symfony', 'CodeIgniter'])) {
-            return 80; // nginx serving PHP-FPM
-        }
-
-        if (in_array($project->framework, ['Next.js', 'React', 'Vue', 'Nuxt.js', 'Node.js'])) {
-            return 3000; // Node.js default
-        }
-
-        // Default to 80 for nginx-based containers
-        return 80;
-    }
-
     public function stopContainer(Project $project): array
     {
-        try {
-            $server = $project->server;
-            $slug = $project->validated_slug;            $projectPath = "/var/www/{$slug}";
-
-            // Check if project uses docker-compose
-            $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
-            $checkProcess = $this->executeRemoteCommand($server, $checkComposeCmd, false);
-            $usesCompose = trim($checkProcess->getOutput()) === 'compose';
-
-            if ($usesCompose) {
-                // Use docker compose down with --remove-orphans to prevent name conflicts
-                // Timeout increased to 180s for complex docker-compose projects (multiple services, volumes)
-                $stopCommand = "cd {$projectPath} && docker compose down --remove-orphans";
-
-                $process = $this->executeRemoteCommandWithTimeout(
-                    $server,
-                    $stopCommand,
-                    config('devflow.timeouts.docker_compose_cleanup', 180),
-                    false
-                );
-
-                return [
-                    'success' => true,
-                    'output' => $process->getOutput(),
-                    'message' => 'Docker Compose services stopped and orphans removed',
-                ];
-            }
-
-            // Standalone container mode
-            // Stop and force remove the container to avoid "name already in use" errors
-            // Using -f flag to force removal even if container is running
-            $validatedSlug = $project->validated_slug;
-            $escapedSlug = escapeshellarg($validatedSlug);
-            $stopAndRemoveCommand = sprintf(
-                'docker stop %s 2>/dev/null || true && docker rm -f %s 2>/dev/null || true',
-                $escapedSlug,
-                $escapedSlug
-            );
-
-            $process = $this->executeRemoteCommand($server, $stopAndRemoveCommand, false);
-
-            return [
-                'success' => true, // Always return success since we use || true
-                'output' => $process->getOutput(),
-            ];
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'error' => $e->getMessage(),
-            ];
-        }
+        return $this->containerService->stopContainer($project);
     }
 
+    /**
+     * Get container status for a project
+     *
+     * @return array{success: bool, container?: array<string, mixed>|null, exists?: bool, error?: string}
+     */
+    public function getContainerStatus(Project $project): array
+    {
+        return $this->containerService->getContainerStatus($project);
+    }
+
+    /**
+     * Get container statistics (CPU, Memory, Network, Disk I/O)
+     *
+     * @return array{success: bool, stats?: array<string, mixed>|null, error?: string}
+     */
+    public function getContainerStats(Project $project): array
+    {
+        return $this->containerService->getContainerStats($project);
+    }
+
+    /**
+     * Get container resource limits
+     *
+     * @return array{success: bool, memory_limit?: int, cpu_shares?: int, cpu_quota?: int, error?: string}
+     */
+    public function getContainerResourceLimits(Project $project): array
+    {
+        return $this->containerService->getContainerResourceLimits($project);
+    }
+
+    /**
+     * Set container resource limits
+     *
+     * @return array{success: bool, output?: string, error?: string}
+     */
+    public function setContainerResourceLimits(Project $project, ?int $memoryMB = null, ?int $cpuShares = null): array
+    {
+        return $this->containerService->setContainerResourceLimits($project, $memoryMB, $cpuShares);
+    }
+
+    /**
+     * Execute command in container
+     *
+     * @return array{success: bool, output?: string, error?: string}
+     */
+    public function execInContainer(Project $project, string $command, bool $interactive = false): array
+    {
+        return $this->containerService->execInContainer($project, $command, $interactive);
+    }
+
+    /**
+     * Get list of processes in container
+     *
+     * @return array{success: bool, processes?: string, error?: string}
+     */
+    public function getContainerProcesses(Project $project): array
+    {
+        return $this->containerService->getContainerProcesses($project);
+    }
+
+    /**
+     * Export container as image (backup)
+     *
+     * @return array{success: bool, backup_name?: string, image_id?: string, error?: string}
+     */
+    public function exportContainer(Project $project, ?string $backupName = null): array
+    {
+        return $this->containerService->exportContainer($project, $backupName);
+    }
+
+    // ==========================================
+    // LOG OPERATIONS
+    // ==========================================
+
+    /**
+     * Get container logs
+     *
+     * @return array{success: bool, logs?: string, source?: string, error?: string}
+     */
     public function getContainerLogs(Project $project, int $lines = 100): array
     {
-        try {
-            $server = $project->server;
-            $slug = $project->validated_slug;            $projectPath = "/var/www/{$slug}";
-
-            // Check if project uses docker-compose
-            $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
-            $checkProcess = $this->executeRemoteCommand($server, $checkComposeCmd, false);
-            $usesCompose = trim($checkProcess->getOutput()) === 'compose';
-
-            if ($usesCompose) {
-                // For docker compose, get logs from the app container (usually named {slug}-app or app)
-                // Try common naming patterns (V2 syntax)
-                $logsCommand = "cd {$projectPath} && docker compose logs --tail {$lines} app 2>/dev/null || docker compose logs --tail {$lines} 2>/dev/null | tail -n {$lines}";
-
-                $process = $this->executeRemoteCommand($server, $logsCommand, false);
-
-                return [
-                    'success' => true,
-                    'logs' => $process->getOutput() ?: $process->getErrorOutput(),
-                    'source' => 'docker-compose',
-                ];
-            }
-
-            // Standalone container mode
-            $validatedSlug = $project->validated_slug;
-            $escapedSlug = escapeshellarg($validatedSlug);
-            $logsCommand = "docker logs --tail {$lines} ".$escapedSlug;
-            $process = $this->executeRemoteCommand($server, $logsCommand, false);
-
-            return [
-                'success' => $process->isSuccessful(),
-                'logs' => $process->getOutput(),
-                'source' => 'container',
-            ];
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'error' => $e->getMessage(),
-            ];
-        }
+        return $this->logService->getContainerLogs($project, $lines);
     }
 
+    /**
+     * Get Laravel-specific logs from container or host
+     *
+     * @return array{success: bool, logs?: string, source?: string, error?: string}
+     */
     public function getLaravelLogs(Project $project, int $lines = 200): array
     {
-        try {
-            $server = $project->server;
-            $slug = $project->validated_slug;
-            $containerPath = '/var/www/storage/logs/laravel.log';
-            $hostPath = "/var/www/{$slug}/storage/logs/laravel.log";
-
-            $escapedSlug = escapeshellarg($slug);
-            $dockerCommand = "docker exec {$escapedSlug} sh -c 'if [ -f {$containerPath} ]; then tail -n {$lines} {$containerPath}; else echo \"Laravel log not found inside container\"; fi'";
-            $process = $this->executeRemoteCommand($server, $dockerCommand, false);
-
-            if ($process->isSuccessful() && trim($process->getOutput()) !== 'Laravel log not found inside container') {
-                return [
-                    'success' => true,
-                    'logs' => $process->getOutput(),
-                    'source' => 'container',
-                ];
-            }
-
-            // Fall back to host filesystem
-            $hostCommand = "if [ -f {$hostPath} ]; then tail -n {$lines} {$hostPath}; else echo 'Laravel log not found on host'; fi";
-            $hostProcess = $this->executeRemoteCommand($server, $hostCommand, false);
-
-            return [
-                'success' => $hostProcess->isSuccessful(),
-                'logs' => $hostProcess->getOutput(),
-                'source' => 'host',
-            ];
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'error' => $e->getMessage(),
-            ];
-        }
+        return $this->logService->getLaravelLogs($project, $lines);
     }
 
+    /**
+     * Clear Laravel logs
+     *
+     * @return array{success: bool, message?: string, error?: string}
+     */
     public function clearLaravelLogs(Project $project): array
     {
-        try {
-            $server = $project->server;
-            if ($server === null) {
-                throw new \RuntimeException('Project has no server assigned');
-            }
-            $slug = $project->validated_slug;
-            $hostPath = "/var/www/{$slug}/storage/logs/laravel.log";
-
-            // Use sudo for non-root users to handle permission issues
-            $sudo = strtolower($server->username) === 'root' ? '' : 'sudo ';
-
-            // Clear logs using truncate command - don't change ownership, just truncate
-            // The file keeps its current ownership so the container can still write to it
-            $hostCommand = "if [ -f {$hostPath} ]; then {$sudo}truncate -s 0 {$hostPath} && echo 'cleared'; elif [ -d /var/www/{$slug}/storage/logs ]; then {$sudo}touch {$hostPath} && {$sudo}chmod 666 {$hostPath} && echo 'created'; else echo 'not_found'; fi";
-            $command = $this->isLocalhost($server)
-                ? $hostCommand
-                : $this->buildSSHCommand($server, $hostCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            $output = trim($process->getOutput());
-
-            if ($process->isSuccessful() && ($output === 'cleared' || $output === 'created')) {
-                return [
-                    'success' => true,
-                    'message' => 'Laravel logs cleared successfully',
-                ];
-            }
-
-            if ($output === 'not_found') {
-                return [
-                    'success' => false,
-                    'error' => "Log directory not found at /var/www/{$slug}/storage/logs",
-                ];
-            }
-
-            return [
-                'success' => false,
-                'error' => 'Could not clear logs: '.($process->getErrorOutput() ?: $process->getOutput() ?: 'Unknown error'),
-            ];
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'error' => $e->getMessage(),
-            ];
-        }
+        return $this->logService->clearLaravelLogs($project);
     }
 
     /**
      * Download Laravel logs as a file
+     *
+     * @return array{success: bool, content?: string, filename?: string, error?: string}
      */
     public function downloadLaravelLogs(Project $project): array
     {
-        try {
-            $server = $project->server;
-            if ($server === null) {
-                throw new \RuntimeException('Project has no server assigned');
-            }
-            $slug = $project->validated_slug;
-            $hostPath = "/var/www/{$slug}/storage/logs/laravel.log";
-
-            // Use sudo for non-root users
-            $sudo = strtolower($server->username) === 'root' ? '' : 'sudo ';
-
-            // Read the entire log file
-            $hostCommand = "if [ -f {$hostPath} ]; then {$sudo}cat {$hostPath}; else echo '__LOG_NOT_FOUND__'; fi";
-            $command = $this->isLocalhost($server)
-                ? $hostCommand
-                : $this->buildSSHCommand($server, $hostCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(config('devflow.timeouts.log_download', 120));
-            $process->run();
-
-            $output = $process->getOutput();
-
-            if (trim($output) === '__LOG_NOT_FOUND__') {
-                return [
-                    'success' => false,
-                    'error' => 'Log file not found',
-                ];
-            }
-
-            if ($process->isSuccessful()) {
-                return [
-                    'success' => true,
-                    'content' => $output,
-                    'filename' => $slug.'-laravel-'.now()->format('Y-m-d-His').'.log',
-                ];
-            }
-
-            return [
-                'success' => false,
-                'error' => 'Could not download logs: '.($process->getErrorOutput() ?: 'Unknown error'),
-            ];
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'error' => $e->getMessage(),
-            ];
-        }
+        return $this->logService->downloadLaravelLogs($project);
     }
+
+    // ==========================================
+    // DOCKER COMPOSE OPERATIONS
+    // ==========================================
 
     /**
      * Check if a project uses docker-compose
      */
     public function usesDockerCompose(Project $project): bool
     {
-        $server = $project->server;
-        $slug = $project->validated_slug;        $projectPath = "/var/www/{$slug}";
-
-        $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
-        $command = $this->isLocalhost($server)
-            ? $checkComposeCmd
-            : $this->buildSSHCommand($server, $checkComposeCmd);
-
-        $process = Process::fromShellCommandline($command);
-        $process->run();
-
-        return trim($process->getOutput()) === 'compose';
+        return $this->composeService->usesDockerCompose($project);
     }
 
     /**
      * Get the app container name for a docker-compose project
-     * Tries common naming patterns: {slug}-app, {slug}_app, app
      */
     public function getAppContainerName(Project $project): string
     {
-        $server = $project->server;
-        $slug = $project->validated_slug;
-        // Try common naming patterns
-        $patterns = [
-            "{$slug}-app",    // docker-compose v2 naming
-            "{$slug}_app_1",  // docker-compose v1 naming
-            'app',            // generic app service
-        ];
-
-        foreach ($patterns as $pattern) {
-            $escapedPattern = escapeshellarg($pattern);
-            $checkCmd = "docker ps --filter 'name={$escapedPattern}' --format '{{.Names}}' | head -1";
-            $command = $this->isLocalhost($server)
-                ? $checkCmd
-                : $this->buildSSHCommand($server, $checkCmd);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-            $containerName = trim($process->getOutput());
-
-            if (! empty($containerName)) {
-                return $containerName;
-            }
-        }
-
-        // Fallback to slug-app pattern
-        return "{$slug}-app";
+        return $this->composeService->getAppContainerName($project);
     }
-
-    /**
-     * Execute a remote command via SSH or locally depending on server configuration
-     *
-     * This is the primary method for executing commands on servers. It handles:
-     * - Local execution for localhost servers
-     * - Remote execution via SSH for remote servers
-     * - Proper error handling and result encapsulation
-     * - Optional error throwing
-     *
-     * @param Server $server The server to execute the command on
-     * @param string $command The command to execute
-     * @param bool $throwOnError Whether to throw exception on command failure (default: true)
-     * @return Process The completed process with results
-     * @throws \RuntimeException When command fails and $throwOnError is true
-     */
-    protected function executeRemoteCommand(Server $server, string $command, bool $throwOnError = true): Process
-    {
-        $finalCommand = $this->isLocalhost($server)
-            ? $command
-            : $this->buildSSHCommand($server, $command);
-
-        $process = Process::fromShellCommandline($finalCommand);
-        $process->run();
-
-        if ($throwOnError && !$process->isSuccessful()) {
-            throw new \RuntimeException(
-                sprintf(
-                    'Remote command failed on server %s: %s. Error: %s',
-                    $server->name,
-                    $command,
-                    $process->getErrorOutput() ?: $process->getOutput()
-                )
-            );
-        }
-
-        return $process;
-    }
-
-    /**
-     * Execute a remote command and return only the output string
-     *
-     * Convenience wrapper around executeRemoteCommand() for simple output retrieval
-     *
-     * @param Server $server The server to execute the command on
-     * @param string $command The command to execute
-     * @param bool $throwOnError Whether to throw exception on command failure (default: true)
-     * @return string The command output
-     * @throws \RuntimeException When command fails and $throwOnError is true
-     */
-    protected function getRemoteOutput(Server $server, string $command, bool $throwOnError = true): string
-    {
-        $process = $this->executeRemoteCommand($server, $command, $throwOnError);
-        return $process->getOutput();
-    }
-
-    /**
-     * Execute a remote command with a custom timeout
-     *
-     * @param Server $server The server to execute the command on
-     * @param string $command The command to execute
-     * @param int $timeout Timeout in seconds
-     * @param bool $throwOnError Whether to throw exception on command failure (default: true)
-     * @return Process The completed process with results
-     * @throws \RuntimeException When command fails and $throwOnError is true
-     */
-    protected function executeRemoteCommandWithTimeout(Server $server, string $command, int $timeout, bool $throwOnError = true): Process
-    {
-        $finalCommand = $this->isLocalhost($server)
-            ? $command
-            : $this->buildSSHCommand($server, $command);
-
-        $process = Process::fromShellCommandline($finalCommand);
-        $process->setTimeout($timeout);
-        $process->run();
-
-        if ($throwOnError && !$process->isSuccessful()) {
-            throw new \RuntimeException(
-                sprintf(
-                    'Remote command failed on server %s: %s. Error: %s',
-                    $server->name,
-                    $command,
-                    $process->getErrorOutput() ?: $process->getOutput()
-                )
-            );
-        }
-
-        return $process;
-    }
-
-    /**
-     * Execute a remote command with input (e.g., for password stdin)
-     *
-     * @param Server $server The server to execute the command on
-     * @param string $command The command to execute
-     * @param string $input Input to pass to the command via stdin
-     * @param bool $throwOnError Whether to throw exception on command failure (default: true)
-     * @return Process The completed process with results
-     * @throws \RuntimeException When command fails and $throwOnError is true
-     */
-    protected function executeRemoteCommandWithInput(Server $server, string $command, string $input, bool $throwOnError = true): Process
-    {
-        $finalCommand = $this->isLocalhost($server)
-            ? $command
-            : $this->buildSSHCommand($server, $command);
-
-        $process = Process::fromShellCommandline($finalCommand);
-        $process->setInput($input);
-        $process->run();
-
-        if ($throwOnError && !$process->isSuccessful()) {
-            throw new \RuntimeException(
-                sprintf(
-                    'Remote command failed on server %s: %s. Error: %s',
-                    $server->name,
-                    $command,
-                    $process->getErrorOutput() ?: $process->getOutput()
-                )
-            );
-        }
-
-        return $process;
-    }
-
-    /**
-     * Build SSH command for remote execution
-     *
-     * Security: Temp files are cached per server and cleaned up in __destruct()
-     * Additionally, a shutdown function provides cleanup on unexpected termination
-     *
-     * @param Server $server The server to connect to
-     * @param string $remoteCommand The command to execute remotely
-     * @return string The complete SSH command string
-     * @throws \RuntimeException When SSH key file creation fails
-     */
-    protected function buildSSHCommand(Server $server, string $remoteCommand): string
-    {
-        $sshOptions = [
-            '-o StrictHostKeyChecking=no',
-            '-o UserKnownHostsFile=/dev/null',
-            '-p '.$server->port,
-        ];
-
-        if ($server->ssh_key) {
-            // Reuse cached temp file if available for this server
-            if (!isset($this->sshKeyFiles[$server->id])) {
-                // Create temporary SSH key file
-                $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
-                if ($keyFile === false) {
-                    throw new \RuntimeException('Failed to create temporary SSH key file');
-                }
-
-                // Security: Set restrictive permissions before writing sensitive data
-                chmod($keyFile, 0600);
-
-                // Write SSH key content
-                file_put_contents($keyFile, $server->ssh_key);
-
-                // Cache the key file path
-                $this->sshKeyFiles[$server->id] = $keyFile;
-
-                // Security: Register shutdown function as additional cleanup protection
-                // This ensures cleanup even if the process is terminated unexpectedly
-                register_shutdown_function(function () use ($keyFile) {
-                    if (file_exists($keyFile)) {
-                        @unlink($keyFile);
-                    }
-                });
-            }
-
-            $sshOptions[] = '-i '.$this->sshKeyFiles[$server->id];
-        }
-
-        return sprintf(
-            'ssh %s %s@%s "%s"',
-            implode(' ', $sshOptions),
-            $server->username,
-            $server->ip_address,
-            addslashes($remoteCommand)
-        );
-    }
-
-    protected function generateDockerfile(Project $project): string
-    {
-        // Generate appropriate Dockerfile based on framework
-        return match ($project->framework) {
-            'Laravel', 'laravel' => $this->getLaravelDockerfile($project),
-            'Node.js', 'nodejs' => $this->getNodeDockerfile($project),
-            'React', 'react' => $this->getReactDockerfile($project),
-            'Vue', 'vue' => $this->getVueDockerfile($project),
-            default => $this->getGenericDockerfile($project),
-        };
-    }
-
-    protected function getLaravelDockerfile(Project $project): string
-    {
-        $phpVersion = $project->php_version ?? '8.2';
-
-        return <<<DOCKERFILE
-FROM php:{$phpVersion}-fpm-alpine
-
-WORKDIR /var/www
-
-# Install system dependencies and PHP extensions
-RUN apk add --no-cache nginx supervisor curl git unzip \
-        libpng-dev libjpeg-turbo-dev freetype-dev \
-        libzip-dev \
-    && apk add --no-cache --virtual .build-deps \
-        \$PHPIZE_DEPS \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j\$(nproc) pdo pdo_mysql pcntl gd zip \
-    && apk del .build-deps
-
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-COPY . .
-
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
-
-# Laravel optimization
-RUN php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache
-
-EXPOSE 80
-
-CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
-DOCKERFILE;
-    }
-
-    protected function getNodeDockerfile(Project $project): string
-    {
-        $nodeVersion = $project->node_version ?? '20';
-
-        return <<<DOCKERFILE
-FROM node:{$nodeVersion}-alpine
-
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm ci --only=production
-
-COPY . .
-
-EXPOSE 3000
-
-CMD ["node", "server.js"]
-DOCKERFILE;
-    }
-
-    protected function getReactDockerfile(Project $project): string
-    {
-        return <<<'DOCKERFILE'
-FROM node:20-alpine as build
-
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-
-COPY . .
-RUN npm run build
-
-FROM nginx:alpine
-COPY --from=build /app/build /usr/share/nginx/html
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
-DOCKERFILE;
-    }
-
-    protected function getVueDockerfile(Project $project): string
-    {
-        return <<<'DOCKERFILE'
-FROM node:20-alpine as build
-
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-
-COPY . .
-RUN npm run build
-
-FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
-DOCKERFILE;
-    }
-
-    protected function getGenericDockerfile(Project $project): string
-    {
-        return <<<'DOCKERFILE'
-FROM alpine:latest
-
-WORKDIR /app
-COPY . .
-
-EXPOSE 80
-
-CMD ["sh", "-c", "while true; do sleep 3600; done"]
-DOCKERFILE;
-    }
-
-    // ==========================================
-    // ADVANCED DOCKER MANAGEMENT FEATURES
-    // ==========================================
-
-    /**
-     * Get container statistics (CPU, Memory, Network, Disk I/O)
-     */
-    public function getContainerStats(Project $project): array
-    {
-        try {
-            $server = $project->server;
-            $slug = $project->validated_slug;            $escapedSlug = escapeshellarg($slug);
-
-            $statsCommand = sprintf(
-                "docker stats --no-stream --format '{{json .}}' %s",
-                $escapedSlug
-            );
-
-            $command = $this->isLocalhost($server)
-                ? $statsCommand
-                : $this->buildSSHCommand($server, $statsCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            if ($process->isSuccessful()) {
-                $stats = json_decode($process->getOutput(), true);
-
-                return [
-                    'success' => true,
-                    'stats' => $stats,
-                ];
-            }
-
-            return ['success' => false, 'error' => $process->getErrorOutput()];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    /**
-     * Get container resource limits
-     */
-    public function getContainerResourceLimits(Project $project): array
-    {
-        try {
-            $server = $project->server;
-            $slug = $project->validated_slug;            $escapedSlug = escapeshellarg($slug);
-
-            $inspectCommand = sprintf(
-                "docker inspect --format='{{json .HostConfig}}' %s",
-                $escapedSlug
-            );
-
-            $command = $this->isLocalhost($server)
-                ? $inspectCommand
-                : $this->buildSSHCommand($server, $inspectCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            if ($process->isSuccessful()) {
-                $config = json_decode($process->getOutput(), true);
-
-                return [
-                    'success' => true,
-                    'memory_limit' => $config['Memory'] ?? 0,
-                    'cpu_shares' => $config['CpuShares'] ?? 0,
-                    'cpu_quota' => $config['CpuQuota'] ?? 0,
-                ];
-            }
-
-            return ['success' => false];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    /**
-     * Set container resource limits
-     */
-    public function setContainerResourceLimits(Project $project, ?int $memoryMB = null, ?int $cpuShares = null): array
-    {
-        try {
-            $server = $project->server;
-            $slug = $project->validated_slug;            $escapedSlug = escapeshellarg($slug);
-
-            $updateCommand = 'docker update';
-            if ($memoryMB !== null) {
-                $updateCommand .= " --memory={$memoryMB}m";
-            }
-            if ($cpuShares !== null) {
-                $updateCommand .= " --cpu-shares={$cpuShares}";
-            }
-            $updateCommand .= ' '.$escapedSlug;
-
-            $command = $this->isLocalhost($server)
-                ? $updateCommand
-                : $this->buildSSHCommand($server, $updateCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            return [
-                'success' => $process->isSuccessful(),
-                'output' => $process->getOutput(),
-            ];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    // ==========================================
-    // VOLUME MANAGEMENT
-    // ==========================================
-
-    /**
-     * List all Docker volumes on server
-     */
-    public function listVolumes(Server $server): array
-    {
-        try {
-            $volumesCommand = "docker volume ls --format '{{json .}}'";
-
-            $command = $this->isLocalhost($server)
-                ? $volumesCommand
-                : $this->buildSSHCommand($server, $volumesCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            if ($process->isSuccessful()) {
-                $output = $process->getOutput();
-                $lines = array_filter(explode("\n", $output));
-                $volumes = array_map(fn ($line) => json_decode($line, true), $lines);
-
-                return [
-                    'success' => true,
-                    'volumes' => $volumes,
-                ];
-            }
-
-            return ['success' => false, 'error' => $process->getErrorOutput()];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    /**
-     * Create a Docker volume
-     */
-    public function createVolume(Server $server, string $name, array $options = []): array
-    {
-        try {
-            $createCommand = 'docker volume create';
-
-            if (isset($options['driver'])) {
-                $createCommand .= " --driver={$options['driver']}";
-            }
-
-            foreach ($options['labels'] ?? [] as $key => $value) {
-                $createCommand .= " --label={$key}={$value}";
-            }
-
-            $createCommand .= " {$name}";
-
-            $command = $this->isLocalhost($server)
-                ? $createCommand
-                : $this->buildSSHCommand($server, $createCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            return [
-                'success' => $process->isSuccessful(),
-                'volume_name' => trim($process->getOutput()),
-            ];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    /**
-     * Delete a Docker volume
-     */
-    public function deleteVolume(Server $server, string $name): array
-    {
-        try {
-            $deleteCommand = "docker volume rm {$name}";
-
-            $command = $this->isLocalhost($server)
-                ? $deleteCommand
-                : $this->buildSSHCommand($server, $deleteCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            return [
-                'success' => $process->isSuccessful(),
-                'output' => $process->getOutput(),
-            ];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    /**
-     * Get volume details and usage
-     */
-    public function getVolumeInfo(Server $server, string $name): array
-    {
-        try {
-            $inspectCommand = "docker volume inspect {$name}";
-
-            $command = $this->isLocalhost($server)
-                ? $inspectCommand
-                : $this->buildSSHCommand($server, $inspectCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            if ($process->isSuccessful()) {
-                $info = json_decode($process->getOutput(), true);
-
-                return [
-                    'success' => true,
-                    'volume' => $info[0] ?? null,
-                ];
-            }
-
-            return ['success' => false, 'error' => $process->getErrorOutput()];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    // ==========================================
-    // NETWORK MANAGEMENT
-    // ==========================================
-
-    /**
-     * List all Docker networks on server
-     */
-    public function listNetworks(Server $server): array
-    {
-        try {
-            $networksCommand = "docker network ls --format '{{json .}}'";
-
-            $command = $this->isLocalhost($server)
-                ? $networksCommand
-                : $this->buildSSHCommand($server, $networksCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            if ($process->isSuccessful()) {
-                $output = $process->getOutput();
-                $lines = array_filter(explode("\n", $output));
-                $networks = array_map(fn ($line) => json_decode($line, true), $lines);
-
-                return [
-                    'success' => true,
-                    'networks' => $networks,
-                ];
-            }
-
-            return ['success' => false, 'error' => $process->getErrorOutput()];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    /**
-     * Create a Docker network
-     */
-    public function createNetwork(Server $server, string $name, string $driver = 'bridge'): array
-    {
-        try {
-            $createCommand = "docker network create --driver={$driver} {$name}";
-
-            $command = $this->isLocalhost($server)
-                ? $createCommand
-                : $this->buildSSHCommand($server, $createCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            return [
-                'success' => $process->isSuccessful(),
-                'network_id' => trim($process->getOutput()),
-            ];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    /**
-     * Delete a Docker network
-     */
-    public function deleteNetwork(Server $server, string $name): array
-    {
-        try {
-            $deleteCommand = "docker network rm {$name}";
-
-            $command = $this->isLocalhost($server)
-                ? $deleteCommand
-                : $this->buildSSHCommand($server, $deleteCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            return [
-                'success' => $process->isSuccessful(),
-                'output' => $process->getOutput(),
-            ];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    /**
-     * Connect container to network
-     */
-    public function connectContainerToNetwork(Project $project, string $networkName): array
-    {
-        try {
-            $server = $project->server;
-            $slug = $project->validated_slug;            $escapedSlug = escapeshellarg($slug);
-            $escapedNetwork = escapeshellarg($networkName);
-            $connectCommand = "docker network connect {$escapedNetwork} {$escapedSlug}";
-
-            $command = $this->isLocalhost($server)
-                ? $connectCommand
-                : $this->buildSSHCommand($server, $connectCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            return [
-                'success' => $process->isSuccessful(),
-                'output' => $process->getOutput(),
-            ];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    /**
-     * Disconnect container from network
-     */
-    public function disconnectContainerFromNetwork(Project $project, string $networkName): array
-    {
-        try {
-            $server = $project->server;
-            $slug = $project->validated_slug;            $escapedSlug = escapeshellarg($slug);
-            $escapedNetwork = escapeshellarg($networkName);
-            $disconnectCommand = "docker network disconnect {$escapedNetwork} {$escapedSlug}";
-
-            $command = $this->isLocalhost($server)
-                ? $disconnectCommand
-                : $this->buildSSHCommand($server, $disconnectCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            return [
-                'success' => $process->isSuccessful(),
-                'output' => $process->getOutput(),
-            ];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    // ==========================================
-    // IMAGE MANAGEMENT
-    // ==========================================
-
-    /**
-     * List all Docker images on server
-     */
-    public function listImages(Server $server): array
-    {
-        try {
-            $imagesCommand = "docker images --format '{{json .}}'";
-
-            $command = $this->isLocalhost($server)
-                ? $imagesCommand
-                : $this->buildSSHCommand($server, $imagesCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            if ($process->isSuccessful()) {
-                $output = $process->getOutput();
-                $lines = array_filter(explode("\n", $output));
-                $images = array_map(fn ($line) => json_decode($line, true), $lines);
-
-                return [
-                    'success' => true,
-                    'images' => $images,
-                ];
-            }
-
-            return ['success' => false, 'error' => $process->getErrorOutput()];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    /**
-     * List Docker images related to a specific project
-     */
-    public function listProjectImages(Project $project): array
-    {
-        try {
-            $server = $project->server;
-            $imagesCommand = "docker images --format '{{json .}}'";
-
-            $command = $this->isLocalhost($server)
-                ? $imagesCommand
-                : $this->buildSSHCommand($server, $imagesCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            if ($process->isSuccessful()) {
-                $output = $process->getOutput();
-                $lines = array_filter(explode("\n", $output));
-                $allImages = array_map(fn ($line) => json_decode($line, true), $lines);
-
-                // Filter images related to this project (by slug or tag)
-                $projectImages = array_filter($allImages, function ($image) use ($project) {
-                    $repository = $image['Repository'] ?? '';
-                    $tag = $image['Tag'] ?? '';
-
-                    // Match images that contain the project slug in the repository name or tag
-                    return stripos($repository, $project->slug) !== false ||
-                           stripos($tag, $project->slug) !== false ||
-                           $repository === $project->slug;
-                });
-
-                return [
-                    'success' => true,
-                    'images' => array_values($projectImages), // Re-index array
-                ];
-            }
-
-            return ['success' => false, 'error' => $process->getErrorOutput()];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    /**
-     * Get container status for a project
-     */
-    public function getContainerStatus(Project $project): array
-    {
-        try {
-            $server = $project->server;
-            $slug = $project->validated_slug;            $escapedSlug = escapeshellarg($slug);
-
-            $statusCommand = sprintf(
-                "docker ps -a --filter name=%s --format '{{json .}}'",
-                $escapedSlug
-            );
-
-            $command = $this->isLocalhost($server)
-                ? $statusCommand
-                : $this->buildSSHCommand($server, $statusCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            if ($process->isSuccessful()) {
-                $output = trim($process->getOutput());
-                if (! empty($output)) {
-                    $container = json_decode($output, true);
-
-                    return [
-                        'success' => true,
-                        'container' => $container,
-                        'exists' => true,
-                    ];
-                }
-
-                return [
-                    'success' => true,
-                    'container' => null,
-                    'exists' => false,
-                ];
-            }
-
-            return ['success' => false, 'error' => $process->getErrorOutput()];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    /**
-     * Delete a Docker image
-     */
-    public function deleteImage(Server $server, string $imageId): array
-    {
-        try {
-            $deleteCommand = "docker rmi {$imageId}";
-
-            $command = $this->isLocalhost($server)
-                ? $deleteCommand
-                : $this->buildSSHCommand($server, $deleteCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            return [
-                'success' => $process->isSuccessful(),
-                'output' => $process->getOutput(),
-            ];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    /**
-     * Prune unused Docker images
-     */
-    public function pruneImages(Server $server, bool $all = false): array
-    {
-        try {
-            $pruneCommand = 'docker image prune -f';
-            if ($all) {
-                $pruneCommand .= ' -a';
-            }
-
-            $command = $this->isLocalhost($server)
-                ? $pruneCommand
-                : $this->buildSSHCommand($server, $pruneCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            return [
-                'success' => $process->isSuccessful(),
-                'output' => $process->getOutput(),
-            ];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    /**
-     * Pull Docker image from registry
-     */
-    public function pullImage(Server $server, string $imageName): array
-    {
-        try {
-            $pullCommand = "docker pull {$imageName}";
-
-            $command = $this->isLocalhost($server)
-                ? $pullCommand
-                : $this->buildSSHCommand($server, $pullCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(config('devflow.timeouts.docker_pull', 600));
-            $process->run();
-
-            return [
-                'success' => $process->isSuccessful(),
-                'output' => $process->getOutput(),
-            ];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    // ==========================================
-    // DOCKER COMPOSE
-    // ==========================================
 
     /**
      * Deploy with docker-compose
+     *
+     * @return array{success: bool, output?: string, error?: string}
      */
     public function deployWithCompose(Project $project): array
     {
-        try {
-            $server = $project->server;
-            $slug = $project->validated_slug;            $projectPath = "/var/www/{$slug}";
-
-            $composeCommand = "cd {$projectPath} && docker-compose up -d --build";
-
-            $command = $this->isLocalhost($server)
-                ? $composeCommand
-                : $this->buildSSHCommand($server, $composeCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(config('devflow.timeouts.docker_compose_build', 1200));
-            $process->run();
-
-            return [
-                'success' => $process->isSuccessful(),
-                'output' => $process->getOutput(),
-            ];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
+        return $this->composeService->deployWithCompose($project);
     }
 
     /**
      * Stop docker-compose services
+     *
+     * @return array{success: bool, output?: string, error?: string}
      */
     public function stopCompose(Project $project): array
     {
-        try {
-            $server = $project->server;
-            $slug = $project->validated_slug;            $projectPath = "/var/www/{$slug}";
-
-            $composeCommand = "cd {$projectPath} && docker-compose down";
-
-            $command = $this->isLocalhost($server)
-                ? $composeCommand
-                : $this->buildSSHCommand($server, $composeCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            return [
-                'success' => $process->isSuccessful(),
-                'output' => $process->getOutput(),
-            ];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
+        return $this->composeService->stopCompose($project);
     }
 
     /**
      * Get docker-compose service status
+     *
+     * @return array{success: bool, services?: array<string, mixed>|null, error?: string}
      */
     public function getComposeStatus(Project $project): array
     {
-        try {
-            $server = $project->server;
-            $slug = $project->validated_slug;            $projectPath = "/var/www/{$slug}";
-
-            $composeCommand = "cd {$projectPath} && docker-compose ps --format json";
-
-            $command = $this->isLocalhost($server)
-                ? $composeCommand
-                : $this->buildSSHCommand($server, $composeCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            if ($process->isSuccessful()) {
-                $output = $process->getOutput();
-                $services = json_decode($output, true);
-
-                return [
-                    'success' => true,
-                    'services' => $services ?? [],
-                ];
-            }
-
-            return ['success' => false, 'error' => $process->getErrorOutput()];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
+        return $this->composeService->getComposeStatus($project);
     }
 
     // ==========================================
-    // CONTAINER EXECUTION
+    // IMAGE OPERATIONS
     // ==========================================
 
     /**
-     * Execute command in container
+     * List all Docker images on server
+     *
+     * @return array{success: bool, images?: array<int, mixed>, error?: string}
      */
-    public function execInContainer(Project $project, string $command, bool $interactive = false): array
+    public function listImages(Server $server): array
     {
-        try {
-            $server = $project->server;
-
-            // Security fix: Escape the command parameter to prevent command injection
-            // Use escapeshellarg() to safely wrap the command for shell execution
-            $escapedCommand = escapeshellarg($command);
-
-            $execCommand = sprintf(
-                'docker exec %s %s sh -c %s',
-                $interactive ? '-it' : '',
-                $project->slug,
-                $escapedCommand
-            );
-
-            $cmd = $this->isLocalhost($server)
-                ? $execCommand
-                : $this->buildSSHCommand($server, $execCommand);
-
-            $process = Process::fromShellCommandline($cmd);
-            $process->setTimeout(config('devflow.timeouts.command_exec', 300));
-            $process->run();
-
-            return [
-                'success' => $process->isSuccessful(),
-                'output' => $process->getOutput(),
-                'error' => $process->getErrorOutput(),
-            ];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
+        return $this->imageService->listImages($server);
     }
 
     /**
-     * Get list of processes in container
+     * List Docker images related to a specific project
+     *
+     * @return array{success: bool, images?: array<int, mixed>, error?: string}
      */
-    public function getContainerProcesses(Project $project): array
+    public function listProjectImages(Project $project): array
     {
-        try {
-            $server = $project->server;
-            $slug = $project->validated_slug;            $escapedSlug = escapeshellarg($slug);
-
-            $psCommand = "docker top {$escapedSlug}";
-
-            $command = $this->isLocalhost($server)
-                ? $psCommand
-                : $this->buildSSHCommand($server, $psCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            return [
-                'success' => $process->isSuccessful(),
-                'processes' => $process->getOutput(),
-            ];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
+        return $this->imageService->listProjectImages($project);
     }
 
-    // ==========================================
-    // BACKUP & RESTORE
-    // ==========================================
+    /**
+     * Delete a Docker image
+     *
+     * @return array{success: bool, output?: string, error?: string}
+     */
+    public function deleteImage(Server $server, string $imageId): array
+    {
+        return $this->imageService->deleteImage($server, $imageId);
+    }
 
     /**
-     * Export container as image (backup)
+     * Prune unused Docker images
+     *
+     * @return array{success: bool, output?: string, error?: string}
      */
-    public function exportContainer(Project $project, ?string $backupName = null): array
+    public function pruneImages(Server $server, bool $all = false): array
     {
-        try {
-            $server = $project->server;
-            $slug = $project->validated_slug;            $backupName = $backupName ?? "{$slug}-backup-".date('Y-m-d-H-i-s');
+        return $this->imageService->pruneImages($server, $all);
+    }
 
-            $escapedSlug = escapeshellarg($slug);
-            $escapedBackupName = escapeshellarg($backupName);
-            $commitCommand = "docker commit {$escapedSlug} {$escapedBackupName}";
+    /**
+     * Pull Docker image from registry
+     *
+     * @return array{success: bool, output?: string, error?: string}
+     */
+    public function pullImage(Server $server, string $imageName): array
+    {
+        return $this->imageService->pullImage($server, $imageName);
+    }
 
-            $command = $this->isLocalhost($server)
-                ? $commitCommand
-                : $this->buildSSHCommand($server, $commitCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            if ($process->isSuccessful()) {
-                return [
-                    'success' => true,
-                    'backup_name' => $backupName,
-                    'image_id' => trim($process->getOutput()),
-                ];
-            }
-
-            return ['success' => false, 'error' => $process->getErrorOutput()];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
+    /**
+     * Tag image for registry
+     *
+     * @return array{success: bool, output?: string, error?: string}
+     */
+    public function tagImage(Server $server, string $sourceImage, string $targetImage): array
+    {
+        return $this->imageService->tagImage($server, $sourceImage, $targetImage);
     }
 
     /**
      * Save image to tar file
+     *
+     * @return array{success: bool, file_path?: string, error?: string}
      */
     public function saveImageToFile(Server $server, string $imageName, string $filePath): array
     {
-        try {
-            $saveCommand = "docker save -o {$filePath} {$imageName}";
-
-            $command = $this->isLocalhost($server)
-                ? $saveCommand
-                : $this->buildSSHCommand($server, $saveCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(config('devflow.timeouts.backup', 1800));
-            $process->run();
-
-            return [
-                'success' => $process->isSuccessful(),
-                'file_path' => $filePath,
-            ];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
+        return $this->imageService->saveImageToFile($server, $imageName, $filePath);
     }
 
     /**
      * Load image from tar file
+     *
+     * @return array{success: bool, output?: string, error?: string}
      */
     public function loadImageFromFile(Server $server, string $filePath): array
     {
-        try {
-            $loadCommand = "docker load -i {$filePath}";
-
-            $command = $this->isLocalhost($server)
-                ? $loadCommand
-                : $this->buildSSHCommand($server, $loadCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(config('devflow.timeouts.backup', 1800));
-            $process->run();
-
-            return [
-                'success' => $process->isSuccessful(),
-                'output' => $process->getOutput(),
-            ];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
+        return $this->imageService->loadImageFromFile($server, $filePath);
     }
 
     // ==========================================
-    // DOCKER REGISTRY
+    // VOLUME OPERATIONS
+    // ==========================================
+
+    /**
+     * List all Docker volumes on server
+     *
+     * @return array{success: bool, volumes?: array<int, mixed>, error?: string}
+     */
+    public function listVolumes(Server $server): array
+    {
+        return $this->volumeService->listVolumes($server);
+    }
+
+    /**
+     * Create a Docker volume
+     *
+     * @param array{driver?: string, labels?: array<string, string>} $options
+     * @return array{success: bool, volume_name?: string, error?: string}
+     */
+    public function createVolume(Server $server, string $name, array $options = []): array
+    {
+        return $this->volumeService->createVolume($server, $name, $options);
+    }
+
+    /**
+     * Delete a Docker volume
+     *
+     * @return array{success: bool, output?: string, error?: string}
+     */
+    public function deleteVolume(Server $server, string $name): array
+    {
+        return $this->volumeService->deleteVolume($server, $name);
+    }
+
+    /**
+     * Get volume details and usage
+     *
+     * @return array{success: bool, volume?: array<string, mixed>|null, error?: string}
+     */
+    public function getVolumeInfo(Server $server, string $name): array
+    {
+        return $this->volumeService->getVolumeInfo($server, $name);
+    }
+
+    // ==========================================
+    // NETWORK OPERATIONS
+    // ==========================================
+
+    /**
+     * List all Docker networks on server
+     *
+     * @return array{success: bool, networks?: array<int, mixed>, error?: string}
+     */
+    public function listNetworks(Server $server): array
+    {
+        return $this->networkService->listNetworks($server);
+    }
+
+    /**
+     * Create a Docker network
+     *
+     * @return array{success: bool, network_id?: string, error?: string}
+     */
+    public function createNetwork(Server $server, string $name, string $driver = 'bridge'): array
+    {
+        return $this->networkService->createNetwork($server, $name, $driver);
+    }
+
+    /**
+     * Delete a Docker network
+     *
+     * @return array{success: bool, output?: string, error?: string}
+     */
+    public function deleteNetwork(Server $server, string $name): array
+    {
+        return $this->networkService->deleteNetwork($server, $name);
+    }
+
+    /**
+     * Connect container to network
+     *
+     * @return array{success: bool, output?: string, error?: string}
+     */
+    public function connectContainerToNetwork(Project $project, string $networkName): array
+    {
+        return $this->networkService->connectContainerToNetwork($project, $networkName);
+    }
+
+    /**
+     * Disconnect container from network
+     *
+     * @return array{success: bool, output?: string, error?: string}
+     */
+    public function disconnectContainerFromNetwork(Project $project, string $networkName): array
+    {
+        return $this->networkService->disconnectContainerFromNetwork($project, $networkName);
+    }
+
+    // ==========================================
+    // REGISTRY OPERATIONS
     // ==========================================
 
     /**
      * Login to Docker registry
      *
-     * Uses --password-stdin for secure password handling to avoid exposing
-     * credentials in process lists or shell history.
+     * @return array{success: bool, output?: string, error?: string}
      */
     public function registryLogin(Server $server, string $registry, string $username, string $password): array
     {
-        try {
-            // Use --password-stdin without echoing password in command line
-            $loginCommand = sprintf(
-                "docker login %s -u %s --password-stdin",
-                escapeshellarg($registry),
-                escapeshellarg($username)
-            );
-
-            $command = $this->isLocalhost($server)
-                ? $loginCommand
-                : $this->buildSSHCommand($server, $loginCommand);
-
-            $process = Process::fromShellCommandline($command);
-            // Pass password via stdin input instead of echoing it in the command
-            $process->setInput($password);
-            $process->run();
-
-            return [
-                'success' => $process->isSuccessful(),
-                'output' => $process->getOutput(),
-            ];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
+        return $this->registryService->registryLogin($server, $registry, $username, $password);
     }
 
     /**
      * Push image to registry
+     *
+     * @return array{success: bool, output?: string, error?: string}
      */
     public function pushImage(Server $server, string $imageName): array
     {
-        try {
-            $pushCommand = "docker push {$imageName}";
-
-            $command = $this->isLocalhost($server)
-                ? $pushCommand
-                : $this->buildSSHCommand($server, $pushCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(config('devflow.timeouts.docker_pull', 600));
-            $process->run();
-
-            return [
-                'success' => $process->isSuccessful(),
-                'output' => $process->getOutput(),
-            ];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    /**
-     * Tag image for registry
-     */
-    public function tagImage(Server $server, string $sourceImage, string $targetImage): array
-    {
-        try {
-            $tagCommand = "docker tag {$sourceImage} {$targetImage}";
-
-            $command = $this->isLocalhost($server)
-                ? $tagCommand
-                : $this->buildSSHCommand($server, $tagCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            return [
-                'success' => $process->isSuccessful(),
-                'output' => $process->getOutput(),
-            ];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
+        return $this->registryService->pushImage($server, $imageName);
     }
 
     // ==========================================
-    // SYSTEM MANAGEMENT
+    // DOCKERFILE GENERATION
     // ==========================================
 
     /**
-     * Get Docker system info
+     * Generate Dockerfile content based on project framework
      */
-    public function getSystemInfo(Server $server): array
+    public function generateDockerfile(Project $project): string
     {
-        try {
-            $infoCommand = "docker info --format '{{json .}}'";
-
-            $command = $this->isLocalhost($server)
-                ? $infoCommand
-                : $this->buildSSHCommand($server, $infoCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->run();
-
-            if ($process->isSuccessful()) {
-                $info = json_decode($process->getOutput(), true);
-
-                return [
-                    'success' => true,
-                    'info' => $info,
-                ];
-            }
-
-            return ['success' => false, 'error' => $process->getErrorOutput()];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
+        return $this->dockerfileGenerator->generate($project);
     }
 
     /**
-     * Clean up Docker system (remove unused data)
+     * Generate Laravel/PHP Dockerfile
      */
-    public function systemPrune(Server $server, bool $volumes = false): array
+    public function getLaravelDockerfile(Project $project): string
     {
-        try {
-            $pruneCommand = 'docker system prune -f';
-            if ($volumes) {
-                $pruneCommand .= ' --volumes';
-            }
-
-            $command = $this->isLocalhost($server)
-                ? $pruneCommand
-                : $this->buildSSHCommand($server, $pruneCommand);
-
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(config('devflow.timeouts.system_prune', 300));
-            $process->run();
-
-            return [
-                'success' => $process->isSuccessful(),
-                'output' => $process->getOutput(),
-            ];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
+        return $this->dockerfileGenerator->getLaravelDockerfile($project);
     }
 
     /**
-     * Get Docker disk usage
+     * Generate Node.js Dockerfile
      */
-    public function getDiskUsage(Server $server): array
+    public function getNodeDockerfile(Project $project): string
     {
-        try {
-            $dfCommand = "docker system df --format '{{json .}}'";
+        return $this->dockerfileGenerator->getNodeDockerfile($project);
+    }
 
-            $command = $this->isLocalhost($server)
-                ? $dfCommand
-                : $this->buildSSHCommand($server, $dfCommand);
+    /**
+     * Generate React Dockerfile
+     */
+    public function getReactDockerfile(Project $project): string
+    {
+        return $this->dockerfileGenerator->getReactDockerfile($project);
+    }
 
-            $process = Process::fromShellCommandline($command);
-            $process->run();
+    /**
+     * Generate Vue Dockerfile
+     */
+    public function getVueDockerfile(Project $project): string
+    {
+        return $this->dockerfileGenerator->getVueDockerfile($project);
+    }
 
-            if ($process->isSuccessful()) {
-                $output = $process->getOutput();
-                $lines = array_filter(explode("\n", $output));
-                $usage = array_map(fn ($line) => json_decode($line, true), $lines);
-
-                return [
-                    'success' => true,
-                    'usage' => $usage,
-                ];
-            }
-
-            return ['success' => false, 'error' => $process->getErrorOutput()];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
+    /**
+     * Generate generic Dockerfile
+     */
+    public function getGenericDockerfile(Project $project): string
+    {
+        return $this->dockerfileGenerator->getGenericDockerfile($project);
     }
 }
