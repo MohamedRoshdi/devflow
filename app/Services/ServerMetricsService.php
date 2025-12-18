@@ -8,7 +8,7 @@ use App\Models\Server;
 use App\Models\ServerMetric;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Process;
 
 class ServerMetricsService
 {
@@ -195,12 +195,10 @@ class ServerMetricsService
     protected function executeSSHCommand(Server $server, string $remoteCommand): string
     {
         $command = $this->buildSSHCommand($server, $remoteCommand);
-        $process = Process::fromShellCommandline($command);
-        $process->setTimeout(10);
-        $process->run();
+        $result = Process::timeout(10)->run($command);
 
-        if ($process->isSuccessful()) {
-            return trim($process->getOutput());
+        if ($result->successful()) {
+            return trim($result->output());
         }
 
         return '0';
@@ -211,11 +209,9 @@ class ServerMetricsService
      */
     protected function executeLocal(string $command): string
     {
-        $process = Process::fromShellCommandline($command);
-        $process->setTimeout(5);
-        $process->run();
+        $result = Process::timeout(5)->run($command);
 
-        return $process->isSuccessful() ? trim($process->getOutput()) : '0';
+        return $result->successful() ? trim($result->output()) : '0';
     }
 
     /**

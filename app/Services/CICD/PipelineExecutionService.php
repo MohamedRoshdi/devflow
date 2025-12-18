@@ -12,7 +12,8 @@ use App\Models\PipelineStage;
 use App\Models\PipelineStageRun;
 use App\Models\Project;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\Process\Process as SymfonyProcess;
+use Illuminate\Support\Facades\Process;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
 
 class PipelineExecutionService
 {
@@ -173,10 +174,7 @@ class PipelineExecutionService
 
         try {
             // Execute command with real-time output
-            $process = SymfonyProcess::fromShellCommandline($fullCommand);
-            $process->setTimeout($timeout);
-
-            $process->run(function ($type, $buffer) use ($stageRun) {
+            $result = Process::timeout($timeout)->run($fullCommand, function (string $type, string $buffer) use ($stageRun) {
                 // Append output to stage run and broadcast
                 $lines = explode("\n", $buffer);
                 foreach ($lines as $line) {
@@ -187,9 +185,9 @@ class PipelineExecutionService
                 }
             });
 
-            return $process->isSuccessful();
+            return $result->successful();
 
-        } catch (\Symfony\Component\Process\Exception\ProcessTimedOutException $e) {
+        } catch (ProcessTimedOutException $e) {
             $errorMsg = "Command timed out after {$timeout} seconds";
             $stageRun->appendOutput($errorMsg);
             $this->broadcastLogLine($stageRun, $errorMsg);

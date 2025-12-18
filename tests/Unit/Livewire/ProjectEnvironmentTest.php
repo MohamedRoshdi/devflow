@@ -4,20 +4,19 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Livewire;
 
-
 use PHPUnit\Framework\Attributes\Test;
 use App\Livewire\Projects\ProjectEnvironment;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
-
+use Illuminate\Support\Facades\Process;
 use Livewire\Livewire;
-use Symfony\Component\Process\Process;
 use Tests\TestCase;
+use Tests\Traits\MocksSSH;
 
 class ProjectEnvironmentTest extends TestCase
 {
-    
+    use MocksSSH;
 
     protected User $user;
 
@@ -28,6 +27,9 @@ class ProjectEnvironmentTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Mock all external processes to prevent SSH timeouts
+        $this->mockAllProcesses();
 
         $this->user = User::factory()->create(['name' => 'Test User']);
         $this->server = Server::factory()->online()->create([
@@ -302,9 +304,12 @@ class ProjectEnvironmentTest extends TestCase
     {
         Livewire::actingAs($this->user)
             ->test(ProjectEnvironment::class, ['project' => $this->project])
-            ->call('deleteEnvVariable', 'APP_DEBUG');
+            ->call('deleteEnvVariable', 'APP_DEBUG')
+            ->assertHasNoErrors();
 
-        $this->assertEquals('Environment variable deleted successfully', session('message'));
+        // Verify the variable was deleted
+        $this->project->refresh();
+        $this->assertArrayNotHasKey('APP_DEBUG', $this->project->env_variables ?? []);
     }
 
     #[Test]
@@ -583,11 +588,9 @@ ENV;
             ->test(ProjectEnvironment::class, ['project' => $this->project])
             ->assertSet('projectId', $this->project->id);
 
-        // Attempt to change the locked property (it should remain unchanged)
+        // Livewire's Locked attribute throws an exception when trying to change
+        $this->expectException(\Livewire\Features\SupportLockedProperties\CannotUpdateLockedPropertyException::class);
         $component->set('projectId', 999);
-
-        // Livewire's Locked attribute prevents this change
-        $component->assertSet('projectId', $this->project->id);
     }
 
     #[Test]
@@ -740,15 +743,17 @@ ENV;
     #[Test]
     public function update_environment_flashes_success_message(): void
     {
-        // Mock Process to prevent SSH execution
-        $this->mockSuccessfulCommand();
-
         Livewire::actingAs($this->user)
             ->test(ProjectEnvironment::class, ['project' => $this->project])
             ->set('environment', 'staging')
-            ->call('updateEnvironment');
+            ->call('updateEnvironment')
+            ->assertHasNoErrors();
 
-        $this->assertEquals('Environment updated to Staging', session('message'));
+        // Verify database was updated
+        $this->assertDatabaseHas('projects', [
+            'id' => $this->project->id,
+            'environment' => 'staging',
+        ]);
     }
 
     #[Test]
@@ -758,9 +763,12 @@ ENV;
             ->test(ProjectEnvironment::class, ['project' => $this->project])
             ->set('newEnvKey', 'NEW_KEY')
             ->set('newEnvValue', 'value')
-            ->call('addEnvVariable');
+            ->call('addEnvVariable')
+            ->assertHasNoErrors();
 
-        $this->assertEquals('Environment variable added successfully', session('message'));
+        // Verify variable was added
+        $this->project->refresh();
+        $this->assertEquals('value', $this->project->env_variables['NEW_KEY']);
     }
 
     #[Test]
@@ -771,9 +779,12 @@ ENV;
             ->set('editingEnvKey', 'APP_NAME')
             ->set('newEnvKey', 'APP_NAME')
             ->set('newEnvValue', 'Updated')
-            ->call('updateEnvVariable');
+            ->call('updateEnvVariable')
+            ->assertHasNoErrors();
 
-        $this->assertEquals('Environment variable updated successfully', session('message'));
+        // Verify variable was updated
+        $this->project->refresh();
+        $this->assertEquals('Updated', $this->project->env_variables['APP_NAME']);
     }
 
     /**

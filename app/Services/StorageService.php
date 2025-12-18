@@ -6,7 +6,7 @@ namespace App\Services;
 
 use App\Models\Project;
 use App\Models\Server;
-use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Process;
 
 class StorageService
 {
@@ -25,11 +25,10 @@ class StorageService
                 "du -sm {$projectPath} | cut -f1"
             );
 
-            $process = Process::fromShellCommandline($command);
-            $process->run();
+            $result = Process::run($command);
 
-            if ($process->isSuccessful()) {
-                $sizeMB = (int) trim($process->getOutput());
+            if ($result->successful()) {
+                $sizeMB = (int) trim($result->output());
 
                 $project->update(['storage_used_mb' => $sizeMB]);
 
@@ -81,8 +80,7 @@ class StorageService
 
             foreach ($cleanupCommands as $cmd) {
                 $command = $this->buildSSHCommand($server, $cmd);
-                $process = Process::fromShellCommandline($command);
-                $process->run();
+                Process::run($command);
             }
 
             // Recalculate storage

@@ -8,7 +8,7 @@ use App\Models\Server;
 use App\Models\SSLCertificate;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Process;
 
 class SSLService
 {
@@ -19,11 +19,9 @@ class SSLService
     {
         try {
             $command = $this->buildSSHCommand($server, 'which certbot', true);
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(10);
-            $process->run();
+            $result = Process::timeout(10)->run($command);
 
-            return $process->isSuccessful();
+            return $result->successful();
         } catch (\Exception $e) {
             Log::error('Failed to check certbot installation', [
                 'server_id' => $server->id,
@@ -53,21 +51,19 @@ class SSLService
             $installScript = $this->getCertbotInstallScript($server);
             $command = $this->buildSSHCommand($server, $installScript);
 
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(300); // 5 minutes timeout
-            $process->run();
+            $result = Process::timeout(300)->run($command); // 5 minutes timeout
 
-            if ($process->isSuccessful() && $this->checkCertbotInstalled($server)) {
+            if ($result->successful() && $this->checkCertbotInstalled($server)) {
                 Log::info('Certbot installed successfully', ['server_id' => $server->id]);
 
                 return [
                     'success' => true,
                     'message' => 'Certbot installed successfully',
-                    'output' => $process->getOutput(),
+                    'output' => $result->output(),
                 ];
             }
 
-            $errorMessage = $process->getErrorOutput() ?: $process->getOutput();
+            $errorMessage = $result->errorOutput() ?: $result->output();
 
             Log::error('Certbot installation failed', [
                 'server_id' => $server->id,
@@ -119,14 +115,12 @@ class SSLService
             $certbotCommand = "{$sudoPrefix}certbot certonly --standalone --non-interactive --agree-tos --email {$email} -d {$domain} --preferred-challenges http";
 
             $command = $this->buildSSHCommand($server, $certbotCommand);
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(120);
-            $process->run();
+            $result = Process::timeout(120)->run($command);
 
-            $output = $process->getOutput();
-            $errorOutput = $process->getErrorOutput();
+            $output = $result->output();
+            $errorOutput = $result->errorOutput();
 
-            if ($process->isSuccessful() || str_contains($output, 'Successfully received certificate')) {
+            if ($result->successful() || str_contains($output, 'Successfully received certificate')) {
                 // Get certificate information
                 $certInfo = $this->getCertificateInfo($server, $domain);
 
@@ -233,14 +227,12 @@ class SSLService
             $renewCommand = "{$sudoPrefix}certbot renew --cert-name {$certificate->domain_name} --non-interactive";
 
             $command = $this->buildSSHCommand($server, $renewCommand);
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(120);
-            $process->run();
+            $result = Process::timeout(120)->run($command);
 
-            $output = $process->getOutput();
-            $errorOutput = $process->getErrorOutput();
+            $output = $result->output();
+            $errorOutput = $result->errorOutput();
 
-            if ($process->isSuccessful() || str_contains($output, 'successfully renewed') || str_contains($output, 'not yet due for renewal')) {
+            if ($result->successful() || str_contains($output, 'successfully renewed') || str_contains($output, 'not yet due for renewal')) {
                 // Get updated certificate information
                 $certInfo = $this->getCertificateInfo($server, $certificate->domain_name);
 
@@ -318,11 +310,9 @@ class SSLService
             $revokeCommand = "{$sudoPrefix}certbot revoke --cert-name {$certificate->domain_name} --non-interactive";
 
             $command = $this->buildSSHCommand($server, $revokeCommand);
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(60);
-            $process->run();
+            $result = Process::timeout(60)->run($command);
 
-            if ($process->isSuccessful()) {
+            if ($result->successful()) {
                 $certificate->update([
                     'status' => 'revoked',
                 ]);
@@ -337,7 +327,7 @@ class SSLService
                 ];
             }
 
-            $errorMessage = $process->getErrorOutput() ?: $process->getOutput();
+            $errorMessage = $result->errorOutput() ?: $result->output();
 
             Log::error('SSL certificate revocation failed', [
                 'certificate_id' => $certificate->id,
@@ -414,13 +404,11 @@ class SSLService
             $opensslCommand = "{$sudoPrefix}openssl x509 -in {$certPath} -noout -enddate 2>/dev/null || echo 'NOT_FOUND'";
 
             $command = $this->buildSSHCommand($server, $opensslCommand, true);
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(10);
-            $process->run();
+            $result = Process::timeout(10)->run($command);
 
-            $output = trim($process->getOutput());
+            $output = trim($result->output());
 
-            if (str_contains($output, 'NOT_FOUND') || ! $process->isSuccessful()) {
+            if (str_contains($output, 'NOT_FOUND') || ! $result->successful()) {
                 return [
                     'found' => false,
                 ];
@@ -470,11 +458,9 @@ class SSLService
             $cronCheckCommand = "{$sudoPrefix}systemctl status certbot.timer 2>/dev/null || crontab -l | grep certbot || echo 'NOT_CONFIGURED'";
 
             $command = $this->buildSSHCommand($server, $cronCheckCommand, true);
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(10);
-            $process->run();
+            $result = Process::timeout(10)->run($command);
 
-            $output = $process->getOutput();
+            $output = $result->output();
 
             if (str_contains($output, 'active') || str_contains($output, 'certbot renew')) {
                 return [
@@ -488,11 +474,9 @@ class SSLService
             $setupCronCommand = "(crontab -l 2>/dev/null | grep -v certbot; echo '{$cronCommand}') | crontab -";
 
             $command = $this->buildSSHCommand($server, $setupCronCommand);
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(30);
-            $process->run();
+            $result = Process::timeout(30)->run($command);
 
-            if ($process->isSuccessful()) {
+            if ($result->successful()) {
                 Log::info('Auto-renewal cron job configured', ['server_id' => $server->id]);
 
                 return [
@@ -504,7 +488,7 @@ class SSLService
             return [
                 'success' => false,
                 'message' => 'Failed to configure auto-renewal',
-                'error' => $process->getErrorOutput(),
+                'error' => $result->errorOutput(),
             ];
 
         } catch (\Exception $e) {

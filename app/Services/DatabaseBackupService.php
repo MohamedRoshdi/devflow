@@ -12,7 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Process;
 
 class DatabaseBackupService
 {
@@ -139,12 +139,10 @@ class DatabaseBackupService
 
         // Execute via SSH
         $command = $this->buildSSHCommand($server, $dumpCommand);
-        $process = Process::fromShellCommandline($command);
-        $process->setTimeout(3600); // 1 hour timeout for large databases
-        $process->run();
+        $result = Process::timeout(3600)->run($command); // 1 hour timeout for large databases
 
-        if (! $process->isSuccessful()) {
-            throw new \RuntimeException('MySQL backup failed: '.$process->getErrorOutput());
+        if (! $result->successful()) {
+            throw new \RuntimeException('MySQL backup failed: '.$result->errorOutput());
         }
 
         // Download the file from remote server if not localhost
@@ -183,12 +181,10 @@ class DatabaseBackupService
 
         // Execute via SSH
         $command = $this->buildSSHCommand($server, $dumpCommand);
-        $process = Process::fromShellCommandline($command);
-        $process->setTimeout(3600); // 1 hour timeout
-        $process->run();
+        $result = Process::timeout(3600)->run($command); // 1 hour timeout
 
-        if (! $process->isSuccessful()) {
-            throw new \RuntimeException('PostgreSQL backup failed: '.$process->getErrorOutput());
+        if (! $result->successful()) {
+            throw new \RuntimeException('PostgreSQL backup failed: '.$result->errorOutput());
         }
 
         // Download the file from remote server if not localhost
@@ -226,12 +222,10 @@ class DatabaseBackupService
 
         // Execute via SSH
         $command = $this->buildSSHCommand($server, $copyCommand);
-        $process = Process::fromShellCommandline($command);
-        $process->setTimeout(600);
-        $process->run();
+        $result = Process::timeout(600)->run($command);
 
-        if (! $process->isSuccessful()) {
-            throw new \RuntimeException('SQLite backup failed: '.$process->getErrorOutput());
+        if (! $result->successful()) {
+            throw new \RuntimeException('SQLite backup failed: '.$result->errorOutput());
         }
 
         // Download the file from remote server if not localhost
@@ -671,12 +665,10 @@ class DatabaseBackupService
             );
         }
 
-        $process = Process::fromShellCommandline($command);
-        $process->setTimeout(3600);
-        $process->run();
+        $result = Process::timeout(3600)->run($command);
 
-        if (! $process->isSuccessful()) {
-            throw new \RuntimeException('File download failed: '.$process->getErrorOutput());
+        if (! $result->successful()) {
+            throw new \RuntimeException('File download failed: '.$result->errorOutput());
         }
     }
 
@@ -721,12 +713,10 @@ class DatabaseBackupService
             );
         }
 
-        $process = Process::fromShellCommandline($command);
-        $process->setTimeout(3600);
-        $process->run();
+        $result = Process::timeout(3600)->run($command);
 
-        if (! $process->isSuccessful()) {
-            throw new \RuntimeException('File upload failed: '.$process->getErrorOutput());
+        if (! $result->successful()) {
+            throw new \RuntimeException('File upload failed: '.$result->errorOutput());
         }
     }
 
@@ -736,12 +726,10 @@ class DatabaseBackupService
     protected function executeSSHCommand(Server $server, string $remoteCommand, int $timeout = 60): void
     {
         $command = $this->buildSSHCommand($server, $remoteCommand);
-        $process = Process::fromShellCommandline($command);
-        $process->setTimeout($timeout);
-        $process->run();
+        $result = Process::timeout($timeout)->run($command);
 
-        if (! $process->isSuccessful()) {
-            throw new \RuntimeException('SSH command failed: '.$process->getErrorOutput());
+        if (! $result->successful()) {
+            throw new \RuntimeException('SSH command failed: '.$result->errorOutput());
         }
     }
 
@@ -940,12 +928,10 @@ class DatabaseBackupService
     protected function executeSSHCommandOutput(Server $server, string $remoteCommand): string
     {
         $command = $this->buildSSHCommand($server, $remoteCommand);
-        $process = Process::fromShellCommandline($command);
-        $process->setTimeout(60);
-        $process->run();
+        $result = Process::timeout(60)->run($command);
 
-        if ($process->isSuccessful()) {
-            return trim($process->getOutput());
+        if ($result->successful()) {
+            return trim($result->output());
         }
 
         return '';

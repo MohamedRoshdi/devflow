@@ -7,7 +7,7 @@ namespace App\Services;
 use App\Models\ProvisioningLog;
 use App\Models\Server;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Process;
 
 class ServerProvisioningService
 {
@@ -592,14 +592,12 @@ class ServerProvisioningService
             );
         }
 
-        $process = Process::fromShellCommandline($command);
-        $process->setTimeout(600); // 10 minutes for long-running installs
-        $process->run();
+        $result = Process::timeout(600)->run($command); // 10 minutes for long-running installs
 
-        if (! $process->isSuccessful()) {
-            throw new \RuntimeException("SSH command failed: {$remoteCommand}\nError: {$process->getErrorOutput()}");
+        if (! $result->successful()) {
+            throw new \RuntimeException("SSH command failed: {$remoteCommand}\nError: {$result->errorOutput()}");
         }
 
-        return trim($process->getOutput());
+        return trim($result->output());
     }
 }

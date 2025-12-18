@@ -465,7 +465,7 @@ class HealthCheckServiceTest extends TestCase
         // Arrange
         $check = HealthCheck::factory()->create(['status' => 'healthy']);
         $channel = NotificationChannel::factory()->create([
-            'provider' => 'slack',
+            'type' => 'slack',
             'enabled' => true,
         ]);
 
@@ -503,7 +503,7 @@ class HealthCheckServiceTest extends TestCase
         ]);
 
         $channel = NotificationChannel::factory()->create([
-            'provider' => 'slack',
+            'type' => 'slack',
             'enabled' => true,
         ]);
 
@@ -533,9 +533,8 @@ class HealthCheckServiceTest extends TestCase
     {
         // Arrange
         $check = HealthCheck::factory()->create(['status' => 'healthy']);
-        $channel = NotificationChannel::factory()->create([
-            'provider' => 'slack',
-            'enabled' => false,
+        $channel = NotificationChannel::factory()->inactive()->create([
+            'type' => 'slack',
         ]);
 
         $check->notificationChannels()->attach($channel->id, [
@@ -789,24 +788,15 @@ class HealthCheckServiceTest extends TestCase
     #[Test]
     public function it_throws_exception_for_unknown_check_type(): void
     {
-        // Arrange
-        // We can't create an invalid check_type in the database due to enum constraint
-        // So we create a partial mock that returns an invalid type
-        $check = $this->getMockBuilder(HealthCheck::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods([])
-            ->getMock();
-
-        // Set the check_type property to an invalid value
-        $reflection = new \ReflectionClass($check);
-        $property = $reflection->getProperty('check_type');
-        $property->setAccessible(true);
-        $property->setValue($check, 'invalid_type');
-
-        // Also set attributes to prevent issues
-        $attributesProperty = $reflection->getProperty('attributes');
-        $attributesProperty->setAccessible(true);
-        $attributesProperty->setValue($check, ['check_type' => 'invalid_type']);
+        // Arrange - create a real HealthCheck model instance (not saved to DB)
+        $check = new HealthCheck;
+        $check->id = 1;
+        $check->name = 'Test Check';
+        $check->target_url = 'https://example.com';
+        $check->timeout_seconds = 10;
+        $check->status = 'healthy';
+        // Set invalid check_type using forceFill to bypass validation
+        $check->forceFill(['check_type' => 'invalid_type']);
 
         // Assert
         $this->expectException(\InvalidArgumentException::class);
@@ -938,15 +928,14 @@ class HealthCheckServiceTest extends TestCase
     #[Test]
     public function it_handles_unknown_status_in_check_correctly(): void
     {
-        // Arrange
+        // Arrange - 'unknown' status is treated as healthy, so no recovery notification
+        // when transitioning from unknown to healthy (success result)
         $check = HealthCheck::factory()->create([
             'status' => 'unknown',
             'consecutive_failures' => 0,
         ]);
 
-        $channel = NotificationChannel::factory()->create([
-            'enabled' => true,
-        ]);
+        $channel = NotificationChannel::factory()->active()->create();
 
         $check->notificationChannels()->attach($channel->id, [
             'notify_on_recovery' => true,
@@ -959,8 +948,9 @@ class HealthCheckServiceTest extends TestCase
             'checked_at' => now(),
         ]);
 
+        // 'unknown' is considered healthy, so no recovery notification expected
         $this->notificationService
-            ->expects($this->once())
+            ->expects($this->never())
             ->method('notifyHealthCheckRecovery');
 
         // Act

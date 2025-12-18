@@ -11,7 +11,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Process;
 
 class DomainService
 {
@@ -606,21 +606,21 @@ class DomainService
     protected function performDNSLookupWithDig(string $domain): array
     {
         try {
-            $process = new Process(['dig', '+short', $domain, 'A']);
-            $process->setTimeout(5);
-            $process->run();
+            $result = Process::command(['dig', '+short', $domain, 'A'])
+                ->timeout(5)
+                ->run();
 
-            if (!$process->isSuccessful()) {
+            if (!$result->successful()) {
                 Log::error('DomainService: DNS lookup with dig failed', [
                     'domain' => $domain,
                     'operation' => 'perform_dns_lookup_dig',
-                    'error' => $process->getErrorOutput(),
-                    'exit_code' => $process->getExitCode(),
+                    'error' => $result->errorOutput(),
+                    'exit_code' => $result->exitCode(),
                 ]);
                 return [];
             }
 
-            $output = trim($process->getOutput());
+            $output = trim($result->output());
             if (empty($output)) {
                 Log::warning('DomainService: DNS lookup returned empty result', [
                     'domain' => $domain,

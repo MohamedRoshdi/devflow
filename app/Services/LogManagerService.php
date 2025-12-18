@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Process;
 use ZipArchive;
 
 class LogManagerService
@@ -635,27 +636,23 @@ class LogManagerService
     {
         try {
             if ($this->isLocalhost($server)) {
-                $process = \Symfony\Component\Process\Process::fromShellCommandline($command);
-                $process->setTimeout(300); // 5 minutes
-                $process->run();
+                $result = Process::timeout(300)->run($command); // 5 minutes
 
                 return [
-                    'success' => $process->isSuccessful(),
-                    'output' => $process->getOutput(),
-                    'error' => $process->getErrorOutput(),
+                    'success' => $result->successful(),
+                    'output' => $result->output(),
+                    'error' => $result->errorOutput(),
                 ];
             }
 
             // For remote servers, use SSH
             $sshCommand = $this->buildSSHCommand($server, $command);
-            $process = \Symfony\Component\Process\Process::fromShellCommandline($sshCommand);
-            $process->setTimeout(300);
-            $process->run();
+            $result = Process::timeout(300)->run($sshCommand);
 
             return [
-                'success' => $process->isSuccessful(),
-                'output' => $process->getOutput(),
-                'error' => $process->getErrorOutput(),
+                'success' => $result->successful(),
+                'output' => $result->output(),
+                'error' => $result->errorOutput(),
             ];
         } catch (\Exception $e) {
             return [

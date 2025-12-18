@@ -6,7 +6,7 @@ namespace App\Services;
 
 use App\Models\Server;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Process;
 
 class DockerInstallationService
 {
@@ -24,14 +24,12 @@ class DockerInstallationService
             // Execute installation via SSH
             $command = $this->buildSSHCommand($server, $installScript);
 
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(600); // 10 minutes timeout
-            $process->run();
+            $result = Process::timeout(600)->run($command); // 10 minutes timeout
 
-            $output = $process->getOutput();
-            $error = $process->getErrorOutput();
+            $output = $result->output();
+            $error = $result->errorOutput();
 
-            if ($process->isSuccessful()) {
+            if ($result->successful()) {
                 // Verify installation
                 $verifyResult = $this->verifyDockerInstallation($server);
 
@@ -67,7 +65,7 @@ class DockerInstallationService
 
             Log::error('Docker installation failed', [
                 'server_id' => $server->id,
-                'exit_code' => $process->getExitCode(),
+                'exit_code' => $result->exitCode(),
                 'error' => $errorMessage,
                 'output' => substr($output, 0, 500), // First 500 chars
             ]);
@@ -101,12 +99,10 @@ class DockerInstallationService
         try {
             // Check Docker version
             $versionCommand = $this->buildSSHCommand($server, 'docker --version', true);
-            $process = Process::fromShellCommandline($versionCommand);
-            $process->setTimeout(30);
-            $process->run();
+            $result = Process::timeout(30)->run($versionCommand);
 
-            if ($process->isSuccessful()) {
-                $output = trim($process->getOutput());
+            if ($result->successful()) {
+                $output = trim($result->output());
 
                 // Extract version number (e.g., "Docker version 24.0.7, build...")
                 preg_match('/Docker version ([0-9.]+)/', $output, $matches);
@@ -401,12 +397,10 @@ BASH;
     {
         try {
             $command = $this->buildSSHCommand($server, 'docker compose version', true);
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(30);
-            $process->run();
+            $result = Process::timeout(30)->run($command);
 
-            if ($process->isSuccessful()) {
-                $output = trim($process->getOutput());
+            if ($result->successful()) {
+                $output = trim($result->output());
 
                 // Extract version
                 preg_match('/v?([0-9.]+)/', $output, $matches);
@@ -468,12 +462,10 @@ BASH;
     {
         try {
             $command = $this->buildSSHCommand($server, 'docker info --format "{{json .}}"', true);
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(30);
-            $process->run();
+            $result = Process::timeout(30)->run($command);
 
-            if ($process->isSuccessful()) {
-                $output = trim($process->getOutput());
+            if ($result->successful()) {
+                $output = trim($result->output());
                 $info = json_decode($output, true);
 
                 return [

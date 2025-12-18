@@ -18,7 +18,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $name
  * @property array<string, mixed> $config
  * @property bool $is_active
- * @property string $provider
  * @property string|null $webhook_url
  * @property string|null $webhook_secret
  * @property bool $enabled
@@ -41,7 +40,6 @@ class NotificationChannel extends Model
         'name',
         'config',
         'is_active',
-        'provider',
         'webhook_url',
         'webhook_secret',
         'enabled',
@@ -119,7 +117,7 @@ class NotificationChannel extends Model
 
     public function getTypeIconAttribute(): string
     {
-        return match ($this->type ?? $this->provider) {
+        return match ($this->type) {
             'email' => 'envelope',
             'slack' => 'chat-bubble-left-right',
             'discord' => 'chat-bubble-bottom-center-text',
@@ -129,7 +127,7 @@ class NotificationChannel extends Model
 
     public function getTypeLabelAttribute(): string
     {
-        return match ($this->type ?? $this->provider) {
+        return match ($this->type) {
             'email' => 'Email',
             'slack' => 'Slack',
             'discord' => 'Discord',
@@ -139,7 +137,7 @@ class NotificationChannel extends Model
 
     public function getConfigSummaryAttribute(): string
     {
-        $type = $this->type ?? $this->provider;
+        $type = $this->type;
 
         return match ($type) {
             'email' => $this->config['email'] ?? 'No email set',

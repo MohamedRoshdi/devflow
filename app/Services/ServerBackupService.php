@@ -8,7 +8,7 @@ use App\Models\Server;
 use App\Models\ServerBackup;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Process;
 
 class ServerBackupService
 {
@@ -52,12 +52,10 @@ class ServerBackupService
 
             // Execute backup command via SSH
             $command = $this->buildSSHCommand($server, $backupScript);
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(3600); // 1 hour timeout
-            $process->run();
+            $result = Process::timeout(3600)->run($command); // 1 hour timeout
 
-            if (! $process->isSuccessful()) {
-                throw new \RuntimeException('Backup failed: '.$process->getErrorOutput());
+            if (! $result->successful()) {
+                throw new \RuntimeException('Backup failed: '.$result->errorOutput());
             }
 
             // Download backup file from remote server
@@ -139,12 +137,10 @@ return $freshBackup;
             // Build rsync command
             $rsyncCommand = $this->buildRsyncCommand($server, $dirsToBackup, $backupPath);
 
-            $process = Process::fromShellCommandline($rsyncCommand);
-            $process->setTimeout(3600);
-            $process->run();
+            $result = Process::timeout(3600)->run($rsyncCommand);
 
-            if (! $process->isSuccessful()) {
-                throw new \RuntimeException('Incremental backup failed: '.$process->getErrorOutput());
+            if (! $result->successful()) {
+                throw new \RuntimeException('Incremental backup failed: '.$result->errorOutput());
             }
 
             // Calculate backup size
@@ -533,12 +529,10 @@ BASH;
             $scpCommand = 'sshpass -p '.escapeshellarg($server->ssh_password).' '.$scpCommand;
         }
 
-        $process = Process::fromShellCommandline($scpCommand);
-        $process->setTimeout(3600);
-        $process->run();
+        $result = Process::timeout(3600)->run($scpCommand);
 
-        if (! $process->isSuccessful()) {
-            throw new \RuntimeException('Failed to download backup file: '.$process->getErrorOutput());
+        if (! $result->successful()) {
+            throw new \RuntimeException('Failed to download backup file: '.$result->errorOutput());
         }
     }
 
@@ -550,11 +544,9 @@ BASH;
             $command .= ' 2>/dev/null';
         }
 
-        $process = Process::fromShellCommandline($command);
-        $process->setTimeout(60);
-        $process->run();
+        $result = Process::timeout(60)->run($command);
 
-        return trim($process->getOutput());
+        return trim($result->output());
     }
 
     private function cleanupRemoteFile(Server $server, string $filePath): void
@@ -572,10 +564,9 @@ BASH;
             return 0;
         }
 
-        $process = Process::fromShellCommandline('du -sb '.escapeshellarg($path).' | cut -f1');
-        $process->run();
+        $result = Process::run('du -sb '.escapeshellarg($path).' | cut -f1');
 
-        return (int) trim($process->getOutput());
+        return (int) trim($result->output());
     }
 
     private function deleteDirectory(string $path): void
@@ -723,17 +714,15 @@ BASH;
             'command' => $rsyncCommand,
         ]);
 
-        $process = Process::fromShellCommandline($rsyncCommand);
-        $process->setTimeout(3600);
-        $process->run();
+        $result = Process::timeout(3600)->run($rsyncCommand);
 
-        if (! $process->isSuccessful()) {
-            throw new \RuntimeException('Failed to restore incremental backup: '.$process->getErrorOutput());
+        if (! $result->successful()) {
+            throw new \RuntimeException('Failed to restore incremental backup: '.$result->errorOutput());
         }
 
         Log::info('Incremental backup restored successfully', [
             'backup_id' => $backup->id,
-            'output' => $process->getOutput(),
+            'output' => $result->output(),
         ]);
 
         // Restart services
@@ -827,11 +816,9 @@ INSTRUCTIONS;
             $scpCommand = 'sshpass -p '.escapeshellarg($server->ssh_password).' '.$scpCommand;
         }
 
-        $process = Process::fromShellCommandline($scpCommand);
-        $process->setTimeout(3600);
-        $process->run();
+        $result = Process::timeout(3600)->run($scpCommand);
 
-        if (! $process->isSuccessful()) {
+        if (! $result->successful()) {
             throw new \RuntimeException('Failed to upload backup file');
         }
     }

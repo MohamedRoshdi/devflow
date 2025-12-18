@@ -10,7 +10,7 @@ use App\Models\SSLCertificate;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Process;
 
 class SSLManagementService
 {
@@ -478,14 +478,12 @@ class SSLManagementService
             );
         }
 
-        $process = Process::fromShellCommandline($command);
-        $process->setTimeout(300); // 5 minutes
-        $process->run();
+        $result = Process::timeout(300)->run($command); // 5 minutes
 
-        if (! $process->isSuccessful()) {
-            throw new \RuntimeException("SSH command failed: {$remoteCommand}\nError: {$process->getErrorOutput()}");
+        if (! $result->successful()) {
+            throw new \RuntimeException("SSH command failed: {$remoteCommand}\nError: {$result->errorOutput()}");
         }
 
-        return trim($process->getOutput());
+        return trim($result->output());
     }
 }

@@ -6,7 +6,7 @@ namespace App\Services;
 
 use App\Models\Server;
 use App\Models\SSHKey;
-use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Process;
 
 class SSHKeyService
 {
@@ -54,11 +54,10 @@ class SSHKeyService
             };
 
             // Generate key pair
-            $process = new Process($command);
-            $process->run();
+            $result = Process::command($command)->run();
 
-            if (! $process->isSuccessful()) {
-                throw new \RuntimeException('Failed to generate SSH key: '.$process->getErrorOutput());
+            if (! $result->successful()) {
+                throw new \RuntimeException('Failed to generate SSH key: '.$result->errorOutput());
             }
 
             // Read generated keys
@@ -160,21 +159,20 @@ class SSHKeyService
             file_put_contents($tempFile, trim($publicKey));
 
             // Get fingerprint using ssh-keygen
-            $process = new Process([
+            $result = Process::command([
                 'ssh-keygen',
                 '-l',
                 '-E', 'md5',
                 '-f', $tempFile,
-            ]);
-            $process->run();
+            ])->run();
 
             @unlink($tempFile);
 
-            if (! $process->isSuccessful()) {
-                throw new \RuntimeException('Failed to calculate fingerprint: '.$process->getErrorOutput());
+            if (! $result->successful()) {
+                throw new \RuntimeException('Failed to calculate fingerprint: '.$result->errorOutput());
             }
 
-            $output = $process->getOutput();
+            $output = $result->output();
 
             // Extract fingerprint from output (format: "2048 MD5:xx:xx:xx... comment (RSA)")
             if (preg_match('/MD5:([a-f0-9:]+)/i', $output, $matches)) {
@@ -315,12 +313,10 @@ class SSHKeyService
 
         $sshCommand = $this->buildSSHCommand($server, $remoteCommand);
 
-        $process = Process::fromShellCommandline($sshCommand);
-        $process->setTimeout(30);
-        $process->run();
+        $result = Process::timeout(30)->run($sshCommand);
 
-        if (! $process->isSuccessful()) {
-            throw new \RuntimeException('Failed to deploy key to server: '.$process->getErrorOutput());
+        if (! $result->successful()) {
+            throw new \RuntimeException('Failed to deploy key to server: '.$result->errorOutput());
         }
 
         return [
@@ -377,12 +373,10 @@ class SSHKeyService
 
         $sshCommand = $this->buildSSHCommand($server, $remoteCommand);
 
-        $process = Process::fromShellCommandline($sshCommand);
-        $process->setTimeout(30);
-        $process->run();
+        $result = Process::timeout(30)->run($sshCommand);
 
-        if (! $process->isSuccessful()) {
-            throw new \RuntimeException('Failed to remove key from server: '.$process->getErrorOutput());
+        if (! $result->successful()) {
+            throw new \RuntimeException('Failed to remove key from server: '.$result->errorOutput());
         }
 
         return [

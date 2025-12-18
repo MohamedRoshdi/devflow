@@ -6,7 +6,7 @@ namespace App\Services;
 
 use App\Models\Server;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Process;
 
 class ServerConnectivityService
 {
@@ -27,14 +27,12 @@ class ServerConnectivityService
 
             // Test SSH connection with timeout
             $command = $this->buildSSHCommand($server, 'echo "CONNECTION_TEST"');
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(10);
 
             $startTime = microtime(true);
-            $process->run();
+            $result = Process::timeout(10)->run($command);
             $latency = (microtime(true) - $startTime) * 1000;
 
-            if ($process->isSuccessful() && str_contains($process->getOutput(), 'CONNECTION_TEST')) {
+            if ($result->successful() && str_contains($result->output(), 'CONNECTION_TEST')) {
                 return [
                     'reachable' => true,
                     'message' => 'SSH connection successful',
@@ -44,8 +42,8 @@ class ServerConnectivityService
 
             return [
                 'reachable' => false,
-                'message' => 'SSH connection failed: '.$process->getErrorOutput(),
-                'error' => $process->getErrorOutput(),
+                'message' => 'SSH connection failed: '.$result->errorOutput(),
+                'error' => $result->errorOutput(),
             ];
 
         } catch (\Exception $e) {
@@ -101,12 +99,10 @@ class ServerConnectivityService
             $info = [];
             foreach ($commands as $key => $cmd) {
                 $command = $this->buildSSHCommand($server, $cmd, true);
-                $process = Process::fromShellCommandline($command);
-                $process->setTimeout(10);
-                $process->run();
+                $result = Process::timeout(10)->run($command);
 
-                if ($process->isSuccessful()) {
-                    $output = trim($process->getOutput());
+                if ($result->successful()) {
+                    $output = trim($result->output());
                     // For numeric fields, extract only the number
                     if (in_array($key, ['cpu_cores', 'memory_gb', 'disk_gb'])) {
                         $output = $this->extractNumericValue($output);
@@ -213,10 +209,9 @@ class ServerConnectivityService
      */
     protected function executeLocal(string $command): string
     {
-        $process = Process::fromShellCommandline($command);
-        $process->run();
+        $result = Process::run($command);
 
-        return trim($process->getOutput());
+        return trim($result->output());
     }
 
     /**
@@ -238,9 +233,7 @@ class ServerConnectivityService
             }
 
             $command = $this->buildSSHCommand($server, "{$sudoPrefix}reboot");
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(30);
-            $process->run();
+            Process::timeout(30)->run($command);
 
             // Reboot command usually closes connection, so we check if it was initiated
             // Update server status to reflect it's rebooting
@@ -303,11 +296,9 @@ class ServerConnectivityService
             }
 
             $command = $this->buildSSHCommand($server, "{$sudoPrefix}systemctl restart {$service}");
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(60);
-            $process->run();
+            $result = Process::timeout(60)->run($command);
 
-            if ($process->isSuccessful()) {
+            if ($result->successful()) {
                 Log::info('ServerConnectivityService: Service restarted', [
                     'server_id' => $server->id,
                     'ip' => $server->ip_address,
@@ -323,7 +314,7 @@ class ServerConnectivityService
 
             return [
                 'success' => false,
-                'message' => 'Failed to restart service: '.$process->getErrorOutput(),
+                'message' => 'Failed to restart service: '.$result->errorOutput(),
             ];
 
         } catch (\Exception $e) {
@@ -349,14 +340,12 @@ class ServerConnectivityService
     {
         try {
             $command = $this->buildSSHCommand($server, 'uptime -p', true);
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(10);
-            $process->run();
+            $result = Process::timeout(10)->run($command);
 
-            if ($process->isSuccessful()) {
+            if ($result->successful()) {
                 return [
                     'success' => true,
-                    'uptime' => trim($process->getOutput()),
+                    'uptime' => trim($result->output()),
                 ];
             }
 
@@ -381,14 +370,12 @@ class ServerConnectivityService
     {
         try {
             $command = $this->buildSSHCommand($server, "df -h / | tail -1 | awk '{print $5}'", true);
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(10);
-            $process->run();
+            $result = Process::timeout(10)->run($command);
 
-            if ($process->isSuccessful()) {
+            if ($result->successful()) {
                 return [
                     'success' => true,
-                    'usage' => trim($process->getOutput()),
+                    'usage' => trim($result->output()),
                 ];
             }
 
@@ -413,14 +400,12 @@ class ServerConnectivityService
     {
         try {
             $command = $this->buildSSHCommand($server, "free | awk '/^Mem:/{printf \"%.1f\", \$3/\$2 * 100}'", true);
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(10);
-            $process->run();
+            $result = Process::timeout(10)->run($command);
 
-            if ($process->isSuccessful()) {
+            if ($result->successful()) {
                 return [
                     'success' => true,
-                    'usage' => trim($process->getOutput()).'%',
+                    'usage' => trim($result->output()).'%',
                 ];
             }
 
@@ -457,11 +442,9 @@ class ServerConnectivityService
 
             // Sync filesystem and drop caches
             $command = $this->buildSSHCommand($server, "{$sudoPrefix}sync && {$sudoPrefix}sh -c 'echo 3 > /proc/sys/vm/drop_caches'");
-            $process = Process::fromShellCommandline($command);
-            $process->setTimeout(30);
-            $process->run();
+            $result = Process::timeout(30)->run($command);
 
-            if ($process->isSuccessful()) {
+            if ($result->successful()) {
                 return [
                     'success' => true,
                     'message' => 'System cache cleared successfully.',
@@ -470,7 +453,7 @@ class ServerConnectivityService
 
             return [
                 'success' => false,
-                'message' => 'Failed to clear cache: '.$process->getErrorOutput(),
+                'message' => 'Failed to clear cache: '.$result->errorOutput(),
             ];
 
         } catch (\Exception $e) {

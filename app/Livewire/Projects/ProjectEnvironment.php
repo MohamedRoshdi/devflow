@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Livewire\Projects;
 
 use App\Models\Project;
+use Illuminate\Support\Facades\Process;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
-use Symfony\Component\Process\Process;
 
 class ProjectEnvironment extends Component
 {
@@ -112,11 +112,9 @@ class ProjectEnvironment extends Component
 
             $sshCommand = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 {$server->username}@{$server->ip_address} \"{$updateCommand}\"";
 
-            $process = Process::fromShellCommandline($sshCommand);
-            $process->setTimeout(30);
-            $process->run();
+            $result = Process::timeout(30)->run($sshCommand);
 
-            if ($process->isSuccessful() && str_contains($process->getOutput(), 'SUCCESS')) {
+            if ($result->successful() && str_contains($result->output(), 'SUCCESS')) {
                 // Reload server env variables to show updated values
                 $this->loadServerEnv();
             }
@@ -215,18 +213,16 @@ class ProjectEnvironment extends Component
             // Build SSH command to read the .env file
             $sshCommand = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 {$server->username}@{$server->ip_address} \"cat {$envPath} 2>/dev/null || echo '__ENV_NOT_FOUND__'\"";
 
-            $process = Process::fromShellCommandline($sshCommand);
-            $process->setTimeout(30);
-            $process->run();
+            $result = Process::timeout(30)->run($sshCommand);
 
-            if (! $process->isSuccessful()) {
-                $this->serverEnvError = 'Failed to connect to server: '.$process->getErrorOutput();
+            if (! $result->successful()) {
+                $this->serverEnvError = 'Failed to connect to server: '.$result->errorOutput();
                 $this->serverEnvLoading = false;
 
                 return;
             }
 
-            $output = trim($process->getOutput());
+            $output = trim($result->output());
 
             if ($output === '__ENV_NOT_FOUND__') {
                 $this->serverEnvError = 'No .env file found at '.$envPath;
@@ -349,12 +345,10 @@ class ProjectEnvironment extends Component
 
             $sshCommand = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 {$server->username}@{$server->ip_address} \"{$updateCommand}\"";
 
-            $process = Process::fromShellCommandline($sshCommand);
-            $process->setTimeout(30);
-            $process->run();
+            $result = Process::timeout(30)->run($sshCommand);
 
-            if (! $process->isSuccessful() || ! str_contains($process->getOutput(), 'SUCCESS')) {
-                session()->flash('error', 'Failed to save variable: '.$process->getErrorOutput());
+            if (! $result->successful() || ! str_contains($result->output(), 'SUCCESS')) {
+                session()->flash('error', 'Failed to save variable: '.$result->errorOutput());
 
                 return;
             }
@@ -385,12 +379,10 @@ class ProjectEnvironment extends Component
 
             $sshCommand = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 {$server->username}@{$server->ip_address} \"{$deleteCommand}\"";
 
-            $process = Process::fromShellCommandline($sshCommand);
-            $process->setTimeout(30);
-            $process->run();
+            $result = Process::timeout(30)->run($sshCommand);
 
-            if (! $process->isSuccessful() || ! str_contains($process->getOutput(), 'SUCCESS')) {
-                session()->flash('error', 'Failed to delete variable: '.$process->getErrorOutput());
+            if (! $result->successful() || ! str_contains($result->output(), 'SUCCESS')) {
+                session()->flash('error', 'Failed to delete variable: '.$result->errorOutput());
 
                 return;
             }

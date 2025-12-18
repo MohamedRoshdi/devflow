@@ -9,7 +9,7 @@ use App\Models\Project;
 use App\Models\Server;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Process;
 
 class FileBackupService
 {
@@ -496,12 +496,10 @@ class FileBackupService
     private function generateManifest(string $archivePath): array
     {
         try {
-            $process = Process::fromShellCommandline('tar -tzf '.escapeshellarg($archivePath).' | head -1000');
-            $process->setTimeout(60);
-            $process->run();
+            $result = Process::timeout(60)->run('tar -tzf '.escapeshellarg($archivePath).' | head -1000');
 
-            if ($process->isSuccessful()) {
-                $files = array_filter(explode("\n", $process->getOutput()));
+            if ($result->successful()) {
+                $files = array_filter(explode("\n", $result->output()));
 
                 return array_values($files);
             }
@@ -626,12 +624,10 @@ class FileBackupService
             );
         }
 
-        $process = Process::fromShellCommandline($command);
-        $process->setTimeout(3600); // 1 hour for large files
-        $process->run();
+        $result = Process::timeout(3600)->run($command); // 1 hour for large files
 
-        if (! $process->isSuccessful()) {
-            throw new \RuntimeException('File download failed: '.$process->getErrorOutput());
+        if (! $result->successful()) {
+            throw new \RuntimeException('File download failed: '.$result->errorOutput());
         }
     }
 
@@ -674,12 +670,10 @@ class FileBackupService
             );
         }
 
-        $process = Process::fromShellCommandline($command);
-        $process->setTimeout(3600);
-        $process->run();
+        $result = Process::timeout(3600)->run($command);
 
-        if (! $process->isSuccessful()) {
-            throw new \RuntimeException('File upload failed: '.$process->getErrorOutput());
+        if (! $result->successful()) {
+            throw new \RuntimeException('File upload failed: '.$result->errorOutput());
         }
     }
 
@@ -689,15 +683,13 @@ class FileBackupService
     private function executeSSHCommand(Server $server, string $remoteCommand, int $timeout = 60): string
     {
         $command = $this->buildSSHCommand($server, $remoteCommand);
-        $process = Process::fromShellCommandline($command);
-        $process->setTimeout($timeout);
-        $process->run();
+        $result = Process::timeout($timeout)->run($command);
 
-        if (! $process->isSuccessful()) {
-            throw new \RuntimeException('SSH command failed: '.$process->getErrorOutput());
+        if (! $result->successful()) {
+            throw new \RuntimeException('SSH command failed: '.$result->errorOutput());
         }
 
-        return $process->getOutput();
+        return $result->output();
     }
 
     /**

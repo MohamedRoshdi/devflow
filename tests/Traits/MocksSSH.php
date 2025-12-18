@@ -7,6 +7,40 @@ use Illuminate\Support\Facades\Process;
 trait MocksSSH
 {
     /**
+     * Mock all external process commands to prevent timeouts.
+     * Call this in setUp() for tests that may trigger SSH/external commands.
+     */
+    protected function mockAllProcesses(): void
+    {
+        Process::fake([
+            // SSH and SCP commands
+            '*ssh*' => Process::result(output: 'SSH command executed'),
+            '*scp*' => Process::result(output: 'File transferred'),
+
+            // Docker commands
+            '*docker*' => Process::result(output: '{"Status": "running"}'),
+            '*docker-compose*' => Process::result(output: 'Services started'),
+
+            // Git commands
+            '*git*' => Process::result(output: 'abc123 Commit message'),
+
+            // Database backup commands
+            '*mysqldump*' => Process::result(output: 'Backup created'),
+            '*pg_dump*' => Process::result(output: 'Backup created'),
+            '*mysql*' => Process::result(output: 'OK'),
+
+            // System commands
+            '*cat*' => Process::result(output: 'file content'),
+            '*grep*' => Process::result(output: 'match'),
+            '*tail*' => Process::result(output: 'log content'),
+            '*timeout*' => Process::result(output: 'command output'),
+
+            // Catch-all for any other commands
+            '*' => Process::result(output: 'Command executed'),
+        ]);
+    }
+
+    /**
      * Mock SSH command execution with successful response.
      */
     protected function mockSshSuccess(string $output = 'Success'): void
@@ -20,6 +54,7 @@ trait MocksSSH
                 output: 'File transferred successfully',
                 errorOutput: ''
             ),
+            '*' => Process::result(output: 'Command executed'),
         ]);
     }
 

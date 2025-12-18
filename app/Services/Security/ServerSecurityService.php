@@ -7,6 +7,7 @@ namespace App\Services\Security;
 use App\Models\SecurityEvent;
 use App\Models\Server;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Process;
 
 class ServerSecurityService
 {
@@ -113,26 +114,22 @@ class ServerSecurityService
             $isLocalhost = $this->isLocalhost($server->ip_address);
 
             if ($isLocalhost) {
-                $process = \Symfony\Component\Process\Process::fromShellCommandline($command);
-                $process->setTimeout(30);
-                $process->run();
+                $result = Process::timeout(30)->run($command);
 
                 return [
-                    'success' => $process->isSuccessful(),
-                    'output' => trim($process->getOutput()),
-                    'error' => $process->getErrorOutput(),
+                    'success' => $result->successful(),
+                    'output' => trim($result->output()),
+                    'error' => $result->errorOutput(),
                 ];
             }
 
             $sshCommand = $this->buildSSHCommand($server, $command);
-            $process = \Symfony\Component\Process\Process::fromShellCommandline($sshCommand);
-            $process->setTimeout(30);
-            $process->run();
+            $result = Process::timeout(30)->run($sshCommand);
 
             return [
-                'success' => $process->isSuccessful(),
-                'output' => trim($process->getOutput()),
-                'error' => $process->getErrorOutput(),
+                'success' => $result->successful(),
+                'output' => trim($result->output()),
+                'error' => $result->errorOutput(),
             ];
         } catch (\Exception $e) {
             return [
