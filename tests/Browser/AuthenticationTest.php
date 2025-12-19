@@ -24,9 +24,9 @@ class AuthenticationTest extends DuskTestCase
     /**
      * Test user credentials
      */
-    protected const TEST_EMAIL = 'admin@devflow.com';
+    protected const TEST_EMAIL = 'admin@devflow.test';
 
-    protected const TEST_PASSWORD = 'DevFlow@2025';
+    protected const TEST_PASSWORD = 'password';
 
     protected const INVALID_EMAIL = 'invalid@example.com';
 
@@ -275,25 +275,23 @@ class AuthenticationTest extends DuskTestCase
     public function logout_functionality_works_correctly(): void
     {
         $this->browse(function (Browser $browser) {
-            // First login
-            $browser->loginAs(User::where('email', self::TEST_EMAIL)->first())
-                ->visit('/dashboard')
-                ->assertAuthenticated()
-                ->screenshot('05-logged-in-before-logout')
-
-                    // Find and click logout button/link
-                ->pause(500);
-
-            // Logout via POST request (since logout is a POST route)
-            $user = User::where('email', self::TEST_EMAIL)->first();
-            $browser->visit('/dashboard')
-                ->assertAuthenticated();
-
-            // Manually logout using the logout route
-            $this->post('/logout');
-
+            // First login via UI
             $browser->visit('/login')
-                ->pause(500)
+                ->waitForText('Sign in to your account')
+                ->type('#email', self::TEST_EMAIL)
+                ->type('#password', self::TEST_PASSWORD)
+                ->press('Sign in')
+                ->waitForLocation('/dashboard', 10)
+                ->assertAuthenticated()
+                ->screenshot('05-logged-in-before-logout');
+
+            // Find and submit the logout form using JavaScript
+            $browser->script("document.querySelector('form[action*=\"logout\"]').submit();");
+
+            // Wait for redirect and verify guest state
+            $browser->pause(2000)
+                ->visit('/dashboard') // Try visiting protected route
+                ->waitForLocation('/login', 10) // Should redirect to login
                 ->assertGuest()
                 ->screenshot('05-after-logout');
         });

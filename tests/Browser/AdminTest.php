@@ -71,7 +71,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-users-list-page');
 
             // Check if users page loaded via page source
@@ -100,7 +99,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-user-create-button');
 
             // Check for add user button via page source
@@ -128,8 +126,7 @@ class AdminTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 // Try to find and click the Add User button
@@ -170,8 +167,7 @@ class AdminTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 // Try to find search input
@@ -203,7 +199,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-role-filter');
 
             // Check for role filter via page source
@@ -231,7 +226,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-users-table');
 
             // Check for table structure via page source
@@ -258,7 +252,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-edit-button');
 
             // Check for edit button via page source
@@ -286,7 +279,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-delete-button');
 
             // Check for delete button via page source
@@ -314,7 +306,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-user-roles');
 
             // Check for roles display via page source
@@ -342,7 +333,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-email-verification');
 
             // Check for verification status via page source
@@ -370,7 +360,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-projects-count');
 
             // Check for projects count via page source
@@ -397,7 +386,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-creation-date');
 
             // Check for creation date via page source
@@ -425,8 +413,7 @@ class AdminTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Check if form fields are defined in page source
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -453,8 +440,7 @@ class AdminTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Check for role checkboxes in page source
             $pageSource = $browser->driver->getPageSource();
@@ -481,7 +467,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-current-user');
 
             // Check for "You" indicator via page source
@@ -508,7 +493,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-pagination');
 
             // Check for pagination via page source
@@ -537,7 +521,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-user-avatar');
 
             // Check for avatar or initials via page source
@@ -564,8 +547,7 @@ class AdminTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Check for empty state handling via page source
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -593,7 +575,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-flash-messages');
 
             // Check for flash message handling via page source
@@ -621,7 +602,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/dashboard')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-dashboard');
 
             // Check if dashboard loaded via page source
@@ -649,7 +629,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-page');
 
             // Check if system admin page loaded via page source
@@ -676,8 +655,7 @@ class AdminTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Check for password confirmation field via page source
             $pageSource = $browser->driver->getPageSource();
@@ -704,7 +682,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-role-badges');
 
             // Check for role badge styling via page source
@@ -732,7 +709,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-clear-filters');
 
             // Check for clear filters functionality via page source
@@ -759,7 +735,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-self-delete-protection');
 
             // Check for self-deletion protection via page source
@@ -786,7 +761,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-delete-confirmation');
 
             // Check for delete confirmation via page source
@@ -813,7 +787,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-modal-close');
 
             // Check for modal close functionality via page source
@@ -841,7 +814,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-validation-messages');
 
             // Check for validation error handling via page source
@@ -868,7 +840,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/users')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-dark-mode');
 
             // Check for dark mode classes via page source
@@ -894,13 +865,11 @@ class AdminTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/dashboard')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Try to navigate to users page
             $browser->visit('/users')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('admin-navigation');
 
             $currentUrl = $browser->driver->getCurrentURL();
@@ -924,7 +893,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-loads');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -950,7 +918,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-overview-tab');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -976,7 +943,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-stats');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1001,7 +967,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-metrics');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1028,7 +993,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('recent-alerts');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1054,7 +1018,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-logs-tab');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1080,7 +1043,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('monitoring-logs-tab');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1106,7 +1068,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('optimization-logs-tab');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1132,7 +1093,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('run-backup-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1158,7 +1118,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('run-optimization-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1184,7 +1143,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-log-viewer');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1210,7 +1168,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-log-search');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1235,7 +1192,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-log-filters');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1262,7 +1218,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-log-date-filter');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1288,7 +1243,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-log-export');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1314,7 +1268,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-log-clear-filters');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1340,7 +1293,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-log-stats');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1366,7 +1318,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/settings/queue')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cache-management');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1392,7 +1343,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/settings/queue')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('queue-monitoring');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1418,7 +1368,6 @@ class AdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/dashboard')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-indicators');
 
             $pageSource = strtolower($browser->driver->getPageSource());

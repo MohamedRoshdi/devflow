@@ -14,6 +14,23 @@ abstract class DuskTestCase extends BaseTestCase
     use CreatesApplication;
 
     /**
+     * Clean up after each test to ensure fresh state
+     */
+    protected function tearDown(): void
+    {
+        try {
+            // Clear browser session between tests to prevent state leakage
+            $this->browse(function (\Laravel\Dusk\Browser $browser) {
+                $browser->driver->manage()->deleteAllCookies();
+            });
+        } catch (\Exception $e) {
+            // Ignore errors during cleanup
+        }
+
+        parent::tearDown();
+    }
+
+    /**
      * Prepare for Dusk test execution.
      */
     #[BeforeClass]
