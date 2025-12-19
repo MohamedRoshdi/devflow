@@ -115,8 +115,8 @@ class ResourceAlertManager extends Component
 
         $this->resource_type = $alert->resource_type;
         $this->threshold_type = $alert->threshold_type;
-        $this->threshold_value = $alert->threshold_value;
-        $this->cooldown_minutes = $alert->cooldown_minutes;
+        $this->threshold_value = (float) $alert->threshold_value;
+        $this->cooldown_minutes = (int) $alert->cooldown_minutes;
         $this->is_active = $alert->is_active;
 
         // Load notification channels

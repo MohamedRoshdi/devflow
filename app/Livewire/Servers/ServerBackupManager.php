@@ -156,7 +156,7 @@ class ServerBackupManager extends Component
         $rules = [
             'scheduleType' => 'required|in:full,incremental,snapshot',
             'scheduleFrequency' => 'required|in:daily,weekly,monthly',
-            'scheduleTime' => 'required|regex:/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/',
+            'scheduleTime' => ['required', 'regex:/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/'],
             'retentionDays' => 'required|integer|min:1|max:365',
             'scheduleStorageDriver' => 'required|in:local,s3',
         ];

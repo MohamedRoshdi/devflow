@@ -38,7 +38,7 @@ class ProjectTemplateManager extends Component
     #[Validate('nullable|string|max:1000')]
     public string $description = '';
 
-    #[Validate('required|in:laravel,react,vue,nodejs,php,python,docker,custom')]
+    #[Validate('required|in:laravel,react,vue,nextjs,nodejs,static,php,python,docker,custom')]
     public string $framework = 'laravel';
 
     #[Validate('nullable|string|max:50')]
@@ -162,13 +162,12 @@ class ProjectTemplateManager extends Component
         $this->validate();
 
         try {
-            ProjectTemplate::create([
+            $data = [
                 'name' => $this->name,
                 'slug' => $this->slug,
                 'description' => $this->description ?: null,
                 'framework' => $this->framework,
                 'icon' => $this->icon ?: null,
-                'color' => $this->color ?: null,
                 'is_system' => false,
                 'is_active' => $this->is_active,
                 'user_id' => (int) auth()->id(),
@@ -182,7 +181,14 @@ class ProjectTemplateManager extends Component
                 'docker_compose_template' => $this->docker_compose_template ?: null,
                 'dockerfile_template' => $this->dockerfile_template ?: null,
                 'health_check_path' => $this->health_check_path ?: null,
-            ]);
+            ];
+
+            // Only include color if it's not empty (column has NOT NULL constraint with default)
+            if ($this->color) {
+                $data['color'] = $this->color;
+            }
+
+            ProjectTemplate::create($data);
 
             session()->flash('message', 'Template created successfully!');
             $this->showCreateModal = false;
@@ -206,13 +212,12 @@ class ProjectTemplateManager extends Component
                 return;
             }
 
-            $template->update([
+            $updateData = [
                 'name' => $this->name,
                 'slug' => $this->slug,
                 'description' => $this->description ?: null,
                 'framework' => $this->framework,
                 'icon' => $this->icon ?: null,
-                'color' => $this->color ?: null,
                 'is_active' => $this->is_active,
                 'default_branch' => $this->default_branch,
                 'php_version' => $this->php_version ?: null,
@@ -224,7 +229,14 @@ class ProjectTemplateManager extends Component
                 'docker_compose_template' => $this->docker_compose_template ?: null,
                 'dockerfile_template' => $this->dockerfile_template ?: null,
                 'health_check_path' => $this->health_check_path ?: null,
-            ]);
+            ];
+
+            // Only update color if it's provided (column has NOT NULL constraint)
+            if ($this->color) {
+                $updateData['color'] = $this->color;
+            }
+
+            $template->update($updateData);
 
             session()->flash('message', 'Template updated successfully!');
             $this->showEditModal = false;
@@ -392,6 +404,8 @@ class ProjectTemplateManager extends Component
 
     public function render(): View
     {
-        return view('livewire.admin.project-template-manager');
+        return view('livewire.admin.project-template-manager', [
+            'templates' => $this->templates,
+        ]);
     }
 }

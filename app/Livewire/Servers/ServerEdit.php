@@ -33,8 +33,8 @@ class ServerEdit extends Component
         $this->ip_address = $this->server->ip_address;
         $this->port = $this->server->port ?? 22;
         $this->username = $this->server->username ?? 'root';
-        $this->latitude = $this->server->latitude;
-        $this->longitude = $this->server->longitude;
+        $this->latitude = $this->server->latitude !== null ? (float) $this->server->latitude : null;
+        $this->longitude = $this->server->longitude !== null ? (float) $this->server->longitude : null;
         $this->location_name = $this->server->location_name ?? '';
 
         // Debug: log the ssh credentials state

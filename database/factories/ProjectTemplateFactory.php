@@ -23,7 +23,8 @@ class ProjectTemplateFactory extends Factory
     public function definition(): array
     {
         $framework = fake()->randomElement(['laravel', 'react', 'vue', 'nextjs', 'nodejs', 'static']);
-        $name = ucfirst($framework) . ' Template';
+        $uniqueSuffix = fake()->unique()->numberBetween(10000, 99999);
+        $name = ucfirst($framework) . ' Template ' . $uniqueSuffix;
 
         return [
             'name' => $name,
@@ -95,9 +96,11 @@ class ProjectTemplateFactory extends Factory
      */
     public function laravel(): static
     {
+        $uniqueSuffix = fake()->unique()->numberBetween(10000, 99999);
+
         return $this->state(fn (array $attributes) => [
-            'name' => 'Laravel Template',
-            'slug' => 'laravel-template',
+            'name' => 'Laravel Template ' . $uniqueSuffix,
+            'slug' => 'laravel-template-' . $uniqueSuffix,
             'framework' => 'laravel',
             'php_version' => '8.4',
             'node_version' => '20',
@@ -124,9 +127,11 @@ class ProjectTemplateFactory extends Factory
      */
     public function react(): static
     {
+        $uniqueSuffix = fake()->unique()->numberBetween(10000, 99999);
+
         return $this->state(fn (array $attributes) => [
-            'name' => 'React Template',
-            'slug' => 'react-template',
+            'name' => 'React Template ' . $uniqueSuffix,
+            'slug' => 'react-template-' . $uniqueSuffix,
             'framework' => 'react',
             'php_version' => null,
             'node_version' => '20',
@@ -142,9 +147,11 @@ class ProjectTemplateFactory extends Factory
      */
     public function vue(): static
     {
+        $uniqueSuffix = fake()->unique()->numberBetween(10000, 99999);
+
         return $this->state(fn (array $attributes) => [
-            'name' => 'Vue Template',
-            'slug' => 'vue-template',
+            'name' => 'Vue Template ' . $uniqueSuffix,
+            'slug' => 'vue-template-' . $uniqueSuffix,
             'framework' => 'vue',
             'php_version' => null,
             'node_version' => '20',
@@ -160,9 +167,11 @@ class ProjectTemplateFactory extends Factory
      */
     public function nextjs(): static
     {
+        $uniqueSuffix = fake()->unique()->numberBetween(10000, 99999);
+
         return $this->state(fn (array $attributes) => [
-            'name' => 'Next.js Template',
-            'slug' => 'nextjs-template',
+            'name' => 'Next.js Template ' . $uniqueSuffix,
+            'slug' => 'nextjs-template-' . $uniqueSuffix,
             'framework' => 'nextjs',
             'php_version' => null,
             'node_version' => '20',

@@ -169,8 +169,8 @@ class ServerProvisioning extends Component
 
             $this->showProvisioningModal = false;
 
-            // Refresh server status after 2 seconds
-            $this->dispatch('refresh-server-status')->delay(2000);
+            // Refresh server status
+            $this->dispatch('refresh-server-status');
 
         } catch (\Exception $e) {
             $this->dispatch('notification', [
