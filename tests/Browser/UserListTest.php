@@ -725,9 +725,16 @@ class UserListTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/users')
                 ->pause(2000)
-                ->waitForText('(You)', 10)
-                ->assertSee('(You)')
                 ->screenshot('28-current-user-indicator');
+
+            // Check for "You" indicator via page source (the view shows just "You" without parentheses)
+            $pageSource = $browser->driver->getPageSource();
+            $hasCurrentUserIndicator =
+                preg_match('/>\s*You\s*</', $pageSource) ||
+                str_contains($pageSource, '(You)') ||
+                preg_match('/You\s*<\/span>/', $pageSource);
+
+            $this->assertTrue($hasCurrentUserIndicator, 'Current user indicator should be shown');
 
             $this->testResults['current_user_indicator'] = 'Current user indicator is shown';
         });
