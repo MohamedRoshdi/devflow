@@ -44,7 +44,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-dashboard-page-loads');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -72,7 +71,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('overall-health-status');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -99,7 +97,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-check-list');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -127,7 +124,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('service-status-indicators');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -155,7 +151,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('response-time-metrics');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -182,7 +177,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('uptime-status');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -210,7 +204,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('recent-incidents');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -238,7 +231,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-score-projects');
 
             $pageSource = $browser->driver->getPageSource();
@@ -265,7 +257,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('before-refresh');
 
             $pageSource = $browser->driver->getPageSource();
@@ -300,7 +291,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('filter-all');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -326,7 +316,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('before-healthy-filter');
 
             try {
@@ -360,7 +349,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('before-warning-filter');
 
             try {
@@ -394,7 +382,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('before-critical-filter');
 
             try {
@@ -428,7 +415,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-check-details');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -456,7 +442,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('success-failure-counts');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -484,7 +469,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('avg-response-time');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -511,7 +495,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('last-check-timestamps');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -539,7 +522,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('alert-indicators');
 
             $pageSource = $browser->driver->getPageSource();
@@ -569,7 +551,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('stats-overview');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -598,7 +579,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('flash-messages');
 
             try {
@@ -633,7 +613,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-health-cards');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -661,7 +640,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-health-section');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -689,7 +667,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cpu-usage');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -715,7 +692,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ram-usage');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -742,7 +718,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('disk-usage');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -769,7 +744,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('issues-list');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -824,7 +798,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('view-project-links');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -851,7 +824,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-view-links');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -878,7 +850,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('empty-state');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -905,7 +876,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-score-colors');
 
             $pageSource = $browser->driver->getPageSource();
@@ -935,7 +905,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-server-info');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -962,7 +931,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deployment-status');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -990,7 +958,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('filter-tab-counts');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1020,7 +987,6 @@ class HealthDashboardTest extends DuskTestCase
                 ->resize(375, 667)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('mobile-responsive');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1048,7 +1014,6 @@ class HealthDashboardTest extends DuskTestCase
                 ->resize(768, 1024)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tablet-responsive');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1075,7 +1040,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('gradient-headers');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1103,7 +1067,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-projects-count');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1129,7 +1092,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('navigation-integration');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1157,7 +1119,6 @@ class HealthDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('title-description');
 
             $pageSource = strtolower($browser->driver->getPageSource());

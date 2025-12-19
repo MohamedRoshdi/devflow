@@ -80,7 +80,6 @@ class ResourceAlertsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/alerts")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('resource-alerts-page');
 
             $pageSource = strtolower($browser->driver->getPageSource());

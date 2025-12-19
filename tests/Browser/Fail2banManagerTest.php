@@ -62,7 +62,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-page-load');
 
             // Check if Fail2ban manager page loaded via page source
@@ -90,7 +89,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-status-display');
 
             // Check for status information via page source
@@ -119,7 +117,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-start-button');
 
             // Check for start button via page source
@@ -146,7 +143,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-stop-button');
 
             // Check for stop button via page source
@@ -173,7 +169,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-jail-list');
 
             // Check for jails section via page source
@@ -200,7 +195,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-jail-selection');
 
             // Check for jail selection functionality via page source
@@ -227,7 +221,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-banned-ips-list');
 
             // Check for banned IPs section via page source
@@ -254,7 +247,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-unban-button');
 
             // Check for unban button via page source
@@ -281,7 +273,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-install-button');
 
             // Check for install button via page source
@@ -309,7 +300,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-flash-messages');
 
             // Check for flash message container via page source
@@ -337,7 +327,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-selected-jail-highlight');
 
             // Check for selected jail highlighting via page source
@@ -364,7 +353,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-loading-states');
 
             // Check for loading states via page source
@@ -392,7 +380,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-back-navigation');
 
             // Check for back navigation link via page source
@@ -419,7 +406,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-status-indicators');
 
             // Check for status indicators via page source
@@ -449,7 +435,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-refresh-button');
 
             // Check for refresh button via page source
@@ -476,7 +461,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-service-control');
 
             // Check for service control section via page source
@@ -504,7 +488,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-jail-count');
 
             // Check for jail count via page source
@@ -531,7 +514,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-banned-ip-count');
 
             // Check for banned IP count via page source
@@ -557,7 +539,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-page-title');
 
             // Check for page title via page source
@@ -583,7 +564,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-server-name');
 
             // Check for server name via page source
@@ -609,7 +589,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-empty-jails');
 
             // Check for empty state message via page source
@@ -635,7 +614,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-empty-banned-ips');
 
             // Check for empty state message via page source
@@ -661,7 +639,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-unban-confirmation');
 
             // Check for confirmation dialog via page source
@@ -687,7 +664,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-icons');
 
             // Check for SVG icons via page source
@@ -713,7 +689,6 @@ class Fail2banManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-responsive-design');
 
             // Check for responsive design classes via page source

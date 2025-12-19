@@ -78,7 +78,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('database-backup-manager-page');
 
             // Check if backup manager page loaded via page source
@@ -107,7 +106,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('before-backup-creation-modal');
 
             // Check for create backup button via page source
@@ -136,7 +134,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('file-backup-manager-page');
 
             // Check if file backup page loaded via page source
@@ -182,7 +179,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-schedules-list');
 
             // Check for backup schedules via page source
@@ -212,7 +208,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('before-schedule-modal');
 
             // Check for create schedule button via page source
@@ -262,7 +257,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-restoration-list');
 
             // Check for restore functionality via page source
@@ -290,7 +284,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-download-option');
 
             // Check for download functionality via page source
@@ -318,7 +311,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-deletion-option');
 
             // Check for delete functionality via page source
@@ -347,7 +339,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-verification-option');
 
             // Check for verification functionality via page source
@@ -376,7 +367,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-history');
 
             // Check for backup history via page source
@@ -406,7 +396,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-statistics');
 
             // Check for backup statistics via page source
@@ -435,7 +424,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('database-type-selection');
 
             // Check for database type selection via page source
@@ -464,7 +452,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-frequency-options');
 
             // Check for frequency options via page source
@@ -494,7 +481,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('retention-days-config');
 
             // Check for retention configuration via page source
@@ -523,7 +509,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-disk-selection');
 
             // Check for storage disk options via page source
@@ -552,7 +537,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('schedule-toggle');
 
             // Check for toggle functionality via page source
@@ -582,7 +566,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('file-backup-type-selection');
 
             // Check for backup type selection via page source
@@ -611,7 +594,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-checksum');
 
             // Check for checksum display via page source
@@ -640,7 +622,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-status-indicators');
 
             // Check for status indicators via page source
@@ -670,7 +651,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-file-size');
 
             // Check for file size display via page source
@@ -700,7 +680,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-duration');
 
             // Check for duration display via page source
@@ -730,7 +709,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('schedule-next-run');
 
             // Check for next run time via page source
@@ -783,7 +761,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('file-backup-manifest');
 
             // Check for manifest viewing option via page source
@@ -812,7 +789,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('exclude-patterns-config');
 
             // Check for exclude patterns option via page source
@@ -841,7 +817,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('incremental-backup-parent');
 
             // Check for parent backup selection via page source
@@ -889,7 +864,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-error-messages');
 
             // Check for error messages via page source
@@ -918,7 +892,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-filtering');
 
             // Check for filter options via page source
@@ -947,7 +920,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-type-navigation');
 
             // Check for navigation between backup types via page source
@@ -976,7 +948,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-pagination');
 
             // Check for pagination via page source
@@ -1005,7 +976,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-backup-manager-page');
 
             // Check if server backup manager loaded
@@ -1033,7 +1003,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-full-backup-creation');
 
             // Check for full backup creation option
@@ -1061,7 +1030,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-incremental-backup');
 
             // Check for incremental backup option
@@ -1089,7 +1057,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-snapshot-creation');
 
             // Check for snapshot creation
@@ -1116,7 +1083,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-encryption-settings');
 
             // Check for encryption settings
@@ -1144,7 +1110,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('s3-storage-config');
 
             // Check for S3 storage option
@@ -1172,7 +1137,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('gcs-storage-option');
 
             // Check for GCS storage option
@@ -1200,7 +1164,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('azure-storage-option');
 
             // Check for Azure storage option
@@ -1228,7 +1191,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-compression-settings');
 
             // Check for compression settings
@@ -1256,7 +1218,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-cleanup-operations');
 
             // Check for cleanup operations
@@ -1284,7 +1245,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-retention-policy');
 
             // Check for retention policy
@@ -1312,7 +1272,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('weekly-backup-schedule');
 
             // Check for weekly schedule option
@@ -1340,7 +1299,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('monthly-backup-schedule');
 
             // Check for monthly schedule option
@@ -1368,7 +1326,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('hourly-backup-schedule');
 
             // Check for hourly schedule option
@@ -1396,7 +1353,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-notification-settings');
 
             // Check for notification settings
@@ -1424,7 +1380,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-restore-preview');
 
             // Check for restore preview
@@ -1452,7 +1407,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-schedule-edit');
 
             // Check for schedule edit option
@@ -1480,7 +1434,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-progress-tracking');
 
             // Check for progress tracking
@@ -1508,7 +1461,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-log-viewing');
 
             // Check for log viewing
@@ -1536,7 +1488,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-comparison');
 
             // Check for comparison feature
@@ -1564,7 +1515,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-export');
 
             // Check for export functionality
@@ -1609,7 +1559,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('schedule-delete-confirmation');
 
             // Check for delete confirmation
@@ -1637,7 +1586,6 @@ class BackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-optimization');
 
             // Check for optimization suggestions

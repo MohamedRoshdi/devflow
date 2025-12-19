@@ -46,7 +46,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('kubernetes-cluster-list-page');
 
             // Check if Kubernetes cluster page loaded via page source
@@ -75,7 +74,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('add-cluster-button');
 
             // Check for add cluster button via page source
@@ -104,7 +102,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-table-columns');
 
             // Check for table columns via page source
@@ -133,7 +130,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-actions');
 
             // Check for cluster action buttons via page source
@@ -161,8 +157,7 @@ class KubernetesTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Try to click Add Cluster button
             try {
@@ -198,7 +193,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-form-fields');
 
             // Check for form fields via page source
@@ -227,7 +221,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-namespace-field');
 
             // Check for namespace field via page source
@@ -254,7 +247,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deploy-to-kubernetes-modal');
 
             // Check for deployment-related content via page source
@@ -283,7 +275,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deployment-resource-limits');
 
             // Check for resource configuration via page source
@@ -312,7 +303,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('replica-count-config');
 
             // Check for replica configuration via page source
@@ -340,7 +330,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('autoscaling-config');
 
             // Check for auto-scaling configuration via page source
@@ -369,7 +358,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('service-type-selection');
 
             // Check for service type selection via page source
@@ -398,7 +386,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-status-indicators');
 
             // Check for status indicators via page source
@@ -427,7 +414,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('default-cluster-indicator');
 
             // Check for default cluster indicator via page source
@@ -455,7 +441,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-test-button');
 
             // Check for test connection button via page source
@@ -482,7 +467,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('kubeconfig-input-field');
 
             // Check for kubeconfig field via page source
@@ -510,7 +494,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-project-count');
 
             // Check for project count via page source
@@ -537,7 +520,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-delete-confirmation');
 
             // Check for delete functionality with confirmation via page source
@@ -564,7 +546,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-edit-functionality');
 
             // Check for edit functionality via page source
@@ -592,7 +573,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('empty-state-clusters');
 
             // Check for empty state message via page source
@@ -621,7 +601,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-endpoint-validation');
 
             // Check for endpoint field with URL validation via page source
@@ -648,7 +627,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deployment-cpu-config');
 
             // Check for CPU configuration fields via page source
@@ -675,7 +653,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deployment-memory-config');
 
             // Check for memory configuration fields via page source
@@ -702,7 +679,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deployment-project-selection');
 
             // Check for project selection via page source
@@ -729,7 +705,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-namespace-management');
 
             // Check for namespace management via page source
@@ -756,7 +731,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('kubernetes-icon-display');
 
             // Check for Kubernetes visual elements via page source
@@ -784,7 +758,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-list-pagination');
 
             // Check for pagination via page source
@@ -813,7 +786,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-modal-cancel');
 
             // Check for cancel button in modals via page source
@@ -841,7 +813,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('kubernetes-dark-mode-support');
 
             // Check for dark mode classes via page source
@@ -870,7 +841,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('kubernetes-responsive-design');
 
             // Check for responsive classes via page source
@@ -899,7 +869,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('pod-listing');
 
             // Check for pod listing via page source
@@ -926,7 +895,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('pod-status-indicators');
 
             // Check for pod status indicators via page source
@@ -955,7 +923,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('pod-logs-viewing');
 
             // Check for pod logs functionality via page source
@@ -982,7 +949,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('configmap-management');
 
             // Check for ConfigMap management via page source
@@ -1010,7 +976,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('secret-management');
 
             // Check for Secret management via page source
@@ -1038,7 +1003,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ingress-configuration');
 
             // Check for Ingress configuration via page source
@@ -1066,7 +1030,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-resource-monitoring');
 
             // Check for resource monitoring via page source
@@ -1093,7 +1056,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('kubectl-command-execution');
 
             // Check for kubectl execution via page source
@@ -1121,7 +1083,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('helm-chart-management');
 
             // Check for Helm chart management via page source
@@ -1149,7 +1110,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-scaling-controls');
 
             // Check for scaling controls via page source
@@ -1177,7 +1137,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-health-monitoring');
 
             // Check for health monitoring via page source
@@ -1204,7 +1163,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deployment-rollout-history');
 
             // Check for rollout history via page source
@@ -1232,7 +1190,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deployment-rollback');
 
             // Check for rollback functionality via page source
@@ -1260,7 +1217,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-node-info');
 
             // Check for node information via page source
@@ -1287,7 +1243,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('persistent-volume-management');
 
             // Check for PV management via page source
@@ -1315,7 +1270,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('statefulset-management');
 
             // Check for StatefulSet management via page source
@@ -1343,7 +1297,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('daemonset-management');
 
             // Check for DaemonSet management via page source
@@ -1371,7 +1324,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('job-cronjob-management');
 
             // Check for Job/CronJob management via page source
@@ -1399,7 +1351,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('hpa-configuration');
 
             // Check for HPA configuration via page source
@@ -1427,7 +1378,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('network-policy-management');
 
             // Check for Network Policy management via page source
@@ -1454,7 +1404,6 @@ class KubernetesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('service-mesh-integration');
 
             // Check for service mesh integration via page source

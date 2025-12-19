@@ -110,7 +110,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-dashboard-access');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -135,7 +134,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-cpu-chart');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -160,7 +158,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-memory-display');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -185,7 +182,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-disk-stats');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -210,7 +206,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-network-traffic');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -236,7 +231,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-process-list');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -261,7 +255,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-real-time');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -287,7 +280,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-historical');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -312,7 +304,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-time-range');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -339,7 +330,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-export');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -365,7 +355,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-alerts');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -390,7 +379,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-load-average');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -415,7 +403,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-uptime');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -440,7 +427,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-comparison');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -465,7 +451,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-custom-config');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -490,7 +475,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-cpu-percentage');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -515,7 +499,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-memory-units');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -540,7 +523,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-disk-remaining');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -566,7 +548,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-network-upload');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -591,7 +572,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-network-download');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -616,7 +596,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-interactive-graphs');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -641,7 +620,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-refresh');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -665,7 +643,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-current-values');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -690,7 +667,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-peak-values');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -715,7 +691,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-average-values');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -740,7 +715,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-date-filter');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -765,7 +739,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-24h-view');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -790,7 +763,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-7d-view');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -816,7 +788,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-30d-view');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -842,7 +813,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-cpu-temp');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -867,7 +837,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-swap');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -892,7 +861,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-io');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -917,7 +885,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-connections');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -942,7 +909,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-health-score');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -967,7 +933,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-alert-config');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -992,7 +957,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-notifications');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1017,7 +981,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-clear-history');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1042,7 +1005,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-response-time');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1067,7 +1029,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-responsive');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1093,7 +1054,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-dark-mode');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1117,7 +1077,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-print-pdf');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1142,7 +1101,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-trends');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1168,7 +1126,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-comparison-period');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1196,7 +1153,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-load-time');
 
             $loadTime = microtime(true) - $startTime;
@@ -1219,7 +1175,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-data-accuracy');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1246,7 +1201,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-cpu-cores');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1271,7 +1225,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-total-memory');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1296,7 +1249,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-partitions');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1321,7 +1273,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-network-interfaces');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1346,7 +1297,6 @@ class ServerMetricsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-refresh-interval');
 
             $pageSource = strtolower($browser->driver->getPageSource());

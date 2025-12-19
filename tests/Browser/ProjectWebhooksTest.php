@@ -72,7 +72,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}/webhooks")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-webhook-page');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -92,7 +91,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-webhook-link');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -112,7 +110,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-toggle-visible');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -133,7 +130,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-url-display');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -154,7 +150,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-webhook-url');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -174,7 +169,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('gitlab-webhook-url');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -194,7 +188,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('bitbucket-webhook-info');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -215,7 +208,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-secret-display');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -235,7 +227,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-secret-toggle');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -255,7 +246,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('regenerate-secret-button');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -275,7 +265,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('regenerate-secret-confirmation');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -295,7 +284,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('copy-webhook-url-button');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -315,7 +303,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('recent-deliveries-section');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -335,7 +322,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('delivery-status-indicators');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -357,7 +343,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('event-type-selection');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -379,7 +364,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('url-validation');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -399,7 +383,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('delivery-history-table');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -421,7 +404,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('retry-functionality');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -441,7 +423,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('payload-inspection');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -463,7 +444,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('manual-trigger');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -485,7 +465,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('delivery-timestamp');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -507,7 +486,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('custom-headers');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -529,7 +507,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-verification');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -551,7 +528,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('response-status-code');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -573,7 +549,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('delivery-count');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -595,7 +570,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('success-rate');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -617,7 +591,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('configuration-instructions');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -639,7 +612,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-warning');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -661,7 +633,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('event-types-documentation');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -683,7 +654,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('delivery-detail-view');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -705,7 +675,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('request-headers');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -726,7 +695,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('response-body');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -748,7 +716,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('signature-verification');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -770,7 +737,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('delivery-pagination');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -792,7 +758,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('provider-icons');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -814,7 +779,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deployment-link');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -835,7 +799,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('error-messages');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -857,7 +820,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('filter-by-status');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -879,7 +841,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('delivery-duration');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -901,7 +862,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('branch-filter');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -923,7 +883,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('statistics-summary');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -945,7 +904,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('activity-timeline');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -967,7 +925,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('help-documentation');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1003,7 +960,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$emptyProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('empty-state');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1025,7 +981,6 @@ class ProjectWebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('auto-retry-settings');
 
             $pageSource = strtolower($browser->driver->getPageSource());

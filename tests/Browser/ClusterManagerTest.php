@@ -46,7 +46,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-manager-page-loads');
 
             // Check if page contains Kubernetes content via page source
@@ -73,7 +72,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-list-displayed');
 
             // Check for table structure via page source
@@ -100,7 +98,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('add-cluster-button-visible');
 
             // Check for Add Cluster button via page source
@@ -126,8 +123,7 @@ class ClusterManagerTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Try to click Add Cluster button
             try {
@@ -169,7 +165,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-name-field');
 
             // Check for name field via page source
@@ -197,7 +192,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('kubeconfig-field');
 
             // Check for kubeconfig field via page source
@@ -224,7 +218,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-form-submit');
 
             // Check for form submit functionality via page source
@@ -252,7 +245,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-status-indicators');
 
             // Check for status indicators via page source
@@ -281,7 +273,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('namespace-list-visible');
 
             // Check for namespace column or field via page source
@@ -308,7 +299,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('pod-list-visible');
 
             // Check for pod-related content via page source
@@ -337,7 +327,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('delete-cluster-button');
 
             // Check for delete button via page source
@@ -364,7 +353,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('refresh-status-button');
 
             // Check for refresh or test connection functionality via page source
@@ -392,7 +380,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cluster-details-expandable');
 
             // Check for expandable content or action buttons via page source
@@ -421,7 +408,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('connection-status-shown');
 
             // Check for connection status via page source
@@ -449,7 +435,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('flash-messages-display');
 
             // Check for notification/flash message structure via page source
@@ -478,7 +463,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('endpoint-field-present');
 
             // Check for endpoint field via page source
@@ -506,7 +490,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('table-columns-labeled');
 
             // Check for table column headers via page source
@@ -535,7 +518,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('action-buttons-present');
 
             // Check for action buttons via page source
@@ -564,7 +546,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deploy-modal-project-selection');
 
             // Check for deployment project selection via page source
@@ -592,7 +573,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deploy-modal-replicas');
 
             // Check for replicas configuration via page source
@@ -619,7 +599,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deploy-modal-autoscaling');
 
             // Check for autoscaling option via page source
@@ -647,7 +626,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deploy-modal-cpu-config');
 
             // Check for CPU configuration via page source
@@ -674,7 +652,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deploy-modal-memory-config');
 
             // Check for memory configuration via page source
@@ -701,7 +678,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deploy-modal-service-type');
 
             // Check for service type selection via page source
@@ -730,7 +706,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('empty-state-message');
 
             // Check for empty state message via page source
@@ -759,7 +734,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('default-cluster-indicator');
 
             // Check for default cluster indicator via page source
@@ -787,7 +761,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-count-displayed');
 
             // Check for project count via page source
@@ -814,7 +787,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cancel-button-modals');
 
             // Check for cancel button via page source
@@ -841,7 +813,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('form-validation-errors');
 
             // Check for error handling via page source
@@ -870,7 +841,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('dark-mode-support');
 
             // Check for dark mode classes via page source
@@ -899,7 +869,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('responsive-design-classes');
 
             // Check for responsive classes via page source
@@ -928,7 +897,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('page-title-display');
 
             // Check for page title via page source
@@ -955,7 +923,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('kubernetes-icon-present');
 
             // Check for Kubernetes icon via page source
@@ -983,7 +950,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('namespace-optional-indicator');
 
             // Check for namespace optional indicator via page source
@@ -1010,7 +976,6 @@ class ClusterManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/kubernetes')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('pagination-visible');
 
             // Check for pagination via page source

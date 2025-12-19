@@ -80,7 +80,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-list-page');
 
             // Check if servers page loaded via page source
@@ -108,7 +107,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-create-button');
 
             // Check for add server button via page source
@@ -137,7 +135,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/create')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-create-page');
 
             // Check if create page loaded via page source
@@ -165,7 +162,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/create')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-create-form-fields');
 
             // Check if form fields are defined in page source
@@ -193,7 +189,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-show-page');
 
             // Check if server details page loaded via page source
@@ -221,7 +216,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/edit")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-edit-page');
 
             // Check if edit page loaded via page source
@@ -249,7 +243,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-metrics-dashboard');
 
             // Check if metrics page loaded via page source
@@ -278,7 +271,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-tags-manager');
 
             // Check if tags page loaded via page source
@@ -306,7 +298,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-status-display');
 
             // Check for status display via page source
@@ -334,7 +325,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-search');
 
             // Check for search input via page source
@@ -362,7 +352,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-status-filter');
 
             // Check for status filter via page source
@@ -389,7 +378,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-ping-action');
 
             // Check for ping action via page source
@@ -417,7 +405,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-reboot-action');
 
             // Check for reboot action via page source
@@ -445,7 +432,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-docker-status');
 
             // Check for Docker status via page source
@@ -472,7 +458,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/docker")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-docker-management');
 
             // Check if Docker management page loaded
@@ -499,7 +484,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-hardware-info');
 
             // Check for hardware info via page source
@@ -528,7 +512,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-projects-list');
 
             // Check for projects list via page source
@@ -555,7 +538,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/create')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-ssh-config');
 
             // Check for SSH configuration fields
@@ -583,7 +565,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-delete-action');
 
             // Check for delete action via page source
@@ -611,7 +592,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-ssl-manager');
 
             // Check if SSL manager page loaded
@@ -638,7 +618,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/alerts")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-alerts-page');
 
             // Check if alerts page loaded
@@ -666,7 +645,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-backups-page');
 
             // Check if backups page loaded
@@ -694,7 +672,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/security")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-security-dashboard');
 
             // Check if security dashboard loaded
@@ -722,7 +699,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-tag-assignment');
 
             // Check for tag functionality via page source
@@ -749,7 +725,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/create')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-connection-test');
 
             // Check for connection test functionality
@@ -776,7 +751,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-metrics-cpu');
 
             // Check for CPU metrics
@@ -804,7 +778,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-metrics-memory');
 
             // Check for memory metrics
@@ -832,7 +805,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/metrics")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-metrics-disk');
 
             // Check for disk metrics
@@ -860,7 +832,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-bulk-actions');
 
             // Check for bulk actions
@@ -888,7 +859,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/create')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-location-info');
 
             // Check for location fields
@@ -916,7 +886,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/create')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-validation');
 
             // Check for validation error handling
@@ -943,7 +912,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-last-ping');
 
             // Check for last ping time
@@ -971,7 +939,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-service-restart');
 
             // Check for service restart functionality
@@ -998,7 +965,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-cache-clear');
 
             // Check for cache clear functionality
@@ -1025,7 +991,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-dark-mode');
 
             // Check for dark mode classes
@@ -1052,7 +1017,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-pagination');
 
             // Check for pagination
@@ -1080,7 +1044,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-os-info');
 
             // Check for OS information
@@ -1108,7 +1071,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-ip-address');
 
             // Check for IP address display
@@ -1134,13 +1096,11 @@ class ServersTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/dashboard')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Try to navigate to servers page
             $browser->visit('/servers')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-navigation');
 
             $currentUrl = $browser->driver->getCurrentURL();
@@ -1164,7 +1124,6 @@ class ServersTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-quick-add');
 
             // Check for quick add current server functionality

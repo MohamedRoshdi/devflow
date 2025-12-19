@@ -44,7 +44,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('api-documentation-page');
 
             // Check if API documentation page loaded via page source
@@ -74,7 +73,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('api-docs-authentication-section');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -102,7 +100,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('api-endpoints-list');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -131,7 +128,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('projects-api-endpoints');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -157,7 +153,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('servers-api-endpoints');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -183,7 +178,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deployments-api-endpoints');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -209,7 +203,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('api-request-examples');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -237,7 +230,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('api-response-examples');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -265,7 +257,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('http-methods');
 
             $pageSource = strtoupper($browser->driver->getPageSource());
@@ -294,7 +285,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('api-versioning');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -321,7 +311,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('authentication-requirements');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -349,7 +338,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('rate-limiting-info');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -377,7 +365,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('error-codes');
 
             $pageSource = $browser->driver->getPageSource();
@@ -408,7 +395,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-documentation');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -435,7 +421,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('api-sections-navigation-initial');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -471,7 +456,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('api-token-creation-link');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -499,7 +483,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('api-base-url');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -526,7 +509,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('request-headers');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -554,7 +536,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('response-formats');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -582,7 +563,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('pagination-docs');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -610,7 +590,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('filtering-sorting-params');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -638,7 +617,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('code-snippets');
 
             $pageSource = $browser->driver->getPageSource();
@@ -667,7 +645,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('api-changelog');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -695,7 +672,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('docs-search');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -722,7 +698,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('api-request-builder');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -750,7 +725,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('api-usage-stats');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -778,7 +752,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('api-token-mgmt-link-before');
 
             // Look for API token management link
@@ -814,7 +787,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('api-versions');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -841,7 +813,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-event-types');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -869,7 +840,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('api-security-practices');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -897,7 +867,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('api-token-scopes');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -925,7 +894,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('endpoint-parameters');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -953,7 +921,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('validation-rules');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -982,7 +949,6 @@ class ApiDocumentationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/docs/api')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('quick-start-guide');
 
             $pageSource = strtolower($browser->driver->getPageSource());

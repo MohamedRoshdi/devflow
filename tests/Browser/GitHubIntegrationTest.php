@@ -144,7 +144,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/integrations/github')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-integrations-page');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -170,7 +169,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/integrations/github')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-connection-status');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -198,7 +196,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/integrations/github')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-connect-button');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -255,7 +252,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/integrations/github/repositories')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-repositories-list');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -280,7 +276,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/integrations/github/repositories')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-repository-details');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -320,8 +315,7 @@ class GitHubIntegrationTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/integrations/github/repositories')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Try to find and use search input
             $searchInput = $browser->element('input[type="search"], input[placeholder*="search" i], input[name*="search" i]');
@@ -359,7 +353,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/integrations/github/repositories')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-import-repository');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -384,7 +377,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug)
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-webhook-config');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -409,7 +401,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/settings')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-webhook-secret');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -446,7 +437,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-webhook-deliveries');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -472,7 +462,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug)
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-branch-list');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -497,7 +486,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/settings')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-switch-branch');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -534,7 +522,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug)
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-commit-history');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -569,7 +556,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/deployments/'.$deployment->id)
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-commit-details');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -594,7 +580,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/integrations/github')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-pull-request-integration');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -621,7 +606,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/integrations/github')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-actions-status');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -657,7 +641,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/deployments/'.$deployment->id)
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-deployment-status');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -682,7 +665,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/integrations/github/repositories')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-repository-sync');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -707,7 +689,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/integrations/github')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-disconnect-confirmation');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -732,7 +713,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/integrations/github')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-connection-scopes');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -758,7 +738,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/integrations/github')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-user-profile');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -784,7 +763,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/integrations/github/repositories')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-language-badges');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -809,7 +787,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/integrations/github/repositories')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-stars-forks');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -835,7 +812,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/settings')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-auto-deploy-toggle');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -861,7 +837,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/settings')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-webhook-events');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -887,7 +862,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/integrations/github/repositories')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-last-sync-time');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -913,7 +887,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/integrations/github/repositories')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-external-link');
 
             $pageSource = $browser->driver->getPageSource();
@@ -942,7 +915,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/integrations/github')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-token-expiration-warning');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -981,7 +953,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/integrations/github')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-multiple-connections');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1016,7 +987,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/integrations/github/repositories')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-private-repo-indicator');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1049,7 +1019,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/integrations/github/repositories')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-repository-pagination');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1083,7 +1052,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-webhook-retry');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1108,7 +1076,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/integrations/github')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-statistics-dashboard');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1134,7 +1101,6 @@ class GitHubIntegrationTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/integrations/github/repositories')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-default-branch-badge');
 
             $pageSource = strtolower($browser->driver->getPageSource());

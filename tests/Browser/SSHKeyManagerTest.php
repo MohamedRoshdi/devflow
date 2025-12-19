@@ -46,7 +46,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-key-page-loads');
 
             // Check if page loaded via page source
@@ -85,7 +84,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-key-list-displayed');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -116,7 +114,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('generate-key-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -143,7 +140,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('import-key-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -170,7 +166,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('before-generate-modal-open');
 
             try {
@@ -212,7 +207,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('key-name-field');
 
             $pageSource = $browser->driver->getPageSource();
@@ -239,7 +233,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('key-type-selector');
 
             $pageSource = $browser->driver->getPageSource();
@@ -266,7 +259,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ed25519-option');
 
             $pageSource = $browser->driver->getPageSource();
@@ -292,7 +284,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('rsa-option');
 
             $pageSource = $browser->driver->getPageSource();
@@ -318,7 +309,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ecdsa-option');
 
             $pageSource = $browser->driver->getPageSource();
@@ -344,7 +334,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('before-import-modal-open');
 
             try {
@@ -386,7 +375,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('public-key-textarea');
 
             $pageSource = $browser->driver->getPageSource();
@@ -413,7 +401,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('private-key-textarea');
 
             $pageSource = $browser->driver->getPageSource();
@@ -450,7 +437,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('copy-public-key-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -489,7 +475,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('download-private-key-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -528,7 +513,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('delete-key-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -567,7 +551,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('delete-confirmation');
 
             $pageSource = $browser->driver->getPageSource();
@@ -606,7 +589,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('key-fingerprint');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -645,7 +627,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('creation-date');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -678,7 +659,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('empty-state');
 
             $pageSource = $browser->driver->getPageSource();
@@ -715,7 +695,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('view-public-key-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -754,7 +733,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deploy-to-server-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -793,7 +771,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('key-type-badge');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -843,7 +820,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deployed-servers');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -874,7 +850,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-selector');
 
             $pageSource = $browser->driver->getPageSource();
@@ -901,7 +876,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('view-key-modal');
 
             $pageSource = $browser->driver->getPageSource();
@@ -928,7 +902,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('hero-section');
 
             $pageSource = $browser->driver->getPageSource();
@@ -956,7 +929,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('flash-messages');
 
             $pageSource = $browser->driver->getPageSource();
@@ -982,7 +954,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('error-flash-messages');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1008,7 +979,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('generated-key-success');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1035,7 +1005,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('dark-mode-classes');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1083,7 +1052,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('remove-from-server');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1114,7 +1082,6 @@ class SSHKeyManagerTest extends DuskTestCase
                 ->resize(375, 667)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('mobile-responsive');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1141,7 +1108,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('generated-fingerprint');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1167,7 +1133,6 @@ class SSHKeyManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('modal-close-button');
 
             $pageSource = $browser->driver->getPageSource();

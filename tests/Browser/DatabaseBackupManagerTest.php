@@ -77,7 +77,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-backup-manager-page');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -103,7 +102,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-create-backup-modal-check');
 
             $pageSource = $browser->driver->getPageSource();
@@ -130,7 +128,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-name-input-field');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -156,7 +153,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-type-selection');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -183,7 +179,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-schedule-modal-check');
 
             $pageSource = $browser->driver->getPageSource();
@@ -209,7 +204,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-frequency-options');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -237,7 +231,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-time-selection');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -262,7 +255,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-retention-days');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -288,7 +280,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-storage-disk-selection');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -336,7 +327,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-backup-list');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -378,7 +368,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-schedule-list');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -404,7 +393,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-backup-statistics');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -431,7 +419,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-delete-confirmation');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -457,7 +444,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-restore-confirmation');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -482,7 +468,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-verify-backup');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -508,7 +493,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-download-backup');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -533,7 +517,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-status-indicators');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -561,7 +544,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-file-size-display');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -588,7 +570,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-checksum-display');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -614,7 +595,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-schedule-toggle');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -641,7 +621,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-weekly-day-selection');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -667,7 +646,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-monthly-day-selection');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -693,7 +671,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-creation-progress');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -719,7 +696,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-schedule-creation-progress');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -744,7 +720,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-verification-progress');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -769,7 +744,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-started-time');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -795,7 +769,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-completed-time');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -839,7 +812,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-error-message');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -865,7 +837,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-delete-schedule');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -891,7 +862,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-backup-pagination');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -918,7 +888,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-mysql-option');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -941,7 +910,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-postgresql-option');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -964,7 +932,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-sqlite-option');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -987,7 +954,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-local-storage');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1010,7 +976,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-s3-storage');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1033,7 +998,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-hourly-frequency');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1056,7 +1020,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-daily-frequency');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1079,7 +1042,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-weekly-frequency');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1102,7 +1064,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-monthly-frequency');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1125,7 +1086,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-total-backups-stat');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1150,7 +1110,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-scheduled-count-stat');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1175,7 +1134,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-total-size-stat');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1200,7 +1158,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-last-backup-stat');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1225,7 +1182,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-full-backup-type');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1248,7 +1204,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-active-schedule');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1273,7 +1228,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-file-name-display');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1300,7 +1254,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-database-name-display');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1325,7 +1278,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-schedule-frequency-display');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1348,7 +1300,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-schedule-time-display');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1374,7 +1325,6 @@ class DatabaseBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('db-retention-days-display');
 
             $pageSource = strtolower($browser->driver->getPageSource());

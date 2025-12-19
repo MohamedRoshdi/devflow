@@ -89,7 +89,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-logs-page-load');
 
             $pageSource = $browser->driver->getPageSource();
@@ -109,7 +108,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-log-list');
 
             $pageSource = $browser->driver->getPageSource();
@@ -130,7 +128,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('status-filter-before');
 
             try {
@@ -167,7 +164,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('date-range-filter');
 
             $pageSource = $browser->driver->getPageSource();
@@ -189,7 +185,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-payload-before');
 
             try {
@@ -225,7 +220,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('retry-button-check');
 
             $pageSource = $browser->driver->getPageSource();
@@ -247,7 +241,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('delete-button-check');
 
             $pageSource = $browser->driver->getPageSource();
@@ -267,7 +260,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('response-code-display');
 
             $pageSource = $browser->driver->getPageSource();
@@ -287,7 +279,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('delivery-time-display');
 
             $pageSource = $browser->driver->getPageSource();
@@ -307,7 +298,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-url-display');
 
             $pageSource = $browser->driver->getPageSource();
@@ -328,7 +318,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('pagination-check');
 
             $pageSource = $browser->driver->getPageSource();
@@ -350,7 +339,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('search-before');
 
             try {
@@ -382,7 +370,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('expand-details-before');
 
             try {
@@ -418,7 +405,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('bulk-actions-check');
 
             $pageSource = $browser->driver->getPageSource();
@@ -439,7 +425,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('flash-messages-check');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -461,7 +446,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('hero-section');
 
             $pageSource = $browser->driver->getPageSource();
@@ -481,7 +465,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('stats-cards');
 
             $pageSource = $browser->driver->getPageSource();
@@ -502,7 +485,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('provider-filter');
 
             $pageSource = $browser->driver->getPageSource();
@@ -522,7 +504,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-filter');
 
             $pageSource = $browser->driver->getPageSource();
@@ -542,7 +523,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('clear-filters-before');
 
             try {
@@ -574,7 +554,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('table-headers');
 
             $pageSource = $browser->driver->getPageSource();
@@ -596,7 +575,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('event-type-column');
 
             $pageSource = $browser->driver->getPageSource();
@@ -617,7 +595,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('status-badges');
 
             $pageSource = $browser->driver->getPageSource();
@@ -638,7 +615,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deployment-id-links');
 
             $pageSource = $browser->driver->getPageSource();
@@ -658,7 +634,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('modal-before');
 
             try {
@@ -693,8 +668,7 @@ class WebhookLogsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 $buttons = $browser->driver->findElements(
@@ -728,8 +702,7 @@ class WebhookLogsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 $buttons = $browser->driver->findElements(
@@ -764,8 +737,7 @@ class WebhookLogsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 $viewButtons = $browser->driver->findElements(
@@ -809,7 +781,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks?statusFilter=pending')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('empty-state');
 
             $pageSource = $browser->driver->getPageSource();
@@ -829,7 +800,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('gradient-hero-styling');
 
             $pageSource = $browser->driver->getPageSource();
@@ -849,7 +819,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('provider-badges');
 
             $pageSource = $browser->driver->getPageSource();
@@ -870,7 +839,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('status-dots');
 
             $pageSource = $browser->driver->getPageSource();
@@ -891,7 +859,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('table-hover-effects');
 
             $pageSource = $browser->driver->getPageSource();
@@ -912,7 +879,6 @@ class WebhookLogsTest extends DuskTestCase
                 ->resize(375, 667) // Mobile size
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('mobile-responsive-webhooks');
 
             $pageSource = $browser->driver->getPageSource();
@@ -932,7 +898,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('dark-mode-webhooks');
 
             $pageSource = $browser->driver->getPageSource();
@@ -952,7 +917,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('filter-focus-styling');
 
             $pageSource = $browser->driver->getPageSource();
@@ -972,7 +936,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('stats-card-styling');
 
             $pageSource = $browser->driver->getPageSource();
@@ -992,7 +955,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('provider-icons');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1012,7 +974,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('view-details-button-styling');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1031,8 +992,7 @@ class WebhookLogsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 $buttons = $browser->driver->findElements(
@@ -1067,7 +1027,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-count-stats');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1087,7 +1046,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('filters-layout');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1107,7 +1065,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('success-count-green');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1127,7 +1084,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('failed-count-red');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1147,7 +1103,6 @@ class WebhookLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('table-overflow');
 
             $pageSource = $browser->driver->getPageSource();

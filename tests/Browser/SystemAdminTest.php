@@ -69,7 +69,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-page-loads');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -95,7 +94,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-overview');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -121,7 +119,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-backup-stats');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -146,7 +143,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-monitoring-stats');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -171,7 +167,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-log-rotation');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -197,7 +192,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-db-optimization');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -222,7 +216,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-quick-actions');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -247,7 +240,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-recent-alerts');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -273,7 +265,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-health-indicators');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -299,7 +290,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-tabs');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -325,7 +315,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-backup-logs-before');
 
             $pageSource = $browser->driver->getPageSource();
@@ -350,7 +339,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-monitoring-logs-before');
 
             $pageSource = $browser->driver->getPageSource();
@@ -375,7 +363,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-optimization-logs-before');
 
             $pageSource = $browser->driver->getPageSource();
@@ -400,7 +387,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-statistics-cards');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -427,7 +413,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-run-backup-button');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -452,7 +437,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-optimize-button');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -477,7 +461,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-backup-status');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -503,7 +486,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-alerts-section');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -529,7 +511,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->regularUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-non-admin-access');
 
             $currentUrl = $browser->driver->getCurrentURL();
@@ -559,7 +540,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-flash-messages');
 
             $pageSource = $browser->driver->getPageSource();
@@ -585,7 +565,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-backup-statistics');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -611,7 +590,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-schedule-info');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -638,7 +616,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-alert-severity');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -665,7 +642,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-loading-states');
 
             $pageSource = $browser->driver->getPageSource();
@@ -691,7 +667,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-info-banner');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -717,7 +692,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-automated-features');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -743,7 +717,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-retention-policy');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -769,7 +742,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-monitoring-interval');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -795,7 +767,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-db-operations');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -821,7 +792,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-system-metrics');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -848,7 +818,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-hero-section');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -873,7 +842,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-visual-indicators');
 
             $pageSource = $browser->driver->getPageSource();
@@ -899,7 +867,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-success-styling');
 
             $pageSource = $browser->driver->getPageSource();
@@ -924,7 +891,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-error-styling');
 
             $pageSource = $browser->driver->getPageSource();
@@ -949,7 +915,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-grid-layout');
 
             $pageSource = $browser->driver->getPageSource();
@@ -975,7 +940,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-hover-effects');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1000,7 +964,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-dark-mode');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1025,7 +988,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-gradients');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1051,7 +1013,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-log-formatting');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1077,7 +1038,6 @@ class SystemAdminTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-admin-timestamps');
 
             $pageSource = strtolower($browser->driver->getPageSource());

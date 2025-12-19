@@ -77,7 +77,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-page');
 
             // Check if log viewer page loaded via page source
@@ -104,7 +103,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-page');
 
             // Check if notification logs page loaded
@@ -131,7 +129,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-logs-page');
 
             // Check if webhook logs page loaded
@@ -158,7 +155,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-page');
 
             // Check if security audit log page loaded
@@ -186,7 +182,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/log-sources')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-source-manager-page');
 
             // Check if log source manager page loaded
@@ -247,7 +242,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-before-filter');
 
             // Check for filter controls via page source
@@ -303,7 +297,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-before-search');
 
             // Check for search input via page source
@@ -339,7 +332,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-server-filter');
 
             // Check for server filter
@@ -364,7 +356,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-project-filter');
 
             // Check for project filter
@@ -399,7 +390,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-entries-display');
 
             // Check if log entry information is visible
@@ -454,7 +444,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-level-badges');
 
             // Check for level indicators
@@ -480,7 +469,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-types');
 
             // Check for notification type information
@@ -507,7 +495,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-request-details');
 
             // Check for webhook request information
@@ -534,7 +521,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-user-actions');
 
             // Check for user action information
@@ -585,7 +571,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-statistics');
 
             // Check for statistics display
@@ -612,7 +597,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('date-range-filter');
 
             // Check for date range inputs
@@ -639,7 +623,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-export-button');
 
             // Check for export button or link
@@ -665,7 +648,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-sync-button');
 
             // Check for sync button
@@ -703,7 +685,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-pagination');
 
             // Check for pagination elements
@@ -730,7 +711,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-clear-filters-before');
 
             // Check for clear filters button
@@ -765,7 +745,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-source-types');
 
             // Check for source type information
@@ -792,7 +771,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-auto-refresh-toggle');
 
             // Check for auto-refresh control
@@ -829,7 +807,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-detail-before-expand');
 
             // Check if log details can be expanded
@@ -856,7 +833,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-navigation-main');
 
             // Navigate to notification logs
@@ -915,7 +891,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-empty-state');
 
             // Check for empty state message
@@ -942,7 +917,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/log-sources')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-source-add-button');
 
             // Check for add source button
@@ -968,7 +942,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/log-sources')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-source-templates');
 
             // Check for template-related content
@@ -995,7 +968,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-realtime-indicator');
 
             // Check for real-time/live indicators
@@ -1022,7 +994,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-rotation-settings');
 
             // Check for rotation/cleanup settings
@@ -1049,7 +1020,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-cleanup-operations');
 
             // Check for cleanup/delete actions
@@ -1086,7 +1056,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-critical-highlight');
 
             // Check for critical level content
@@ -1122,7 +1091,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-debug-filter');
 
             // Check for debug level option
@@ -1158,7 +1126,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-context-display');
 
             // Check for context information
@@ -1196,7 +1163,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-file-path');
 
             // Check for file path information
@@ -1232,7 +1198,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-timestamp-display');
 
             // Check for timestamp information
@@ -1259,7 +1224,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-delivery-status');
 
             // Check for status information
@@ -1286,7 +1250,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-response-codes');
 
             // Check for HTTP status codes
@@ -1313,7 +1276,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-ip-addresses');
 
             // Check for IP address information
@@ -1339,7 +1301,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-quick-time-filters');
 
             // Check for quick time filter options
@@ -1378,7 +1339,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-per-page-selector');
 
             // Check for per page selector
@@ -1405,7 +1365,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/log-sources')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-source-toggle');
 
             // Check for toggle controls
@@ -1432,7 +1391,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/log-sources')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-source-last-sync');
 
             // Check for sync time information
@@ -1459,7 +1417,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id)
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-health-metrics');
 
             // Check for health/metric information
@@ -1487,7 +1444,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/alerts')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('alert-configuration-page');
 
             // Check for alert configuration elements
@@ -1514,7 +1470,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-retention-settings');
 
             // Check for retention policy settings
@@ -1560,7 +1515,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-multiple-level-filter');
 
             // Check for filter functionality
@@ -1595,7 +1549,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-export-filtered');
 
             // Check for export functionality
@@ -1621,7 +1574,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-failed-logins');
 
             // Check for login attempt information
@@ -1660,7 +1612,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-total-count');
 
             // Check for count/total information
@@ -1687,7 +1638,6 @@ class LogsAndMonitoringTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-retry-function');
 
             // Check for retry functionality

@@ -59,7 +59,6 @@ class ServerSecurityDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-dashboard-page');
 
             // Check if security dashboard loaded via page source
@@ -96,7 +95,6 @@ class ServerSecurityDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-overview');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -132,7 +130,6 @@ class ServerSecurityDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('firewall-status-card');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -167,7 +164,6 @@ class ServerSecurityDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-status-card');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -201,7 +197,6 @@ class ServerSecurityDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-card');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -235,7 +230,6 @@ class ServerSecurityDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-scan-card');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -268,8 +262,7 @@ class ServerSecurityDashboardTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Look for firewall link in page source
             $pageSource = $browser->driver->getPageSource();
@@ -284,7 +277,6 @@ class ServerSecurityDashboardTest extends DuskTestCase
             try {
                 $browser->visit('/servers/'.$this->server->id.'/security/firewall')
                     ->pause(2000)
-                    ->waitFor('body', 15)
                     ->screenshot('firewall-manager-page');
 
                 $firewallPage = strtolower($browser->driver->getPageSource());
@@ -321,8 +313,7 @@ class ServerSecurityDashboardTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Look for fail2ban link in page source
             $pageSource = $browser->driver->getPageSource();
@@ -337,7 +328,6 @@ class ServerSecurityDashboardTest extends DuskTestCase
             try {
                 $browser->visit('/servers/'.$this->server->id.'/security/fail2ban')
                     ->pause(2000)
-                    ->waitFor('body', 15)
                     ->screenshot('fail2ban-manager-page');
 
                 $fail2banPage = strtolower($browser->driver->getPageSource());
@@ -373,8 +363,7 @@ class ServerSecurityDashboardTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Look for SSH security link in page source
             $pageSource = $browser->driver->getPageSource();
@@ -389,7 +378,6 @@ class ServerSecurityDashboardTest extends DuskTestCase
             try {
                 $browser->visit('/servers/'.$this->server->id.'/security/ssh')
                     ->pause(2000)
-                    ->waitFor('body', 15)
                     ->screenshot('ssh-security-manager-page');
 
                 $sshPage = strtolower($browser->driver->getPageSource());
@@ -425,8 +413,7 @@ class ServerSecurityDashboardTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Look for security scan link in page source
             $pageSource = $browser->driver->getPageSource();
@@ -441,7 +428,6 @@ class ServerSecurityDashboardTest extends DuskTestCase
             try {
                 $browser->visit('/servers/'.$this->server->id.'/security/scan')
                     ->pause(2000)
-                    ->waitFor('body', 15)
                     ->screenshot('security-scan-dashboard-page');
 
                 $scanPage = strtolower($browser->driver->getPageSource());
@@ -478,7 +464,6 @@ class ServerSecurityDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-score');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -514,7 +499,6 @@ class ServerSecurityDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('quick-action-buttons');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -549,7 +533,6 @@ class ServerSecurityDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('recent-security-events');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -584,7 +567,6 @@ class ServerSecurityDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-info-header');
 
             $pageSource = $browser->driver->getPageSource();
@@ -617,8 +599,7 @@ class ServerSecurityDashboardTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Look for back button/link in page source
             $pageSource = $browser->driver->getPageSource();
@@ -633,7 +614,6 @@ class ServerSecurityDashboardTest extends DuskTestCase
             try {
                 $browser->visit('/servers/'.$this->server->id)
                     ->pause(2000)
-                    ->waitFor('body', 15)
                     ->screenshot('server-detail-page');
 
                 $serverPage = $browser->driver->getPageSource();
@@ -669,7 +649,6 @@ class ServerSecurityDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('score-visualization');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -704,7 +683,6 @@ class ServerSecurityDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('open-ports-info');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -738,7 +716,6 @@ class ServerSecurityDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('refresh-status-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -772,7 +749,6 @@ class ServerSecurityDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('run-scan-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -806,7 +782,6 @@ class ServerSecurityDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('navigation-cards');
 
             $pageSource = strtolower($browser->driver->getPageSource());

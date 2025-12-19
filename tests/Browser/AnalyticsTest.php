@@ -46,7 +46,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('analytics-dashboard-page');
 
             // Check if Analytics page loaded via page source
@@ -75,7 +74,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deployment-statistics-cards');
 
             // Check for deployment statistics via page source
@@ -104,7 +102,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-performance-metrics');
 
             // Check for server performance metrics via page source
@@ -133,7 +130,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-analytics-section');
 
             // Check for project analytics via page source
@@ -162,7 +158,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('time-period-filter-initial');
 
             // Check for time period filter via page source
@@ -191,7 +186,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-filter-dropdown');
 
             // Check for project filter via page source
@@ -219,7 +213,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cpu-usage-chart');
 
             // Check for CPU usage display via page source
@@ -247,7 +240,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('memory-usage-chart');
 
             // Check for memory usage display via page source
@@ -275,7 +267,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('disk-usage-chart');
 
             // Check for disk usage display via page source
@@ -303,7 +294,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('total-deployments-count');
 
             // Check for total deployments via page source
@@ -330,7 +320,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('successful-deployments-count');
 
             // Check for successful deployments via page source
@@ -357,7 +346,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('failed-deployments-count');
 
             // Check for failed deployments via page source
@@ -384,7 +372,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('average-deployment-duration');
 
             // Check for average duration via page source
@@ -412,7 +399,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('total-projects-count');
 
             // Check for total projects via page source
@@ -439,7 +425,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('running-projects-count');
 
             // Check for running projects via page source
@@ -466,7 +451,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('stopped-projects-count');
 
             // Check for stopped projects via page source
@@ -493,7 +477,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('total-storage-usage');
 
             // Check for total storage via page source
@@ -521,7 +504,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('filter-section-labels');
 
             // Check for filter section labels via page source
@@ -549,7 +531,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('success-rate-percentage');
 
             // Check for success rate calculation via page source
@@ -576,7 +557,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('failure-rate-percentage');
 
             // Check for failure rate calculation via page source
@@ -603,7 +583,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-metrics-status');
 
             // Check for status indicators via page source
@@ -632,7 +611,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('progress-bars-metrics');
 
             // Check for progress bars via page source
@@ -660,7 +638,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('analytics-page-heading');
 
             // Check for proper heading via page source
@@ -687,7 +664,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deployment-statistics-title');
 
             // Check for deployment statistics title via page source
@@ -714,7 +690,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-performance-title');
 
             // Check for server performance title via page source
@@ -741,7 +716,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-analytics-title');
 
             // Check for project analytics title via page source
@@ -768,7 +742,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('time-period-filter-options');
 
             // Check for all time period options via page source
@@ -797,7 +770,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('gradient-backgrounds');
 
             // Check for gradient backgrounds via page source
@@ -824,7 +796,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('percentage-values');
 
             // Check for percentage values via page source
@@ -851,7 +822,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('responsive-design');
 
             // Check for responsive design classes via page source
@@ -911,7 +881,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('livewire-reactivity');
 
             // Check for Livewire usage via page source
@@ -939,7 +908,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('hero-section-styled');
 
             // Check for hero section styling via page source
@@ -966,7 +934,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('icons-displayed');
 
             // Check for SVG icons via page source
@@ -993,7 +960,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('dark-mode-classes');
 
             // Check for dark mode classes via page source
@@ -1021,7 +987,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('user-activity-tracking');
 
             // Check for user activity indicators via page source
@@ -1049,7 +1014,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('resource-usage-analytics');
 
             // Check for resource usage analytics via page source
@@ -1077,7 +1041,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('trend-analysis');
 
             // Check for trend analysis indicators via page source
@@ -1105,7 +1068,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('custom-date-range-filtering');
 
             // Check for custom date range filtering via page source
@@ -1133,7 +1095,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('export-analytics-data');
 
             // Check for export functionality via page source
@@ -1162,7 +1123,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('comparison-views');
 
             // Check for comparison views via page source
@@ -1191,7 +1151,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('top-projects-by-activity');
 
             // Check for top projects listing via page source
@@ -1219,7 +1178,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('top-servers-by-activity');
 
             // Check for top servers listing via page source
@@ -1247,7 +1205,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('error-rate-tracking');
 
             // Check for error rate tracking via page source
@@ -1275,7 +1232,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('performance-benchmarks');
 
             // Check for performance benchmarks via page source
@@ -1303,7 +1259,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deployment-frequency-chart');
 
             // Check for deployment frequency chart via page source
@@ -1331,7 +1286,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('response-time-metrics');
 
             // Check for response time metrics via page source
@@ -1359,7 +1313,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('uptime-statistics');
 
             // Check for uptime statistics via page source
@@ -1387,7 +1340,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cost-analysis');
 
             // Check for cost analysis via page source
@@ -1416,7 +1368,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('network-usage-metrics');
 
             // Check for network usage metrics via page source
@@ -1444,7 +1395,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('historical-data-visualization');
 
             // Check for historical data visualization via page source
@@ -1472,7 +1422,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('realtime-updates');
 
             // Check for real-time updates via page source (Livewire wire:poll)
@@ -1500,7 +1449,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('alerts-notifications-summary');
 
             // Check for alerts/notifications summary via page source
@@ -1528,7 +1476,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('data-refresh-button');
 
             // Check for refresh button via page source
@@ -1556,7 +1503,6 @@ class AnalyticsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/analytics')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('dashboard-no-errors');
 
             // Check for no error messages via page source

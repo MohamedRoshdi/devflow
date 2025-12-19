@@ -44,7 +44,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000)
                 ->assertSee('Queue Monitor')
                 ->screenshot('queue-monitor-page-loaded');
@@ -64,7 +64,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000)
                 ->assertSeeIn('body', 'Pending Jobs')
                 ->assertSeeIn('body', 'Processing')
@@ -86,7 +86,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000)
                 ->assertSeeIn('body', 'Pending Jobs')
                 ->screenshot('pending-jobs-count');
@@ -108,7 +108,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000)
                 ->assertSeeIn('body', 'Failed Jobs')
                 ->screenshot('failed-jobs-count');
@@ -128,7 +128,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000)
                 ->assertSeeIn('body', 'Processing')
                 ->screenshot('processing-jobs-shown');
@@ -148,7 +148,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000)
                 ->assertSeeIn('body', 'Jobs/Hour')
                 ->screenshot('jobs-per-hour-metric');
@@ -168,7 +168,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000)
                 ->assertSeeIn('body', 'Worker Status')
                 ->screenshot('worker-status-displayed');
@@ -188,7 +188,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000)
                 ->assertSeeIn('button', 'Refresh')
                 ->screenshot('refresh-button-visible');
@@ -208,7 +208,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000);
 
             $pageSource = $browser->driver->getPageSource();
@@ -237,7 +237,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000);
 
             $pageSource = $browser->driver->getPageSource();
@@ -265,7 +265,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000);
 
             $pageSource = $browser->driver->getPageSource();
@@ -292,7 +292,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000);
 
             $pageSource = $browser->driver->getPageSource();
@@ -320,7 +320,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000);
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -347,7 +347,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000);
 
             $pageSource = $browser->driver->getPageSource();
@@ -374,7 +374,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000);
 
             $pageSource = $browser->driver->getPageSource();
@@ -401,7 +401,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000);
 
             $pageSource = $browser->driver->getPageSource();
@@ -428,7 +428,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000);
 
             $pageSource = $browser->driver->getPageSource();
@@ -455,7 +455,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000);
 
             $pageSource = $browser->driver->getPageSource();
@@ -481,7 +481,7 @@ class QueueMonitorTest extends DuskTestCase
 
             $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000);
 
             $pageSource = $browser->driver->getPageSource();
@@ -508,7 +508,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000);
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -537,7 +537,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000);
 
             $pageSource = $browser->driver->getPageSource();
@@ -564,7 +564,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000);
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -591,7 +591,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000);
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -617,7 +617,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000);
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -644,7 +644,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000);
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -671,7 +671,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000);
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -697,7 +697,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000)
                 ->assertSee('Queue Monitor')
                 ->assertSeeIn('body', 'Monitor and manage Laravel queue jobs')
@@ -718,7 +718,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000);
 
             $pageSource = $browser->driver->getPageSource();
@@ -746,7 +746,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000);
 
             $pageSource = $browser->driver->getPageSource();
@@ -772,7 +772,7 @@ class QueueMonitorTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser = $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
-                ->waitFor('body', 15)
+                ->pause(1000)
                 ->pause(1000);
 
             $pageSource = $browser->driver->getPageSource();

@@ -71,7 +71,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-logs-page-load');
 
             $pageSource = $browser->driver->getPageSource();
@@ -93,7 +92,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('logs-page-header');
 
             $pageSource = $browser->driver->getPageSource();
@@ -112,7 +110,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('laravel-log-toggle');
 
             $pageSource = $browser->driver->getPageSource();
@@ -131,7 +128,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('docker-output-toggle');
 
             $pageSource = $browser->driver->getPageSource();
@@ -150,7 +146,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('refresh-button-before');
 
             $pageSource = $browser->driver->getPageSource();
@@ -179,7 +174,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('download-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -199,7 +193,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('clear-logs-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -219,7 +212,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('lines-selector');
 
             $pageSource = $browser->driver->getPageSource();
@@ -240,7 +232,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('lines-selector-options');
 
             $pageSource = $browser->driver->getPageSource();
@@ -264,7 +255,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-display-area');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -285,7 +275,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('before-docker-switch');
 
             try {
@@ -322,7 +311,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('before-laravel-switch');
 
             try {
@@ -359,7 +347,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('before-lines-change');
 
             try {
@@ -391,7 +378,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-timestamp');
 
             $pageSource = $browser->driver->getPageSource();
@@ -411,8 +397,7 @@ class ProjectLogsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 $browser->click('button:contains("Refresh")');
@@ -439,7 +424,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('error-message-check');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -461,7 +445,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-source-indicator');
 
             $pageSource = $browser->driver->getPageSource();
@@ -481,7 +464,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('preformatted-text-area');
 
             $pageSource = $browser->driver->getPageSource();
@@ -502,7 +484,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('scrollable-area');
 
             $pageSource = $browser->driver->getPageSource();
@@ -522,7 +503,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('terminal-style');
 
             $pageSource = $browser->driver->getPageSource();
@@ -541,8 +521,7 @@ class ProjectLogsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 $buttons = $browser->driver->findElements(
@@ -576,7 +555,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('download-loading-state');
 
             $pageSource = $browser->driver->getPageSource();
@@ -596,7 +574,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('clear-logs-confirmation');
 
             $pageSource = $browser->driver->getPageSource();
@@ -616,7 +593,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('toggle-active-state');
 
             $pageSource = $browser->driver->getPageSource();
@@ -636,7 +612,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('empty-log-state');
 
             $pageSource = $browser->driver->getPageSource();
@@ -656,7 +631,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fixed-height-container');
 
             $pageSource = $browser->driver->getPageSource();
@@ -676,7 +650,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('gradient-header');
 
             $pageSource = $browser->driver->getPageSource();
@@ -696,7 +669,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('header-description');
 
             $pageSource = $browser->driver->getPageSource();
@@ -716,7 +688,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('button-spacing');
 
             $pageSource = $browser->driver->getPageSource();
@@ -736,7 +707,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('button-icons');
 
             $pageSource = $browser->driver->getPageSource();
@@ -758,7 +728,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('pill-style-selector');
 
             $pageSource = $browser->driver->getPageSource();
@@ -778,7 +747,6 @@ class ProjectLogsTest extends DuskTestCase
                 ->resize(375, 667) // Mobile size
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('mobile-responsive-logs');
 
             $pageSource = $browser->driver->getPageSource();
@@ -799,7 +767,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('dark-mode-styling');
 
             $pageSource = $browser->driver->getPageSource();
@@ -819,7 +786,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('monospace-font');
 
             $pageSource = $browser->driver->getPageSource();
@@ -838,7 +804,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('clear-logs-success');
 
             // Check for flash message structure
@@ -860,7 +825,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('border-styling');
 
             $pageSource = $browser->driver->getPageSource();
@@ -880,7 +844,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('toolbar-flex-layout');
 
             $pageSource = $browser->driver->getPageSource();
@@ -900,7 +863,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('current-timestamp');
 
             $pageSource = $browser->driver->getPageSource();
@@ -923,7 +885,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-title');
 
             $pageSource = $browser->driver->getPageSource();
@@ -943,7 +904,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('buttons-disabled-state');
 
             $pageSource = $browser->driver->getPageSource();
@@ -962,7 +922,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('green-text-logs');
 
             $pageSource = $browser->driver->getPageSource();
@@ -982,7 +941,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('selection-highlight');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1001,7 +959,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('scrollbar-styling');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1020,7 +977,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('button-hover-effects');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1041,7 +997,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('select-focus-styling');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1061,7 +1016,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('text-wrapping');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1080,7 +1034,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('icon-sizes');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1100,7 +1053,6 @@ class ProjectLogsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/'.$this->project->slug.'/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('page-layout-overall');
 
             $pageSource = $browser->driver->getPageSource();

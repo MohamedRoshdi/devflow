@@ -123,7 +123,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-page-loads');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -149,7 +148,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-entries-display');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -176,7 +174,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-filter-firewall-enabled');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -202,7 +199,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-filter-rule-added');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -227,7 +223,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-filter-ip-banned');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -252,7 +247,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-filter-ssh-config');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -277,7 +271,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-user-filter');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -302,7 +295,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-ip-display');
 
             $pageSource = $browser->driver->getPageSource();
@@ -326,7 +318,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-timestamp');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -353,7 +344,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-action-description');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -379,7 +369,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-resource-affected');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -404,7 +393,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-date-from');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -430,7 +418,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-date-to');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -456,7 +443,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-search');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -481,7 +467,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-pagination');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -508,7 +493,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-export-csv');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -534,7 +518,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-export-json');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -559,7 +542,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-export-pdf');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -584,7 +566,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-severity-indicators');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -612,7 +593,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-location');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -638,7 +618,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-user-agent');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -664,7 +643,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-session-id');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -689,7 +667,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-suspicious-activity');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -714,8 +691,7 @@ class SecurityAuditLogTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Create a new security event
             SecurityEvent::create([
@@ -746,7 +722,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-bulk-export');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -772,7 +747,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-retention-policy');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -798,7 +772,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-access-control');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -824,7 +797,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-api-access');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -849,7 +821,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-failed-auth');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -875,7 +846,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-permission-escalation');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -901,7 +871,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-server-filter');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -926,7 +895,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-event-type-filter');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -952,7 +920,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-clear-filters');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -977,7 +944,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-details-modal');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1003,7 +969,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-metadata');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1029,7 +994,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-stats-total');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1055,7 +1019,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-stats-today');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1080,7 +1043,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-stats-firewall');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1104,7 +1066,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-stats-ip-bans');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1129,7 +1090,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-color-green');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1155,7 +1115,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-color-red');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1181,7 +1140,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-color-orange');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1207,7 +1165,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-search-ip');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1232,7 +1189,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-search-details');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1257,7 +1213,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-pagination-next');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1282,7 +1237,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-pagination-previous');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1310,7 +1264,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-empty-state');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1342,7 +1295,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-mobile');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1371,7 +1323,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-tablet');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1398,7 +1349,6 @@ class SecurityAuditLogTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-log-sorting');
 
             $pageSource = strtolower($browser->driver->getPageSource());

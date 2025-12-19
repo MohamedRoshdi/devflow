@@ -44,7 +44,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('api-token-manager-page');
 
             // Check if API token page loaded via page source
@@ -73,7 +72,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/github')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-settings-page');
 
             // Check if GitHub settings page loaded via page source
@@ -102,7 +100,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-check-manager');
 
             // Check if health check page loaded via page source
@@ -131,7 +128,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-key-manager-page');
 
             // Check if SSH key page loaded via page source
@@ -160,7 +156,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-status-page');
 
             // Check if system status page loaded via page source
@@ -189,7 +184,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-settings-page');
 
             // Check if storage settings page loaded via page source
@@ -218,7 +212,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('queue-monitor-page');
 
             // Check if queue monitor page loaded via page source
@@ -247,7 +240,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('api-token-create-button');
 
             // Check for create token button via page source
@@ -276,7 +268,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/github')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-oauth-status');
 
             // Check for OAuth connection status via page source
@@ -305,7 +296,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-check-endpoints');
 
             // Check for health check endpoints via page source
@@ -334,7 +324,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-key-list');
 
             // Check for SSH key list via page source
@@ -363,7 +352,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-metrics');
 
             // Check for system metrics via page source
@@ -392,7 +380,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-usage-stats');
 
             // Check for storage usage statistics via page source
@@ -421,7 +408,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('queue-statistics');
 
             // Check for queue statistics via page source
@@ -450,7 +436,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('api-token-permissions');
 
             // Check for permission configuration via page source
@@ -479,7 +464,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/github')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-repositories');
 
             // Check for repository list via page source
@@ -508,7 +492,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('add-health-check-button');
 
             // Check for add health check button via page source
@@ -537,7 +520,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-key-generation');
 
             // Check for key generation option via page source
@@ -566,7 +548,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('service-status-indicators');
 
             // Check for service status indicators via page source
@@ -595,7 +576,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-driver-config');
 
             // Check for storage driver configuration via page source
@@ -624,7 +604,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/queue-monitor')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('queue-worker-status');
 
             // Check for worker status via page source
@@ -653,7 +632,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('api-token-revocation');
 
             // Check for token revocation option via page source
@@ -682,7 +660,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-check-frequency');
 
             // Check for frequency settings via page source
@@ -711,7 +688,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-key-fingerprint');
 
             // Check for key fingerprint via page source
@@ -740,7 +716,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-load-averages');
 
             // Check for load averages via page source
@@ -804,7 +779,6 @@ class SettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('settings-navigation');
 
             // Check for settings navigation via page source

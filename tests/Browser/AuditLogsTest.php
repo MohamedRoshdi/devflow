@@ -192,7 +192,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-page-loads');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -218,7 +217,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-list-entries');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -260,7 +258,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-pagination');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -287,7 +284,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-filter-user-before');
 
             // Try to find and use user filter
@@ -313,7 +309,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-filter-action-type');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -339,7 +334,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-filter-date-range');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -366,7 +360,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-search');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -391,7 +384,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-view-details');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -417,7 +409,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-export-csv');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -443,7 +434,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-export-json');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -469,7 +459,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-retention-settings');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -496,7 +485,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-user-activity');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -522,7 +510,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-server-actions');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -548,7 +535,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-project-changes');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -574,7 +560,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-deployment-activity');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -599,7 +584,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-security-events');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -625,7 +609,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-api-access');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -652,7 +635,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-filter-category');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -677,7 +659,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-filter-model-type');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -703,7 +684,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-filter-ip');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -728,7 +708,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-clear-filters');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -753,7 +732,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-timestamps');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -780,7 +758,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-user-names');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -806,7 +783,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-action-description');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -833,7 +809,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-ip-display');
 
             $pageSource = $browser->driver->getPageSource();
@@ -857,7 +832,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-old-values');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -883,7 +857,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-new-values');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -909,7 +882,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-model-identifier');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -936,7 +908,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-statistics');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -963,7 +934,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-timeline');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -989,7 +959,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-recent-activity');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1015,7 +984,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-user-summary');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1041,7 +1009,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-action-breakdown');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1067,7 +1034,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-security-filter');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1092,7 +1058,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-export-filtered');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1117,7 +1082,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-date-picker');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1142,8 +1106,7 @@ class AuditLogsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Create a new audit log
             AuditLog::create([
@@ -1176,7 +1139,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-detail-modal');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1202,7 +1164,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-bulk-export');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1228,7 +1189,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-search-action');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1253,7 +1213,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-today-filter');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1279,7 +1238,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-7days-filter');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1305,7 +1263,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-30days-filter');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1331,7 +1288,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->testUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-non-admin-access');
 
             $currentUrl = $browser->driver->getCurrentURL();
@@ -1361,7 +1317,6 @@ class AuditLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('audit-logs-count-display');
 
             $pageSource = strtolower($browser->driver->getPageSource());

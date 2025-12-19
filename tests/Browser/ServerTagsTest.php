@@ -90,7 +90,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-tags-page');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -116,7 +115,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-creation-form');
 
             $pageSource = $browser->driver->getPageSource();
@@ -142,7 +140,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-color-picker');
 
             $pageSource = $browser->driver->getPageSource();
@@ -168,7 +165,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('existing-tags');
 
             $pageSource = $browser->driver->getPageSource();
@@ -193,7 +189,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-edit-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -218,7 +213,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-delete-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -243,7 +237,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-color-display');
 
             $pageSource = $browser->driver->getPageSource();
@@ -269,7 +262,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-server-count');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -295,7 +287,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-edit-modal');
 
             $pageSource = $browser->driver->getPageSource();
@@ -321,7 +312,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-name-validation');
 
             $pageSource = $browser->driver->getPageSource();
@@ -347,7 +337,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-color-validation');
 
             $pageSource = $browser->driver->getPageSource();
@@ -373,7 +362,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-list-sortable');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -398,7 +386,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-list-tags');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -423,7 +410,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-detail-tags');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -448,7 +434,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-assignment-interface');
 
             $pageSource = $browser->driver->getPageSource();
@@ -474,7 +459,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-removal-interface');
 
             $pageSource = $browser->driver->getPageSource();
@@ -500,7 +484,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-filter-by-tag');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -526,7 +509,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-search');
 
             $pageSource = $browser->driver->getPageSource();
@@ -552,7 +534,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-statistics');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -578,7 +559,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-usage-count');
 
             $pageSource = $browser->driver->getPageSource();
@@ -603,7 +583,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('bulk-tag-assignment');
 
             $pageSource = $browser->driver->getPageSource();
@@ -629,7 +608,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('bulk-tag-removal');
 
             $pageSource = $browser->driver->getPageSource();
@@ -654,7 +632,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-auto-suggestion');
 
             $pageSource = $browser->driver->getPageSource();
@@ -680,7 +657,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-category-grouping');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -706,7 +682,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-based-server-grouping');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -731,7 +706,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-permissions');
 
             $pageSource = $browser->driver->getPageSource();
@@ -757,7 +731,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-color-presets');
 
             $pageSource = $browser->driver->getPageSource();
@@ -784,7 +757,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-unique-name');
 
             $pageSource = $browser->driver->getPageSource();
@@ -809,7 +781,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-export');
 
             $pageSource = $browser->driver->getPageSource();
@@ -835,7 +806,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-import');
 
             $pageSource = $browser->driver->getPageSource();
@@ -861,7 +831,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-deletion-confirmation');
 
             $pageSource = $browser->driver->getPageSource();
@@ -887,7 +856,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-edit-associations');
 
             $pageSource = $browser->driver->getPageSource();
@@ -912,7 +880,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-quick-actions');
 
             $pageSource = $browser->driver->getPageSource();
@@ -937,7 +904,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-name-length');
 
             $pageSource = $browser->driver->getPageSource();
@@ -962,7 +928,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-success-messages');
 
             $pageSource = $browser->driver->getPageSource();
@@ -988,7 +953,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-error-messages');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1014,7 +978,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-modal-close');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1039,7 +1002,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-list-refresh');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1065,7 +1027,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-events');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1091,7 +1052,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-form-reset');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1117,7 +1077,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-assignment-dropdown');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1143,7 +1102,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-filter-count');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1168,7 +1126,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-color-in-list');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1193,7 +1150,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-dark-mode');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1217,12 +1173,10 @@ class ServerTagsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             $browser->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-navigation');
 
             $currentUrl = $browser->driver->getCurrentURL();
@@ -1245,7 +1199,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-responsive');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1271,7 +1224,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-livewire-attributes');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1296,7 +1248,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-empty-state');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1322,7 +1273,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-ordering');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1347,7 +1297,6 @@ class ServerTagsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/servers/tags')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tag-performance');
 
             $pageSource = $browser->driver->getPageSource();

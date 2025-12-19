@@ -91,7 +91,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-page-loads');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -117,7 +116,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-basic-settings');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -143,7 +141,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-name-field');
 
             $pageSource = $browser->driver->getPageSource();
@@ -168,7 +165,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-slug-field');
 
             $pageSource = $browser->driver->getPageSource();
@@ -193,7 +189,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-repository');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -219,7 +214,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-repo-url');
 
             $pageSource = $browser->driver->getPageSource();
@@ -244,7 +238,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-branch');
 
             $pageSource = $browser->driver->getPageSource();
@@ -269,7 +262,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-framework');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -295,7 +287,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-php-version');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -321,7 +312,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-node-version');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -347,7 +337,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-root-directory');
 
             $pageSource = $browser->driver->getPageSource();
@@ -372,7 +361,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-health-check');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -398,7 +386,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-auto-deploy');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -424,7 +411,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-save-button');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -450,7 +436,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-framework-laravel');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -473,7 +458,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-framework-nodejs');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -498,7 +482,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-framework-react');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -521,7 +504,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-php-84');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -546,7 +528,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-php-83');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -571,7 +552,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-node-22');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -596,7 +576,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-node-20');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -621,7 +600,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-current-name');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -644,7 +622,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-current-branch');
 
             $pageSource = $browser->driver->getPageSource();
@@ -667,7 +644,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-breadcrumb');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -692,13 +668,11 @@ class ProjectConfigurationTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}")
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Try to navigate to configuration
             $browser->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-accessible');
 
             $currentUrl = $browser->driver->getCurrentURL();
@@ -721,7 +695,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-validation');
 
             $pageSource = $browser->driver->getPageSource();
@@ -746,7 +719,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-success-message');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -772,7 +744,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-livewire');
 
             $pageSource = $browser->driver->getPageSource();
@@ -797,7 +768,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-title');
 
             $pageTitle = strtolower($browser->driver->getTitle());
@@ -823,7 +793,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-cancel-button');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -849,7 +818,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-github-url');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -874,7 +842,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-url-validation');
 
             $pageSource = $browser->driver->getPageSource();
@@ -899,7 +866,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-slug-validation');
 
             $pageSource = $browser->driver->getPageSource();
@@ -922,7 +888,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-dark-mode');
 
             $pageSource = $browser->driver->getPageSource();
@@ -947,7 +912,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-framework-select');
 
             $pageSource = $browser->driver->getPageSource();
@@ -972,7 +936,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-php-select');
 
             $pageSource = $browser->driver->getPageSource();
@@ -997,7 +960,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-node-select');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1022,7 +984,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-health-url-type');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1047,7 +1008,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-auto-deploy-type');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1072,7 +1032,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-responsive');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1098,7 +1057,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-labels');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1121,7 +1079,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-persistence');
 
             // Check that current data is loaded
@@ -1147,7 +1104,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-loading-states');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1173,7 +1129,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-help-text');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1200,7 +1155,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-organization');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1226,7 +1180,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-required-fields');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1252,7 +1205,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-accessibility');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1278,7 +1230,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-styling');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1303,7 +1254,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-duplicate-prevention');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1329,7 +1279,6 @@ class ProjectConfigurationTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/projects/{$this->testProject->id}/configuration")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-config-meta-tags');
 
             $pageSource = strtolower($browser->driver->getPageSource());

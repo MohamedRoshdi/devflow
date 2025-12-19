@@ -48,7 +48,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-dashboard-page');
 
             // Check if health dashboard page loaded via page source
@@ -77,7 +76,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-check-manager-page');
 
             // Check if health check manager page loaded via page source
@@ -106,7 +104,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-check-list');
 
             // Check for health check list elements via page source
@@ -136,7 +133,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('create-health-check-button');
 
             // Check for create button via page source
@@ -166,7 +162,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('before-modal-open');
 
             // Try to find and click create button
@@ -196,7 +191,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-check-form');
 
             // Check for form elements via page source
@@ -227,7 +221,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('http-check-type');
 
             // Check for HTTP check type via page source
@@ -254,7 +247,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tcp-check-type');
 
             // Check for TCP check type via page source
@@ -281,7 +273,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('dns-check-type');
 
             // Check for DNS check type via page source
@@ -308,7 +299,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-check-type');
 
             // Check for SSL check type via page source
@@ -335,7 +325,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('check-interval-config');
 
             // Check for interval configuration via page source
@@ -364,7 +353,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('check-timeout-config');
 
             // Check for timeout configuration via page source
@@ -392,7 +380,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('expected-status-config');
 
             // Check for expected status configuration via page source
@@ -421,7 +408,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-check-results-modal');
 
             // Check for results viewing capability via page source
@@ -450,7 +436,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-check-history');
 
             // Check for history elements via page source
@@ -479,7 +464,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-status-indicators');
 
             // Check for status indicators via page source
@@ -509,7 +493,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('alert-configuration');
 
             // Check for alert/notification configuration via page source
@@ -538,7 +521,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-channels');
 
             // Check for notification channel management via page source
@@ -567,7 +549,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notify-on-failure');
 
             // Check for notification on failure settings via page source
@@ -595,7 +576,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notify-on-recovery');
 
             // Check for notification on recovery settings via page source
@@ -623,7 +603,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('check-toggle-active');
 
             // Check for active/inactive toggle via page source
@@ -652,7 +631,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('check-pause');
 
             // Check for pause functionality via page source
@@ -680,7 +658,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('check-resume');
 
             // Check for resume functionality via page source
@@ -708,7 +685,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('check-manual-run');
 
             // Check for manual run capability via page source
@@ -737,7 +713,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('check-edit-functionality');
 
             // Check for edit functionality via page source
@@ -765,7 +740,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('check-delete-functionality');
 
             // Check for delete functionality via page source
@@ -793,7 +767,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-health-checks');
 
             // Check for project linkage via page source
@@ -821,7 +794,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-health-checks');
 
             // Check for server linkage via page source
@@ -849,7 +821,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-statistics');
 
             // Check for statistics via page source
@@ -879,7 +850,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('response-time-tracking');
 
             // Check for response time tracking via page source
@@ -908,7 +878,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('consecutive-failures');
 
             // Check for consecutive failures tracking via page source
@@ -936,7 +905,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('last-checked-time');
 
             // Check for last checked time via page source
@@ -965,7 +933,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('overall-health-status');
 
             // Check for overall status display via page source
@@ -994,7 +961,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-health-dashboard');
 
             // Check for project health display via page source
@@ -1022,7 +988,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-health-dashboard');
 
             // Check for server health display via page source
@@ -1050,7 +1015,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/health')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-dashboard-refresh');
 
             // Check for refresh capability via page source
@@ -1078,7 +1042,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('uptime-statistics');
 
             // Check for uptime statistics via page source
@@ -1106,7 +1069,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-check-groups');
 
             // Check for groups/categories via page source
@@ -1134,7 +1096,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('bulk-operations');
 
             // Check for bulk operations via page source
@@ -1162,7 +1123,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('response-validation');
 
             // Check for response validation via page source
@@ -1190,7 +1150,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('alerting-rules');
 
             // Check for alerting rules via page source
@@ -1218,7 +1177,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('email-channel-type');
 
             // Check for email channel type via page source
@@ -1245,7 +1203,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('slack-channel-type');
 
             // Check for Slack channel type via page source
@@ -1272,7 +1229,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('discord-channel-type');
 
             // Check for Discord channel type via page source
@@ -1299,7 +1255,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('channel-test-functionality');
 
             // Check for test notification functionality via page source
@@ -1327,7 +1282,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-check-export');
 
             // Check for export functionality via page source
@@ -1356,7 +1310,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-check-import');
 
             // Check for import functionality via page source
@@ -1384,7 +1337,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-check-search');
 
             // Check for search functionality via page source
@@ -1412,7 +1364,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('filter-by-type');
 
             // Check for type filter via page source
@@ -1440,7 +1391,6 @@ class HealthChecksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/health-checks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('filter-by-status');
 
             // Check for status filter via page source

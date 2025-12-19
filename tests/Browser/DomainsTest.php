@@ -197,7 +197,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-list-page');
 
             // Check if domains section is present
@@ -226,7 +225,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-primary-badge');
 
             // Check for primary domain indicator
@@ -254,7 +252,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-ssl-status');
 
             // Check for SSL status indicators
@@ -283,7 +280,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-dns-status');
 
             // Check for DNS status
@@ -312,7 +308,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-count');
 
             // Check domain count
@@ -343,7 +338,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-add-button');
 
             // Check for add domain button
@@ -372,7 +366,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-edit-functionality');
 
             // Check for edit functionality
@@ -401,7 +394,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-delete-option');
 
             // Check for delete option
@@ -430,7 +422,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-ssl-expiry-warning');
 
             // Check for SSL expiry warnings
@@ -459,7 +450,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-verification-status');
 
             // Check for verification status
@@ -488,7 +478,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-subdomain-support');
 
             // Check for subdomain (api.primary.devflow.test)
@@ -517,7 +506,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-ssl-provider');
 
             // Check for SSL provider info
@@ -546,7 +534,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-auto-renew-status');
 
             // Check for auto-renew status
@@ -575,7 +562,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-status-badges');
 
             // Check for status badges with color coding
@@ -604,7 +590,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-pending-dns-highlighted');
 
             // Check for pending DNS highlighting
@@ -633,7 +618,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-set-primary-action');
 
             // Check for set primary domain action
@@ -662,7 +646,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-search-filter');
 
             // Check for search/filter
@@ -691,7 +674,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-ssl-dates');
 
             // Check for SSL dates
@@ -720,7 +702,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-verify-dns-button');
 
             // Check for verify DNS button
@@ -749,7 +730,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-enable-ssl-button');
 
             // Check for enable SSL button
@@ -778,7 +758,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-details-modal');
 
             // Check for domain details modal trigger
@@ -807,7 +786,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-inactive-distinguished');
 
             // Check for inactive domain visual distinction
@@ -836,7 +814,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-form-validation');
 
             // Check for form validation elements
@@ -865,7 +842,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-dns-instructions');
 
             // Check for DNS instructions
@@ -894,7 +870,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-ssl-renewal-action');
 
             // Check for SSL renewal action
@@ -923,7 +898,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-redirection-settings');
 
             // Check for redirection settings
@@ -952,7 +926,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-force-https-option');
 
             // Check for force HTTPS option
@@ -981,7 +954,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-expiry-tracking');
 
             // Check for expiry tracking
@@ -1010,7 +982,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-bulk-actions');
 
             // Check for bulk actions
@@ -1039,7 +1010,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-health-check-status');
 
             // Check for health check status
@@ -1068,7 +1038,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-project-association');
 
             // Check for project association
@@ -1097,7 +1066,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-sorting-functionality');
 
             // Check for sorting options
@@ -1126,7 +1094,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-pagination');
 
             // Check for pagination elements
@@ -1155,7 +1122,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-dns-records');
 
             // Check for DNS record types
@@ -1184,7 +1150,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-ssl-certificate-detailed');
 
             // Check for detailed SSL information
@@ -1213,7 +1178,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-wildcard-ssl');
 
             // Check for wildcard SSL support
@@ -1241,7 +1205,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-quick-actions-menu');
 
             // Check for quick actions menu
@@ -1270,7 +1233,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-import-export');
 
             // Check for import/export options
@@ -1299,7 +1261,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-activity-log');
 
             // Check for activity log
@@ -1328,7 +1289,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-error-alerts');
 
             // Check for error alerts
@@ -1357,7 +1317,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-clone-functionality');
 
             // Check for clone/duplicate option
@@ -1386,7 +1345,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-statistics-summary');
 
             // Check for statistics
@@ -1415,7 +1373,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-form-input-fields');
 
             // Check for form input fields
@@ -1444,7 +1401,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-status-filter');
 
             // Check for status filter
@@ -1473,7 +1429,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-ssl-filter');
 
             // Check for SSL filter
@@ -1502,7 +1457,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-refresh-sync-button');
 
             // Check for refresh/sync button
@@ -1531,7 +1485,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-dns-verification-progress');
 
             // Check for verification progress
@@ -1560,7 +1513,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-documentation-links');
 
             // Check for documentation links
@@ -1589,7 +1541,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-notifications-preferences');
 
             // Check for notification preferences
@@ -1618,7 +1569,6 @@ class DomainsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('domains-performance-metrics');
 
             // Check for performance metrics

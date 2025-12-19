@@ -63,7 +63,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
                 ->pause(1000)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('01-default-setup-preferences-page');
 
             // Check if the page loaded
@@ -89,7 +88,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('02-hero-section-with-title');
 
             $pageSource = $browser->driver->getPageSource();
@@ -111,7 +109,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('03-project-creation-defaults-section');
 
             $pageSource = $browser->driver->getPageSource();
@@ -133,7 +130,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('04-ssl-certificate-toggle');
 
             $pageSource = $browser->driver->getPageSource();
@@ -161,7 +157,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('05-before-ssl-toggle');
 
             // Try to toggle SSL setting
@@ -190,7 +185,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('06-webhooks-toggle');
 
             $pageSource = $browser->driver->getPageSource();
@@ -218,7 +212,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('07-before-webhooks-toggle');
 
             // Try to toggle webhooks setting
@@ -247,7 +240,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('08-health-checks-toggle');
 
             $pageSource = $browser->driver->getPageSource();
@@ -275,7 +267,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('09-before-health-checks-toggle');
 
             // Try to toggle health checks setting
@@ -304,7 +295,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('10-backups-toggle');
 
             $pageSource = $browser->driver->getPageSource();
@@ -332,7 +322,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('11-before-backups-toggle');
 
             // Try to toggle backups setting
@@ -361,7 +350,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('12-notifications-toggle');
 
             $pageSource = $browser->driver->getPageSource();
@@ -389,7 +377,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('13-before-notifications-toggle');
 
             // Try to toggle notifications setting
@@ -418,7 +405,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('14-auto-deploy-toggle');
 
             $pageSource = $browser->driver->getPageSource();
@@ -446,7 +432,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('15-before-auto-deploy-toggle');
 
             // Try to toggle auto-deploy setting
@@ -475,7 +460,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('16-ui-preferences-section');
 
             $pageSource = $browser->driver->getPageSource();
@@ -497,7 +481,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('17-theme-selection');
 
             $pageSource = $browser->driver->getPageSource();
@@ -521,7 +504,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('18-dark-theme-option');
 
             $pageSource = $browser->driver->getPageSource();
@@ -543,7 +525,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('19-light-theme-option');
 
             $pageSource = $browser->driver->getPageSource();
@@ -569,7 +550,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('20-before-dark-theme-select');
 
             // Try to select dark theme
@@ -602,7 +582,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('21-before-light-theme-select');
 
             // Try to select light theme
@@ -631,7 +610,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('22-wizard-tips-toggle');
 
             $pageSource = $browser->driver->getPageSource();
@@ -659,7 +637,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('23-before-wizard-tips-toggle');
 
             // Try to toggle wizard tips setting
@@ -688,7 +665,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('24-save-preferences-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -712,7 +688,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('25-cancel-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -734,7 +709,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('26-before-save-preferences');
 
             // Try to click save button
@@ -759,8 +733,7 @@ class DefaultSetupPreferencesTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Try to save and check for success message
             try {
@@ -788,8 +761,7 @@ class DefaultSetupPreferencesTest extends DuskTestCase
 
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Toggle a setting and save
             try {
@@ -823,7 +795,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('29-ssl-description-text');
 
             $pageSource = $browser->driver->getPageSource();
@@ -847,7 +818,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('30-webhooks-description-text');
 
             $pageSource = $browser->driver->getPageSource();
@@ -871,7 +841,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('31-health-checks-description-text');
 
             $pageSource = $browser->driver->getPageSource();
@@ -895,7 +864,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('32-backups-description-text');
 
             $pageSource = $browser->driver->getPageSource();
@@ -919,7 +887,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('33-notifications-description-text');
 
             $pageSource = $browser->driver->getPageSource();
@@ -943,7 +910,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('34-auto-deploy-description-text');
 
             $pageSource = $browser->driver->getPageSource();
@@ -967,7 +933,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('35-wizard-tips-description-text');
 
             $pageSource = $browser->driver->getPageSource();
@@ -991,7 +956,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('36-toggle-switches-styling');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1016,7 +980,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('37-setting-icons');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1039,7 +1002,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
                 ->resize(375, 667)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('38-mobile-responsive');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1062,7 +1024,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
                 ->resize(768, 1024)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('39-tablet-responsive');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1084,7 +1045,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('40-save-button-loading-state');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1111,7 +1071,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('41-current-preferences-loaded');
 
             // Verify settings are loaded
@@ -1135,8 +1094,7 @@ class DefaultSetupPreferencesTest extends DuskTestCase
 
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Toggle multiple settings
             try {
@@ -1169,7 +1127,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('43-gradient-background');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1193,7 +1150,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('44-card-styling');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1220,7 +1176,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('45-theme-reflects-setting');
 
             // Verify theme setting exists
@@ -1263,7 +1218,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('47-preferences-inheritance');
 
             // Verify that settings exist and can be applied
@@ -1299,7 +1253,6 @@ class DefaultSetupPreferencesTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/preferences')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('48-all-toggles-independent');
 
             // Verify all toggles are present

@@ -182,7 +182,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-page-loads');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -208,7 +207,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-entries-displayed');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -236,7 +234,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-level-filter-before');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -271,7 +268,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-search-field');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -296,7 +292,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-search-before');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -329,7 +324,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-date-filter');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -356,7 +350,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-download-button');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -381,7 +374,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-clear-button');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -406,7 +398,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-expandable-entries');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -447,7 +438,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-pagination');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -474,7 +464,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-refresh-button');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -500,7 +489,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-source-selector');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -527,7 +515,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-auto-refresh');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -554,7 +541,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-level-badges');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -582,7 +568,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-flash-messages');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -610,7 +595,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-statistics');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -637,7 +621,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-server-filter');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -662,7 +645,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-project-filter');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -687,7 +669,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-timestamps');
 
             $pageSource = $browser->driver->getPageSource();
@@ -725,7 +706,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-truncation');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -751,7 +731,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-source-badges');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -779,7 +758,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-file-paths');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -806,7 +784,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-line-numbers');
 
             $pageSource = $browser->driver->getPageSource();
@@ -831,7 +808,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-context-data');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -857,7 +833,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-clear-filters-before');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -890,7 +865,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-export-logs');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -916,7 +890,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-sync-button');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -944,7 +917,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-no-logs');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -973,7 +945,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-loading-state');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1000,7 +971,6 @@ class LogViewerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit('/logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('log-viewer-responsive-layout');
 
             $pageSource = strtolower($browser->driver->getPageSource());

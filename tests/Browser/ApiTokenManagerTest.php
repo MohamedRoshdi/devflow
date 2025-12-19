@@ -45,7 +45,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('api-token-page-loads');
 
             // Check if page loaded via page source
@@ -83,7 +82,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('token-list-displayed');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -114,7 +112,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('create-token-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -141,7 +138,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('before-modal-open');
 
             try {
@@ -183,7 +179,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('token-name-field');
 
             $pageSource = $browser->driver->getPageSource();
@@ -210,7 +205,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('permissions-checkboxes');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -238,7 +232,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('create-form-fields');
 
             $pageSource = $browser->driver->getPageSource();
@@ -265,7 +258,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('expiration-dropdown');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -293,7 +285,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('copy-token-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -329,7 +320,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('revoke-button-visible');
 
             $pageSource = $browser->driver->getPageSource();
@@ -367,7 +357,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('revoke-confirmation');
 
             $pageSource = $browser->driver->getPageSource();
@@ -407,7 +396,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('last-used-timestamp');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -446,7 +434,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('creation-date');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -479,7 +466,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('empty-state');
 
             $pageSource = $browser->driver->getPageSource();
@@ -506,7 +492,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('warning-message');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -543,7 +528,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('abilities-badges');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -582,7 +566,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('regenerate-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -620,7 +603,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('expiration-date');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -659,7 +641,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('expired-token-indicator');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -698,7 +679,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('full-access-badge');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -736,7 +716,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('table-headers');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -769,7 +748,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('hero-section');
 
             $pageSource = $browser->driver->getPageSource();
@@ -797,7 +775,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('modal-cancel-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -823,7 +800,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('readonly-token-input');
 
             $pageSource = $browser->driver->getPageSource();
@@ -850,7 +826,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('available-permissions');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -879,7 +854,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('token-icon');
 
             $pageSource = $browser->driver->getPageSource();
@@ -915,7 +889,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('hover-effect');
 
             $pageSource = $browser->driver->getPageSource();
@@ -945,7 +918,6 @@ class ApiTokenManagerTest extends DuskTestCase
                 ->resize(375, 667)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('mobile-responsive');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -972,7 +944,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('dark-mode-classes');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1008,7 +979,6 @@ class ApiTokenManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/api-tokens')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('actions-alignment');
 
             $pageSource = $browser->driver->getPageSource();

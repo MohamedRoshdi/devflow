@@ -76,7 +76,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('file-backup-manager-page');
 
             // Check if page loaded via page source
@@ -105,7 +104,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('create-backup-modal');
 
             // Check for create backup button
@@ -134,7 +132,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('full-backup-type');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -161,7 +158,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('incremental-backup-type');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -188,7 +184,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-disk-local');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -215,7 +210,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-disk-s3');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -242,7 +236,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-disk-gcs');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -269,7 +262,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-disk-azure');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -316,7 +308,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('base-backup-selection');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -344,7 +335,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-list-display');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -391,7 +381,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-status-indicators');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -420,7 +409,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-file-size');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -449,7 +437,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-files-count');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -476,7 +463,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-checksum');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -503,7 +489,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-duration');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -531,7 +516,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-timestamp');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -559,7 +543,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('restore-backup-modal');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -586,7 +569,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('restore-overwrite-option');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -613,7 +595,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('download-backup');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -664,7 +645,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('view-manifest-modal');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -691,7 +671,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('delete-backup-confirmation');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -719,7 +698,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('exclude-patterns-modal');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -747,7 +725,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('add-exclude-pattern');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -775,7 +752,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('remove-exclude-pattern');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -803,7 +779,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('reset-exclude-patterns');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -830,7 +805,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('search-filter-backups');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -857,7 +831,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('filter-by-type');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -885,7 +858,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('filter-by-status');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -946,7 +918,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('incremental-parent-reference');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -973,7 +944,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('delete-with-children-warning');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1019,7 +989,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('failed-backup-error');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1046,7 +1015,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-compression');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1092,7 +1060,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-progress');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1119,7 +1086,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-size-estimation');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1146,7 +1112,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-encryption');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1173,7 +1138,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-verification');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1200,7 +1164,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-logs');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1241,7 +1204,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$emptyProject->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('empty-state-no-backups');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1269,7 +1231,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-type-colors');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1297,7 +1258,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-status-colors');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1325,7 +1285,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('incremental-depth');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1352,7 +1311,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-retention-policy');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1380,7 +1338,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-sorting');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1407,7 +1364,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('bulk-operations');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1434,7 +1390,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-notifications');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1461,7 +1416,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-statistics');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1489,7 +1443,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-usage');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1516,7 +1469,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-chain');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1543,7 +1495,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-metadata');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1570,7 +1521,6 @@ class FileBackupManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->project->id}/file-backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('refresh-backups-list');
 
             $pageSource = strtolower($browser->driver->getPageSource());

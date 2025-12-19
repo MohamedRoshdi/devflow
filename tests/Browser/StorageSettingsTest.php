@@ -63,7 +63,6 @@ class StorageSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('01-storage-settings-page-loads');
 
             // Check if storage settings page loaded via page source
@@ -91,7 +90,6 @@ class StorageSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('02-add-storage-button');
 
             // Check for add storage button via page source
@@ -118,8 +116,7 @@ class StorageSettingsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Try to click Add Storage button
             try {
@@ -154,8 +151,7 @@ class StorageSettingsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 $browser->script("window.livewire.find('" . $browser->script("return Object.keys(window.livewire.components)[0]")[0] . "').call('openCreateModal')");
@@ -189,8 +185,7 @@ class StorageSettingsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 $browser->script("window.livewire.find('" . $browser->script("return Object.keys(window.livewire.components)[0]")[0] . "').call('openCreateModal')");
@@ -239,7 +234,6 @@ class StorageSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('06-storage-usage-statistics');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -284,7 +278,6 @@ class StorageSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('07-test-connection-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -312,8 +305,7 @@ class StorageSettingsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 $browser->script("window.livewire.find('" . $browser->script("return Object.keys(window.livewire.components)[0]")[0] . "').call('openCreateModal')");
@@ -372,7 +364,6 @@ class StorageSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('09-configurations-list');
 
             $pageSource = $browser->driver->getPageSource();
@@ -417,7 +408,6 @@ class StorageSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('10-default-badge');
 
             $pageSource = $browser->driver->getPageSource();
@@ -458,7 +448,6 @@ class StorageSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('11-set-default-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -498,7 +487,6 @@ class StorageSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('12-edit-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -538,7 +526,6 @@ class StorageSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('13-delete-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -565,8 +552,7 @@ class StorageSettingsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 $browser->script("window.livewire.find('" . $browser->script("return Object.keys(window.livewire.components)[0]")[0] . "').call('openCreateModal')");
@@ -599,8 +585,7 @@ class StorageSettingsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 $browser->script("window.livewire.find('" . $browser->script("return Object.keys(window.livewire.components)[0]")[0] . "').call('openCreateModal')");
@@ -633,8 +618,7 @@ class StorageSettingsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 $browser->script("window.livewire.find('" . $browser->script("return Object.keys(window.livewire.components)[0]")[0] . "').call('openCreateModal')");
@@ -690,7 +674,6 @@ class StorageSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('17-driver-icons');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -733,7 +716,6 @@ class StorageSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('18-status-badges');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -764,7 +746,6 @@ class StorageSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('19-empty-state');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -789,8 +770,7 @@ class StorageSettingsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 $browser->script("window.livewire.find('" . $browser->script("return Object.keys(window.livewire.components)[0]")[0] . "').call('openCreateModal')");
@@ -822,8 +802,7 @@ class StorageSettingsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 $browser->script("window.livewire.find('" . $browser->script("return Object.keys(window.livewire.components)[0]")[0] . "').call('openCreateModal')");
@@ -855,8 +834,7 @@ class StorageSettingsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 $browser->script("window.livewire.find('" . $browser->script("return Object.keys(window.livewire.components)[0]")[0] . "').call('openCreateModal')");
@@ -888,8 +866,7 @@ class StorageSettingsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 $browser->script("window.livewire.find('" . $browser->script("return Object.keys(window.livewire.components)[0]")[0] . "').call('openCreateModal')");
@@ -922,8 +899,7 @@ class StorageSettingsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 $browser->script("window.livewire.find('" . $browser->script("return Object.keys(window.livewire.components)[0]")[0] . "').call('openCreateModal')");
@@ -955,8 +931,7 @@ class StorageSettingsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 $browser->script("window.livewire.find('" . $browser->script("return Object.keys(window.livewire.components)[0]")[0] . "').call('openCreateModal')");
@@ -993,8 +968,7 @@ class StorageSettingsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 $browser->script("window.livewire.find('" . $browser->script("return Object.keys(window.livewire.components)[0]")[0] . "').call('openCreateModal')");
@@ -1031,8 +1005,7 @@ class StorageSettingsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 $browser->script("window.livewire.find('" . $browser->script("return Object.keys(window.livewire.components)[0]")[0] . "').call('openCreateModal')");

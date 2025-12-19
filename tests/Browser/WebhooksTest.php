@@ -74,7 +74,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-logs-list');
 
             // Check if webhook logs page loaded via page source
@@ -103,7 +102,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-statistics');
 
             // Check for statistics via page source
@@ -132,7 +130,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-status-filter');
 
             // Check for status filter via page source
@@ -161,7 +158,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-provider-filter');
 
             // Check for provider filter via page source
@@ -190,7 +186,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-project-filter');
 
             // Check for project filter via page source
@@ -218,7 +213,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-event-filter');
 
             // Check for event type filter via page source
@@ -247,7 +241,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-search');
 
             // Check for search functionality via page source
@@ -275,7 +268,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-clear-filters');
 
             // Check for clear filters button via page source
@@ -303,7 +295,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-delivery-details');
 
             // Check for view details option via page source
@@ -332,7 +323,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-status-indicators');
 
             // Check for status indicators via page source
@@ -363,7 +353,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-timestamp');
 
             // Check for timestamp information via page source
@@ -392,7 +381,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-webhook-settings');
 
             // Check if project page loaded via page source
@@ -420,7 +408,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-toggle');
 
             // Check for webhook toggle via page source
@@ -449,7 +436,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-url-display');
 
             // Check for webhook URL via page source
@@ -478,7 +464,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-webhook-url');
 
             // Check for GitHub webhook URL via page source
@@ -505,7 +490,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('gitlab-webhook-url');
 
             // Check for GitLab webhook URL via page source
@@ -532,7 +516,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-secret-display');
 
             // Check for webhook secret via page source
@@ -560,7 +543,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-secret-toggle');
 
             // Check for secret visibility toggle via page source
@@ -589,7 +571,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('regenerate-secret-button');
 
             // Check for regenerate secret button via page source
@@ -617,7 +598,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('regenerate-secret-confirmation');
 
             // Check for confirmation dialog via page source
@@ -645,7 +625,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('copy-webhook-url');
 
             // Check for copy URL button via page source
@@ -672,7 +651,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('recent-webhook-deliveries');
 
             // Check for recent deliveries via page source
@@ -701,7 +679,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-delivery-badges');
 
             // Check for status badges via page source
@@ -730,7 +707,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-event-type-logs');
 
             // Check for event type in logs via page source
@@ -758,7 +734,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-provider-logs');
 
             // Check for provider in logs via page source
@@ -786,7 +761,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-pagination');
 
             // Check for pagination via page source
@@ -815,7 +789,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-payload-view');
 
             // Check for payload viewing via page source
@@ -843,7 +816,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-response-view');
 
             // Check for response viewing via page source
@@ -871,7 +843,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-signature-verification');
 
             // Check for signature verification via page source
@@ -899,7 +870,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-deployment-link');
 
             // Check for deployment link via page source
@@ -927,7 +897,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-configuration-instructions');
 
             // Check for configuration instructions via page source
@@ -956,7 +925,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-security-warning');
 
             // Check for security warning via page source
@@ -985,7 +953,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/projects/{$this->testProject->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-event-types-docs');
 
             // Check for event types documentation via page source
@@ -1013,7 +980,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-delivery-count');
 
             // Check for delivery count via page source
@@ -1042,7 +1008,6 @@ class WebhooksTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/webhooks')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-success-rate');
 
             // Check for success rate via page source

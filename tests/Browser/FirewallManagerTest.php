@@ -62,7 +62,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('firewall-manager-page-loads');
 
             // Check if firewall page loaded via page source
@@ -88,7 +87,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('firewall-status-displayed');
 
             // Check for status indicators
@@ -117,7 +115,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('enable-firewall-button');
 
             // Check for enable button
@@ -144,7 +141,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('disable-firewall-button');
 
             // Check for disable button
@@ -171,7 +167,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('add-rule-button');
 
             // Check for add rule button
@@ -197,7 +192,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('add-rule-modal-check');
 
             // Check for modal structure
@@ -223,7 +217,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('add-rule-form-port-field');
 
             // Check for port field
@@ -249,7 +242,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('add-rule-form-protocol-field');
 
             // Check for protocol field
@@ -275,7 +267,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('protocol-dropdown-options');
 
             // Check for protocol options
@@ -302,7 +293,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('add-rule-form-action-field');
 
             // Check for action field
@@ -328,7 +318,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('action-dropdown-options');
 
             // Check for action options
@@ -356,7 +345,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('add-rule-form-from-ip-field');
 
             // Check for from IP field
@@ -383,7 +371,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('add-rule-form-description-field');
 
             // Check for description field
@@ -410,7 +397,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('rule-list-displayed');
 
             // Check for rules section
@@ -437,7 +423,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('delete-rule-buttons');
 
             // Check for delete functionality
@@ -464,7 +449,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('install-ufw-button');
 
             // Check for install UFW button
@@ -490,7 +474,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('flash-messages-display');
 
             // Check for flash message structure
@@ -516,7 +499,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('form-validation');
 
             // Check for validation error display
@@ -542,7 +524,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('navigation-back-link');
 
             // Check for back navigation
@@ -568,7 +549,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('refresh-button');
 
             // Check for refresh button
@@ -594,7 +574,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ufw-status-indicator');
 
             // Check for UFW status
@@ -620,7 +599,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('rules-table-structure');
 
             // Check for table structure
@@ -647,7 +625,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('modal-cancel-button');
 
             // Check for cancel button
@@ -673,7 +650,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('confirm-disable-modal');
 
             // Check for confirmation modal
@@ -699,7 +675,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-name-in-header');
 
             // Check for server name in header
@@ -725,7 +700,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('loading-states');
 
             // Check for loading indicators
@@ -751,7 +725,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('rule-action-badges');
 
             // Check for action badges styling
@@ -779,7 +752,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('empty-state-message');
 
             // Check for empty state
@@ -805,7 +777,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('debug-output-section');
 
             // Check for debug output
@@ -832,7 +803,6 @@ class FirewallManagerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('firewall-hero-section');
 
             // Check for hero section

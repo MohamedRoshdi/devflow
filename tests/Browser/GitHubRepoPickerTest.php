@@ -47,7 +47,6 @@ class GitHubRepoPickerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/create')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-create-page');
 
             // Check if project create page loaded via page source
@@ -75,8 +74,7 @@ class GitHubRepoPickerTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/projects/create')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Check for repository URL input field
             $hasRepoUrlField = false;
@@ -108,8 +106,7 @@ class GitHubRepoPickerTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/projects/create')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Check for branch input field
             $hasBranchField = false;
@@ -143,8 +140,7 @@ class GitHubRepoPickerTest extends DuskTestCase
 
             $this->loginViaUI($browser)
                 ->visit('/projects/create')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Look for GitHub import button or connection indicator
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -171,7 +167,6 @@ class GitHubRepoPickerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/create')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-import-button');
 
             // Check for Import from GitHub button
@@ -208,8 +203,7 @@ class GitHubRepoPickerTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/projects/create')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Try to enter manual repository URL
             $testUrl = 'https://github.com/laravel/laravel.git';
@@ -256,8 +250,7 @@ class GitHubRepoPickerTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/projects/create')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             try {
                 // Fill required fields with test data
@@ -295,7 +288,6 @@ class GitHubRepoPickerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/github')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-settings-not-connected');
 
             // Check for connect button or connection status
@@ -323,8 +315,7 @@ class GitHubRepoPickerTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/projects/create')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Look for Import from GitHub button
             $pageSource = $browser->driver->getPageSource();
@@ -378,8 +369,7 @@ class GitHubRepoPickerTest extends DuskTestCase
 
             $this->loginViaUI($browser)
                 ->visit('/projects/create')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // The connection exists, so import button should work
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -431,8 +421,7 @@ class GitHubRepoPickerTest extends DuskTestCase
 
             $this->loginViaUI($browser)
                 ->visit('/projects/create')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Check if search/filter capability exists
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -469,8 +458,7 @@ class GitHubRepoPickerTest extends DuskTestCase
 
             $this->loginViaUI($browser)
                 ->visit('/projects/create')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             $pageSource = $browser->driver->getPageSource();
             $hasSelectionUI =
@@ -495,8 +483,7 @@ class GitHubRepoPickerTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/projects/create')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Check for branch-related elements
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -519,8 +506,7 @@ class GitHubRepoPickerTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/projects/create')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Check for loading indicators in page source
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -547,8 +533,7 @@ class GitHubRepoPickerTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/projects/create')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Check if we can navigate back to projects index
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -561,8 +546,7 @@ class GitHubRepoPickerTest extends DuskTestCase
 
             // Try to visit projects index
             $browser->visit('/projects')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             $projectsPageSource = strtolower($browser->driver->getPageSource());
             $onProjectsPage = str_contains($projectsPageSource, 'projects');
@@ -584,8 +568,7 @@ class GitHubRepoPickerTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/projects/create')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Check for error message elements or validation feedback
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -624,8 +607,7 @@ class GitHubRepoPickerTest extends DuskTestCase
 
             $this->loginViaUI($browser)
                 ->visit('/projects/create')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Check for refresh capability
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -653,7 +635,6 @@ class GitHubRepoPickerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/projects/create')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-create-wizard');
 
             // Check for wizard step indicators
@@ -681,7 +662,6 @@ class GitHubRepoPickerTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/github')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('github-settings-page');
 
             // Verify GitHub settings page loaded
@@ -746,8 +726,7 @@ class GitHubRepoPickerTest extends DuskTestCase
 
             $this->loginViaUI($browser)
                 ->visit('/projects/create')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Check for visibility filter options
             $pageSource = strtolower($browser->driver->getPageSource());

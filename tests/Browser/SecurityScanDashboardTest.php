@@ -156,7 +156,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-scan-dashboard-page');
 
             // Check if security scan dashboard loaded via page source
@@ -184,7 +183,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('start-scan-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -212,7 +210,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('scan-history');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -240,7 +237,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('latest-scan');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -268,7 +264,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-score');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -295,7 +290,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('risk-level-indicator');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -324,7 +318,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('scan-status-badges');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -352,7 +345,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('running-scan-progress');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -380,7 +372,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('scan-results-summary');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -408,7 +399,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('view-details-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -436,7 +426,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('critical-vulnerabilities');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -463,7 +452,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('high-severity-vulnerabilities');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -490,7 +478,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('medium-severity-vulnerabilities');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -517,7 +504,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('low-severity-vulnerabilities');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -544,7 +530,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('vulnerability-count');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -571,7 +556,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('remediation-suggestions');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -599,7 +583,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('scan-duration');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -627,7 +610,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('scan-timestamp');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -655,7 +637,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('scan-history-pagination');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -683,7 +664,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('filter-by-severity');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -711,7 +691,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('search-vulnerabilities');
 
             $pageSource = $browser->driver->getPageSource();
@@ -738,7 +717,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('vulnerability-details-modal');
 
             $pageSource = $browser->driver->getPageSource();
@@ -765,7 +743,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('mark-resolved');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -793,7 +770,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('false-positive-option');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -820,7 +796,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('export-pdf');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -848,7 +823,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('export-csv');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -875,7 +849,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('schedule-recurring-scans');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -903,7 +876,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('scan-comparison');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -931,7 +903,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('vulnerability-categories');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -959,7 +930,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('scan-type-selection');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -987,7 +957,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('pci-compliance');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1014,7 +983,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('hipaa-compliance');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1041,7 +1009,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('scan-notifications');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1068,7 +1035,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-score-trend');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1096,7 +1062,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('quick-scan-action');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1123,7 +1088,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deep-scan-option');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1151,7 +1115,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('scan-progress-percentage');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1179,7 +1142,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('refresh-results-button');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1206,7 +1168,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-selection');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1233,7 +1194,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('affected-files');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1261,7 +1221,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cve-references');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1288,7 +1247,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cancel-scan');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1316,7 +1274,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('remediation-priority');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1344,7 +1301,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('filter-by-date');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1372,7 +1328,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('automated-remediation');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1400,7 +1355,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('total-issues');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1428,7 +1382,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('realtime-updates');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1455,7 +1408,6 @@ class SecurityScanDashboardTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scans')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('best-practices');
 
             $pageSource = strtolower($browser->driver->getPageSource());

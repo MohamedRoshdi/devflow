@@ -46,7 +46,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-channels-list');
 
             // Check if notification channels page loaded via page source
@@ -76,7 +75,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('add-notification-channel-button');
 
             // Check for add channel button via page source
@@ -105,7 +103,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-providers');
 
             // Check for notification providers via page source
@@ -135,7 +132,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('slack-channel-config');
 
             // Check for Slack configuration via page source
@@ -163,7 +159,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('discord-channel-config');
 
             // Check for Discord configuration via page source
@@ -191,7 +186,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('email-channel-config');
 
             // Check for Email configuration via page source
@@ -219,7 +213,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-channel-config');
 
             // Check for Webhook configuration via page source
@@ -247,7 +240,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('teams-channel-config');
 
             // Check for Teams configuration via page source
@@ -275,7 +267,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('test-notification-button');
 
             // Check for test notification button via page source
@@ -303,7 +294,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('deployment-notification-events');
 
             // Check for deployment events via page source
@@ -332,7 +322,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-notification-events');
 
             // Check for server events via page source
@@ -361,7 +350,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-notification-events');
 
             // Check for SSL events via page source
@@ -390,7 +378,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-notification-events');
 
             // Check for storage events via page source
@@ -419,7 +406,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-notification-events');
 
             // Check for backup events via page source
@@ -447,7 +433,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('health-check-notification-events');
 
             // Check for health check events via page source
@@ -476,7 +461,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-channel-toggle');
 
             // Check for enable/disable toggle via page source
@@ -505,7 +489,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-channel-deletion');
 
             // Check for delete option via page source
@@ -533,7 +516,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-channel-edit');
 
             // Check for edit functionality via page source
@@ -561,7 +543,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-specific-notifications');
 
             // Check for project selection via page source
@@ -589,7 +570,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-page');
 
             // Check if notification logs page loaded via page source
@@ -618,7 +598,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-history');
 
             // Check for notification history via page source
@@ -647,7 +626,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-status-indicators');
 
             // Check for status indicators via page source
@@ -676,7 +654,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-channel-name-edit');
 
             // Check for name field via page source
@@ -704,7 +681,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-secret-config');
 
             // Check for webhook secret via page source
@@ -732,7 +708,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('multiple-notification-events');
 
             // Check for multiple event selection via page source
@@ -760,7 +735,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('provider-icons');
 
             // Check for provider icons via page source
@@ -789,7 +763,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-preferences');
 
             // Check for notification preferences via page source
@@ -817,7 +790,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-validation-errors');
 
             // Check for validation error handling via page source
@@ -845,7 +817,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-pagination');
 
             // Check for pagination via page source
@@ -874,7 +845,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-filter');
 
             // Check for filtering via page source
@@ -903,7 +873,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-timestamp');
 
             // Check for timestamp via page source
@@ -932,7 +901,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-channel-count');
 
             // Check for channel count via page source
@@ -960,7 +928,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-delivery-status');
 
             // Check for delivery status via page source
@@ -989,7 +956,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-retry');
 
             // Check for retry mechanism via page source
@@ -1017,7 +983,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-channel-description');
 
             // Check for description field via page source
@@ -1045,7 +1010,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-date-range-filter');
 
             // Check for date range filtering via page source
@@ -1074,7 +1038,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-channel-filter');
 
             // Check for channel filtering via page source
@@ -1102,7 +1065,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-error-messages');
 
             // Check for error message display via page source
@@ -1130,7 +1092,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-event-type');
 
             // Check for event type display via page source
@@ -1159,7 +1120,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-statistics');
 
             // Check for statistics via page source
@@ -1189,7 +1149,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-clear-filters');
 
             // Check for clear filters button via page source
@@ -1217,7 +1176,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-details-modal');
 
             // Check for details view functionality via page source
@@ -1245,7 +1203,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-payload');
 
             // Check for payload information via page source
@@ -1274,7 +1231,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-type-indicators');
 
             // Check for type indicators via page source
@@ -1304,7 +1260,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-select-all-events');
 
             // Check for select all functionality via page source
@@ -1332,7 +1287,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-search');
 
             // Check for search functionality via page source
@@ -1360,7 +1314,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/dashboard')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('realtime-notification-indicator');
 
             // Check for real-time notification indicators via page source
@@ -1389,7 +1342,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/dashboard')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-sound-toggle');
 
             // Check for sound toggle via page source
@@ -1418,7 +1370,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/dashboard')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('desktop-notification-toggle');
 
             // Check for desktop notification toggle via page source
@@ -1447,7 +1398,6 @@ class NotificationsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-all-projects');
 
             // Check for all projects option via page source

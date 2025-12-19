@@ -60,7 +60,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-manager-page-load');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -84,7 +83,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-configuration-display');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -108,7 +106,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-port-display');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -132,7 +129,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-root-login-toggle');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -156,7 +152,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-password-auth-toggle');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -180,7 +175,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-pubkey-status');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -204,7 +198,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-max-auth-tries');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -228,7 +221,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-change-port-button');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -252,7 +244,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-harden-button');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -276,7 +267,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-restart-button');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -300,7 +290,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-harden-modal-before');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -324,7 +313,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-flash-messages');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -347,7 +335,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-loading-states');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -371,7 +358,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-toggle-buttons');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -395,7 +381,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-port-validation');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -419,7 +404,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-back-navigation');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -443,7 +427,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-refresh-button');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -467,7 +450,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-recommendations');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -491,7 +473,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-port-recommendation');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -515,7 +496,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-root-recommendation');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -539,7 +519,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-password-recommendation');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -563,7 +542,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-auth-tries-recommendation');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -587,7 +565,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-harden-warning');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -611,7 +588,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-harden-changes');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -635,7 +611,6 @@ class SSHSecurityManagerTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/servers/{$this->server->id}/security/ssh")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-server-name');
 
             $pageSource = strtolower($browser->driver->getPageSource());

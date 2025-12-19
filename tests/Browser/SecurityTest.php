@@ -66,7 +66,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('firewall-manager-page');
 
             // Check if firewall page loaded via page source
@@ -95,7 +94,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/ssl')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-manager-page');
 
             // Check if SSL page loaded via page source
@@ -124,7 +122,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-dashboard');
 
             // Check if security dashboard loaded via page source
@@ -152,7 +149,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/ssh')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-security-settings');
 
             // Check if SSH security page loaded via page source
@@ -182,7 +178,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-status');
 
             // Check if Fail2ban page loaded via page source
@@ -212,7 +207,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-metrics');
 
             // Check for security metrics via page source
@@ -241,7 +235,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('firewall-rules-section');
 
             // Check for firewall rules via page source
@@ -271,7 +264,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/ssl')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-certificates-list');
 
             // Check for SSL certificates section via page source
@@ -301,7 +293,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/ssh')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-configuration-options');
 
             // Check for SSH configuration options via page source
@@ -331,7 +322,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-jails');
 
             // Check for Fail2ban jails via page source
@@ -361,7 +351,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scan')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-scan-page');
 
             // Check if security scan page loaded via page source
@@ -390,7 +379,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('firewall-add-rule-button');
 
             // Check for add rule button via page source
@@ -419,7 +407,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/ssl')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-renewal-option');
 
             // Check for renewal option via page source
@@ -448,7 +435,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/ssh')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-port-configuration');
 
             // Check for SSH port configuration via page source
@@ -476,7 +462,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-banned-ips');
 
             // Check for banned IPs section via page source
@@ -505,7 +490,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-dashboard-nav');
 
             // Check for navigation links via page source
@@ -534,7 +518,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('firewall-status-indicator');
 
             // Check for status indicator via page source
@@ -564,7 +547,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/ssl')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-expiration-warnings');
 
             // Check for expiration warnings via page source
@@ -593,7 +575,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/ssh')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-auth-methods');
 
             // Check for authentication methods via page source
@@ -622,7 +603,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-control-buttons');
 
             // Check for service control buttons via page source
@@ -652,7 +632,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-score-display');
 
             // Check for security score via page source
@@ -681,7 +660,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-recommendations');
 
             // Check for recommendations via page source
@@ -710,7 +688,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('port-management');
 
             // Check for port management via page source
@@ -739,7 +716,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-key-management');
 
             // Check for SSH key management via page source
@@ -768,7 +744,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('two-factor-settings');
 
             // Check for 2FA settings via page source
@@ -797,7 +772,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/admin/audit-logs')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-audit-logs');
 
             // Check for audit logs via page source
@@ -826,7 +800,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('intrusion-alerts');
 
             // Check for intrusion detection alerts via page source
@@ -855,7 +828,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ip-whitelist');
 
             // Check for whitelist management via page source
@@ -884,7 +856,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ip-blacklist');
 
             // Check for blacklist management via page source
@@ -913,7 +884,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-policy');
 
             // Check for security policy via page source
@@ -942,7 +912,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scan')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('vulnerability-scan-initiate');
 
             // Check for scan initiation via page source
@@ -971,7 +940,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/scan')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-scan-results');
 
             // Check for scan results via page source
@@ -1000,7 +968,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('firewall-toggle-rules');
 
             // Check for enable/disable functionality via page source
@@ -1029,7 +996,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/ssl')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-auto-renewal');
 
             // Check for auto-renewal settings via page source
@@ -1058,7 +1024,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/ssh')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-root-login');
 
             // Check for root login settings via page source
@@ -1087,7 +1052,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-ban-time');
 
             // Check for ban time configuration via page source
@@ -1116,7 +1080,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-events-timeline');
 
             // Check for events timeline via page source
@@ -1145,7 +1108,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('firewall-rule-priorities');
 
             // Check for priority settings via page source
@@ -1174,7 +1136,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/ssl')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-validation-status');
 
             // Check for validation status via page source
@@ -1203,7 +1164,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/ssh')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-password-auth');
 
             // Check for password authentication toggle via page source
@@ -1232,7 +1192,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-max-retry');
 
             // Check for max retry configuration via page source
@@ -1261,7 +1220,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-notifications');
 
             // Check for notification preferences via page source
@@ -1290,7 +1248,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('firewall-logging');
 
             // Check for logging configuration via page source
@@ -1319,7 +1276,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/ssl')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-certificate-chain');
 
             // Check for certificate chain validation via page source
@@ -1348,7 +1304,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/ssh-keys')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-key-fingerprints');
 
             // Check for key fingerprints via page source
@@ -1377,7 +1332,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/fail2ban')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('fail2ban-unban');
 
             // Check for unban functionality via page source
@@ -1406,7 +1360,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('security-compliance-reports');
 
             // Check for compliance reports via page source
@@ -1435,7 +1388,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/firewall')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('firewall-default-policies');
 
             // Check for default policies via page source
@@ -1464,7 +1416,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/ssl')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-installation-wizard');
 
             // Check for installation wizard via page source
@@ -1493,7 +1444,6 @@ class SecurityTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/servers/'.$this->server->id.'/security/ssh')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-timeout');
 
             // Check for timeout configuration via page source

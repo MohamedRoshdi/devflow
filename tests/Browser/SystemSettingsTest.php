@@ -62,7 +62,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('01-system-settings-page-loads');
 
             // Check if page loaded via page source
@@ -90,7 +89,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('02-general-settings-group');
 
             // Check for general settings group
@@ -117,7 +115,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('03-auth-settings-group');
 
             // Check for auth settings group
@@ -144,7 +141,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('04-features-settings-group');
 
             // Check for features settings group
@@ -170,7 +166,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('05-mail-settings-group');
 
             // Check for mail settings group
@@ -197,7 +192,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('06-security-settings-group');
 
             // Check for security settings group
@@ -223,7 +217,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('07a-before-switch-to-auth');
 
             // Try to click auth group
@@ -256,7 +249,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('08a-before-switch-to-features');
 
             // Try to click features group
@@ -289,7 +281,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('09-toggle-settings-present');
 
             // Check for toggle settings via page source
@@ -317,7 +308,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('10-save-button-present');
 
             // Check for save button via page source
@@ -345,7 +335,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('11-reset-button-present');
 
             // Check for reset button via page source
@@ -373,7 +362,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('12-clear-cache-button-present');
 
             // Check for clear cache button via page source
@@ -401,7 +389,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('13-form-validation');
 
             // Check for input fields that might have validation
@@ -429,7 +416,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('14-before-save');
 
             // Check for notification infrastructure
@@ -457,7 +443,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('15-error-notification-support');
 
             // Check for error notification capability
@@ -485,7 +470,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('16-general-settings-content');
 
             // Check for general settings content
@@ -512,8 +496,7 @@ class SystemSettingsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Try to switch to auth group
             try {
@@ -550,8 +533,7 @@ class SystemSettingsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Try to switch to features group
             try {
@@ -587,8 +569,7 @@ class SystemSettingsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Try to switch to mail group
             try {
@@ -624,8 +605,7 @@ class SystemSettingsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Try to switch to security group
             try {
@@ -662,7 +642,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('21a-initial-group');
 
             // Navigate through different groups
@@ -699,7 +678,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('22-ui-styling');
 
             // Check for styling classes
@@ -729,7 +707,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('23-sidebar-navigation');
 
             // Check for sidebar navigation
@@ -757,7 +734,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('24-header-section');
 
             // Check for header section
@@ -784,7 +760,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('25-settings-organization');
 
             // Check for group organization
@@ -812,7 +787,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('26-toggle-visual-feedback');
 
             // Check for toggle switch styling
@@ -841,7 +815,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('27-save-loading-state');
 
             // Check for loading state implementation
@@ -870,7 +843,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('28-settings-descriptions');
 
             // Check for setting descriptions
@@ -899,7 +871,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('29-integer-input-fields');
 
             // Check for integer/number input fields
@@ -927,7 +898,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('30-text-input-fields');
 
             // Check for text input fields
@@ -956,7 +926,6 @@ class SystemSettingsTest extends DuskTestCase
                 ->resize(375, 667)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('31-mobile-responsive');
 
             // Verify page loaded on mobile
@@ -984,7 +953,6 @@ class SystemSettingsTest extends DuskTestCase
                 ->resize(768, 1024)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('32-tablet-responsive');
 
             // Verify page loaded on tablet
@@ -1011,7 +979,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('33-dark-mode-support');
 
             // Check for dark mode classes
@@ -1039,7 +1006,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('34-icons-visual-enhancement');
 
             // Check for SVG icons
@@ -1067,7 +1033,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('35-group-icons');
 
             // Check for group icons
@@ -1094,7 +1059,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('36-active-group-highlight');
 
             // Check for active state styling
@@ -1122,7 +1086,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('37-spacing-layout');
 
             // Check for spacing classes
@@ -1151,7 +1114,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('38-smooth-transitions');
 
             // Check for transition classes
@@ -1179,7 +1141,6 @@ class SystemSettingsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('39-empty-group-message');
 
             // Check for empty state message

@@ -85,7 +85,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('project-environment-page-loads');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -110,7 +109,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('environment-variables-section');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -135,7 +133,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('add-env-variable-button');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -160,7 +157,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('env-key-field-works');
 
             $pageSource = $browser->driver->getPageSource();
@@ -185,7 +181,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('env-value-field-works');
 
             $pageSource = $browser->driver->getPageSource();
@@ -210,7 +205,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('save-env-variables');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -236,7 +230,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('delete-env-variable');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -262,7 +255,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('env-variables-list');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -289,7 +281,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('masked-secret-values');
 
             $pageSource = $browser->driver->getPageSource();
@@ -316,7 +307,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('show-hide-toggle');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -342,7 +332,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('duplicate-key-validation');
 
             $pageSource = $browser->driver->getPageSource();
@@ -368,7 +357,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('import-env-file');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -394,7 +382,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('export-env-variables');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -420,7 +407,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('env-sync-status');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -446,7 +432,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('success-flash-messages');
 
             $pageSource = $browser->driver->getPageSource();
@@ -472,7 +457,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('error-flash-messages');
 
             $pageSource = $browser->driver->getPageSource();
@@ -498,7 +482,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('environment-selector');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -524,7 +507,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-env-section');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -549,7 +531,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('env-modal-opens');
 
             $pageSource = $browser->driver->getPageSource();
@@ -575,7 +556,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('env-modal-closes');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -601,7 +581,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('environment-badge');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -629,7 +608,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('refresh-server-env');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -654,7 +632,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('env-formatting');
 
             $pageSource = $browser->driver->getPageSource();
@@ -680,7 +657,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('edit-env-functionality');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -706,7 +682,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('warning-messages');
 
             $pageSource = $browser->driver->getPageSource();
@@ -733,7 +708,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('multiline-textarea');
 
             $pageSource = $browser->driver->getPageSource();
@@ -759,7 +733,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('loading-states');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -785,7 +758,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('error-states');
 
             $pageSource = $browser->driver->getPageSource();
@@ -811,7 +783,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('variable-count');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -837,7 +808,6 @@ class ProjectEnvironmentTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit("/projects/{$this->project->id}")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('delete-confirm-dialog');
 
             $pageSource = strtolower($browser->driver->getPageSource());

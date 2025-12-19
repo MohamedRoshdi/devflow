@@ -97,7 +97,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-settings-page');
 
             // Check if storage settings page loaded via page source
@@ -126,7 +125,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-configurations-list');
 
             // Check for storage configurations via page source
@@ -155,7 +153,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('before-storage-config-modal');
 
             // Check for create button via page source
@@ -184,7 +181,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('s3-provider-tab');
 
             // Check for S3 provider option via page source
@@ -212,7 +208,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('gcs-provider-tab');
 
             // Check for GCS provider option via page source
@@ -240,7 +235,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ftp-provider-tab');
 
             // Check for FTP provider option via page source
@@ -267,7 +261,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('sftp-provider-tab');
 
             // Check for SFTP provider option via page source
@@ -295,7 +288,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('local-storage-option');
 
             // Check for local storage option via page source
@@ -323,7 +315,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-credentials-fields');
 
             // Check for credential input fields via page source
@@ -353,7 +344,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-bucket-field');
 
             // Check for bucket field via page source
@@ -381,7 +371,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-region-selection');
 
             // Check for region field via page source
@@ -410,7 +399,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-path-prefix');
 
             // Check for path prefix field via page source
@@ -438,7 +426,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-encryption-option');
 
             // Check for encryption option via page source
@@ -466,7 +453,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('generate-encryption-key-button');
 
             // Check for generate key button via page source
@@ -494,7 +480,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('test-storage-connection');
 
             // Check for test connection button via page source
@@ -522,7 +507,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('set-default-storage');
 
             // Check for set default option via page source
@@ -550,7 +534,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('edit-storage-config-modal');
 
             // Check for edit button via page source
@@ -578,7 +561,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('delete-storage-config');
 
             // Check for delete button via page source
@@ -606,7 +588,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-config-status');
 
             // Check for status indicator via page source
@@ -638,7 +619,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-last-tested');
 
             // Check for last tested timestamp via page source
@@ -667,7 +647,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-usage-statistics');
 
             // Check for storage usage stats via page source
@@ -697,7 +676,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-cleanup-tools');
 
             // Check for cleanup tools via page source
@@ -726,7 +704,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-project-assignment');
 
             // Check for project assignment via page source
@@ -754,7 +731,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-endpoint-config');
 
             // Check for endpoint field via page source
@@ -782,7 +758,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-test-results');
 
             // Check for test results display area via page source
@@ -811,7 +786,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-driver-icon');
 
             // Check for driver icon via page source
@@ -840,7 +814,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-config-name');
 
             // Check for name field via page source
@@ -868,7 +841,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ftp-passive-mode');
 
             // Check for passive mode toggle via page source
@@ -896,7 +868,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ftp-ssl-option');
 
             // Check for SSL option via page source
@@ -925,7 +896,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('sftp-private-key');
 
             // Check for private key field via page source
@@ -954,7 +924,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-config-save');
 
             // Check for save button via page source
@@ -982,7 +951,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-config-validation');
 
             // Check for validation via page source
@@ -1013,7 +981,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-default-badge');
 
             // Check for default badge via page source
@@ -1041,7 +1008,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-port-config');
 
             // Check for port field via page source
@@ -1069,7 +1035,6 @@ class StorageTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/storage')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-config-filtering');
 
             // Check for filtering/search via page source

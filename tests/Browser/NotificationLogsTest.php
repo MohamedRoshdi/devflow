@@ -172,7 +172,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-page-loads');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -197,7 +196,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-list-entries');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -225,7 +223,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-filter-type');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -253,7 +250,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-filter-status');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -280,7 +276,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-date-filter');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -307,7 +302,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-search');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -332,7 +326,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-details');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -359,7 +352,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-retry-button');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -385,7 +377,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-delete-button');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -411,7 +402,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-type-badge');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -438,7 +428,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-status-indicator');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -465,7 +454,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-timestamp');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -492,7 +480,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-recipient');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -519,7 +506,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-subject');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -546,7 +532,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-pagination');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -576,7 +561,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications?search=nonexistentnotification12345')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-empty-state');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -604,7 +588,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-bulk-delete');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -631,7 +614,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-export');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -657,7 +639,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-statistics');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -685,7 +666,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-flash-messages');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -712,7 +692,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-event-filter');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -739,7 +718,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-clear-filters');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -765,7 +743,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-error-message');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -792,7 +769,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-channel-name');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -819,7 +795,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-success-highlight');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -845,7 +820,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-failed-highlight');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -871,7 +845,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-payload');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -898,7 +871,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-count');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -925,7 +897,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-recent');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -951,7 +922,6 @@ class NotificationLogsTest extends DuskTestCase
             $this->loginViaUI($browser, $this->user)
                 ->visit('/logs/notifications')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-logs-modal');
 
             $pageSource = strtolower($browser->driver->getPageSource());

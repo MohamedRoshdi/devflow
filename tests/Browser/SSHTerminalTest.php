@@ -78,7 +78,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-page');
 
             // Check if terminal page loaded
@@ -106,7 +105,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-header');
 
             // Check for terminal header elements
@@ -134,7 +132,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-status');
 
             // Check for connection status elements
@@ -162,7 +159,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-input');
 
             // Check for command input field
@@ -189,7 +185,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-execute-button');
 
             // Check for execute button
@@ -216,7 +211,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-output');
 
             // Check for output display area
@@ -244,7 +238,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-history');
 
             // Check for history section
@@ -271,7 +264,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-clear-history');
 
             // Check for clear history button
@@ -298,7 +290,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-prompt');
 
             // Check for prompt symbol
@@ -325,7 +316,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-quick-commands');
 
             // Check for quick commands
@@ -352,7 +342,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-system-commands');
 
             // Check for system info commands
@@ -380,7 +369,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-docker-commands');
 
             // Check for Docker commands
@@ -407,7 +395,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-process-commands');
 
             // Check for process/service commands
@@ -435,7 +422,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-dark-theme');
 
             // Check for dark theme styling
@@ -462,7 +448,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-monospace');
 
             // Check for monospace font
@@ -488,7 +473,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-rerun');
 
             // Check for rerun functionality
@@ -515,7 +499,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-exit-code');
 
             // Check for exit code display
@@ -542,7 +525,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-indicators');
 
             // Check for success/failure indicators
@@ -570,7 +552,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-timestamp');
 
             // Check for timestamp display
@@ -597,7 +578,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-web-commands');
 
             // Check for web services commands
@@ -625,7 +605,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-log-commands');
 
             // Check for log commands
@@ -653,7 +632,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-username');
 
             // Check for username display
@@ -680,7 +658,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-ip');
 
             // Check for IP address display
@@ -706,7 +683,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-responsive');
 
             // Check for responsive classes
@@ -733,7 +709,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-placeholder');
 
             // Check for placeholder text
@@ -760,7 +735,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-loading');
 
             // Check for loading state
@@ -787,7 +761,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-disabled-button');
 
             // Check for disabled state logic
@@ -814,7 +787,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-disabled-input');
 
             // Check for input disabled state
@@ -840,7 +812,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-hover');
 
             // Check for hover styles
@@ -866,7 +837,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-tooltips');
 
             // Check for tooltips
@@ -892,7 +862,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-colors');
 
             // Check for color classes
@@ -920,7 +889,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-macos-controls');
 
             // Check for macOS-style control circles
@@ -948,7 +916,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-explore-commands');
 
             // Check for explore commands
@@ -976,7 +943,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-wire-submit');
 
             // Check for wire:submit.prevent
@@ -1002,7 +968,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-autofocus');
 
             // Check for autofocus attribute
@@ -1028,7 +993,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-rounded');
 
             // Check for rounded corners
@@ -1055,7 +1019,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-wire-model');
 
             // Check for wire:model
@@ -1081,7 +1044,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-categories');
 
             // Check for command categories
@@ -1108,7 +1070,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-dark-mode-support');
 
             // Check for dark mode classes
@@ -1135,7 +1096,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-spacing');
 
             // Check for spacing classes
@@ -1163,7 +1123,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-quick-click');
 
             // Check for wire:click set command
@@ -1189,7 +1148,6 @@ class SSHTerminalTest extends DuskTestCase
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-clear-confirm');
 
             // Check for confirmation dialog
@@ -1215,13 +1173,11 @@ class SSHTerminalTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $this->loginViaUI($browser, $this->adminUser)
                 ->visit("/servers/{$this->testServer->id}")
-                ->pause(2000)
-                ->waitFor('body', 15);
+                ->pause(2000);
 
             // Try to navigate to terminal
             $browser->visit("/servers/{$this->testServer->id}/terminal")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssh-terminal-navigation');
 
             $currentUrl = $browser->driver->getCurrentURL();

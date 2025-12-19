@@ -78,7 +78,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-backups-page');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -104,7 +103,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('full-backup-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -131,7 +129,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('incremental-backup-option');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -157,7 +154,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-scheduling-config');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -185,7 +181,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-location-settings');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -230,7 +225,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-restoration');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -256,7 +250,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-download');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -282,7 +275,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-deletion-confirm');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -309,7 +301,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-history');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -336,7 +327,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-logs');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -363,7 +353,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-encryption');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -390,7 +379,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('retention-policies');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -417,7 +405,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-verification');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -444,7 +431,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-settings');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -471,7 +457,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('s3-backup-destination');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -498,7 +483,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('gcs-destination');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -525,7 +509,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('azure-destination');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -565,7 +548,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-progress');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -592,7 +574,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-comparison');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -618,7 +599,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-diff');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -645,7 +625,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('daily-schedule');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -671,7 +650,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('weekly-schedule');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -697,7 +675,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('monthly-schedule');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -723,7 +700,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-size-info');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -750,7 +726,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-status-indicators');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -778,7 +753,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-checksum');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -805,7 +779,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-duration');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -847,7 +820,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('schedule-toggle');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -889,7 +861,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-errors');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -915,7 +886,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('compression-options');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -942,7 +912,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-statistics');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -969,7 +938,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-filtering');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -996,7 +964,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-sorting');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1023,7 +990,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-pagination');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1050,7 +1016,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('schedule-next-run');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1076,7 +1041,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-cleanup');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1103,7 +1067,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-export-local');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1130,7 +1093,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('schedule-time-selection');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1157,7 +1119,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-type-indicators');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1184,7 +1145,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('restore-point-selection');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1211,7 +1171,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('storage-usage-metrics');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1238,7 +1197,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('schedule-edit');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1265,7 +1223,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('schedule-delete-confirm');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1292,7 +1249,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('notification-channels');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1319,7 +1275,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('integrity-test');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1346,7 +1301,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('backup-manifest');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1373,7 +1327,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('partial-restore');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1400,7 +1353,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('bandwidth-throttling');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1427,7 +1379,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('email-notification');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1454,7 +1405,6 @@ class ServerBackupsTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->server->id}/backups")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('webhook-notification');
 
             $pageSource = strtolower($browser->driver->getPageSource());

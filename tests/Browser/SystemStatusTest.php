@@ -44,7 +44,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('system-status-page-loads');
 
             // Check if page loaded via page source
@@ -73,7 +72,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('overall-health-indicator');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -100,7 +98,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('database-connection-status');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -128,7 +125,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('redis-connection-status');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -154,7 +150,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('queue-worker-status');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -181,7 +176,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('websocket-reverb-status');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -208,7 +202,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cache-driver-info');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -236,7 +229,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('php-version');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -263,7 +255,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('laravel-version');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -290,7 +281,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('app-version-environment');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -318,7 +308,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('server-uptime');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -345,7 +334,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('memory-usage');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -373,7 +361,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cpu-usage');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -400,7 +387,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('disk-space-status');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -427,7 +413,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('service-status-colors');
 
             $pageSource = $browser->driver->getPageSource();
@@ -457,7 +442,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('running-green-indicator');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -484,7 +468,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('stopped-red-indicator');
 
             $pageSource = $browser->driver->getPageSource();
@@ -512,7 +495,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('warning-yellow-indicator');
 
             $pageSource = $browser->driver->getPageSource();
@@ -540,7 +522,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('refresh-status-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -568,7 +549,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('before-refresh');
 
             try {
@@ -603,7 +583,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('queue-statistics');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -631,7 +610,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('cache-statistics');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -659,7 +637,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('database-statistics');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -687,7 +664,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('redis-info');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -713,7 +689,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('queue-worker-count');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -740,7 +715,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('reverb-port-info');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -767,7 +741,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('service-details');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -794,7 +767,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('test-broadcast-button');
 
             $pageSource = $browser->driver->getPageSource();
@@ -821,7 +793,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('broadcasting-status');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -848,7 +819,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('environment-display');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -876,7 +846,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('debug-mode-warning');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -903,7 +872,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('maintenance-mode-status');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -930,7 +898,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('loading-state');
 
             $pageSource = $browser->driver->getPageSource();
@@ -957,7 +924,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('service-list-organized');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -985,7 +951,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('failed-jobs-count');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1012,7 +977,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('pending-jobs-count');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1039,7 +1003,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('redis-memory-usage');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1066,7 +1029,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('redis-connected-clients');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1093,7 +1055,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('database-version');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1120,7 +1081,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('database-name-driver');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1147,7 +1107,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('error-messages');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1175,7 +1134,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('service-details-info');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1203,7 +1161,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('livewire-polling');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1229,7 +1186,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('before-refresh-notification');
 
             try {
@@ -1266,7 +1222,6 @@ class SystemStatusTest extends DuskTestCase
                 ->resize(375, 667)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('mobile-responsive-status');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1294,7 +1249,6 @@ class SystemStatusTest extends DuskTestCase
                 ->resize(768, 1024)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('tablet-viewport-status');
 
             $pageSource = strtolower($browser->driver->getPageSource());
@@ -1321,7 +1275,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('service-cards-styled');
 
             $pageSource = $browser->driver->getPageSource();
@@ -1349,7 +1302,6 @@ class SystemStatusTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit('/settings/system-status')
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('navigation-integration');
 
             $pageSource = strtolower($browser->driver->getPageSource());

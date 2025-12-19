@@ -215,7 +215,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-certificates-list-page');
 
             // Check if SSL certificates page loaded via page source
@@ -244,7 +243,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-statistics-dashboard');
 
             // Check for statistics content
@@ -273,7 +271,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-before-modal-open');
 
             // Look for certificate details or view button
@@ -302,7 +299,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-expiry-warnings');
 
             // Check for expiry warnings
@@ -331,7 +327,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-status-filter');
 
             // Check for filter options
@@ -360,7 +355,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-search-functionality');
 
             // Check for search input
@@ -389,7 +383,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-renewal-button');
 
             // Check for renewal button
@@ -418,7 +411,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-letsencrypt-provider');
 
             // Check for Let's Encrypt references
@@ -447,7 +439,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-status-indicators');
 
             // Check for status indicators
@@ -476,7 +467,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-expiring-highlighted');
 
             // Check for expiring certificate highlighting
@@ -505,7 +495,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-expired-error-state');
 
             // Check for expired certificate error state
@@ -534,7 +523,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-failed-issuance');
 
             // Check for failed certificate
@@ -563,7 +551,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-domain-verification');
 
             // Check for domain verification status
@@ -592,7 +579,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-auto-renewal-status');
 
             // Check for auto-renewal status
@@ -621,7 +607,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-expiry-dates');
 
             // Check for expiry dates
@@ -650,7 +635,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-issue-date');
 
             // Check for issue dates
@@ -679,7 +663,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-bulk-renewal');
 
             // Check for bulk renewal option
@@ -708,7 +691,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-download-option');
 
             // Check for download option
@@ -737,7 +719,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-certificate-paths');
 
             // Check for certificate paths
@@ -766,7 +747,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-critical-certificates');
 
             // Check for critical certificates section
@@ -795,7 +775,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-provider-badge');
 
             // Check for provider badge
@@ -824,7 +803,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-days-until-expiry');
 
             // Check for days counter
@@ -853,7 +831,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-validation-errors');
 
             // Check for validation error messages
@@ -882,7 +859,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-pagination');
 
             // Check for pagination elements
@@ -911,7 +887,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-issue-new-button');
 
             // Check for issue new certificate button
@@ -940,7 +915,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-revocation-option');
 
             // Check for revocation option
@@ -969,7 +943,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-refresh-check-expiry');
 
             // Check for refresh/check expiry action
@@ -998,7 +971,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-domain-list');
 
             // Check for domain names in the list
@@ -1027,7 +999,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-last-renewal-attempt');
 
             // Check for last renewal attempt
@@ -1056,7 +1027,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-certificate-count');
 
             // Check for certificate count
@@ -1088,7 +1058,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-chain-validation');
 
             // Check for chain validation status
@@ -1117,7 +1086,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-history-logs');
 
             // Check for history/logs access
@@ -1146,7 +1114,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-wildcard-support');
 
             // Check for wildcard certificate support
@@ -1175,7 +1142,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-export-functionality');
 
             // Check for export functionality
@@ -1204,7 +1170,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-auto-renewal-toggle');
 
             // Check for auto-renewal toggle
@@ -1233,7 +1198,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-notification-settings');
 
             // Check for notification settings
@@ -1262,7 +1226,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-creation-modal-before');
 
             // Check for create button and modal elements
@@ -1291,7 +1254,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-letsencrypt-option');
 
             // Check for Let's Encrypt option
@@ -1320,7 +1282,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-custom-upload-option');
 
             // Check for custom certificate upload
@@ -1349,7 +1310,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-verification-button');
 
             // Check for verification button
@@ -1378,7 +1338,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-sorting-functionality');
 
             // Check for sorting functionality
@@ -1407,7 +1366,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-issuer-information');
 
             // Check for issuer information
@@ -1436,7 +1394,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-bulk-deletion');
 
             // Check for bulk deletion option
@@ -1465,7 +1422,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-certbot-status');
 
             // Check for Certbot installation status
@@ -1494,7 +1450,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-quick-actions');
 
             // Check for quick actions menu
@@ -1523,7 +1478,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-expiry-notifications-preview');
 
             // Check for expiry notifications
@@ -1552,7 +1506,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-domain-association');
 
             // Check for domain association
@@ -1581,7 +1534,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-renewal-progress');
 
             // Check for progress indicator
@@ -1610,7 +1562,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-statistics-cards');
 
             // Check for statistics cards
@@ -1639,7 +1590,6 @@ class SSLTest extends DuskTestCase
             $this->loginViaUI($browser)
                 ->visit("/servers/{$this->testServer->id}/ssl")
                 ->pause(2000)
-                ->waitFor('body', 15)
                 ->screenshot('ssl-responsive-design');
 
             // Check page loads and has responsive elements
