@@ -11,9 +11,9 @@
                         </svg>
                     </div>
                     <div>
-                        <p class="text-lg font-bold text-gray-900 dark:text-white">NileStack</p>
+                        <p class="text-lg font-bold text-gray-900 dark:text-white">DevFlow Pro</p>
                         <p class="text-xs text-gray-500 dark:text-gray-400">
-                            <span class="font-medium text-blue-600 dark:text-blue-400">DevFlow Pro</span> Platform
+                            <span class="font-medium text-blue-600 dark:text-blue-400">Deployment</span> Platform
                         </p>
                     </div>
                 </div>

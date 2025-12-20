@@ -1,0 +1,93 @@
+# DevFlow Pro - Development Docker Compose Configuration
+# SQLite | File Cache | Sync Queue - Zero External Dependencies
+# Perfect for quick local development and testing
+
+version: '3.8'
+
+services:
+  # ================================
+  # DevFlow Pro Application (PHP-FPM)
+  # ================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.4}
+        INSTALL_XDEBUG: ${INSTALL_XDEBUG:-true}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+      target: development
+    container_name: devflow_app_dev
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html:delegated
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      # Laravel Application
+      - APP_NAME=${APP_NAME:-DevFlow Pro}
+      - APP_ENV=local
+      - APP_KEY=${APP_KEY:-}
+      - APP_DEBUG=true
+      - APP_URL=http://localhost:8000
+
+      # SQLite Database (Zero Setup)
+      - DB_CONNECTION=sqlite
+      - DB_DATABASE=/var/www/html/database/database.sqlite
+
+      # File-based Cache & Session (No Redis Required)
+      - CACHE_STORE=file
+      - SESSION_DRIVER=file
+      - SESSION_LIFETIME=120
+
+      # Sync Queue (Immediate Processing)
+      - QUEUE_CONNECTION=sync
+
+      # Logging
+      - LOG_CHANNEL=stack
+      - LOG_LEVEL=debug
+
+      # Filesystem
+      - FILESYSTEM_DISK=local
+
+      # Broadcasting (Disabled for Development)
+      - BROADCAST_CONNECTION=log
+
+      # PHP Development Configuration
+      - PHP_MEMORY_LIMIT=256M
+      - PHP_MAX_EXECUTION_TIME=0
+      - PHP_DISPLAY_ERRORS=On
+    ports:
+      - "${HTTP_PORT:-8000}:8000"
+    networks:
+      - devflow_dev_network
+    command: php artisan serve --host=0.0.0.0 --port=8000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ================================
+  # Node.js for Asset Building
+  # ================================
+  node:
+    image: node:20-alpine
+    container_name: devflow_node_dev
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html:delegated
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "${VITE_PORT:-5173}:5173"
+    networks:
+      - devflow_dev_network
+
+# ================================
+# Docker Networks
+# ================================
+networks:
+  devflow_dev_network:
+    driver: bridge

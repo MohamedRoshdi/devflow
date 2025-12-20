@@ -5,23 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ $title ?? 'NileStack - DevFlow Pro Platform' }}</title>
-    <meta name="title" content="{{ $title ?? 'NileStack - DevFlow Pro Platform' }}">
-    <meta name="description" content="Professional multi-project deployment and management platform. Automated DevOps, CI/CD pipelines, and infrastructure management by NileStack.">
-    <meta name="author" content="NileStack">
+    <title>{{ $title ?? 'DevFlow Pro - Deployment Platform' }}</title>
+    <meta name="title" content="{{ $title ?? 'DevFlow Pro - Deployment Platform' }}">
+    <meta name="description" content="Professional multi-project deployment and management platform. Automated DevOps, CI/CD pipelines, and infrastructure management.">
+    <meta name="author" content="DevFlow Pro">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="{{ $title ?? 'NileStack - DevFlow Pro Platform' }}">
-    <meta property="og:description" content="Professional multi-project deployment and management platform by NileStack.">
-    <meta property="og:image" content="{{ url('/images/nilestack-og.svg') }}">
+    <meta property="og:title" content="{{ $title ?? 'DevFlow Pro - Deployment Platform' }}">
+    <meta property="og:description" content="Professional multi-project deployment and management platform.">
+    <meta property="og:image" content="{{ url('/images/devflow-og.svg') }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:type" content="image/svg+xml">
-    <meta property="og:site_name" content="NileStack">
+    <meta property="og:site_name" content="DevFlow Pro">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ $title ?? 'NileStack - DevFlow Pro Platform' }}">
-    <meta name="twitter:description" content="Professional multi-project deployment and management platform by NileStack.">
-    <meta name="twitter:image" content="{{ url('/images/nilestack-og.svg') }}">
+    <meta name="twitter:title" content="{{ $title ?? 'DevFlow Pro - Deployment Platform' }}">
+    <meta name="twitter:description" content="Professional multi-project deployment and management platform.">
+    <meta name="twitter:image" content="{{ url('/images/devflow-og.svg') }}">
     <meta name="theme-color" content="#2563eb">
 
     <!-- Favicon -->

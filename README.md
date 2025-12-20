@@ -165,27 +165,55 @@ DevFlow Pro is an enterprise-grade deployment management platform that makes it 
 - **Git:** Latest stable version
 - **Docker:** 20.10+ (optional, for containerized deployments)
 
-### Quick Installation (Traditional)
+### Quick Start (5 Minutes - SQLite)
+
+The fastest way to get DevFlow Pro running locally:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/yourusername/devflow-pro.git
+git clone https://github.com/devflow-pro/devflow-pro.git
 cd devflow-pro
 
-# 2. Install PHP dependencies
+# 2. Install dependencies
 composer install
-
-# 3. Install Node.js dependencies
 npm install
 
-# 4. Create environment file
+# 3. Setup environment (uses SQLite by default - no database setup needed!)
 cp .env.example .env
-
-# 5. Generate application key
 php artisan key:generate
 
-# 6. Configure database in .env
-# For PostgreSQL (recommended):
+# 4. Create SQLite database and run migrations
+touch database/database.sqlite
+php artisan migrate
+
+# 5. Build frontend assets
+npm run build
+
+# 6. Start the application
+php artisan serve
+```
+
+Visit `http://localhost:8000` - that's it! 🎉
+
+### Traditional Installation (PostgreSQL/MySQL)
+
+For production or if you prefer a full database:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/devflow-pro/devflow-pro.git
+cd devflow-pro
+
+# 2. Install dependencies
+composer install
+npm install
+
+# 3. Create environment file
+cp .env.example .env
+php artisan key:generate
+
+# 4. Configure database in .env
+# For PostgreSQL:
 DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
 DB_PORT=5432
@@ -193,43 +221,74 @@ DB_DATABASE=devflow_pro
 DB_USERNAME=your_username
 DB_PASSWORD=your_password
 
-# 7. Run database migrations
+# For production, also update:
+CACHE_STORE=redis
+SESSION_DRIVER=redis
+QUEUE_CONNECTION=redis
+
+# 5. Run database migrations
 php artisan migrate
 
-# 8. Seed initial data (optional)
+# 6. Seed initial data (optional)
 php artisan db:seed
 
-# 9. Build frontend assets
+# 7. Build frontend assets
 npm run build
 
-# 10. Start the application
+# 8. Start the application
 php artisan serve
 ```
 
 Visit `http://localhost:8000` to access DevFlow Pro.
 
-### Docker Installation
+### Docker Installation (Development)
+
+For quick development with SQLite (no external database needed):
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/yourusername/devflow-pro.git
+git clone https://github.com/devflow-pro/devflow-pro.git
 cd devflow-pro
 
 # 2. Copy environment file
 cp .env.example .env
 
-# 3. Build and start containers
-docker-compose up -d
+# 3. Create SQLite database
+touch database/database.sqlite
+
+# 4. Build and start development containers
+docker-compose -f docker-compose.dev.yml up -d --build
+
+# 5. Generate application key
+docker-compose -f docker-compose.dev.yml exec app php artisan key:generate
+
+# 6. Run migrations
+docker-compose -f docker-compose.dev.yml exec app php artisan migrate
+```
+
+Visit `http://localhost:8000` to access DevFlow Pro.
+
+### Docker Installation (Production)
+
+For production with PostgreSQL and Redis:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/devflow-pro/devflow-pro.git
+cd devflow-pro
+
+# 2. Copy and configure environment
+cp .env.example .env
+# Edit .env: Set DB_CONNECTION=pgsql, add DB_PASSWORD, etc.
+
+# 3. Build and start production containers
+docker-compose up -d --build
 
 # 4. Generate application key
 docker-compose exec app php artisan key:generate
 
 # 5. Run migrations
 docker-compose exec app php artisan migrate
-
-# 6. Build frontend assets
-docker-compose exec app npm install
-docker-compose exec app npm run build
 ```
 
 Visit `http://localhost` to access DevFlow Pro.
@@ -443,7 +502,7 @@ Please see [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines on:
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/devflow-pro.git
+git clone https://github.com/devflow-pro/devflow-pro.git
 cd devflow-pro
 
 # Install dependencies
@@ -494,7 +553,7 @@ For more details, see [TESTING.md](TESTING.md).
 
 ## Security
 
-Security is a top priority for DevFlow Pro. If you discover a security vulnerability, please email security@devflow.pro instead of using the issue tracker.
+Security is a top priority for DevFlow Pro. If you discover a security vulnerability, please open a private security advisory on GitHub instead of using the public issue tracker.
 
 ### Security Features
 - SSH key authentication
@@ -517,9 +576,8 @@ DevFlow Pro is open-source software licensed under the [MIT License](LICENSE).
 ## Support
 
 - **Documentation:** [docs/](docs/)
-- **Issues:** [GitHub Issues](https://github.com/yourusername/devflow-pro/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/yourusername/devflow-pro/discussions)
-- **Email:** support@devflow.pro
+- **Issues:** [GitHub Issues](https://github.com/devflow-pro/devflow-pro/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/devflow-pro/devflow-pro/discussions)
 
 ---
 
@@ -540,12 +598,12 @@ Thank you to all contributors who have helped make DevFlow Pro better!
 
 <div align="center">
 
-**Developed by [NileStack](https://github.com/nilestack)**
+**Built with ❤️ by the Open Source Community**
 
 [Get Started](#installation) • [Documentation](#documentation) • [Support](#support)
 
 ---
 
-© 2025 NileStack. All rights reserved.
+Made with Laravel, Livewire, and Tailwind CSS
 
 </div>

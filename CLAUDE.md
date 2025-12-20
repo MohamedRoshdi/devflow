@@ -4,9 +4,8 @@
 ### Project Overview
 
 **Project Name:** DevFlow Pro - Multi-Project Deployment & Management System
-**Primary Developer:** MBFouad (Senior PHP Developer at ACID21)
-**Tech Stack:** Laravel 12, PHP 8.4, Livewire 3, MySQL 8.0+, Redis, Docker, Nginx
-**Code Standards:** PHPStan Level 8 compliance required
+**Tech Stack:** Laravel 12, PHP 8.4, Livewire 3, SQLite/PostgreSQL/MySQL, Redis (optional), Docker, Nginx
+**Code Standards:** PHPStan Level 9 compliance required
 **Development Approach:** Direct code in conversation, single definitive solutions preferred
 
 ### Core Purpose

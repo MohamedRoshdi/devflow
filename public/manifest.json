@@ -1,7 +1,7 @@
 {
-  "name": "NileStack - DevFlow Pro",
+  "name": "DevFlow Pro",
   "short_name": "DevFlow Pro",
-  "description": "Multi-Project Deployment & Management Platform by NileStack",
+  "description": "Multi-Project Deployment & Management Platform",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#0F172A",

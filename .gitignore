@@ -60,3 +60,4 @@ deploy.local.sh
 quick-deploy.local.sh
 public/vendor/
 storage/data/
+storage/testing/
