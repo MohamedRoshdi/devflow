@@ -28,9 +28,9 @@ class PipelineBuilderTest extends TestCase
     {
         parent::setUp();
 
-        // Create permissions
-        Permission::create(['name' => 'create-pipelines']);
-        Permission::create(['name' => 'edit-pipelines']);
+        // Create permissions (or find existing)
+        Permission::findOrCreate('create-pipelines');
+        Permission::findOrCreate('edit-pipelines');
 
         $this->user = User::factory()->create();
         $this->user->givePermissionTo('create-pipelines');

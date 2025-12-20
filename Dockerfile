@@ -26,6 +26,8 @@ WORKDIR /var/www/html
 RUN apk add --no-cache \
     # Build dependencies
     $PHPIZE_DEPS \
+    # Linux headers (required for sockets extension)
+    linux-headers \
     # System utilities
     bash \
     curl \
@@ -73,6 +75,8 @@ RUN apk add --no-cache \
     # XML processing
     libxml2-dev \
     libxslt-dev \
+    # Multibyte string support (required for mbstring)
+    oniguruma-dev \
     && rm -rf /var/cache/apk/*
 
 # Configure and install PHP extensions
@@ -112,17 +116,19 @@ RUN docker-php-ext-configure gd \
         # String manipulation
         mbstring \
         # File info
-        fileinfo
+        fileinfo \
+        # FTP support
+        ftp
 
-# Install PECL extensions
+# Install PECL extensions (using compatible versions for PHP 8.4)
 RUN pecl channel-update pecl.php.net \
-    && pecl install redis-6.0.2 \
-    && pecl install igbinary-3.2.15 \
+    && pecl install redis \
+    && pecl install igbinary-3.2.16 \
     && docker-php-ext-enable redis igbinary
 
 # Install Xdebug (development only)
 RUN if [ "$INSTALL_XDEBUG" = "true" ]; then \
-        pecl install xdebug-3.3.2 \
+        pecl install xdebug \
         && docker-php-ext-enable xdebug; \
     fi
 

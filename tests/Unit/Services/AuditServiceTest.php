@@ -1006,4 +1006,299 @@ class AuditServiceTest extends TestCase
         $this->assertCount(1, $lines); // Only header
         $this->assertStringStartsWith('ID,User,Action,Model,Model ID,IP Address,Date,Changes', $csv);
     }
+
+    // ==================== CURSOR ITERATION TESTS (Memory-Efficient) ====================
+
+    #[Test]
+    public function it_streams_logs_as_lazy_collection(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $project = Project::factory()->create();
+        $this->actingAs($user);
+
+        for ($i = 0; $i < 25; $i++) {
+            $this->service->log('project.accessed', $project);
+        }
+
+        // Act
+        $stream = $this->service->streamLogs();
+
+        // Assert
+        $this->assertInstanceOf(\Illuminate\Support\LazyCollection::class, $stream);
+        $this->assertEquals(25, $stream->count());
+    }
+
+    #[Test]
+    public function it_streams_logs_with_filters(): void
+    {
+        // Arrange
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $project = Project::factory()->create();
+
+        $this->actingAs($user1);
+        $this->service->log('project.created', $project);
+        $this->service->log('project.updated', $project);
+
+        $this->actingAs($user2);
+        $this->service->log('project.deleted', $project);
+
+        // Act
+        $stream = $this->service->streamLogs(['user_id' => $user1->id]);
+
+        // Assert
+        $this->assertEquals(2, $stream->count());
+    }
+
+    #[Test]
+    public function it_streams_logs_filtered_by_action(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $project = Project::factory()->create();
+        $server = Server::factory()->create();
+        $this->actingAs($user);
+
+        $this->service->log('project.created', $project);
+        $this->service->log('project.updated', $project);
+        $this->service->log('server.created', $server);
+
+        // Act
+        $stream = $this->service->streamLogs(['action' => 'created']);
+
+        // Assert
+        $this->assertEquals(2, $stream->count());
+    }
+
+    #[Test]
+    public function it_streams_logs_filtered_by_model_type(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $project = Project::factory()->create();
+        $server = Server::factory()->create();
+        $this->actingAs($user);
+
+        $this->service->log('project.created', $project);
+        $this->service->log('project.updated', $project);
+        $this->service->log('server.created', $server);
+
+        // Act
+        $stream = $this->service->streamLogs(['model_type' => Project::class]);
+
+        // Assert
+        $this->assertEquals(2, $stream->count());
+    }
+
+    #[Test]
+    public function it_streams_logs_filtered_by_date_range(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $project = Project::factory()->create();
+        $this->actingAs($user);
+
+        // Old log
+        $oldLog = $this->service->log('project.created', $project);
+        $oldLog->created_at = now()->subDays(10);
+        $oldLog->save();
+
+        // Recent log
+        $this->service->log('project.updated', $project);
+
+        // Act
+        $stream = $this->service->streamLogs(['from_date' => now()->subDays(1)]);
+
+        // Assert
+        $this->assertEquals(1, $stream->count());
+    }
+
+    #[Test]
+    public function it_streams_csv_export_as_generator(): void
+    {
+        // Arrange
+        $user = User::factory()->create(['name' => 'Stream User']);
+        $project = Project::factory()->create();
+        $this->actingAs($user);
+
+        $this->service->log('project.created', $project);
+        $this->service->log('project.updated', $project);
+
+        // Act
+        $generator = $this->service->streamExportToCsv();
+        $csvContent = '';
+        foreach ($generator as $line) {
+            $csvContent .= $line;
+        }
+
+        // Assert
+        $this->assertInstanceOf(\Generator::class, $generator);
+        $this->assertStringContainsString('ID,User,Action,Model,Model ID,IP Address,Date,Changes', $csvContent);
+        $this->assertStringContainsString('Stream User', $csvContent);
+        $this->assertStringContainsString('project.created', $csvContent);
+        $this->assertStringContainsString('project.updated', $csvContent);
+    }
+
+    #[Test]
+    public function it_streams_csv_with_filters(): void
+    {
+        // Arrange
+        $user1 = User::factory()->create(['name' => 'First User']);
+        $user2 = User::factory()->create(['name' => 'Second User']);
+        $project = Project::factory()->create();
+
+        $this->actingAs($user1);
+        $this->service->log('project.created', $project);
+
+        $this->actingAs($user2);
+        $this->service->log('project.updated', $project);
+
+        // Act
+        $generator = $this->service->streamExportToCsv(['user_id' => $user1->id]);
+        $csvContent = '';
+        foreach ($generator as $line) {
+            $csvContent .= $line;
+        }
+
+        // Assert
+        $this->assertStringContainsString('First User', $csvContent);
+        $this->assertStringNotContainsString('Second User', $csvContent);
+    }
+
+    #[Test]
+    public function it_counts_logs_by_condition(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $project = Project::factory()->create();
+        $server = Server::factory()->create();
+        $this->actingAs($user);
+
+        $this->service->log('project.created', $project);
+        $this->service->log('project.updated', $project);
+        $this->service->log('server.created', $server);
+        $this->service->log('project.deployed', $project);
+
+        // Act
+        $count = $this->service->countByCondition(
+            fn (AuditLog $log) => str_starts_with($log->action, 'project.')
+        );
+
+        // Assert
+        $this->assertEquals(3, $count);
+    }
+
+    #[Test]
+    public function it_counts_logs_by_condition_with_date_filter(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $project = Project::factory()->create();
+        $this->actingAs($user);
+
+        // Old log
+        $oldLog = $this->service->log('project.created', $project);
+        $oldLog->created_at = now()->subDays(10);
+        $oldLog->save();
+
+        // Recent logs
+        $this->service->log('project.updated', $project);
+        $this->service->log('project.deployed', $project);
+
+        // Act
+        $count = $this->service->countByCondition(
+            fn (AuditLog $log) => str_starts_with($log->action, 'project.'),
+            ['from_date' => now()->subDays(1)]
+        );
+
+        // Assert
+        $this->assertEquals(2, $count);
+    }
+
+    #[Test]
+    public function it_processes_all_logs_with_callback(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $project = Project::factory()->create();
+        $this->actingAs($user);
+
+        $this->service->log('project.created', $project);
+        $this->service->log('project.updated', $project);
+        $this->service->log('project.deployed', $project);
+
+        // Act
+        $processedActions = [];
+        $count = $this->service->processAllLogs(
+            function (AuditLog $log) use (&$processedActions) {
+                $processedActions[] = $log->action;
+            }
+        );
+
+        // Assert
+        $this->assertEquals(3, $count);
+        $this->assertCount(3, $processedActions);
+        $this->assertContains('project.created', $processedActions);
+        $this->assertContains('project.updated', $processedActions);
+        $this->assertContains('project.deployed', $processedActions);
+    }
+
+    #[Test]
+    public function it_processes_logs_with_action_filter(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $project = Project::factory()->create();
+        $this->actingAs($user);
+
+        $this->service->log('project.created', $project);
+        $this->service->log('project.updated', $project);
+        $this->service->log('project.deployed', $project);
+
+        // Act
+        $processedActions = [];
+        $count = $this->service->processAllLogs(
+            function (AuditLog $log) use (&$processedActions) {
+                $processedActions[] = $log->action;
+            },
+            ['action' => 'project.updated']
+        );
+
+        // Assert
+        $this->assertEquals(1, $count);
+        $this->assertCount(1, $processedActions);
+        $this->assertContains('project.updated', $processedActions);
+    }
+
+    #[Test]
+    public function it_processes_logs_with_date_range_filter(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $project = Project::factory()->create();
+        $this->actingAs($user);
+
+        // Old log
+        $oldLog = $this->service->log('project.created', $project);
+        $oldLog->created_at = now()->subDays(10);
+        $oldLog->save();
+
+        // Recent logs
+        $this->service->log('project.updated', $project);
+        $this->service->log('project.deployed', $project);
+
+        // Act
+        $processedIds = [];
+        $count = $this->service->processAllLogs(
+            function (AuditLog $log) use (&$processedIds) {
+                $processedIds[] = $log->id;
+            },
+            ['from_date' => now()->subDays(1)]
+        );
+
+        // Assert
+        $this->assertEquals(2, $count);
+        $this->assertCount(2, $processedIds);
+    }
 }

@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Concerns\IteratesLargeDatasets;
 use App\Jobs\DeployProjectJob;
 use App\Models\Deployment;
 use App\Models\Project;
 use App\Models\User;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\LazyCollection;
 
 /**
  * DeploymentService - Centralized deployment orchestration
@@ -25,6 +28,8 @@ use Illuminate\Support\Facades\Log;
  */
 class DeploymentService
 {
+    use IteratesLargeDatasets;
+
     public function __construct(
         private readonly DockerService $dockerService,
         private readonly GitService $gitService
@@ -582,5 +587,151 @@ class DeploymentService
             ]);
             return false;
         }
+    }
+
+    /**
+     * Stream deployment history for memory-efficient processing.
+     *
+     * Use this for exporting or analyzing large deployment histories.
+     *
+     * @param Project|null $project Filter by project (null for all)
+     * @param int $days Number of days to look back
+     * @return LazyCollection<int, Deployment>
+     */
+    public function streamDeploymentHistory(?Project $project = null, int $days = 90): LazyCollection
+    {
+        $query = Deployment::query()
+            ->with(['user:id,name', 'project:id,name,slug'])
+            ->where('created_at', '>=', now()->subDays($days))
+            ->orderBy('created_at', 'desc');
+
+        if ($project !== null) {
+            $query->where('project_id', $project->id);
+        }
+
+        return $this->lazyQuery($query);
+    }
+
+    /**
+     * Get deployment statistics using cursor for memory efficiency.
+     *
+     * More memory-efficient than getDeploymentStats for large datasets.
+     *
+     * @param Project $project The project to analyze
+     * @param int $days Number of days to look back
+     * @return array{total: int, successful: int, failed: int, cancelled: int, success_rate: float, avg_duration: float}
+     */
+    public function getDeploymentStatsEfficient(Project $project, int $days = 30): array
+    {
+        $query = $project->deployments()
+            ->where('created_at', '>=', now()->subDays($days));
+
+        $stats = [
+            'total' => 0,
+            'successful' => 0,
+            'failed' => 0,
+            'cancelled' => 0,
+            'total_duration' => 0,
+            'completed_count' => 0,
+        ];
+
+        $this->processByCursor($query, function (Deployment $deployment) use (&$stats): void {
+            $stats['total']++;
+
+            match ($deployment->status) {
+                'success' => $stats['successful']++,
+                'failed' => $stats['failed']++,
+                'cancelled' => $stats['cancelled']++,
+                default => null,
+            };
+
+            if ($deployment->duration_seconds !== null) {
+                $stats['total_duration'] += $deployment->duration_seconds;
+                $stats['completed_count']++;
+            }
+        });
+
+        return [
+            'total' => $stats['total'],
+            'successful' => $stats['successful'],
+            'failed' => $stats['failed'],
+            'cancelled' => $stats['cancelled'],
+            'success_rate' => $stats['total'] > 0
+                ? round(($stats['successful'] / $stats['total']) * 100, 2)
+                : 0.0,
+            'avg_duration' => $stats['completed_count'] > 0
+                ? round($stats['total_duration'] / $stats['completed_count'], 2)
+                : 0.0,
+        ];
+    }
+
+    /**
+     * Process all deployments matching condition with callback.
+     *
+     * Useful for batch operations like cleanup or migration.
+     *
+     * @param callable(Deployment): void $callback
+     * @param array{status?: string, days?: int, project_id?: int} $filters
+     * @return int Number of deployments processed
+     */
+    public function processDeployments(callable $callback, array $filters = []): int
+    {
+        $query = Deployment::query();
+
+        if (isset($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        if (isset($filters['days'])) {
+            $query->where('created_at', '>=', now()->subDays($filters['days']));
+        }
+
+        if (isset($filters['project_id'])) {
+            $query->where('project_id', $filters['project_id']);
+        }
+
+        return $this->processByCursor($query, $callback);
+    }
+
+    /**
+     * Find deployments matching a condition using memory-efficient iteration.
+     *
+     * @param callable(Deployment): bool $condition
+     * @param int $limit Maximum deployments to find
+     * @return Collection<int, Deployment>
+     */
+    public function findDeploymentsMatching(callable $condition, int $limit = 100): Collection
+    {
+        $query = Deployment::query()
+            ->with(['project:id,name', 'user:id,name'])
+            ->orderBy('created_at', 'desc');
+
+        return $this->mapByCursor(
+            $query,
+            fn (Deployment $d) => $condition($d) ? $d : null,
+            $limit
+        )->filter()->values();
+    }
+
+    /**
+     * Partition deployments by success/failure for analysis.
+     *
+     * @param Project $project
+     * @param int $days
+     * @param int|null $limit
+     * @return array{0: Collection<int, Deployment>, 1: Collection<int, Deployment>}
+     */
+    public function partitionBySuccess(Project $project, int $days = 30, ?int $limit = null): array
+    {
+        $query = $project->deployments()
+            ->where('created_at', '>=', now()->subDays($days))
+            ->whereIn('status', ['success', 'failed'])
+            ->orderBy('created_at', 'desc');
+
+        return $this->partitionByCursor(
+            $query,
+            fn (Deployment $d) => $d->status === 'success',
+            $limit
+        );
     }
 }

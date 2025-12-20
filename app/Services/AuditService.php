@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Concerns\IteratesLargeDatasets;
 use App\Contracts\AuditServiceInterface;
 use App\Models\AuditLog;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\LazyCollection;
 
 class AuditService implements AuditServiceInterface
 {
+    use IteratesLargeDatasets;
     /**
      * Log an action on a model
      *
@@ -199,6 +202,114 @@ class AuditService implements AuditServiceInterface
         }
 
         return $csv;
+    }
+
+    /**
+     * Stream audit logs for memory-efficient export or processing.
+     *
+     * @param array<string, mixed> $filters
+     * @return LazyCollection<int, AuditLog>
+     */
+    public function streamLogs(array $filters = []): LazyCollection
+    {
+        $query = AuditLog::with(['user:id,name']);
+
+        if (isset($filters['user_id'])) {
+            $query->where('user_id', $filters['user_id']);
+        }
+
+        if (isset($filters['action'])) {
+            $query->where('action', 'like', "%{$filters['action']}%");
+        }
+
+        if (isset($filters['model_type'])) {
+            $query->where('auditable_type', $filters['model_type']);
+        }
+
+        if (isset($filters['from_date'])) {
+            $query->where('created_at', '>=', $filters['from_date']);
+        }
+
+        if (isset($filters['to_date'])) {
+            $query->where('created_at', '<=', $filters['to_date']);
+        }
+
+        return $this->lazyQuery($query->orderBy('created_at', 'desc'));
+    }
+
+    /**
+     * Stream export to CSV for large datasets.
+     *
+     * @param array<string, mixed> $filters
+     * @return \Generator<string>
+     */
+    public function streamExportToCsv(array $filters = []): \Generator
+    {
+        yield "ID,User,Action,Model,Model ID,IP Address,Date,Changes\n";
+
+        $stream = $this->streamLogs($filters);
+
+        foreach ($stream as $log) {
+            yield sprintf(
+                "%d,%s,%s,%s,%d,%s,%s,%s\n",
+                $log->id,
+                $log->user ? $log->user->name : 'System',
+                $log->action,
+                $log->model_name,
+                $log->auditable_id,
+                $log->ip_address ?? 'N/A',
+                $log->created_at->format('Y-m-d H:i:s'),
+                json_encode($log->changes_summary)
+            );
+        }
+    }
+
+    /**
+     * Count audit logs by condition using cursor for memory efficiency.
+     *
+     * @param callable(AuditLog): bool $condition
+     * @param array<string, mixed> $filters
+     * @return int
+     */
+    public function countByCondition(callable $condition, array $filters = []): int
+    {
+        $query = AuditLog::query();
+
+        if (isset($filters['from_date'])) {
+            $query->where('created_at', '>=', $filters['from_date']);
+        }
+
+        if (isset($filters['to_date'])) {
+            $query->where('created_at', '<=', $filters['to_date']);
+        }
+
+        return $this->countByCursor($query, $condition);
+    }
+
+    /**
+     * Process all audit logs with callback for batch operations.
+     *
+     * @param callable(AuditLog): void $callback
+     * @param array<string, mixed> $filters
+     * @return int Number of logs processed
+     */
+    public function processAllLogs(callable $callback, array $filters = []): int
+    {
+        $query = AuditLog::query();
+
+        if (isset($filters['from_date'])) {
+            $query->where('created_at', '>=', $filters['from_date']);
+        }
+
+        if (isset($filters['to_date'])) {
+            $query->where('created_at', '<=', $filters['to_date']);
+        }
+
+        if (isset($filters['action'])) {
+            $query->where('action', $filters['action']);
+        }
+
+        return $this->processByCursor($query, $callback);
     }
 
     /**

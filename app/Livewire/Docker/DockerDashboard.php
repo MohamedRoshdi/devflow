@@ -74,31 +74,31 @@ class DockerDashboard extends Component
         try {
             // Get Docker system info
             $infoResult = $this->dockerService->getSystemInfo($this->server);
-            if ($infoResult['success']) {
+            if ($infoResult['success'] && isset($infoResult['info'])) {
                 $this->dockerInfo = $infoResult['info'];
             }
 
             // Get disk usage
             $diskResult = $this->dockerService->getDiskUsage($this->server);
-            if ($diskResult['success']) {
+            if ($diskResult['success'] && isset($diskResult['usage'])) {
                 $this->diskUsage = $diskResult['usage'];
             }
 
             // Get volumes
             $volumesResult = $this->dockerService->listVolumes($this->server);
-            if ($volumesResult['success']) {
+            if ($volumesResult['success'] && isset($volumesResult['volumes'])) {
                 $this->volumes = $volumesResult['volumes'];
             }
 
             // Get networks
             $networksResult = $this->dockerService->listNetworks($this->server);
-            if ($networksResult['success']) {
+            if ($networksResult['success'] && isset($networksResult['networks'])) {
                 $this->networks = $networksResult['networks'];
             }
 
             // Get images
             $imagesResult = $this->dockerService->listImages($this->server);
-            if ($imagesResult['success']) {
+            if ($imagesResult['success'] && isset($imagesResult['images'])) {
                 $this->images = $imagesResult['images'];
             }
 
@@ -120,7 +120,7 @@ class DockerDashboard extends Component
         try {
             $result = $this->dockerService->pruneImages($this->server, false);
             if ($result['success']) {
-                session()->flash('message', 'Images pruned successfully! '.$result['output']);
+                session()->flash('message', 'Images pruned successfully! '.($result['output'] ?? ''));
                 $this->loadDockerInfo();
             } else {
                 $this->error = 'Failed to prune images: '.($result['error'] ?? 'Unknown error');
@@ -137,7 +137,7 @@ class DockerDashboard extends Component
         try {
             $result = $this->dockerService->systemPrune($this->server, false);
             if ($result['success']) {
-                session()->flash('message', 'System cleaned up successfully! '.$result['output']);
+                session()->flash('message', 'System cleaned up successfully! '.($result['output'] ?? ''));
                 $this->loadDockerInfo();
             } else {
                 $this->error = 'Failed to clean up system: '.($result['error'] ?? 'Unknown error');

@@ -116,6 +116,14 @@ return new class extends Migration
             return count($indexes) > 0;
         }
 
+        if ($driver === 'pgsql') {
+            $indexes = DB::select(
+                "SELECT indexname FROM pg_indexes WHERE tablename = ? AND indexname = ?",
+                [$table, $indexName]
+            );
+            return count($indexes) > 0;
+        }
+
         $indexes = DB::select("SHOW INDEX FROM {$table} WHERE Key_name = ?", [$indexName]);
 
         return count($indexes) > 0;

@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Concerns\IteratesLargeDatasets;
 use App\Models\Project;
 use App\Models\Server;
 use App\Services\Health\ProjectHealthScorer;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\LazyCollection;
 
 /**
  * Project Health Service
@@ -19,6 +21,8 @@ use Illuminate\Support\Facades\Cache;
  */
 class ProjectHealthService
 {
+    use IteratesLargeDatasets;
+
     public function __construct(
         private readonly DockerService $dockerService,
         private readonly ProjectHealthScorer $healthScorer
@@ -35,21 +39,47 @@ class ProjectHealthService
     private const DOCKER_STATUS_CACHE_TTL = 120;
 
     /**
-     * Check health of all projects
+     * Check health of all projects (memory-efficient using cursor)
      *
      * @return Collection<int, array{project: Project, status: string, checks: array}>
      */
     public function checkAllProjects(): Collection
     {
-        return Project::with(['server', 'domains', 'deployments' => function ($query) {
-            $query->latest()->limit(1);
-        }])->get()->map(function (Project $project) {
-            $cacheKey = "project_health_{$project->id}";
+        return $this->mapByCursor(
+            Project::with(['server', 'domains', 'deployments' => function ($query) {
+                $query->latest()->limit(1);
+            }]),
+            function (Project $project) {
+                $cacheKey = "project_health_{$project->id}";
 
-            return Cache::remember($cacheKey, self::HEALTH_CHECK_CACHE_TTL, function () use ($project) {
-                return $this->checkProject($project);
-            });
-        });
+                return Cache::remember($cacheKey, self::HEALTH_CHECK_CACHE_TTL, function () use ($project) {
+                    return $this->checkProject($project);
+                });
+            }
+        );
+    }
+
+    /**
+     * Stream health checks for all projects (lazy evaluation)
+     *
+     * Use this for processing very large numbers of projects without memory issues.
+     *
+     * @return LazyCollection<int, array>
+     */
+    public function streamHealthChecks(): LazyCollection
+    {
+        return $this->streamTransform(
+            Project::with(['server', 'domains', 'deployments' => function ($query) {
+                $query->latest()->limit(1);
+            }]),
+            function (Project $project) {
+                $cacheKey = "project_health_{$project->id}";
+
+                return Cache::remember($cacheKey, self::HEALTH_CHECK_CACHE_TTL, function () use ($project) {
+                    return $this->checkProject($project);
+                });
+            }
+        );
     }
 
     /**

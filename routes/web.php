@@ -114,8 +114,8 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
     // Analytics
     Route::get('/analytics', AnalyticsDashboard::class)->name('analytics');
 
-    // Health Dashboard
-    Route::get('/health', HealthDashboard::class)->name('health.dashboard');
+    // Health Dashboard (using /system-health to avoid nginx health check at /health)
+    Route::get('/system-health', HealthDashboard::class)->name('health.dashboard');
 
     // Users Management
     Route::get('/users', \App\Livewire\Users\UserList::class)->name('users.index');

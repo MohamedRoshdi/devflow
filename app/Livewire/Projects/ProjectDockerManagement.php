@@ -85,19 +85,19 @@ class ProjectDockerManagement extends Component
 
             // Get project-specific images
             $imagesResult = $dockerService->listProjectImages($project);
-            if ($imagesResult['success']) {
+            if ($imagesResult['success'] && isset($imagesResult['images'])) {
                 $this->images = $imagesResult['images'];
             }
 
             // Get container status
             $statusResult = $dockerService->getContainerStatus($project);
-            if ($statusResult['success'] && $statusResult['exists']) {
+            if ($statusResult['success'] && isset($statusResult['exists']) && $statusResult['exists'] && isset($statusResult['container'])) {
                 $this->containerInfo = $statusResult['container'];
 
                 // Get container stats if running
                 if (isset($this->containerInfo['State']) && is_string($this->containerInfo['State']) && stripos($this->containerInfo['State'], 'running') !== false) {
                     $statsResult = $dockerService->getContainerStats($project);
-                    if ($statsResult['success']) {
+                    if ($statsResult['success'] && isset($statsResult['stats'])) {
                         $this->containerStats = $statsResult['stats'];
                     }
                 }
@@ -129,7 +129,7 @@ class ProjectDockerManagement extends Component
             $project = $this->getProject();
             $dockerService = app(DockerService::class);
             $result = $dockerService->getContainerLogs($project, $this->logLines);
-            if ($result['success']) {
+            if ($result['success'] && isset($result['logs'])) {
                 $this->containerLogs = $result['logs'];
             } else {
                 $this->error = 'Failed to load logs: '.($result['error'] ?? 'Unknown error');
@@ -238,7 +238,7 @@ class ProjectDockerManagement extends Component
             $project = $this->getProject();
             $dockerService = app(DockerService::class);
             $result = $dockerService->exportContainer($project);
-            if ($result['success']) {
+            if ($result['success'] && isset($result['backup_name'])) {
                 session()->flash('message', 'Container exported as backup: '.$result['backup_name']);
                 $this->loadDockerInfo();
             } else {

@@ -573,6 +573,224 @@ class DeploymentServiceTest extends TestCase
     }
 
     // ==========================================
+    // CURSOR ITERATION TESTS (Memory-Efficient)
+    // ==========================================
+
+    #[Test]
+    public function it_streams_deployment_history(): void
+    {
+        $project = Project::factory()->create();
+
+        Deployment::factory()->count(25)->create([
+            'project_id' => $project->id,
+            'created_at' => now()->subDays(30),
+        ]);
+
+        $stream = $this->service->streamDeploymentHistory($project, 60);
+
+        $this->assertInstanceOf(\Illuminate\Support\LazyCollection::class, $stream);
+        $this->assertEquals(25, $stream->count());
+    }
+
+    #[Test]
+    public function it_streams_deployment_history_within_date_range(): void
+    {
+        $project = Project::factory()->create();
+
+        // Recent deployments (within 30 days)
+        Deployment::factory()->count(10)->create([
+            'project_id' => $project->id,
+            'created_at' => now()->subDays(15),
+        ]);
+
+        // Old deployments (outside 30 days)
+        Deployment::factory()->count(5)->create([
+            'project_id' => $project->id,
+            'created_at' => now()->subDays(60),
+        ]);
+
+        $stream = $this->service->streamDeploymentHistory($project, 30);
+
+        $this->assertEquals(10, $stream->count());
+    }
+
+    #[Test]
+    public function it_streams_all_deployment_history_when_no_project(): void
+    {
+        $project1 = Project::factory()->create();
+        $project2 = Project::factory()->create();
+
+        Deployment::factory()->count(10)->create([
+            'project_id' => $project1->id,
+            'created_at' => now()->subDays(10),
+        ]);
+
+        Deployment::factory()->count(8)->create([
+            'project_id' => $project2->id,
+            'created_at' => now()->subDays(10),
+        ]);
+
+        $stream = $this->service->streamDeploymentHistory(null, 30);
+
+        $this->assertEquals(18, $stream->count());
+    }
+
+    #[Test]
+    public function it_calculates_efficient_deployment_stats(): void
+    {
+        $project = Project::factory()->create();
+
+        Deployment::factory()->count(7)->create([
+            'project_id' => $project->id,
+            'status' => 'success',
+            'duration_seconds' => 120,
+            'created_at' => now()->subDays(15),
+        ]);
+
+        Deployment::factory()->count(3)->create([
+            'project_id' => $project->id,
+            'status' => 'failed',
+            'duration_seconds' => 60,
+            'created_at' => now()->subDays(15),
+        ]);
+
+        $stats = $this->service->getDeploymentStatsEfficient($project, 30);
+
+        $this->assertEquals(10, $stats['total']);
+        $this->assertEquals(7, $stats['successful']);
+        $this->assertEquals(3, $stats['failed']);
+        $this->assertEquals(70.0, $stats['success_rate']);
+        $this->assertEquals(102.0, $stats['avg_duration']); // (7*120 + 3*60) / 10 = 102
+    }
+
+    #[Test]
+    public function it_handles_empty_efficient_stats(): void
+    {
+        $project = Project::factory()->create();
+
+        $stats = $this->service->getDeploymentStatsEfficient($project, 30);
+
+        $this->assertEquals(0, $stats['total']);
+        $this->assertEquals(0, $stats['successful']);
+        $this->assertEquals(0, $stats['failed']);
+        $this->assertEquals(0.0, $stats['success_rate']);
+        $this->assertEquals(0.0, $stats['avg_duration']);
+    }
+
+    #[Test]
+    public function it_processes_deployments_with_callback(): void
+    {
+        $project = Project::factory()->create();
+
+        Deployment::factory()->count(5)->create([
+            'project_id' => $project->id,
+            'status' => 'success',
+        ]);
+
+        $processedIds = [];
+        $count = $this->service->processDeployments(
+            function (Deployment $deployment) use (&$processedIds) {
+                $processedIds[] = $deployment->id;
+            },
+            ['project_id' => $project->id]
+        );
+
+        $this->assertEquals(5, $count);
+        $this->assertCount(5, $processedIds);
+    }
+
+    #[Test]
+    public function it_finds_deployments_matching_condition(): void
+    {
+        $project = Project::factory()->create();
+
+        Deployment::factory()->count(3)->create([
+            'project_id' => $project->id,
+            'status' => 'success',
+            'duration_seconds' => 50,
+        ]);
+
+        Deployment::factory()->count(2)->create([
+            'project_id' => $project->id,
+            'status' => 'success',
+            'duration_seconds' => 200,
+        ]);
+
+        // Find deployments that took longer than 100 seconds
+        $found = $this->service->findDeploymentsMatching(
+            fn (Deployment $d) => ($d->duration_seconds ?? 0) > 100,
+            10
+        );
+
+        $this->assertCount(2, $found);
+    }
+
+    #[Test]
+    public function it_limits_found_deployments(): void
+    {
+        $project = Project::factory()->create();
+
+        Deployment::factory()->count(10)->create([
+            'project_id' => $project->id,
+            'status' => 'success',
+        ]);
+
+        $found = $this->service->findDeploymentsMatching(
+            fn (Deployment $d) => $d->status === 'success',
+            5
+        );
+
+        $this->assertCount(5, $found);
+    }
+
+    #[Test]
+    public function it_partitions_deployments_by_success(): void
+    {
+        $project = Project::factory()->create();
+
+        Deployment::factory()->count(7)->create([
+            'project_id' => $project->id,
+            'status' => 'success',
+            'created_at' => now()->subDays(5),
+        ]);
+
+        Deployment::factory()->count(3)->create([
+            'project_id' => $project->id,
+            'status' => 'failed',
+            'created_at' => now()->subDays(5),
+        ]);
+
+        $result = $this->service->partitionBySuccess($project, 30);
+
+        $this->assertCount(7, $result['successful']);
+        $this->assertCount(3, $result['failed']);
+    }
+
+    #[Test]
+    public function it_partitions_with_limit(): void
+    {
+        $project = Project::factory()->create();
+
+        Deployment::factory()->count(10)->create([
+            'project_id' => $project->id,
+            'status' => 'success',
+            'created_at' => now()->subDays(5),
+        ]);
+
+        Deployment::factory()->count(5)->create([
+            'project_id' => $project->id,
+            'status' => 'failed',
+            'created_at' => now()->subDays(5),
+        ]);
+
+        $result = $this->service->partitionBySuccess($project, 30, 8);
+
+        // Should stop after 8 total records
+        $totalCount = count($result['successful']) + count($result['failed']);
+        $this->assertEquals(8, $totalCount);
+    }
+
+    // ==========================================
     // MANUAL STATUS CHANGE TESTS
     // ==========================================
 

@@ -373,7 +373,7 @@ class ProjectManagerService
                 ];
             }
 
-            $isHealthy = $status['exists'] &&
+            $isHealthy = isset($status['exists']) && $status['exists'] &&
                          isset($status['container']['State']) &&
                          str_contains(strtolower($status['container']['State']), 'up');
 
@@ -556,7 +556,7 @@ class ProjectManagerService
             $outputs = [];
             foreach ($commands as $cmd) {
                 $result = $this->dockerService->execInContainer($project, $cmd);
-                if ($result['success']) {
+                if ($result['success'] && isset($result['output'])) {
                     $outputs[] = $result['output'];
                 }
             }

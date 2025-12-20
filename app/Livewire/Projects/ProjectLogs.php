@@ -97,7 +97,7 @@ class ProjectLogs extends Component
         try {
             $result = $dockerService->downloadLaravelLogs($project);
 
-            if ($result['success'] ?? false) {
+            if (($result['success'] ?? false) && isset($result['content'], $result['filename'])) {
                 $content = $result['content'];
                 $filename = $result['filename'];
 

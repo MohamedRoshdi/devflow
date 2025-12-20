@@ -253,7 +253,7 @@ class RollbackService
         try {
             // Check if containers are running
             $containers = $this->dockerService->getContainerStatus($project);
-            if (empty($containers)) {
+            if ($containers === [] || $containers === null) {
                 return ['healthy' => false, 'error' => 'No containers running'];
             }
 
