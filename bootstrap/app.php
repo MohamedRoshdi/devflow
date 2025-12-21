@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'api.auth' => \App\Http\Middleware\AuthenticateApiToken::class,
             'abilities' => \App\Http\Middleware\CheckSanctumAbility::class,
+            'registration.enabled' => \App\Http\Middleware\RegistrationEnabled::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
