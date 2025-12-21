@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [6.9.3] - 2025-12-21
+
+### Added
+
+#### User Registration Control Feature
+- **Registration enabled by default** - New installations now allow user registration out of the box
+- **Admin toggle via System Settings** - Administrators can enable/disable registration at `/settings/system`
+  - Setting: `auth.registration_enabled` in "Authentication" group
+  - When disabled, users are redirected to login with a friendly message
+- **Dynamic route handling** - Registration route checks `SystemSetting::isRegistrationEnabled()` before rendering
+
+**Files Modified:**
+- `routes/auth.php` - Added dynamic registration control with SystemSetting check
+
+**How it works:**
+- Registration is controlled by the `auth.registration_enabled` system setting
+- Default value is `true` (registration enabled)
+- Admin can toggle via UI: Settings → System → Authentication → Allow Registration
+- When disabled, `/register` redirects to `/login` with status message
+
+---
+
 ## [6.9.2] - 2025-12-21
 
 ### Fixed
