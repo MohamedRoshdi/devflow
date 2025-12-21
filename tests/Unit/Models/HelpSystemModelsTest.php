@@ -320,12 +320,12 @@ class HelpSystemModelsTest extends TestCase
     }
 
     #[Test]
-    public function help_content_related_casts_relevance_score_as_float(): void
+    public function help_content_related_casts_relevance_score_as_integer(): void
     {
-        $related = HelpContentRelated::factory()->create(['relevance_score' => 0.85]);
+        $related = HelpContentRelated::factory()->create(['relevance_score' => 85]);
 
-        $this->assertIsFloat($related->relevance_score);
-        $this->assertEquals(0.85, $related->relevance_score);
+        $this->assertIsInt($related->relevance_score);
+        $this->assertEquals(85, $related->relevance_score);
     }
 
     // ========================

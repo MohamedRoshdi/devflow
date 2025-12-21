@@ -8,6 +8,11 @@ declare(strict_types=1);
  * Pre-warms database connections and caches to improve test performance
  */
 
+// Reset opcache to ensure tests use fresh code (important when opcache.validate_timestamps=0)
+if (function_exists('opcache_reset')) {
+    @opcache_reset();
+}
+
 // Create a temporary writable storage path for testing
 $tempStoragePath = sys_get_temp_dir() . '/devflow-tests-storage';
 if (!is_dir($tempStoragePath)) {

@@ -95,9 +95,11 @@ class LogEntry extends Model
      */
     public function scopeSearch(Builder $query, string $search): Builder
     {
-        return $query->where(function ($q) use ($search) {
-            $q->where('message', 'like', "%{$search}%")
-                ->orWhere('file_path', 'like', "%{$search}%");
+        $searchLower = strtolower($search);
+
+        return $query->where(function ($q) use ($searchLower) {
+            $q->whereRaw('LOWER(message) LIKE ?', ["%{$searchLower}%"])
+                ->orWhereRaw('LOWER(file_path) LIKE ?', ["%{$searchLower}%"]);
         });
     }
 

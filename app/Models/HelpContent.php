@@ -85,10 +85,12 @@ class HelpContent extends Model
      */
     public function scopeSearch(Builder $query, string $search): Builder
     {
-        return $query->where(function ($q) use ($search) {
-            $q->where('title', 'like', "%{$search}%")
-              ->orWhere('brief', 'like', "%{$search}%")
-              ->orWhere('key', 'like', "%{$search}%");
+        $searchLower = strtolower($search);
+
+        return $query->where(function ($q) use ($searchLower) {
+            $q->whereRaw('LOWER(title) LIKE ?', ["%{$searchLower}%"])
+              ->orWhereRaw('LOWER(brief) LIKE ?', ["%{$searchLower}%"])
+              ->orWhereRaw('LOWER(key) LIKE ?', ["%{$searchLower}%"]);
         });
     }
 

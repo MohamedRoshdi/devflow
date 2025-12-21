@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [6.9.2] - 2025-12-21
+
+### Fixed
+
+#### Model Test Fixes (PostgreSQL Compatibility)
+
+**Case-Insensitive Search Scopes:**
+- **HelpContent::scopeSearch()** - Fixed case-insensitive search for PostgreSQL
+  - Changed from `where('column', 'like', ...)` to `whereRaw('LOWER(column) LIKE ?', ...)`
+  - Now searches title, brief, and key fields case-insensitively
+- **LogEntry::scopeSearch()** - Fixed case-insensitive search for PostgreSQL
+  - Changed from `where('column', 'like', ...)` to `whereRaw('LOWER(column) LIKE ?', ...)`
+  - Now searches message and file_path fields case-insensitively
+
+**Issue:** PostgreSQL's `LIKE` operator is case-sensitive by default, unlike MySQL. Tests were failing because lowercase search terms ("deploy", "database") didn't match mixed-case data ("Deployment", "Database").
+
+**HelpContentRelated Model Fix:**
+- Changed `relevance_score` cast from `'float'` to `'integer'`
+- Database column is `unsignedTinyInteger` (0-255), so float cast was incorrect
+- Updated corresponding test to use integer value (85) instead of float (0.85)
+
+**Test Bootstrap Enhancement:**
+- Added `opcache_reset()` call to ensure tests use fresh code when opcache.validate_timestamps is disabled
+
+**Files Modified:**
+- `app/Models/HelpContent.php` - Case-insensitive search scope
+- `app/Models/LogEntry.php` - Case-insensitive search scope
+- `app/Models/HelpContentRelated.php` - Integer cast for relevance_score
+- `tests/Unit/Models/HelpSystemModelsTest.php` - Fixed test assertions
+- `tests/bootstrap.php` - Added opcache reset
+
+**Results:**
+- All 645 Model unit tests passing ✓
+- PostgreSQL and MySQL compatible search scopes
+
+---
+
 ## [6.9.1] - 2025-12-20
 
 ### Fixed

@@ -22,7 +22,7 @@ class HelpContentRelated extends Model
     ];
 
     protected $casts = [
-        'relevance_score' => 'float',
+        'relevance_score' => 'integer',
     ];
 
     /**

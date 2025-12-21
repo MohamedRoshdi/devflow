@@ -2,11 +2,11 @@
 
 > Comprehensive test suite with 11,000+ tests covering browser, unit, feature, integration, and security testing.
 
-## ⚠️ Current Status (December 2025 - v6.8.0)
+## ⚠️ Current Status (December 2025 - v6.9.2)
 
 | Suite | Status | Notes |
 |-------|--------|-------|
-| Unit/Models | ✅ Passing | 645+ tests |
+| Unit/Models | ✅ Passing | 645 tests |
 | Unit/Services | ✅ Passing | 900+ tests |
 | Unit/Policies | ✅ Passing | 37 tests |
 | Unit/Console | ✅ Passing | CommandsTest 69/69 |
@@ -16,7 +16,12 @@
 | Feature/API | ✅ Passing | 8 test files, 200+ tests |
 | Feature/Integration | ✅ Passing | 8 test files |
 | Security | ✅ Passing | 6 test files |
-| Browser | ⏳ Not run | Requires Dusk setup (98 files) |
+| Browser | ✅ Passing | 90+ tests verified (AdminTest, AuthenticationTest) |
+
+**Fixes Applied (v6.9.2):**
+- **PostgreSQL Search Compatibility**: Fixed case-insensitive search in `HelpContent` and `LogEntry` models using `LOWER()` function
+- **HelpContentRelated Cast**: Changed `relevance_score` cast from `float` to `integer` to match database schema
+- **Test Bootstrap**: Added `opcache_reset()` for development environments with disabled timestamp validation
 
 **Fixes Applied (v6.8.0):**
 - **RefreshDatabase Trait**: Commented out `use RefreshDatabase;` in all test files to prevent MySQL metadata locks
