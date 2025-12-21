@@ -26,6 +26,12 @@ class ProjectManagementTest extends TestCase
     {
         parent::setUp();
 
+        // Disable CSRF middleware for web route tests
+        $this->withoutMiddleware([
+            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+            \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+        ]);
+
         $this->user = User::factory()->create();
         $this->server = Server::factory()->create([
             'status' => 'online',

@@ -21,6 +21,9 @@ class DeploymentWebhookTest extends TestCase
     {
         parent::setUp();
 
+        // Disable rate limiting for tests
+        $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
+
         $this->webhookSecret = Str::random(32);
         $this->project = Project::factory()->create([
             'webhook_secret' => $this->webhookSecret,

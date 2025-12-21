@@ -12,12 +12,12 @@ use App\Models\Project;
 use App\Models\Server;
 use App\Models\ServerMetric;
 use App\Models\User;
+use Illuminate\Cache\RateLimiter;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class ApiEndpointTest extends TestCase
 {
-
     protected User $user;
     protected User $otherUser;
     protected string $token;
@@ -27,6 +27,9 @@ class ApiEndpointTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Disable rate limiting for tests
+        $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
 
         $this->user = User::factory()->create();
         $this->otherUser = User::factory()->create();

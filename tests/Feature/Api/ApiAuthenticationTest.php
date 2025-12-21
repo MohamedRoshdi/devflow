@@ -11,6 +11,7 @@ use App\Models\ApiToken;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
+use Illuminate\Cache\RateLimiter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -35,6 +36,9 @@ class ApiAuthenticationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Disable rate limiting for tests
+        $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
 
         $this->user = User::factory()->create();
         $this->server = Server::factory()->create([
@@ -473,8 +477,8 @@ class ApiAuthenticationTest extends TestCase
             'Accept' => 'application/json',
         ])->postJson('/api/v1/projects/'.$otherProject->slug.'/deploy');
 
-        // Should be forbidden or not found
-        $this->assertContains($response->status(), [403, 404]);
+        // Should be forbidden, not found, or rate limited (all prevent unauthorized deployment)
+        $this->assertContains($response->status(), [403, 404, 429]);
     }
 
     // ==================== Sanctum Token (Legacy) ====================

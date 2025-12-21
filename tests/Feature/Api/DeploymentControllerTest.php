@@ -34,6 +34,9 @@ class DeploymentControllerTest extends TestCase
     {
         parent::setUp();
 
+        // Disable rate limiting for tests
+        $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
+
         // Create main user
         $this->user = User::factory()->create([
             'email' => 'api@example.com',

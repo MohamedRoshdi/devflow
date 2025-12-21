@@ -62,8 +62,9 @@ class DocsController extends Controller
             ]);
         }
 
-        // Build file path
-        $filePath = resource_path("docs/categories/{$category}.md");
+        // Build file path - use configurable path for testing
+        $docsPath = config('docs.categories_path', resource_path('docs/categories'));
+        $filePath = "{$docsPath}/{$category}.md";
 
         if (!File::exists($filePath)) {
             abort(404, 'Documentation page not found');
@@ -268,7 +269,7 @@ class DocsController extends Controller
     private function searchDocumentation(string $query): array
     {
         $results = [];
-        $docsPath = resource_path('docs/categories');
+        $docsPath = config('docs.categories_path', resource_path('docs/categories'));
 
         if (!File::isDirectory($docsPath)) {
             return [];

@@ -27,6 +27,12 @@ class DomainControllerTest extends TestCase
     {
         parent::setUp();
 
+        // Disable CSRF middleware for web route tests (Laravel 12 uses both classes)
+        $this->withoutMiddleware([
+            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+            \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+        ]);
+
         $this->user = User::factory()->create();
         $this->otherUser = User::factory()->create();
 

@@ -43,6 +43,8 @@ class SecurityScanDashboardTest extends TestCase
 
     public function test_component_requires_authentication(): void
     {
+        $this->withoutExceptionHandling();
+
         $this->expectException(AuthorizationException::class);
 
         Livewire::test(SecurityScanDashboard::class, ['server' => $this->server]);
@@ -50,6 +52,8 @@ class SecurityScanDashboardTest extends TestCase
 
     public function test_component_requires_authorization(): void
     {
+        $this->withoutExceptionHandling();
+
         $otherUser = User::factory()->create();
 
         $this->expectException(AuthorizationException::class);
@@ -283,8 +287,8 @@ class SecurityScanDashboardTest extends TestCase
     public function test_view_scan_details_with_recommendations(): void
     {
         $recommendations = [
-            ['priority' => 'high', 'title' => 'Enable Firewall'],
-            ['priority' => 'medium', 'title' => 'Disable Root Login'],
+            ['priority' => 'high', 'title' => 'Enable Firewall', 'description' => 'Configure UFW or iptables to restrict incoming connections'],
+            ['priority' => 'medium', 'title' => 'Disable Root Login', 'description' => 'Disable direct root SSH login for better security'],
         ];
 
         $scan = SecurityScan::factory()->completed()->create([
@@ -330,11 +334,13 @@ class SecurityScanDashboardTest extends TestCase
             'server_id' => $this->server->id,
         ]);
 
-        Livewire::actingAs($this->user)
+        $component = Livewire::actingAs($this->user)
             ->test(SecurityScanDashboard::class, ['server' => $this->server])
-            ->call('viewScanDetails', $scan->id)
-            ->assertNotNull('selectedScan')
-            ->call('closeDetails')
+            ->call('viewScanDetails', $scan->id);
+
+        $this->assertNotNull($component->get('selectedScan'));
+
+        $component->call('closeDetails')
             ->assertSet('selectedScan', null);
     }
 
@@ -349,7 +355,7 @@ class SecurityScanDashboardTest extends TestCase
         $component = Livewire::actingAs($this->user)
             ->test(SecurityScanDashboard::class, ['server' => $this->server]);
 
-        $scans = $component->viewData('scans');
+        $scans = $component->instance()->scans;
         $this->assertCount(10, $scans);
         $this->assertEquals(15, $scans->total());
     }
@@ -369,7 +375,7 @@ class SecurityScanDashboardTest extends TestCase
         $component = Livewire::actingAs($this->user)
             ->test(SecurityScanDashboard::class, ['server' => $this->server]);
 
-        $scans = $component->viewData('scans');
+        $scans = $component->instance()->scans;
         $this->assertEquals($newScan->id, $scans->first()->id);
     }
 
@@ -388,7 +394,7 @@ class SecurityScanDashboardTest extends TestCase
         $component = Livewire::actingAs($this->user)
             ->test(SecurityScanDashboard::class, ['server' => $this->server]);
 
-        $scans = $component->viewData('scans');
+        $scans = $component->instance()->scans;
         $this->assertEquals(5, $scans->total());
     }
 
@@ -397,7 +403,7 @@ class SecurityScanDashboardTest extends TestCase
         $component = Livewire::actingAs($this->user)
             ->test(SecurityScanDashboard::class, ['server' => $this->server]);
 
-        $scans = $component->viewData('scans');
+        $scans = $component->instance()->scans;
         $this->assertEquals(0, $scans->total());
     }
 
@@ -420,7 +426,7 @@ class SecurityScanDashboardTest extends TestCase
         $component = Livewire::actingAs($this->user)
             ->test(SecurityScanDashboard::class, ['server' => $this->server]);
 
-        $latest = $component->viewData('latestScan');
+        $latest = $component->instance()->latestScan;
         $this->assertEquals($latestScan->id, $latest->id);
         $this->assertEquals(85, $latest->score);
     }
@@ -430,7 +436,7 @@ class SecurityScanDashboardTest extends TestCase
         $component = Livewire::actingAs($this->user)
             ->test(SecurityScanDashboard::class, ['server' => $this->server]);
 
-        $latest = $component->viewData('latestScan');
+        $latest = $component->instance()->latestScan;
         $this->assertNull($latest);
     }
 
@@ -488,7 +494,7 @@ class SecurityScanDashboardTest extends TestCase
         $component = Livewire::actingAs($this->user)
             ->test(SecurityScanDashboard::class, ['server' => $this->server]);
 
-        $scans = $component->viewData('scans');
+        $scans = $component->instance()->scans;
         $this->assertEquals(SecurityScan::STATUS_PENDING, $scans->first()->status);
     }
 
@@ -501,7 +507,7 @@ class SecurityScanDashboardTest extends TestCase
         $component = Livewire::actingAs($this->user)
             ->test(SecurityScanDashboard::class, ['server' => $this->server]);
 
-        $scans = $component->viewData('scans');
+        $scans = $component->instance()->scans;
         $this->assertEquals(SecurityScan::STATUS_RUNNING, $scans->first()->status);
     }
 
@@ -515,7 +521,7 @@ class SecurityScanDashboardTest extends TestCase
         $component = Livewire::actingAs($this->user)
             ->test(SecurityScanDashboard::class, ['server' => $this->server]);
 
-        $scans = $component->viewData('scans');
+        $scans = $component->instance()->scans;
         $this->assertEquals(SecurityScan::STATUS_FAILED, $scans->first()->status);
     }
 
@@ -528,7 +534,7 @@ class SecurityScanDashboardTest extends TestCase
         $component = Livewire::actingAs($this->user)
             ->test(SecurityScanDashboard::class, ['server' => $this->server]);
 
-        $scans = $component->viewData('scans');
+        $scans = $component->instance()->scans;
         $this->assertEquals(SecurityScan::STATUS_COMPLETED, $scans->first()->status);
     }
 
@@ -545,7 +551,7 @@ class SecurityScanDashboardTest extends TestCase
         $component = Livewire::actingAs($this->user)
             ->test(SecurityScanDashboard::class, ['server' => $this->server]);
 
-        $scans = $component->viewData('scans');
+        $scans = $component->instance()->scans;
         $this->assertEquals(SecurityScan::RISK_CRITICAL, $scans->first()->risk_level);
     }
 
@@ -560,7 +566,7 @@ class SecurityScanDashboardTest extends TestCase
         $component = Livewire::actingAs($this->user)
             ->test(SecurityScanDashboard::class, ['server' => $this->server]);
 
-        $scans = $component->viewData('scans');
+        $scans = $component->instance()->scans;
         $this->assertEquals(SecurityScan::RISK_HIGH, $scans->first()->risk_level);
     }
 
@@ -575,7 +581,7 @@ class SecurityScanDashboardTest extends TestCase
         $component = Livewire::actingAs($this->user)
             ->test(SecurityScanDashboard::class, ['server' => $this->server]);
 
-        $scans = $component->viewData('scans');
+        $scans = $component->instance()->scans;
         $this->assertEquals(SecurityScan::RISK_MEDIUM, $scans->first()->risk_level);
     }
 
@@ -590,7 +596,7 @@ class SecurityScanDashboardTest extends TestCase
         $component = Livewire::actingAs($this->user)
             ->test(SecurityScanDashboard::class, ['server' => $this->server]);
 
-        $scans = $component->viewData('scans');
+        $scans = $component->instance()->scans;
         $this->assertEquals(SecurityScan::RISK_LOW, $scans->first()->risk_level);
     }
 
@@ -605,7 +611,7 @@ class SecurityScanDashboardTest extends TestCase
         $component = Livewire::actingAs($this->user)
             ->test(SecurityScanDashboard::class, ['server' => $this->server]);
 
-        $scans = $component->viewData('scans');
+        $scans = $component->instance()->scans;
         $this->assertEquals(SecurityScan::RISK_SECURE, $scans->first()->risk_level);
     }
 

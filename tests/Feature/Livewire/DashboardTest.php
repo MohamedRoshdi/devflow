@@ -41,18 +41,18 @@ class DashboardTest extends TestCase
     }
 
     #[Test]
-    public function load_stats_caches_results_for_60_seconds()
+    public function load_onboarding_caches_results_for_5_minutes()
     {
         Cache::flush();
 
-        // First call should cache the results (call loadDashboardData since wire:init doesn't fire in tests)
-        $component = Livewire::test(Dashboard::class)
-            ->call('loadDashboardData');
-        $this->assertTrue(Cache::has('dashboard_stats'));
+        // Dashboard loads onboarding status in mount()
+        Livewire::test(Dashboard::class);
+        $this->assertTrue(Cache::has('dashboard_onboarding_status'));
 
-        // Verify cache TTL (should be around 60 seconds)
-        $stats = Cache::get('dashboard_stats');
-        $this->assertIsArray($stats);
+        // Verify cache contains expected structure
+        $onboardingData = Cache::get('dashboard_onboarding_status');
+        $this->assertIsArray($onboardingData);
+        $this->assertArrayHasKey('server_count', $onboardingData);
     }
 
     #[Test]
@@ -93,8 +93,8 @@ class DashboardTest extends TestCase
             'project_id' => Project::factory()->create(['server_id' => $this->server->id]),
         ]);
 
-        $component = Livewire::test(Dashboard::class)
-            ->call('loadDashboardData');
+        // Dashboard loads data in mount()
+        $component = Livewire::test(Dashboard::class);
 
         // Dashboard now tracks activeDeployments instead of projects
         $this->assertEquals(2, $component->get('activeDeployments'));
@@ -138,8 +138,8 @@ class DashboardTest extends TestCase
             ]);
         }
 
-        $component = Livewire::test(Dashboard::class)
-            ->call('loadDashboardData');
+        // Dashboard loads timeline in mount()
+        $component = Livewire::test(Dashboard::class);
         $timeline = $component->get('deploymentTimeline');
 
         $this->assertIsArray($timeline);
@@ -166,8 +166,8 @@ class DashboardTest extends TestCase
             'created_at' => now(),
         ]);
 
-        $component = Livewire::test(Dashboard::class)
-            ->call('loadDashboardData');
+        // Dashboard loads timeline in mount()
+        $component = Livewire::test(Dashboard::class);
         $timeline = $component->get('deploymentTimeline');
 
         $this->assertCount(7, $timeline);
@@ -186,8 +186,8 @@ class DashboardTest extends TestCase
         Deployment::factory()->count(3)->running()->create(['project_id' => $project->id]);
         Deployment::factory()->count(5)->success()->create(['project_id' => $project->id]);
 
-        $component = Livewire::test(Dashboard::class)
-            ->call('loadDashboardData');
+        // Dashboard loads activeDeployments in mount()
+        $component = Livewire::test(Dashboard::class);
         $activeDeployments = $component->get('activeDeployments');
 
         $this->assertEquals(5, $activeDeployments); // 2 pending + 3 running
@@ -196,12 +196,17 @@ class DashboardTest extends TestCase
     #[Test]
     public function on_deployment_completed_refreshes_relevant_data()
     {
-        Cache::put('dashboard_stats', ['test' => 'old_data'], 3600);
+        // Dashboard no longer tracks stats directly - that's handled by DashboardStats child component
+        // Verify that deployment-completed event refreshes onboarding status
+        Cache::put('dashboard_onboarding_status', ['deployment_count' => 0], 3600);
+
+        $project = Project::factory()->create(['server_id' => $this->server->id]);
+        Deployment::factory()->create(['project_id' => $project->id]);
 
         Livewire::test(Dashboard::class)
             ->dispatch('deployment-completed')
-            ->assertSet('stats', function ($stats) {
-                return ! isset($stats['test']) || $stats['test'] !== 'old_data';
+            ->assertSet('onboardingSteps', function ($steps) {
+                return $steps['first_deployment'] === true;
             });
     }
 
@@ -215,8 +220,8 @@ class DashboardTest extends TestCase
             'project_id' => Project::factory()->create(['server_id' => $this->server->id]),
         ]);
 
-        $component = Livewire::test(Dashboard::class)
-            ->call('loadDashboardData');
+        // Dashboard loads data in mount()
+        $component = Livewire::test(Dashboard::class);
 
         // Verify activeDeployments is loaded
         $this->assertEquals(2, $component->get('activeDeployments'));
@@ -256,8 +261,7 @@ class DashboardTest extends TestCase
 
         // Test dashboard for user with no data - component should handle empty case gracefully
         $component = Livewire::actingAs($newUser)
-            ->test(Dashboard::class)
-            ->call('loadDashboardData');
+            ->test(Dashboard::class);
 
         // Dashboard now tracks activeDeployments and deploymentTimeline
         $this->assertEquals(0, $component->get('activeDeployments'));
@@ -280,8 +284,8 @@ class DashboardTest extends TestCase
             'created_at' => now(),
         ]);
 
-        $component = Livewire::test(Dashboard::class)
-            ->call('loadDashboardData');
+        // Dashboard loads timeline in mount()
+        $component = Livewire::test(Dashboard::class);
         $timeline = $component->get('deploymentTimeline');
 
         $today = end($timeline);
@@ -302,8 +306,8 @@ class DashboardTest extends TestCase
             // Redis might not be available, which is what we're testing
         }
 
-        $component = Livewire::test(Dashboard::class)
-            ->call('loadDashboardData');
+        // Dashboard loads data in mount()
+        $component = Livewire::test(Dashboard::class);
 
         // Should still work and load data
         $this->assertIsArray($component->get('deploymentTimeline'));

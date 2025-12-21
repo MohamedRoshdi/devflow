@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Events;
 
 use App\Models\Server;
@@ -48,11 +50,11 @@ class ServerMetricsUpdated implements ShouldBroadcast
             'server_id' => $this->server->id,
             'server_name' => $this->server->name,
             'metrics' => [
-                'cpu_usage' => round($this->metric->cpu_usage, 1),
-                'memory_usage' => round($this->metric->memory_usage, 1),
+                'cpu_usage' => round((float) $this->metric->cpu_usage, 1),
+                'memory_usage' => round((float) $this->metric->memory_usage, 1),
                 'memory_used_mb' => $this->metric->memory_used_mb,
                 'memory_total_mb' => $this->metric->memory_total_mb,
-                'disk_usage' => round($this->metric->disk_usage, 1),
+                'disk_usage' => round((float) $this->metric->disk_usage, 1),
                 'disk_used_gb' => $this->metric->disk_used_gb,
                 'disk_total_gb' => $this->metric->disk_total_gb,
                 'load_average_1' => $this->metric->load_average_1,

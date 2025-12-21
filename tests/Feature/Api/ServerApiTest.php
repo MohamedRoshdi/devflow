@@ -25,6 +25,9 @@ class ServerApiTest extends TestCase
     {
         parent::setUp();
 
+        // Disable rate limiting for tests
+        $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
+
         $this->user = User::factory()->create([
             'email' => 'api@example.com',
             'password' => Hash::make('password123'),

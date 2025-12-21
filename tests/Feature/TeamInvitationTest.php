@@ -22,6 +22,12 @@ class TeamInvitationTest extends TestCase
     {
         parent::setUp();
 
+        // Disable CSRF middleware for web route tests
+        $this->withoutMiddleware([
+            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+            \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+        ]);
+
         $this->user = User::factory()->create();
         $this->team = Team::factory()->create();
         $this->invitation = TeamInvitation::factory()->create([

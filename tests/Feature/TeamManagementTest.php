@@ -33,6 +33,12 @@ class TeamManagementTest extends TestCase
     {
         parent::setUp();
 
+        // Disable CSRF middleware for web route tests
+        $this->withoutMiddleware([
+            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+            \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+        ]);
+
         $this->owner = User::factory()->create([
             'email' => 'owner@example.com',
             'password' => Hash::make('password123'),

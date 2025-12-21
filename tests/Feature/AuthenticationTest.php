@@ -153,7 +153,10 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->post('/logout');
+        // Use withSession to provide CSRF token
+        $response = $this->actingAs($user)
+            ->withSession(['_token' => 'test-token'])
+            ->post('/logout', ['_token' => 'test-token']);
 
         $response->assertRedirect('/');
         $this->assertGuest();

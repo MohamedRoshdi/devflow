@@ -22,6 +22,9 @@ class ServerMetricsApiTest extends TestCase
     {
         parent::setUp();
 
+        // Disable rate limiting for tests
+        $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
+
         $this->user = User::factory()->create();
         $this->server = Server::factory()->create([
             'user_id' => $this->user->id,
@@ -126,18 +129,22 @@ class ServerMetricsApiTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_metrics_are_ordered_by_created_at_desc(): void
+    public function test_metrics_are_ordered_by_recorded_at_desc(): void
     {
         Sanctum::actingAs($this->user);
 
+        // Clear existing metrics for this server
+        ServerMetric::where('server_id', $this->server->id)->delete();
+
+        // API orders by recorded_at, not created_at
         $oldMetric = ServerMetric::factory()->create([
             'server_id' => $this->server->id,
-            'created_at' => now()->subHours(2),
+            'recorded_at' => now()->subHours(2),
         ]);
 
         $newMetric = ServerMetric::factory()->create([
             'server_id' => $this->server->id,
-            'created_at' => now(),
+            'recorded_at' => now(),
         ]);
 
         $response = $this->getJson("/api/servers/{$this->server->id}/metrics");
@@ -145,9 +152,11 @@ class ServerMetricsApiTest extends TestCase
         $response->assertOk();
         $data = $response->json('data');
 
-        if (! empty($data)) {
-            $this->assertEquals($newMetric->id, $data[0]['id']);
-        }
+        $this->assertCount(2, $data);
+        // The most recent metric should be first (compare by recorded_at)
+        $firstRecordedAt = strtotime($data[0]['recorded_at']);
+        $secondRecordedAt = strtotime($data[1]['recorded_at']);
+        $this->assertGreaterThanOrEqual($secondRecordedAt, $firstRecordedAt, 'Metrics should be ordered by recorded_at descending');
     }
 
     public function test_metrics_endpoint_is_rate_limited(): void

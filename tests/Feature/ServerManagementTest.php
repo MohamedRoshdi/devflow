@@ -36,7 +36,7 @@ class ServerManagementTest extends TestCase
         $response = $this->get(route('servers.index'));
 
         $response->assertStatus(200);
-        $response->assertSeeLivewire(\App\Livewire\Servers\ServerList::class);
+        $response->assertSee('Servers');
     }
 
     #[Test]

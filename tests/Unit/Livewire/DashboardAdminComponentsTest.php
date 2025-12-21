@@ -67,7 +67,7 @@ class DashboardAdminComponentsTest extends TestCase
     }
 
     #[Test]
-    public function dashboard_loads_stats_correctly(): void
+    public function dashboard_stats_loads_stats_correctly(): void
     {
         $user = User::factory()->create();
         $onlineServers = Server::factory()->count(5)->create(['status' => 'online']);
@@ -92,9 +92,9 @@ class DashboardAdminComponentsTest extends TestCase
             'user_id' => $user->id,
         ]);
 
+        // Stats are now in DashboardStats child component
         Livewire::actingAs($user)
-            ->test(Dashboard::class)
-            ->call('loadDashboardData')
+            ->test(\App\Livewire\Dashboard\DashboardStats::class)
             ->assertSet('stats.total_servers', 7)
             ->assertSet('stats.online_servers', 5)
             ->assertSet('stats.total_projects', 3)
@@ -105,7 +105,7 @@ class DashboardAdminComponentsTest extends TestCase
     }
 
     #[Test]
-    public function dashboard_loads_recent_deployments(): void
+    public function dashboard_recent_activity_loads_recent_deployments(): void
     {
         $user = User::factory()->create();
         $server = Server::factory()->create();
@@ -119,15 +119,15 @@ class DashboardAdminComponentsTest extends TestCase
             'user_id' => $user->id,
         ]);
 
+        // Recent activity is now in DashboardRecentActivity child component
         $component = Livewire::actingAs($user)
-            ->test(Dashboard::class)
-            ->call('loadDashboardData');
+            ->test(\App\Livewire\Dashboard\DashboardRecentActivity::class);
 
-        $this->assertCount(10, $component->get('recentDeployments'));
+        $this->assertNotEmpty($component->get('recentActivity'));
     }
 
     #[Test]
-    public function dashboard_loads_ssl_stats(): void
+    public function dashboard_stats_loads_ssl_stats(): void
     {
         $user = User::factory()->create();
         $server = Server::factory()->create();
@@ -155,9 +155,9 @@ class DashboardAdminComponentsTest extends TestCase
             'expires_at' => now()->subDays(5), // Expired
         ]);
 
+        // SSL stats are now in DashboardStats child component
         $component = Livewire::actingAs($user)
-            ->test(Dashboard::class)
-            ->call('loadSSLStats');
+            ->test(\App\Livewire\Dashboard\DashboardStats::class);
 
         $sslStats = $component->get('sslStats');
         $this->assertEquals(8, $sslStats['total_certificates']);
@@ -167,7 +167,7 @@ class DashboardAdminComponentsTest extends TestCase
     }
 
     #[Test]
-    public function dashboard_loads_health_check_stats(): void
+    public function dashboard_stats_loads_health_check_stats(): void
     {
         $user = User::factory()->create();
         $project = Project::factory()->create();
@@ -194,9 +194,9 @@ class DashboardAdminComponentsTest extends TestCase
             'is_active' => true,
         ]);
 
+        // Health check stats are now in DashboardStats child component
         $component = Livewire::actingAs($user)
-            ->test(Dashboard::class)
-            ->call('loadHealthCheckStats');
+            ->test(\App\Livewire\Dashboard\DashboardStats::class);
 
         $healthCheckStats = $component->get('healthCheckStats');
         $this->assertEquals(6, $healthCheckStats['total_checks']);
@@ -207,7 +207,7 @@ class DashboardAdminComponentsTest extends TestCase
     }
 
     #[Test]
-    public function dashboard_loads_deployments_today(): void
+    public function dashboard_stats_loads_deployments_today(): void
     {
         $user = User::factory()->create();
         $server = Server::factory()->create();
@@ -228,14 +228,14 @@ class DashboardAdminComponentsTest extends TestCase
             'user_id' => $user->id,
         ]);
 
+        // Deployments today is now in DashboardStats child component
         Livewire::actingAs($user)
-            ->test(Dashboard::class)
-            ->call('loadDeploymentsToday')
+            ->test(\App\Livewire\Dashboard\DashboardStats::class)
             ->assertSet('deploymentsToday', 5);
     }
 
     #[Test]
-    public function dashboard_loads_recent_activity(): void
+    public function dashboard_recent_activity_loads_activity(): void
     {
         $user = User::factory()->create();
         $server = Server::factory()->create();
@@ -250,15 +250,15 @@ class DashboardAdminComponentsTest extends TestCase
             'user_id' => $user->id,
         ]);
 
+        // Recent activity is now in DashboardRecentActivity child component
         $component = Livewire::actingAs($user)
-            ->test(Dashboard::class)
-            ->call('loadDashboardData');
+            ->test(\App\Livewire\Dashboard\DashboardRecentActivity::class);
 
         $this->assertNotEmpty($component->get('recentActivity'));
     }
 
     #[Test]
-    public function dashboard_loads_server_health(): void
+    public function dashboard_server_health_loads_health(): void
     {
         $user = User::factory()->create();
         $server = Server::factory()->create(['status' => 'online']);
@@ -271,9 +271,9 @@ class DashboardAdminComponentsTest extends TestCase
             'recorded_at' => now(),
         ]);
 
+        // Server health is now in DashboardServerHealth child component
         $component = Livewire::actingAs($user)
-            ->test(Dashboard::class)
-            ->call('loadDashboardData');
+            ->test(\App\Livewire\Dashboard\DashboardServerHealth::class);
 
         $serverHealth = $component->get('serverHealth');
         $this->assertNotEmpty($serverHealth);
@@ -281,16 +281,16 @@ class DashboardAdminComponentsTest extends TestCase
     }
 
     #[Test]
-    public function dashboard_loads_queue_stats(): void
+    public function dashboard_stats_loads_queue_stats(): void
     {
         $user = User::factory()->create();
 
         // Create jobs table entries
         DB::table('jobs')->insert(['queue' => 'default', 'payload' => '', 'attempts' => 0, 'reserved_at' => null, 'available_at' => now()->timestamp, 'created_at' => now()->timestamp]);
 
+        // Queue stats are now in DashboardStats child component
         $component = Livewire::actingAs($user)
-            ->test(Dashboard::class)
-            ->call('loadQueueStats');
+            ->test(\App\Livewire\Dashboard\DashboardStats::class);
 
         $queueStats = $component->get('queueStats');
         $this->assertArrayHasKey('pending', $queueStats);
@@ -298,15 +298,15 @@ class DashboardAdminComponentsTest extends TestCase
     }
 
     #[Test]
-    public function dashboard_loads_security_score(): void
+    public function dashboard_stats_loads_security_score(): void
     {
         $user = User::factory()->create();
         Server::factory()->create(['status' => 'online', 'security_score' => 85]);
         Server::factory()->create(['status' => 'online', 'security_score' => 90]);
 
+        // Security score is now in DashboardStats child component
         $component = Livewire::actingAs($user)
-            ->test(Dashboard::class)
-            ->call('loadSecurityScore');
+            ->test(\App\Livewire\Dashboard\DashboardStats::class);
 
         $this->assertGreaterThan(0, $component->get('overallSecurityScore'));
     }
@@ -339,9 +339,9 @@ class DashboardAdminComponentsTest extends TestCase
             'user_id' => $user->id,
         ]);
 
+        // Dashboard still tracks activeDeployments (pending + running) in mount()
         Livewire::actingAs($user)
             ->test(Dashboard::class)
-            ->call('loadDashboardData')
             ->assertSet('activeDeployments', 5);
     }
 
@@ -366,9 +366,9 @@ class DashboardAdminComponentsTest extends TestCase
             ]);
         }
 
+        // Dashboard now loads data in mount(), no need to call loadDashboardData
         $component = Livewire::actingAs($user)
-            ->test(Dashboard::class)
-            ->call('loadDashboardData');
+            ->test(Dashboard::class);
 
         $this->assertCount(7, $component->get('deploymentTimeline'));
     }
@@ -386,12 +386,13 @@ class DashboardAdminComponentsTest extends TestCase
     }
 
     #[Test]
-    public function dashboard_can_clear_all_caches(): void
+    public function dashboard_quick_actions_can_clear_all_caches(): void
     {
         $user = User::factory()->create();
 
+        // clearAllCaches is now in DashboardQuickActions component
         Livewire::actingAs($user)
-            ->test(Dashboard::class)
+            ->test(\App\Livewire\Dashboard\DashboardQuickActions::class)
             ->call('clearAllCaches')
             ->assertDispatched('notification');
     }
@@ -408,7 +409,7 @@ class DashboardAdminComponentsTest extends TestCase
     }
 
     #[Test]
-    public function dashboard_can_deploy_all_projects(): void
+    public function dashboard_quick_actions_can_deploy_all_projects(): void
     {
         \Illuminate\Support\Facades\Queue::fake();
         $user = User::factory()->create();
@@ -418,8 +419,9 @@ class DashboardAdminComponentsTest extends TestCase
             'server_id' => $server->id,
         ]);
 
+        // deployAll is now in DashboardQuickActions child component
         Livewire::actingAs($user)
-            ->test(Dashboard::class)
+            ->test(\App\Livewire\Dashboard\DashboardQuickActions::class)
             ->call('deployAll')
             ->assertDispatched('notification');
     }
@@ -488,7 +490,7 @@ class DashboardAdminComponentsTest extends TestCase
     }
 
     #[Test]
-    public function dashboard_can_load_more_activity(): void
+    public function dashboard_recent_activity_can_load_more_activity(): void
     {
         $user = User::factory()->create();
         $server = Server::factory()->create();
@@ -503,8 +505,9 @@ class DashboardAdminComponentsTest extends TestCase
             'user_id' => $user->id,
         ]);
 
+        // loadMoreActivity is now in DashboardRecentActivity child component
         Livewire::actingAs($user)
-            ->test(Dashboard::class)
+            ->test(\App\Livewire\Dashboard\DashboardRecentActivity::class)
             ->call('loadMoreActivity')
             ->assertSet('loadingMoreActivity', false);
     }

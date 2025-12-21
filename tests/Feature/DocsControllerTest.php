@@ -23,7 +23,8 @@ class DocsControllerTest extends TestCase
     {
         parent::setUp();
 
-        $this->docsPath = resource_path('docs/categories');
+        // Use storage path which is writable in Docker
+        $this->docsPath = storage_path('app/docs-test');
         $this->testMarkdownFile = $this->docsPath . '/test-category.md';
 
         // Test markdown content with frontmatter
@@ -54,12 +55,15 @@ This section contains information about feature two with a **search term** examp
 Another section with more content for testing purposes.
 MD;
 
-        // Create test markdown file
+        // Create test markdown file in writable location
         if (!File::isDirectory($this->docsPath)) {
             File::makeDirectory($this->docsPath, 0755, true);
         }
 
         File::put($this->testMarkdownFile, $this->testMarkdownContent);
+
+        // Bind the docs path for tests
+        config(['docs.categories_path' => $this->docsPath]);
 
         // Clear cache before each test
         Cache::flush();
@@ -67,9 +71,9 @@ MD;
 
     protected function tearDown(): void
     {
-        // Clean up test file
-        if (File::exists($this->testMarkdownFile)) {
-            File::delete($this->testMarkdownFile);
+        // Clean up test files and directory
+        if (File::isDirectory($this->docsPath)) {
+            File::deleteDirectory($this->docsPath);
         }
 
         parent::tearDown();
@@ -554,6 +558,9 @@ MD;
     #[Test]
     public function user_can_view_actual_deployments_documentation(): void
     {
+        // Use real docs path for this test
+        config(['docs.categories_path' => resource_path('docs/categories')]);
+
         $this->actingAsUser();
 
         $response = $this->get(route('docs.show', ['category' => 'deployments']));
@@ -567,6 +574,9 @@ MD;
     #[Test]
     public function user_can_view_actual_domains_documentation(): void
     {
+        // Use real docs path for this test
+        config(['docs.categories_path' => resource_path('docs/categories')]);
+
         $this->actingAsUser();
 
         $response = $this->get(route('docs.show', ['category' => 'domains']));
@@ -581,6 +591,9 @@ MD;
     #[Test]
     public function search_handles_special_characters_safely(): void
     {
+        // Use real docs for search testing
+        config(['docs.categories_path' => resource_path('docs/categories')]);
+
         $this->actingAsUser();
 
         $specialChars = ['<script>', '&', '"', "'", '<', '>'];
@@ -616,13 +629,8 @@ MD;
     {
         $this->actingAsUser();
 
-        // Temporarily rename the docs directory
-        $originalPath = resource_path('docs/categories');
-        $tempPath = resource_path('docs/categories_backup');
-
-        if (File::isDirectory($originalPath)) {
-            File::move($originalPath, $tempPath);
-        }
+        // Point to a non-existent directory
+        config(['docs.categories_path' => storage_path('app/non-existent-docs')]);
 
         $response = $this->getJson(route('docs.search', ['q' => 'test']));
 
@@ -631,11 +639,6 @@ MD;
                 'results' => [],
                 'count' => 0,
             ]);
-
-        // Restore the directory
-        if (File::isDirectory($tempPath)) {
-            File::move($tempPath, $originalPath);
-        }
     }
 
     #[Test]

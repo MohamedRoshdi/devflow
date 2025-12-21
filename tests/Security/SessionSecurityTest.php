@@ -33,8 +33,10 @@ class SessionSecurityTest extends TestCase
         $this->actingAs($this->user);
 
         // Disable CSRF middleware to test without token
-        $response = $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class)
-            ->post('/logout');
+        $response = $this->withoutMiddleware([
+            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+            \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+        ])->post('/logout');
 
         // Without CSRF middleware disabled, it would return 419
         // This test verifies the middleware is in place by checking logout works when disabled
