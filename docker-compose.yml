@@ -421,6 +421,6 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.30.0.0/16
+        - subnet: 172.35.0.0/16
     driver_opts:
-      com.docker.network.bridge.name: devflow_br0
+      com.docker.network.bridge.name: devflow_br1
