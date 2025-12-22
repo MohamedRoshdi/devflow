@@ -60,7 +60,7 @@ if (function_exists('opcache_compile_file')) {
 }
 
 // Set memory limit for tests (increased for large test suite)
-ini_set('memory_limit', '2G');
+ini_set('memory_limit', '8G');
 
 // Optimize garbage collection for tests
 gc_enable();

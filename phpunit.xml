@@ -32,6 +32,7 @@
         </include>
     </source>
     <php>
+        <ini name="memory_limit" value="4G"/>
         <env name="APP_ENV" value="testing"/>
         <env name="APP_KEY" value="base64:I3WSB7wRH6xiI8KOmAZF3U8PA1M41PpGstglNw+PnJY="/>
         <env name="BCRYPT_ROUNDS" value="4"/>
