@@ -30,7 +30,7 @@ trait HasServerFormFields
 
     public string $ssh_key = '';
 
-    public string $auth_method = 'password';
+    public string $auth_method = 'host_key';
 
     public ?float $latitude = null;
 
@@ -103,7 +103,7 @@ trait HasServerFormFields
             'hostname' => 'nullable|string|max:255',
             'ip_address' => 'required|ip',
             'port' => 'required|integer|min:1|max:65535',
-            'auth_method' => 'required|in:password,key',
+            'auth_method' => 'required|in:host_key,password,key',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'location_name' => 'nullable|string|max:255',
@@ -133,6 +133,7 @@ trait HasServerFormFields
     {
         return [
             'ssh_password' => 'nullable|string|required_if:auth_method,password',
+            // SSH key is required only when using custom key auth method
             'ssh_key' => 'nullable|string|required_if:auth_method,key',
         ];
     }

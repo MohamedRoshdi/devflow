@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [6.9.4] - 2025-12-22
+
+### Added
+
+#### SSH Password Authentication with phpseclib3
+- **phpseclib3 integration** - Added native PHP SSH library for reliable password authentication
+  - More reliable than system `sshpass` command
+  - Better error handling and connection feedback
+  - Supports all authentication methods: host key, password, and SSH key
+- **Server connectivity improvements** - Enhanced `ServerConnectivityService` with:
+  - `testConnectionWithPhpseclib()` for password-based auth
+  - `executeCommandWithPhpseclib()` for command execution
+  - `getServerInfoWithPhpseclib()` for system information retrieval
+  - Automatic fallback between phpseclib and system SSH based on auth method
+
+#### Docker Improvements
+- **sshpass package** - Added to Dockerfile for legacy SSH password support
+- **Docker Compose updates** - Improved service configuration and volume mounts
+
+### Fixed
+
+#### Light Theme Support
+- **Server show page** - Fixed light theme styling for server detail view
+  - Hero section now uses proper light/dark gradient classes
+  - Stat cards have correct white backgrounds in light mode
+  - All icons and text have proper light mode contrast
+  - Fixed Docker status badge colors for both themes
+
+**Files Modified:**
+- `app/Services/ServerConnectivityService.php` - Added phpseclib3 SSH support
+- `app/Livewire/Servers/ServerCreate.php` - Updated server creation flow
+- `app/Livewire/Concerns/HasServerFormFields.php` - Form field improvements
+- `resources/views/livewire/servers/server-show.blade.php` - Light theme fixes
+- `resources/views/livewire/servers/server-create.blade.php` - UI improvements
+- `Dockerfile` - Added sshpass package
+- `docker-compose.yml` - Configuration updates
+- `composer.json` - Added phpseclib/phpseclib dependency
+
+---
+
 ## [6.9.3] - 2025-12-21
 
 ### Added

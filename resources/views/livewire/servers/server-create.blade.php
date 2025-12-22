@@ -102,7 +102,16 @@
             <!-- Authentication Method -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Authentication Method</label>
-                <div class="flex space-x-4">
+                <div class="flex flex-wrap gap-4">
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="radio"
+                               wire:model.live="auth_method"
+                               value="host_key"
+                               wire:loading.attr="disabled"
+                               wire:target="createServer,testConnection"
+                               class="form-radio text-blue-600 dark:bg-gray-700 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span class="ml-2 text-gray-700 dark:text-gray-300">Host SSH Keys</span>
+                    </label>
                     <label class="inline-flex items-center cursor-pointer">
                         <input type="radio"
                                wire:model.live="auth_method"
@@ -119,7 +128,7 @@
                                wire:loading.attr="disabled"
                                wire:target="createServer,testConnection"
                                class="form-radio text-blue-600 dark:bg-gray-700 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span class="ml-2 text-gray-700 dark:text-gray-300">SSH Key</span>
+                        <span class="ml-2 text-gray-700 dark:text-gray-300">Custom SSH Key</span>
                     </label>
                 </div>
             </div>
@@ -145,11 +154,10 @@
             <!-- SSH Key -->
             @if($auth_method === 'key')
             <div>
-                <label for="ssh_key" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SSH Private Key <span class="text-red-500">*</span></label>
+                <label for="ssh_key" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SSH Private Key <span class="text-gray-400 text-xs">(optional - uses host keys if empty)</span></label>
                 <textarea wire:model="ssh_key"
                           id="ssh_key"
                           rows="6"
-                          required
                           placeholder="-----BEGIN OPENSSH PRIVATE KEY-----"
                           wire:loading.attr="disabled"
                           wire:target="createServer,testConnection"

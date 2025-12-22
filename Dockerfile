@@ -65,6 +65,9 @@ RUN apk add --no-cache \
     # Network utilities
     net-tools \
     iputils \
+    # SSH client and sshpass for remote server management
+    openssh-client \
+    sshpass \
     # File system utilities
     rsync \
     # Memory profiling

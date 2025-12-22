@@ -27,7 +27,7 @@ class ServerCreate extends Component
 
     public string $ssh_key = '';
 
-    public string $auth_method = 'password'; // 'password' or 'key'
+    public string $auth_method = 'host_key'; // 'host_key', 'password', or 'key'
 
     public ?float $latitude = null;
 
@@ -48,8 +48,9 @@ class ServerCreate extends Component
             // Username: alphanumeric, underscores, hyphens - no shell special chars
             'username' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_\-]+$/'],
             'ssh_password' => 'nullable|string|required_if:auth_method,password',
+            // SSH key is optional - required only for 'key' auth method
             'ssh_key' => 'nullable|string|required_if:auth_method,key',
-            'auth_method' => 'required|in:password,key',
+            'auth_method' => 'required|in:host_key,password,key',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'location_name' => 'nullable|string|max:255',
@@ -120,9 +121,9 @@ class ServerCreate extends Component
             if (! empty($serverInfo)) {
                 $server->update([
                     'os' => $serverInfo['os'] ?? null,
-                    'cpu_cores' => $serverInfo['cpu_cores'] ?? null,
-                    'memory_gb' => $serverInfo['memory_gb'] ?? null,
-                    'disk_gb' => $serverInfo['disk_gb'] ?? null,
+                    'cpu_cores' => isset($serverInfo['cpu_cores']) ? (int) $serverInfo['cpu_cores'] : null,
+                    'memory_gb' => isset($serverInfo['memory_gb']) ? (int) round((float) $serverInfo['memory_gb']) : null,
+                    'disk_gb' => isset($serverInfo['disk_gb']) ? (int) $serverInfo['disk_gb'] : null,
                 ]);
             }
         }

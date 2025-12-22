@@ -7,9 +7,19 @@ namespace App\Services;
 use App\Models\Server;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
+use phpseclib3\Net\SSH2;
 
 class ServerConnectivityService
 {
+    /**
+     * Check if server uses password authentication
+     * Note: Using strlen() because PHP treats "0" as falsy
+     */
+    protected function usesPasswordAuth(Server $server): bool
+    {
+        return $server->ssh_password !== null && strlen($server->ssh_password) > 0;
+    }
+
     /**
      * Test if server is reachable via SSH
      */
@@ -25,7 +35,13 @@ class ServerConnectivityService
                 ];
             }
 
-            // Test SSH connection with timeout
+            // Use phpseclib for password authentication (more reliable)
+            // Note: Using strlen() because PHP treats "0" as falsy
+            if ($this->usesPasswordAuth($server)) {
+                return $this->testConnectionWithPhpseclib($server);
+            }
+
+            // Use system SSH for key-based authentication
             $command = $this->buildSSHCommand($server, 'echo "CONNECTION_TEST"');
 
             $startTime = microtime(true);
@@ -48,7 +64,7 @@ class ServerConnectivityService
 
         } catch (\Exception $e) {
             Log::error('ServerConnectivityService: Connection test failed', [
-                'server_id' => $server->id,
+                'server_id' => $server->id ?? null,
                 'ip' => $server->ip_address,
                 'port' => $server->port,
                 'error' => $e->getMessage(),
@@ -57,6 +73,62 @@ class ServerConnectivityService
             return [
                 'reachable' => false,
                 'message' => 'Connection test failed: '.$e->getMessage(),
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Test SSH connection using phpseclib (for password authentication)
+     */
+    protected function testConnectionWithPhpseclib(Server $server): array
+    {
+        $startTime = microtime(true);
+
+        try {
+            $ssh = new SSH2($server->ip_address, $server->port, 10);
+
+            if (! $ssh->login($server->username, $server->ssh_password)) {
+                return [
+                    'reachable' => false,
+                    'message' => 'SSH authentication failed: Invalid username or password',
+                    'error' => 'Authentication failed',
+                ];
+            }
+
+            // Test command execution
+            $output = $ssh->exec('echo "CONNECTION_TEST"');
+            $latency = (microtime(true) - $startTime) * 1000;
+
+            if (str_contains($output, 'CONNECTION_TEST')) {
+                return [
+                    'reachable' => true,
+                    'message' => 'SSH connection successful',
+                    'latency_ms' => round($latency, 2),
+                ];
+            }
+
+            return [
+                'reachable' => false,
+                'message' => 'SSH connection established but command execution failed',
+                'error' => 'Command execution failed',
+            ];
+
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            // Provide more user-friendly error messages
+            if (str_contains($errorMessage, 'Connection refused')) {
+                $errorMessage = 'Connection refused - SSH server may not be running on port '.$server->port;
+            } elseif (str_contains($errorMessage, 'Connection timed out') || str_contains($errorMessage, 'timed out')) {
+                $errorMessage = 'Connection timed out - Server may be unreachable or firewall blocking port '.$server->port;
+            } elseif (str_contains($errorMessage, 'No route to host')) {
+                $errorMessage = 'No route to host - Server IP may be incorrect or network issue';
+            }
+
+            return [
+                'reachable' => false,
+                'message' => 'SSH connection failed: '.$errorMessage,
                 'error' => $e->getMessage(),
             ];
         }
@@ -97,6 +169,26 @@ class ServerConnectivityService
             ];
 
             $info = [];
+
+            // Use phpseclib for password authentication
+            if ($this->usesPasswordAuth($server)) {
+                $ssh = $this->getPhpseclibConnection($server);
+                if (! $ssh) {
+                    return [];
+                }
+
+                foreach ($commands as $key => $cmd) {
+                    $output = trim($ssh->exec($cmd));
+                    if (in_array($key, ['cpu_cores', 'memory_gb', 'disk_gb'])) {
+                        $output = $this->extractNumericValue($output);
+                    }
+                    $info[$key] = $output;
+                }
+
+                return $info;
+            }
+
+            // Use system SSH for key-based authentication
             foreach ($commands as $key => $cmd) {
                 $command = $this->buildSSHCommand($server, $cmd, true);
                 $result = Process::timeout(10)->run($command);
@@ -115,13 +207,83 @@ class ServerConnectivityService
 
         } catch (\Exception $e) {
             Log::error('ServerConnectivityService: Failed to get server info', [
-                'server_id' => $server->id,
+                'server_id' => $server->id ?? null,
                 'ip' => $server->ip_address,
                 'port' => $server->port,
                 'error' => $e->getMessage(),
             ]);
 
             return [];
+        }
+    }
+
+    /**
+     * Get a phpseclib SSH connection for password authentication
+     */
+    protected function getPhpseclibConnection(Server $server): ?SSH2
+    {
+        try {
+            $ssh = new SSH2($server->ip_address, $server->port, 10);
+
+            if (! $ssh->login($server->username, $server->ssh_password)) {
+                Log::warning('ServerConnectivityService: phpseclib login failed', [
+                    'ip' => $server->ip_address,
+                    'username' => $server->username,
+                ]);
+
+                return null;
+            }
+
+            return $ssh;
+        } catch (\Exception $e) {
+            Log::error('ServerConnectivityService: phpseclib connection failed', [
+                'ip' => $server->ip_address,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+    }
+
+    /**
+     * Execute a command on server using phpseclib or system SSH
+     */
+    protected function executeRemoteCommand(Server $server, string $command, bool $useSudo = false): ?string
+    {
+        try {
+            if ($this->usesPasswordAuth($server)) {
+                $ssh = $this->getPhpseclibConnection($server);
+                if (! $ssh) {
+                    return null;
+                }
+
+                if ($useSudo && strtolower($server->username) !== 'root') {
+                    // For sudo with password using phpseclib
+                    $ssh->enablePTY();
+                    $ssh->exec("sudo -S {$command}");
+                    $ssh->write($server->ssh_password."\n");
+                    sleep(1); // Wait for command to execute
+                    $output = $ssh->read();
+
+                    return $output;
+                }
+
+                return $ssh->exec($command);
+            }
+
+            // Use system SSH for key-based authentication
+            $sshCommand = $this->buildSSHCommand($server, $command);
+            $result = Process::timeout(60)->run($sshCommand);
+
+            return $result->successful() ? $result->output() : null;
+        } catch (\Exception $e) {
+            Log::error('ServerConnectivityService: Remote command execution failed', [
+                'server_id' => $server->id ?? null,
+                'command' => $command,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
         }
     }
 
@@ -222,18 +384,29 @@ class ServerConnectivityService
         try {
             $isRoot = strtolower($server->username) === 'root';
 
-            // Build sudo prefix for non-root users
-            if ($isRoot) {
-                $sudoPrefix = '';
-            } elseif ($server->ssh_password) {
-                $escapedPassword = str_replace("'", "'\\''", $server->ssh_password);
-                $sudoPrefix = "echo '{$escapedPassword}' | sudo -S ";
-            } else {
-                $sudoPrefix = 'sudo ';
-            }
+            // Use phpseclib for password authentication
+            if ($this->usesPasswordAuth($server)) {
+                $ssh = $this->getPhpseclibConnection($server);
+                if (! $ssh) {
+                    return [
+                        'success' => false,
+                        'message' => 'Failed to connect to server',
+                    ];
+                }
 
-            $command = $this->buildSSHCommand($server, "{$sudoPrefix}reboot");
-            Process::timeout(30)->run($command);
+                if ($isRoot) {
+                    $ssh->exec('reboot');
+                } else {
+                    $ssh->enablePTY();
+                    $ssh->exec('sudo -S reboot');
+                    $ssh->write($server->ssh_password."\n");
+                }
+            } else {
+                // Use system SSH for key-based authentication
+                $sudoPrefix = $isRoot ? '' : 'sudo ';
+                $command = $this->buildSSHCommand($server, "{$sudoPrefix}reboot");
+                Process::timeout(30)->run($command);
+            }
 
             // Reboot command usually closes connection, so we check if it was initiated
             // Update server status to reflect it's rebooting
@@ -285,36 +458,51 @@ class ServerConnectivityService
             }
 
             $isRoot = strtolower($server->username) === 'root';
+            $restartCommand = "systemctl restart {$service}";
 
-            if ($isRoot) {
-                $sudoPrefix = '';
-            } elseif ($server->ssh_password) {
-                $escapedPassword = str_replace("'", "'\\''", $server->ssh_password);
-                $sudoPrefix = "echo '{$escapedPassword}' | sudo -S ";
+            // Use phpseclib for password authentication
+            if ($this->usesPasswordAuth($server)) {
+                $ssh = $this->getPhpseclibConnection($server);
+                if (! $ssh) {
+                    return [
+                        'success' => false,
+                        'message' => 'Failed to connect to server',
+                    ];
+                }
+
+                if ($isRoot) {
+                    $output = $ssh->exec($restartCommand);
+                } else {
+                    $ssh->enablePTY();
+                    $ssh->exec("sudo -S {$restartCommand}");
+                    $ssh->write($server->ssh_password."\n");
+                    sleep(2); // Wait for service restart
+                    $output = $ssh->read();
+                }
             } else {
-                $sudoPrefix = 'sudo ';
+                // Use system SSH for key-based authentication
+                $sudoPrefix = $isRoot ? '' : 'sudo ';
+                $command = $this->buildSSHCommand($server, "{$sudoPrefix}{$restartCommand}");
+                $result = Process::timeout(60)->run($command);
+
+                if (! $result->successful()) {
+                    return [
+                        'success' => false,
+                        'message' => 'Failed to restart service: '.$result->errorOutput(),
+                    ];
+                }
             }
 
-            $command = $this->buildSSHCommand($server, "{$sudoPrefix}systemctl restart {$service}");
-            $result = Process::timeout(60)->run($command);
-
-            if ($result->successful()) {
-                Log::info('ServerConnectivityService: Service restarted', [
-                    'server_id' => $server->id,
-                    'ip' => $server->ip_address,
-                    'port' => $server->port,
-                    'service' => $service,
-                ]);
-
-                return [
-                    'success' => true,
-                    'message' => "Service '{$service}' restarted successfully.",
-                ];
-            }
+            Log::info('ServerConnectivityService: Service restarted', [
+                'server_id' => $server->id,
+                'ip' => $server->ip_address,
+                'port' => $server->port,
+                'service' => $service,
+            ]);
 
             return [
-                'success' => false,
-                'message' => 'Failed to restart service: '.$result->errorOutput(),
+                'success' => true,
+                'message' => "Service '{$service}' restarted successfully.",
             ];
 
         } catch (\Exception $e) {
@@ -339,6 +527,21 @@ class ServerConnectivityService
     public function getUptime(Server $server): array
     {
         try {
+            // Use phpseclib for password authentication
+            if ($this->usesPasswordAuth($server)) {
+                $ssh = $this->getPhpseclibConnection($server);
+                if (! $ssh) {
+                    return ['success' => false, 'uptime' => null];
+                }
+                $output = trim($ssh->exec('uptime -p'));
+
+                return [
+                    'success' => true,
+                    'uptime' => $output,
+                ];
+            }
+
+            // Use system SSH for key-based authentication
             $command = $this->buildSSHCommand($server, 'uptime -p', true);
             $result = Process::timeout(10)->run($command);
 
@@ -369,7 +572,24 @@ class ServerConnectivityService
     public function getDiskUsage(Server $server): array
     {
         try {
-            $command = $this->buildSSHCommand($server, "df -h / | tail -1 | awk '{print $5}'", true);
+            $diskCommand = "df -h / | tail -1 | awk '{print \$5}'";
+
+            // Use phpseclib for password authentication
+            if ($this->usesPasswordAuth($server)) {
+                $ssh = $this->getPhpseclibConnection($server);
+                if (! $ssh) {
+                    return ['success' => false, 'usage' => null];
+                }
+                $output = trim($ssh->exec($diskCommand));
+
+                return [
+                    'success' => true,
+                    'usage' => $output,
+                ];
+            }
+
+            // Use system SSH for key-based authentication
+            $command = $this->buildSSHCommand($server, $diskCommand, true);
             $result = Process::timeout(10)->run($command);
 
             if ($result->successful()) {
@@ -399,7 +619,24 @@ class ServerConnectivityService
     public function getMemoryUsage(Server $server): array
     {
         try {
-            $command = $this->buildSSHCommand($server, "free | awk '/^Mem:/{printf \"%.1f\", \$3/\$2 * 100}'", true);
+            $memCommand = "free | awk '/^Mem:/{printf \"%.1f\", \$3/\$2 * 100}'";
+
+            // Use phpseclib for password authentication
+            if ($this->usesPasswordAuth($server)) {
+                $ssh = $this->getPhpseclibConnection($server);
+                if (! $ssh) {
+                    return ['success' => false, 'usage' => null];
+                }
+                $output = trim($ssh->exec($memCommand));
+
+                return [
+                    'success' => true,
+                    'usage' => $output.'%',
+                ];
+            }
+
+            // Use system SSH for key-based authentication
+            $command = $this->buildSSHCommand($server, $memCommand, true);
             $result = Process::timeout(10)->run($command);
 
             if ($result->successful()) {
@@ -430,18 +667,36 @@ class ServerConnectivityService
     {
         try {
             $isRoot = strtolower($server->username) === 'root';
+            $cacheCommand = "sync && sh -c 'echo 3 > /proc/sys/vm/drop_caches'";
 
-            if ($isRoot) {
-                $sudoPrefix = '';
-            } elseif ($server->ssh_password) {
-                $escapedPassword = str_replace("'", "'\\''", $server->ssh_password);
-                $sudoPrefix = "echo '{$escapedPassword}' | sudo -S ";
-            } else {
-                $sudoPrefix = 'sudo ';
+            // Use phpseclib for password authentication
+            if ($this->usesPasswordAuth($server)) {
+                $ssh = $this->getPhpseclibConnection($server);
+                if (! $ssh) {
+                    return [
+                        'success' => false,
+                        'message' => 'Failed to connect to server',
+                    ];
+                }
+
+                if ($isRoot) {
+                    $ssh->exec($cacheCommand);
+                } else {
+                    $ssh->enablePTY();
+                    $ssh->exec("sudo -S {$cacheCommand}");
+                    $ssh->write($server->ssh_password."\n");
+                    sleep(1);
+                }
+
+                return [
+                    'success' => true,
+                    'message' => 'System cache cleared successfully.',
+                ];
             }
 
-            // Sync filesystem and drop caches
-            $command = $this->buildSSHCommand($server, "{$sudoPrefix}sync && {$sudoPrefix}sh -c 'echo 3 > /proc/sys/vm/drop_caches'");
+            // Use system SSH for key-based authentication
+            $sudoPrefix = $isRoot ? '' : 'sudo ';
+            $command = $this->buildSSHCommand($server, "{$sudoPrefix}{$cacheCommand}");
             $result = Process::timeout(30)->run($command);
 
             if ($result->successful()) {
@@ -489,7 +744,7 @@ class ServerConnectivityService
         $stderrRedirect = $suppressWarnings ? '2>/dev/null' : '2>&1';
 
         // Check if password authentication should be used
-        if ($server->ssh_password) {
+        if ($this->usesPasswordAuth($server)) {
             // Use sshpass for password authentication
             $escapedPassword = escapeshellarg($server->ssh_password);
 
@@ -508,10 +763,34 @@ class ServerConnectivityService
         $sshOptions[] = '-o BatchMode=yes';
 
         if ($server->ssh_key) {
+            // Use provided key content
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
             file_put_contents($keyFile, $server->ssh_key);
             chmod($keyFile, 0600);
             $sshOptions[] = '-i '.$keyFile;
+        } else {
+            // Try to use mounted host SSH keys (default locations)
+            // Keys are mounted from host - copy to temp with correct permissions
+            $possibleKeys = [
+                '/tmp/host_ssh_key',  // Pre-copied key with correct permissions
+                '/home/www-data/.ssh/id_rsa',
+                '/home/www-data/.ssh/id_ed25519',
+                '/root/.ssh/id_rsa',
+            ];
+
+            foreach ($possibleKeys as $keyPath) {
+                if (file_exists($keyPath)) {
+                    // Copy key to temp file with correct permissions (600)
+                    $keyContent = @file_get_contents($keyPath);
+                    if ($keyContent) {
+                        $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
+                        file_put_contents($keyFile, $keyContent);
+                        chmod($keyFile, 0600);
+                        $sshOptions[] = '-i '.escapeshellarg($keyFile);
+                        break;
+                    }
+                }
+            }
         }
 
         return sprintf(
