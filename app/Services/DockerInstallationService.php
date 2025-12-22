@@ -31,35 +31,7 @@ class DockerInstallationService
         try {
             Log::info('Starting Docker installation', ['server_id' => $server->id]);
 
-            $this->streamOutput($onOutput, 'Connecting to server...', 5, 'Establishing SSH connection');
-
-            // Check sudo privileges first for non-root users
-            $isRoot = strtolower($server->username) === 'root';
-            if (! $isRoot) {
-                $this->streamOutput($onOutput, 'Checking sudo privileges...', 8, 'Verifying permissions');
-
-                $sudoCheck = $this->checkSudoPrivileges($server);
-                if (! $sudoCheck['has_sudo']) {
-                    $errorMsg = $sudoCheck['error'] ?? 'User does not have sudo privileges';
-                    $this->streamOutput($onOutput, 'ERROR: '.$errorMsg, 0, 'Permission denied');
-
-                    Log::error('Docker installation failed - no sudo privileges', [
-                        'server_id' => $server->id,
-                        'username' => $server->username,
-                        'error' => $errorMsg,
-                    ]);
-
-                    return [
-                        'success' => false,
-                        'message' => "Cannot install Docker: {$errorMsg}. Please use root user or a user with sudo privileges.",
-                        'error' => $errorMsg,
-                    ];
-                }
-
-                $this->streamOutput($onOutput, 'Sudo privileges verified', 10, 'Permissions OK');
-            }
-
-            $this->streamOutput($onOutput, 'Preparing installation...', 12, 'Building script');
+            $this->streamOutput($onOutput, 'Connecting to server...', 10, 'Establishing SSH connection');
 
             // Build installation script
             $installScript = $this->getDockerInstallScript($server);
@@ -241,90 +213,6 @@ class DockerInstallationService
         }
 
         return 'Installing...';
-    }
-
-    /**
-     * Check if the user has sudo privileges on the server
-     *
-     * @return array{has_sudo: bool, error?: string}
-     */
-    public function checkSudoPrivileges(Server $server): array
-    {
-        try {
-            $isRoot = strtolower($server->username) === 'root';
-
-            if ($isRoot) {
-                return ['has_sudo' => true];
-            }
-
-            // Build a simple sudo test command
-            if ($server->ssh_password) {
-                // Test sudo with password - use sudo -S to read password from stdin
-                $escapedPassword = str_replace("'", "'\\''", $server->ssh_password);
-                $sudoTestScript = "echo '{$escapedPassword}' | sudo -S -n whoami 2>/dev/null || echo '{$escapedPassword}' | sudo -S whoami 2>&1";
-            } else {
-                // Test passwordless sudo with timeout to avoid hanging
-                $sudoTestScript = 'sudo -n whoami 2>&1 || echo "SUDO_FAILED"';
-            }
-
-            $command = $this->buildSSHCommand($server, $sudoTestScript, true);
-
-            // Use a short timeout to avoid hanging
-            $result = Process::timeout(15)->run($command);
-
-            $output = trim($result->output());
-
-            // Check for common sudo failure indicators
-            if (str_contains($output, 'SUDO_FAILED') ||
-                str_contains($output, 'password is required') ||
-                str_contains($output, 'not in the sudoers file') ||
-                str_contains($output, 'incorrect password') ||
-                str_contains($output, 'not allowed to execute') ||
-                str_contains($output, 'a password is required') ||
-                str_contains($output, 'sudo: a terminal is required')) {
-
-                $errorMessage = 'User does not have sudo privileges';
-
-                if (str_contains($output, 'not in the sudoers file')) {
-                    $errorMessage = "User '{$server->username}' is not in the sudoers file";
-                } elseif (str_contains($output, 'password is required') || str_contains($output, 'a password is required')) {
-                    $errorMessage = 'Sudo requires a password but none was provided. Add SSH password in server settings.';
-                } elseif (str_contains($output, 'incorrect password')) {
-                    $errorMessage = 'Incorrect sudo password';
-                }
-
-                return [
-                    'has_sudo' => false,
-                    'error' => $errorMessage,
-                ];
-            }
-
-            // Check if output contains 'root' or the username (successful sudo)
-            if ($output === 'root' || ! empty($output)) {
-                return ['has_sudo' => true];
-            }
-
-            // If we got here without clear success indicators
-            if (! $result->successful()) {
-                return [
-                    'has_sudo' => false,
-                    'error' => 'Could not verify sudo privileges. Exit code: '.$result->exitCode(),
-                ];
-            }
-
-            return ['has_sudo' => true];
-
-        } catch (\Exception $e) {
-            Log::error('Sudo privilege check failed', [
-                'server_id' => $server->id,
-                'error' => $e->getMessage(),
-            ]);
-
-            return [
-                'has_sudo' => false,
-                'error' => 'Failed to check sudo privileges: '.$e->getMessage(),
-            ];
-        }
     }
 
     /**
