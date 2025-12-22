@@ -138,9 +138,9 @@ class ServerEdit extends Component
             if (! empty($serverInfo)) {
                 $this->server->update([
                     'os' => $serverInfo['os'] ?? $this->server->os,
-                    'cpu_cores' => $serverInfo['cpu_cores'] ?? $this->server->cpu_cores,
-                    'memory_gb' => $serverInfo['memory_gb'] ?? $this->server->memory_gb,
-                    'disk_gb' => $serverInfo['disk_gb'] ?? $this->server->disk_gb,
+                    'cpu_cores' => isset($serverInfo['cpu_cores']) ? (int) $serverInfo['cpu_cores'] : $this->server->cpu_cores,
+                    'memory_gb' => isset($serverInfo['memory_gb']) ? (int) $serverInfo['memory_gb'] : $this->server->memory_gb,
+                    'disk_gb' => isset($serverInfo['disk_gb']) ? (int) $serverInfo['disk_gb'] : $this->server->disk_gb,
                 ]);
             }
         }

@@ -164,7 +164,7 @@ class ServerConnectivityService
             $commands = [
                 'os' => 'uname -s',
                 'cpu_cores' => 'nproc',
-                'memory_gb' => 'free -m | awk \'/^Mem:/{printf "%.1f", $2/1024}\'',
+                'memory_gb' => 'free -m | awk \'/^Mem:/{printf "%d", int($2/1024)}\'',
                 'disk_gb' => 'df -BG / | tail -1 | awk \'{print $2}\' | sed \'s/G//\'',
             ];
 

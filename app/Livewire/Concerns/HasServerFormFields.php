@@ -38,11 +38,20 @@ trait HasServerFormFields
 
     public string $location_name = '';
 
+    // Connection test result messages
+    public ?string $connectionSuccess = null;
+
+    public ?string $connectionError = null;
+
     /**
      * Test SSH connection with current form values
      */
     public function testConnection(): void
     {
+        // Reset previous messages
+        $this->connectionSuccess = null;
+        $this->connectionError = null;
+
         $this->validate();
 
         try {
@@ -58,12 +67,12 @@ trait HasServerFormFields
             $result = $connectivityService->testConnection($tempServer);
 
             if ($result['reachable']) {
-                session()->flash('connection_test', $result['message'].' (Latency: '.$result['latency_ms'].'ms)');
+                $this->connectionSuccess = $result['message'].' (Latency: '.$result['latency_ms'].'ms)';
             } else {
-                session()->flash('connection_error', $result['message']);
+                $this->connectionError = $result['message'];
             }
         } catch (\Exception $e) {
-            session()->flash('connection_error', 'Connection failed: '.$e->getMessage());
+            $this->connectionError = 'Connection failed: '.$e->getMessage();
         }
     }
 
