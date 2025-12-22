@@ -175,7 +175,9 @@ class ServerShow extends Component
             $existingStatus = Cache::get($cacheKey);
 
             if ($existingStatus && $existingStatus['status'] === 'installing') {
-                session()->flash('info', 'Docker installation is already in progress...');
+                // Show the log viewer instead
+                $this->dispatch('docker-installation-started');
+                session()->flash('info', 'Docker installation is already in progress. Showing live logs...');
 
                 return;
             }
@@ -185,8 +187,13 @@ class ServerShow extends Component
                 'status' => 'installing',
                 'message' => 'Starting Docker installation...',
                 'progress' => 5,
+                'current_step' => 'Preparing...',
                 'started_at' => now()->toISOString(),
             ], 3600);
+
+            // Initialize logs cache
+            $logsKey = "docker_install_logs_{$this->server->id}";
+            Cache::put($logsKey, [], 3600);
 
             $this->dockerInstalling = true;
             $this->dockerInstallStatus = Cache::get($cacheKey);
@@ -197,17 +204,26 @@ class ServerShow extends Component
                 // For sync queue, run directly but without blocking the request
                 // by using dispatchAfterResponse
                 InstallDockerJob::dispatchAfterResponse($this->server);
-                session()->flash('info', 'Docker installation started! Please wait while installation completes...');
             } else {
                 InstallDockerJob::dispatch($this->server);
-                session()->flash('info', 'Docker installation started! This runs in the background and may take several minutes. The page will update automatically when complete.');
             }
+
+            // Dispatch event to show log viewer
+            $this->dispatch('docker-installation-started');
 
         } catch (\Exception $e) {
             Cache::forget($cacheKey);
             $this->dockerInstalling = false;
             session()->flash('error', 'Failed to start Docker installation: '.$e->getMessage());
         }
+    }
+
+    /**
+     * Show Docker installation logs modal
+     */
+    public function showDockerLogs(): void
+    {
+        $this->dispatch('docker-installation-started');
     }
 
     public function rebootServer()

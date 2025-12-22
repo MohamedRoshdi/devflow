@@ -12,24 +12,76 @@ class DockerInstallationService
 {
     /**
      * Install Docker on a server
+     *
+     * @return array<string, mixed>
      */
     public function installDocker(Server $server): array
+    {
+        return $this->installDockerWithStreaming($server, null);
+    }
+
+    /**
+     * Install Docker on a server with streaming output callback
+     *
+     * @param callable|null $onOutput Callback function(string $line, int $progress, string $step)
+     * @return array<string, mixed>
+     */
+    public function installDockerWithStreaming(Server $server, ?callable $onOutput = null): array
     {
         try {
             Log::info('Starting Docker installation', ['server_id' => $server->id]);
 
+            $this->streamOutput($onOutput, 'Connecting to server...', 10, 'Establishing SSH connection');
+
             // Build installation script
             $installScript = $this->getDockerInstallScript($server);
 
-            // Execute installation via SSH
+            // Execute installation via SSH with streaming
             $command = $this->buildSSHCommand($server, $installScript);
 
-            $result = Process::timeout(600)->run($command); // 10 minutes timeout
+            $this->streamOutput($onOutput, 'Running installation script...', 15, 'Executing Docker installation');
 
-            $output = $result->output();
-            $error = $result->errorOutput();
+            // Use Process with output callback for real-time streaming
+            $allOutput = '';
+            $allError = '';
+            $currentProgress = 15;
+
+            $result = Process::timeout(600)->run($command, function (string $type, string $output) use ($onOutput, &$allOutput, &$allError, &$currentProgress) {
+                if ($type === 'out') {
+                    $allOutput .= $output;
+
+                    // Stream each line
+                    $lines = explode("\n", $output);
+                    foreach ($lines as $line) {
+                        $line = trim($line);
+                        if (empty($line)) {
+                            continue;
+                        }
+
+                        // Detect progress based on output
+                        $step = $this->detectInstallationStep($line);
+                        if ($step !== null) {
+                            $currentProgress = min(90, $currentProgress + 10);
+                        }
+
+                        $this->streamOutput($onOutput, $line, $currentProgress, $this->getCurrentStepDescription($line));
+                    }
+                } else {
+                    $allError .= $output;
+                    // Stream errors as well
+                    $lines = explode("\n", $output);
+                    foreach ($lines as $line) {
+                        $line = trim($line);
+                        if (! empty($line)) {
+                            $this->streamOutput($onOutput, 'STDERR: '.$line, $currentProgress, 'Processing...');
+                        }
+                    }
+                }
+            });
 
             if ($result->successful()) {
+                $this->streamOutput($onOutput, 'Verifying Docker installation...', 95, 'Verification');
+
                 // Verify installation
                 $verifyResult = $this->verifyDockerInstallation($server);
 
@@ -40,6 +92,8 @@ class DockerInstallationService
                         'docker_version' => $verifyResult['version'],
                     ]);
 
+                    $this->streamOutput($onOutput, 'Docker version: '.($verifyResult['version'] ?? 'unknown'), 100, 'Complete');
+
                     Log::info('Docker installed successfully', [
                         'server_id' => $server->id,
                         'version' => $verifyResult['version'],
@@ -49,32 +103,32 @@ class DockerInstallationService
                         'success' => true,
                         'message' => 'Docker installed successfully!',
                         'version' => $verifyResult['version'],
-                        'output' => $output,
+                        'output' => $allOutput,
                     ];
                 } else {
                     return [
                         'success' => false,
                         'message' => 'Docker installation completed but verification failed',
-                        'output' => $output,
-                        'error' => $error,
+                        'output' => $allOutput,
+                        'error' => $allError,
                     ];
                 }
             }
 
-            $errorMessage = ! empty($error) ? $error : (! empty($output) ? $output : 'Unknown error - no output from installation script');
+            $errorMessage = ! empty($allError) ? $allError : (! empty($allOutput) ? $allOutput : 'Unknown error - no output from installation script');
 
             Log::error('Docker installation failed', [
                 'server_id' => $server->id,
                 'exit_code' => $result->exitCode(),
                 'error' => $errorMessage,
-                'output' => substr($output, 0, 500), // First 500 chars
+                'output' => substr($allOutput, 0, 500),
             ]);
 
             return [
                 'success' => false,
                 'message' => 'Docker installation failed. '.(strlen($errorMessage) > 200 ? substr($errorMessage, 0, 200).'...' : $errorMessage),
-                'output' => $output,
-                'error' => $error,
+                'output' => $allOutput,
+                'error' => $allError,
             ];
 
         } catch (\Exception $e) {
@@ -83,12 +137,82 @@ class DockerInstallationService
                 'error' => $e->getMessage(),
             ]);
 
+            $this->streamOutput($onOutput, 'Exception: '.$e->getMessage(), 0, 'Error');
+
             return [
                 'success' => false,
                 'message' => 'Installation failed: '.$e->getMessage(),
                 'error' => $e->getMessage(),
             ];
         }
+    }
+
+    /**
+     * Stream output to callback if provided
+     */
+    private function streamOutput(?callable $onOutput, string $line, int $progress, string $step): void
+    {
+        if ($onOutput !== null) {
+            $onOutput($line, $progress, $step);
+        }
+    }
+
+    /**
+     * Detect installation step from output line
+     */
+    private function detectInstallationStep(string $line): ?string
+    {
+        $stepPatterns = [
+            '/Step\s+(\d+)\/(\d+)/' => 'step',
+            '/Updating package index/' => 'update',
+            '/Installing prerequisites/' => 'prerequisites',
+            '/Adding Docker repository/' => 'repository',
+            '/Installing Docker packages/' => 'packages',
+            '/Starting Docker service/' => 'service',
+            '/Configuring user permissions/' => 'permissions',
+            '/Verifying Installation/' => 'verify',
+        ];
+
+        foreach ($stepPatterns as $pattern => $step) {
+            if (preg_match($pattern, $line)) {
+                return $step;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get human-readable step description from output line
+     */
+    private function getCurrentStepDescription(string $line): string
+    {
+        if (str_contains($line, 'Step 1') || str_contains($line, 'Updating package index')) {
+            return 'Updating package index...';
+        }
+        if (str_contains($line, 'Step 2') || str_contains($line, 'Installing prerequisites')) {
+            return 'Installing prerequisites...';
+        }
+        if (str_contains($line, 'Step 3') || str_contains($line, 'Adding Docker repository')) {
+            return 'Adding Docker repository...';
+        }
+        if (str_contains($line, 'Step 4') || str_contains($line, 'Updating package index with Docker')) {
+            return 'Updating with Docker repository...';
+        }
+        if (str_contains($line, 'Step 5') || str_contains($line, 'Installing Docker packages')) {
+            return 'Installing Docker packages...';
+        }
+        if (str_contains($line, 'Step 6') || str_contains($line, 'Starting Docker service')) {
+            return 'Starting Docker service...';
+        }
+        if (str_contains($line, 'Verifying Installation')) {
+            return 'Verifying installation...';
+        }
+        if (str_contains($line, 'Completed Successfully')) {
+            return 'Installation complete!';
+        }
+
+        return 'Installing...';
     }
 
     /**

@@ -434,20 +434,35 @@
                         @if(!$server->docker_installed)
                             @if($dockerInstalling)
                                 <div class="p-4 rounded-xl bg-blue-500/10 border border-blue-500/30">
-                                    <div class="flex items-center gap-3 mb-2">
-                                        <svg class="w-5 h-5 text-blue-400 animate-spin" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                                        </svg>
-                                        <p class="text-sm font-semibold text-blue-300">Installing Docker...</p>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center gap-3">
+                                            <svg class="w-5 h-5 text-blue-400 animate-spin" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                            </svg>
+                                            <p class="text-sm font-semibold text-blue-300">{{ __('Installing Docker...') }}</p>
+                                        </div>
+                                        <button wire:click="showDockerLogs"
+                                            class="px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 border border-blue-500/30 transition-all">
+                                            {{ __('View Live Logs') }}
+                                        </button>
                                     </div>
                                     @if($dockerInstallStatus)
-                                        <p class="text-xs text-blue-200">{{ $dockerInstallStatus['message'] ?? 'Please wait...' }}</p>
+                                        <div class="mt-2">
+                                            <div class="flex items-center justify-between text-xs text-blue-200 mb-1">
+                                                <span>{{ $dockerInstallStatus['current_step'] ?? $dockerInstallStatus['message'] ?? 'Please wait...' }}</span>
+                                                <span>{{ $dockerInstallStatus['progress'] ?? 0 }}%</span>
+                                            </div>
+                                            <div class="w-full bg-blue-900/50 rounded-full h-1.5 overflow-hidden">
+                                                <div class="h-1.5 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-500"
+                                                    style="width: {{ $dockerInstallStatus['progress'] ?? 0 }}%"></div>
+                                            </div>
+                                        </div>
                                     @endif
                                 </div>
                             @else
                                 <button wire:click="installDocker"
-                                    wire:confirm="Install Docker?\n\nThis will install Docker Engine, Docker Compose, and required dependencies.\nThis runs in the background and may take 3-5 minutes."
+                                    wire:confirm="{{ __('Install Docker?') }}\n\n{{ __('This will install Docker Engine, Docker Compose, and required dependencies.') }}\n{{ __('This runs in the background and may take 3-5 minutes.') }}"
                                     wire:loading.attr="disabled"
                                     class="w-full p-4 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                                     <svg wire:loading.remove wire:target="installDocker" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -457,8 +472,8 @@
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                                     </svg>
-                                    <span wire:loading.remove wire:target="installDocker">Install Docker Now</span>
-                                    <span wire:loading wire:target="installDocker">Starting Installation...</span>
+                                    <span wire:loading.remove wire:target="installDocker">{{ __('Install Docker Now') }}</span>
+                                    <span wire:loading wire:target="installDocker">{{ __('Starting Installation...') }}</span>
                                 </button>
                             @endif
                         @else
@@ -839,4 +854,7 @@
     <div class="mt-8">
         <livewire:servers.server-tag-assignment :server="$server" />
     </div>
+
+    {{-- Docker Installation Logs Modal --}}
+    <livewire:servers.docker-installation-logs :server="$server" />
 </div>
