@@ -80,10 +80,13 @@
                 <!-- Port -->
                 <div>
                     <label for="port" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SSH Port</label>
-                    <input wire:model="port"
+                    <input wire:model.number.blur="port"
                            id="port"
                            type="number"
+                           min="1"
+                           max="65535"
                            required
+                           placeholder="22"
                            wire:loading.attr="disabled"
                            wire:target="updateServer,testConnection"
                            class="input @error('port') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
@@ -95,10 +98,11 @@
                 <!-- Username -->
                 <div>
                     <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SSH Username</label>
-                    <input wire:model="username"
+                    <input wire:model.blur="username"
                            id="username"
                            type="text"
                            required
+                           placeholder="root"
                            wire:loading.attr="disabled"
                            wire:target="updateServer,testConnection"
                            class="input @error('username') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
@@ -111,7 +115,16 @@
             <!-- Authentication Method -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Authentication Method</label>
-                <div class="flex space-x-4">
+                <div class="flex flex-wrap gap-4">
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="radio"
+                               wire:model.live="auth_method"
+                               value="host_key"
+                               wire:loading.attr="disabled"
+                               wire:target="updateServer,testConnection"
+                               class="form-radio text-blue-600 dark:bg-gray-700 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span class="ml-2 text-gray-700 dark:text-gray-300">Host SSH Keys</span>
+                    </label>
                     <label class="inline-flex items-center cursor-pointer">
                         <input type="radio"
                                wire:model.live="auth_method"
@@ -128,30 +141,51 @@
                                wire:loading.attr="disabled"
                                wire:target="updateServer,testConnection"
                                class="form-radio text-blue-600 dark:bg-gray-700 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span class="ml-2 text-gray-700 dark:text-gray-300">SSH Key</span>
+                        <span class="ml-2 text-gray-700 dark:text-gray-300">Custom SSH Key</span>
                     </label>
                 </div>
                 <livewire:components.inline-help help-key="ssh-access-button" :collapsible="true" />
             </div>
 
-            <!-- SSH Password - Always visible, simple binding -->
+            <!-- SSH Password -->
+            @if($auth_method === 'password')
             <div>
-                <label for="ssh_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    SSH Password
-                    <span class="text-gray-400 text-xs">(Enter password for SSH authentication)</span>
-                </label>
-                <input wire:model.defer="ssh_password"
-                       name="ssh_password"
+                <label for="ssh_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SSH Password <span class="text-red-500">*</span></label>
+                <input wire:model="ssh_password"
                        id="ssh_password"
-                       type="text"
-                       placeholder="Enter SSH password"
-                       autocomplete="off"
-                       class="input @error('ssh_password') border-red-500 @enderror">
-                <p class="text-xs text-gray-500 mt-1">Debug: Password will be visible while we fix the issue</p>
+                       type="password"
+                       placeholder="Enter new SSH password (leave empty to keep current)"
+                       wire:loading.attr="disabled"
+                       wire:target="updateServer,testConnection"
+                       class="input @error('ssh_password') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
+                @if($server->ssh_password)
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Leave empty to keep current password</p>
+                @endif
                 @error('ssh_password')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
+            @endif
+
+            <!-- SSH Key -->
+            @if($auth_method === 'key')
+            <div>
+                <label for="ssh_key" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SSH Private Key <span class="text-gray-400 text-xs">(optional - uses host keys if empty)</span></label>
+                <textarea wire:model="ssh_key"
+                          id="ssh_key"
+                          rows="6"
+                          placeholder="-----BEGIN OPENSSH PRIVATE KEY-----"
+                          wire:loading.attr="disabled"
+                          wire:target="updateServer,testConnection"
+                          class="input @error('ssh_key') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed"></textarea>
+                @if($server->ssh_key)
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Leave empty to keep current SSH key</p>
+                @endif
+                @error('ssh_key')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+            @endif
 
             <!-- GPS Location -->
             <div class="border-t pt-6">
@@ -193,6 +227,27 @@
                                class="input disabled:opacity-50 disabled:cursor-not-allowed">
                     </div>
                 </div>
+
+                <button type="button"
+                        wire:click="getLocation"
+                        wire:loading.attr="disabled"
+                        wire:target="getLocation,updateServer,testConnection"
+                        class="mt-4 inline-flex items-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity">
+                    <span wire:loading.remove wire:target="getLocation">
+                        <svg class="w-4 h-4 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        Use Current GPS Location
+                    </span>
+                    <span wire:loading wire:target="getLocation" class="inline-flex items-center">
+                        <svg class="animate-spin h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Getting Location...
+                    </span>
+                </button>
             </div>
 
             <!-- Current Server Info -->

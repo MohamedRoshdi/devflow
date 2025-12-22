@@ -220,15 +220,18 @@ class ServerEditTest extends DuskTestCase
                 ->pause(3000)
                 ->screenshot('auth-method-options');
 
-            // Check for authentication method radio buttons
-            $browser->assertPresent('input[value="password"]')
+            // Check for all authentication method radio buttons (host_key, password, key)
+            $browser->assertPresent('input[value="host_key"]')
+                ->assertPresent('input[value="password"]')
                 ->assertPresent('input[value="key"]');
 
-            // Verify page contains password/key authentication labels
+            // Verify page contains all authentication labels
             $pageSource = $browser->driver->getPageSource();
             $this->assertTrue(
-                str_contains($pageSource, 'Password') && str_contains($pageSource, 'SSH Key'),
-                'Authentication method options should be visible'
+                str_contains($pageSource, 'Host SSH Keys') &&
+                str_contains($pageSource, 'Password') &&
+                str_contains($pageSource, 'Custom SSH Key'),
+                'All authentication method options should be visible'
             );
 
             $this->testResults['auth_method'] = 'Authentication method options present';
@@ -966,6 +969,7 @@ class ServerEditTest extends DuskTestCase
                 ->assertPresent('#ip_address')
                 ->assertPresent('#port')
                 ->assertPresent('#username')
+                ->assertPresent('input[value="host_key"]')
                 ->assertPresent('input[value="password"]')
                 ->assertPresent('input[value="key"]');
 

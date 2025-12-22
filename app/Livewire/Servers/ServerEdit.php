@@ -37,16 +37,15 @@ class ServerEdit extends Component
         $this->longitude = $this->server->longitude !== null ? (float) $this->server->longitude : null;
         $this->location_name = $this->server->location_name ?? '';
 
-        // Debug: log the ssh credentials state
-        logger()->info('ServerEdit loadServerData', [
-            'server_id' => $this->server->id,
-            'has_ssh_key' => !empty($this->server->ssh_key),
-            'ssh_key_length' => strlen($this->server->ssh_key ?? ''),
-            'has_ssh_password' => !empty($this->server->ssh_password),
-        ]);
-
-        // Use empty() for more reliable check (catches empty strings, null, etc.)
-        $this->auth_method = !empty($this->server->ssh_key) ? 'key' : 'password';
+        // Determine auth method based on stored credentials
+        // Priority: key > password > host_key (default)
+        if (! empty($this->server->ssh_key)) {
+            $this->auth_method = 'key';
+        } elseif (! empty($this->server->ssh_password)) {
+            $this->auth_method = 'password';
+        } else {
+            $this->auth_method = 'host_key';
+        }
     }
 
     /**
@@ -54,6 +53,11 @@ class ServerEdit extends Component
      */
     protected function getPasswordForTest(): ?string
     {
+        // Host key auth doesn't use password
+        if ($this->auth_method === 'host_key') {
+            return null;
+        }
+
         if ($this->auth_method === 'password' && $this->ssh_password) {
             return $this->ssh_password;
         }
@@ -66,6 +70,11 @@ class ServerEdit extends Component
      */
     protected function getKeyForTest(): ?string
     {
+        // Host key auth doesn't use custom key
+        if ($this->auth_method === 'host_key') {
+            return null;
+        }
+
         if ($this->auth_method === 'key' && $this->ssh_key) {
             return $this->ssh_key;
         }
@@ -89,17 +98,6 @@ class ServerEdit extends Component
     {
         $this->validate();
 
-        // Debug logging - remove after fixing
-        logger()->info('ServerEdit updateServer called', [
-            'auth_method' => $this->auth_method,
-            'ssh_password_length' => strlen($this->ssh_password),
-            'ssh_password_empty' => empty($this->ssh_password),
-            'ssh_password_trimmed_length' => strlen(trim($this->ssh_password)),
-            'ssh_password_is_string' => is_string($this->ssh_password),
-            'ssh_password_ord' => strlen($this->ssh_password) > 0 ? ord($this->ssh_password[0]) : 'empty',
-            'ssh_key_length' => strlen($this->ssh_key),
-        ]);
-
         /** @var array<string, mixed> */
         $updateData = [
             'name' => $this->name,
@@ -112,21 +110,20 @@ class ServerEdit extends Component
             'location_name' => $this->location_name,
         ];
 
-        // Only update credentials if new ones are provided
-        // Use strlen() > 0 instead of truthiness to handle edge cases like "0"
-        if ($this->auth_method === 'password' && strlen($this->ssh_password) > 0) {
+        // Update credentials based on auth method
+        if ($this->auth_method === 'host_key') {
+            // Host key authentication - clear stored credentials
+            $updateData['ssh_password'] = null;
+            $updateData['ssh_key'] = null;
+        } elseif ($this->auth_method === 'password' && strlen($this->ssh_password) > 0) {
+            // Password auth with new password provided
             $updateData['ssh_password'] = $this->ssh_password;
             $updateData['ssh_key'] = null;
         } elseif ($this->auth_method === 'key' && strlen($this->ssh_key) > 0) {
+            // Key auth with new key provided
             $updateData['ssh_key'] = $this->ssh_key;
             $updateData['ssh_password'] = null;
         }
-
-        // Debug: Log what we're about to save
-        logger()->info('ServerEdit about to update', [
-            'update_data_has_password' => isset($updateData['ssh_password']),
-            'update_data_keys' => array_keys($updateData),
-        ]);
 
         $this->server->update($updateData);
 
