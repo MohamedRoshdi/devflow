@@ -8,7 +8,7 @@
 
     {{-- Hero Header --}}
     <div class="relative mb-8">
-        <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl overflow-hidden border border-slate-700/50 shadow-2xl">
+        <div class="bg-gradient-to-br from-slate-100 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-700/50 shadow-2xl">
             {{-- Grid Pattern --}}
             <div class="absolute inset-0 opacity-[0.03]" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23fff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
 
@@ -26,12 +26,12 @@
 
                         <div>
                             <div class="flex items-center gap-3 mb-1">
-                                <h1 class="text-2xl lg:text-3xl font-bold text-white tracking-tight">Projects Management</h1>
+                                <h1 class="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Projects Management</h1>
                                 <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                                     {{ $projects->total() }} Projects
                                 </span>
                             </div>
-                            <p class="text-slate-400 text-sm">Manage and deploy your applications with ease</p>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm">Manage and deploy your applications with ease</p>
 
                             {{-- Quick Stats Pills --}}
                             <div class="flex flex-wrap items-center gap-2 mt-3">
@@ -83,12 +83,12 @@
     </div>
 
     {{-- Filters Section --}}
-    <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 shadow-xl mb-8 overflow-hidden">
+    <div class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-xl mb-8 overflow-hidden">
         <div class="p-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                    <label for="search-input" class="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
-                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <label for="search-input" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                         Search Projects
@@ -97,19 +97,19 @@
                            id="search-input"
                            type="text"
                            placeholder="Type to search..."
-                           class="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-500 focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                           class="w-full px-4 py-2.5 bg-white dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600/50 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
                            aria-label="Search projects by name">
                 </div>
                 <div>
-                    <label for="server-filter" class="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
-                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <label for="server-filter" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"/>
                         </svg>
                         Server
                     </label>
                     <select wire:model.live="serverFilter"
                             id="server-filter"
-                            class="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-600/50 rounded-xl text-white focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                            class="w-full px-4 py-2.5 bg-white dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600/50 rounded-xl text-slate-900 dark:text-white focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
                             aria-label="Filter by server">
                         <option value="">All Servers</option>
                         @foreach($this->servers as $server)
@@ -118,15 +118,15 @@
                     </select>
                 </div>
                 <div>
-                    <label for="status-filter" class="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
-                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <label for="status-filter" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                         Status
                     </label>
                     <select wire:model.live="statusFilter"
                             id="status-filter"
-                            class="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-600/50 rounded-xl text-white focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                            class="w-full px-4 py-2.5 bg-white dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600/50 rounded-xl text-slate-900 dark:text-white focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
                             aria-label="Filter by status">
                         <option value="">All Statuses</option>
                         <option value="running">Running</option>
@@ -245,7 +245,7 @@
             {{-- Project Cards --}}
             @foreach($projects as $project)
                 <div wire:key="project-{{ $project->id }}"
-                     class="group relative bg-slate-800/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-slate-700/50 shadow-xl hover:shadow-2xl hover:border-slate-600/50 transform hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300 cursor-pointer"
+                     class="group relative bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700/50 shadow-xl hover:shadow-2xl hover:border-slate-300 dark:hover:border-slate-600/50 transform hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300 cursor-pointer"
                      onclick="window.location='{{ route('projects.show', $project) }}'"
                      role="article"
                      aria-labelledby="project-{{ $project->id }}-title">
@@ -265,7 +265,7 @@
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2 mb-2">
-                                    <h3 class="text-lg font-bold text-white truncate group-hover:text-emerald-400 transition-colors" id="project-{{ $project->id }}-title">
+                                    <h3 class="text-lg font-bold text-slate-900 dark:text-white truncate group-hover:text-emerald-400 transition-colors" id="project-{{ $project->id }}-title">
                                         {{ $project->name }}
                                     </h3>
                                     {{-- Status Badge --}}
@@ -294,7 +294,7 @@
                                         @endif
                                     </span>
                                 </div>
-                                <p class="text-sm text-slate-400 font-mono">{{ $project->slug }}</p>
+                                <p class="text-sm text-slate-500 dark:text-slate-400 font-mono">{{ $project->slug }}</p>
                             </div>
                         </div>
 
@@ -363,8 +363,8 @@
                         @endif
 
                         {{-- Footer --}}
-                        <div class="flex justify-between items-center pt-4 border-t border-slate-700/50">
-                            <span class="text-xs text-slate-500">
+                        <div class="flex justify-between items-center pt-4 border-t border-slate-200 dark:border-slate-700/50">
+                            <span class="text-xs text-slate-500 dark:text-slate-500">
                                 {{ $project->last_deployed_at ? $project->last_deployed_at->diffForHumans() : 'Never deployed' }}
                             </span>
                             <div class="flex items-center gap-3" onclick="event.stopPropagation()">
@@ -395,24 +395,24 @@
         </div>
 
         {{-- Pagination --}}
-        <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 shadow-xl p-4" wire:loading.remove>
+        <div class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-xl p-4" wire:loading.remove>
             {{ $projects->links() }}
         </div>
     @elseif($search || $serverFilter || $statusFilter)
         {{-- No Results State (filters applied) --}}
-        <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 shadow-xl text-center py-16" wire:loading.remove role="status" aria-live="polite">
+        <div class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-xl text-center py-16" wire:loading.remove role="status" aria-live="polite">
             <div class="relative inline-flex items-center justify-center w-20 h-20 mb-6">
                 <div class="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-full blur-xl" aria-hidden="true"></div>
-                <div class="relative p-4 bg-slate-700/50 rounded-2xl">
-                    <svg class="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="No results found icon">
+                <div class="relative p-4 bg-slate-200/50 dark:bg-slate-700/50 rounded-2xl">
+                    <svg class="w-10 h-10 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="No results found icon">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                 </div>
             </div>
-            <h3 class="text-xl font-bold text-white mb-2">No Projects Found</h3>
-            <p class="text-slate-400 mb-6 max-w-md mx-auto">No projects match your current filters. Try adjusting your search criteria or clear the filters.</p>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">No Projects Found</h3>
+            <p class="text-slate-600 dark:text-slate-400 mb-6 max-w-md mx-auto">No projects match your current filters. Try adjusting your search criteria or clear the filters.</p>
             <button wire:click="$set('search', ''); $set('serverFilter', ''); $set('statusFilter', '')"
-               class="group inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-white overflow-hidden transition-all duration-300 hover:-translate-y-0.5 bg-slate-700/50 backdrop-blur-sm border border-slate-600/50 hover:border-slate-500/50"
+               class="group inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-slate-700 dark:text-white overflow-hidden transition-all duration-300 hover:-translate-y-0.5 bg-slate-200/50 dark:bg-slate-700/50 backdrop-blur-sm border border-slate-300/50 dark:border-slate-600/50 hover:border-slate-400/50 dark:hover:border-slate-500/50"
                aria-label="Clear all filters">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -422,17 +422,17 @@
         </div>
     @else
         {{-- Empty State (no projects at all) --}}
-        <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 shadow-xl text-center py-16" wire:loading.remove role="status" aria-live="polite">
+        <div class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-xl text-center py-16" wire:loading.remove role="status" aria-live="polite">
             <div class="relative inline-flex items-center justify-center w-20 h-20 mb-6">
                 <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-full blur-xl" aria-hidden="true"></div>
-                <div class="relative p-4 bg-slate-700/50 rounded-2xl">
-                    <svg class="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="Empty projects folder icon">
+                <div class="relative p-4 bg-slate-200/50 dark:bg-slate-700/50 rounded-2xl">
+                    <svg class="w-10 h-10 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="Empty projects folder icon">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
                     </svg>
                 </div>
             </div>
-            <h3 class="text-xl font-bold text-white mb-2">No Projects Yet</h3>
-            <p class="text-slate-400 mb-6 max-w-md mx-auto">Get started by creating your first project and deploy your applications with ease.</p>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">No Projects Yet</h3>
+            <p class="text-slate-600 dark:text-slate-400 mb-6 max-w-md mx-auto">Get started by creating your first project and deploy your applications with ease.</p>
             <a href="{{ route('projects.create') }}"
                class="group inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-white overflow-hidden transition-all duration-300 hover:-translate-y-0.5"
                style="background: linear-gradient(135deg, #10b981 0%, #14b8a6 50%, #06b6d4 100%);"

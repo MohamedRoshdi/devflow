@@ -34,12 +34,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Stat cards have correct white backgrounds in light mode
   - All icons and text have proper light mode contrast
   - Fixed Docker status badge colors for both themes
+- **Server list page** - Fixed light theme styling for server list view
+  - Hero section gradient: `from-slate-100 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900`
+  - Filter inputs with proper light mode backgrounds and borders
+  - Server cards with white backgrounds in light mode
+  - Bulk actions bar, pagination, and empty states with light mode support
+- **Project list page** - Fixed light theme styling for project list view
+  - Hero section with proper light/dark gradient classes
+  - Filter section with light mode form inputs
+  - Project cards with white backgrounds and proper text colors
+  - Empty states and pagination with light mode support
 
 **Files Modified:**
 - `app/Services/ServerConnectivityService.php` - Added phpseclib3 SSH support
 - `app/Livewire/Servers/ServerCreate.php` - Updated server creation flow
 - `app/Livewire/Concerns/HasServerFormFields.php` - Form field improvements
 - `resources/views/livewire/servers/server-show.blade.php` - Light theme fixes
+- `resources/views/livewire/servers/server-list.blade.php` - Light theme fixes
+- `resources/views/livewire/projects/project-list.blade.php` - Light theme fixes
 - `resources/views/livewire/servers/server-create.blade.php` - UI improvements
 - `Dockerfile` - Added sshpass package
 - `docker-compose.yml` - Configuration updates

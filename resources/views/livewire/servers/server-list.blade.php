@@ -8,7 +8,7 @@
 
     {{-- Hero Header --}}
     <div class="relative mb-8">
-        <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl overflow-hidden border border-slate-700/50 shadow-2xl">
+        <div class="bg-gradient-to-br from-slate-100 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-700/50 shadow-2xl">
             {{-- Grid Pattern Overlay --}}
             <div class="absolute inset-0 opacity-[0.03]" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23fff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
 
@@ -26,12 +26,12 @@
 
                         <div>
                             <div class="flex items-center gap-3 mb-1">
-                                <h1 class="text-2xl lg:text-3xl font-bold text-white tracking-tight">Server Management</h1>
+                                <h1 class="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Server Management</h1>
                                 <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-blue-500/20 text-blue-400 border border-blue-500/30">
                                     {{ $servers->total() }} Servers
                                 </span>
                             </div>
-                            <p class="text-slate-400 text-sm">Manage your server infrastructure</p>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm">Manage your server infrastructure</p>
 
                             {{-- Quick Stats Pills --}}
                             <div class="flex flex-wrap items-center gap-2 mt-3">
@@ -93,7 +93,7 @@
                                 wire:loading.class="opacity-50 cursor-not-allowed"
                                 wire:target="addCurrentServer"
                                 aria-label="Add current server to the management system"
-                                class="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white overflow-hidden transition-all duration-300 hover:-translate-y-0.5 disabled:hover:translate-y-0 bg-slate-700/50 backdrop-blur-sm border border-slate-600/50 hover:border-slate-500/50">
+                                class="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-slate-700 dark:text-white overflow-hidden transition-all duration-300 hover:-translate-y-0.5 disabled:hover:translate-y-0 bg-slate-200/50 dark:bg-slate-700/50 backdrop-blur-sm border border-slate-300/50 dark:border-slate-600/50 hover:border-slate-400/50 dark:hover:border-slate-500/50">
                             <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" aria-hidden="true"></div>
                             <span wire:loading.remove wire:target="addCurrentServer" class="relative z-10">+ Add Current Server</span>
                             <span wire:loading wire:target="addCurrentServer" class="relative z-10 inline-flex items-center gap-2" role="status" aria-live="polite">
@@ -122,7 +122,7 @@
 
     <!-- Bulk Actions Bar (Sticky when servers selected) -->
     @if(count($selectedServers) > 0)
-        <div class="sticky top-0 z-40 mb-6 bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/50 p-4">
+        <div class="sticky top-0 z-40 mb-6 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700/50 p-4">
             {{-- Mobile: Stack vertically --}}
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div class="flex flex-wrap items-center gap-3">
@@ -130,7 +130,7 @@
                         <svg class="w-5 h-5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        <span class="text-white font-semibold whitespace-nowrap">{{ count($selectedServers) }} server(s) selected</span>
+                        <span class="text-slate-900 dark:text-white font-semibold whitespace-nowrap">{{ count($selectedServers) }} server(s) selected</span>
                     </div>
                     <button wire:click="clearSelection"
                             aria-label="Clear all selected servers"
@@ -283,12 +283,12 @@
     @endif
 
     <!-- Filters -->
-    <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 shadow-xl mb-8 overflow-hidden">
+    <div class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-xl mb-8 overflow-hidden">
         <div class="p-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
-                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                         Search Servers
@@ -296,17 +296,17 @@
                     <input wire:model.live="search"
                            type="text"
                            placeholder="Type to search..."
-                           class="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-500 focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                           class="w-full px-4 py-2.5 bg-white dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600/50 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
-                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                         Status
                     </label>
                     <select wire:model.live="statusFilter"
-                            class="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-600/50 rounded-xl text-white focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                            class="w-full px-4 py-2.5 bg-white dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600/50 rounded-xl text-slate-900 dark:text-white focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all">
                         <option value="">All Statuses</option>
                         <option value="online">Online</option>
                         <option value="offline">Offline</option>
@@ -318,9 +318,9 @@
 
             <!-- Tag Filter -->
             @if($allTags->count() > 0)
-                <div class="border-t border-slate-700/50 pt-4">
+                <div class="border-t border-slate-200 dark:border-slate-700/50 pt-4">
                     <div class="flex items-center justify-between mb-3">
-                        <label class="block text-sm font-medium text-slate-300">Filter by Tags</label>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Filter by Tags</label>
                         <a href="{{ route('servers.tags') }}" class="text-xs text-blue-400 hover:text-blue-300 transition-colors">
                             Manage Tags
                         </a>
@@ -367,14 +367,14 @@
 
     <!-- Select All Checkbox -->
     @if($servers->count() > 0)
-        <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 shadow-xl p-4 mb-4" wire:loading.remove>
+        <div class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-xl p-4 mb-4" wire:loading.remove>
             <label class="flex items-center cursor-pointer">
                 <input type="checkbox"
                        wire:model.live="selectAll"
                        wire:change="toggleSelectAll"
                        aria-label="Select all servers on this page"
-                       class="w-5 h-5 text-blue-500 bg-slate-700 border-slate-600 rounded focus:ring-blue-500/50 focus:ring-2 focus:ring-offset-0">
-                <span class="ml-3 text-white font-medium">Select All Servers</span>
+                       class="w-5 h-5 text-blue-500 bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 rounded focus:ring-blue-500/50 focus:ring-2 focus:ring-offset-0">
+                <span class="ml-3 text-slate-900 dark:text-white font-medium">Select All Servers</span>
             </label>
         </div>
     @endif
@@ -383,7 +383,7 @@
     @if($servers->count() > 0)
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6" wire:loading.remove>
             @foreach($servers as $server)
-                <div class="group relative bg-slate-800/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-slate-700/50 shadow-xl hover:shadow-2xl hover:border-slate-600/50 transform hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300"
+                <div class="group relative bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700/50 shadow-xl hover:shadow-2xl hover:border-slate-300 dark:hover:border-slate-600/50 transform hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300"
                      :class="{ 'ring-4 ring-blue-500/50': {{ in_array($server->id, $selectedServers) ? 'true' : 'false' }} }">
 
                     {{-- Status Indicator Bar --}}
@@ -403,17 +403,17 @@
                                    value="{{ $server->id }}"
                                    wire:change="toggleServerSelection({{ $server->id }})"
                                    aria-label="Select {{ $server->name }}"
-                                   class="w-5 h-5 text-blue-500 bg-slate-700 border-slate-600 rounded focus:ring-blue-500/50 focus:ring-2 focus:ring-offset-0">
+                                   class="w-5 h-5 text-blue-500 bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 rounded focus:ring-blue-500/50 focus:ring-2 focus:ring-offset-0">
                         </label>
                     </div>
 
                     <div class="p-6 cursor-pointer" onclick="window.location='{{ route('servers.show', $server) }}'">
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex-1 ml-8 min-w-0">
-                                <a href="{{ route('servers.show', $server) }}" class="text-xl font-bold text-white hover:text-blue-400 transition-colors truncate block">
+                                <a href="{{ route('servers.show', $server) }}" class="text-xl font-bold text-slate-900 dark:text-white hover:text-blue-400 transition-colors truncate block">
                                     {{ $server->name }}
                                 </a>
-                                <p class="text-sm text-slate-400 mt-1 font-mono truncate">{{ $server->ip_address }}</p>
+                                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 font-mono truncate">{{ $server->ip_address }}</p>
                             </div>
                             <div class="flex-shrink-0 p-2 rounded-lg
                                 @if($server->status === 'online') bg-gradient-to-br from-emerald-500 to-teal-600
@@ -483,7 +483,7 @@
                                     </div>
                                     <span class="text-sm font-medium text-slate-300">CPU</span>
                                 </div>
-                                <span class="text-sm font-bold text-white">{{ $server->cpu_cores ?? 0 }} Cores</span>
+                                <span class="text-sm font-bold text-slate-900 dark:text-white">{{ $server->cpu_cores ?? 0 }} Cores</span>
                             </div>
 
                             <div class="flex items-center justify-between p-3 bg-purple-500/10 border border-purple-500/30 rounded-xl backdrop-blur-sm"
@@ -497,7 +497,7 @@
                                     </div>
                                     <span class="text-sm font-medium text-slate-300">RAM</span>
                                 </div>
-                                <span class="text-sm font-bold text-white">{{ $server->memory_gb ?? 0 }} GB</span>
+                                <span class="text-sm font-bold text-slate-900 dark:text-white">{{ $server->memory_gb ?? 0 }} GB</span>
                             </div>
                         </div>
 
@@ -526,7 +526,7 @@
                             </div>
                         </div>
 
-                        <div class="flex justify-between items-center pt-4 border-t border-slate-700/50">
+                        <div class="flex justify-between items-center pt-4 border-t border-slate-200 dark:border-slate-700/50">
                             <div class="flex space-x-3" onclick="event.stopPropagation()">
                                 <button wire:click="pingServer({{ $server->id }})"
                                         wire:loading.attr="disabled"
@@ -598,24 +598,24 @@
             @endforeach
         </div>
 
-        <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 shadow-xl p-4" wire:loading.remove>
+        <div class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-xl p-4" wire:loading.remove>
             {{ $servers->links() }}
         </div>
     @elseif($search || $statusFilter || !empty($tagFilter))
         {{-- No Results State (filters applied) --}}
-        <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 shadow-xl text-center py-16" wire:loading.remove>
+        <div class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-xl text-center py-16" wire:loading.remove>
             <div class="relative inline-flex items-center justify-center w-20 h-20 mb-6">
                 <div class="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-full blur-xl"></div>
-                <div class="relative p-4 bg-slate-700/50 rounded-2xl">
-                    <svg class="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="relative p-4 bg-slate-200/50 dark:bg-slate-700/50 rounded-2xl">
+                    <svg class="w-10 h-10 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                 </div>
             </div>
-            <h3 class="text-xl font-bold text-white mb-2">No Servers Found</h3>
-            <p class="text-slate-400 mb-6 max-w-md mx-auto">No servers match your current filters. Try adjusting your search criteria or clear the filters.</p>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">No Servers Found</h3>
+            <p class="text-slate-600 dark:text-slate-400 mb-6 max-w-md mx-auto">No servers match your current filters. Try adjusting your search criteria or clear the filters.</p>
             <button wire:click="$set('search', ''); $set('statusFilter', ''); $set('tagFilter', [])"
-               class="group inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-white overflow-hidden transition-all duration-300 hover:-translate-y-0.5 bg-slate-700/50 backdrop-blur-sm border border-slate-600/50 hover:border-slate-500/50">
+               class="group inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-slate-700 dark:text-white overflow-hidden transition-all duration-300 hover:-translate-y-0.5 bg-slate-200/50 dark:bg-slate-700/50 backdrop-blur-sm border border-slate-300/50 dark:border-slate-600/50 hover:border-slate-400/50 dark:hover:border-slate-500/50">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
@@ -624,17 +624,17 @@
         </div>
     @else
         {{-- Empty State (no servers at all) --}}
-        <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 shadow-xl text-center py-16" wire:loading.remove>
+        <div class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-xl text-center py-16" wire:loading.remove>
             <div class="relative inline-flex items-center justify-center w-20 h-20 mb-6">
                 <div class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 rounded-full blur-xl"></div>
-                <div class="relative p-4 bg-slate-700/50 rounded-2xl">
-                    <svg class="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="relative p-4 bg-slate-200/50 dark:bg-slate-700/50 rounded-2xl">
+                    <svg class="w-10 h-10 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"></path>
                     </svg>
                 </div>
             </div>
-            <h3 class="text-xl font-bold text-white mb-2">No Servers Yet</h3>
-            <p class="text-slate-400 mb-6 max-w-md mx-auto">Get started by adding your first server to manage your infrastructure.</p>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">No Servers Yet</h3>
+            <p class="text-slate-600 dark:text-slate-400 mb-6 max-w-md mx-auto">Get started by adding your first server to manage your infrastructure.</p>
             <a href="{{ route('servers.create') }}"
                class="group inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-white overflow-hidden transition-all duration-300 hover:-translate-y-0.5"
                style="background: linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%);">
