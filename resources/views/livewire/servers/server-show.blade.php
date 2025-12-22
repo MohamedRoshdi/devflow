@@ -461,20 +461,25 @@
                                     @endif
                                 </div>
                             @else
-                                <button wire:click="installDocker"
-                                    wire:confirm="{{ __('Install Docker?') }}\n\n{{ __('This will install Docker Engine, Docker Compose, and required dependencies.') }}\n{{ __('This runs in the background and may take 3-5 minutes.') }}"
-                                    wire:loading.attr="disabled"
-                                    class="w-full p-4 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-2">
-                                    <svg wire:loading.remove wire:target="installDocker" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                                    </svg>
-                                    <svg wire:loading wire:target="installDocker" class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                                    </svg>
-                                    <span wire:loading.remove wire:target="installDocker">{{ __('Install Docker Now') }}</span>
-                                    <span wire:loading wire:target="installDocker">{{ __('Starting Installation...') }}</span>
-                                </button>
+                                <div>
+                                    <button wire:click="installDocker"
+                                        wire:confirm="{{ __('Install Docker?') }}\n\n{{ __('This will install Docker Engine, Docker Compose, and required dependencies.') }}\n{{ __('This runs in the background and may take 3-5 minutes.') }}\n\n{{ __('⚠️ Requires: root user OR a user with sudo privileges.') }}"
+                                        wire:loading.attr="disabled"
+                                        class="w-full p-4 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                                        <svg wire:loading.remove wire:target="installDocker" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                        </svg>
+                                        <svg wire:loading wire:target="installDocker" class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                        </svg>
+                                        <span wire:loading.remove wire:target="installDocker">{{ __('Install Docker Now') }}</span>
+                                        <span wire:loading wire:target="installDocker">{{ __('Starting Installation...') }}</span>
+                                    </button>
+                                    <p class="text-xs text-slate-400 dark:text-slate-500 mt-2 text-center">
+                                        {{ __('Requires root or sudo privileges') }}
+                                    </p>
+                                </div>
                             @endif
                         @else
                             <a href="{{ route('docker.dashboard', $server) }}"

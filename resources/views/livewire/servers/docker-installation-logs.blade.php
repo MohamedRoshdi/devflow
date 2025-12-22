@@ -23,7 +23,7 @@
                             <p class="text-sm text-cyan-100">{{ $server->name }} ({{ $server->ip_address }})</p>
                         </div>
                     </div>
-                    <button wire:click="hide" class="text-white/70 hover:text-white transition-colors">
+                    <button wire:click="clearAndClose" class="text-white/70 hover:text-white transition-colors" title="{{ __('Close') }}">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
@@ -96,6 +96,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                 </svg>
                                 <p>{{ __('Waiting for installation output...') }}</p>
+                                <p class="text-xs text-slate-600 mt-2">{{ __('Connecting to server and checking permissions...') }}</p>
                             </div>
                         </div>
                     @endif
@@ -103,10 +104,42 @@
 
                 {{-- Error Message --}}
                 @if($errorMessage)
-                    <div class="px-6 py-3 bg-red-900/30 border-t border-red-800">
-                        <p class="text-sm text-red-400">
-                            <strong>{{ __('Error:') }}</strong> {{ $errorMessage }}
-                        </p>
+                    <div class="px-6 py-4 bg-red-900/30 border-t border-red-800">
+                        <div class="flex items-start gap-3">
+                            <div class="flex-shrink-0">
+                                <svg class="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-red-400">{{ __('Installation Failed') }}</p>
+                                <p class="text-sm text-red-300 mt-1">{{ $errorMessage }}</p>
+                                @if(str_contains($errorMessage, 'sudo') || str_contains($errorMessage, 'sudoers') || str_contains($errorMessage, 'privileges'))
+                                    <div class="mt-3 p-3 bg-red-900/50 rounded-lg border border-red-800/50">
+                                        <p class="text-xs text-red-200 font-medium mb-1">{{ __('How to fix:') }}</p>
+                                        <ul class="text-xs text-red-300 space-y-1 list-disc list-inside">
+                                            <li>{{ __('Use root user for this server') }}</li>
+                                            <li>{{ __('Or add user to sudoers: sudo usermod -aG sudo username') }}</li>
+                                            <li>{{ __('Or add SSH password in server settings for sudo authentication') }}</li>
+                                        </ul>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Requirements Note (shown only during installing or idle) --}}
+                @if($status === 'installing' && $progress < 15)
+                    <div class="px-6 py-3 bg-amber-900/20 border-t border-amber-800/50">
+                        <div class="flex items-center gap-2 text-amber-400">
+                            <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            <p class="text-xs">
+                                <strong>{{ __('Note:') }}</strong> {{ __('Docker installation requires root access or a user with sudo privileges.') }}
+                            </p>
+                        </div>
                     </div>
                 @endif
 
@@ -118,22 +151,24 @@
                         @elseif($status === 'completed')
                             {{ __('Docker has been successfully installed on the server.') }}
                         @elseif($status === 'failed')
-                            {{ __('Check the logs above for error details.') }}
+                            {{ __('Installation failed. Review the error above and try again.') }}
                         @endif
                     </div>
                     <div class="flex gap-2">
-                        @if($status !== 'installing')
-                            <button wire:click="clearAndClose"
-                                class="px-4 py-2 rounded-lg text-sm font-medium bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white transition-all">
-                                {{ __('Close') }}
-                            </button>
-                        @endif
                         @if($status === 'installing')
                             <button wire:click="hide"
                                 class="px-4 py-2 rounded-lg text-sm font-medium bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white transition-all">
                                 {{ __('Run in Background') }}
                             </button>
                         @endif
+                        <button wire:click="clearAndClose"
+                            class="px-4 py-2 rounded-lg text-sm font-medium
+                                @if($status === 'failed') bg-red-600 hover:bg-red-500 text-white
+                                @elseif($status === 'completed') bg-emerald-600 hover:bg-emerald-500 text-white
+                                @else bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white
+                                @endif transition-all">
+                            {{ __('Close') }}
+                        </button>
                     </div>
                 </div>
             </div>
