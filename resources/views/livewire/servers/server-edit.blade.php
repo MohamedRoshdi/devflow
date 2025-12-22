@@ -30,7 +30,7 @@
             <!-- Server Name -->
             <div>
                 <label for="server_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Server Name</label>
-                <input wire:model="name"
+                <input wire:model.live="name"
                        wire:key="server-name-{{ $server->id }}"
                        id="server_name"
                        name="server_name"
@@ -38,6 +38,7 @@
                        required
                        autocomplete="off"
                        placeholder="Production Server 1"
+                       value="{{ $name }}"
                        wire:loading.attr="disabled"
                        wire:target="updateServer,testConnection"
                        class="input @error('name') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
@@ -50,7 +51,7 @@
                 <!-- IP Address -->
                 <div>
                     <label for="server_ip" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">IP Address <span class="text-red-500">*</span></label>
-                    <input wire:model="ip_address"
+                    <input wire:model.live="ip_address"
                            wire:key="server-ip-{{ $server->id }}"
                            id="server_ip"
                            name="server_ip"
@@ -58,6 +59,7 @@
                            required
                            autocomplete="off"
                            placeholder="192.168.1.100"
+                           value="{{ $ip_address }}"
                            wire:loading.attr="disabled"
                            wire:target="updateServer,testConnection"
                            class="input @error('ip_address') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
@@ -69,13 +71,14 @@
                 <!-- Hostname (Optional) -->
                 <div>
                     <label for="server_hostname" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Domain/Hostname <span class="text-gray-400 text-xs">(Optional)</span></label>
-                    <input wire:model="hostname"
+                    <input wire:model.live="hostname"
                            wire:key="server-hostname-{{ $server->id }}"
                            id="server_hostname"
                            name="server_hostname"
                            type="text"
                            autocomplete="off"
                            placeholder="server1.example.com"
+                           value="{{ $hostname }}"
                            wire:loading.attr="disabled"
                            wire:target="updateServer,testConnection"
                            class="input @error('hostname') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
@@ -89,7 +92,7 @@
                 <!-- Port -->
                 <div>
                     <label for="ssh_port" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SSH Port</label>
-                    <input wire:model.number="port"
+                    <input wire:model.number.live="port"
                            wire:key="ssh-port-{{ $server->id }}"
                            id="ssh_port"
                            name="ssh_port"
@@ -99,6 +102,7 @@
                            required
                            autocomplete="off"
                            placeholder="22"
+                           value="{{ $port }}"
                            wire:loading.attr="disabled"
                            wire:target="updateServer,testConnection"
                            class="input @error('port') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
@@ -110,7 +114,7 @@
                 <!-- Username -->
                 <div>
                     <label for="ssh_user" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SSH Username</label>
-                    <input wire:model="username"
+                    <input wire:model.live="username"
                            wire:key="ssh-user-{{ $server->id }}"
                            id="ssh_user"
                            name="ssh_user"
@@ -120,6 +124,7 @@
                            data-lpignore="true"
                            data-form-type="other"
                            placeholder="root"
+                           value="{{ $username }}"
                            wire:loading.attr="disabled"
                            wire:target="updateServer,testConnection"
                            class="input @error('username') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
