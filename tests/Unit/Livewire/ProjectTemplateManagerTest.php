@@ -13,10 +13,11 @@ use App\Models\User;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
+use Tests\Traits\WithPermissions;
 
 class ProjectTemplateManagerTest extends TestCase
 {
-    
+    use WithPermissions;
 
     protected User $admin;
 
@@ -28,10 +29,8 @@ class ProjectTemplateManagerTest extends TestCase
     {
         parent::setUp();
 
-        // Create roles
-        Role::create(['name' => 'super-admin']);
-        Role::create(['name' => 'admin']);
-        Role::create(['name' => 'user']);
+        // Setup permissions first
+        $this->setUpPermissions();
 
         // Create users with different roles
         $this->superAdmin = User::factory()->create(['name' => 'Super Admin']);
@@ -40,8 +39,9 @@ class ProjectTemplateManagerTest extends TestCase
         $this->admin = User::factory()->create(['name' => 'Admin']);
         $this->admin->assignRole('admin');
 
+        // Regular user doesn't have manage-system-settings permission
         $this->regularUser = User::factory()->create(['name' => 'Regular User']);
-        $this->regularUser->assignRole('user');
+        $this->regularUser->assignRole('viewer');
     }
 
     #[Test]
@@ -1048,12 +1048,14 @@ class ProjectTemplateManagerTest extends TestCase
     #[Test]
     public function name_can_be_maximum_length(): void
     {
-        $maxName = str_repeat('a', 255);
+        // Database column is varchar(191), not 255
+        $maxName = str_repeat('a', 191);
+        $uniqueSlug = 'test-max-length-' . uniqid();
 
         Livewire::actingAs($this->admin)
             ->test(ProjectTemplateManager::class)
             ->set('name', $maxName)
-            ->set('slug', 'test')
+            ->set('slug', $uniqueSlug)
             ->set('framework', 'laravel')
             ->call('createTemplate')
             ->assertHasNoErrors(['name']);
@@ -1062,12 +1064,14 @@ class ProjectTemplateManagerTest extends TestCase
     #[Test]
     public function name_cannot_exceed_maximum_length(): void
     {
-        $tooLongName = str_repeat('a', 256);
+        // Database column is varchar(191), so 192 should fail
+        $tooLongName = str_repeat('a', 192);
+        $uniqueSlug = 'test-exceed-length-' . uniqid();
 
         Livewire::actingAs($this->admin)
             ->test(ProjectTemplateManager::class)
             ->set('name', $tooLongName)
-            ->set('slug', 'test')
+            ->set('slug', $uniqueSlug)
             ->set('framework', 'laravel')
             ->call('createTemplate')
             ->assertHasErrors(['name']);

@@ -433,11 +433,8 @@ class JobsTest extends TestCase
         $server = Server::factory()->create();
 
         $installationService = Mockery::mock(DockerInstallationService::class);
-        $installationService->shouldReceive('installDocker')
+        $installationService->shouldReceive('installDockerWithStreaming')
             ->once()
-            ->with(Mockery::on(function ($arg) use ($server) {
-                return $arg->id === $server->id;
-            }))
             ->andReturn([
                 'success' => true,
                 'message' => 'Docker installed successfully',
@@ -463,7 +460,7 @@ class JobsTest extends TestCase
         $server = Server::factory()->create();
 
         $installationService = Mockery::mock(DockerInstallationService::class);
-        $installationService->shouldReceive('installDocker')
+        $installationService->shouldReceive('installDockerWithStreaming')
             ->once()
             ->andReturn([
                 'success' => false,
@@ -490,7 +487,7 @@ class JobsTest extends TestCase
         $server = Server::factory()->create();
 
         $installationService = Mockery::mock(DockerInstallationService::class);
-        $installationService->shouldReceive('installDocker')
+        $installationService->shouldReceive('installDockerWithStreaming')
             ->once()
             ->andReturn([
                 'success' => true,
@@ -516,7 +513,7 @@ class JobsTest extends TestCase
         $server = Server::factory()->create();
 
         $installationService = Mockery::mock(DockerInstallationService::class);
-        $installationService->shouldReceive('installDocker')
+        $installationService->shouldReceive('installDockerWithStreaming')
             ->once()
             ->andThrow(new \Exception('Unexpected error occurred'));
 
@@ -562,7 +559,7 @@ class JobsTest extends TestCase
         $server = Server::factory()->create();
 
         $installationService = Mockery::mock(DockerInstallationService::class);
-        $installationService->shouldReceive('installDocker')
+        $installationService->shouldReceive('installDockerWithStreaming')
             ->andReturn(['success' => true, 'message' => 'Installed', 'version' => '24.0.7']);
 
         $job = new InstallDockerJob($server);
@@ -584,7 +581,7 @@ class JobsTest extends TestCase
         $server = Server::factory()->create();
 
         $installationService = Mockery::mock(DockerInstallationService::class);
-        $installationService->shouldReceive('installDocker')
+        $installationService->shouldReceive('installDockerWithStreaming')
             ->andReturn(['success' => true, 'message' => 'Installed', 'version' => '24.0.7']);
 
         $job = new InstallDockerJob($server);
@@ -608,7 +605,7 @@ class JobsTest extends TestCase
         $server = Server::factory()->create();
 
         $installationService = Mockery::mock(DockerInstallationService::class);
-        $installationService->shouldReceive('installDocker')
+        $installationService->shouldReceive('installDockerWithStreaming')
             ->andReturn(['success' => false, 'message' => 'Installation failed']);
 
         $job = new InstallDockerJob($server);

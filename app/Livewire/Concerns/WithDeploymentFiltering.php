@@ -73,11 +73,17 @@ trait WithDeploymentFiltering
 
         $userId = $user->id;
 
-        return Cache::remember('projects_dropdown_list_user_'.$userId, 600, function () use ($userId) {
+        // Cache as array of stdClass objects to avoid serialization issues with Eloquent models
+        $cached = Cache::remember('projects_dropdown_list_user_'.$userId, 600, function () use ($userId) {
             return Project::where('user_id', $userId)
                 ->orderBy('name')
-                ->get(['id', 'name']);
+                ->get(['id', 'name'])
+                ->map(fn ($p) => ['id' => $p->id, 'name' => $p->name])
+                ->toArray();
         });
+
+        // Convert back to objects for consistent access in blade templates
+        return collect($cached)->map(fn ($p) => (object) $p);
     }
 
     /**

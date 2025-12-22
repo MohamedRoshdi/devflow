@@ -29,10 +29,10 @@ class ProjectTemplateManager extends Component
     public ?int $previewingTemplateId = null;
 
     // Form fields
-    #[Validate('required|string|max:255')]
+    #[Validate('required|string|max:191')]
     public string $name = '';
 
-    #[Validate('required|string|max:255|regex:/^[a-z0-9-]+$/')]
+    #[Validate('required|string|max:191|regex:/^[a-z0-9-]+$/')]
     public string $slug = '';
 
     #[Validate('nullable|string|max:1000')]

@@ -119,9 +119,10 @@ class ProjectList extends Component
         ])
             ->select(['id', 'name', 'slug', 'status', 'server_id', 'user_id', 'framework', 'created_at', 'updated_at'])
             ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('name', 'like', '%'.$this->search.'%')
-                        ->orWhere('slug', 'like', '%'.$this->search.'%');
+                $searchTerm = '%'.strtolower($this->search).'%';
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->whereRaw('LOWER(name) LIKE ?', [$searchTerm])
+                        ->orWhereRaw('LOWER(slug) LIKE ?', [$searchTerm]);
                 });
             })
             ->when($this->statusFilter, function ($query) {

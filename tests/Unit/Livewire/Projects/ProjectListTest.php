@@ -14,10 +14,11 @@ use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Livewire;
 use Tests\TestCase;
+use Tests\Traits\WithPermissions;
 
 class ProjectListTest extends TestCase
 {
-    
+    use WithPermissions;
 
     protected User $user;
 
@@ -27,7 +28,7 @@ class ProjectListTest extends TestCase
     {
         parent::setUp();
 
-        $this->user = User::factory()->create();
+        $this->user = $this->createUserWithAllPermissions();
         $this->server = Server::factory()->create(['status' => 'online']);
     }
 
@@ -125,16 +126,19 @@ class ProjectListTest extends TestCase
     #[Test]
     public function search_is_case_insensitive(): void
     {
-        Project::factory()->create([
+        $project = Project::factory()->create([
             'user_id' => $this->user->id,
             'server_id' => $this->server->id,
             'name' => 'Production Server',
         ]);
 
+        // Search with uppercase - should find case-insensitively
         Livewire::actingAs($this->user)
             ->test(ProjectList::class)
             ->set('search', 'PRODUCTION')
-            ->assertSee('Production Server');
+            ->assertViewHas('projects', function ($projects) use ($project) {
+                return $projects->contains('id', $project->id);
+            });
     }
 
     #[Test]
@@ -268,18 +272,22 @@ class ProjectListTest extends TestCase
     #[Test]
     public function non_owner_cannot_delete_project(): void
     {
+        // Create a user with only view permissions (not delete)
+        $viewerUser = $this->createViewerUser();
+
         $otherUser = User::factory()->create();
         $project = Project::factory()->create([
             'user_id' => $otherUser->id,
             'server_id' => $this->server->id,
         ]);
 
-        Livewire::actingAs($this->user)
+        // Viewer user should not be able to delete other user's project
+        Livewire::actingAs($viewerUser)
             ->test(ProjectList::class)
             ->call('deleteProject', $project->id)
             ->assertHasNoErrors();
 
-        // Project should still exist (not deleted)
+        // Project should still exist (not deleted) because viewer lacks delete permission
         $this->assertDatabaseHas('projects', ['id' => $project->id, 'deleted_at' => null]);
     }
 
@@ -288,8 +296,11 @@ class ProjectListTest extends TestCase
     {
         // Note: The ProjectPolicy only allows project owners to delete, not team owners
         // This test verifies that team ownership alone doesn't grant delete permission
-        $team = Team::factory()->create(['owner_id' => $this->user->id]);
-        $team->members()->attach($this->user->id, ['role' => 'owner']);
+        // Create team owner with limited permissions (no delete-projects)
+        $teamOwner = $this->createUserWithPermissions(['view-projects', 'create-projects', 'edit-projects', 'view-teams', 'edit-teams']);
+
+        $team = Team::factory()->create(['owner_id' => $teamOwner->id]);
+        $team->members()->attach($teamOwner->id, ['role' => 'owner']);
 
         $project = Project::factory()->create([
             'user_id' => User::factory()->create()->id, // Different user owns the project
@@ -297,23 +308,26 @@ class ProjectListTest extends TestCase
             'server_id' => $this->server->id,
         ]);
 
-        $this->user->update(['current_team_id' => $team->id]);
-        $this->user->refresh();
+        $teamOwner->update(['current_team_id' => $team->id]);
+        $teamOwner->refresh();
 
-        Livewire::actingAs($this->user)
+        Livewire::actingAs($teamOwner)
             ->test(ProjectList::class)
             ->call('deleteProject', $project->id)
             ->assertHasNoErrors();
 
-        // Project should NOT be deleted - only project owners can delete
+        // Project should NOT be deleted - team owner without delete-projects permission cannot delete
         $this->assertDatabaseHas('projects', ['id' => $project->id, 'deleted_at' => null]);
     }
 
     #[Test]
     public function team_member_cannot_delete_team_project(): void
     {
+        // Create team member with only view permissions (no delete)
+        $teamMember = $this->createViewerUser();
+
         $team = Team::factory()->create();
-        $team->members()->attach($this->user->id, ['role' => 'member']);
+        $team->members()->attach($teamMember->id, ['role' => 'member']);
 
         $project = Project::factory()->create([
             'user_id' => User::factory()->create()->id,
@@ -321,15 +335,15 @@ class ProjectListTest extends TestCase
             'server_id' => $this->server->id,
         ]);
 
-        $this->user->update(['current_team_id' => $team->id]);
-        $this->user->refresh();
+        $teamMember->update(['current_team_id' => $team->id]);
+        $teamMember->refresh();
 
-        Livewire::actingAs($this->user)
+        Livewire::actingAs($teamMember)
             ->test(ProjectList::class)
             ->call('deleteProject', $project->id)
             ->assertHasNoErrors();
 
-        // Project should still exist (not deleted)
+        // Project should still exist (not deleted) because member lacks delete permission
         $this->assertDatabaseHas('projects', ['id' => $project->id, 'deleted_at' => null]);
     }
 

@@ -26,9 +26,11 @@ use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
 use Tests\TestCase;
+use Tests\Traits\WithPermissions;
 
 class ControllersTest extends TestCase
 {
+    use WithPermissions;
 
     protected User $user;
 
@@ -46,7 +48,10 @@ class ControllersTest extends TestCase
 
         Process::fake();
 
-        $this->user = User::factory()->create();
+        // Disable throttle middleware for all tests
+        $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
+
+        $this->user = $this->createUserWithAllPermissions();
         $this->server = Server::factory()->create(['user_id' => $this->user->id]);
         $this->project = Project::factory()->create([
             'user_id' => $this->user->id,

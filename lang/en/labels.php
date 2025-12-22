@@ -51,9 +51,7 @@ return [
     'rejection_reason_placeholder' => 'Explain why this deployment is being rejected...',
 
     // Project-specific labels
-    'project' => [
-        'notes' => 'Project Notes',
-        'notes_placeholder' => 'Add notes about this project, deployment instructions, team contacts, or any other relevant information...',
-        'notes_hint' => 'Use this space for deployment notes, team contacts, or important reminders. Maximum 2000 characters.',
-    ],
+    'project_notes' => 'Project Notes',
+    'project_notes_placeholder' => 'Add notes about this project, deployment instructions, team contacts, or any other relevant information...',
+    'project_notes_hint' => 'Use this space for deployment notes, team contacts, or important reminders. Maximum 2000 characters.',
 ];

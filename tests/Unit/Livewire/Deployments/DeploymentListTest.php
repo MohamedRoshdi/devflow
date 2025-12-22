@@ -584,10 +584,10 @@ class DeploymentListTest extends TestCase
     #[Test]
     public function unauthenticated_user_is_redirected(): void
     {
-        // The component requires authentication - it accesses auth()->user()->projects()
+        // The component requires authentication - it checks auth()->user()
         // Without authentication, this throws a ViewException
         $this->expectException(\Illuminate\View\ViewException::class);
-        $this->expectExceptionMessage('Call to a member function projects() on null');
+        $this->expectExceptionMessage('User must be authenticated');
         Livewire::test(DeploymentList::class);
     }
 

@@ -33,9 +33,11 @@ use Illuminate\Support\Facades\Process;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
+use Tests\Traits\WithPermissions;
 
 class DashboardAdminComponentsTest extends TestCase
 {
+    use WithPermissions;
 
     protected function setUp(): void
     {
@@ -51,6 +53,14 @@ class DashboardAdminComponentsTest extends TestCase
         Cache::forget('dashboard_queue_stats');
     }
 
+    /**
+     * Create a user with all permissions for admin tests.
+     */
+    protected function createAdminUserForTest(): User
+    {
+        return $this->createUserWithAllPermissions();
+    }
+
     // ============================================
     // Dashboard Component Tests
     // ============================================
@@ -58,7 +68,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function dashboard_component_renders_correctly(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
 
         Livewire::actingAs($user)
             ->test(Dashboard::class)
@@ -69,7 +79,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function dashboard_stats_loads_stats_correctly(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $onlineServers = Server::factory()->count(5)->create(['status' => 'online']);
         $offlineServers = Server::factory()->count(2)->create(['status' => 'offline']);
 
@@ -107,7 +117,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function dashboard_recent_activity_loads_recent_deployments(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $server = Server::factory()->create();
         $project = Project::factory()->create([
             'server_id' => $server->id,
@@ -129,7 +139,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function dashboard_stats_loads_ssl_stats(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $server = Server::factory()->create();
         $domain = Domain::factory()->create();
 
@@ -169,7 +179,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function dashboard_stats_loads_health_check_stats(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $project = Project::factory()->create();
         $server = Server::factory()->create();
 
@@ -209,7 +219,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function dashboard_stats_loads_deployments_today(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $server = Server::factory()->create();
         $project = Project::factory()->create([
             'server_id' => $server->id,
@@ -237,7 +247,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function dashboard_recent_activity_loads_activity(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $server = Server::factory()->create();
         $project = Project::factory()->create([
             'user_id' => $user->id,
@@ -260,7 +270,10 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function dashboard_server_health_loads_health(): void
     {
-        $user = User::factory()->create();
+        // Clear cache before test to ensure fresh data
+        \Illuminate\Support\Facades\Cache::forget('dashboard_server_health');
+
+        $user = $this->createAdminUserForTest();
         $server = Server::factory()->create(['status' => 'online']);
 
         ServerMetric::factory()->create([
@@ -277,13 +290,16 @@ class DashboardAdminComponentsTest extends TestCase
 
         $serverHealth = $component->get('serverHealth');
         $this->assertNotEmpty($serverHealth);
-        $this->assertEquals(45.5, $serverHealth[0]['cpu_usage']);
+        // Find the server we created by ID
+        $ourServer = collect($serverHealth)->firstWhere('server_id', $server->id);
+        $this->assertNotNull($ourServer, 'Our test server should be in the health list');
+        $this->assertEquals(45.5, $ourServer['cpu_usage']);
     }
 
     #[Test]
     public function dashboard_stats_loads_queue_stats(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
 
         // Create jobs table entries
         DB::table('jobs')->insert(['queue' => 'default', 'payload' => '', 'attempts' => 0, 'reserved_at' => null, 'available_at' => now()->timestamp, 'created_at' => now()->timestamp]);
@@ -300,7 +316,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function dashboard_stats_loads_security_score(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         Server::factory()->create(['status' => 'online', 'security_score' => 85]);
         Server::factory()->create(['status' => 'online', 'security_score' => 90]);
 
@@ -314,7 +330,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function dashboard_loads_active_deployments(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $server = Server::factory()->create();
         $project = Project::factory()->create([
             'server_id' => $server->id,
@@ -348,7 +364,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function dashboard_loads_deployment_timeline(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $server = Server::factory()->create();
         $project = Project::factory()->create([
             'server_id' => $server->id,
@@ -376,7 +392,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function dashboard_can_toggle_section(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
 
         $component = Livewire::actingAs($user)
             ->test(Dashboard::class)
@@ -388,7 +404,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function dashboard_quick_actions_can_clear_all_caches(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
 
         // clearAllCaches is now in DashboardQuickActions component
         Livewire::actingAs($user)
@@ -400,7 +416,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function dashboard_can_refresh_dashboard(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
 
         Livewire::actingAs($user)
             ->test(Dashboard::class)
@@ -412,7 +428,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function dashboard_quick_actions_can_deploy_all_projects(): void
     {
         \Illuminate\Support\Facades\Queue::fake();
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $server = Server::factory()->create();
         Project::factory()->count(3)->create([
             'status' => 'running',
@@ -429,7 +445,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function dashboard_handles_deployment_completed_event(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
 
         Cache::put('dashboard_stats', ['test' => 'data'], 60);
 
@@ -442,7 +458,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function dashboard_loads_user_preferences(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
 
         Livewire::actingAs($user)
             ->test(Dashboard::class)
@@ -452,7 +468,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function dashboard_can_update_widget_order(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
 
         // New order must include all widgets from DEFAULT_WIDGET_ORDER
         $newOrder = ['deployment_timeline', 'stats_cards', 'quick_actions', 'activity_server_grid', 'getting_started'];
@@ -467,7 +483,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function dashboard_can_toggle_edit_mode(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
 
         Livewire::actingAs($user)
             ->test(Dashboard::class)
@@ -480,7 +496,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function dashboard_can_reset_widget_order(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
 
         Livewire::actingAs($user)
             ->test(Dashboard::class)
@@ -492,7 +508,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function dashboard_recent_activity_can_load_more_activity(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $server = Server::factory()->create();
         $project = Project::factory()->create([
             'server_id' => $server->id,
@@ -520,7 +536,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function health_dashboard_component_renders_correctly(): void
     {
         Permission::findOrCreate('view-health-checks', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-health-checks');
 
         Livewire::actingAs($user)
@@ -533,7 +549,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function health_dashboard_loads_projects_health(): void
     {
         Permission::findOrCreate('view-health-checks', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-health-checks');
         $project = Project::factory()->create(['status' => 'running']);
         $server = Server::factory()->create();
@@ -547,7 +563,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function health_dashboard_loads_servers_health(): void
     {
         Permission::findOrCreate('view-health-checks', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-health-checks');
         Server::factory()->count(3)->create(['status' => 'online']);
 
@@ -561,7 +577,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function health_dashboard_can_refresh_health(): void
     {
         Permission::findOrCreate('view-health-checks', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-health-checks');
 
         Livewire::actingAs($user)
@@ -574,7 +590,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function health_dashboard_filters_projects_by_status(): void
     {
         Permission::findOrCreate('view-health-checks', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-health-checks');
 
         Livewire::actingAs($user)
@@ -587,7 +603,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function health_dashboard_calculates_overall_stats(): void
     {
         Permission::findOrCreate('view-health-checks', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-health-checks');
 
         Livewire::actingAs($user)
@@ -599,7 +615,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function health_dashboard_checks_http_health(): void
     {
         Permission::findOrCreate('view-health-checks', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-health-checks');
 
         Http::fake([
@@ -618,7 +634,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function system_admin_component_renders_correctly(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
 
         Livewire::actingAs($user)
             ->test(SystemAdmin::class)
@@ -629,7 +645,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function system_admin_has_default_active_tab(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
 
         Livewire::actingAs($user)
             ->test(SystemAdmin::class)
@@ -639,7 +655,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function system_admin_can_load_backup_stats(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
 
         Process::fake();
 
@@ -652,7 +668,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function system_admin_can_load_system_metrics(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
 
         Process::fake();
 
@@ -665,7 +681,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function system_admin_can_load_recent_alerts(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
 
         Process::fake();
 
@@ -678,7 +694,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function system_admin_can_run_backup_now(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
 
         Process::fake();
 
@@ -691,7 +707,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function system_admin_can_run_optimization_now(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
 
         Process::fake();
 
@@ -704,7 +720,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function system_admin_can_view_backup_logs(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
 
         Livewire::actingAs($user)
             ->test(SystemAdmin::class)
@@ -715,7 +731,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function system_admin_can_view_monitoring_logs(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
 
         Process::fake();
 
@@ -728,7 +744,7 @@ class DashboardAdminComponentsTest extends TestCase
     #[Test]
     public function system_admin_can_view_optimization_logs(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
 
         Process::fake();
 
@@ -746,7 +762,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function audit_log_viewer_component_renders_correctly(): void
     {
         Permission::findOrCreate('view-audit-logs', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-audit-logs');
 
         Livewire::actingAs($user)
@@ -759,7 +775,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function audit_log_viewer_can_search_logs(): void
     {
         Permission::findOrCreate('view-audit-logs', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-audit-logs');
 
         Livewire::actingAs($user)
@@ -772,7 +788,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function audit_log_viewer_can_filter_by_user(): void
     {
         Permission::findOrCreate('view-audit-logs', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-audit-logs');
 
         Livewire::actingAs($user)
@@ -785,7 +801,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function audit_log_viewer_can_filter_by_action(): void
     {
         Permission::findOrCreate('view-audit-logs', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-audit-logs');
 
         Livewire::actingAs($user)
@@ -798,7 +814,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function audit_log_viewer_can_filter_by_model_type(): void
     {
         Permission::findOrCreate('view-audit-logs', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-audit-logs');
 
         Livewire::actingAs($user)
@@ -811,7 +827,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function audit_log_viewer_can_filter_by_date_range(): void
     {
         Permission::findOrCreate('view-audit-logs', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-audit-logs');
 
         Livewire::actingAs($user)
@@ -826,7 +842,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function audit_log_viewer_can_toggle_expand_log(): void
     {
         Permission::findOrCreate('view-audit-logs', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-audit-logs');
 
         Livewire::actingAs($user)
@@ -841,7 +857,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function audit_log_viewer_can_clear_filters(): void
     {
         Permission::findOrCreate('view-audit-logs', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-audit-logs');
 
         Livewire::actingAs($user)
@@ -857,7 +873,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function audit_log_viewer_resets_page_on_search_update(): void
     {
         Permission::findOrCreate('view-audit-logs', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-audit-logs');
 
         $component = Livewire::actingAs($user)
@@ -1270,7 +1286,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function analytics_dashboard_component_renders_correctly(): void
     {
         Permission::findOrCreate('view-analytics', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-analytics');
 
         Livewire::actingAs($user)
@@ -1283,7 +1299,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function analytics_dashboard_has_default_period(): void
     {
         Permission::findOrCreate('view-analytics', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-analytics');
 
         Livewire::actingAs($user)
@@ -1295,7 +1311,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function analytics_dashboard_can_change_period(): void
     {
         Permission::findOrCreate('view-analytics', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-analytics');
 
         Livewire::actingAs($user)
@@ -1308,7 +1324,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function analytics_dashboard_loads_deployment_stats(): void
     {
         Permission::findOrCreate('view-analytics', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-analytics');
         $server = Server::factory()->create();
         $project = Project::factory()->create([
@@ -1340,7 +1356,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function analytics_dashboard_loads_server_metrics(): void
     {
         Permission::findOrCreate('view-analytics', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-analytics');
         $server = Server::factory()->create();
 
@@ -1361,7 +1377,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function analytics_dashboard_loads_project_analytics(): void
     {
         Permission::findOrCreate('view-analytics', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-analytics');
         $server = Server::factory()->create();
         Project::factory()->count(5)->create([
@@ -1383,7 +1399,7 @@ class DashboardAdminComponentsTest extends TestCase
     public function analytics_dashboard_can_filter_by_project(): void
     {
         Permission::findOrCreate('view-analytics', 'web');
-        $user = User::factory()->create();
+        $user = $this->createAdminUserForTest();
         $user->givePermissionTo('view-analytics');
         $project = Project::factory()->create();
 

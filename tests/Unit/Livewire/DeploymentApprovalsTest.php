@@ -44,9 +44,10 @@ class DeploymentApprovalsTest extends TestCase
             'requires_approval' => true,
         ]);
 
-        // Create permissions
-        Permission::create(['name' => 'approve_deployments']);
-        Permission::create(['name' => 'approve_all_deployments']);
+        // Create permissions (use firstOrCreate to avoid duplicates)
+        Permission::firstOrCreate(['name' => 'approve_deployments', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'approve_all_deployments', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'approve-deployments', 'guard_name' => 'web']);
     }
 
     #[Test]

@@ -397,7 +397,7 @@
                         <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                         </svg>
-                        {{ __('labels.project.notes') }}
+                        {{ __('labels.project_notes') }}
                     </h3>
                     <a href="{{ route('docs.show', ['category' => 'features', 'page' => 'project-notes']) }}"
                        target="_blank"
@@ -413,11 +413,11 @@
                               id="notes"
                               rows="4"
                               maxlength="2000"
-                              placeholder="{{ __('labels.project.notes_placeholder') }}"
+                              placeholder="{{ __('labels.project_notes_placeholder') }}"
                               class="input w-full resize-none"></textarea>
                     <div class="flex items-center justify-between mt-2">
                         <span class="text-xs text-gray-500 dark:text-gray-400">
-                            {{ __('labels.project.notes_hint') }}
+                            {{ __('labels.project_notes_hint') }}
                         </span>
                         <span class="text-xs text-gray-500 dark:text-gray-400">
                             <span x-text="$wire.notes?.length || 0"></span>/2000

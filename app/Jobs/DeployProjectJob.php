@@ -125,7 +125,7 @@ class DeployProjectJob implements ShouldQueue
 
         } catch (\Exception $e) {
             $endTime = now();
-            $duration = $endTime->diffInSeconds($startTime);
+            $duration = max(0, (int) $endTime->diffInSeconds($startTime));
 
             $this->deployment->update([
                 'status' => 'failed',
@@ -162,7 +162,7 @@ class DeployProjectJob implements ShouldQueue
 
         // Update deployment based on pipeline result
         $endTime = now();
-        $duration = $endTime->diffInSeconds($startTime);
+        $duration = max(0, (int) $endTime->diffInSeconds($startTime));
 
         $this->deployment->update([
             'status' => $pipelineRun->status === 'success' ? 'success' : 'failed',
@@ -560,7 +560,7 @@ class DeployProjectJob implements ShouldQueue
 
         // Update deployment and project
         $endTime = now();
-        $duration = $endTime->diffInSeconds($startTime);
+        $duration = max(0, (int) $endTime->diffInSeconds($startTime));
 
         $this->deployment->update([
             'status' => 'success',

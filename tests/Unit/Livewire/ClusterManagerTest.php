@@ -39,9 +39,8 @@ class ClusterManagerTest extends TestCase
         ]);
         $this->project = Project::factory()->create([
             'name' => 'Test Project',
-            'slug' => 'test-project',
             'framework' => 'laravel',
-        ]);
+        ]); // Let factory generate unique slug
     }
 
     #[Test]
@@ -78,15 +77,16 @@ class ClusterManagerTest extends TestCase
     #[Test]
     public function component_displays_projects_list(): void
     {
+        // Clear cache to ensure fresh data
+        \Illuminate\Support\Facades\Cache::forget('k8s_deployable_projects');
+
         Project::factory()->create([
             'name' => 'Project Alpha',
-            'slug' => 'project-alpha',
             'framework' => 'laravel',
         ]);
 
         Project::factory()->create([
             'name' => 'Project Beta',
-            'slug' => 'project-beta',
             'framework' => 'symfony',
         ]);
 
@@ -688,7 +688,8 @@ class ClusterManagerTest extends TestCase
             ->set('enableAutoscaling', true)
             ->set('minReplicas', 5)
             ->set('maxReplicas', 25)
-            ->call('deployToKubernetes');
+            ->call('deployToKubernetes')
+            ->assertHasNoErrors();
     }
 
     #[Test]
