@@ -170,6 +170,11 @@ trait ExecutesRemoteCommands
      * Security: Temp files are cached per server and cleaned up in __destruct()
      * Additionally, a shutdown function provides cleanup on unexpected termination
      *
+     * Supports three authentication methods:
+     * 1. SSH key (server->ssh_key) - uses temp key file
+     * 2. Password (server->ssh_password) - uses sshpass
+     * 3. Host key - uses local SSH key (default)
+     *
      * @param Server $server The server to connect to
      * @param string $remoteCommand The command to execute remotely
      * @return string The complete SSH command string
@@ -180,10 +185,14 @@ trait ExecutesRemoteCommands
         $sshOptions = [
             '-o StrictHostKeyChecking=no',
             '-o UserKnownHostsFile=/dev/null',
+            '-o ConnectTimeout=10',
             '-p '.$server->port,
         ];
 
+        $sshpassPrefix = '';
+
         if ($server->ssh_key) {
+            // SSH key authentication
             // Reuse cached temp file if available for this server
             if (! isset($this->sshKeyFiles[$server->id])) {
                 // Create temporary SSH key file
@@ -210,10 +219,18 @@ trait ExecutesRemoteCommands
             }
 
             $sshOptions[] = '-i '.$this->sshKeyFiles[$server->id];
+        } elseif ($server->ssh_password) {
+            // Password authentication using sshpass
+            $sshpassPrefix = sprintf('sshpass -p %s ', escapeshellarg($server->ssh_password));
+            // Disable batch mode to allow password auth
+            $sshOptions[] = '-o BatchMode=no';
+            $sshOptions[] = '-o PubkeyAuthentication=no';
         }
+        // else: Host key authentication (default) - uses local SSH key
 
         return sprintf(
-            'ssh %s %s@%s %s',
+            '%sssh %s %s@%s %s',
+            $sshpassPrefix,
             implode(' ', $sshOptions),
             $server->username,
             $server->ip_address,
