@@ -26,14 +26,17 @@
             </div>
         @endif
 
-        <form wire:submit="updateServer" class="space-y-6">
+        <form wire:submit="updateServer" class="space-y-6" autocomplete="off">
             <!-- Server Name -->
             <div>
-                <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Server Name</label>
+                <label for="server_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Server Name</label>
                 <input wire:model="name"
-                       id="name"
+                       wire:key="server-name-{{ $server->id }}"
+                       id="server_name"
+                       name="server_name"
                        type="text"
                        required
+                       autocomplete="off"
                        placeholder="Production Server 1"
                        wire:loading.attr="disabled"
                        wire:target="updateServer,testConnection"
@@ -46,11 +49,14 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- IP Address -->
                 <div>
-                    <label for="ip_address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">IP Address <span class="text-red-500">*</span></label>
+                    <label for="server_ip" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">IP Address <span class="text-red-500">*</span></label>
                     <input wire:model="ip_address"
-                           id="ip_address"
+                           wire:key="server-ip-{{ $server->id }}"
+                           id="server_ip"
+                           name="server_ip"
                            type="text"
                            required
+                           autocomplete="off"
                            placeholder="192.168.1.100"
                            wire:loading.attr="disabled"
                            wire:target="updateServer,testConnection"
@@ -62,10 +68,13 @@
 
                 <!-- Hostname (Optional) -->
                 <div>
-                    <label for="hostname" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Domain/Hostname <span class="text-gray-400 text-xs">(Optional)</span></label>
+                    <label for="server_hostname" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Domain/Hostname <span class="text-gray-400 text-xs">(Optional)</span></label>
                     <input wire:model="hostname"
-                           id="hostname"
+                           wire:key="server-hostname-{{ $server->id }}"
+                           id="server_hostname"
+                           name="server_hostname"
                            type="text"
+                           autocomplete="off"
                            placeholder="server1.example.com"
                            wire:loading.attr="disabled"
                            wire:target="updateServer,testConnection"
@@ -79,13 +88,16 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Port -->
                 <div>
-                    <label for="port" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SSH Port</label>
-                    <input wire:model.number.blur="port"
-                           id="port"
+                    <label for="ssh_port" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SSH Port</label>
+                    <input wire:model.number="port"
+                           wire:key="ssh-port-{{ $server->id }}"
+                           id="ssh_port"
+                           name="ssh_port"
                            type="number"
                            min="1"
                            max="65535"
                            required
+                           autocomplete="off"
                            placeholder="22"
                            wire:loading.attr="disabled"
                            wire:target="updateServer,testConnection"
@@ -97,11 +109,16 @@
 
                 <!-- Username -->
                 <div>
-                    <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SSH Username</label>
-                    <input wire:model.blur="username"
-                           id="username"
+                    <label for="ssh_user" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SSH Username</label>
+                    <input wire:model="username"
+                           wire:key="ssh-user-{{ $server->id }}"
+                           id="ssh_user"
+                           name="ssh_user"
                            type="text"
                            required
+                           autocomplete="off"
+                           data-lpignore="true"
+                           data-form-type="other"
                            placeholder="root"
                            wire:loading.attr="disabled"
                            wire:target="updateServer,testConnection"
@@ -149,11 +166,16 @@
 
             <!-- SSH Password -->
             @if($auth_method === 'password')
-            <div>
-                <label for="ssh_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SSH Password <span class="text-red-500">*</span></label>
+            <div wire:key="ssh-password-section-{{ $server->id }}">
+                <label for="server_ssh_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SSH Password <span class="text-red-500">*</span></label>
                 <input wire:model="ssh_password"
-                       id="ssh_password"
+                       wire:key="ssh-password-{{ $server->id }}"
+                       id="server_ssh_password"
+                       name="server_ssh_password"
                        type="password"
+                       autocomplete="new-password"
+                       data-lpignore="true"
+                       data-form-type="other"
                        placeholder="Enter new SSH password (leave empty to keep current)"
                        wire:loading.attr="disabled"
                        wire:target="updateServer,testConnection"
@@ -169,11 +191,14 @@
 
             <!-- SSH Key -->
             @if($auth_method === 'key')
-            <div>
-                <label for="ssh_key" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SSH Private Key <span class="text-gray-400 text-xs">(optional - uses host keys if empty)</span></label>
+            <div wire:key="ssh-key-section-{{ $server->id }}">
+                <label for="server_ssh_key" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SSH Private Key <span class="text-gray-400 text-xs">(optional - uses host keys if empty)</span></label>
                 <textarea wire:model="ssh_key"
-                          id="ssh_key"
+                          wire:key="ssh-key-{{ $server->id }}"
+                          id="server_ssh_key"
+                          name="server_ssh_key"
                           rows="6"
+                          autocomplete="off"
                           placeholder="-----BEGIN OPENSSH PRIVATE KEY-----"
                           wire:loading.attr="disabled"
                           wire:target="updateServer,testConnection"
@@ -193,11 +218,14 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                        <label for="latitude" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Latitude</label>
+                        <label for="server_latitude" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Latitude</label>
                         <input wire:model="latitude"
-                               id="latitude"
+                               wire:key="server-latitude-{{ $server->id }}"
+                               id="server_latitude"
+                               name="server_latitude"
                                type="number"
                                step="any"
+                               autocomplete="off"
                                placeholder="0.0"
                                wire:loading.attr="disabled"
                                wire:target="updateServer,testConnection"
@@ -205,11 +233,14 @@
                     </div>
 
                     <div>
-                        <label for="longitude" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Longitude</label>
+                        <label for="server_longitude" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Longitude</label>
                         <input wire:model="longitude"
-                               id="longitude"
+                               wire:key="server-longitude-{{ $server->id }}"
+                               id="server_longitude"
+                               name="server_longitude"
                                type="number"
                                step="any"
+                               autocomplete="off"
                                placeholder="0.0"
                                wire:loading.attr="disabled"
                                wire:target="updateServer,testConnection"
@@ -217,10 +248,13 @@
                     </div>
 
                     <div>
-                        <label for="location_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Location Name</label>
+                        <label for="server_location_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Location Name</label>
                         <input wire:model="location_name"
-                               id="location_name"
+                               wire:key="server-location-name-{{ $server->id }}"
+                               id="server_location_name"
+                               name="server_location_name"
                                type="text"
+                               autocomplete="off"
                                placeholder="New York, USA"
                                wire:loading.attr="disabled"
                                wire:target="updateServer,testConnection"
