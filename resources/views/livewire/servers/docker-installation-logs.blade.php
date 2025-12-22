@@ -1,9 +1,17 @@
 <div>
     @if($isVisible || $status === 'installing')
-    <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true"
-         wire:poll.1s="pollLogs">
-        {{-- Backdrop --}}
-        <div class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity"></div>
+    <div class="fixed inset-0 z-50 overflow-y-auto"
+         aria-labelledby="modal-title"
+         role="dialog"
+         aria-modal="true"
+         wire:poll.1s="pollLogs"
+         wire:keydown.escape.window="forceClose"
+         x-data
+         x-on:keydown.escape.window="$wire.forceClose()">
+        {{-- Backdrop (click to close) --}}
+        <div class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity cursor-pointer"
+             wire:click="clearAndClose"
+             title="{{ __('Click to close') }}"></div>
 
         {{-- Modal Panel --}}
         <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">

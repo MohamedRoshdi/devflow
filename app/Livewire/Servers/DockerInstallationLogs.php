@@ -100,12 +100,24 @@ class DockerInstallationLogs extends Component
         Cache::forget($cacheKey);
         Cache::forget($logsKey);
 
+        // Reset ALL component state
         $this->logs = [];
         $this->status = 'idle';
         $this->progress = 0;
+        $this->currentStep = '';
+        $this->errorMessage = null;
         $this->isVisible = false;
 
         $this->dispatch('docker-installation-cleared');
+    }
+
+    /**
+     * Force close the modal (emergency close)
+     */
+    public function forceClose(): void
+    {
+        $this->isVisible = false;
+        $this->status = 'idle';
     }
 
     public function render(): View
