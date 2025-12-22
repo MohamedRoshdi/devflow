@@ -1,7 +1,7 @@
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Hero Section with Gradient -->
-        <div class="relative mb-8 rounded-2xl bg-gradient-to-br from-slate-600 via-gray-600 to-zinc-600 dark:from-slate-700 dark:via-gray-700 dark:to-zinc-700 p-8 shadow-xl overflow-hidden">
+        <div class="relative mb-8 rounded-2xl bg-gradient-to-br from-teal-500 via-emerald-500 to-green-500 dark:from-teal-600 dark:via-emerald-600 dark:to-green-600 p-8 shadow-xl overflow-hidden">
             <div class="absolute inset-0 bg-black/10 dark:bg-black/20"></div>
             <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>

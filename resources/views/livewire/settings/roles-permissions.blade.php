@@ -55,7 +55,7 @@
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <!-- Total Roles Card -->
-            <div class="relative bg-slate-800/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6 border border-slate-700/50 overflow-hidden group">
+            <div class="relative bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6 border border-slate-200 dark:border-slate-700/50 overflow-hidden group">
                 <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div class="relative z-10">
                     <div class="flex items-center justify-between mb-4">
@@ -65,13 +65,13 @@
                             </svg>
                         </div>
                     </div>
-                    <h3 class="text-slate-400 text-sm font-medium mb-1">Total Roles</h3>
-                    <p class="text-3xl font-bold text-white">{{ $roles->total() }}</p>
+                    <h3 class="text-slate-600 dark:text-slate-400 text-sm font-medium mb-1">Total Roles</h3>
+                    <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ $roles->total() }}</p>
                 </div>
             </div>
 
             <!-- Total Permissions Card -->
-            <div class="relative bg-slate-800/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6 border border-slate-700/50 overflow-hidden group">
+            <div class="relative bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6 border border-slate-200 dark:border-slate-700/50 overflow-hidden group">
                 <div class="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div class="relative z-10">
                     <div class="flex items-center justify-between mb-4">
@@ -81,13 +81,13 @@
                             </svg>
                         </div>
                     </div>
-                    <h3 class="text-slate-400 text-sm font-medium mb-1">Total Permissions</h3>
-                    <p class="text-3xl font-bold text-white">{{ $permissions->count() }}</p>
+                    <h3 class="text-slate-600 dark:text-slate-400 text-sm font-medium mb-1">Total Permissions</h3>
+                    <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ $permissions->count() }}</p>
                 </div>
             </div>
 
             <!-- Permission Categories Card -->
-            <div class="relative bg-slate-800/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6 border border-slate-700/50 overflow-hidden group">
+            <div class="relative bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6 border border-slate-200 dark:border-slate-700/50 overflow-hidden group">
                 <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div class="relative z-10">
                     <div class="flex items-center justify-between mb-4">
@@ -97,26 +97,26 @@
                             </svg>
                         </div>
                     </div>
-                    <h3 class="text-slate-400 text-sm font-medium mb-1">Categories</h3>
-                    <p class="text-3xl font-bold text-white">{{ count($groupedPermissions) }}</p>
+                    <h3 class="text-slate-600 dark:text-slate-400 text-sm font-medium mb-1">Categories</h3>
+                    <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ count($groupedPermissions) }}</p>
                 </div>
             </div>
         </div>
 
         <!-- Search Filter - Glassmorphism -->
-        <div class="relative bg-slate-800/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6 mb-6 border border-slate-700/50">
+        <div class="relative bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6 mb-6 border border-slate-200 dark:border-slate-700/50">
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="flex-1">
-                    <label class="block text-sm font-medium text-slate-300 dark:text-slate-300 mb-2">Search Roles</label>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Search Roles</label>
                     <input wire:model.live="search"
                            type="text"
                            placeholder="Search by role name..."
-                           class="w-full bg-slate-900/50 border border-slate-600/50 rounded-lg px-4 py-2.5 text-white placeholder-slate-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 backdrop-blur-sm">
+                           class="w-full bg-white dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600/50 rounded-lg px-4 py-2.5 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 backdrop-blur-sm">
                 </div>
                 @if($search)
                     <div class="flex items-end">
                         <button wire:click="clearFilters"
-                                class="px-4 py-2.5 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 hover:text-white rounded-lg transition-all duration-300 font-medium border border-slate-600/50 backdrop-blur-sm flex items-center space-x-2">
+                                class="px-4 py-2.5 bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-600/50 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-lg transition-all duration-300 font-medium border border-slate-300 dark:border-slate-600/50 backdrop-blur-sm flex items-center space-x-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
@@ -130,7 +130,7 @@
         <!-- Roles Grid - Glassmorphism Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($roles as $role)
-                <div class="relative bg-slate-800/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6 border border-slate-700/50 overflow-hidden group">
+                <div class="relative bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6 border border-slate-200 dark:border-slate-700/50 overflow-hidden group">
                     <!-- Gradient Hover Effect -->
                     <div class="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
@@ -146,8 +146,8 @@
                                         </svg>
                                     </div>
                                     <div>
-                                        <h3 class="text-lg font-bold text-white group-hover:text-purple-300 transition-colors">{{ ucfirst($role->name) }}</h3>
-                                        <span class="text-xs text-slate-400">Guard: {{ $role->guard_name }}</span>
+                                        <h3 class="text-lg font-bold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">{{ ucfirst($role->name) }}</h3>
+                                        <span class="text-xs text-slate-500 dark:text-slate-400">Guard: {{ $role->guard_name }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -155,22 +155,22 @@
 
                         <!-- Role Stats -->
                         <div class="grid grid-cols-2 gap-4 mb-6">
-                            <div class="bg-slate-900/30 rounded-lg p-3 border border-slate-700/30">
+                            <div class="bg-slate-100/80 dark:bg-slate-900/30 rounded-lg p-3 border border-slate-200 dark:border-slate-700/30">
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        <p class="text-xs text-slate-400 mb-1">Permissions</p>
-                                        <p class="text-2xl font-bold text-blue-400">{{ $role->permissions_count }}</p>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Permissions</p>
+                                        <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ $role->permissions_count }}</p>
                                     </div>
                                     <svg class="w-8 h-8 text-blue-400/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
                                     </svg>
                                 </div>
                             </div>
-                            <div class="bg-slate-900/30 rounded-lg p-3 border border-slate-700/30">
+                            <div class="bg-slate-100/80 dark:bg-slate-900/30 rounded-lg p-3 border border-slate-200 dark:border-slate-700/30">
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        <p class="text-xs text-slate-400 mb-1">Users</p>
-                                        <p class="text-2xl font-bold text-green-400">{{ $role->users_count }}</p>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Users</p>
+                                        <p class="text-2xl font-bold text-green-600 dark:text-green-400">{{ $role->users_count }}</p>
                                     </div>
                                     <svg class="w-8 h-8 text-green-400/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
@@ -206,13 +206,13 @@
                 </div>
             @empty
                 <div class="col-span-full">
-                    <div class="relative bg-slate-800/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl p-16 border border-slate-700/50 text-center">
+                    <div class="relative bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl p-16 border border-slate-200 dark:border-slate-700/50 text-center">
                         <div class="flex flex-col items-center justify-center space-y-4">
                             <div class="relative">
                                 <div class="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full blur-2xl"></div>
-                                <div class="relative text-slate-500 dark:text-slate-600 text-6xl">🔐</div>
+                                <div class="relative text-slate-400 dark:text-slate-600 text-6xl">🔐</div>
                             </div>
-                            <p class="text-slate-400 dark:text-slate-500 text-lg font-medium">No roles found</p>
+                            <p class="text-slate-600 dark:text-slate-500 text-lg font-medium">No roles found</p>
                             @if($search)
                                 <button wire:click="clearFilters"
                                         class="inline-flex items-center px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/50">

@@ -10,88 +10,77 @@ use App\Models\User;
 /**
  * PipelineConfig Policy
  *
- * Pipeline configurations are owned through their parent project.
- * Users can manage pipeline configs if they have access to the project.
+ * Uses permission-based authorization via Spatie Laravel Permission.
+ * Permissions: view-pipelines, edit-pipelines, delete-pipelines
  */
 class PipelineConfigPolicy
 {
     public function viewAny(User $user): bool
     {
-        return true; // Can see the list, filtered by project ownership
+        return $user->can('view-pipelines');
     }
 
     public function view(User $user, PipelineConfig $pipelineConfig): bool
     {
-        return $this->hasAccess($user, $pipelineConfig);
+        return $user->can('view-pipelines') && $this->hasOwnershipAccess($user, $pipelineConfig);
     }
 
     public function create(User $user): bool
     {
-        return true; // Any authenticated user can create pipeline configs for their projects
+        return $user->can('create-pipelines');
     }
 
     public function update(User $user, PipelineConfig $pipelineConfig): bool
     {
-        return $this->hasAccess($user, $pipelineConfig);
+        return $user->can('edit-pipelines') && $this->hasOwnershipAccess($user, $pipelineConfig);
     }
 
     public function delete(User $user, PipelineConfig $pipelineConfig): bool
     {
-        // Only project owner can delete pipeline configs
-        $project = $pipelineConfig->project;
-        return $project && $project->user_id === $user->id;
+        return $user->can('delete-pipelines') && $this->hasOwnershipAccess($user, $pipelineConfig);
     }
 
     public function toggle(User $user, PipelineConfig $pipelineConfig): bool
     {
-        // Toggle enabled/disabled status
-        return $this->hasAccess($user, $pipelineConfig);
+        return $user->can('edit-pipelines') && $this->hasOwnershipAccess($user, $pipelineConfig);
     }
 
     public function regenerateWebhookSecret(User $user, PipelineConfig $pipelineConfig): bool
     {
-        // Only project owner can regenerate webhook secret
-        if ($user->hasRole(['super_admin', 'admin'])) {
-            return true;
-        }
-
-        $project = $pipelineConfig->project;
-        return $project && $project->user_id === $user->id;
+        return $user->can('edit-pipelines') && $this->hasOwnershipAccess($user, $pipelineConfig);
     }
 
     public function updateBranches(User $user, PipelineConfig $pipelineConfig): bool
     {
-        // Update auto-deploy branches
-        return $this->hasAccess($user, $pipelineConfig);
+        return $user->can('edit-pipelines') && $this->hasOwnershipAccess($user, $pipelineConfig);
     }
 
     public function updatePatterns(User $user, PipelineConfig $pipelineConfig): bool
     {
-        // Update skip/deploy patterns
-        return $this->hasAccess($user, $pipelineConfig);
+        return $user->can('edit-pipelines') && $this->hasOwnershipAccess($user, $pipelineConfig);
     }
 
     /**
-     * Check if user has access to the pipeline config through the project
+     * Check if user has ownership access to the pipeline config
      */
-    private function hasAccess(User $user, PipelineConfig $pipelineConfig): bool
+    private function hasOwnershipAccess(User $user, PipelineConfig $pipelineConfig): bool
     {
-        // Super admin or admin can access all
-        if ($user->hasRole(['super_admin', 'admin'])) {
+        // Users with delete permission have global access
+        if ($user->can('delete-pipelines')) {
             return true;
         }
 
         $project = $pipelineConfig->project;
-        if (!$project) {
+        if (! $project) {
             return false;
         }
 
-        // Project owner can access
+        // Project owner
         if ($project->user_id === $user->id) {
             return true;
         }
 
-        // Team members can access team projects
+        // Team members
         if ($project->team_id) {
             $team = $project->team;
             if ($team && $team->hasMember($user)) {

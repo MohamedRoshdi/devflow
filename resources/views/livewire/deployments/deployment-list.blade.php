@@ -9,7 +9,7 @@
 
     <div class="relative">
         {{-- Glassmorphism Card Container --}}
-        <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-2xl shadow-slate-900/60 border border-slate-700/50 overflow-hidden">
+        <div class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-2xl shadow-slate-900/20 dark:shadow-slate-900/60 border border-slate-200 dark:border-slate-700/50 overflow-hidden">
             {{-- Premium Gradient Header with Grid Pattern --}}
             <div class="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-600 px-8 py-10 overflow-hidden">
                 {{-- Grid Pattern Overlay --}}
@@ -80,12 +80,12 @@
                 </div>
 
                 {{-- Premium Filter Section with Glassmorphism --}}
-                <div class="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-lg" wire:loading.remove role="search" aria-label="Filter deployments">
+                <div class="bg-white/30 dark:bg-slate-800/30 backdrop-blur-sm border border-slate-200 dark:border-slate-700/50 rounded-2xl p-6 shadow-lg" wire:loading.remove role="search" aria-label="Filter deployments">
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
                         <div>
-                            <label for="search-deployments" class="group flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-wider mb-2 cursor-help" title="Search across commit messages, branch names, and project names">
+                            <label for="search-deployments" class="group flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 cursor-help" title="Search across commit messages, branch names, and project names">
                                 Search
-                                <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-700/50 text-slate-400 text-[10px] font-normal group-hover:bg-blue-500/30 group-hover:text-blue-300 transition-colors">?</span>
+                                <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-200/50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-[10px] font-normal group-hover:bg-blue-500/30 group-hover:text-blue-300 transition-colors">?</span>
                             </label>
                             <div class="relative" x-data="{ focused: false }" @focusin="focused = true" @focusout="focused = false">
                                 <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 transition-colors" :class="{ 'text-blue-400': focused }" aria-hidden="true">
@@ -94,18 +94,18 @@
                                     </svg>
                                 </span>
                                 <input type="text" id="search-deployments" placeholder="Commit message, branch, or project" wire:model.live.debounce.500ms="search"
-                                       class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-600/50 bg-slate-900/50 backdrop-blur-sm text-sm text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                                       class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600/50 bg-white dark:bg-slate-900/50 backdrop-blur-sm text-sm text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
                                        aria-label="Search deployments by commit message, branch, or project"
                                        title="Type to search through all deployments by commit message, branch name, or project name" />
                             </div>
                         </div>
                         <div>
-                            <label for="filter-project" class="group flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-wider mb-2 cursor-help" title="Filter deployments to show only those belonging to a specific project">
+                            <label for="filter-project" class="group flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 cursor-help" title="Filter deployments to show only those belonging to a specific project">
                                 Project
-                                <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-700/50 text-slate-400 text-[10px] font-normal group-hover:bg-blue-500/30 group-hover:text-blue-300 transition-colors">?</span>
+                                <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-200/50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-[10px] font-normal group-hover:bg-blue-500/30 group-hover:text-blue-300 transition-colors">?</span>
                             </label>
                             <select id="filter-project" wire:model.live="projectFilter"
-                                    class="w-full px-4 py-3 rounded-xl border border-slate-600/50 bg-slate-900/50 backdrop-blur-sm text-sm text-slate-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                                    class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600/50 bg-white dark:bg-slate-900/50 backdrop-blur-sm text-sm text-slate-900 dark:text-slate-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
                                     aria-label="Filter deployments by project"
                                     title="Select a project to filter deployments, or choose 'All projects' to see all">
                                 <option value="">All projects</option>
@@ -115,12 +115,12 @@
                             </select>
                         </div>
                         <div>
-                            <label for="filter-status" class="group flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-wider mb-2 cursor-help" title="Filter by deployment status: Success (completed), Failed (error occurred), Running (in progress), or Pending (queued)">
+                            <label for="filter-status" class="group flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 cursor-help" title="Filter by deployment status: Success (completed), Failed (error occurred), Running (in progress), or Pending (queued)">
                                 Status
-                                <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-700/50 text-slate-400 text-[10px] font-normal group-hover:bg-blue-500/30 group-hover:text-blue-300 transition-colors">?</span>
+                                <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-200/50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-[10px] font-normal group-hover:bg-blue-500/30 group-hover:text-blue-300 transition-colors">?</span>
                             </label>
                             <select id="filter-status" wire:model.live="statusFilter"
-                                    class="w-full px-4 py-3 rounded-xl border border-slate-600/50 bg-slate-900/50 backdrop-blur-sm text-sm text-slate-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                                    class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600/50 bg-white dark:bg-slate-900/50 backdrop-blur-sm text-sm text-slate-900 dark:text-slate-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
                                     aria-label="Filter deployments by status"
                                     title="Filter deployments by their current status">
                                 <option value="" title="Show deployments of all statuses">All statuses</option>
@@ -131,12 +131,12 @@
                             </select>
                         </div>
                         <div>
-                            <label for="per-page" class="group flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-wider mb-2 cursor-help" title="Change how many deployments are displayed per page">
+                            <label for="per-page" class="group flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 cursor-help" title="Change how many deployments are displayed per page">
                                 Per Page
-                                <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-700/50 text-slate-400 text-[10px] font-normal group-hover:bg-blue-500/30 group-hover:text-blue-300 transition-colors">?</span>
+                                <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-200/50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-[10px] font-normal group-hover:bg-blue-500/30 group-hover:text-blue-300 transition-colors">?</span>
                             </label>
                             <select id="per-page" wire:model.live="perPage"
-                                    class="w-full px-4 py-3 rounded-xl border border-slate-600/50 bg-slate-900/50 backdrop-blur-sm text-sm text-slate-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                                    class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600/50 bg-white dark:bg-slate-900/50 backdrop-blur-sm text-sm text-slate-900 dark:text-slate-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
                                     aria-label="Number of deployments per page"
                                     title="Adjust how many deployment entries are shown on each page">
                                 @foreach([10, 15, 20, 30, 50] as $size)
@@ -158,7 +158,7 @@
                                 <div class="relative pl-8 group" role="listitem">
                                     {{-- Enhanced Timeline Dot with Glow Effect --}}
                                     <span @class([
-                                        'absolute left-0 top-4 w-5 h-5 rounded-full border-3 border-slate-800 shadow-2xl transition-all duration-300 group-hover:scale-125',
+                                        'absolute left-0 top-4 w-5 h-5 rounded-full border-3 border-white dark:border-slate-800 shadow-2xl transition-all duration-300 group-hover:scale-125',
                                         'bg-gradient-to-br from-emerald-400 to-green-500 shadow-emerald-500/50' => $deployment->status === 'success',
                                         'bg-gradient-to-br from-amber-400 to-orange-500 shadow-amber-500/50 animate-pulse' => $deployment->status === 'running',
                                         'bg-gradient-to-br from-red-400 to-rose-500 shadow-red-500/50' => $deployment->status === 'failed',
@@ -181,7 +181,7 @@
 
                                     {{-- Glassmorphism Deployment Card with Glow on Hover --}}
                                     <div @class([
-                                        'relative p-6 bg-slate-800/50 backdrop-blur-sm rounded-2xl border-2 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl',
+                                        'relative p-6 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border-2 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl',
                                         'border-emerald-500/40 hover:border-emerald-400/60 hover:shadow-emerald-500/20' => $deployment->status === 'success',
                                         'border-amber-500/40 hover:border-amber-400/60 hover:shadow-amber-500/20' => $deployment->status === 'running',
                                         'border-red-500/40 hover:border-red-400/60 hover:shadow-red-500/20' => $deployment->status === 'failed',
@@ -238,51 +238,51 @@
                                                     </span>
 
                                                     @if($deployment->commit_hash)
-                                                        <code class="text-xs font-mono bg-slate-900/80 backdrop-blur-sm text-cyan-300 px-4 py-2 rounded-lg border border-cyan-500/30 shadow-lg" aria-label="Commit hash: {{ $deployment->commit_hash }}" title="Full commit hash: {{ $deployment->commit_hash }}">{{ substr($deployment->commit_hash, 0, 7) }}</code>
+                                                        <code class="text-xs font-mono bg-slate-100/80 dark:bg-slate-900/80 backdrop-blur-sm text-cyan-600 dark:text-cyan-300 px-4 py-2 rounded-lg border border-cyan-500/30 shadow-lg" aria-label="Commit hash: {{ $deployment->commit_hash }}" title="Full commit hash: {{ $deployment->commit_hash }}">{{ substr($deployment->commit_hash, 0, 7) }}</code>
                                                     @endif
 
-                                                    <span class="inline-flex items-center gap-2 text-xs text-slate-400" aria-label="Deployment time: {{ $deployment->created_at->format('M d, Y at H:i') }}" title="Deployed on {{ $deployment->created_at->format('M d, Y at H:i') }}">
-                                                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                                    <span class="inline-flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400" aria-label="Deployment time: {{ $deployment->created_at->format('M d, Y at H:i') }}" title="Deployed on {{ $deployment->created_at->format('M d, Y at H:i') }}">
+                                                        <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                         </svg>
                                                         {{ $deployment->created_at->format('M d, Y • H:i') }}
-                                                        <span class="text-xs text-slate-500">({{ $deployment->created_at->diffForHumans() }})</span>
+                                                        <span class="text-xs text-slate-400 dark:text-slate-500">({{ $deployment->created_at->diffForHumans() }})</span>
                                                     </span>
                                                 </div>
 
                                                 {{-- Project & Commit Info --}}
                                                 <div class="space-y-3">
                                                     <div class="flex items-center gap-2.5 text-sm">
-                                                        <svg class="w-5 h-5 text-blue-400 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <svg class="w-5 h-5 text-blue-500 dark:text-blue-400 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v4a1 1 0 001 1h3v8l7-12h3a1 1 0 001-1V7a1 1 0 00-1-1H4a1 1 0 00-1 1z" />
                                                         </svg>
-                                                        <span class="font-bold text-slate-100">{{ $deployment->project->name }}</span>
+                                                        <span class="font-bold text-slate-900 dark:text-slate-100">{{ $deployment->project->name }}</span>
                                                     </div>
-                                                    <p class="text-sm text-slate-300 leading-relaxed pl-7">
+                                                    <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed pl-7">
                                                         {{ $deployment->commit_message ?? 'No commit message available for this deployment.' }}
                                                     </p>
                                                 </div>
 
                                                 {{-- Metadata Pills --}}
                                                 <div class="flex flex-wrap items-center gap-3 text-xs pl-7">
-                                                    <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-700/50 backdrop-blur-sm border border-slate-600/50 text-slate-300" aria-label="Branch: {{ $deployment->branch }}" title="Git branch: {{ $deployment->branch }}">
-                                                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                                    <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100/50 dark:bg-slate-700/50 backdrop-blur-sm border border-slate-200 dark:border-slate-600/50 text-slate-600 dark:text-slate-300" aria-label="Branch: {{ $deployment->branch }}" title="Git branch: {{ $deployment->branch }}">
+                                                        <svg class="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 12h4m1 8h5a2 2 0 002-2V7a2 2 0 00-2-2h-5M7 17h4m-5 4h5a2 2 0 002-2v-5" />
                                                         </svg>
-                                                        Branch: <span class="font-bold text-white ml-1">{{ $deployment->branch }}</span>
+                                                        Branch: <span class="font-bold text-slate-900 dark:text-white ml-1">{{ $deployment->branch }}</span>
                                                     </span>
-                                                    <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-700/50 backdrop-blur-sm border border-slate-600/50 text-slate-300" aria-label="Server: {{ optional($deployment->server)->name ?? 'Unknown' }}" title="Deployment server: {{ optional($deployment->server)->name ?? 'Unknown' }}">
-                                                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                                    <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100/50 dark:bg-slate-700/50 backdrop-blur-sm border border-slate-200 dark:border-slate-600/50 text-slate-600 dark:text-slate-300" aria-label="Server: {{ optional($deployment->server)->name ?? 'Unknown' }}" title="Deployment server: {{ optional($deployment->server)->name ?? 'Unknown' }}">
+                                                        <svg class="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" />
                                                         </svg>
-                                                        Server: <span class="font-bold text-white ml-1">{{ optional($deployment->server)->name ?? 'Unknown' }}</span>
+                                                        Server: <span class="font-bold text-slate-900 dark:text-white ml-1">{{ optional($deployment->server)->name ?? 'Unknown' }}</span>
                                                     </span>
                                                     @if($deployment->duration_seconds)
-                                                        <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-700/50 backdrop-blur-sm border border-slate-600/50 text-slate-300" aria-label="Duration: {{ number_format($deployment->duration_seconds / 60, 1) }} minutes" title="Deployment took {{ number_format($deployment->duration_seconds / 60, 1) }} minutes">
-                                                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                                        <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100/50 dark:bg-slate-700/50 backdrop-blur-sm border border-slate-200 dark:border-slate-600/50 text-slate-600 dark:text-slate-300" aria-label="Duration: {{ number_format($deployment->duration_seconds / 60, 1) }} minutes" title="Deployment took {{ number_format($deployment->duration_seconds / 60, 1) }} minutes">
+                                                            <svg class="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                             </svg>
-                                                            Duration: <span class="font-bold text-white ml-1">{{ number_format($deployment->duration_seconds / 60, 1) }} min</span>
+                                                            Duration: <span class="font-bold text-slate-900 dark:text-white ml-1">{{ number_format($deployment->duration_seconds / 60, 1) }} min</span>
                                                         </span>
                                                     @endif
                                                 </div>
@@ -311,17 +311,17 @@
                     </div>
                 @elseif($search || $projectFilter || $statusFilter)
                     {{-- No Results State (filters applied) --}}
-                    <div class="text-center py-24 bg-slate-800/30 backdrop-blur-sm rounded-2xl border border-slate-700/50" wire:loading.remove role="status" aria-live="polite">
+                    <div class="text-center py-24 bg-white/30 dark:bg-slate-800/30 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700/50" wire:loading.remove role="status" aria-live="polite">
                         <div class="relative inline-block">
-                            <svg class="mx-auto h-24 w-24 text-slate-600 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <svg class="mx-auto h-24 w-24 text-slate-400 dark:text-slate-600 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                             </svg>
                             <div class="absolute inset-0 blur-2xl bg-slate-500/20 rounded-full" aria-hidden="true"></div>
                         </div>
-                        <p class="mt-6 text-slate-300 text-xl font-semibold">No deployments found for the selected filters.</p>
+                        <p class="mt-6 text-slate-700 dark:text-slate-300 text-xl font-semibold">No deployments found for the selected filters.</p>
                         <p class="text-sm text-slate-500 mt-3 mb-6">Adjust your filters or trigger a new deployment to see it here.</p>
                         <button wire:click="$set('search', ''); $set('projectFilter', ''); $set('statusFilter', '')"
-                           class="group inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-white overflow-hidden transition-all duration-300 hover:-translate-y-0.5 bg-slate-700/50 backdrop-blur-sm border border-slate-600/50 hover:border-slate-500/50"
+                           class="group inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-slate-900 dark:text-white overflow-hidden transition-all duration-300 hover:-translate-y-0.5 bg-slate-100/50 dark:bg-slate-700/50 backdrop-blur-sm border border-slate-300 dark:border-slate-600/50 hover:border-slate-400 dark:hover:border-slate-500/50"
                            aria-label="Clear all filters and show all deployments" title="Remove all active filters">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -331,14 +331,14 @@
                     </div>
                 @else
                     {{-- Empty State (no deployments at all) --}}
-                    <div class="text-center py-24 bg-slate-800/30 backdrop-blur-sm rounded-2xl border border-slate-700/50" wire:loading.remove role="status">
+                    <div class="text-center py-24 bg-white/30 dark:bg-slate-800/30 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700/50" wire:loading.remove role="status">
                         <div class="relative inline-block">
-                            <svg class="mx-auto h-24 w-24 text-slate-600 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <svg class="mx-auto h-24 w-24 text-slate-400 dark:text-slate-600 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                             </svg>
                             <div class="absolute inset-0 blur-2xl bg-slate-500/20 rounded-full" aria-hidden="true"></div>
                         </div>
-                        <p class="mt-6 text-slate-300 text-xl font-semibold">No deployments yet</p>
+                        <p class="mt-6 text-slate-700 dark:text-slate-300 text-xl font-semibold">No deployments yet</p>
                         <p class="text-sm text-slate-500 mt-3 mb-6">Start deploying your projects to see deployment history here.</p>
                         <a href="{{ route('projects.index') }}"
                            class="group inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-white overflow-hidden transition-all duration-300 hover:-translate-y-0.5"

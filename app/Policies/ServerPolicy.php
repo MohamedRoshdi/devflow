@@ -10,68 +10,70 @@ use App\Models\User;
 /**
  * Server Policy
  *
- * Servers are owned by users. Only the owner or team members can access them.
+ * Uses permission-based authorization via Spatie Laravel Permission.
+ * Permissions: view-servers, create-servers, edit-servers, delete-servers
  */
 class ServerPolicy
 {
+    /**
+     * Check if user has ownership or team access to the server.
+     */
+    private function hasOwnershipAccess(User $user, Server $server): bool
+    {
+        // User owns the server
+        if ($server->user_id === $user->id) {
+            return true;
+        }
+
+        // User is a team member with access to the server's team
+        if ($server->team_id && $user->currentTeam && $user->currentTeam->id === $server->team_id) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function viewAny(User $user): bool
     {
-        return true; // Can see the list, filtered by ownership
+        return $user->can('view-servers');
     }
 
     public function view(User $user, Server $server): bool
     {
-        // Admins can view all servers
-        if ($user->hasRole('admin')) {
-            return true;
+        // Must have view permission AND (ownership OR global access)
+        if (! $user->can('view-servers')) {
+            return false;
         }
 
-        // User must own the server or be a team member
-        if ($server->user_id === $user->id) {
-            return true;
-        }
-
-        // Check if user is a team member with access
-        if ($server->team_id && $user->currentTeam && $user->currentTeam->id === $server->team_id) {
-            return true;
-        }
-
-        return false;
+        // Ownership check or user has elevated permissions
+        return $this->hasOwnershipAccess($user, $server)
+            || $user->can('edit-servers'); // Users who can edit all can view all
     }
 
     public function create(User $user): bool
     {
-        return true; // Any authenticated user can create servers
+        return $user->can('create-servers');
     }
 
     public function update(User $user, Server $server): bool
     {
-        // Admins can update all servers
-        if ($user->hasRole('admin')) {
-            return true;
+        if (! $user->can('edit-servers')) {
+            return false;
         }
 
-        // User must own the server or be a team member
-        if ($server->user_id === $user->id) {
-            return true;
-        }
-
-        // Check if user is a team member with access
-        if ($server->team_id && $user->currentTeam && $user->currentTeam->id === $server->team_id) {
-            return true;
-        }
-
-        return false;
+        // Global edit permission or ownership
+        return $this->hasOwnershipAccess($user, $server)
+            || $user->can('delete-servers'); // Higher permission implies global access
     }
 
     public function delete(User $user, Server $server): bool
     {
-        // Admins can delete all servers
-        if ($user->hasRole('admin')) {
-            return true;
+        if (! $user->can('delete-servers')) {
+            return false;
         }
 
-        // Only owner can delete
-        return $server->user_id === $user->id;
+        // Delete permission + ownership, or full delete permission implies global
+        return $this->hasOwnershipAccess($user, $server)
+            || $user->can('delete-servers');
     }
 }

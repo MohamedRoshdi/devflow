@@ -96,10 +96,10 @@ class ProjectTemplateManager extends Component
 
     public function mount(): void
     {
-        // Only super-admin and admin users can manage project templates
+        // Permission-based access control
         $user = auth()->user();
         abort_unless(
-            $user && $user->hasRole(['super-admin', 'admin']),
+            $user && $user->can('manage-system-settings'),
             403,
             'You do not have permission to manage project templates.'
         );

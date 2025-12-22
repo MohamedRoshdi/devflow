@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace App\Livewire\Auth;
 
+use App\Models\SystemSetting;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Spatie\Permission\Models\Role;
 
 #[Layout('layouts.guest')]
 #[Title('Register')]
@@ -60,6 +61,20 @@ class Register extends Component
             'email' => $this->email,
             'password' => Hash::make($this->password),
         ]);
+
+        // Assign default role to new user
+        $defaultRoleName = SystemSetting::get('auth.default_role', 'viewer');
+        $defaultRole = Role::where('name', $defaultRoleName)->first();
+
+        if ($defaultRole) {
+            $user->assignRole($defaultRole);
+        } else {
+            // Fallback to viewer role if configured role doesn't exist
+            $viewerRole = Role::where('name', 'viewer')->first();
+            if ($viewerRole) {
+                $user->assignRole($viewerRole);
+            }
+        }
 
         Auth::login($user);
 

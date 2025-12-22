@@ -173,6 +173,15 @@ class SystemSettingsService
                 'description' => 'How long sessions should last',
                 'is_public' => false,
             ],
+            [
+                'key' => 'auth.default_role',
+                'value' => 'viewer',
+                'type' => 'string',
+                'group' => 'auth',
+                'label' => 'Default Role for New Users',
+                'description' => 'Role automatically assigned to new registered users (viewer, developer, manager, admin)',
+                'is_public' => false,
+            ],
 
             // Features
             [

@@ -10,76 +10,72 @@ use App\Models\User;
 /**
  * Pipeline Policy
  *
- * Pipelines are owned through their parent project.
- * Users can manage pipelines if they have access to the project.
+ * Uses permission-based authorization via Spatie Laravel Permission.
+ * Permissions: view-pipelines, create-pipelines, edit-pipelines, delete-pipelines, execute-pipelines
  */
 class PipelinePolicy
 {
     public function viewAny(User $user): bool
     {
-        return true; // Can see the list, filtered by project ownership
+        return $user->can('view-pipelines');
     }
 
     public function view(User $user, Pipeline $pipeline): bool
     {
-        return $this->hasAccess($user, $pipeline);
+        return $user->can('view-pipelines') && $this->hasOwnershipAccess($user, $pipeline);
     }
 
     public function create(User $user): bool
     {
-        return true; // Any authenticated user can create pipelines for their projects
+        return $user->can('create-pipelines');
     }
 
     public function update(User $user, Pipeline $pipeline): bool
     {
-        return $this->hasAccess($user, $pipeline);
+        return $user->can('edit-pipelines') && $this->hasOwnershipAccess($user, $pipeline);
     }
 
     public function delete(User $user, Pipeline $pipeline): bool
     {
-        // Only project owner can delete pipelines
-        $project = $pipeline->project;
-        return $project && $project->user_id === $user->id;
+        return $user->can('delete-pipelines') && $this->hasOwnershipAccess($user, $pipeline);
     }
 
     public function execute(User $user, Pipeline $pipeline): bool
     {
-        // Any user with access can execute pipelines
-        return $this->hasAccess($user, $pipeline);
+        return $user->can('execute-pipelines') && $this->hasOwnershipAccess($user, $pipeline);
     }
 
     public function toggle(User $user, Pipeline $pipeline): bool
     {
-        // Toggle active status - any user with access
-        return $this->hasAccess($user, $pipeline);
+        return $user->can('edit-pipelines') && $this->hasOwnershipAccess($user, $pipeline);
     }
 
     public function viewRuns(User $user, Pipeline $pipeline): bool
     {
-        return $this->hasAccess($user, $pipeline);
+        return $user->can('view-pipelines') && $this->hasOwnershipAccess($user, $pipeline);
     }
 
     /**
-     * Check if user has access to the pipeline through the project
+     * Check if user has ownership access to the pipeline through the project
      */
-    private function hasAccess(User $user, Pipeline $pipeline): bool
+    private function hasOwnershipAccess(User $user, Pipeline $pipeline): bool
     {
-        // Super admin or admin can access all
-        if ($user->hasRole(['super_admin', 'admin'])) {
+        // Users with delete permission have global access
+        if ($user->can('delete-pipelines')) {
             return true;
         }
 
         $project = $pipeline->project;
-        if (!$project) {
+        if (! $project) {
             return false;
         }
 
-        // Project owner can access
+        // Project owner
         if ($project->user_id === $user->id) {
             return true;
         }
 
-        // Team members can access team projects
+        // Team members
         if ($project->team_id) {
             $team = $project->team;
             if ($team && $team->hasMember($user)) {

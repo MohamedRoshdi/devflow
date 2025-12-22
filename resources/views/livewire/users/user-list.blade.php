@@ -53,19 +53,19 @@
         @endif
 
         <!-- Filters - Glassmorphism -->
-        <div class="relative bg-slate-800/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6 mb-6 border border-slate-700/50">
+        <div class="relative bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6 mb-6 border border-slate-200 dark:border-slate-700/50">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-slate-300 dark:text-slate-300 mb-2">Search Users</label>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Search Users</label>
                     <input wire:model.live="search"
                            type="text"
                            placeholder="Search by name or email..."
-                           class="w-full bg-slate-900/50 border border-slate-600/50 rounded-lg px-4 py-2.5 text-white placeholder-slate-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 backdrop-blur-sm">
+                           class="w-full bg-white dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600/50 rounded-lg px-4 py-2.5 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 backdrop-blur-sm">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-300 dark:text-slate-300 mb-2">Filter by Role</label>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Filter by Role</label>
                     <select wire:model.live="roleFilter"
-                            class="w-full bg-slate-900/50 border border-slate-600/50 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 backdrop-blur-sm">
+                            class="w-full bg-white dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600/50 rounded-lg px-4 py-2.5 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 backdrop-blur-sm">
                         <option value="">All Roles</option>
                         @foreach($roles as $role)
                             <option value="{{ $role->name }}">{{ ucfirst($role->name) }}</option>
@@ -76,55 +76,55 @@
         </div>
 
         <!-- Users Table - Glassmorphism -->
-        <div class="relative bg-slate-800/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-700/50">
+        <div class="relative bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 dark:border-slate-700/50">
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-slate-700/50">
+                <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700/50">
                     <!-- Premium Gradient Header -->
-                    <thead class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900">
+                    <thead class="bg-gradient-to-r from-slate-100 via-slate-50 to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
                                 <div class="flex items-center space-x-2">
-                                    <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 text-purple-500 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                     </svg>
                                     <span>User</span>
                                 </div>
                             </th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
                                 <div class="flex items-center space-x-2">
-                                    <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                                     </svg>
                                     <span>Email</span>
                                 </div>
                             </th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
                                 <div class="flex items-center space-x-2">
-                                    <svg class="w-4 h-4 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 text-pink-500 dark:text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                                     </svg>
                                     <span>Roles</span>
                                 </div>
                             </th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
                                 <div class="flex items-center space-x-2">
-                                    <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 text-green-500 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
                                     </svg>
                                     <span>Projects</span>
                                 </div>
                             </th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
                                 <div class="flex items-center space-x-2">
-                                    <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 text-cyan-500 dark:text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                     <span>Created</span>
                                 </div>
                             </th>
-                            <th class="px-6 py-4 text-right text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                            <th class="px-6 py-4 text-right text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
                                 <div class="flex items-center justify-end space-x-2">
-                                    <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 text-orange-500 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                                     </svg>
                                     <span>Actions</span>
@@ -133,24 +133,24 @@
                         </tr>
                     </thead>
                     <!-- Enhanced Table Body with Glassmorphism -->
-                    <tbody class="divide-y divide-slate-700/30">
+                    <tbody class="divide-y divide-slate-200 dark:divide-slate-700/30">
                         @forelse($users as $user)
-                            <tr class="bg-slate-800/30 hover:bg-slate-700/50 transition-all duration-300 group backdrop-blur-sm hover:shadow-lg hover:shadow-purple-500/10">
+                            <tr class="bg-white/50 dark:bg-slate-800/30 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all duration-300 group backdrop-blur-sm hover:shadow-lg hover:shadow-purple-500/10">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <!-- Gradient Avatar Ring -->
                                         <div class="flex-shrink-0 h-11 w-11 relative">
                                             <div class="absolute inset-0 bg-gradient-to-br from-purple-500 via-pink-500 to-blue-500 rounded-full opacity-75 group-hover:opacity-100 transition-opacity duration-300 animate-spin-very-slow"></div>
-                                            <div class="absolute inset-0.5 bg-slate-900 rounded-full flex items-center justify-center">
+                                            <div class="absolute inset-0.5 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center">
                                                 <span class="text-transparent bg-clip-text bg-gradient-to-br from-purple-400 via-pink-400 to-blue-400 font-bold text-lg">
                                                     {{ strtoupper(substr($user->name, 0, 1)) }}
                                                 </span>
                                             </div>
                                         </div>
                                         <div class="ml-4">
-                                            <div class="text-sm font-semibold text-white group-hover:text-purple-300 transition-colors">{{ $user->name }}</div>
+                                            <div class="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">{{ $user->name }}</div>
                                             @if($user->id === auth()->id())
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gradient-to-r from-blue-500/20 to-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gradient-to-r from-blue-500/20 to-cyan-500/20 text-cyan-600 dark:text-cyan-300 border border-cyan-500/30">
                                                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                                         <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
                                                     </svg>
@@ -161,16 +161,16 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-slate-200 font-medium">{{ $user->email }}</div>
+                                    <div class="text-sm text-slate-700 dark:text-slate-200 font-medium">{{ $user->email }}</div>
                                     @if($user->email_verified_at)
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30">
                                             <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                                             </svg>
                                             Verified
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-700/50 text-slate-400 border border-slate-600/30">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-200/50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-600/30">
                                             <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
                                             </svg>
@@ -206,7 +206,7 @@
                                                 {{ ucfirst($role->name) }}
                                             </span>
                                         @empty
-                                            <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-700/50 text-slate-400 border border-slate-600/30">
+                                            <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-200/50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-600/30">
                                                 <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path>
                                                 </svg>
@@ -216,16 +216,16 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex items-center px-3 py-1 rounded-lg bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold text-sm">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-lg bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30 font-semibold text-sm">
                                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
                                         </svg>
                                         {{ $user->projects()->count() }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-400 font-medium">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 font-medium">
                                     <div class="flex items-center space-x-1.5">
-                                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
                                         <span>{{ $user->created_at->diffForHumans() }}</span>
@@ -257,13 +257,13 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-16 text-center">
+                                <td colspan="6" class="px-6 py-16 text-center bg-white/50 dark:bg-transparent">
                                     <div class="flex flex-col items-center justify-center space-y-4">
                                         <div class="relative">
                                             <div class="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full blur-2xl"></div>
-                                            <div class="relative text-slate-500 dark:text-slate-600 text-6xl">👥</div>
+                                            <div class="relative text-slate-400 dark:text-slate-600 text-6xl">👥</div>
                                         </div>
-                                        <p class="text-slate-400 dark:text-slate-500 text-lg font-medium">No users found</p>
+                                        <p class="text-slate-600 dark:text-slate-500 text-lg font-medium">No users found</p>
                                         @if($search || $roleFilter)
                                             <button wire:click="clearFilters"
                                                     class="inline-flex items-center px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/50">
@@ -282,7 +282,7 @@
             </div>
 
             <!-- Pagination -->
-            <div class="px-6 py-4 border-t border-slate-700/50 bg-slate-900/30 backdrop-blur-sm">
+            <div class="px-6 py-4 border-t border-slate-200 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-900/30 backdrop-blur-sm">
                 {{ $users->links() }}
             </div>
         </div>

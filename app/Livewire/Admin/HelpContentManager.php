@@ -71,10 +71,10 @@ class HelpContentManager extends Component
 
     public function mount(): void
     {
-        // Only super-admin and admin users can manage help content
+        // Permission-based access control
         $user = auth()->user();
         abort_unless(
-            $user && $user->hasRole(['super-admin', 'admin']),
+            $user && $user->can('manage-system-settings'),
             403,
             'You do not have permission to manage help content.'
         );
