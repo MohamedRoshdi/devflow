@@ -53,13 +53,13 @@
                             {{-- Info Pills --}}
                             <div class="flex flex-wrap items-center gap-2 mt-3">
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/50">
-                                    <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
                                     </svg>
                                     {{ $server->ip_address }}
                                 </span>
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/50">
-                                    <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
                                     {{ $server->username . '@' . $server->hostname }}
@@ -118,7 +118,7 @@
                 {{-- Server Connection Info Bar --}}
                 <div class="mt-6 flex items-center gap-4 p-4 rounded-2xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/30 backdrop-blur-sm">
                     <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center border border-slate-300 dark:border-slate-600/50">
-                        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
                     </div>
@@ -130,7 +130,7 @@
                     </div>
                     <button wire:click="pingServer"
                         wire:loading.attr="disabled"
-                        class="px-4 py-2 rounded-lg text-sm font-medium bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 transition-all disabled:opacity-50">
+                        class="px-4 py-2 rounded-lg text-sm font-medium bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 transition-all disabled:opacity-50">
                         <span wire:loading.remove wire:target="pingServer" class="flex items-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.14 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/>
@@ -426,7 +426,7 @@
                                     </p>
                                 </div>
                             </div>
-                            <span class="px-3 py-1 rounded-lg text-xs font-bold {{ $server->docker_installed ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30' }}">
+                            <span class="px-3 py-1 rounded-lg text-xs font-bold {{ $server->docker_installed ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/30' }}">
                                 {{ $server->docker_installed ? 'Active' : 'Inactive' }}
                             </span>
                         </div>
@@ -675,9 +675,9 @@
                             </div>
                         </div>
                         <div class="flex items-center justify-between p-4 rounded-xl bg-purple-500/10 border border-purple-500/30 mt-4">
-                            <span class="text-xs text-purple-300">Last updated: {{ $latestMetric->recorded_at->diffForHumans() }}</span>
+                            <span class="text-xs text-purple-600 dark:text-purple-300">Last updated: {{ $latestMetric->recorded_at->diffForHumans() }}</span>
                             <a href="{{ route('servers.metrics', $server) }}"
-                                class="text-xs font-medium text-purple-400 hover:text-purple-300 hover:underline">
+                                class="text-xs font-medium text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300 hover:underline">
                                 View detailed metrics
                             </a>
                         </div>
@@ -819,14 +819,14 @@
         {{-- Terminal Tab --}}
         @if(isset($activeTab) && $activeTab === 'terminal')
         <div class="bg-white dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700/50 overflow-hidden">
-            <div class="bg-gradient-to-r from-slate-800 to-slate-900 dark:from-slate-900 dark:to-slate-800 p-6 border-b border-slate-600 dark:border-slate-700/50">
+            <div class="bg-gradient-to-r from-slate-700 to-slate-800 p-6 border-b border-slate-600">
                 <h2 class="text-xl font-bold text-white flex items-center gap-2">
                     <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
                     SSH Terminal
                 </h2>
-                <p class="text-sm text-slate-300 dark:text-slate-400 mt-1">Execute commands directly on {{ $server->name }}</p>
+                <p class="text-sm text-slate-200 mt-1">Execute commands directly on {{ $server->name }}</p>
             </div>
             <div class="p-6">
                 <livewire:servers.s-s-h-terminal :server="$server" />
