@@ -897,6 +897,43 @@ class CoreModelsTest extends TestCase
         $this->assertNotNull($project->deleted_at);
     }
 
+    #[Test]
+    public function project_notes_field_is_fillable(): void
+    {
+        $project = Project::factory()->create(['notes' => 'Test notes content']);
+
+        $this->assertEquals('Test notes content', $project->notes);
+    }
+
+    #[Test]
+    public function project_notes_are_sanitized_for_xss(): void
+    {
+        $project = Project::factory()->create([
+            'notes' => '<script>alert("xss")</script>Safe notes content',
+        ]);
+
+        $this->assertStringNotContainsString('<script>', $project->notes);
+        $this->assertStringContainsString('Safe notes content', $project->notes);
+    }
+
+    #[Test]
+    public function project_notes_can_be_null(): void
+    {
+        $project = Project::factory()->create(['notes' => null]);
+
+        $this->assertNull($project->notes);
+    }
+
+    #[Test]
+    public function project_notes_strips_html_tags(): void
+    {
+        $project = Project::factory()->create([
+            'notes' => '<div><b>Bold</b> and <i>italic</i> text</div>',
+        ]);
+
+        $this->assertEquals('Bold and italic text', $project->notes);
+    }
+
     // ========================================
     // DEPLOYMENT MODEL TESTS
     // ========================================

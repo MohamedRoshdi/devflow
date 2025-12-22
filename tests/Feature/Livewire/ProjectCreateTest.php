@@ -913,4 +913,116 @@ class ProjectCreateTest extends TestCase
 
         $this->assertEquals(2, Project::withTrashed()->where('slug', 'test-project')->count());
     }
+
+    // ==================== PROJECT NOTES TESTS ====================
+
+    #[Test]
+    public function create_project_with_notes(): void
+    {
+        Queue::fake();
+
+        Livewire::test(ProjectCreate::class)
+            ->set('name', 'Test Project')
+            ->set('slug', 'test-project')
+            ->set('server_id', (string) $this->server->id)
+            ->set('repository_url', 'https://github.com/user/repo.git')
+            ->set('branch', 'main')
+            ->set('deployment_method', 'docker')
+            ->set('root_directory', '/')
+            ->set('notes', 'Deployment instructions: run npm install first')
+            ->call('createProject')
+            ->assertHasNoErrors();
+
+        $project = Project::where('slug', 'test-project')->first();
+        $this->assertNotNull($project);
+        $this->assertEquals('Deployment instructions: run npm install first', $project->notes);
+    }
+
+    #[Test]
+    public function create_project_without_notes(): void
+    {
+        Queue::fake();
+
+        Livewire::test(ProjectCreate::class)
+            ->set('name', 'Test Project')
+            ->set('slug', 'test-project')
+            ->set('server_id', (string) $this->server->id)
+            ->set('repository_url', 'https://github.com/user/repo.git')
+            ->set('branch', 'main')
+            ->set('deployment_method', 'docker')
+            ->set('root_directory', '/')
+            ->call('createProject')
+            ->assertHasNoErrors();
+
+        $project = Project::where('slug', 'test-project')->first();
+        $this->assertNotNull($project);
+        $this->assertNull($project->notes);
+    }
+
+    #[Test]
+    public function notes_validation_max_length(): void
+    {
+        $longNotes = str_repeat('a', 2001);
+
+        Livewire::test(ProjectCreate::class)
+            ->set('name', 'Test Project')
+            ->set('slug', 'test-project')
+            ->set('server_id', (string) $this->server->id)
+            ->set('repository_url', 'https://github.com/user/repo.git')
+            ->set('branch', 'main')
+            ->set('deployment_method', 'docker')
+            ->set('root_directory', '/')
+            ->set('notes', $longNotes)
+            ->call('createProject')
+            ->assertHasErrors(['notes' => 'max']);
+    }
+
+    #[Test]
+    public function notes_accepts_max_2000_characters(): void
+    {
+        Queue::fake();
+
+        $maxNotes = str_repeat('a', 2000);
+
+        Livewire::test(ProjectCreate::class)
+            ->set('name', 'Test Project')
+            ->set('slug', 'test-project')
+            ->set('server_id', (string) $this->server->id)
+            ->set('repository_url', 'https://github.com/user/repo.git')
+            ->set('branch', 'main')
+            ->set('deployment_method', 'docker')
+            ->set('root_directory', '/')
+            ->set('notes', $maxNotes)
+            ->call('createProject')
+            ->assertHasNoErrors(['notes']);
+
+        $project = Project::where('slug', 'test-project')->first();
+        $this->assertNotNull($project);
+        $this->assertEquals(2000, strlen($project->notes ?? ''));
+    }
+
+    #[Test]
+    public function notes_are_sanitized_for_xss_on_create(): void
+    {
+        Queue::fake();
+
+        $xssNotes = '<script>alert("xss")</script>Safe content';
+
+        Livewire::test(ProjectCreate::class)
+            ->set('name', 'Test Project')
+            ->set('slug', 'test-project')
+            ->set('server_id', (string) $this->server->id)
+            ->set('repository_url', 'https://github.com/user/repo.git')
+            ->set('branch', 'main')
+            ->set('deployment_method', 'docker')
+            ->set('root_directory', '/')
+            ->set('notes', $xssNotes)
+            ->call('createProject')
+            ->assertHasNoErrors();
+
+        $project = Project::where('slug', 'test-project')->first();
+        $this->assertNotNull($project);
+        $this->assertStringNotContainsString('<script>', $project->notes ?? '');
+        $this->assertStringContainsString('Safe content', $project->notes ?? '');
+    }
 }

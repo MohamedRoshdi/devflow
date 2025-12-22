@@ -36,4 +36,12 @@ return [
     'back_to_projects' => 'العودة إلى المشاريع',
     'view_details' => 'عرض التفاصيل',
     'new_project' => 'مشروع جديد',
+
+    // Help & Documentation (Egyptian Arabic)
+    'learn_more' => 'اعرف أكتر',
+    'view_docs' => 'شوف الدليل',
+
+    // Project Notes (Egyptian Arabic)
+    'edit_notes' => 'عدّل الملاحظات',
+    'add_notes' => 'ضيف ملاحظات',
 ];

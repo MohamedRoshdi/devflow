@@ -47,4 +47,10 @@ return [
     'running_count' => ':count Running',
     'building_count' => ':count Building',
     'stopped_count' => ':count Stopped',
+
+    // Project-specific messages
+    'project' => [
+        'no_notes' => 'No notes have been added to this project yet.',
+        'notes_updated' => 'Project notes updated successfully.',
+    ],
 ];

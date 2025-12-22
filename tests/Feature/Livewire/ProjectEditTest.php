@@ -491,4 +491,85 @@ class ProjectEditTest extends TestCase
         $this->assertEquals('/src', $freshProject->root_directory);
         $this->assertTrue($freshProject->auto_deploy);
     }
+
+    // ==================== PROJECT NOTES TESTS ====================
+
+    public function test_can_update_project_notes(): void
+    {
+        Livewire::actingAs($this->user)
+            ->test(ProjectEdit::class, ['project' => $this->project])
+            ->set('notes', 'These are my project notes for deployment instructions.')
+            ->call('updateProject')
+            ->assertHasNoErrors();
+
+        $freshProject = $this->project->fresh();
+        $this->assertNotNull($freshProject);
+        $this->assertEquals('These are my project notes for deployment instructions.', $freshProject->notes);
+    }
+
+    public function test_loads_existing_notes(): void
+    {
+        $this->project->update(['notes' => 'Existing deployment notes']);
+
+        Livewire::actingAs($this->user)
+            ->test(ProjectEdit::class, ['project' => $this->project])
+            ->assertSet('notes', 'Existing deployment notes');
+    }
+
+    public function test_notes_are_nullable(): void
+    {
+        $this->project->update(['notes' => 'Some notes']);
+
+        Livewire::actingAs($this->user)
+            ->test(ProjectEdit::class, ['project' => $this->project])
+            ->set('notes', '')
+            ->call('updateProject')
+            ->assertHasNoErrors();
+
+        $freshProject = $this->project->fresh();
+        $this->assertNotNull($freshProject);
+        $this->assertNull($freshProject->notes);
+    }
+
+    public function test_notes_max_length_validation(): void
+    {
+        $longNotes = str_repeat('a', 2001);
+
+        Livewire::actingAs($this->user)
+            ->test(ProjectEdit::class, ['project' => $this->project])
+            ->set('notes', $longNotes)
+            ->call('updateProject')
+            ->assertHasErrors(['notes' => 'max']);
+    }
+
+    public function test_notes_accept_max_2000_characters(): void
+    {
+        $maxNotes = str_repeat('a', 2000);
+
+        Livewire::actingAs($this->user)
+            ->test(ProjectEdit::class, ['project' => $this->project])
+            ->set('notes', $maxNotes)
+            ->call('updateProject')
+            ->assertHasNoErrors(['notes']);
+
+        $freshProject = $this->project->fresh();
+        $this->assertNotNull($freshProject);
+        $this->assertEquals(2000, strlen($freshProject->notes ?? ''));
+    }
+
+    public function test_notes_are_sanitized_for_xss(): void
+    {
+        $xssNotes = '<script>alert("xss")</script>Deployment notes';
+
+        Livewire::actingAs($this->user)
+            ->test(ProjectEdit::class, ['project' => $this->project])
+            ->set('notes', $xssNotes)
+            ->call('updateProject')
+            ->assertHasNoErrors();
+
+        $freshProject = $this->project->fresh();
+        $this->assertNotNull($freshProject);
+        $this->assertStringNotContainsString('<script>', $freshProject->notes ?? '');
+        $this->assertStringContainsString('Deployment notes', $freshProject->notes ?? '');
+    }
 }

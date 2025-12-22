@@ -36,4 +36,12 @@ return [
     'back_to_projects' => 'Back to Projects',
     'view_details' => 'View Details',
     'new_project' => 'New Project',
+
+    // Help & Documentation
+    'learn_more' => 'Learn More',
+    'view_docs' => 'View Documentation',
+
+    // Project Notes
+    'edit_notes' => 'Edit Notes',
+    'add_notes' => 'Add Notes',
 ];

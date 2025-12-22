@@ -43,6 +43,8 @@ trait HasProjectFormFields
 
     public float|string|null $longitude = null;
 
+    public ?string $notes = null;
+
     /**
      * Auto-generate slug from name
      */
@@ -123,6 +125,7 @@ trait HasProjectFormFields
             'auto_deploy' => 'boolean',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
+            'notes' => 'nullable|string|max:2000',
         ];
     }
 

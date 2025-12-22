@@ -47,4 +47,10 @@ return [
     'running_count' => ':count قيد التشغيل',
     'building_count' => ':count قيد البناء',
     'stopped_count' => ':count متوقف',
+
+    // Project-specific messages (Egyptian Arabic)
+    'project' => [
+        'no_notes' => 'مفيش ملاحظات متضافة للمشروع ده لسه.',
+        'notes_updated' => 'تم تحديث ملاحظات المشروع بنجاح.',
+    ],
 ];

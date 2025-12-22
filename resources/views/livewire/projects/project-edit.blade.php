@@ -390,6 +390,45 @@
                 </div>
             </div>
 
+            <!-- Project Notes -->
+            <div class="border-t pt-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                        <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                        {{ __('labels.project.notes') }}
+                    </h3>
+                    <a href="{{ route('docs.show', ['category' => 'features', 'page' => 'project-notes']) }}"
+                       target="_blank"
+                       class="text-sm text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        {{ __('buttons.learn_more') }}
+                    </a>
+                </div>
+                <div class="relative">
+                    <textarea wire:model="notes"
+                              id="notes"
+                              rows="4"
+                              maxlength="2000"
+                              placeholder="{{ __('labels.project.notes_placeholder') }}"
+                              class="input w-full resize-none"></textarea>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">
+                            {{ __('labels.project.notes_hint') }}
+                        </span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">
+                            <span x-text="$wire.notes?.length || 0"></span>/2000
+                        </span>
+                    </div>
+                    @error('notes')
+                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
             <!-- Actions -->
             <div class="flex items-center justify-between pt-6 border-t">
                 <a href="{{ route('projects.index') }}" class="btn btn-secondary">

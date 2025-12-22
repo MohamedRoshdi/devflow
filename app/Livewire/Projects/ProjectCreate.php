@@ -60,6 +60,8 @@ class ProjectCreate extends Component
 
     public ?float $longitude = null;
 
+    public ?string $notes = null;
+
     // Step 3: Setup Options
     public bool $enableSsl = true;
 
@@ -230,6 +232,7 @@ class ProjectCreate extends Component
             'auto_deploy' => 'boolean',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
+            'notes' => 'nullable|string|max:2000',
         ];
     }
 
@@ -259,6 +262,7 @@ class ProjectCreate extends Component
             'auto_deploy' => $this->auto_deploy,
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
+            'notes' => $this->notes ?: null,
             'status' => 'stopped',
             'setup_status' => 'pending',
             'setup_config' => $setupConfig,

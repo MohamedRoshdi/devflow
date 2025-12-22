@@ -45,6 +45,7 @@ class Project extends Model
         'build_commands',
         'post_deploy_commands',
         'env_variables',
+        'notes',
         'status',
         'setup_status',
         'setup_config',
@@ -112,7 +113,7 @@ class Project extends Model
      */
     protected function sanitizeInputs(): void
     {
-        $sanitizeFields = ['name', 'repository_url', 'branch', 'health_check_url'];
+        $sanitizeFields = ['name', 'repository_url', 'branch', 'health_check_url', 'notes'];
 
         foreach ($sanitizeFields as $field) {
             if (isset($this->attributes[$field]) && is_string($this->attributes[$field])) {

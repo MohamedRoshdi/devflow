@@ -49,4 +49,11 @@ return [
     'commit_search_placeholder' => 'Commit message, branch, or project',
     'approval_notes_placeholder' => 'Add any notes about this approval...',
     'rejection_reason_placeholder' => 'Explain why this deployment is being rejected...',
+
+    // Project-specific labels
+    'project' => [
+        'notes' => 'Project Notes',
+        'notes_placeholder' => 'Add notes about this project, deployment instructions, team contacts, or any other relevant information...',
+        'notes_hint' => 'Use this space for deployment notes, team contacts, or important reminders. Maximum 2000 characters.',
+    ],
 ];

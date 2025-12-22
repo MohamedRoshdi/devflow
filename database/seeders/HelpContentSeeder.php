@@ -162,6 +162,32 @@ class HelpContentSeeder extends Seeder
                     'restore' => 'استعادة بنقرة واحدة من أي نقطة نسخ احتياطي',
                 ],
             ],
+            [
+                'key' => 'project-notes',
+                'category' => 'projects',
+                'ui_element_type' => 'field',
+                'icon' => 'document-text',
+                'title' => 'Project Notes',
+                'brief' => 'Add internal notes and documentation for your project',
+                'details' => [
+                    'purpose' => 'Store deployment instructions, team contacts, or important reminders',
+                    'visibility' => 'Notes are visible to all team members with project access',
+                    'limit' => 'Maximum 2000 characters per project',
+                    'formatting' => 'Plain text only, no markdown or HTML supported',
+                    'security' => 'Notes are sanitized to prevent XSS attacks',
+                ],
+                'docs_url' => 'https://docs.devflowpro.com/projects/notes',
+                'video_url' => null,
+                'is_active' => true,
+                'ar_brief' => 'ضيف ملاحظات داخلية ووثائق للمشروع بتاعك',
+                'ar_details' => [
+                    'purpose' => 'احفظ تعليمات النشر أو بيانات الفريق أو التذكيرات المهمة',
+                    'visibility' => 'الملاحظات بتبان لكل أعضاء الفريق اللي عندهم صلاحية للمشروع',
+                    'limit' => 'الحد الأقصى 2000 حرف لكل مشروع',
+                    'formatting' => 'نص عادي بس، مفيش دعم للماركداون أو HTML',
+                    'security' => 'الملاحظات بتتنظف لمنع هجمات XSS',
+                ],
+            ],
         ];
 
         foreach ($helpContents as $data) {

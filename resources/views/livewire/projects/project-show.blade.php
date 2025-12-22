@@ -631,6 +631,48 @@
                     </div>
                 </div>
                 @endif
+
+                {{-- Project Notes Card --}}
+                <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 overflow-hidden">
+                    <div class="bg-gradient-to-r from-amber-600 to-orange-600 p-6 border-b border-amber-500/30">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                                {{ __('labels.project.notes') }}
+                            </h2>
+                            <a href="{{ route('docs.show', ['category' => 'features', 'page' => 'project-notes']) }}"
+                               target="_blank"
+                               class="text-white/70 hover:text-white transition-colors"
+                               title="{{ __('buttons.view_docs') }}">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        @if($project->notes)
+                            <div class="p-4 bg-slate-900/50 rounded-xl border border-slate-700/30">
+                                <p class="text-sm text-slate-300 whitespace-pre-wrap">{{ $project->notes }}</p>
+                            </div>
+                        @else
+                            <div class="text-center py-6">
+                                <svg class="w-12 h-12 mx-auto text-slate-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                                <p class="text-slate-500 text-sm">{{ __('messages.project.no_notes') }}</p>
+                                <a href="{{ route('projects.edit', $project) }}" class="inline-flex items-center gap-1 mt-2 text-amber-400 hover:text-amber-300 text-sm">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                    </svg>
+                                    {{ __('buttons.edit_notes') }}
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                </div>
             </div>
 
             {{-- Domains Card --}}

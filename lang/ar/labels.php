@@ -49,4 +49,11 @@ return [
     'commit_search_placeholder' => 'رسالة الالتزام أو الفرع أو المشروع',
     'approval_notes_placeholder' => 'أضف أي ملاحظات حول هذه الموافقة...',
     'rejection_reason_placeholder' => 'اشرح سبب رفض هذا النشر...',
+
+    // Project-specific labels (Egyptian Arabic)
+    'project' => [
+        'notes' => 'ملاحظات المشروع',
+        'notes_placeholder' => 'اكتب ملاحظات عن المشروع، تعليمات النشر، بيانات الفريق، أو أي معلومات مهمة...',
+        'notes_hint' => 'استخدم المساحة دي لملاحظات النشر أو بيانات الفريق أو التذكيرات. الحد الأقصى 2000 حرف.',
+    ],
 ];

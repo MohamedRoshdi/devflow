@@ -59,6 +59,7 @@ class ProjectEdit extends Component
         $this->auto_deploy = $this->project->auto_deploy;
         $this->latitude = $this->project->latitude;
         $this->longitude = $this->project->longitude;
+        $this->notes = $this->project->notes;
     }
 
     protected function loadServers(): void
@@ -109,6 +110,7 @@ class ProjectEdit extends Component
             'auto_deploy' => $this->auto_deploy,
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
+            'notes' => $this->notes ?: null,
         ]);
 
         session()->flash('message', 'Project updated successfully!');
