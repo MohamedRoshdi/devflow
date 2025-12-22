@@ -64,11 +64,20 @@
             </button>
         </div>
 
-        <!-- Access Help -->
+        <!-- Register Link -->
         <div class="text-center">
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-                Need an account? Contact your DevFlow Pro administrator to request access.
-            </p>
+            @if(\App\Models\SystemSetting::isRegistrationEnabled())
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                    Don't have an account?
+                    <a href="{{ route('register') }}" class="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 transition-colors">
+                        Register here
+                    </a>
+                </p>
+            @else
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                    Need an account? Contact your DevFlow Pro administrator to request access.
+                </p>
+            @endif
         </div>
     </form>
 </div>

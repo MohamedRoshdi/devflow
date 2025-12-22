@@ -36,6 +36,11 @@
                             Open Dashboard
                         </a>
                     @else
+                        @if(\App\Models\SystemSetting::isRegistrationEnabled())
+                            <a href="{{ route('register') }}" class="hidden md:inline-flex px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
+                                Register
+                            </a>
+                        @endif
                         <a href="{{ route('login') }}" class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-white bg-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100 rounded-full transition-colors">
                             Sign In
                         </a>
