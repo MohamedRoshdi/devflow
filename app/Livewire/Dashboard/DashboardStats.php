@@ -210,10 +210,11 @@ class DashboardStats extends Component
     {
         $this->healthCheckStats = $this->cacheOrFallback('dashboard_health_stats', 120, function () {
             // Optimized: Single query with subqueries instead of 5 separate queries
+            // Note: Using is_active = true for PostgreSQL compatibility (not is_active = 1)
             $result = DB::selectOne("
                 SELECT
                     (SELECT COUNT(*) FROM health_checks) as total_checks,
-                    (SELECT COUNT(*) FROM health_checks WHERE is_active = 1) as active_checks,
+                    (SELECT COUNT(*) FROM health_checks WHERE is_active = true) as active_checks,
                     (SELECT COUNT(*) FROM health_checks WHERE status = 'healthy') as healthy,
                     (SELECT COUNT(*) FROM health_checks WHERE status = 'degraded') as degraded,
                     (SELECT COUNT(*) FROM health_checks WHERE status = 'down') as down
