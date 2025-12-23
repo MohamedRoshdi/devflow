@@ -41,28 +41,45 @@ class TimingAttackPreventionTest extends TestCase
 
     public function test_invalid_webhook_token_returns_not_found(): void
     {
-        $response = $this->postJson('/api/webhook/deploy/invalid-token-12345');
+        $response = $this->postJson('/api/webhooks/deploy/invalid-token-12345');
 
         $response->assertNotFound();
     }
 
     public function test_valid_webhook_token_processes_request(): void
     {
+        // Create project with webhook enabled
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
             'server_id' => $this->server->id,
+            'user_id' => $this->user->id,
             'auto_deploy' => true,
             'webhook_secret' => 'valid-secret-token-abc123',
+            'branch' => 'main',
         ]);
 
-        // Note: This will fail because the project might not be fully configured,
-        // but we're testing that it doesn't return 404 (unauthorized)
-        $response = $this->postJson('/api/webhook/deploy/valid-secret-token-abc123', [
+        // Verify project was created correctly
+        $this->assertTrue($project->auto_deploy);
+        $this->assertEquals('valid-secret-token-abc123', $project->webhook_secret);
+
+        // Verify the project can be found via the same query the controller uses
+        $foundProject = Project::where('auto_deploy', true)
+            ->whereNotNull('webhook_secret')
+            ->where('webhook_secret', 'valid-secret-token-abc123')
+            ->first();
+
+        $this->assertNotNull($foundProject, 'Project should be findable via webhook_secret query');
+        $this->assertEquals($project->id, $foundProject->id);
+
+        // Now test the webhook endpoint
+        $response = $this->postJson('/api/webhooks/deploy/valid-secret-token-abc123', [
             'ref' => 'refs/heads/main',
         ]);
 
-        // Should not be 404 (the timing-attack safe code should find the project)
-        $this->assertNotEquals(404, $response->getStatusCode());
+        // Should not be 404 - the timing-safe code should find the project
+        // May return 200 (success), 409 (conflict), or other valid codes
+        $this->assertNotEquals(404, $response->getStatusCode(),
+            'Webhook should find project. Response: ' . $response->getContent());
     }
 
     public function test_similar_tokens_are_rejected(): void
@@ -83,7 +100,7 @@ class TimingAttackPreventionTest extends TestCase
         ];
 
         foreach ($similarTokens as $token) {
-            $response = $this->postJson("/api/webhook/deploy/{$token}");
+            $response = $this->postJson("/api/webhooks/deploy/{$token}");
             $response->assertNotFound();
         }
     }
@@ -97,7 +114,7 @@ class TimingAttackPreventionTest extends TestCase
             'webhook_secret' => 'secret-but-disabled',
         ]);
 
-        $response = $this->postJson('/api/webhook/deploy/secret-but-disabled');
+        $response = $this->postJson('/api/webhooks/deploy/secret-but-disabled');
 
         // Should be 404 because auto_deploy is false
         $response->assertNotFound();
@@ -112,7 +129,7 @@ class TimingAttackPreventionTest extends TestCase
             'webhook_secret' => null, // No secret set
         ]);
 
-        $response = $this->postJson('/api/webhook/deploy/any-token');
+        $response = $this->postJson('/api/webhooks/deploy/any-token');
 
         $response->assertNotFound();
     }
@@ -126,7 +143,7 @@ class TimingAttackPreventionTest extends TestCase
             'webhook_secret' => '',
         ]);
 
-        $response = $this->postJson('/api/webhook/deploy/empty');
+        $response = $this->postJson('/api/webhooks/deploy/empty');
 
         $response->assertNotFound();
     }
@@ -152,14 +169,14 @@ class TimingAttackPreventionTest extends TestCase
         // Measure response times for invalid tokens
         for ($i = 0; $i < 3; $i++) {
             $start = microtime(true);
-            $this->postJson('/api/webhook/deploy/invalid-token-' . $i);
+            $this->postJson('/api/webhooks/deploy/invalid-token-' . $i);
             $invalidTimes[] = microtime(true) - $start;
         }
 
         // Measure response times for valid token (but will fail on other validation)
         for ($i = 0; $i < 3; $i++) {
             $start = microtime(true);
-            $this->postJson('/api/webhook/deploy/real-secret-token', ['ref' => 'refs/heads/main']);
+            $this->postJson('/api/webhooks/deploy/real-secret-token', ['ref' => 'refs/heads/main']);
             $validTimes[] = microtime(true) - $start;
         }
 

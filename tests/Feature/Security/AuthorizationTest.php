@@ -9,9 +9,9 @@ use App\Livewire\Servers\WebTerminal;
 use App\Models\Server;
 use App\Models\Team;
 use App\Models\User;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
 
 /**
@@ -32,8 +32,14 @@ class AuthorizationTest extends TestCase
     {
         parent::setUp();
 
+        // Create necessary permissions
+        Permission::firstOrCreate(['name' => 'view-servers', 'guard_name' => 'web']);
+
         $this->owner = User::factory()->create();
         $this->otherUser = User::factory()->create();
+
+        // Give owner the view-servers permission
+        $this->owner->givePermissionTo('view-servers');
 
         $this->team = Team::factory()->create(['owner_id' => $this->owner->id]);
         $this->owner->teams()->attach($this->team->id, ['role' => 'owner']);
@@ -47,9 +53,9 @@ class AuthorizationTest extends TestCase
 
     public function test_ssh_terminal_requires_authentication(): void
     {
-        $this->expectException(AuthorizationException::class);
-
-        Livewire::test(SSHTerminal::class, ['server' => $this->server]);
+        // Unauthenticated users should get 403 Forbidden
+        Livewire::test(SSHTerminal::class, ['server' => $this->server])
+            ->assertForbidden();
     }
 
     public function test_ssh_terminal_authorizes_team_owner(): void
@@ -61,17 +67,17 @@ class AuthorizationTest extends TestCase
 
     public function test_ssh_terminal_denies_non_team_member(): void
     {
-        $this->expectException(AuthorizationException::class);
-
+        // User without permission or team membership should get 403
         Livewire::actingAs($this->otherUser)
-            ->test(SSHTerminal::class, ['server' => $this->server]);
+            ->test(SSHTerminal::class, ['server' => $this->server])
+            ->assertForbidden();
     }
 
     public function test_web_terminal_requires_authentication(): void
     {
-        $this->expectException(AuthorizationException::class);
-
-        Livewire::test(WebTerminal::class, ['server' => $this->server]);
+        // Unauthenticated users should get 403 Forbidden
+        Livewire::test(WebTerminal::class, ['server' => $this->server])
+            ->assertForbidden();
     }
 
     public function test_web_terminal_authorizes_team_owner(): void
@@ -83,15 +89,16 @@ class AuthorizationTest extends TestCase
 
     public function test_web_terminal_denies_non_team_member(): void
     {
-        $this->expectException(AuthorizationException::class);
-
+        // User without permission or team membership should get 403
         Livewire::actingAs($this->otherUser)
-            ->test(WebTerminal::class, ['server' => $this->server]);
+            ->test(WebTerminal::class, ['server' => $this->server])
+            ->assertForbidden();
     }
 
     public function test_team_member_can_access_terminal(): void
     {
-        // Add other user to the team
+        // Add other user to the team and give permission
+        $this->otherUser->givePermissionTo('view-servers');
         $this->otherUser->teams()->attach($this->team->id, ['role' => 'member']);
         $this->otherUser->update(['current_team_id' => $this->team->id]);
 
@@ -105,16 +112,16 @@ class AuthorizationTest extends TestCase
         $otherTeam = Team::factory()->create(['owner_id' => $this->otherUser->id]);
         $this->otherUser->teams()->attach($otherTeam->id, ['role' => 'owner']);
         $this->otherUser->update(['current_team_id' => $otherTeam->id]);
+        $this->otherUser->givePermissionTo('view-servers');
 
         $otherServer = Server::factory()->create([
             'team_id' => $otherTeam->id,
             'status' => 'online',
         ]);
 
-        // Owner of team1 trying to access team2's server
-        $this->expectException(AuthorizationException::class);
-
+        // Owner of team1 trying to access team2's server should be denied
         Livewire::actingAs($this->owner)
-            ->test(SSHTerminal::class, ['server' => $otherServer]);
+            ->test(SSHTerminal::class, ['server' => $otherServer])
+            ->assertForbidden();
     }
 }
