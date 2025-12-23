@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Livewire\Auth;
 
+use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -22,6 +25,27 @@ class Login extends Component
     public string $password = '';
 
     public bool $remember = false;
+
+    /**
+     * Check if this is a fresh installation with only the default admin user.
+     */
+    #[Computed]
+    public function isFirstSetup(): bool
+    {
+        // Check if there's exactly one user with the default admin email
+        $userCount = User::count();
+        if ($userCount !== 1) {
+            return false;
+        }
+
+        $defaultAdmin = User::where('email', 'admin@devflow.local')->first();
+        if (! $defaultAdmin) {
+            return false;
+        }
+
+        // Verify the password is still the default
+        return Hash::check('password', $defaultAdmin->password);
+    }
 
     /**
      * Get the validation rules that apply to the component.
