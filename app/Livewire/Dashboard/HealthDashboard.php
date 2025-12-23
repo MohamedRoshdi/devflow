@@ -66,16 +66,17 @@ class HealthDashboard extends Component
 
     protected function loadProjectsHealth()
     {
-        // All projects are shared across all users
-        // Use latestDeployment relationship instead of deployments closure
-        $projects = Project::query()
-            ->select(['id', 'name', 'slug', 'status', 'server_id', 'health_check_url'])
-            ->with([
-                'server:id,name',
-                'domains:id,project_id,domain,subdomain',
-                'latestDeployment' => fn ($q) => $q->select('deployments.id', 'deployments.project_id', 'deployments.status', 'deployments.created_at')
-            ])
-            ->get();
+        // Cache the main projects query for 3 minutes to reduce database load
+        $projects = $this->cache->remember('health_dashboard_projects', 180, function () {
+            return Project::query()
+                ->select(['id', 'name', 'slug', 'status', 'server_id', 'health_check_url'])
+                ->with([
+                    'server:id,name',
+                    'domains:id,project_id,domain,subdomain',
+                    'latestDeployment' => fn ($q) => $q->select('deployments.id', 'deployments.project_id', 'deployments.status', 'deployments.created_at')
+                ])
+                ->get();
+        });
 
         $this->projectsHealth = $projects->map(function ($project) {
             $cacheKey = "project_health_{$project->id}";
@@ -88,9 +89,10 @@ class HealthDashboard extends Component
 
     protected function loadServersHealth()
     {
-        // All servers are shared across all users
-        // Eager load projects count to avoid N+1 queries
-        $servers = Server::withCount('projects')->get();
+        // Cache the main servers query for 3 minutes to reduce database load
+        $servers = $this->cache->remember('health_dashboard_servers', 180, function () {
+            return Server::withCount('projects')->get();
+        });
 
         $this->serversHealth = $servers->map(function ($server) {
             $cacheKey = "server_health_{$server->id}";
@@ -233,8 +235,13 @@ class HealthDashboard extends Component
 
     protected function getServerMetrics(Server $server): array
     {
-        $sshOptions = "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=5 -p {$server->port}";
-        $sshCommand = "ssh {$sshOptions} {$server->username}@{$server->ip_address}";
+        // Security: All server properties MUST be escaped to prevent command injection
+        $port = (int) $server->port;
+        $username = escapeshellarg($server->username);
+        $ipAddress = escapeshellarg($server->ip_address);
+
+        $sshOptions = "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=5 -p {$port}";
+        $sshCommand = "ssh {$sshOptions} {$username}@{$ipAddress}";
 
         // Combine all metrics into a single SSH call
         // Using echo with delimiters to separate different metric outputs
@@ -339,6 +346,10 @@ class HealthDashboard extends Component
 
     public function refreshHealth()
     {
+        // Clear main query caches
+        $this->cache->forget('health_dashboard_projects');
+        $this->cache->forget('health_dashboard_servers');
+
         // Clear cache for all projects and servers
         foreach ($this->projectsHealth as $project) {
             $this->cache->forget("project_health_{$project['id']}");

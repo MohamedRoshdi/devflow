@@ -186,7 +186,7 @@ trait ExecutesRemoteCommands
             '-o StrictHostKeyChecking=no',
             '-o UserKnownHostsFile=/dev/null',
             '-o ConnectTimeout=10',
-            '-p '.$server->port,
+            '-p '.((int) $server->port),
         ];
 
         $sshpassPrefix = '';
@@ -218,7 +218,7 @@ trait ExecutesRemoteCommands
                 });
             }
 
-            $sshOptions[] = '-i '.$this->sshKeyFiles[$server->id];
+            $sshOptions[] = '-i '.escapeshellarg($this->sshKeyFiles[$server->id]);
         } elseif ($server->ssh_password) {
             // Password authentication using sshpass
             $sshpassPrefix = sprintf('sshpass -p %s ', escapeshellarg($server->ssh_password));
@@ -228,12 +228,13 @@ trait ExecutesRemoteCommands
         }
         // else: Host key authentication (default) - uses local SSH key
 
+        // Security: All server properties MUST be escaped to prevent command injection
         return sprintf(
             '%sssh %s %s@%s %s',
             $sshpassPrefix,
             implode(' ', $sshOptions),
-            $server->username,
-            $server->ip_address,
+            escapeshellarg($server->username),
+            escapeshellarg($server->ip_address),
             escapeshellarg($remoteCommand)
         );
     }
