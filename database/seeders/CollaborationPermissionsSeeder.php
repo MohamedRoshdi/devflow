@@ -1,11 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
+/**
+ * Collaboration Permissions Seeder
+ *
+ * IMPORTANT: This seeder ADDS collaboration-specific permissions to existing roles.
+ * It uses givePermissionTo() instead of syncPermissions() to avoid removing
+ * permissions granted by DefaultPermissionsSeeder.
+ *
+ * Run this AFTER DefaultPermissionsSeeder.
+ */
 class CollaborationPermissionsSeeder extends Seeder
 {
     public function run(): void
@@ -13,7 +24,7 @@ class CollaborationPermissionsSeeder extends Seeder
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Create permissions
+        // Create collaboration-specific permissions
         $permissions = [
             // Deployment Approvals
             'approve_deployments' => 'Approve deployments for owned projects',
@@ -44,26 +55,74 @@ class CollaborationPermissionsSeeder extends Seeder
             );
         }
 
-        // Create or update roles with permissions
-        $this->setupAdminRole();
-        $this->setupManagerRole();
-        $this->setupDeveloperRole();
-        $this->setupViewerRole();
+        // Add collaboration permissions to roles (without removing existing ones)
+        $this->addPermissionsToSuperAdmin();
+        $this->addPermissionsToAdmin();
+        $this->addPermissionsToManager();
+        $this->addPermissionsToDeveloper();
+        $this->addPermissionsToViewer();
+
+        $this->command->info('Collaboration permissions added to roles successfully!');
     }
 
-    private function setupAdminRole(): void
+    private function addPermissionsToSuperAdmin(): void
     {
-        $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        $role = Role::where('name', 'super-admin')->first();
+        if (! $role) {
+            return;
+        }
 
-        // Admin has all permissions
-        $role->syncPermissions(Permission::all());
+        // Super-admin gets all new permissions
+        $role->givePermissionTo([
+            'approve_deployments',
+            'approve_all_deployments',
+            'request_deployment_approval',
+            'view_audit_logs',
+            'view_all_audit_logs',
+            'export_audit_logs',
+            'add_deployment_comments',
+            'edit_own_comments',
+            'delete_own_comments',
+            'manage_all_comments',
+            'manage_notification_channels',
+            'view_notification_channels',
+            'test_notification_channels',
+        ]);
     }
 
-    private function setupManagerRole(): void
+    private function addPermissionsToAdmin(): void
     {
-        $role = Role::firstOrCreate(['name' => 'manager', 'guard_name' => 'web']);
+        $role = Role::where('name', 'admin')->first();
+        if (! $role) {
+            return;
+        }
 
-        $permissions = [
+        // Admin gets most collaboration permissions
+        $role->givePermissionTo([
+            'approve_deployments',
+            'approve_all_deployments',
+            'request_deployment_approval',
+            'view_audit_logs',
+            'view_all_audit_logs',
+            'export_audit_logs',
+            'add_deployment_comments',
+            'edit_own_comments',
+            'delete_own_comments',
+            'manage_all_comments',
+            'manage_notification_channels',
+            'view_notification_channels',
+            'test_notification_channels',
+        ]);
+    }
+
+    private function addPermissionsToManager(): void
+    {
+        $role = Role::where('name', 'manager')->first();
+        if (! $role) {
+            return;
+        }
+
+        $role->givePermissionTo([
             'approve_deployments',
             'request_deployment_approval',
             'view_audit_logs',
@@ -74,37 +133,37 @@ class CollaborationPermissionsSeeder extends Seeder
             'manage_notification_channels',
             'view_notification_channels',
             'test_notification_channels',
-        ];
-
-        $role->syncPermissions($permissions);
+        ]);
     }
 
-    private function setupDeveloperRole(): void
+    private function addPermissionsToDeveloper(): void
     {
-        $role = Role::firstOrCreate(['name' => 'developer', 'guard_name' => 'web']);
+        $role = Role::where('name', 'developer')->first();
+        if (! $role) {
+            return;
+        }
 
-        $permissions = [
+        $role->givePermissionTo([
             'request_deployment_approval',
             'view_audit_logs',
             'add_deployment_comments',
             'edit_own_comments',
             'delete_own_comments',
             'view_notification_channels',
-        ];
-
-        $role->syncPermissions($permissions);
+        ]);
     }
 
-    private function setupViewerRole(): void
+    private function addPermissionsToViewer(): void
     {
-        $role = Role::firstOrCreate(['name' => 'viewer', 'guard_name' => 'web']);
+        $role = Role::where('name', 'viewer')->first();
+        if (! $role) {
+            return;
+        }
 
-        $permissions = [
+        $role->givePermissionTo([
             'view_audit_logs',
             'add_deployment_comments',
             'view_notification_channels',
-        ];
-
-        $role->syncPermissions($permissions);
+        ]);
     }
 }
