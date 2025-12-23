@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Livewire\Servers;
 
 use App\Models\Server;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Symfony\Component\Process\Process;
 
 class SSHTerminal extends Component
 {
+    use AuthorizesRequests;
+
     public Server $server;
 
     public string $command = '';
@@ -25,8 +28,9 @@ class SSHTerminal extends Component
     /** @var array<int, string> */
     protected $listeners = ['executeCommand'];
 
-    public function mount(Server $server)
+    public function mount(Server $server): void
     {
+        $this->authorize('view', $server);
         $this->server = $server;
 
         // Load command history from session

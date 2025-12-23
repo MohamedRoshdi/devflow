@@ -204,8 +204,8 @@
         </div>
         <div class="p-6">
             <div class="flex items-end gap-2 h-32">
-                @foreach($deploymentTimeline as $day)
-                <div class="flex-1 flex flex-col items-center gap-1">
+                @foreach($deploymentTimeline as $index => $day)
+                <div wire:key="timeline-day-{{ $index }}" class="flex-1 flex flex-col items-center gap-1">
                     <div class="w-full flex flex-col-reverse gap-0.5" style="height: 100px;">
                         @if($day['total'] > 0)
                             @php $maxTotal = max(collect($deploymentTimeline)->max('total'), 1); @endphp

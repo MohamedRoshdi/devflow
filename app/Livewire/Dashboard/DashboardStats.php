@@ -117,14 +117,30 @@ class DashboardStats extends Component
         ];
 
         $cachedStats = $this->cacheOrFallback('dashboard_stats', 60, function () {
+            // Optimized: Single query with subqueries instead of 7 separate queries
+            $result = DB::selectOne("
+                SELECT
+                    (SELECT COUNT(*) FROM servers) as total_servers,
+                    (SELECT COUNT(*) FROM servers WHERE status = 'online') as online_servers,
+                    (SELECT COUNT(*) FROM projects) as total_projects,
+                    (SELECT COUNT(*) FROM projects WHERE status = 'running') as running_projects,
+                    (SELECT COUNT(*) FROM deployments) as total_deployments,
+                    (SELECT COUNT(*) FROM deployments WHERE status = 'success') as successful_deployments,
+                    (SELECT COUNT(*) FROM deployments WHERE status = 'failed') as failed_deployments
+            ");
+
+            if ($result === null) {
+                return [];
+            }
+
             return [
-                'total_servers' => Server::count(),
-                'online_servers' => Server::where('status', 'online')->count(),
-                'total_projects' => Project::count(),
-                'running_projects' => Project::where('status', 'running')->count(),
-                'total_deployments' => Deployment::count(),
-                'successful_deployments' => Deployment::where('status', 'success')->count(),
-                'failed_deployments' => Deployment::where('status', 'failed')->count(),
+                'total_servers' => (int) $result->total_servers,
+                'online_servers' => (int) $result->online_servers,
+                'total_projects' => (int) $result->total_projects,
+                'running_projects' => (int) $result->running_projects,
+                'total_deployments' => (int) $result->total_deployments,
+                'successful_deployments' => (int) $result->successful_deployments,
+                'failed_deployments' => (int) $result->failed_deployments,
             ];
         });
 
@@ -160,20 +176,31 @@ class DashboardStats extends Component
     public function loadSSLStats(): void
     {
         $stats = $this->cacheOrFallback('dashboard_ssl_stats', 300, function (): array {
-            $now = now();
-            $expiringSoonDate = $now->copy()->addDays(7);
+            $now = now()->toDateTimeString();
+            $expiringSoonDate = now()->addDays(7)->toDateTimeString();
+
+            // Optimized: Single query with subqueries instead of 6 separate queries
+            $result = DB::selectOne("
+                SELECT
+                    (SELECT COUNT(*) FROM ssl_certificates) as total_certificates,
+                    (SELECT COUNT(*) FROM ssl_certificates WHERE status = 'issued' AND expires_at > ?) as active_certificates,
+                    (SELECT COUNT(*) FROM ssl_certificates WHERE expires_at <= ? AND expires_at > ?) as expiring_soon,
+                    (SELECT COUNT(*) FROM ssl_certificates WHERE expires_at <= ?) as expired,
+                    (SELECT COUNT(*) FROM ssl_certificates WHERE status = 'pending') as pending,
+                    (SELECT COUNT(*) FROM ssl_certificates WHERE status = 'failed') as failed
+            ", [$now, $expiringSoonDate, $now, $now]);
+
+            if ($result === null) {
+                return [];
+            }
 
             return [
-                'total_certificates' => SSLCertificate::count(),
-                'active_certificates' => SSLCertificate::where('status', 'issued')
-                    ->where('expires_at', '>', $now)
-                    ->count(),
-                'expiring_soon' => SSLCertificate::where('expires_at', '<=', $expiringSoonDate)
-                    ->where('expires_at', '>', $now)
-                    ->count(),
-                'expired' => SSLCertificate::where('expires_at', '<=', $now)->count(),
-                'pending' => SSLCertificate::where('status', 'pending')->count(),
-                'failed' => SSLCertificate::where('status', 'failed')->count(),
+                'total_certificates' => (int) $result->total_certificates,
+                'active_certificates' => (int) $result->active_certificates,
+                'expiring_soon' => (int) $result->expiring_soon,
+                'expired' => (int) $result->expired,
+                'pending' => (int) $result->pending,
+                'failed' => (int) $result->failed,
             ];
         });
         $this->sslStats = is_array($stats) ? $stats : [];
@@ -182,12 +209,26 @@ class DashboardStats extends Component
     public function loadHealthCheckStats(): void
     {
         $this->healthCheckStats = $this->cacheOrFallback('dashboard_health_stats', 120, function () {
+            // Optimized: Single query with subqueries instead of 5 separate queries
+            $result = DB::selectOne("
+                SELECT
+                    (SELECT COUNT(*) FROM health_checks) as total_checks,
+                    (SELECT COUNT(*) FROM health_checks WHERE is_active = 1) as active_checks,
+                    (SELECT COUNT(*) FROM health_checks WHERE status = 'healthy') as healthy,
+                    (SELECT COUNT(*) FROM health_checks WHERE status = 'degraded') as degraded,
+                    (SELECT COUNT(*) FROM health_checks WHERE status = 'down') as down
+            ");
+
+            if ($result === null) {
+                return [];
+            }
+
             return [
-                'total_checks' => HealthCheck::count(),
-                'active_checks' => HealthCheck::where('is_active', true)->count(),
-                'healthy' => HealthCheck::where('status', 'healthy')->count(),
-                'degraded' => HealthCheck::where('status', 'degraded')->count(),
-                'down' => HealthCheck::where('status', 'down')->count(),
+                'total_checks' => (int) $result->total_checks,
+                'active_checks' => (int) $result->active_checks,
+                'healthy' => (int) $result->healthy,
+                'degraded' => (int) $result->degraded,
+                'down' => (int) $result->down,
             ];
         });
     }

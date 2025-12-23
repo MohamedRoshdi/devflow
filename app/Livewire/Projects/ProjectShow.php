@@ -8,6 +8,7 @@ use App\Models\Deployment;
 use App\Models\Project;
 use App\Services\DockerService;
 use App\Services\GitService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -79,13 +80,19 @@ class ProjectShow extends Component
 
     /**
      * Check for pending updates (used by overview banner)
+     * Results are cached for 5 minutes to avoid repeated SSH calls
      */
     public function checkForUpdates(): void
     {
         try {
             $this->checkingForUpdates = true;
 
-            $result = $this->gitService->checkForUpdates($this->project);
+            $cacheKey = "project.{$this->project->id}.git_update_status";
+
+            // Cache Git update checks for 5 minutes to avoid expensive SSH calls on every page load
+            $result = Cache::remember($cacheKey, now()->addMinutes(5), function () {
+                return $this->gitService->checkForUpdates($this->project);
+            });
 
             if ($result['success']) {
                 $this->updateStatus = $result;
@@ -102,10 +109,26 @@ class ProjectShow extends Component
         }
     }
 
+    /**
+     * Force refresh the Git update status by clearing the cache
+     */
+    public function refreshUpdateStatus(): void
+    {
+        $cacheKey = "project.{$this->project->id}.git_update_status";
+        Cache::forget($cacheKey);
+        $this->updateStatusLoaded = false;
+        $this->checkForUpdates();
+    }
+
     #[On('deployment-completed')]
     public function onDeploymentCompleted(): void
     {
         $this->project->refresh();
+
+        // Clear the cached Git status since deployment may have changed it
+        $cacheKey = "project.{$this->project->id}.git_update_status";
+        Cache::forget($cacheKey);
+
         $this->updateStatusLoaded = false;
         $this->checkForUpdates();
     }

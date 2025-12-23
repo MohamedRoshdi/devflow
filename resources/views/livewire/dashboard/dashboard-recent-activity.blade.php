@@ -50,8 +50,9 @@
     </div>
     @else
     <div class="divide-y divide-gray-200 dark:divide-slate-700/50">
-        @forelse($recentActivity as $activity)
-        <div class="px-6 py-4 hover:bg-gray-50 dark:hover:bg-slate-700/30 transition-colors">
+        @forelse($recentActivity as $index => $activity)
+        <div wire:key="activity-{{ $activity['type'] }}-{{ $activity['id'] ?? $index }}"
+             class="px-6 py-4 hover:bg-gray-50 dark:hover:bg-slate-700/30 transition-colors">
             <div class="flex items-start gap-4">
                 <div class="flex-shrink-0 mt-0.5">
                     <span class="w-8 h-8 rounded-full flex items-center justify-center

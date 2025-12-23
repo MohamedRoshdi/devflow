@@ -40,7 +40,8 @@
         @else
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($this->teams as $team)
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6 border border-gray-200 dark:border-gray-700">
+                    <div wire:key="team-{{ $team['id'] }}"
+                         class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6 border border-gray-200 dark:border-gray-700">
                         <!-- Team Header -->
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex items-center space-x-3">

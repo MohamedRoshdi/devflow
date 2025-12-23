@@ -45,7 +45,10 @@
                         Switch to
                     </div>
                     @foreach($this->teams as $team)
-                        <button wire:click="switchTeam({{ $team['id'] }})" type="button" class="flex items-center space-x-3 w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <button wire:key="team-switch-{{ $team['id'] }}"
+                                wire:click="switchTeam({{ $team['id'] }})"
+                                type="button"
+                                class="flex items-center space-x-3 w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                             <img src="{{ $team['avatar_url'] }}" alt="{{ $team['name'] }}" class="w-8 h-8 rounded-lg">
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $team['name'] }}</p>

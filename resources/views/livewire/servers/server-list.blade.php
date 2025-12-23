@@ -383,7 +383,8 @@
     @if($servers->count() > 0)
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6" wire:loading.remove>
             @foreach($servers as $server)
-                <div class="group relative bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700/50 shadow-xl hover:shadow-2xl hover:border-slate-300 dark:hover:border-slate-600/50 transform hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300"
+                <div wire:key="server-{{ $server->id }}"
+                     class="group relative bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700/50 shadow-xl hover:shadow-2xl hover:border-slate-300 dark:hover:border-slate-600/50 transform hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300"
                      :class="{ 'ring-4 ring-blue-500/50': {{ in_array($server->id, $selectedServers) ? 'true' : 'false' }} }">
 
                     {{-- Status Indicator Bar --}}

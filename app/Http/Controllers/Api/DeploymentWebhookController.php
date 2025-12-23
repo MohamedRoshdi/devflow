@@ -20,8 +20,9 @@ class DeploymentWebhookController extends Controller
 
     public function handle(Request $request, string $token)
     {
-        // Find project by webhook secret
-        $project = Project::where('webhook_secret', $token)->first();
+        // Find project by webhook secret using timing-safe comparison
+        // This prevents timing attacks that could enumerate valid secrets
+        $project = $this->findProjectByWebhookSecret($token);
 
         if (! $project) {
             return response()->json(['error' => 'Invalid webhook token'], 404);
@@ -132,5 +133,40 @@ class DeploymentWebhookController extends Controller
         }
 
         return [];
+    }
+
+    /**
+     * Find a project by its webhook secret using timing-safe comparison.
+     *
+     * This method prevents timing attacks by comparing all webhook secrets
+     * in constant time, regardless of whether a match is found early or late.
+     *
+     * @param  string  $secret  The webhook secret to match
+     * @return Project|null The matching project or null if not found
+     */
+    private function findProjectByWebhookSecret(string $secret): ?Project
+    {
+        // Get all webhook-enabled projects with auto_deploy enabled
+        $projects = Project::where('auto_deploy', true)
+            ->whereNotNull('webhook_secret')
+            ->get(['id', 'webhook_secret']);
+
+        $matchedProject = null;
+
+        // Use timing-safe comparison for each project's secret
+        // We iterate through ALL projects to maintain constant time
+        foreach ($projects as $project) {
+            if (hash_equals($project->webhook_secret, $secret)) {
+                $matchedProject = $project;
+                // Don't break early - continue iterating for constant time
+            }
+        }
+
+        // If we found a match, reload the full project model
+        if ($matchedProject !== null) {
+            return Project::find($matchedProject->id);
+        }
+
+        return null;
     }
 }

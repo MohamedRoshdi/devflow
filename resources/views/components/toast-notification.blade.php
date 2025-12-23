@@ -20,24 +20,24 @@
      @toast.window="addToast($event.detail)"
      class="fixed bottom-4 right-4 z-50 space-y-3 pointer-events-none max-w-sm w-full px-4 sm:px-0">
 
-    {{-- Session Flash Messages --}}
+    {{-- Session Flash Messages - Using @js() for XSS-safe JavaScript escaping --}}
     @if (session('success'))
-        <div x-init="addToast({ type: 'success', message: '{{ addslashes(session('success')) }}' })"></div>
+        <div x-init="addToast({ type: 'success', message: @js(session('success')) })"></div>
     @endif
     @if (session('error'))
-        <div x-init="addToast({ type: 'error', message: '{{ addslashes(session('error')) }}' })"></div>
+        <div x-init="addToast({ type: 'error', message: @js(session('error')) })"></div>
     @endif
     @if (session('warning'))
-        <div x-init="addToast({ type: 'warning', message: '{{ addslashes(session('warning')) }}' })"></div>
+        <div x-init="addToast({ type: 'warning', message: @js(session('warning')) })"></div>
     @endif
     @if (session('info'))
-        <div x-init="addToast({ type: 'info', message: '{{ addslashes(session('info')) }}' })"></div>
+        <div x-init="addToast({ type: 'info', message: @js(session('info')) })"></div>
     @endif
     @if (session('connection_test'))
-        <div x-init="addToast({ type: 'success', message: '{{ addslashes(session('connection_test')) }}' })"></div>
+        <div x-init="addToast({ type: 'success', message: @js(session('connection_test')) })"></div>
     @endif
     @if (session('connection_error'))
-        <div x-init="addToast({ type: 'error', message: '{{ addslashes(session('connection_error')) }}' })"></div>
+        <div x-init="addToast({ type: 'error', message: @js(session('connection_error')) })"></div>
     @endif
 
     {{-- Toast Container --}}

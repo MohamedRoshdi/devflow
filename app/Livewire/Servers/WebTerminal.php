@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Servers;
 
 use App\Models\Server;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -12,6 +13,8 @@ use Symfony\Component\Process\Process;
 
 class WebTerminal extends Component
 {
+    use AuthorizesRequests;
+
     public Server $server;
 
     public bool $isConnected = false;
@@ -25,6 +28,7 @@ class WebTerminal extends Component
 
     public function mount(Server $server): void
     {
+        $this->authorize('view', $server);
         $this->server = $server;
         $this->commandHistory = session('web_terminal_history_' . $server->id, []);
     }
