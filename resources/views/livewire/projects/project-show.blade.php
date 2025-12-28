@@ -246,8 +246,8 @@
                             Configure
                         </a>
 
-                        {{-- Install Script Generator --}}
-                        <livewire:projects.install-script-generator :project="$project" :key="'install-script-'.$project->id" />
+                        {{-- Install Script Runner --}}
+                        <livewire:projects.install-script-runner :project="$project" :key="'install-script-'.$project->id" />
                     </div>
                 </div>
 
