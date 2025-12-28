@@ -59,12 +59,13 @@ DevFlow Pro is an enterprise-grade deployment management platform that makes it 
 - **Security Score System** - 100-point scoring across 7 categories
 - **PHP Optimization Checks** - Detect and apply OPcache, JIT optimizations
 
-### Install Script Generator
-- **Project-Specific Scripts** - Generate VPS install scripts for each managed project
-- **Production Mode Support** - Include UFW, Fail2ban, SSL, PHP optimizations
-- **Database Flexibility** - PostgreSQL 16 or MySQL 8 configuration
-- **One-Click Download** - Copy or download scripts from project dashboard
-- **Customizable Options** - Redis, Supervisor, queue workers configuration
+### Install Script Runner
+- **Auto-Detection** - Automatically detects existing install.sh in project repositories
+- **One-Click Execution** - Run install scripts directly from the project dashboard
+- **Production Mode Support** - Configure UFW, Fail2ban, SSL, PHP optimizations
+- **Database Configuration** - PostgreSQL 16 or MySQL 8 selection
+- **Real-Time Output** - View script execution output in real-time
+- **Localhost Support** - Works with both remote servers and local development
 
 ### Docker Integration
 - **Smart Dockerfile Detection** - Uses existing Dockerfiles or auto-generates

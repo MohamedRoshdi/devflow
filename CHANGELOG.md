@@ -11,19 +11,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-#### Install Script Generator for Managed Projects
-- **InstallScriptGenerator service** - Generate customized VPS install scripts per project
+#### Install Script Runner for Managed Projects
+- **InstallScriptRunner component** - Detect and run existing install.sh from project repositories
+  - Auto-detects install.sh in project directory on server
+  - SSH-based script execution with real-time output
+  - Localhost support for local development testing
+  - Production mode configuration (domain, email, SSL)
+  - Database driver selection (PostgreSQL 16 / MySQL 8)
+  - Skip SSL option for reverse proxy setups
+- **Livewire component** - "Run Install Script" button on project dashboard
+  - Modal-based interface with configuration options
+  - View script content before running
+  - Real-time execution output display
+  - Full EN/AR translation support
+
+#### Install Script Generator Service (for generating new scripts)
+- **InstallScriptGenerator service** - Generate customized VPS install scripts
   - Project-specific configurations (name, slug, repository, branch)
   - Configurable database driver (PostgreSQL 16 / MySQL 8)
   - Redis, Supervisor, queue workers configuration
   - Production/Development mode templates
   - UFW firewall, Fail2ban, Let's Encrypt SSL (production mode)
   - PHP 8.4 OPcache + JIT optimizations (production mode)
-- **Livewire component** - "Generate Install Script" button on project dashboard
-  - Modal-based interface with real-time configuration
-  - Copy to clipboard and download functionality
-  - Estimated installation time calculation
-  - Full EN/AR translation support
 
 #### Enhanced ServerSecurityService
 - **PHP optimization checks** - Detect OPcache, JIT, and security settings
@@ -33,14 +42,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Security audit improvements** - PHP optimization included in security score
 
 ### Changed
-- README.md - Added "Install Script Generator" feature section
+- README.md - Updated to "Install Script Runner" feature section
 - Security overview now includes PHP optimization status
-- Project dashboard now shows "Generate Install Script" button
+- Project dashboard now shows "Run Install Script" button
 
 ### Files Added
+- `app/Livewire/Projects/InstallScriptRunner.php` - Script runner component
+- `resources/views/livewire/projects/install-script-runner.blade.php` - Runner UI view
 - `app/Services/InstallScriptGenerator.php` - Script generation service
-- `app/Livewire/Projects/InstallScriptGenerator.php` - Livewire component
-- `resources/views/livewire/projects/install-script-generator.blade.php` - UI view
+- `app/Livewire/Projects/InstallScriptGenerator.php` - Generator component (for future use)
+- `resources/views/livewire/projects/install-script-generator.blade.php` - Generator UI view
 - `lang/en/install_script.php` - English translations
 - `lang/ar/install_script.php` - Arabic translations
 - `tests/Feature/InstallScriptGeneratorTest.php` - Service tests
@@ -49,7 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Files Modified
 - `app/Services/Security/ServerSecurityService.php` - Added PHP optimization methods
-- `resources/views/livewire/projects/project-show.blade.php` - Added Install Script Generator button
+- `resources/views/livewire/projects/project-show.blade.php` - Added Install Script Runner button
 - `README.md` - Updated feature documentation
 
 ---
