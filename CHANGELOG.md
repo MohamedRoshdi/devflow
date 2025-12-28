@@ -7,6 +7,69 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [6.9.5] - 2025-12-28
+
+### Added
+
+#### Automated VPS Installation Script
+- **Full installation script** (`install.sh`) - One-command deployment for VPS
+  - Supports development and production modes via `--production` flag
+  - PostgreSQL 16 or MySQL 8 support via `--db-driver` option
+  - Automatic PHP 8.4 installation with all required extensions
+  - Redis installation and configuration
+  - Node.js 22 and npm setup
+  - Nginx configuration with security headers
+  - Supervisor for queue workers
+  - Laravel scheduler via cron
+  - `--help` flag with comprehensive usage examples
+
+#### Production Security Hardening
+- **UFW Firewall** - Automatic configuration allowing SSH, HTTP, HTTPS
+- **Fail2ban** - Brute-force protection with SSH and Nginx jails
+- **Let's Encrypt SSL** - Automatic certificate issuance via Certbot
+- **PHP OPcache + JIT** - Production optimizations for 2-3x performance boost
+- **Secure file permissions** - 640 for .env, 644/755 for files/directories
+
+#### Install Script Generator
+- **InstallScriptGenerator service** - Generate customized install scripts for managed projects
+  - Project-specific configurations
+  - Configurable database driver, Redis, Supervisor toggles
+  - Queue worker count configuration
+  - Production/Development mode templates
+- **Livewire component** - UI for generating install scripts from project dashboard
+  - Modal-based interface with real-time configuration
+  - Copy to clipboard and download functionality
+  - Estimated installation time calculation
+  - Full EN/AR translation support
+
+#### Enhanced ServerSecurityService
+- **PHP optimization checks** - Detect OPcache, JIT, and security settings
+  - `getPhpOptimizationStatus()` - Check PHP configuration
+  - `applyPhpProductionOptimizations()` - One-click production optimization
+  - `runSecurityAudit()` - Full security audit with recommendations
+- **Security audit improvements** - PHP optimization included in security score
+
+### Changed
+- README.md - Added "Automated VPS Installation" section with install.sh documentation
+- Security overview now includes PHP optimization status
+
+### Files Added
+- `install.sh` - Full VPS installation script (1205 lines)
+- `app/Services/InstallScriptGenerator.php` - Script generation service
+- `app/Livewire/Projects/InstallScriptGenerator.php` - Livewire component
+- `resources/views/livewire/projects/install-script-generator.blade.php` - UI view
+- `lang/en/install_script.php` - English translations
+- `lang/ar/install_script.php` - Arabic translations
+- `tests/Feature/InstallScriptGeneratorTest.php` - Service tests
+- `tests/Feature/Livewire/InstallScriptGeneratorTest.php` - Component tests
+- `tests/Feature/ServerSecurityServiceTest.php` - Security service tests
+
+### Files Modified
+- `app/Services/Security/ServerSecurityService.php` - Added PHP optimization methods
+- `README.md` - Added automated installation documentation
+
+---
+
 ## [6.9.4] - 2025-12-22
 
 ### Added
