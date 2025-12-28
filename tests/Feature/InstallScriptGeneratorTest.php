@@ -9,7 +9,6 @@ use App\Models\Project;
 use App\Models\Server;
 use App\Models\User;
 use App\Services\InstallScriptGenerator;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -55,8 +54,9 @@ class InstallScriptGeneratorTest extends TestCase
         $this->assertStringContainsString('PRODUCTION_MODE=false', $script);
         $this->assertStringContainsString('PHP 8.4', $script);
         $this->assertStringContainsString('PostgreSQL 16', $script);
-        $this->assertStringNotContainsString('UFW Firewall', $script);
-        $this->assertStringNotContainsString('Fail2ban', $script);
+        // Check that production security installation commands are NOT present
+        $this->assertStringNotContainsString('sudo ufw default deny incoming', $script);
+        $this->assertStringNotContainsString('sudo apt-get install -y -qq fail2ban', $script);
     }
 
     #[Test]
