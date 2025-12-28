@@ -245,6 +245,9 @@
                             </svg>
                             Configure
                         </a>
+
+                        {{-- Install Script Generator --}}
+                        <livewire:projects.install-script-generator :project="$project" :key="'install-script-'.$project->id" />
                     </div>
                 </div>
 

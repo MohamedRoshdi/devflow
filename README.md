@@ -60,11 +60,11 @@ DevFlow Pro is an enterprise-grade deployment management platform that makes it 
 - **PHP Optimization Checks** - Detect and apply OPcache, JIT optimizations
 
 ### Install Script Generator
-- **Automated Deployment Scripts** - Generate customized install scripts for projects
+- **Project-Specific Scripts** - Generate VPS install scripts for each managed project
 - **Production Mode Support** - Include UFW, Fail2ban, SSL, PHP optimizations
 - **Database Flexibility** - PostgreSQL 16 or MySQL 8 configuration
-- **One-Click Download** - Copy or download scripts directly from UI
-- **Multi-Language Support** - Full English and Arabic translations
+- **One-Click Download** - Copy or download scripts from project dashboard
+- **Customizable Options** - Redis, Supervisor, queue workers configuration
 
 ### Docker Integration
 - **Smart Dockerfile Detection** - Uses existing Dockerfiles or auto-generates
@@ -203,38 +203,9 @@ php artisan serve
 
 Visit `http://localhost:8000` - that's it! 🎉
 
-### Automated VPS Installation (Recommended for Production)
-
-The easiest way to deploy DevFlow Pro on a fresh VPS:
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/devflow-pro/devflow-pro.git
-cd devflow-pro
-
-# 2. Run the installation script
-# For Development:
-./install.sh
-
-# For Production with PostgreSQL:
-./install.sh --production --domain devflow.example.com --email admin@example.com
-
-# For Production with MySQL:
-./install.sh --production --domain devflow.example.com --email admin@example.com --db-driver mysql
-```
-
-The install script automatically:
-- Installs PHP 8.4, PostgreSQL 16/MySQL 8, Redis, Node.js 22
-- Configures Nginx with optimized settings
-- Sets up Supervisor for queue workers
-- Configures the Laravel scheduler
-- **Production mode adds:** UFW firewall, Fail2ban, Let's Encrypt SSL, PHP OPcache + JIT, secure permissions
-
-Run `./install.sh --help` for all available options.
-
 ### Traditional Installation (PostgreSQL/MySQL)
 
-For manual installation or if you prefer more control:
+For production or if you prefer a full database:
 
 ```bash
 # 1. Clone the repository

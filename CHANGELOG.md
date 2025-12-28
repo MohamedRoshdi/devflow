@@ -11,32 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-#### Automated VPS Installation Script
-- **Full installation script** (`install.sh`) - One-command deployment for VPS
-  - Supports development and production modes via `--production` flag
-  - PostgreSQL 16 or MySQL 8 support via `--db-driver` option
-  - Automatic PHP 8.4 installation with all required extensions
-  - Redis installation and configuration
-  - Node.js 22 and npm setup
-  - Nginx configuration with security headers
-  - Supervisor for queue workers
-  - Laravel scheduler via cron
-  - `--help` flag with comprehensive usage examples
-
-#### Production Security Hardening
-- **UFW Firewall** - Automatic configuration allowing SSH, HTTP, HTTPS
-- **Fail2ban** - Brute-force protection with SSH and Nginx jails
-- **Let's Encrypt SSL** - Automatic certificate issuance via Certbot
-- **PHP OPcache + JIT** - Production optimizations for 2-3x performance boost
-- **Secure file permissions** - 640 for .env, 644/755 for files/directories
-
-#### Install Script Generator
-- **InstallScriptGenerator service** - Generate customized install scripts for managed projects
-  - Project-specific configurations
-  - Configurable database driver, Redis, Supervisor toggles
-  - Queue worker count configuration
+#### Install Script Generator for Managed Projects
+- **InstallScriptGenerator service** - Generate customized VPS install scripts per project
+  - Project-specific configurations (name, slug, repository, branch)
+  - Configurable database driver (PostgreSQL 16 / MySQL 8)
+  - Redis, Supervisor, queue workers configuration
   - Production/Development mode templates
-- **Livewire component** - UI for generating install scripts from project dashboard
+  - UFW firewall, Fail2ban, Let's Encrypt SSL (production mode)
+  - PHP 8.4 OPcache + JIT optimizations (production mode)
+- **Livewire component** - "Generate Install Script" button on project dashboard
   - Modal-based interface with real-time configuration
   - Copy to clipboard and download functionality
   - Estimated installation time calculation
@@ -50,11 +33,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Security audit improvements** - PHP optimization included in security score
 
 ### Changed
-- README.md - Added "Automated VPS Installation" section with install.sh documentation
+- README.md - Added "Install Script Generator" feature section
 - Security overview now includes PHP optimization status
+- Project dashboard now shows "Generate Install Script" button
 
 ### Files Added
-- `install.sh` - Full VPS installation script (1205 lines)
 - `app/Services/InstallScriptGenerator.php` - Script generation service
 - `app/Livewire/Projects/InstallScriptGenerator.php` - Livewire component
 - `resources/views/livewire/projects/install-script-generator.blade.php` - UI view
@@ -66,7 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Files Modified
 - `app/Services/Security/ServerSecurityService.php` - Added PHP optimization methods
-- `README.md` - Added automated installation documentation
+- `resources/views/livewire/projects/project-show.blade.php` - Added Install Script Generator button
+- `README.md` - Updated feature documentation
 
 ---
 
