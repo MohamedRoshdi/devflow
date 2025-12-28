@@ -198,6 +198,11 @@ class InstallScriptRunner extends Component
      */
     protected function executeCommand($server, string $command, int $timeout = 30): ?string
     {
+        // Check if localhost - execute locally
+        if ($this->isLocalhost($server->ip_address)) {
+            return $this->executeLocally($command, $timeout);
+        }
+
         // Check if using password authentication
         if ($server->ssh_password !== null && strlen($server->ssh_password) > 0) {
             return $this->executeWithPhpseclib($server, $command, $timeout);
@@ -205,6 +210,26 @@ class InstallScriptRunner extends Component
 
         // Use system SSH
         return $this->executeWithSystemSsh($server, $command, $timeout);
+    }
+
+    /**
+     * Check if IP is localhost
+     */
+    protected function isLocalhost(string $ip): bool
+    {
+        $localIPs = ['127.0.0.1', '127.0.1.1', '::1', 'localhost'];
+
+        return in_array($ip, $localIPs);
+    }
+
+    /**
+     * Execute command locally
+     */
+    protected function executeLocally(string $command, int $timeout): ?string
+    {
+        $result = \Illuminate\Support\Facades\Process::timeout($timeout)->run($command);
+
+        return $result->output().$result->errorOutput();
     }
 
     /**
