@@ -10,34 +10,31 @@
     - Help: ? (show shortcuts)
 --}}
 
-<div x-data="keyboardShortcuts" @keydown.window="handleKeydown($event)" class="contents">
+<div x-data="keyboardShortcuts" @keydown.window="handleKeydown($event)">
     {{-- Shortcuts Help Modal --}}
-    <div x-show="showHelp"
-         x-cloak
-         x-transition:enter="transition ease-out duration-200"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-150"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0"
-         class="fixed inset-0 z-[9999] overflow-y-auto"
-         style="display: none;">
+    <template x-if="showHelp">
+        <div class="fixed inset-0 z-[9999] overflow-y-auto"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
 
-        {{-- Backdrop --}}
-        <div class="fixed inset-0 bg-black/50 dark:bg-black/70"
-             @click="showHelp = false"></div>
+            {{-- Backdrop --}}
+            <div class="fixed inset-0 bg-black/50 dark:bg-black/70"
+                 @click="showHelp = false"></div>
 
-        {{-- Modal Content --}}
-        <div class="relative min-h-screen flex items-center justify-center p-4 pointer-events-none">
-            <div x-show="showHelp"
-                 x-transition:enter="transition ease-out duration-200"
-                 x-transition:enter-start="opacity-0 scale-95"
-                 x-transition:enter-end="opacity-100 scale-100"
-                 x-transition:leave="transition ease-in duration-150"
-                 x-transition:leave-start="opacity-100 scale-100"
-                 x-transition:leave-end="opacity-0 scale-95"
-                 class="relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden pointer-events-auto"
-                 @click.stop>
+            {{-- Modal Content --}}
+            <div class="relative min-h-screen flex items-center justify-center p-4 pointer-events-none">
+                <div x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     x-transition:enter-end="opacity-100 scale-100"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100 scale-100"
+                     x-transition:leave-end="opacity-0 scale-95"
+                     class="relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden pointer-events-auto"
+                     @click.stop>
 
                 {{-- Header --}}
                 <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gray-50 dark:bg-gray-900/50">
@@ -208,6 +205,7 @@
             </div>
         </div>
     </div>
+    </template>
 
     {{-- Keyboard Shortcut Indicator (shows briefly when combo starts) --}}
     <div x-show="pendingKey"
