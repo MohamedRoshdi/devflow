@@ -28,7 +28,7 @@
              @click="showHelp = false"></div>
 
         {{-- Modal Content --}}
-        <div class="relative min-h-screen flex items-center justify-center p-4">
+        <div class="relative min-h-screen flex items-center justify-center p-4 pointer-events-none">
             <div x-show="showHelp"
                  x-transition:enter="transition ease-out duration-200"
                  x-transition:enter-start="opacity-0 scale-95"
@@ -36,7 +36,7 @@
                  x-transition:leave="transition ease-in duration-150"
                  x-transition:leave-start="opacity-100 scale-100"
                  x-transition:leave-end="opacity-0 scale-95"
-                 class="relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden"
+                 class="relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden pointer-events-auto"
                  @click.stop>
 
                 {{-- Header --}}
