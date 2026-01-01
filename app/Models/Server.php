@@ -44,6 +44,7 @@ class Server extends Model
         'ssh_key',
         'ssh_password',
         'status',
+        'is_current_server',
         'os',
         'cpu_cores',
         'memory_gb',
@@ -74,6 +75,7 @@ class Server extends Model
     protected function casts(): array
     {
         return [
+            'is_current_server' => 'boolean',
             'docker_installed' => 'boolean',
             'ufw_installed' => 'boolean',
             'ufw_enabled' => 'boolean',
@@ -281,6 +283,22 @@ class Server extends Model
         return $this->hasOne(ProvisioningLog::class)->latestOfMany();
     }
 
+    /**
+     * @return HasMany<ServerCommandHistory, $this>
+     */
+    public function commandHistory(): HasMany
+    {
+        return $this->hasMany(ServerCommandHistory::class);
+    }
+
+    /**
+     * @return HasOne<ServerCommandHistory, $this>
+     */
+    public function latestCommand(): HasOne
+    {
+        return $this->hasOne(ServerCommandHistory::class)->latestOfMany();
+    }
+
     // Status helpers
     public function isOnline(): bool
     {
@@ -334,5 +352,37 @@ class Server extends Model
     public function hasPackageInstalled(string $package): bool
     {
         return in_array($package, $this->installed_packages ?? []);
+    }
+
+    /**
+     * Check if this server is the current server (where DevFlow is running)
+     */
+    public function isCurrentServer(): bool
+    {
+        return $this->is_current_server === true;
+    }
+
+    /**
+     * Check if commands should be executed locally (no SSH needed)
+     */
+    public function shouldExecuteLocally(): bool
+    {
+        if ($this->is_current_server) {
+            return true;
+        }
+
+        // Also check if IP matches current server
+        $localIPs = ['127.0.0.1', '::1', 'localhost'];
+        if (in_array($this->ip_address, $localIPs)) {
+            return true;
+        }
+
+        // Check if IP matches server's own IP
+        $serverIP = gethostbyname((string) gethostname());
+        if ($this->ip_address === $serverIP) {
+            return true;
+        }
+
+        return false;
     }
 }

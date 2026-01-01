@@ -177,6 +177,7 @@ trait WithServerActions
                 'port' => 22,
                 'username' => 'root',
                 'status' => 'online', // It's the current server, so it's definitely online
+                'is_current_server' => true, // Mark as current server for local execution
                 'last_ping_at' => now(),
             ]);
 

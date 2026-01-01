@@ -293,6 +293,17 @@
                 </svg>
                 SSH Terminal
             </button>
+
+            <button wire:click="$set('activeTab', 'history')"
+                class="px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 whitespace-nowrap {{ isset($activeTab) && $activeTab === 'history' ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-violet-500/30' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700/50' }}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Command History
+                @if($server->is_current_server)
+                    <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-500/30">Local</span>
+                @endif
+            </button>
         </div>
     </div>
 
@@ -850,6 +861,32 @@
             </div>
             <div class="p-6">
                 <livewire:servers.s-s-h-terminal :server="$server" />
+            </div>
+        </div>
+        @endif
+
+        {{-- Command History Tab --}}
+        @if(isset($activeTab) && $activeTab === 'history')
+        <div class="bg-white dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700/50 overflow-hidden">
+            <div class="bg-gradient-to-r from-violet-600 to-purple-600 p-6 border-b border-violet-500/30">
+                <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Command History
+                    @if($server->is_current_server)
+                        <span class="ml-2 px-2 py-0.5 rounded text-xs font-medium bg-white/20">Local Execution Mode</span>
+                    @endif
+                </h2>
+                <p class="text-sm text-violet-100 mt-1">
+                    View all commands executed on {{ $server->name }}
+                    @if($server->is_current_server)
+                        - Commands run directly without SSH
+                    @endif
+                </p>
+            </div>
+            <div class="p-6">
+                <livewire:servers.server-command-history-list :server="$server" />
             </div>
         </div>
         @endif
