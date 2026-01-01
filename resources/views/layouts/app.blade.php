@@ -11,11 +11,26 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.svg">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#2563eb" id="theme-color-meta">
     <link rel="manifest" href="/manifest.json">
+
+    <!-- iOS PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="DevFlow">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/icons/icon-192.png">
+
+    <!-- Android/Chrome PWA Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="DevFlow">
+
+    <!-- Microsoft PWA Meta Tags -->
+    <meta name="msapplication-TileColor" content="#0F172A">
+    <meta name="msapplication-TileImage" content="/images/icons/icon-144.png">
+    <meta name="msapplication-config" content="none">
 
     <!-- Theme Script (must load before body to prevent flash) -->
     <script>
