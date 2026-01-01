@@ -10,20 +10,22 @@
     - Help: ? (show shortcuts)
 --}}
 
-<div x-data="keyboardShortcuts" @keydown.window="handleKeydown($event)">
+<div x-data="keyboardShortcuts" @keydown.window="handleKeydown($event)" class="contents">
     {{-- Shortcuts Help Modal --}}
     <div x-show="showHelp"
+         x-cloak
          x-transition:enter="transition ease-out duration-200"
          x-transition:enter-start="opacity-0"
          x-transition:enter-end="opacity-100"
          x-transition:leave="transition ease-in duration-150"
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
-         class="fixed inset-0 z-[60] overflow-y-auto"
-         @keydown.escape.window="showHelp = false">
+         class="fixed inset-0 z-[9999] overflow-y-auto"
+         style="display: none;">
 
         {{-- Backdrop --}}
-        <div class="fixed inset-0 bg-black/50 dark:bg-black/70" @click="showHelp = false"></div>
+        <div class="fixed inset-0 bg-black/50 dark:bg-black/70"
+             @click="showHelp = false"></div>
 
         {{-- Modal Content --}}
         <div class="relative min-h-screen flex items-center justify-center p-4">
@@ -48,6 +50,7 @@
                         <h2 class="text-lg font-bold text-gray-900 dark:text-white">Keyboard Shortcuts</h2>
                     </div>
                     <button @click="showHelp = false"
+                            type="button"
                             class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -208,6 +211,7 @@
 
     {{-- Keyboard Shortcut Indicator (shows briefly when combo starts) --}}
     <div x-show="pendingKey"
+         x-cloak
          x-transition:enter="transition ease-out duration-150"
          x-transition:enter-start="opacity-0 translate-y-2"
          x-transition:enter-end="opacity-100 translate-y-0"

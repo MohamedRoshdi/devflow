@@ -223,9 +223,13 @@ document.addEventListener('alpine:init', () => {
                            target.tagName === 'SELECT' ||
                            target.isContentEditable;
 
-            // Allow Escape in inputs
+            // Allow Escape in inputs - close modal if open
             if (event.key === 'Escape') {
-                this.showHelp = false;
+                if (this.showHelp) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    this.showHelp = false;
+                }
                 this.pendingKey = null;
                 return;
             }
