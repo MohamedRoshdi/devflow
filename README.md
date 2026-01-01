@@ -204,6 +204,43 @@ php artisan serve
 
 Visit `http://localhost:8000` - that's it! 🎉
 
+### Automated Installation (Recommended)
+
+Use the interactive install script for the fastest and most secure setup:
+
+```bash
+# Clone the repository
+git clone https://github.com/devflow-pro/devflow-pro.git
+cd devflow-pro
+
+# Development mode (SQLite, file cache, no external dependencies)
+./install.sh
+
+# Production mode (PostgreSQL, Redis, Nginx, Supervisor)
+./install.sh --production
+
+# View all options
+./install.sh --help
+```
+
+**Install Script Features:**
+- **Security-First Design** - Secure password generation, proper permissions, no root execution
+- **Development Mode** - SQLite database, file cache, sync queue (default)
+- **Production Mode** - PostgreSQL, Redis, Nginx auto-configuration, Supervisor workers
+- **Validation** - Checks PHP version, extensions, Composer, Node.js
+- **Dry Run** - Preview changes without executing (`--dry-run`)
+- **Verbose Logging** - Full installation log saved to `install.log`
+
+**Common Options:**
+| Option | Description |
+|--------|-------------|
+| `--production` | Production mode with PostgreSQL, Redis, Nginx |
+| `--force` | Overwrite existing configuration files |
+| `--skip-migrations` | Skip database migrations |
+| `--skip-assets` | Skip npm install and asset building |
+| `--dry-run` | Preview what would be done without changes |
+| `--verbose` | Show detailed output |
+
 ### Traditional Installation (PostgreSQL/MySQL)
 
 For production or if you prefer a full database:

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Projects;
 
 use App\Models\Project;
+use App\Models\Server;
 use App\Services\ServerConnectivityService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
@@ -196,7 +197,7 @@ class InstallScriptRunner extends Component
     /**
      * Execute a command on the server
      */
-    protected function executeCommand($server, string $command, int $timeout = 30): ?string
+    protected function executeCommand(Server $server, string $command, int $timeout = 30): ?string
     {
         // Check if localhost - execute locally
         if ($this->isLocalhost($server->ip_address)) {
@@ -235,7 +236,7 @@ class InstallScriptRunner extends Component
     /**
      * Execute command using phpseclib (password auth)
      */
-    protected function executeWithPhpseclib($server, string $command, int $timeout): ?string
+    protected function executeWithPhpseclib(Server $server, string $command, int $timeout): ?string
     {
         $ssh = new SSH2($server->ip_address, $server->port, $timeout);
 
@@ -249,7 +250,7 @@ class InstallScriptRunner extends Component
     /**
      * Execute command using system SSH (key auth)
      */
-    protected function executeWithSystemSsh($server, string $command, int $timeout): ?string
+    protected function executeWithSystemSsh(Server $server, string $command, int $timeout): ?string
     {
         $sshOptions = [
             '-o StrictHostKeyChecking=no',

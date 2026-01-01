@@ -83,7 +83,10 @@ trait WithDeploymentFiltering
         });
 
         // Convert back to objects for consistent access in blade templates
-        return collect($cached)->map(fn ($p) => (object) $p);
+        /** @var array<int, array{id: int, name: string}> $cachedArray */
+        $cachedArray = is_array($cached) ? $cached : [];
+
+        return collect($cachedArray)->map(fn ($p) => (object) $p);
     }
 
     /**
