@@ -100,35 +100,35 @@
 
 <span {{ $attributes->merge(['class' => "inline-flex items-center font-semibold rounded-full leading-5 {$sizeClasses} {$config['bg']} {$config['text']} {$config['ring']}"]) }}>
     @if($config['icon'] === 'check')
-        <svg class="{{ $iconSize }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="{{ $iconSize }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
         </svg>
     @elseif($config['icon'] === 'x')
-        <svg class="{{ $iconSize }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="{{ $iconSize }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
         </svg>
     @elseif($config['icon'] === 'clock')
-        <svg class="{{ $iconSize }} {{ $shouldAnimate ? 'animate-pulse' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="{{ $iconSize }} {{ $shouldAnimate ? 'animate-pulse' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
     @elseif($config['icon'] === 'pause')
-        <svg class="{{ $iconSize }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="{{ $iconSize }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
     @elseif($config['icon'] === 'info')
-        <svg class="{{ $iconSize }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="{{ $iconSize }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
     @elseif($config['icon'] === 'bolt')
-        <svg class="{{ $iconSize }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="{{ $iconSize }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
         </svg>
     @elseif($config['icon'] === 'sparkles')
-        <svg class="{{ $iconSize }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="{{ $iconSize }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
         </svg>
     @elseif($config['dot'])
-        <span class="rounded-full {{ $dotSize }} {{ $config['dot'] }} {{ $shouldAnimate ? 'animate-pulse' : '' }}"></span>
+        <span class="rounded-full {{ $dotSize }} {{ $config['dot'] }} {{ $shouldAnimate ? 'animate-pulse' : '' }}" aria-hidden="true"></span>
     @endif
 
     {{ $slot->isEmpty() ? ucfirst($status) : $slot }}

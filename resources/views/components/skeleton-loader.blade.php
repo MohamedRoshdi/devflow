@@ -4,11 +4,12 @@
     'class' => ''
 ])
 
-<div class="{{ $class }}">
+<div class="{{ $class }}" role="status" aria-busy="true" aria-label="Loading content">
+    <span class="sr-only">Loading...</span>
     @if($type === 'card')
         {{-- Card Skeleton --}}
         @for($i = 0; $i < $count; $i++)
-            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 animate-pulse">
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 animate-pulse" aria-hidden="true">
                 <div class="space-y-4">
                     <div class="flex items-center justify-between">
                         <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 shimmer"></div>
@@ -28,7 +29,7 @@
 
     @elseif($type === 'stats')
         {{-- Stats Cards Skeleton --}}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" aria-hidden="true">
             @for($i = 0; $i < $count; $i++)
                 <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 animate-pulse">
                     <div class="flex items-center justify-between">
@@ -45,7 +46,7 @@
 
     @elseif($type === 'list')
         {{-- List Items Skeleton --}}
-        <div class="space-y-3">
+        <div class="space-y-3" aria-hidden="true">
             @for($i = 0; $i < $count; $i++)
                 <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 animate-pulse">
                     <div class="flex items-center justify-between gap-4">
@@ -64,7 +65,7 @@
 
     @elseif($type === 'table')
         {{-- Table Skeleton --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden" aria-hidden="true">
             <div class="animate-pulse">
                 {{-- Table Header --}}
                 <div class="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-4">
@@ -91,7 +92,7 @@
 
     @elseif($type === 'text')
         {{-- Text Lines Skeleton --}}
-        <div class="space-y-3 animate-pulse">
+        <div class="space-y-3 animate-pulse" aria-hidden="true">
             @for($i = 0; $i < $count; $i++)
                 <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded shimmer" style="width: {{ rand(60, 100) }}%"></div>
             @endfor
@@ -99,7 +100,7 @@
 
     @else
         {{-- Default Generic Skeleton --}}
-        <div class="space-y-4 animate-pulse">
+        <div class="space-y-4 animate-pulse" aria-hidden="true">
             @for($i = 0; $i < $count; $i++)
                 <div class="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg shimmer"></div>
             @endfor

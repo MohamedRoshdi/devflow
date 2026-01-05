@@ -18,7 +18,11 @@
 <div x-data="toastNotifications()"
      x-init="init()"
      @toast.window="addToast($event.detail)"
-     class="fixed bottom-4 right-4 z-50 space-y-3 pointer-events-none max-w-sm w-full px-4 sm:px-0">
+     class="fixed bottom-4 right-4 z-50 space-y-3 pointer-events-none max-w-sm w-full px-4 sm:px-0"
+     role="region"
+     aria-label="Notifications"
+     aria-live="polite"
+     aria-atomic="false">
 
     {{-- Session Flash Messages - Using @js() for XSS-safe JavaScript escaping --}}
     @if (session('success'))
@@ -55,13 +59,15 @@
                  'bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-900/30 dark:to-rose-900/30': toast.type === 'error',
                  'bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/30 dark:to-yellow-900/30': toast.type === 'warning',
                  'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30': toast.type === 'info'
-             }">
+             }"
+             :role="toast.type === 'error' ? 'alert' : 'status'"
+             :aria-live="toast.type === 'error' ? 'assertive' : 'polite'">
             <div class="p-4">
                 <div class="flex items-start gap-3">
                     {{-- Animated Icon --}}
                     <div class="flex-shrink-0">
                         {{-- Success Icon with checkmark animation --}}
-                        <div x-show="toast.type === 'success'" class="relative">
+                        <div x-show="toast.type === 'success'" class="relative" aria-hidden="true">
                             <div class="w-10 h-10 rounded-full bg-green-500 dark:bg-green-600 flex items-center justify-center animate-bounce-once">
                                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
@@ -74,7 +80,7 @@
                         </div>
 
                         {{-- Error Icon --}}
-                        <div x-show="toast.type === 'error'" class="relative">
+                        <div x-show="toast.type === 'error'" class="relative" aria-hidden="true">
                             <div class="w-10 h-10 rounded-full bg-red-500 dark:bg-red-600 flex items-center justify-center animate-shake">
                                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
@@ -83,7 +89,7 @@
                         </div>
 
                         {{-- Warning Icon --}}
-                        <div x-show="toast.type === 'warning'" class="relative">
+                        <div x-show="toast.type === 'warning'" class="relative" aria-hidden="true">
                             <div class="w-10 h-10 rounded-full bg-amber-500 dark:bg-amber-600 flex items-center justify-center animate-pulse-once">
                                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -92,7 +98,7 @@
                         </div>
 
                         {{-- Info Icon --}}
-                        <div x-show="toast.type === 'info'" class="relative">
+                        <div x-show="toast.type === 'info'" class="relative" aria-hidden="true">
                             <div class="w-10 h-10 rounded-full bg-blue-500 dark:bg-blue-600 flex items-center justify-center animate-pulse-once">
                                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

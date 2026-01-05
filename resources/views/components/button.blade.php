@@ -73,6 +73,8 @@
 
 <button
     type="{{ $type }}"
+    @if($loading) aria-busy="true" @endif
+    @if($disabled) aria-disabled="true" @endif
     {{ $attributes->merge([
         'class' => trim("{$baseClasses} {$sizeClasses} {$variantClasses} {$disabledClasses} {$widthClasses}"),
         'disabled' => $disabled || $loading,
@@ -80,19 +82,20 @@
 >
     {{-- Loading spinner --}}
     @if($loading)
-        <svg class="{{ $iconSize }} animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <svg class="{{ $iconSize }} animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
+        <span class="sr-only">Loading...</span>
     @elseif($icon && $iconPosition === 'left')
-        <x-dynamic-component :component="'heroicon-o-' . $icon" :class="$iconSize" />
+        <x-dynamic-component :component="'heroicon-o-' . $icon" :class="$iconSize" aria-hidden="true" />
     @endif
 
     {{-- Button text --}}
-    <span>{{ $slot }}</span>
+    <span @if($loading) aria-hidden="true" @endif>{{ $slot }}</span>
 
     {{-- Right icon --}}
     @if($icon && $iconPosition === 'right' && !$loading)
-        <x-dynamic-component :component="'heroicon-o-' . $icon" :class="$iconSize" />
+        <x-dynamic-component :component="'heroicon-o-' . $icon" :class="$iconSize" aria-hidden="true" />
     @endif
 </button>
