@@ -155,7 +155,7 @@
 
                         <div class="space-y-6">
                             @foreach($deployments as $deployment)
-                                <div class="relative pl-8 group" role="listitem">
+                                <div wire:key="deployment-{{ $deployment->id }}" class="relative pl-8 group" role="listitem">
                                     {{-- Enhanced Timeline Dot with Glow Effect --}}
                                     <span @class([
                                         'absolute left-0 top-4 w-5 h-5 rounded-full border-3 border-white dark:border-slate-800 shadow-2xl transition-all duration-300 group-hover:scale-125',

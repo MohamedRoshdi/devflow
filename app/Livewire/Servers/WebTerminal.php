@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Servers;
 
 use App\Models\Server;
+use App\Services\Security\CommandSanitizationService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
@@ -57,6 +58,36 @@ class WebTerminal extends Component
 
             return;
         }
+
+        // Validate and sanitize command
+        $sanitizer = app(CommandSanitizationService::class);
+        $validation = $sanitizer->validateCommand($commandToExecute);
+
+        if (! $validation['valid']) {
+            $this->dispatch('terminal-output', output: "\033[31mCommand blocked: " . ($validation['blocked_reason'] ?? 'Security policy violation') . "\033[0m", exitCode: 1);
+
+            Log::warning('WebTerminal command blocked', [
+                'server_id' => $this->server->id,
+                'command' => $commandToExecute,
+                'reason' => $validation['blocked_reason'],
+                'user_id' => auth()->id(),
+            ]);
+
+            return;
+        }
+
+        // Log warning if command is cautious
+        if ($validation['warning']) {
+            Log::warning('WebTerminal cautious command executed', [
+                'server_id' => $this->server->id,
+                'command' => $commandToExecute,
+                'warning' => $validation['warning'],
+                'user_id' => auth()->id(),
+            ]);
+        }
+
+        // Use sanitized command
+        $commandToExecute = $validation['sanitized'];
 
         // Add to history
         $this->addToHistory($commandToExecute);

@@ -145,7 +145,7 @@
         <!-- Projects Health Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             @forelse($filteredProjects as $project)
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                <div wire:key="health-project-{{ $project['id'] }}" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                     <!-- Health Score Header -->
                     <div class="p-4 {{ $project['health_score'] >= 80 ? 'bg-gradient-to-r from-emerald-500 to-green-500' : ($project['health_score'] >= 50 ? 'bg-gradient-to-r from-amber-500 to-orange-500' : 'bg-gradient-to-r from-red-500 to-rose-500') }}">
                         <div class="flex items-center justify-between">
@@ -264,7 +264,7 @@
                 </div>
                 <div class="divide-y divide-gray-200 dark:divide-gray-700">
                     @foreach($serversHealth as $server)
-                        <div class="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+                        <div wire:key="health-server-{{ $server['id'] }}" class="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-4">
                                     <div class="w-10 h-10 rounded-full flex items-center justify-center

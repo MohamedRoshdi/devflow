@@ -292,8 +292,19 @@ class ServerShow extends Component
 
     public function render(): \Illuminate\View\View
     {
-        $projects = $this->server->projects()->latest()->take(5)->get();
-        $deployments = $this->server->deployments()->latest()->take(5)->get();
+        // Fix N+1: Eager load relationships for projects
+        $projects = $this->server->projects()
+            ->with(['domains', 'latestDeployment'])
+            ->latest()
+            ->take(5)
+            ->get();
+
+        // Fix N+1: Eager load relationships for deployments
+        $deployments = $this->server->deployments()
+            ->with(['project:id,name,slug'])
+            ->latest()
+            ->take(5)
+            ->get();
 
         return view('livewire.servers.server-show', [
             'projects' => $projects,

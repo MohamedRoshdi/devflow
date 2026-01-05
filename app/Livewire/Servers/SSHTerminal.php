@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Servers;
 
 use App\Models\Server;
+use App\Services\Security\CommandSanitizationService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
@@ -47,6 +48,52 @@ class SSHTerminal extends Component
 
         try {
             $commandToExecute = trim($this->command);
+
+            // Validate and sanitize command
+            $sanitizer = app(CommandSanitizationService::class);
+            $validation = $sanitizer->validateCommand($commandToExecute);
+
+            if (! $validation['valid']) {
+                // Add blocked command to history with error
+                $historyItem = [
+                    'command' => $commandToExecute,
+                    'output' => 'Command blocked: ' . ($validation['blocked_reason'] ?? 'Security policy violation'),
+                    'exit_code' => 1,
+                    'success' => false,
+                    'timestamp' => now()->toDateTimeString(),
+                    'blocked' => true,
+                ];
+
+                array_unshift($this->history, $historyItem);
+                $this->history = array_slice($this->history, 0, 50);
+                session(['ssh_history_'.$this->server->id => $this->history]);
+
+                Log::warning('SSH command blocked', [
+                    'server_id' => $this->server->id,
+                    'command' => $commandToExecute,
+                    'reason' => $validation['blocked_reason'],
+                    'user_id' => auth()->id(),
+                ]);
+
+                $this->command = '';
+                $this->historyIndex = -1;
+                $this->isExecuting = false;
+
+                return;
+            }
+
+            // Log warning if command is cautious
+            if ($validation['warning']) {
+                Log::warning('SSH cautious command executed', [
+                    'server_id' => $this->server->id,
+                    'command' => $commandToExecute,
+                    'warning' => $validation['warning'],
+                    'user_id' => auth()->id(),
+                ]);
+            }
+
+            // Use sanitized command
+            $commandToExecute = $validation['sanitized'];
 
             // Build SSH command
             $sshCommand = $this->buildSSHCommand($commandToExecute);
