@@ -93,7 +93,7 @@
                         </svg>
                         Search Projects
                     </label>
-                    <input wire:model.live="search"
+                    <input wire:model.live.debounce.300ms="search"
                            id="search-input"
                            type="text"
                            placeholder="Type to search..."

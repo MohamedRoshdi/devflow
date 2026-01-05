@@ -316,19 +316,29 @@ class DocsController extends Controller
      */
     private function extractExcerpt(string $content, string $query, int $contextLength = 150): string
     {
-        $pos = stripos($content, $query);
+        // Strip all HTML tags first
+        $plainContent = strip_tags($content);
+        $pos = stripos($plainContent, $query);
 
         if ($pos === false) {
-            return substr(strip_tags($content), 0, $contextLength) . '...';
+            return e(substr($plainContent, 0, $contextLength)) . '...';
         }
 
         $start = max(0, (int) ($pos - $contextLength / 2));
-        $excerpt = substr($content, $start, $contextLength);
+        $excerpt = substr($plainContent, $start, $contextLength);
 
-        // Highlight the query
-        $excerpt = preg_replace('/(' . preg_quote($query, '/') . ')/i', '<mark>$1</mark>', $excerpt) ?? $excerpt;
+        // Escape the excerpt first to prevent XSS
+        $escapedExcerpt = e($excerpt);
 
-        return ($start > 0 ? '...' : '') . strip_tags($excerpt, '<mark>') . '...';
+        // Highlight the query (escape the query too for safe display)
+        $escapedQuery = e($query);
+        $escapedExcerpt = preg_replace(
+            '/(' . preg_quote($escapedQuery, '/') . ')/i',
+            '<mark>$1</mark>',
+            $escapedExcerpt
+        ) ?? $escapedExcerpt;
+
+        return ($start > 0 ? '...' : '') . $escapedExcerpt . '...';
     }
 
     /**

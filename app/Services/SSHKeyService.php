@@ -311,18 +311,22 @@ class SSHKeyService
         $escapedKey = escapeshellarg($publicKey);
         $remoteCommand = "mkdir -p ~/.ssh && chmod 700 ~/.ssh && echo {$escapedKey} >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys";
 
-        $sshCommand = $this->buildSSHCommand($server, $remoteCommand);
+        $sshData = $this->buildSSHCommand($server, $remoteCommand);
 
-        $result = Process::timeout(30)->run($sshCommand);
+        try {
+            $result = Process::timeout(30)->run($sshData['command']);
 
-        if (! $result->successful()) {
-            throw new \RuntimeException('Failed to deploy key to server: '.$result->errorOutput());
+            if (! $result->successful()) {
+                throw new \RuntimeException('Failed to deploy key to server: '.$result->errorOutput());
+            }
+
+            return [
+                'success' => true,
+                'message' => 'SSH key deployed successfully to remote server',
+            ];
+        } finally {
+            $this->cleanupTempKeyFile($sshData['key_file']);
         }
-
-        return [
-            'success' => true,
-            'message' => 'SSH key deployed successfully to remote server',
-        ];
     }
 
     /**
@@ -371,18 +375,22 @@ class SSHKeyService
         $escapedKey = escapeshellarg($publicKey);
         $remoteCommand = "grep -v {$escapedKey} ~/.ssh/authorized_keys > ~/.ssh/authorized_keys.tmp && mv ~/.ssh/authorized_keys.tmp ~/.ssh/authorized_keys";
 
-        $sshCommand = $this->buildSSHCommand($server, $remoteCommand);
+        $sshData = $this->buildSSHCommand($server, $remoteCommand);
 
-        $result = Process::timeout(30)->run($sshCommand);
+        try {
+            $result = Process::timeout(30)->run($sshData['command']);
 
-        if (! $result->successful()) {
-            throw new \RuntimeException('Failed to remove key from server: '.$result->errorOutput());
+            if (! $result->successful()) {
+                throw new \RuntimeException('Failed to remove key from server: '.$result->errorOutput());
+            }
+
+            return [
+                'success' => true,
+                'message' => 'SSH key removed from remote server',
+            ];
+        } finally {
+            $this->cleanupTempKeyFile($sshData['key_file']);
         }
-
-        return [
-            'success' => true,
-            'message' => 'SSH key removed from remote server',
-        ];
     }
 
     /**
@@ -411,8 +419,10 @@ class SSHKeyService
 
     /**
      * Build SSH command for remote execution
+     *
+     * @return array{command: string, key_file: string|null} Command and optional temp key file path for cleanup
      */
-    private function buildSSHCommand(Server $server, string $remoteCommand): string
+    private function buildSSHCommand(Server $server, string $remoteCommand): array
     {
         $sshOptions = [
             '-o StrictHostKeyChecking=no',
@@ -420,20 +430,41 @@ class SSHKeyService
             '-p '.(int) $server->port,
         ];
 
+        $keyFile = null;
         if ($server->ssh_key) {
-            // Save SSH key to temp file
+            // Save SSH key to temp file - caller must clean this up
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
+            if ($keyFile === false) {
+                throw new \RuntimeException('Failed to create temporary SSH key file');
+            }
             file_put_contents($keyFile, $server->ssh_key);
             chmod($keyFile, 0600);
             $sshOptions[] = '-i '.escapeshellarg($keyFile);
         }
 
-        return sprintf(
+        $command = sprintf(
             'ssh %s %s@%s %s',
             implode(' ', $sshOptions),
             escapeshellarg($server->username),
             escapeshellarg($server->ip_address),
             escapeshellarg($remoteCommand)
         );
+
+        return ['command' => $command, 'key_file' => $keyFile];
+    }
+
+    /**
+     * Securely clean up a temporary SSH key file
+     */
+    private function cleanupTempKeyFile(?string $keyFile): void
+    {
+        if ($keyFile !== null && file_exists($keyFile)) {
+            // Overwrite with zeros before deletion for security
+            $size = filesize($keyFile);
+            if ($size !== false && $size > 0) {
+                file_put_contents($keyFile, str_repeat("\0", $size));
+            }
+            @unlink($keyFile);
+        }
     }
 }

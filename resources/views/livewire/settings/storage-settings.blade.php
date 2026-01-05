@@ -177,7 +177,12 @@
 
     {{-- Create/Edit Modal --}}
     @if($showModal)
-        <div class="fixed inset-0 z-50 overflow-y-auto" x-data="{ activeTab: @entangle('activeTab') }">
+        <div class="fixed inset-0 z-50 overflow-y-auto"
+             x-data="{ activeTab: @entangle('activeTab') }"
+             @keydown.escape.window="$wire.set('showModal', false)"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="modal-title">
             <div class="flex min-h-screen items-center justify-center p-4">
                 {{-- Backdrop --}}
                 <div class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" wire:click="$set('showModal', false)"></div>

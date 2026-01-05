@@ -6,7 +6,7 @@
         Search Results
     </h1>
     <p class="text-gray-600 dark:text-gray-400 mb-8">
-        Found {{ count($results) }} result{{ count($results) !== 1 ? 's' : '' }} for "<strong>{{ $query }}</strong>"
+        Found {{ count($results) }} result{{ count($results) !== 1 ? 's' : '' }} for "<strong>{{ e($query) }}</strong>"
     </p>
 
     @if(count($results) > 0)
