@@ -46,6 +46,47 @@ class ProjectPolicy
     }
 
     /**
+     * Determine if the user can manage project environment variables
+     *
+     * Required for adding/editing/deleting local env variables
+     */
+    public function manageEnvironment(User $user, Project $project): bool
+    {
+        return $user->can('edit-projects') && $this->hasOwnershipAccess($user, $project);
+    }
+
+    /**
+     * Determine if the user can modify server environment variables
+     *
+     * This is a sensitive operation that modifies production .env files.
+     * Requires elevated permissions (deploy-projects or delete-projects).
+     */
+    public function manageServerEnvironment(User $user, Project $project): bool
+    {
+        // Requires deploy permission as it affects running servers
+        if (! $user->can('deploy-projects')) {
+            return false;
+        }
+
+        return $this->hasOwnershipAccess($user, $project);
+    }
+
+    /**
+     * Determine if the user can modify sensitive environment variables
+     *
+     * Sensitive keys like DB_PASSWORD, APP_KEY require admin-level access.
+     */
+    public function manageSensitiveEnvironment(User $user, Project $project): bool
+    {
+        // Only users with delete permission (admin-level) can modify sensitive keys
+        if (! $user->can('delete-projects')) {
+            return false;
+        }
+
+        return $this->hasOwnershipAccess($user, $project);
+    }
+
+    /**
      * Check if user has ownership access to the project
      */
     private function hasOwnershipAccess(User $user, Project $project): bool

@@ -101,7 +101,9 @@ trait WithBulkServerActions
         $this->bulkActionInProgress = true;
         $this->bulkActionResults = [];
 
-        $servers = Server::whereIn('id', $this->selectedServers)->get();
+        $servers = Server::whereIn('id', $this->selectedServers)
+            ->select(['id', 'name', 'ip_address', 'port', 'username', 'ssh_key', 'ssh_password', 'status'])
+            ->get();
 
         $bulkService = app(BulkServerActionService::class);
         $results = $bulkService->pingServers($servers);
@@ -135,7 +137,9 @@ trait WithBulkServerActions
         $this->bulkActionInProgress = true;
         $this->bulkActionResults = [];
 
-        $servers = Server::whereIn('id', $this->selectedServers)->get();
+        $servers = Server::whereIn('id', $this->selectedServers)
+            ->select(['id', 'name', 'ip_address', 'port', 'username', 'ssh_key', 'ssh_password', 'status'])
+            ->get();
 
         $bulkService = app(BulkServerActionService::class);
         $results = $bulkService->rebootServers($servers);
@@ -169,7 +173,9 @@ trait WithBulkServerActions
         $this->bulkActionInProgress = true;
         $this->bulkActionResults = [];
 
-        $servers = Server::whereIn('id', $this->selectedServers)->get();
+        $servers = Server::whereIn('id', $this->selectedServers)
+            ->select(['id', 'name', 'ip_address', 'port', 'username', 'ssh_key', 'ssh_password', 'status', 'docker_installed', 'docker_version'])
+            ->get();
 
         $bulkService = app(BulkServerActionService::class);
         $results = $bulkService->installDockerOnServers($servers);
@@ -204,7 +210,9 @@ trait WithBulkServerActions
         $this->bulkActionInProgress = true;
         $this->bulkActionResults = [];
 
-        $servers = Server::whereIn('id', $this->selectedServers)->get();
+        $servers = Server::whereIn('id', $this->selectedServers)
+            ->select(['id', 'name', 'ip_address', 'port', 'username', 'ssh_key', 'ssh_password', 'status'])
+            ->get();
 
         $bulkService = app(BulkServerActionService::class);
         $results = $bulkService->restartServiceOnServers($servers, $service);

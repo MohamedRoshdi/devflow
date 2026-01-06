@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace App\Livewire\Projects;
 
+use App\Http\Requests\Livewire\EnvironmentVariableRequest;
+use App\Http\Requests\Livewire\ServerEnvVariableRequest;
 use App\Models\Project;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Process;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class ProjectEnvironment extends Component
 {
+    use AuthorizesRequests;
+
     #[Locked]
     public int $projectId;
 
@@ -43,13 +48,6 @@ class ProjectEnvironment extends Component
 
     public string $serverEnvValue = '';
 
-    /** @var array<string, string> */
-    protected array $rules = [
-        'environment' => 'required|in:local,development,staging,production',
-        'newEnvKey' => 'required|string|max:255',
-        'newEnvValue' => 'string|max:1000',
-    ];
-
     public function mount(Project $project): void
     {
         $this->projectId = $project->id;
@@ -74,9 +72,11 @@ class ProjectEnvironment extends Component
             $this->environment = $newEnvironment;
         }
 
-        $this->validate(['environment' => 'required|in:local,development,staging,production']);
+        $this->validate(EnvironmentVariableRequest::environmentRules());
 
         $project = $this->getProject();
+        $this->authorize('manageEnvironment', $project);
+
         $project->update(['environment' => $this->environment]);
 
         // Also update APP_ENV in the server's .env file
@@ -141,9 +141,12 @@ class ProjectEnvironment extends Component
     public function addEnvVariable(): void
     {
         $this->validate([
-            'newEnvKey' => 'required|string|max:255',
-            'newEnvValue' => 'string|max:1000',
+            'newEnvKey' => EnvironmentVariableRequest::keyRules(),
+            'newEnvValue' => EnvironmentVariableRequest::valueRules(),
         ]);
+
+        $project = $this->getProject();
+        $this->authorize('manageEnvironment', $project);
 
         $this->envVariables[$this->newEnvKey] = $this->newEnvValue;
         $this->saveEnvVariables();
@@ -163,6 +166,14 @@ class ProjectEnvironment extends Component
 
     public function updateEnvVariable(): void
     {
+        $this->validate([
+            'newEnvKey' => EnvironmentVariableRequest::keyRules(),
+            'newEnvValue' => EnvironmentVariableRequest::valueRules(),
+        ]);
+
+        $project = $this->getProject();
+        $this->authorize('manageEnvironment', $project);
+
         if ($this->editingEnvKey && $this->editingEnvKey !== $this->newEnvKey) {
             unset($this->envVariables[$this->editingEnvKey]);
         }
@@ -176,6 +187,9 @@ class ProjectEnvironment extends Component
 
     public function deleteEnvVariable(string $key): void
     {
+        $project = $this->getProject();
+        $this->authorize('manageEnvironment', $project);
+
         unset($this->envVariables[$key]);
         $this->saveEnvVariables();
         session()->flash('message', 'Environment variable deleted successfully');
@@ -319,14 +333,33 @@ class ProjectEnvironment extends Component
     public function saveServerEnvVariable(): void
     {
         $this->validate([
-            'serverEnvKey' => 'required|string|max:255|regex:/^[A-Z][A-Z0-9_]*$/i',
-            'serverEnvValue' => 'nullable|string|max:2000',
+            'serverEnvKey' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[A-Z][A-Z0-9_]*$/i',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    if (ServerEnvVariableRequest::isProtectedKey((string) $value)) {
+                        $fail("The {$value} key cannot be modified via the UI. Use artisan commands instead.");
+                    }
+                },
+            ],
+            'serverEnvValue' => ['nullable', 'string', 'max:2000'],
         ], [
             'serverEnvKey.regex' => 'Variable name must start with a letter and contain only letters, numbers, and underscores.',
         ]);
 
         try {
             $project = $this->getProject();
+
+            // Check authorization based on key sensitivity
+            $key = strtoupper(trim($this->serverEnvKey));
+            if (ServerEnvVariableRequest::isSensitiveKey($key)) {
+                $this->authorize('manageSensitiveEnvironment', $project);
+            } else {
+                $this->authorize('manageServerEnvironment', $project);
+            }
+
             $server = $project->server;
             $projectPath = "/var/www/{$project->slug}";
             $envPath = "{$projectPath}/.env";
@@ -369,8 +402,23 @@ class ProjectEnvironment extends Component
      */
     public function deleteServerEnvVariable(string $key): void
     {
+        // Prevent deletion of protected keys
+        if (ServerEnvVariableRequest::isProtectedKey($key)) {
+            session()->flash('error', "The {$key} key cannot be deleted via the UI.");
+
+            return;
+        }
+
         try {
             $project = $this->getProject();
+
+            // Check authorization based on key sensitivity
+            if (ServerEnvVariableRequest::isSensitiveKey($key)) {
+                $this->authorize('manageSensitiveEnvironment', $project);
+            } else {
+                $this->authorize('manageServerEnvironment', $project);
+            }
+
             $server = $project->server;
             $projectPath = "/var/www/{$project->slug}";
 

@@ -762,4 +762,79 @@ class ProjectEnvironmentTest extends TestCase
             ->test(ProjectEnvironment::class, ['project' => $otherProject])
             ->assertSet('envVariables', ['OTHER_VAR' => 'other_value']);
     }
+
+    // ==================== PROTECTED KEY TESTS ====================
+
+    public function test_cannot_save_protected_app_key(): void
+    {
+        $this->mockEnvFileContent();
+
+        Livewire::actingAs($this->user)
+            ->test(ProjectEnvironment::class, ['project' => $this->project])
+            ->set('serverEnvKey', 'APP_KEY')
+            ->set('serverEnvValue', 'base64:newkey123')
+            ->call('saveServerEnvVariable')
+            ->assertHasErrors(['serverEnvKey']);
+    }
+
+    public function test_cannot_delete_protected_app_key(): void
+    {
+        $this->mockEnvFileContent();
+
+        Livewire::actingAs($this->user)
+            ->test(ProjectEnvironment::class, ['project' => $this->project])
+            ->call('deleteServerEnvVariable', 'APP_KEY')
+            ->assertSessionHas('error');
+    }
+
+    // ==================== AUTHORIZATION TESTS ====================
+
+    public function test_unauthorized_user_cannot_update_environment(): void
+    {
+        $this->mockEnvFileContent();
+        $otherUser = User::factory()->create();
+
+        // User without access to project
+        Livewire::actingAs($otherUser)
+            ->test(ProjectEnvironment::class, ['project' => $this->project])
+            ->call('updateEnvironment', 'staging')
+            ->assertForbidden();
+    }
+
+    public function test_unauthorized_user_cannot_add_env_variable(): void
+    {
+        $this->mockEnvFileContent();
+        $otherUser = User::factory()->create();
+
+        Livewire::actingAs($otherUser)
+            ->test(ProjectEnvironment::class, ['project' => $this->project])
+            ->set('newEnvKey', 'NEW_VAR')
+            ->set('newEnvValue', 'value')
+            ->call('addEnvVariable')
+            ->assertForbidden();
+    }
+
+    public function test_unauthorized_user_cannot_delete_env_variable(): void
+    {
+        $this->mockEnvFileContent();
+        $otherUser = User::factory()->create();
+
+        Livewire::actingAs($otherUser)
+            ->test(ProjectEnvironment::class, ['project' => $this->project])
+            ->call('deleteEnvVariable', 'APP_NAME')
+            ->assertForbidden();
+    }
+
+    public function test_unauthorized_user_cannot_update_env_variable(): void
+    {
+        $this->mockEnvFileContent();
+        $otherUser = User::factory()->create();
+
+        Livewire::actingAs($otherUser)
+            ->test(ProjectEnvironment::class, ['project' => $this->project])
+            ->call('editEnvVariable', 'APP_NAME')
+            ->set('newEnvValue', 'NewValue')
+            ->call('updateEnvVariable')
+            ->assertForbidden();
+    }
 }
