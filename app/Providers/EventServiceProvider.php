@@ -8,11 +8,13 @@ use App\Events\DeploymentCompleted;
 use App\Events\DeploymentFailed;
 use App\Events\DeploymentStarted;
 use App\Events\DeploymentStatusUpdated;
+use App\Events\SecurityIncidentDetected;
 use App\Events\ServerMetricsUpdated;
 use App\Listeners\DeploymentCompletedListener;
 use App\Listeners\DeploymentFailedListener;
 use App\Listeners\DeploymentStartedListener;
 use App\Listeners\DeploymentStatusUpdatedListener;
+use App\Listeners\SecurityIncidentDetectedListener;
 use App\Listeners\ServerMetricsUpdatedListener;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -42,6 +44,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         ServerMetricsUpdated::class => [
             ServerMetricsUpdatedListener::class,
+        ],
+        SecurityIncidentDetected::class => [
+            SecurityIncidentDetectedListener::class,
         ],
     ];
 

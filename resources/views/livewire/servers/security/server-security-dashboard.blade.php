@@ -224,7 +224,78 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                 </svg>
             </a>
+
+            <a href="{{ route('servers.security.threats', $server) }}"
+               class="flex items-center gap-4 bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-4 hover:border-amber-500/50 hover:bg-gray-800/70 transition-all">
+                <div class="p-3 bg-amber-500/20 rounded-lg">
+                    <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h4 class="text-white font-medium">Threat Scanner</h4>
+                    <p class="text-gray-400 text-sm">Detect & respond</p>
+                </div>
+                <svg class="w-5 h-5 text-gray-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+            </a>
         </div>
+
+        <!-- Active Security Incidents -->
+        @php
+            $activeIncidents = $server->securityIncidents()->active()->orderBy('detected_at', 'desc')->limit(5)->get();
+        @endphp
+        @if($activeIncidents->isNotEmpty())
+            <div class="bg-red-900/20 backdrop-blur-sm rounded-2xl border border-red-700/50 p-6 mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-red-500/20 rounded-lg">
+                            <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-white">Active Security Incidents</h3>
+                            <p class="text-red-300 text-sm">{{ $activeIncidents->count() }} incident(s) require attention</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('servers.security.threats', $server) }}"
+                       class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors">
+                        View All
+                    </a>
+                </div>
+                <div class="space-y-3">
+                    @foreach($activeIncidents as $incident)
+                        <div class="flex items-center justify-between p-4 rounded-lg bg-gray-900/50 border border-gray-700/50">
+                            <div class="flex items-center gap-4">
+                                <span @class([
+                                    'px-2 py-1 text-xs font-medium rounded-full',
+                                    'bg-red-500/20 text-red-400 border border-red-500/30' => $incident->severity === 'critical',
+                                    'bg-orange-500/20 text-orange-400 border border-orange-500/30' => $incident->severity === 'high',
+                                    'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' => $incident->severity === 'medium',
+                                    'bg-blue-500/20 text-blue-400 border border-blue-500/30' => $incident->severity === 'low',
+                                ])>
+                                    {{ ucfirst($incident->severity) }}
+                                </span>
+                                <div>
+                                    <h4 class="text-white font-medium">{{ $incident->title }}</h4>
+                                    <p class="text-gray-400 text-sm">{{ $incident->detected_at->diffForHumans() }}</p>
+                                </div>
+                            </div>
+                            <span @class([
+                                'px-2 py-1 text-xs rounded-full',
+                                'bg-red-500/20 text-red-400' => $incident->status === 'detected',
+                                'bg-yellow-500/20 text-yellow-400' => $incident->status === 'investigating',
+                                'bg-blue-500/20 text-blue-400' => $incident->status === 'mitigating',
+                            ])>
+                                {{ ucfirst($incident->status) }}
+                            </span>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
 
         <!-- Recent Security Events -->
         <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 p-6">

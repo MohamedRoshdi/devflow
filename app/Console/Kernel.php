@@ -67,6 +67,12 @@ class Kernel extends ConsoleKernel
             \App\Services\LogAggregationService::class;
             app(\App\Services\LogAggregationService::class)->cleanOldLogs(30);
         })->dailyAt('02:00');
+
+        // Security threat scan - Hourly
+        $schedule->command('security:scan-threats --all')
+            ->hourly()
+            ->withoutOverlapping()
+            ->runInBackground();
     }
 
     /**

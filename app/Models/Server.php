@@ -57,6 +57,10 @@ class Server extends Model
         'fail2ban_enabled',
         'security_score',
         'last_security_scan_at',
+        'last_threat_scan_at',
+        'active_incidents_count',
+        'lockdown_mode',
+        'auto_remediation_enabled',
         'latitude',
         'longitude',
         'location_name',
@@ -83,6 +87,10 @@ class Server extends Model
             'fail2ban_enabled' => 'boolean',
             'security_score' => 'integer',
             'last_security_scan_at' => 'datetime',
+            'last_threat_scan_at' => 'datetime',
+            'active_incidents_count' => 'integer',
+            'lockdown_mode' => 'boolean',
+            'auto_remediation_enabled' => 'boolean',
             'last_ping_at' => 'datetime',
             'provisioned_at' => 'datetime',
             'installed_packages' => 'array',
@@ -257,6 +265,30 @@ class Server extends Model
     public function latestSecurityScan(): HasOne
     {
         return $this->hasOne(SecurityScan::class)->latestOfMany();
+    }
+
+    /**
+     * @return HasMany<SecurityIncident, $this>
+     */
+    public function securityIncidents(): HasMany
+    {
+        return $this->hasMany(SecurityIncident::class);
+    }
+
+    /**
+     * @return HasMany<SecurityIncident, $this>
+     */
+    public function activeSecurityIncidents(): HasMany
+    {
+        return $this->hasMany(SecurityIncident::class)->active();
+    }
+
+    /**
+     * @return HasOne<SecurityIncident, $this>
+     */
+    public function latestSecurityIncident(): HasOne
+    {
+        return $this->hasOne(SecurityIncident::class)->latestOfMany();
     }
 
     /**

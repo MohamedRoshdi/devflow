@@ -73,6 +73,10 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
     Route::get('/servers/{server}/security/fail2ban', \App\Livewire\Servers\Security\Fail2banManager::class)->name('servers.security.fail2ban');
     Route::get('/servers/{server}/security/ssh', \App\Livewire\Servers\Security\SSHSecurityManager::class)->name('servers.security.ssh');
     Route::get('/servers/{server}/security/scan', \App\Livewire\Servers\Security\SecurityScanDashboard::class)->name('servers.security.scan');
+    Route::get('/servers/{server}/security/threats', \App\Livewire\Servers\Security\ThreatScanner::class)->name('servers.security.threats');
+
+    // Security Incidents Dashboard (global)
+    Route::get('/security/incidents', \App\Livewire\Servers\Security\IncidentDashboard::class)->name('security.incidents');
 
     // Projects
     Route::get('/projects', ProjectList::class)->name('projects.index');
@@ -180,6 +184,8 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
     Route::get('/logs/notifications', \App\Livewire\Logs\NotificationLogs::class)->name('logs.notifications');
     Route::get('/logs/webhooks', \App\Livewire\Logs\WebhookLogs::class)->name('logs.webhooks');
     Route::get('/logs/security', \App\Livewire\Logs\SecurityAuditLog::class)->name('logs.security');
+    Route::get('/logs/system', \App\Livewire\Logs\SystemLogViewer::class)->name('logs.system');
+    Route::get('/logs/alerts', \App\Livewire\Logs\LogAlertManager::class)->name('logs.alerts');
     Route::get('/servers/{server}/log-sources', \App\Livewire\Logs\LogSourceManager::class)->name('servers.log-sources');
 
     // System Status

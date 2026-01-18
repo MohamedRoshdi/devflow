@@ -115,6 +115,19 @@ DevFlow Pro is an enterprise-grade deployment management platform that makes it 
 - **Log Aggregation** - Centralized log management with full-text search
 - **Health Checks** - HTTP, TCP, Ping, SSL checks with configurable intervals
 
+### System Logs & Alerting
+- **Multi-Server Log Collection** - Collect logs from remote servers via SSH
+- **Multi-Format Parsing** - Parse syslog, auth, docker, nginx, kernel logs automatically
+- **Advanced Filtering** - Filter by server, type, level, time range with full-text search
+- **Log Export** - Export logs to CSV, JSON, or TXT formats with applied filters
+- **Pattern-Based Alerts** - Create alerts with text or regex patterns
+- **Threshold Alerting** - Trigger alerts after N occurrences in time window
+- **Multi-Channel Notifications** - Send alerts via Email, Slack, or Webhooks
+- **Alert Testing** - Test alert patterns before activation with sample data
+- **Real-Time Statistics** - Live dashboard with log counts by type and level
+- **Automated Collection** - Schedule log collection with configurable retention
+- **Alert History** - Track alert triggers with timestamps and match counts
+
 ### Backup & Recovery
 - **Server Backups** - Full/incremental/snapshot backup strategies
 - **Database Backups** - MySQL/PostgreSQL with scheduling
