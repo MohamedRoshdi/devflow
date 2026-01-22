@@ -133,6 +133,9 @@ class DefaultPermissionsSeeder extends Seeder
             Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
         }
 
+        // Reset cached permissions after creating new ones
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
         // Create default roles with their permissions
 
         // Super Admin - Full access to everything
