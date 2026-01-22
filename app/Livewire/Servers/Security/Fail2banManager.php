@@ -25,7 +25,14 @@ class Fail2banManager extends Component
     /** @var array<int, array<string, mixed>> */
     public array $bannedIPs = [];
 
+    /** @var array<int, string> */
+    public array $whitelistedIPs = [];
+
     public string $selectedJail = 'sshd';
+
+    public string $newWhitelistIP = '';
+
+    public string $activeTab = 'banned'; // 'banned' or 'whitelist'
 
     public bool $isLoading = false;
 
@@ -57,6 +64,7 @@ class Fail2banManager extends Component
                     $this->selectedJail = $this->jails[0];
                 }
                 $this->loadBannedIPs();
+                $this->loadWhitelistedIPs();
             }
 
             $this->server->refresh();
@@ -83,10 +91,33 @@ class Fail2banManager extends Component
         }
     }
 
+    public function loadWhitelistedIPs(): void
+    {
+        try {
+            $service = app(Fail2banService::class);
+            $result = $service->getWhitelistedIPs($this->server, $this->selectedJail);
+
+            if ($result['success']) {
+                $this->whitelistedIPs = $result['whitelisted_ips'] ?? [];
+            } else {
+                $this->whitelistedIPs = [];
+            }
+        } catch (\Exception $e) {
+            $this->flashMessage = 'Failed to load whitelisted IPs: '.$e->getMessage();
+            $this->flashType = 'error';
+        }
+    }
+
     public function selectJail(string $jail): void
     {
         $this->selectedJail = $jail;
         $this->loadBannedIPs();
+        $this->loadWhitelistedIPs();
+    }
+
+    public function switchTab(string $tab): void
+    {
+        $this->activeTab = $tab;
     }
 
     public function unbanIP(string $ip): void
@@ -165,6 +196,95 @@ class Fail2banManager extends Component
             }
         } catch (\Exception $e) {
             $this->flashMessage = 'Failed to install Fail2ban: '.$e->getMessage();
+            $this->flashType = 'error';
+        }
+    }
+
+    public function addToWhitelist(): void
+    {
+        if (empty($this->newWhitelistIP)) {
+            $this->flashMessage = 'Please enter an IP address';
+            $this->flashType = 'error';
+            return;
+        }
+
+        try {
+            $service = app(Fail2banService::class);
+            $result = $service->addToWhitelist($this->server, $this->newWhitelistIP, $this->selectedJail);
+
+            if ($result['success']) {
+                $this->flashMessage = $result['message'];
+                $this->flashType = 'success';
+                $this->newWhitelistIP = '';
+                $this->loadWhitelistedIPs();
+                $this->loadBannedIPs();
+            } else {
+                $this->flashMessage = $result['message'];
+                $this->flashType = 'error';
+            }
+        } catch (\Exception $e) {
+            $this->flashMessage = 'Failed to add IP to whitelist: '.$e->getMessage();
+            $this->flashType = 'error';
+        }
+    }
+
+    public function removeFromWhitelist(string $ip): void
+    {
+        try {
+            $service = app(Fail2banService::class);
+            $result = $service->removeFromWhitelist($this->server, $ip, $this->selectedJail);
+
+            if ($result['success']) {
+                $this->flashMessage = $result['message'];
+                $this->flashType = 'success';
+                $this->loadWhitelistedIPs();
+            } else {
+                $this->flashMessage = $result['message'];
+                $this->flashType = 'error';
+            }
+        } catch (\Exception $e) {
+            $this->flashMessage = 'Failed to remove IP from whitelist: '.$e->getMessage();
+            $this->flashType = 'error';
+        }
+    }
+
+    public function transferToWhitelist(string $ip): void
+    {
+        try {
+            $service = app(Fail2banService::class);
+            $result = $service->transferToWhitelist($this->server, $ip, $this->selectedJail);
+
+            if ($result['success']) {
+                $this->flashMessage = $result['message'];
+                $this->flashType = 'success';
+                $this->loadBannedIPs();
+                $this->loadWhitelistedIPs();
+            } else {
+                $this->flashMessage = $result['message'];
+                $this->flashType = 'error';
+            }
+        } catch (\Exception $e) {
+            $this->flashMessage = 'Failed to transfer IP to whitelist: '.$e->getMessage();
+            $this->flashType = 'error';
+        }
+    }
+
+    public function unbanAllIPs(): void
+    {
+        try {
+            $service = app(Fail2banService::class);
+            $result = $service->unbanAllIPs($this->server, $this->selectedJail);
+
+            if ($result['success']) {
+                $this->flashMessage = $result['message'];
+                $this->flashType = 'success';
+                $this->loadBannedIPs();
+            } else {
+                $this->flashMessage = $result['message'];
+                $this->flashType = 'error';
+            }
+        } catch (\Exception $e) {
+            $this->flashMessage = 'Failed to unban all IPs: '.$e->getMessage();
             $this->flashType = 'error';
         }
     }

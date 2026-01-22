@@ -496,6 +496,215 @@ class Fail2banService
         return 'sudo ';
     }
 
+    public function getWhitelistedIPs(Server $server, string $jailName = 'sshd'): array
+    {
+        try {
+            $sudoPrefix = $this->getSudoPrefix($server);
+            $escapedJail = escapeshellarg($jailName);
+
+            $command = "{$sudoPrefix}fail2ban-client get {$escapedJail} ignoreip";
+            $result = $this->executeCommand($server, $command);
+
+            if ($result['success']) {
+                $output = trim($result['output']);
+
+                // Parse the output - format is usually: "These IP addresses/networks are ignored:\n|- 127.0.0.1\n|- ::1"
+                $ips = [];
+                $lines = explode("\n", $output);
+
+                foreach ($lines as $line) {
+                    // Match patterns like "|- 127.0.0.1" or just IP addresses
+                    if (preg_match('/(?:\|-\s*)?(\d+\.\d+\.\d+\.\d+(?:\/\d+)?|[0-9a-f:]+(?:\/\d+)?)/', $line, $matches)) {
+                        $ips[] = $matches[1];
+                    }
+                }
+
+                return [
+                    'success' => true,
+                    'whitelisted_ips' => array_values(array_unique($ips)),
+                    'total' => count($ips),
+                ];
+            }
+
+            return [
+                'success' => false,
+                'whitelisted_ips' => [],
+                'error' => $result['error'] ?: $result['output'],
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'whitelisted_ips' => [],
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    public function addToWhitelist(Server $server, string $ip, string $jailName = 'sshd'): array
+    {
+        try {
+            $this->validateIp($ip);
+
+            // First, check if IP is already whitelisted
+            $currentWhitelist = $this->getWhitelistedIPs($server, $jailName);
+            if ($currentWhitelist['success'] && in_array($ip, $currentWhitelist['whitelisted_ips'])) {
+                return [
+                    'success' => false,
+                    'message' => "IP {$ip} is already whitelisted",
+                ];
+            }
+
+            $sudoPrefix = $this->getSudoPrefix($server);
+            $escapedIp = escapeshellarg($ip);
+            $escapedJail = escapeshellarg($jailName);
+
+            // Add IP to whitelist using fail2ban-client
+            $command = "{$sudoPrefix}fail2ban-client set {$escapedJail} addignoreip {$escapedIp}";
+            $result = $this->executeCommand($server, $command);
+
+            if ($result['success'] || str_contains($result['output'], 'added')) {
+                // Also unban the IP if it's currently banned
+                $this->unbanIP($server, $ip, $jailName);
+
+                $this->logEvent(
+                    $server,
+                    SecurityEvent::TYPE_IP_WHITELISTED ?? 'ip_whitelisted',
+                    "Added IP {$ip} to whitelist in jail {$jailName}",
+                    $ip
+                );
+
+                return [
+                    'success' => true,
+                    'message' => "IP {$ip} has been added to whitelist and unbanned",
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'Failed to add IP to whitelist: '.($result['error'] ?: $result['output']),
+            ];
+        } catch (\InvalidArgumentException $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Failed to add IP to whitelist: '.$e->getMessage(),
+            ];
+        }
+    }
+
+    public function removeFromWhitelist(Server $server, string $ip, string $jailName = 'sshd'): array
+    {
+        try {
+            $this->validateIp($ip);
+
+            $sudoPrefix = $this->getSudoPrefix($server);
+            $escapedIp = escapeshellarg($ip);
+            $escapedJail = escapeshellarg($jailName);
+
+            $command = "{$sudoPrefix}fail2ban-client set {$escapedJail} delignoreip {$escapedIp}";
+            $result = $this->executeCommand($server, $command);
+
+            if ($result['success'] || str_contains($result['output'], 'removed') || str_contains($result['output'], 'deleted')) {
+                $this->logEvent(
+                    $server,
+                    SecurityEvent::TYPE_IP_REMOVED_FROM_WHITELIST ?? 'ip_removed_from_whitelist',
+                    "Removed IP {$ip} from whitelist in jail {$jailName}",
+                    $ip
+                );
+
+                return [
+                    'success' => true,
+                    'message' => "IP {$ip} has been removed from whitelist",
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'Failed to remove IP from whitelist: '.($result['error'] ?: $result['output']),
+            ];
+        } catch (\InvalidArgumentException $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Failed to remove IP from whitelist: '.$e->getMessage(),
+            ];
+        }
+    }
+
+    public function unbanAllIPs(Server $server, string $jailName = 'sshd'): array
+    {
+        try {
+            $sudoPrefix = $this->getSudoPrefix($server);
+            $escapedJail = escapeshellarg($jailName);
+
+            $command = "{$sudoPrefix}fail2ban-client unban --all";
+            $result = $this->executeCommand($server, $command);
+
+            if ($result['success']) {
+                $this->logEvent(
+                    $server,
+                    SecurityEvent::TYPE_BULK_UNBAN ?? 'bulk_unban',
+                    "Unbanned all IPs from all jails"
+                );
+
+                return [
+                    'success' => true,
+                    'message' => "All IPs have been unbanned",
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'Failed to unban all IPs: '.($result['error'] ?: $result['output']),
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Failed to unban all IPs: '.$e->getMessage(),
+            ];
+        }
+    }
+
+    public function transferToWhitelist(Server $server, string $ip, string $jailName = 'sshd'): array
+    {
+        try {
+            $this->validateIp($ip);
+
+            // First add to whitelist
+            $whitelistResult = $this->addToWhitelist($server, $ip, $jailName);
+
+            if (!$whitelistResult['success']) {
+                return $whitelistResult;
+            }
+
+            // Unban is already called in addToWhitelist, so we're done
+            $this->logEvent(
+                $server,
+                SecurityEvent::TYPE_IP_TRANSFERRED ?? 'ip_transferred',
+                "Transferred IP {$ip} from banned list to whitelist in jail {$jailName}",
+                $ip
+            );
+
+            return [
+                'success' => true,
+                'message' => "IP {$ip} has been transferred to whitelist and unbanned",
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Failed to transfer IP to whitelist: '.$e->getMessage(),
+            ];
+        }
+    }
+
     protected function logEvent(Server $server, string $eventType, string $details, ?string $sourceIp = null): void
     {
         SecurityEvent::create([

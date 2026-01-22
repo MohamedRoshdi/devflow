@@ -115,54 +115,154 @@
                         @endif
                     </div>
 
-                    <!-- Banned IPs -->
+                    <!-- Banned & Whitelisted IPs -->
                     <div class="lg:col-span-3 bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-semibold text-white">
-                                Banned IPs - {{ $selectedJail }}
-                            </h3>
-                            <span class="text-gray-400 text-sm">{{ count($bannedIPs) }} banned</span>
+                        <!-- Tabs -->
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex gap-2">
+                                <button wire:click="switchTab('banned')"
+                                    class="px-4 py-2 rounded-lg font-medium transition-colors {{ $activeTab === 'banned' ? 'bg-red-600 text-white' : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50' }}">
+                                    Banned IPs ({{ count($bannedIPs) }})
+                                </button>
+                                <button wire:click="switchTab('whitelist')"
+                                    class="px-4 py-2 rounded-lg font-medium transition-colors {{ $activeTab === 'whitelist' ? 'bg-green-600 text-white' : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50' }}">
+                                    Whitelist ({{ count($whitelistedIPs) }})
+                                </button>
+                            </div>
+
+                            @if($activeTab === 'banned' && count($bannedIPs) > 0)
+                                <button wire:click="unbanAllIPs"
+                                    wire:confirm="Are you sure you want to unban all {{ count($bannedIPs) }} IPs?"
+                                    class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white text-sm rounded-lg transition-colors">
+                                    Unban All
+                                </button>
+                            @endif
                         </div>
 
-                        @if(empty($bannedIPs))
-                            <div class="text-center py-8">
-                                <svg class="w-12 h-12 text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                <p class="text-gray-400">No IPs currently banned in this jail</p>
-                            </div>
-                        @else
-                            <div class="overflow-x-auto">
-                                <table class="w-full">
-                                    <thead>
-                                        <tr class="text-left text-gray-400 text-sm border-b border-gray-700">
-                                            <th class="pb-3 font-medium">IP Address</th>
-                                            <th class="pb-3 font-medium text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-gray-700/50">
-                                        @foreach($bannedIPs as $ip)
-                                            <tr class="text-gray-300">
-                                                <td class="py-3">
-                                                    <div class="flex items-center gap-2">
-                                                        <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
-                                                        </svg>
-                                                        {{ $ip }}
-                                                    </div>
-                                                </td>
-                                                <td class="py-3 text-right">
-                                                    <button wire:click="unbanIP('{{ $ip }}')"
-                                                        wire:confirm="Are you sure you want to unban {{ $ip }}?"
-                                                        class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg transition-colors">
-                                                        Unban
-                                                    </button>
-                                                </td>
+                        <!-- Banned IPs Tab Content -->
+                        @if($activeTab === 'banned')
+                            @if(empty($bannedIPs))
+                                <div class="text-center py-8">
+                                    <svg class="w-12 h-12 text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <p class="text-gray-400">No IPs currently banned in this jail</p>
+                                </div>
+                            @else
+                                <div class="overflow-x-auto">
+                                    <table class="w-full">
+                                        <thead>
+                                            <tr class="text-left text-gray-400 text-sm border-b border-gray-700">
+                                                <th class="pb-3 font-medium">IP Address</th>
+                                                <th class="pb-3 font-medium text-right">Actions</th>
                                             </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-700/50">
+                                            @foreach($bannedIPs as $ip)
+                                                <tr class="text-gray-300">
+                                                    <td class="py-3">
+                                                        <div class="flex items-center gap-2">
+                                                            <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                                                            </svg>
+                                                            {{ $ip }}
+                                                        </div>
+                                                    </td>
+                                                    <td class="py-3 text-right">
+                                                        <div class="flex items-center justify-end gap-2">
+                                                            <button wire:click="transferToWhitelist('{{ $ip }}')"
+                                                                wire:confirm="Transfer {{ $ip }} to whitelist? This will unban the IP and prevent future bans."
+                                                                class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors flex items-center gap-1"
+                                                                title="Transfer to Whitelist">
+                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                                                </svg>
+                                                                Whitelist
+                                                            </button>
+                                                            <button wire:click="unbanIP('{{ $ip }}')"
+                                                                wire:confirm="Are you sure you want to unban {{ $ip }}?"
+                                                                class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg transition-colors">
+                                                                Unban
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @endif
+                        @endif
+
+                        <!-- Whitelist Tab Content -->
+                        @if($activeTab === 'whitelist')
+                            <!-- Add to Whitelist Form -->
+                            <div class="mb-6 bg-gray-900/50 rounded-lg p-4">
+                                <h4 class="text-sm font-medium text-gray-300 mb-3">Add IP to Whitelist</h4>
+                                <div class="flex gap-3">
+                                    <input type="text"
+                                        wire:model="newWhitelistIP"
+                                        placeholder="Enter IP address (e.g., 192.168.1.1)"
+                                        class="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-green-500 focus:ring-1 focus:ring-green-500">
+                                    <button wire:click="addToWhitelist"
+                                        wire:loading.attr="disabled"
+                                        class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <span wire:loading.remove wire:target="addToWhitelist">Add to Whitelist</span>
+                                        <span wire:loading wire:target="addToWhitelist">Adding...</span>
+                                    </button>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-2">Whitelisted IPs will never be banned by Fail2ban</p>
                             </div>
+
+                            <!-- Whitelisted IPs List -->
+                            @if(empty($whitelistedIPs))
+                                <div class="text-center py-8">
+                                    <svg class="w-12 h-12 text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                    </svg>
+                                    <p class="text-gray-400">No IPs whitelisted yet</p>
+                                    <p class="text-gray-500 text-sm mt-1">Add trusted IPs to prevent them from being banned</p>
+                                </div>
+                            @else
+                                <div class="overflow-x-auto">
+                                    <table class="w-full">
+                                        <thead>
+                                            <tr class="text-left text-gray-400 text-sm border-b border-gray-700">
+                                                <th class="pb-3 font-medium">IP Address / Network</th>
+                                                <th class="pb-3 font-medium text-right">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-700/50">
+                                            @foreach($whitelistedIPs as $ip)
+                                                <tr class="text-gray-300">
+                                                    <td class="py-3">
+                                                        <div class="flex items-center gap-2">
+                                                            <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                                            </svg>
+                                                            <span>{{ $ip }}</span>
+                                                            @if(in_array($ip, ['127.0.0.1', '127.0.0.0/8', '::1']))
+                                                                <span class="px-2 py-0.5 text-xs bg-gray-700 text-gray-400 rounded">System</span>
+                                                            @endif
+                                                        </div>
+                                                    </td>
+                                                    <td class="py-3 text-right">
+                                                        @if(!in_array($ip, ['127.0.0.1', '127.0.0.0/8', '::1']))
+                                                            <button wire:click="removeFromWhitelist('{{ $ip }}')"
+                                                                wire:confirm="Are you sure you want to remove {{ $ip }} from whitelist?"
+                                                                class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition-colors">
+                                                                Remove
+                                                            </button>
+                                                        @else
+                                                            <span class="text-xs text-gray-500">Protected</span>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @endif
                         @endif
                     </div>
                 </div>
