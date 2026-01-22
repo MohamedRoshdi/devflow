@@ -14,6 +14,8 @@ class SystemLogService
 {
     /**
      * Collect system logs from a server.
+     *
+     * @return Collection<int, array<string, mixed>>
      */
     public function collectLogsFromServer(Server $server, int $lines = 100, ?string $logType = null): Collection
     {
@@ -33,6 +35,8 @@ class SystemLogService
 
     /**
      * Collect specific log type from server.
+     *
+     * @return Collection<int, array<string, mixed>>
      */
     public function collectSpecificLogType(Server $server, string $logType, int $lines = 100): Collection
     {
@@ -48,6 +52,8 @@ class SystemLogService
 
     /**
      * Collect syslog entries.
+     *
+     * @return Collection<int, array<string, mixed>>
      */
     public function collectSyslog(Server $server, int $lines = 100): Collection
     {
@@ -59,6 +65,8 @@ class SystemLogService
 
     /**
      * Collect auth log entries.
+     *
+     * @return Collection<int, array<string, mixed>>
      */
     public function collectAuthLog(Server $server, int $lines = 100): Collection
     {
@@ -70,6 +78,8 @@ class SystemLogService
 
     /**
      * Collect Docker logs.
+     *
+     * @return Collection<int, array<string, mixed>>
      */
     public function collectDockerLogs(Server $server, int $lines = 100): Collection
     {
@@ -97,6 +107,8 @@ class SystemLogService
 
     /**
      * Collect Nginx logs.
+     *
+     * @return Collection<int, array<string, mixed>>
      */
     public function collectNginxLogs(Server $server, int $lines = 100): Collection
     {
@@ -108,6 +120,8 @@ class SystemLogService
 
     /**
      * Collect kernel logs.
+     *
+     * @return Collection<int, array<string, mixed>>
      */
     public function collectKernelLog(Server $server, int $lines = 100): Collection
     {
@@ -119,6 +133,8 @@ class SystemLogService
 
     /**
      * Parse syslog format.
+     *
+     * @return Collection<int, array<string, mixed>>
      */
     protected function parseSyslog(string $output, Server $server): Collection
     {
@@ -164,6 +180,8 @@ class SystemLogService
 
     /**
      * Parse auth log format.
+     *
+     * @return Collection<int, array<string, mixed>>
      */
     protected function parseAuthLog(string $output, Server $server): Collection
     {
@@ -195,6 +213,8 @@ class SystemLogService
 
     /**
      * Parse Docker logs.
+     *
+     * @return Collection<int, array<string, mixed>>
      */
     protected function parseDockerLogs(string $output, Server $server, string $containerName): Collection
     {
@@ -225,6 +245,8 @@ class SystemLogService
 
     /**
      * Parse Nginx logs.
+     *
+     * @return Collection<int, array<string, mixed>>
      */
     protected function parseNginxLogs(string $output, Server $server): Collection
     {
@@ -252,6 +274,8 @@ class SystemLogService
 
     /**
      * Parse kernel logs.
+     *
+     * @return Collection<int, array<string, mixed>>
      */
     protected function parseKernelLog(string $output, Server $server): Collection
     {
@@ -279,6 +303,8 @@ class SystemLogService
 
     /**
      * Store collected logs in database.
+     *
+     * @param Collection<int, array<string, mixed>> $logs
      */
     public function storeLogs(Collection $logs): int
     {

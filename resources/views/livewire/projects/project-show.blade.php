@@ -522,6 +522,19 @@
                 </svg>
                 Webhooks
             </button>
+
+            <button wire:click="setActiveTab('files')"
+                wire:loading.class="opacity-50"
+                class="px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 {{ $activeTab === 'files' ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg shadow-teal-500/30' : 'text-slate-400 hover:text-white hover:bg-slate-700/50' }}">
+                <svg wire:loading.remove wire:target="setActiveTab('files')" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                </svg>
+                <svg wire:loading wire:target="setActiveTab('files')" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                Files
+            </button>
         </div>
     </div>
 
@@ -817,6 +830,11 @@
         {{-- Webhooks Tab --}}
         @if($activeTab === 'webhooks')
             @livewire('projects.project-webhook-settings', ['project' => $project], key('webhooks-' . $project->id))
+        @endif
+
+        {{-- Files Tab --}}
+        @if($activeTab === 'files')
+            @livewire('projects.project-files', ['project' => $project], key('files-' . $project->id))
         @endif
     </div>
 

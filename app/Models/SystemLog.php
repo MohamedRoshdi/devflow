@@ -8,8 +8,26 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int|null $server_id
+ * @property int|null $user_id
+ * @property string $log_type
+ * @property string $level
+ * @property string|null $source
+ * @property string $message
+ * @property array<string, mixed>|null $metadata
+ * @property string|null $ip_address
+ * @property \Illuminate\Support\Carbon|null $logged_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Server|null $server
+ * @property-read User|null $user
+ * @property-read string $level_color
+ */
 class SystemLog extends Model
 {
+    /** @use HasFactory<\Database\Factories\SystemLogFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -55,6 +73,8 @@ class SystemLog extends Model
 
     /**
      * Get the server that owns the log.
+     *
+     * @return BelongsTo<Server, SystemLog>
      */
     public function server(): BelongsTo
     {
@@ -63,6 +83,8 @@ class SystemLog extends Model
 
     /**
      * Get the user associated with the log.
+     *
+     * @return BelongsTo<User, SystemLog>
      */
     public function user(): BelongsTo
     {
@@ -71,48 +93,66 @@ class SystemLog extends Model
 
     /**
      * Scope to filter by log type.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<SystemLog> $query
+     * @return \Illuminate\Database\Eloquent\Builder<SystemLog>
      */
-    public function scopeOfType($query, string $type)
+    public function scopeOfType(\Illuminate\Database\Eloquent\Builder $query, string $type): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('log_type', $type);
     }
 
     /**
      * Scope to filter by log level.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<SystemLog> $query
+     * @return \Illuminate\Database\Eloquent\Builder<SystemLog>
      */
-    public function scopeOfLevel($query, string $level)
+    public function scopeOfLevel(\Illuminate\Database\Eloquent\Builder $query, string $level): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('level', $level);
     }
 
     /**
      * Scope to filter by server.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<SystemLog> $query
+     * @return \Illuminate\Database\Eloquent\Builder<SystemLog>
      */
-    public function scopeForServer($query, int $serverId)
+    public function scopeForServer(\Illuminate\Database\Eloquent\Builder $query, int $serverId): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('server_id', $serverId);
     }
 
     /**
      * Scope to filter by date range.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<SystemLog> $query
+     * @return \Illuminate\Database\Eloquent\Builder<SystemLog>
      */
-    public function scopeBetweenDates($query, $startDate, $endDate)
+    public function scopeBetweenDates(\Illuminate\Database\Eloquent\Builder $query, mixed $startDate, mixed $endDate): \Illuminate\Database\Eloquent\Builder
     {
         return $query->whereBetween('logged_at', [$startDate, $endDate]);
     }
 
     /**
      * Scope to get recent logs.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<SystemLog> $query
+     * @return \Illuminate\Database\Eloquent\Builder<SystemLog>
      */
-    public function scopeRecent($query, int $hours = 24)
+    public function scopeRecent(\Illuminate\Database\Eloquent\Builder $query, int $hours = 24): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('logged_at', '>=', now()->subHours($hours));
     }
 
     /**
      * Scope to get critical logs (emergency, alert, critical).
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<SystemLog> $query
+     * @return \Illuminate\Database\Eloquent\Builder<SystemLog>
      */
-    public function scopeCritical($query)
+    public function scopeCritical(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->whereIn('level', [
             self::LEVEL_EMERGENCY,
@@ -123,8 +163,11 @@ class SystemLog extends Model
 
     /**
      * Scope to get error logs (critical, error).
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<SystemLog> $query
+     * @return \Illuminate\Database\Eloquent\Builder<SystemLog>
      */
-    public function scopeErrors($query)
+    public function scopeErrors(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->whereIn('level', [
             self::LEVEL_EMERGENCY,
@@ -136,8 +179,11 @@ class SystemLog extends Model
 
     /**
      * Scope to search logs by message content.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<SystemLog> $query
+     * @return \Illuminate\Database\Eloquent\Builder<SystemLog>
      */
-    public function scopeSearch($query, string $search)
+    public function scopeSearch(\Illuminate\Database\Eloquent\Builder $query, string $search): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where(function ($q) use ($search) {
             $q->where('message', 'like', "%{$search}%")

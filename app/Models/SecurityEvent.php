@@ -47,6 +47,14 @@ class SecurityEvent extends Model
 
     public const TYPE_SECURITY_SCAN = 'security_scan';
 
+    public const TYPE_IP_WHITELISTED = 'ip_whitelisted';
+
+    public const TYPE_IP_REMOVED_FROM_WHITELIST = 'ip_removed_from_whitelist';
+
+    public const TYPE_BULK_UNBAN = 'bulk_unban';
+
+    public const TYPE_IP_TRANSFERRED = 'ip_transferred';
+
     /**
      * @var array<int, string>
      */
@@ -96,6 +104,10 @@ class SecurityEvent extends Model
             self::TYPE_IP_UNBANNED => 'IP Unbanned',
             self::TYPE_SSH_CONFIG_CHANGED => 'SSH Config Changed',
             self::TYPE_SECURITY_SCAN => 'Security Scan',
+            self::TYPE_IP_WHITELISTED => 'IP Whitelisted',
+            self::TYPE_IP_REMOVED_FROM_WHITELIST => 'IP Removed from Whitelist',
+            self::TYPE_BULK_UNBAN => 'Bulk Unban',
+            self::TYPE_IP_TRANSFERRED => 'IP Transferred',
             default => ucfirst(str_replace('_', ' ', $this->event_type)),
         };
     }
@@ -103,11 +115,11 @@ class SecurityEvent extends Model
     public function getEventTypeColorAttribute(): string
     {
         return match ($this->event_type) {
-            self::TYPE_FIREWALL_ENABLED, self::TYPE_RULE_ADDED => 'green',
-            self::TYPE_FIREWALL_DISABLED, self::TYPE_RULE_DELETED => 'red',
+            self::TYPE_FIREWALL_ENABLED, self::TYPE_RULE_ADDED, self::TYPE_IP_WHITELISTED => 'green',
+            self::TYPE_FIREWALL_DISABLED, self::TYPE_RULE_DELETED, self::TYPE_IP_REMOVED_FROM_WHITELIST => 'red',
             self::TYPE_IP_BANNED => 'orange',
-            self::TYPE_IP_UNBANNED => 'yellow',
-            self::TYPE_SSH_CONFIG_CHANGED => 'blue',
+            self::TYPE_IP_UNBANNED, self::TYPE_BULK_UNBAN => 'yellow',
+            self::TYPE_SSH_CONFIG_CHANGED, self::TYPE_IP_TRANSFERRED => 'blue',
             self::TYPE_SECURITY_SCAN => 'purple',
             default => 'gray',
         };

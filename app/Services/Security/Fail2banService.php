@@ -568,7 +568,7 @@ class Fail2banService
 
                 $this->logEvent(
                     $server,
-                    SecurityEvent::TYPE_IP_WHITELISTED ?? 'ip_whitelisted',
+                    SecurityEvent::TYPE_IP_WHITELISTED,
                     "Added IP {$ip} to whitelist in jail {$jailName}",
                     $ip
                 );
@@ -611,7 +611,7 @@ class Fail2banService
             if ($result['success'] || str_contains($result['output'], 'removed') || str_contains($result['output'], 'deleted')) {
                 $this->logEvent(
                     $server,
-                    SecurityEvent::TYPE_IP_REMOVED_FROM_WHITELIST ?? 'ip_removed_from_whitelist',
+                    SecurityEvent::TYPE_IP_REMOVED_FROM_WHITELIST,
                     "Removed IP {$ip} from whitelist in jail {$jailName}",
                     $ip
                 );
@@ -651,7 +651,7 @@ class Fail2banService
             if ($result['success']) {
                 $this->logEvent(
                     $server,
-                    SecurityEvent::TYPE_BULK_UNBAN ?? 'bulk_unban',
+                    SecurityEvent::TYPE_BULK_UNBAN,
                     "Unbanned all IPs from all jails"
                 );
 
@@ -688,7 +688,7 @@ class Fail2banService
             // Unban is already called in addToWhitelist, so we're done
             $this->logEvent(
                 $server,
-                SecurityEvent::TYPE_IP_TRANSFERRED ?? 'ip_transferred',
+                SecurityEvent::TYPE_IP_TRANSFERRED,
                 "Transferred IP {$ip} from banned list to whitelist in jail {$jailName}",
                 $ip
             );

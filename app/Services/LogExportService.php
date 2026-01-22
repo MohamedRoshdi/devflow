@@ -12,6 +12,8 @@ class LogExportService
 {
     /**
      * Export logs to CSV format.
+     *
+     * @param Collection<int, SystemLog> $logs
      */
     public function exportToCsv(Collection $logs): StreamedResponse
     {
@@ -43,8 +45,8 @@ class LogExportService
                     $log->source ?? 'N/A',
                     $log->message,
                     $log->ip_address ?? 'N/A',
-                    $log->logged_at->toDateTimeString(),
-                    $log->created_at->toDateTimeString(),
+                    $log->logged_at?->toDateTimeString() ?? 'N/A',
+                    $log->created_at?->toDateTimeString() ?? 'N/A',
                 ]);
             }
 
@@ -56,6 +58,8 @@ class LogExportService
 
     /**
      * Export logs to JSON format.
+     *
+     * @param Collection<int, SystemLog> $logs
      */
     public function exportToJson(Collection $logs): StreamedResponse
     {
@@ -78,8 +82,8 @@ class LogExportService
                 'message' => $log->message,
                 'metadata' => $log->metadata,
                 'ip_address' => $log->ip_address,
-                'logged_at' => $log->logged_at->toIso8601String(),
-                'created_at' => $log->created_at->toIso8601String(),
+                'logged_at' => $log->logged_at?->toIso8601String(),
+                'created_at' => $log->created_at?->toIso8601String(),
             ];
         });
 
@@ -96,6 +100,8 @@ class LogExportService
 
     /**
      * Export logs to plain text format.
+     *
+     * @param Collection<int, SystemLog> $logs
      */
     public function exportToText(Collection $logs): StreamedResponse
     {
@@ -108,7 +114,8 @@ class LogExportService
             echo str_repeat('=', 80) . "\n\n";
 
             foreach ($logs as $log) {
-                echo "[{$log->logged_at->toDateTimeString()}] ";
+                $loggedAt = $log->logged_at?->toDateTimeString() ?? 'N/A';
+                echo "[{$loggedAt}] ";
                 echo "[{$log->level}] ";
                 echo "[{$log->log_type}] ";
 
@@ -139,6 +146,8 @@ class LogExportService
 
     /**
      * Export logs based on format.
+     *
+     * @param Collection<int, SystemLog> $logs
      */
     public function export(Collection $logs, string $format = 'csv'): StreamedResponse
     {

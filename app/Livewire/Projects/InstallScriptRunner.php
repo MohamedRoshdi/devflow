@@ -48,6 +48,39 @@ class InstallScriptRunner extends Component
         $this->project = $project;
         $this->domain = $project->domains()->where('is_primary', true)->first()?->domain ?? '';
         $this->email = config('mail.from.address', 'admin@example.com');
+
+        // Check for install.sh on mount so the button can be shown/hidden appropriately
+        $this->checkInstallScriptSilently();
+    }
+
+    /**
+     * Check for install.sh existence without setting isChecking flag (for mount)
+     */
+    protected function checkInstallScriptSilently(): void
+    {
+        try {
+            $server = $this->project->server;
+            if (! $server) {
+                $this->isChecking = false;
+
+                return;
+            }
+
+            $projectPath = $this->getProjectPath();
+            $checkCommand = "test -f {$projectPath}/install.sh && echo 'EXISTS' || echo 'NOT_FOUND'";
+
+            $output = $this->executeCommand($server, $checkCommand);
+
+            $this->hasInstallScript = str_contains(trim($output ?? ''), 'EXISTS');
+        } catch (\Exception $e) {
+            Log::error('InstallScriptRunner: Failed to check install.sh on mount', [
+                'project_id' => $this->project->id,
+                'error' => $e->getMessage(),
+            ]);
+            $this->hasInstallScript = false;
+        }
+
+        $this->isChecking = false;
     }
 
     public function openModal(): void

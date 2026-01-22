@@ -8,8 +8,32 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int|null $server_id
+ * @property int|null $user_id
+ * @property string $name
+ * @property string|null $description
+ * @property string $pattern
+ * @property string|null $log_type
+ * @property string|null $log_level
+ * @property bool $is_regex
+ * @property bool $case_sensitive
+ * @property int $threshold
+ * @property int $time_window
+ * @property array<int, string>|null $notification_channels
+ * @property array<string, mixed>|null $notification_config
+ * @property bool $is_active
+ * @property \Illuminate\Support\Carbon|null $last_triggered_at
+ * @property int $trigger_count
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Server|null $server
+ * @property-read User|null $user
+ */
 class LogAlert extends Model
 {
+    /** @use HasFactory<\Database\Factories\LogAlertFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -42,6 +66,8 @@ class LogAlert extends Model
 
     /**
      * Get the server for this alert.
+     *
+     * @return BelongsTo<Server, LogAlert>
      */
     public function server(): BelongsTo
     {
@@ -50,6 +76,8 @@ class LogAlert extends Model
 
     /**
      * Get the user who created this alert.
+     *
+     * @return BelongsTo<User, LogAlert>
      */
     public function user(): BelongsTo
     {
@@ -58,16 +86,22 @@ class LogAlert extends Model
 
     /**
      * Scope to get only active alerts.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<LogAlert> $query
+     * @return \Illuminate\Database\Eloquent\Builder<LogAlert>
      */
-    public function scopeActive($query)
+    public function scopeActive(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('is_active', true);
     }
 
     /**
      * Scope to get alerts for a specific server.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<LogAlert> $query
+     * @return \Illuminate\Database\Eloquent\Builder<LogAlert>
      */
-    public function scopeForServer($query, int $serverId)
+    public function scopeForServer(\Illuminate\Database\Eloquent\Builder $query, int $serverId): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('server_id', $serverId);
     }

@@ -89,6 +89,8 @@ class LogAlertService
 
     /**
      * Get recent logs for alert evaluation.
+     *
+     * @return Collection<int, SystemLog>
      */
     protected function getRecentLogs(LogAlert $alert): Collection
     {
@@ -119,6 +121,8 @@ class LogAlertService
 
     /**
      * Trigger alert and send notifications.
+     *
+     * @param Collection<int, SystemLog> $matchingLogs
      */
     protected function triggerAlert(LogAlert $alert, Collection $matchingLogs): void
     {
@@ -146,6 +150,8 @@ class LogAlertService
 
     /**
      * Send email notification.
+     *
+     * @param Collection<int, SystemLog> $logs
      */
     protected function sendEmailNotification(LogAlert $alert, Collection $logs): void
     {
@@ -157,6 +163,8 @@ class LogAlertService
 
     /**
      * Send Slack notification.
+     *
+     * @param Collection<int, SystemLog> $logs
      */
     protected function sendSlackNotification(LogAlert $alert, Collection $logs): void
     {
@@ -173,6 +181,9 @@ class LogAlertService
 
     /**
      * Build Slack message payload.
+     *
+     * @param Collection<int, SystemLog> $logs
+     * @return array<string, mixed>
      */
     protected function buildSlackMessage(LogAlert $alert, Collection $logs): array
     {
@@ -223,6 +234,8 @@ class LogAlertService
 
     /**
      * Send webhook notification.
+     *
+     * @param Collection<int, SystemLog> $logs
      */
     protected function sendWebhookNotification(LogAlert $alert, Collection $logs): void
     {
@@ -248,7 +261,7 @@ class LogAlertService
                     'level' => $log->level,
                     'log_type' => $log->log_type,
                     'source' => $log->source,
-                    'logged_at' => $log->logged_at->toIso8601String(),
+                    'logged_at' => $log->logged_at?->toIso8601String(),
                 ];
             })->toArray(),
             'triggered_at' => now()->toIso8601String(),
@@ -283,7 +296,7 @@ class LogAlertService
             'sample_matches' => $matches->map(fn($log) => [
                 'id' => $log->id,
                 'message' => $log->message,
-                'logged_at' => $log->logged_at->toDateTimeString(),
+                'logged_at' => $log->logged_at?->toDateTimeString(),
             ])->toArray(),
         ];
     }

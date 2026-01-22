@@ -78,7 +78,7 @@ return new class extends Migration
         Schema::table('health_checks', function (Blueprint $table) {
             // For active health checks with status
             if (!$this->indexExists('health_checks', 'idx_health_checks_active_status')) {
-                $table->index(['is_active', 'last_check_status'], 'idx_health_checks_active_status');
+                $table->index(['is_active', 'status'], 'idx_health_checks_active_status');
             }
         });
 
@@ -86,7 +86,7 @@ return new class extends Migration
         Schema::table('health_check_results', function (Blueprint $table) {
             // For fetching results by check within time range
             if (!$this->indexExists('health_check_results', 'idx_health_results_check_time')) {
-                $table->index(['health_check_id', 'created_at'], 'idx_health_results_check_time');
+                $table->index(['health_check_id', 'checked_at'], 'idx_health_results_check_time');
             }
         });
 

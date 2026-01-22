@@ -52,13 +52,16 @@ class LogAlertManager extends Component
     #[Validate('required|integer|min:1')]
     public int $time_window = 60;
 
+    /** @var array<int, string> */
     public array $notification_channels = [];
+
+    /** @var array<string, mixed> */
     public array $notification_config = [];
 
     #[Validate('boolean')]
     public bool $is_active = true;
 
-    // Test result
+    /** @var array<string, mixed>|null */
     public ?array $testResult = null;
 
     #[Computed]

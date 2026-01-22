@@ -28,7 +28,8 @@ class SystemLogViewer extends Component
     public bool $autoRefresh = false;
     public bool $showCollectModal = false;
 
-    protected $queryString = [
+    /** @var array<string, array<string, string>> */
+    protected array $queryString = [
         'serverId' => ['as' => 'server'],
         'logType' => ['as' => 'type'],
         'logLevel' => ['as' => 'level'],
@@ -110,7 +111,11 @@ class SystemLogViewer extends Component
         ];
     }
 
-    protected function applyTimeRangeFilter($query)
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<SystemLog> $query
+     * @return \Illuminate\Database\Eloquent\Builder<SystemLog>
+     */
+    protected function applyTimeRangeFilter(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
     {
         return match ($this->timeRange) {
             '1h' => $query->where('logged_at', '>=', now()->subHour()),

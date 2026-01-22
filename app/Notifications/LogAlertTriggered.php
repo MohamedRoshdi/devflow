@@ -15,13 +15,19 @@ class LogAlertTriggered extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    /** @var Collection<int, \App\Models\SystemLog> */
+    public Collection $matchingLogs;
+
     /**
      * Create a new notification instance.
+     *
+     * @param Collection<int, \App\Models\SystemLog> $matchingLogs
      */
     public function __construct(
         public LogAlert $alert,
-        public Collection $matchingLogs
+        Collection $matchingLogs
     ) {
+        $this->matchingLogs = $matchingLogs;
         $this->queue = 'notifications';
     }
 
@@ -68,9 +74,10 @@ class LogAlertTriggered extends Notification implements ShouldQueue
         return $this->matchingLogs
             ->take(5)
             ->map(function ($log) {
+                $loggedAt = $log->logged_at?->format('Y-m-d H:i:s') ?? 'N/A';
                 return sprintf(
                     '[%s] [%s] %s',
-                    $log->logged_at->format('Y-m-d H:i:s'),
+                    $loggedAt,
                     strtoupper($log->level),
                     $log->message
                 );
