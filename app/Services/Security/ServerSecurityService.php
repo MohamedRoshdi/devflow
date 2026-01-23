@@ -148,30 +148,44 @@ class ServerSecurityService
 
     /**
      * Get PHP.ini security-related settings
+     * Uses a single SSH command to fetch all settings at once for better performance
      */
     protected function getPhpIniSecuritySettings(Server $server): array
     {
         $settings = [
-            'expose_php' => 'expose_php',
-            'display_errors' => 'display_errors',
-            'log_errors' => 'log_errors',
-            'allow_url_fopen' => 'allow_url_fopen',
-            'allow_url_include' => 'allow_url_include',
-            'open_basedir' => 'open_basedir',
-            'disable_functions' => 'disable_functions',
-            'session.cookie_httponly' => 'session.cookie_httponly',
-            'session.cookie_secure' => 'session.cookie_secure',
-            'session.use_strict_mode' => 'session.use_strict_mode',
+            'expose_php',
+            'display_errors',
+            'log_errors',
+            'allow_url_fopen',
+            'allow_url_include',
+            'open_basedir',
+            'disable_functions',
+            'session.cookie_httponly',
+            'session.cookie_secure',
+            'session.use_strict_mode',
         ];
 
-        $result = [];
-        foreach ($settings as $key => $ini) {
-            $command = "php -r \"echo ini_get('{$ini}');\" 2>/dev/null";
-            $cmdResult = $this->executeCommand($server, $command);
-            $result[$key] = $cmdResult['output'] ?? '';
+        // Build a single PHP command that outputs all settings as JSON
+        $phpCode = sprintf(
+            'echo json_encode([%s]);',
+            implode(', ', array_map(
+                fn ($setting) => "'{$setting}' => ini_get('{$setting}')",
+                $settings
+            ))
+        );
+
+        $command = "php -r \"{$phpCode}\" 2>/dev/null";
+        $cmdResult = $this->executeCommand($server, $command);
+
+        if ($cmdResult['success'] && ! empty($cmdResult['output'])) {
+            $decoded = json_decode($cmdResult['output'], true);
+            if (is_array($decoded)) {
+                return $decoded;
+            }
         }
 
-        return $result;
+        // Fallback to empty values if command fails
+        return array_fill_keys($settings, '');
     }
 
     /**

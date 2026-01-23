@@ -8,8 +8,10 @@ use App\Models\Server;
 use App\Services\Security\SecurityScoreService;
 use App\Services\Security\ServerSecurityService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Lazy;
 use Livewire\Component;
 
+#[Lazy]
 class ServerSecurityDashboard extends Component
 {
     use AuthorizesRequests;
@@ -19,7 +21,7 @@ class ServerSecurityDashboard extends Component
     /** @var array<string, mixed>|null */
     public ?array $securityOverview = null;
 
-    public bool $isLoading = false;
+    public bool $isLoading = true;
 
     public bool $isScanning = false;
 
@@ -32,6 +34,24 @@ class ServerSecurityDashboard extends Component
         $this->authorize('view', $server);
         $this->server = $server;
         $this->loadSecurityStatus();
+    }
+
+    /**
+     * Placeholder shown while lazy component loads
+     */
+    public function placeholder(): string
+    {
+        return <<<'HTML'
+        <div class="flex items-center justify-center min-h-[400px]">
+            <div class="flex flex-col items-center gap-4">
+                <svg class="animate-spin h-8 w-8 text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="text-sm text-gray-500 dark:text-gray-400">Loading security status...</span>
+            </div>
+        </div>
+        HTML;
     }
 
     public function loadSecurityStatus(): void
