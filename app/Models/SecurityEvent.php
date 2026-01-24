@@ -53,6 +53,8 @@ class SecurityEvent extends Model
 
     public const TYPE_BULK_UNBAN = 'bulk_unban';
 
+    public const TYPE_BULK_BAN = 'bulk_ban';
+
     public const TYPE_IP_TRANSFERRED = 'ip_transferred';
 
     /**
@@ -107,6 +109,7 @@ class SecurityEvent extends Model
             self::TYPE_IP_WHITELISTED => 'IP Whitelisted',
             self::TYPE_IP_REMOVED_FROM_WHITELIST => 'IP Removed from Whitelist',
             self::TYPE_BULK_UNBAN => 'Bulk Unban',
+            self::TYPE_BULK_BAN => 'Bulk Ban',
             self::TYPE_IP_TRANSFERRED => 'IP Transferred',
             default => ucfirst(str_replace('_', ' ', $this->event_type)),
         };
@@ -117,7 +120,7 @@ class SecurityEvent extends Model
         return match ($this->event_type) {
             self::TYPE_FIREWALL_ENABLED, self::TYPE_RULE_ADDED, self::TYPE_IP_WHITELISTED => 'green',
             self::TYPE_FIREWALL_DISABLED, self::TYPE_RULE_DELETED, self::TYPE_IP_REMOVED_FROM_WHITELIST => 'red',
-            self::TYPE_IP_BANNED => 'orange',
+            self::TYPE_IP_BANNED, self::TYPE_BULK_BAN => 'orange',
             self::TYPE_IP_UNBANNED, self::TYPE_BULK_UNBAN => 'yellow',
             self::TYPE_SSH_CONFIG_CHANGED, self::TYPE_IP_TRANSFERRED => 'blue',
             self::TYPE_SECURITY_SCAN => 'purple',

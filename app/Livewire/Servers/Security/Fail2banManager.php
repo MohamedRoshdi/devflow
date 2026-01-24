@@ -32,13 +32,29 @@ class Fail2banManager extends Component
 
     public string $newWhitelistIP = '';
 
-    public string $activeTab = 'banned'; // 'banned' or 'whitelist'
+    public string $manualBanIP = '';
+
+    public string $activeTab = 'banned'; // 'banned', 'whitelist', 'attackers', 'logins'
 
     public bool $isLoading = false;
 
     public ?string $flashMessage = null;
 
     public ?string $flashType = null;
+
+    /** @var array<int, array{ip: string, attempts: int}> */
+    public array $topAttackers = [];
+
+    public int $totalAttacks = 0;
+
+    /** @var array<int, array{timestamp: string, ip: string, user: string, type: string}> */
+    public array $failedLogins = [];
+
+    /** @var array<int, array{timestamp: string, ip: string, user: string, method: string}> */
+    public array $successfulLogins = [];
+
+    /** @var array<int, string> */
+    public array $selectedAttackers = [];
 
     public function mount(Server $server): void
     {
@@ -118,6 +134,142 @@ class Fail2banManager extends Component
     public function switchTab(string $tab): void
     {
         $this->activeTab = $tab;
+
+        // Load data for the selected tab
+        if ($tab === 'attackers' && empty($this->topAttackers)) {
+            $this->loadTopAttackers();
+        } elseif ($tab === 'logins' && empty($this->failedLogins)) {
+            $this->loadRecentLogins();
+        }
+    }
+
+    public function loadTopAttackers(): void
+    {
+        try {
+            $service = app(Fail2banService::class);
+            $result = $service->getTopAttackingIPs($this->server);
+
+            if ($result['success']) {
+                $this->topAttackers = $result['attackers'];
+                $this->totalAttacks = $result['total_attacks'];
+            } else {
+                $this->flashMessage = $result['error'] ?? 'Failed to load attackers';
+                $this->flashType = 'error';
+            }
+        } catch (\Exception $e) {
+            $this->flashMessage = 'Failed to load top attackers: '.$e->getMessage();
+            $this->flashType = 'error';
+        }
+    }
+
+    public function loadRecentLogins(): void
+    {
+        try {
+            $service = app(Fail2banService::class);
+
+            $failedResult = $service->getRecentFailedLogins($this->server);
+            if ($failedResult['success']) {
+                $this->failedLogins = $failedResult['attempts'];
+            }
+
+            $successResult = $service->getRecentSuccessfulLogins($this->server);
+            if ($successResult['success']) {
+                $this->successfulLogins = $successResult['logins'];
+            }
+        } catch (\Exception $e) {
+            $this->flashMessage = 'Failed to load login history: '.$e->getMessage();
+            $this->flashType = 'error';
+        }
+    }
+
+    public function banAttacker(string $ip): void
+    {
+        try {
+            $service = app(Fail2banService::class);
+            $result = $service->banIP($this->server, $ip, $this->selectedJail);
+
+            if ($result['success']) {
+                $this->flashMessage = "Banned IP {$ip}";
+                $this->flashType = 'success';
+                $this->loadTopAttackers();
+                $this->loadBannedIPs();
+            } else {
+                $this->flashMessage = $result['message'];
+                $this->flashType = 'error';
+            }
+        } catch (\Exception $e) {
+            $this->flashMessage = 'Failed to ban IP: '.$e->getMessage();
+            $this->flashType = 'error';
+        }
+    }
+
+    public function manualBan(): void
+    {
+        if (empty($this->manualBanIP)) {
+            $this->flashMessage = 'Please enter an IP address';
+            $this->flashType = 'error';
+            return;
+        }
+
+        if (! filter_var($this->manualBanIP, FILTER_VALIDATE_IP)) {
+            $this->flashMessage = 'Invalid IP address format';
+            $this->flashType = 'error';
+            return;
+        }
+
+        $this->banAttacker($this->manualBanIP);
+        $this->manualBanIP = '';
+    }
+
+    public function toggleAttackerSelection(string $ip): void
+    {
+        if (in_array($ip, $this->selectedAttackers)) {
+            $this->selectedAttackers = array_values(array_diff($this->selectedAttackers, [$ip]));
+        } else {
+            $this->selectedAttackers[] = $ip;
+        }
+    }
+
+    public function selectAllAttackers(): void
+    {
+        $this->selectedAttackers = array_column($this->topAttackers, 'ip');
+    }
+
+    public function deselectAllAttackers(): void
+    {
+        $this->selectedAttackers = [];
+    }
+
+    public function banSelectedAttackers(): void
+    {
+        if (empty($this->selectedAttackers)) {
+            $this->flashMessage = 'No IPs selected';
+            $this->flashType = 'error';
+            return;
+        }
+
+        try {
+            $service = app(Fail2banService::class);
+            $result = $service->bulkBanIPs($this->server, $this->selectedAttackers, $this->selectedJail);
+
+            $this->flashMessage = $result['message'];
+            $this->flashType = $result['success'] ? 'success' : 'error';
+
+            $this->selectedAttackers = [];
+            $this->loadTopAttackers();
+            $this->loadBannedIPs();
+        } catch (\Exception $e) {
+            $this->flashMessage = 'Failed to ban IPs: '.$e->getMessage();
+            $this->flashType = 'error';
+        }
+    }
+
+    public function refreshAttackData(): void
+    {
+        $this->loadTopAttackers();
+        $this->loadRecentLogins();
+        $this->flashMessage = 'Attack data refreshed';
+        $this->flashType = 'success';
     }
 
     public function unbanIP(string $ip): void

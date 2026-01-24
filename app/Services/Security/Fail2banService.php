@@ -715,4 +715,275 @@ class Fail2banService
             'user_id' => Auth::id(),
         ]);
     }
+
+    /**
+     * Get top attacking IPs from SSH auth logs
+     *
+     * @return array{success: bool, attackers: array<int, array{ip: string, attempts: int}>, total_attacks: int, error?: string}
+     */
+    public function getTopAttackingIPs(Server $server, int $limit = 20): array
+    {
+        try {
+            $sudoPrefix = $this->getSudoPrefix($server);
+
+            // Parse auth.log for failed SSH attempts and count by IP
+            $command = "{$sudoPrefix}grep -E 'Failed password|Invalid user' /var/log/auth.log 2>/dev/null | grep -oE '[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+' | sort | uniq -c | sort -rn | head -{$limit}";
+            $result = $this->executeCommand($server, $command);
+
+            if (! $result['success'] && empty($result['output'])) {
+                // Try alternate log location for RHEL/CentOS
+                $command = "{$sudoPrefix}grep -E 'Failed password|Invalid user' /var/log/secure 2>/dev/null | grep -oE '[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+' | sort | uniq -c | sort -rn | head -{$limit}";
+                $result = $this->executeCommand($server, $command);
+            }
+
+            $attackers = [];
+            $totalAttacks = 0;
+
+            if (! empty($result['output'])) {
+                $lines = array_filter(explode("\n", trim($result['output'])));
+                foreach ($lines as $line) {
+                    if (preg_match('/^\s*(\d+)\s+(\d+\.\d+\.\d+\.\d+)/', trim($line), $matches)) {
+                        $attempts = (int) $matches[1];
+                        $attackers[] = [
+                            'ip' => $matches[2],
+                            'attempts' => $attempts,
+                        ];
+                        $totalAttacks += $attempts;
+                    }
+                }
+            }
+
+            return [
+                'success' => true,
+                'attackers' => $attackers,
+                'total_attacks' => $totalAttacks,
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'attackers' => [],
+                'total_attacks' => 0,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Get recent failed SSH login attempts
+     *
+     * @return array{success: bool, attempts: array<int, array{timestamp: string, ip: string, user: string, type: string}>, error?: string}
+     */
+    public function getRecentFailedLogins(Server $server, int $limit = 50): array
+    {
+        try {
+            $sudoPrefix = $this->getSudoPrefix($server);
+
+            $command = "{$sudoPrefix}grep -E 'Failed password|Invalid user' /var/log/auth.log 2>/dev/null | tail -{$limit}";
+            $result = $this->executeCommand($server, $command);
+
+            if (! $result['success'] && empty($result['output'])) {
+                $command = "{$sudoPrefix}grep -E 'Failed password|Invalid user' /var/log/secure 2>/dev/null | tail -{$limit}";
+                $result = $this->executeCommand($server, $command);
+            }
+
+            $attempts = [];
+
+            if (! empty($result['output'])) {
+                $lines = array_filter(explode("\n", trim($result['output'])));
+                foreach ($lines as $line) {
+                    $attempt = $this->parseAuthLogLine($line);
+                    if ($attempt) {
+                        $attempts[] = $attempt;
+                    }
+                }
+            }
+
+            // Reverse to show most recent first
+            $attempts = array_reverse($attempts);
+
+            return [
+                'success' => true,
+                'attempts' => $attempts,
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'attempts' => [],
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Get recent successful SSH logins
+     *
+     * @return array{success: bool, logins: array<int, array{timestamp: string, ip: string, user: string, method: string}>, error?: string}
+     */
+    public function getRecentSuccessfulLogins(Server $server, int $limit = 30): array
+    {
+        try {
+            $sudoPrefix = $this->getSudoPrefix($server);
+
+            $command = "{$sudoPrefix}grep 'Accepted' /var/log/auth.log 2>/dev/null | tail -{$limit}";
+            $result = $this->executeCommand($server, $command);
+
+            if (! $result['success'] && empty($result['output'])) {
+                $command = "{$sudoPrefix}grep 'Accepted' /var/log/secure 2>/dev/null | tail -{$limit}";
+                $result = $this->executeCommand($server, $command);
+            }
+
+            $logins = [];
+
+            if (! empty($result['output'])) {
+                $lines = array_filter(explode("\n", trim($result['output'])));
+                foreach ($lines as $line) {
+                    $login = $this->parseSuccessfulLoginLine($line);
+                    if ($login) {
+                        $logins[] = $login;
+                    }
+                }
+            }
+
+            // Reverse to show most recent first
+            $logins = array_reverse($logins);
+
+            return [
+                'success' => true,
+                'logins' => $logins,
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'logins' => [],
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Bulk ban multiple IPs at once
+     *
+     * @param array<int, string> $ips
+     * @return array{success: bool, banned: int, failed: int, message: string}
+     */
+    public function bulkBanIPs(Server $server, array $ips, string $jailName = 'sshd'): array
+    {
+        $banned = 0;
+        $failed = 0;
+
+        foreach ($ips as $ip) {
+            try {
+                $result = $this->banIP($server, $ip, $jailName);
+                if ($result['success']) {
+                    $banned++;
+                } else {
+                    $failed++;
+                }
+            } catch (\Exception $e) {
+                $failed++;
+            }
+        }
+
+        $this->logEvent(
+            $server,
+            SecurityEvent::TYPE_BULK_BAN,
+            "Bulk banned {$banned} IPs in jail {$jailName}"
+        );
+
+        return [
+            'success' => $banned > 0,
+            'banned' => $banned,
+            'failed' => $failed,
+            'message' => "Banned {$banned} IPs" . ($failed > 0 ? ", {$failed} failed" : ''),
+        ];
+    }
+
+    /**
+     * Parse an auth.log line for failed login attempts
+     *
+     * @return array{timestamp: string, ip: string, user: string, type: string}|null
+     */
+    protected function parseAuthLogLine(string $line): ?array
+    {
+        // Match timestamp at beginning (various formats)
+        $timestamp = '';
+        if (preg_match('/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})/', $line, $tsMatch)) {
+            $timestamp = $tsMatch[1];
+        } elseif (preg_match('/^([A-Z][a-z]{2}\s+\d+\s+\d{2}:\d{2}:\d{2})/', $line, $tsMatch)) {
+            $timestamp = $tsMatch[1];
+        }
+
+        // Extract IP address
+        $ip = '';
+        if (preg_match('/from\s+(\d+\.\d+\.\d+\.\d+)/', $line, $ipMatch)) {
+            $ip = $ipMatch[1];
+        }
+
+        // Extract username
+        $user = 'unknown';
+        $type = 'failed_password';
+
+        if (preg_match('/Invalid user\s+(\S+)\s+from/', $line, $userMatch)) {
+            $user = $userMatch[1];
+            $type = 'invalid_user';
+        } elseif (preg_match('/Failed password for invalid user\s+(\S+)\s+from/', $line, $userMatch)) {
+            $user = $userMatch[1];
+            $type = 'invalid_user';
+        } elseif (preg_match('/Failed password for\s+(\S+)\s+from/', $line, $userMatch)) {
+            $user = $userMatch[1];
+            $type = 'failed_password';
+        }
+
+        if (empty($ip)) {
+            return null;
+        }
+
+        return [
+            'timestamp' => $timestamp,
+            'ip' => $ip,
+            'user' => $user,
+            'type' => $type,
+        ];
+    }
+
+    /**
+     * Parse successful login line from auth.log
+     *
+     * @return array{timestamp: string, ip: string, user: string, method: string}|null
+     */
+    protected function parseSuccessfulLoginLine(string $line): ?array
+    {
+        $timestamp = '';
+        if (preg_match('/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})/', $line, $tsMatch)) {
+            $timestamp = $tsMatch[1];
+        } elseif (preg_match('/^([A-Z][a-z]{2}\s+\d+\s+\d{2}:\d{2}:\d{2})/', $line, $tsMatch)) {
+            $timestamp = $tsMatch[1];
+        }
+
+        $ip = '';
+        if (preg_match('/from\s+(\d+\.\d+\.\d+\.\d+)/', $line, $ipMatch)) {
+            $ip = $ipMatch[1];
+        }
+
+        $user = 'unknown';
+        if (preg_match('/Accepted\s+\S+\s+for\s+(\S+)\s+from/', $line, $userMatch)) {
+            $user = $userMatch[1];
+        }
+
+        $method = 'password';
+        if (str_contains($line, 'publickey')) {
+            $method = 'publickey';
+        }
+
+        if (empty($ip)) {
+            return null;
+        }
+
+        return [
+            'timestamp' => $timestamp,
+            'ip' => $ip,
+            'user' => $user,
+            'method' => $method,
+        ];
+    }
 }
