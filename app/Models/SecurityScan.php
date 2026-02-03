@@ -54,6 +54,12 @@ class SecurityScan extends Model
 
     public const RISK_SECURE = 'secure';
 
+    public const SCAN_TYPE_STANDARD = 'standard';
+
+    public const SCAN_TYPE_GUARDIAN = 'guardian';
+
+    public const SCAN_TYPE_THREAT = 'threat';
+
     /**
      * @var array<int, string>
      */
@@ -67,6 +73,7 @@ class SecurityScan extends Model
         'started_at',
         'completed_at',
         'triggered_by',
+        'scan_type',
     ];
 
     /**

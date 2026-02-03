@@ -4,13 +4,41 @@ declare(strict_types=1);
 
 namespace App\Services\Security;
 
+use App\Models\RemediationLog;
 use App\Models\SecurityIncident;
 use App\Models\Server;
+use App\Traits\ExecutesServerCommands;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
 
 class IncidentResponseService
 {
+    use ExecutesServerCommands;
+
+    /**
+     * Protected services that must never be disabled
+     *
+     * @var array<int, string>
+     */
+    protected array $protectedServices = [
+        'ssh', 'sshd', 'ssh.socket', 'docker', 'containerd', 'nginx', 'apache2',
+        'mysql', 'mariadb', 'postgresql', 'redis-server', 'fail2ban', 'ufw',
+        'supervisor', 'cron', 'rsyslog', 'systemd-journald', 'systemd-logind',
+        'systemd-networkd', 'systemd-resolved', 'systemd-timesyncd', 'dbus',
+        'networking', 'NetworkManager',
+    ];
+
+    /**
+     * Protected binary paths that must never be removed
+     *
+     * @var array<int, string>
+     */
+    protected array $protectedPaths = [
+        '/usr/bin/bash', '/usr/bin/sh', '/usr/sbin/sshd', '/usr/bin/ssh',
+        '/usr/bin/sudo', '/usr/sbin/nginx', '/usr/bin/docker',
+        '/usr/bin/python3', '/usr/bin/perl', '/usr/bin/php',
+        '/bin/bash', '/bin/sh', '/sbin/init',
+    ];
     /**
      * Kill a suspicious process
      *
@@ -410,6 +438,54 @@ EOF;
                 ];
 
                 break;
+
+            case SecurityIncident::TYPE_CRYPTO_MINER:
+                // Kill miner processes
+                if (isset($incident->affected_items['pid'])) {
+                    $result = $this->killProcess($server, (int) $incident->affected_items['pid']);
+                    $actions[] = ['action' => 'kill_miner_process', 'success' => $result['success'], 'message' => $result['message']];
+                }
+                // Remove miner binary if found
+                if (isset($incident->affected_items['exe_path'])) {
+                    $result = $this->removeMaliciousBinary($server, $incident->affected_items['exe_path']);
+                    $actions[] = ['action' => 'remove_miner_binary', 'success' => $result['success'], 'message' => $result['message']];
+                }
+
+                break;
+
+            case SecurityIncident::TYPE_IRC_BOTNET:
+                // Block IRC port
+                $result = $this->blockOutboundPort($server, 6667);
+                $actions[] = ['action' => 'block_irc_port', 'success' => $result['success'], 'message' => $result['message']];
+
+                break;
+
+            case SecurityIncident::TYPE_MALICIOUS_SERVICE:
+                // Disable the malicious service
+                if (isset($incident->affected_items['service_name'])) {
+                    $result = $this->disableSystemdService($server, $incident->affected_items['service_name']);
+                    $actions[] = ['action' => 'disable_malicious_service', 'success' => $result['success'], 'message' => $result['message']];
+                }
+
+                break;
+
+            case SecurityIncident::TYPE_MINING_POOL_CONNECTION:
+                // Block the mining pool port
+                if (isset($incident->affected_items['port'])) {
+                    $result = $this->blockOutboundPort($server, (int) $incident->affected_items['port']);
+                    $actions[] = ['action' => 'block_mining_port', 'success' => $result['success'], 'message' => $result['message']];
+                }
+
+                break;
+
+            case SecurityIncident::TYPE_PROXY_TUNNEL:
+                // Disable the proxy service
+                if (isset($incident->affected_items['service_name'])) {
+                    $result = $this->disableSystemdService($server, $incident->affected_items['service_name']);
+                    $actions[] = ['action' => 'disable_proxy_service', 'success' => $result['success'], 'message' => $result['message']];
+                }
+
+                break;
         }
 
         // Log remediation actions on the incident
@@ -428,6 +504,299 @@ EOF;
             'success' => $allSuccess,
             'actions' => $actions,
         ];
+    }
+
+    /**
+     * Disable a systemd service (stop + disable)
+     *
+     * @return array{success: bool, message: string}
+     */
+    public function disableSystemdService(Server $server, string $serviceName): array
+    {
+        // Safety check - never disable protected services
+        foreach ($this->protectedServices as $protected) {
+            if (str_contains($serviceName, $protected)) {
+                return [
+                    'success' => false,
+                    'message' => "Cannot disable protected service: {$serviceName}",
+                ];
+            }
+        }
+
+        $this->executeCommand($server, "systemctl stop {$serviceName} 2>&1");
+        $result = $this->executeCommand($server, "systemctl disable {$serviceName} 2>&1");
+
+        $this->logRemediation($server, 'disable_service', $serviceName,
+            "systemctl stop {$serviceName} && systemctl disable {$serviceName}",
+            "systemctl enable {$serviceName} && systemctl start {$serviceName}",
+            $result['success']
+        );
+
+        Log::info('Incident response: Disable systemd service', [
+            'server_id' => $server->id,
+            'service' => $serviceName,
+            'success' => $result['success'],
+        ]);
+
+        return [
+            'success' => $result['success'],
+            'message' => $result['success'] ? "Service {$serviceName} stopped and disabled" : "Failed to disable service: {$result['error']}",
+        ];
+    }
+
+    /**
+     * Remove a systemd service completely (stop + disable + remove file + daemon-reload)
+     *
+     * @return array{success: bool, message: string}
+     */
+    public function removeSystemdService(Server $server, string $serviceName): array
+    {
+        // Safety check
+        foreach ($this->protectedServices as $protected) {
+            if (str_contains($serviceName, $protected)) {
+                return [
+                    'success' => false,
+                    'message' => "Cannot remove protected service: {$serviceName}",
+                ];
+            }
+        }
+
+        // Find the service file path
+        $pathResult = $this->executeCommand($server, "systemctl show {$serviceName} --property=FragmentPath --no-pager 2>/dev/null");
+        $servicePath = str_replace('FragmentPath=', '', trim($pathResult['output'] ?? ''));
+
+        // Stop and disable
+        $this->executeCommand($server, "systemctl stop {$serviceName} 2>&1");
+        $this->executeCommand($server, "systemctl disable {$serviceName} 2>&1");
+
+        // Remove service file
+        if (! empty($servicePath) && file_exists($servicePath)) {
+            $this->executeCommand($server, "rm -f '{$servicePath}' 2>&1");
+        }
+
+        // Reload daemon
+        $result = $this->executeCommand($server, 'systemctl daemon-reload 2>&1');
+
+        $this->logRemediation($server, 'remove_service', $serviceName,
+            "systemctl stop {$serviceName} && systemctl disable {$serviceName} && rm -f '{$servicePath}' && systemctl daemon-reload",
+            null,
+            $result['success']
+        );
+
+        Log::info('Incident response: Remove systemd service', [
+            'server_id' => $server->id,
+            'service' => $serviceName,
+            'service_path' => $servicePath,
+            'success' => $result['success'],
+        ]);
+
+        return [
+            'success' => $result['success'],
+            'message' => $result['success'] ? "Service {$serviceName} completely removed" : "Failed to remove service: {$result['error']}",
+        ];
+    }
+
+    /**
+     * Remove a malicious crontab entry for a specific user
+     *
+     * @return array{success: bool, message: string}
+     */
+    public function removeMaliciousCrontabEntry(Server $server, string $user, string $pattern): array
+    {
+        // Get current crontab
+        $currentResult = $this->executeCommand($server, "crontab -u {$user} -l 2>/dev/null");
+        if (! $currentResult['success'] || empty($currentResult['output'])) {
+            return ['success' => true, 'message' => 'No crontab to clean'];
+        }
+
+        // Filter out lines matching the malicious pattern
+        $lines = explode("\n", $currentResult['output']);
+        $cleanLines = array_filter($lines, function (string $line) use ($pattern): bool {
+            return ! preg_match($pattern, $line);
+        });
+
+        $cleanContent = implode("\n", $cleanLines);
+
+        // Write the cleaned crontab
+        $escapedContent = str_replace(["'", '\\'], ["'\\''", '\\\\'], $cleanContent);
+        $result = $this->executeCommand($server, "echo '{$escapedContent}' | crontab -u {$user} - 2>&1");
+
+        $this->logRemediation($server, 'remove_crontab', "user:{$user} pattern:{$pattern}",
+            "Filtered crontab for user {$user}",
+            "Restore original crontab for {$user}",
+            $result['success']
+        );
+
+        Log::info('Incident response: Remove malicious crontab entry', [
+            'server_id' => $server->id,
+            'user' => $user,
+            'pattern' => $pattern,
+            'success' => $result['success'],
+        ]);
+
+        return [
+            'success' => $result['success'],
+            'message' => $result['success'] ? "Cleaned crontab for user {$user}" : "Failed to clean crontab: {$result['error']}",
+        ];
+    }
+
+    /**
+     * Remove a malicious binary with safety checks
+     *
+     * @return array{success: bool, message: string}
+     */
+    public function removeMaliciousBinary(Server $server, string $binaryPath): array
+    {
+        // Safety check - never remove protected binaries
+        $realPath = $binaryPath;
+        $realResult = $this->executeCommand($server, "readlink -f '{$binaryPath}' 2>/dev/null");
+        if ($realResult['success'] && ! empty($realResult['output'])) {
+            $realPath = trim($realResult['output']);
+        }
+
+        if (in_array($realPath, $this->protectedPaths, true)) {
+            return [
+                'success' => false,
+                'message' => "Cannot remove protected binary: {$binaryPath}",
+            ];
+        }
+
+        // Don't remove binaries in standard system directories
+        $systemDirs = ['/usr/bin/', '/usr/sbin/', '/bin/', '/sbin/', '/usr/lib/'];
+        foreach ($systemDirs as $dir) {
+            if (str_starts_with($realPath, $dir)) {
+                return [
+                    'success' => false,
+                    'message' => "Cannot remove binary in system directory: {$realPath}",
+                ];
+            }
+        }
+
+        // Get file info before removal
+        $fileInfo = $this->executeCommand($server, "ls -la '{$binaryPath}' 2>/dev/null");
+
+        $result = $this->executeCommand($server, "rm -f '{$binaryPath}' 2>&1");
+
+        $this->logRemediation($server, 'remove_binary', $binaryPath,
+            "rm -f '{$binaryPath}'",
+            null,
+            $result['success'],
+            $fileInfo['output'] ?? null
+        );
+
+        Log::info('Incident response: Remove malicious binary', [
+            'server_id' => $server->id,
+            'binary_path' => $binaryPath,
+            'success' => $result['success'],
+        ]);
+
+        return [
+            'success' => $result['success'],
+            'message' => $result['success'] ? "Binary {$binaryPath} removed" : "Failed to remove binary: {$result['error']}",
+        ];
+    }
+
+    /**
+     * Block mining pool IPs via UFW
+     *
+     * @param array<int, string> $ips
+     * @return array{success: bool, message: string}
+     */
+    public function blockMiningPool(Server $server, array $ips): array
+    {
+        $blocked = 0;
+
+        foreach ($ips as $ip) {
+            $ip = trim($ip);
+            if (empty($ip) || ! filter_var($ip, FILTER_VALIDATE_IP)) {
+                continue;
+            }
+
+            $result = $this->executeCommand($server, "ufw deny out to {$ip} 2>&1");
+            if ($result['success']) {
+                $blocked++;
+            }
+        }
+
+        $this->logRemediation($server, 'block_ip', 'mining_pool_ips:'.implode(',', $ips),
+            'ufw deny out to [IPs]',
+            'ufw delete deny out to [IPs]',
+            $blocked > 0
+        );
+
+        Log::info('Incident response: Block mining pool IPs', [
+            'server_id' => $server->id,
+            'ips_blocked' => $blocked,
+            'total_ips' => count($ips),
+        ]);
+
+        return [
+            'success' => $blocked > 0,
+            'message' => "Blocked {$blocked} of ".count($ips).' mining pool IPs',
+        ];
+    }
+
+    /**
+     * Block outbound port (e.g., IRC 6667, stratum ports)
+     *
+     * @return array{success: bool, message: string}
+     */
+    public function blockOutboundPort(Server $server, int $port): array
+    {
+        // Safety check - never block essential ports
+        $essentialPorts = [22, 80, 443, 53, 25, 587, 993, 995];
+        if (in_array($port, $essentialPorts, true)) {
+            return [
+                'success' => false,
+                'message' => "Cannot block essential port: {$port}",
+            ];
+        }
+
+        $result = $this->executeCommand($server, "ufw deny out {$port} 2>&1");
+
+        $this->logRemediation($server, 'block_port', "port:{$port}",
+            "ufw deny out {$port}",
+            "ufw delete deny out {$port}",
+            $result['success']
+        );
+
+        Log::info('Incident response: Block outbound port', [
+            'server_id' => $server->id,
+            'port' => $port,
+            'success' => $result['success'],
+        ]);
+
+        return [
+            'success' => $result['success'],
+            'message' => $result['success'] ? "Outbound port {$port} blocked" : "Failed to block port: {$result['error']}",
+        ];
+    }
+
+    /**
+     * Log a remediation action for audit trail
+     */
+    protected function logRemediation(
+        Server $server,
+        string $action,
+        string $target,
+        ?string $command = null,
+        ?string $rollbackCommand = null,
+        bool $success = false,
+        ?string $output = null,
+        ?int $incidentId = null,
+        bool $autoTriggered = false,
+    ): RemediationLog {
+        return RemediationLog::create([
+            'server_id' => $server->id,
+            'security_incident_id' => $incidentId,
+            'action' => $action,
+            'target' => $target,
+            'command_executed' => $command,
+            'rollback_command' => $rollbackCommand,
+            'success' => $success,
+            'output' => $output,
+            'auto_triggered' => $autoTriggered,
+        ]);
     }
 
     /**

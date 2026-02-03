@@ -66,6 +66,20 @@ class SecurityIncident extends Model
 
     public const TYPE_HIDDEN_DIRECTORY = 'hidden_directory';
 
+    public const TYPE_CRYPTO_MINER = 'crypto_miner';
+
+    public const TYPE_IRC_BOTNET = 'irc_botnet';
+
+    public const TYPE_MALICIOUS_SERVICE = 'malicious_service';
+
+    public const TYPE_PROCESS_DISGUISE = 'process_disguise';
+
+    public const TYPE_MINING_POOL_CONNECTION = 'mining_pool_connection';
+
+    public const TYPE_PROXY_TUNNEL = 'proxy_tunnel';
+
+    public const TYPE_PERSISTENCE = 'persistence';
+
     // Severity Levels
     public const SEVERITY_CRITICAL = 'critical';
 
@@ -277,6 +291,13 @@ class SecurityIncident extends Model
             self::TYPE_BRUTE_FORCE => 'Brute Force Attack',
             self::TYPE_UNAUTHORIZED_ACCESS => 'Unauthorized Access',
             self::TYPE_FILE_INTEGRITY => 'File Integrity Violation',
+            self::TYPE_CRYPTO_MINER => 'Crypto Miner Detected',
+            self::TYPE_IRC_BOTNET => 'IRC Botnet Detected',
+            self::TYPE_MALICIOUS_SERVICE => 'Malicious Systemd Service',
+            self::TYPE_PROCESS_DISGUISE => 'Disguised Process',
+            self::TYPE_MINING_POOL_CONNECTION => 'Mining Pool Connection',
+            self::TYPE_PROXY_TUNNEL => 'Proxy Tunnel Detected',
+            self::TYPE_PERSISTENCE => 'Persistence Mechanism',
         ];
     }
 

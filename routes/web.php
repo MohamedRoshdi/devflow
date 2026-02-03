@@ -75,6 +75,11 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
     Route::get('/servers/{server}/security/scan', \App\Livewire\Servers\Security\SecurityScanDashboard::class)->name('servers.security.scan');
     Route::get('/servers/{server}/security/threats', \App\Livewire\Servers\Security\ThreatScanner::class)->name('servers.security.threats');
 
+    // Security Guardian
+    Route::get('/servers/{server}/security/guardian', \App\Livewire\Servers\Security\SecurityGuardianDashboard::class)->name('servers.security.guardian');
+    Route::get('/servers/{server}/security/predictions', \App\Livewire\Servers\Security\PredictiveAnalyticsDashboard::class)->name('servers.security.predictions');
+    Route::get('/servers/{server}/security/hardening', \App\Livewire\Servers\Security\ServerHardeningWizard::class)->name('servers.security.hardening');
+
     // Security Incidents Dashboard (global)
     Route::get('/security/incidents', \App\Livewire\Servers\Security\IncidentDashboard::class)->name('security.incidents');
 

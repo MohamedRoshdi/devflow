@@ -14,6 +14,14 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
+ * @property bool $guardian_enabled
+ * @property \Illuminate\Support\Carbon|null $last_guardian_scan_at
+ * @property \Illuminate\Support\Carbon|null $last_baseline_at
+ * @property \Illuminate\Support\Carbon|null $last_hardening_at
+ * @property string|null $hardening_level
+ */
+
+/**
  * @property array<int, string>|null $installed_packages
  */
 class Server extends Model
@@ -69,6 +77,11 @@ class Server extends Model
         'provision_status',
         'installed_packages',
         'metadata',
+        'guardian_enabled',
+        'last_guardian_scan_at',
+        'last_baseline_at',
+        'last_hardening_at',
+        'hardening_level',
     ];
 
     protected $hidden = [
@@ -101,6 +114,10 @@ class Server extends Model
             'port' => 'integer',
             'latitude' => 'decimal:8',
             'longitude' => 'decimal:8',
+            'guardian_enabled' => 'boolean',
+            'last_guardian_scan_at' => 'datetime',
+            'last_baseline_at' => 'datetime',
+            'last_hardening_at' => 'datetime',
         ];
     }
 
@@ -313,6 +330,46 @@ class Server extends Model
     public function latestProvisioningLog(): HasOne
     {
         return $this->hasOne(ProvisioningLog::class)->latestOfMany();
+    }
+
+    /**
+     * @return HasMany<SecurityBaseline, $this>
+     */
+    public function securityBaselines(): HasMany
+    {
+        return $this->hasMany(SecurityBaseline::class);
+    }
+
+    /**
+     * @return HasOne<SecurityBaseline, $this>
+     */
+    public function latestBaseline(): HasOne
+    {
+        return $this->hasOne(SecurityBaseline::class)->latestOfMany();
+    }
+
+    /**
+     * @return HasMany<SecurityPrediction, $this>
+     */
+    public function securityPredictions(): HasMany
+    {
+        return $this->hasMany(SecurityPrediction::class);
+    }
+
+    /**
+     * @return HasMany<SecurityPrediction, $this>
+     */
+    public function activePredictions(): HasMany
+    {
+        return $this->hasMany(SecurityPrediction::class)->where('status', SecurityPrediction::STATUS_ACTIVE);
+    }
+
+    /**
+     * @return HasMany<RemediationLog, $this>
+     */
+    public function remediationLogs(): HasMany
+    {
+        return $this->hasMany(RemediationLog::class);
     }
 
     /**

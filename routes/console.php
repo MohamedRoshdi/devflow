@@ -37,3 +37,12 @@ Schedule::command('ssl:check-expiry --days=14 --renew')->daily()->at('03:00');
 
 // Renew SSL certificates (daily at 2 AM)
 Schedule::command('ssl:renew')->daily()->at('02:00');
+
+// Security Guardian - Scan every 15 minutes
+Schedule::command('security:guardian-scan --all --auto-remediate')->everyFifteenMinutes();
+
+// Predictive security analysis - Run hourly
+Schedule::command('security:predict --all')->hourly();
+
+// Capture security baselines - Weekly on Sunday at 4 AM
+Schedule::command('security:capture-baseline --all')->weeklyOn(0, '04:00');

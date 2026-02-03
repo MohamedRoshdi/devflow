@@ -413,6 +413,64 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Security Guardian Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Settings for the Security Guardian feature including threat detection,
+    | predictive analysis, and server hardening.
+    |
+    */
+
+    'guardian' => [
+        // Enable guardian by default for new servers
+        'enabled_by_default' => (bool) env('DEVFLOW_GUARDIAN_ENABLED', false),
+
+        // Auto-remediation enabled by default
+        'auto_remediate_by_default' => (bool) env('DEVFLOW_GUARDIAN_AUTO_REMEDIATE', false),
+
+        // CPU anomaly threshold multiplier (current > baseline * multiplier = alert)
+        'cpu_anomaly_multiplier' => (float) env('DEVFLOW_GUARDIAN_CPU_MULTIPLIER', 2.0),
+
+        // CPU anomaly sustained minutes before alert
+        'cpu_anomaly_sustained_minutes' => (int) env('DEVFLOW_GUARDIAN_CPU_SUSTAINED_MIN', 15),
+
+        // Memory exhaustion prediction window (hours)
+        'memory_prediction_hours' => (int) env('DEVFLOW_GUARDIAN_MEMORY_HOURS', 2),
+
+        // Memory threshold for critical alert (percentage)
+        'memory_critical_threshold' => (int) env('DEVFLOW_GUARDIAN_MEMORY_CRITICAL', 95),
+
+        // Stratum mining ports to monitor
+        'stratum_ports' => [3333, 5555, 7777, 8888, 9999, 14433, 14444, 45560],
+
+        // IRC ports to monitor
+        'irc_ports' => [6667, 6668, 6669, 7000],
+
+        // Protected services that must never be disabled by auto-remediation
+        'safe_services' => [
+            'ssh', 'sshd', 'docker', 'containerd', 'nginx', 'apache2',
+            'mysql', 'mariadb', 'postgresql', 'redis-server', 'fail2ban',
+            'ufw', 'supervisor', 'cron', 'rsyslog', 'systemd-',
+            'networkd', 'resolved', 'timesyncd', 'snapd', 'php', 'node',
+        ],
+
+        // Protected binary paths that must never be removed
+        'protected_paths' => [
+            '/usr/bin/bash', '/usr/bin/sh', '/usr/sbin/sshd', '/usr/bin/ssh',
+            '/usr/bin/sudo', '/usr/sbin/nginx', '/usr/bin/docker',
+            '/usr/bin/python3', '/usr/bin/perl', '/usr/bin/php',
+            '/bin/bash', '/bin/sh', '/sbin/init',
+        ],
+
+        // Known mining pool domain patterns
+        'mining_pool_patterns' => [
+            'c3pool', 'minergate', 'nanopool', 'supportxmr',
+            'hashvault', 'moneroocean', 'xmrpool', 'f2pool',
+        ],
+    ],
+
     'storage' => [
         // Enable automatic cleanup of old artifacts
         'auto_cleanup' => (bool) env('DEVFLOW_AUTO_CLEANUP', true),

@@ -57,6 +57,16 @@ class SecurityEvent extends Model
 
     public const TYPE_IP_TRANSFERRED = 'ip_transferred';
 
+    public const TYPE_GUARDIAN_SCAN = 'guardian_scan';
+
+    public const TYPE_BASELINE_CAPTURED = 'baseline_captured';
+
+    public const TYPE_PREDICTION_CREATED = 'prediction_created';
+
+    public const TYPE_AUTO_REMEDIATION = 'auto_remediation';
+
+    public const TYPE_SERVER_HARDENED = 'server_hardened';
+
     /**
      * @var array<int, string>
      */
@@ -111,6 +121,11 @@ class SecurityEvent extends Model
             self::TYPE_BULK_UNBAN => 'Bulk Unban',
             self::TYPE_BULK_BAN => 'Bulk Ban',
             self::TYPE_IP_TRANSFERRED => 'IP Transferred',
+            self::TYPE_GUARDIAN_SCAN => 'Guardian Scan',
+            self::TYPE_BASELINE_CAPTURED => 'Baseline Captured',
+            self::TYPE_PREDICTION_CREATED => 'Prediction Created',
+            self::TYPE_AUTO_REMEDIATION => 'Auto Remediation',
+            self::TYPE_SERVER_HARDENED => 'Server Hardened',
             default => ucfirst(str_replace('_', ' ', $this->event_type)),
         };
     }
@@ -124,6 +139,11 @@ class SecurityEvent extends Model
             self::TYPE_IP_UNBANNED, self::TYPE_BULK_UNBAN => 'yellow',
             self::TYPE_SSH_CONFIG_CHANGED, self::TYPE_IP_TRANSFERRED => 'blue',
             self::TYPE_SECURITY_SCAN => 'purple',
+            self::TYPE_GUARDIAN_SCAN => 'indigo',
+            self::TYPE_BASELINE_CAPTURED => 'cyan',
+            self::TYPE_PREDICTION_CREATED => 'amber',
+            self::TYPE_AUTO_REMEDIATION => 'rose',
+            self::TYPE_SERVER_HARDENED => 'emerald',
             default => 'gray',
         };
     }
