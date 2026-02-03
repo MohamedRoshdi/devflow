@@ -7,6 +7,71 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [7.0.0] - 2026-02-03
+
+### Added
+
+#### Security Guardian - Predictive Threat Detection & Auto-Remediation
+- **SecurityGuardianService** - Top-level security orchestrator coordinating threat detection, incident response, and predictive analysis
+- **PredictiveSecurityService** - Predictive analytics engine
+  - CPU anomaly detection (sustained usage > 2x baseline indicates crypto miners)
+  - Memory exhaustion prediction via linear regression on metrics history
+  - Brute force escalation analysis from fail2ban ban rate trends
+  - Baseline drift detection (new services, users, ports, crontab entries)
+- **ServerHardeningService** - One-click server hardening
+  - SSH hardening (disable password auth, root login, limit retries)
+  - Safe SSH port change (updates sshd_config + systemd socket override + UFW before restart)
+  - UFW firewall setup with sensible defaults
+  - Fail2ban configuration with custom maxretry/bantime/findtime
+  - Kernel hardening via sysctl (SYN cookies, ICMP protection, ASLR, etc.)
+  - Unnecessary service cleanup (avahi-daemon, cups, bluetooth, etc.)
+- **7 new threat detection methods** in ThreatDetectionService
+  - `detectCryptoMiners()` - XMRig, c3pool, kdevtmpfsi, high-CPU non-standard binaries
+  - `detectIRCBotnets()` - IRC port 6667 connections, Perl masquerading as system processes
+  - `detectMaliciousSystemdServices()` - Services running from /tmp, /var/tmp, /dev/shm
+  - `detectDisguisedProcesses()` - /proc/PID/exe vs process name mismatch
+  - `detectMiningPoolConnections()` - Stratum port connections (3333, 5555, 7777, 8888, 9999, 14444)
+  - `detectProxyTunnels()` - v2ray, shadowsocks, xray services
+  - `detectPersistenceMechanisms()` - All user crontabs, .bashrc/.profile injections, rc.local
+- **6 new remediation methods** in IncidentResponseService
+  - `disableSystemdService()` - Stop + disable with protected service whitelist
+  - `removeSystemdService()` - Full removal with daemon-reload
+  - `removeMaliciousCrontabEntry()` - Filter out malicious patterns from user crontabs
+  - `removeMaliciousBinary()` - Remove with protected path validation
+  - `blockMiningPool()` - UFW deny for mining pool IPs
+  - `blockOutboundPort()` - UFW deny with essential port protection
+- **ExecutesServerCommands trait** - Extracted from 6 services to DRY up SSH execution code
+- **4 Artisan commands**
+  - `security:guardian-scan` - Run guardian scan with `--all` and `--auto-remediate` flags
+  - `security:predict` - Run predictive analysis with `--all` flag
+  - `security:capture-baseline` - Capture security baseline snapshot
+  - `security:harden` - Harden server with `--ssh-port`, `--firewall`, `--fail2ban`, `--sysctl`, `--full` options
+- **3 Livewire dashboards**
+  - SecurityGuardianDashboard - Traffic-light overview, scan/harden buttons, active incidents/predictions
+  - PredictiveAnalyticsDashboard - Trends, predictions table, baseline info, drift detection
+  - ServerHardeningWizard - 4-step wizard (SSH, Firewall, Fail2ban, Kernel/Services)
+- **Database**: 5 new migrations (security_baselines, security_predictions, remediation_logs, known_threat_signatures, server guardian fields)
+- **Models**: SecurityBaseline, SecurityPrediction, RemediationLog, KnownThreatSignature
+- **Enums**: ThreatCategory (10 categories), RemediationAction (12 actions)
+- **Events**: SecurityPredictionCreated, AutoRemediationCompleted (both ShouldBroadcast)
+- **Notifications**: SecurityThreatNotification, SecurityPredictionNotification (mail + database)
+- **Seeder**: KnownThreatSignatureSeeder with 25 real-world threat patterns
+- **Scheduled tasks**: Guardian scan every 15min, predictions hourly, baselines weekly
+
+### Changed
+- SecurityIncident model - Added 7 new TYPE constants (crypto_miner, irc_botnet, malicious_service, process_disguise, mining_pool_connection, proxy_tunnel, persistence)
+- Server model - Added guardian_enabled, last_guardian_scan_at, last_baseline_at, last_hardening_at, hardening_level fields and 5 new relationships
+- SecurityEvent model - Added 5 new event type constants (guardian_scan, baseline_captured, prediction_created, auto_remediation, server_hardened)
+- SecurityScan model - Added scan_type constants (standard, guardian, threat)
+- ThreatDetectionService - Uses ExecutesServerCommands trait, added scanServerGuardian() orchestrator
+- IncidentResponseService - Uses ExecutesServerCommands trait, added protected service/path whitelists
+- config/devflow.php - Added `guardian` configuration section with thresholds and safe service lists
+- routes/web.php - Added 3 guardian routes
+- routes/console.php - Added 3 scheduled security tasks
+- README.md - Added Security Guardian feature section
+
+---
+
 ## [6.9.5] - 2025-12-28
 
 ### Added

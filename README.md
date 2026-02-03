@@ -59,6 +59,34 @@ DevFlow Pro is an enterprise-grade deployment management platform that makes it 
 - **Security Score System** - 100-point scoring across 7 categories
 - **PHP Optimization Checks** - Detect and apply OPcache, JIT optimizations
 
+### Security Guardian (NEW)
+- **Predictive Threat Detection** - Predict security incidents before they happen
+  - CPU anomaly detection (sustained high usage indicating crypto miners)
+  - Memory exhaustion prediction via linear regression
+  - Brute force escalation analysis from fail2ban metrics
+  - Baseline drift detection (new services, users, ports, crontabs)
+- **Real-World Threat Detection** - 14 detection methods covering:
+  - Crypto miners (XMRig, c3pool, kdevtmpfsi, mining pool connections)
+  - IRC botnets (port 6667, Perl masquerading as system processes)
+  - Malicious systemd services (running from /tmp, /var/tmp, /dev/shm)
+  - Disguised processes (/proc/PID/exe vs process name mismatch)
+  - Proxy tunnels (v2ray, shadowsocks)
+  - Persistence mechanisms (all user crontabs, .bashrc, rc.local)
+- **Auto-Remediation** - Safe automatic response to detected threats
+  - Protected service whitelist (ssh, docker, nginx never disabled)
+  - Protected binary paths (system binaries never removed)
+  - Full audit trail with rollback commands in remediation logs
+- **Server Hardening Wizard** - 4-step one-click hardening
+  - SSH hardening (key-only auth, disable root, limit retries)
+  - Safe SSH port change (updates sshd_config + systemd socket override + UFW)
+  - UFW firewall with sensible defaults
+  - Fail2ban configuration with custom parameters
+  - Kernel hardening (sysctl: SYN cookies, ICMP protection, ASLR)
+  - Unnecessary service cleanup
+- **25 Known Threat Signatures** - Pre-seeded from real-world incidents
+- **Scheduled Scanning** - Guardian every 15min, predictions hourly, baselines weekly
+- **4 Artisan Commands** - `security:guardian-scan`, `security:predict`, `security:capture-baseline`, `security:harden`
+
 ### Install Script Runner
 - **Auto-Detection** - Automatically detects existing install.sh in project repositories
 - **One-Click Execution** - Run install scripts directly from the project dashboard
