@@ -198,6 +198,16 @@
                                 </label>
 
                                 <label class="flex items-center gap-2 p-3 bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-700/50">
+                                    <input type="checkbox" wire:model="installPostgreSQL" class="rounded text-blue-600">
+                                    <span class="text-sm text-gray-300">PostgreSQL 16</span>
+                                </label>
+
+                                <label class="flex items-center gap-2 p-3 bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-700/50">
+                                    <input type="checkbox" wire:model="installRedis" class="rounded text-blue-600">
+                                    <span class="text-sm text-gray-300">Redis Server</span>
+                                </label>
+
+                                <label class="flex items-center gap-2 p-3 bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-700/50">
                                     <input type="checkbox" wire:model="installPHP" class="rounded text-blue-600">
                                     <span class="text-sm text-gray-300">PHP {{ $phpVersion }}</span>
                                 </label>
@@ -260,6 +270,47 @@
                                 @error('mysqlPassword')
                                     <span class="text-xs text-red-400 mt-1">{{ $message }}</span>
                                 @enderror
+                            </div>
+                        @endif
+
+                        @if($installPostgreSQL)
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">PostgreSQL Password</label>
+                                    <input type="password" wire:model="postgresqlPassword"
+                                           class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white"
+                                           placeholder="Enter PostgreSQL password">
+                                    @error('postgresqlPassword')
+                                        <span class="text-xs text-red-400 mt-1">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">Databases (comma-separated)</label>
+                                    <input type="text" wire:model="postgresqlDatabases"
+                                           class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white"
+                                           placeholder="e.g. app_db, admin_db">
+                                    <p class="text-xs text-gray-500 mt-1">Leave empty to create databases later</p>
+                                </div>
+                            </div>
+                        @endif
+
+                        @if($installRedis)
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">Redis Password</label>
+                                    <input type="password" wire:model="redisPassword"
+                                           class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white"
+                                           placeholder="Optional">
+                                    <p class="text-xs text-gray-500 mt-1">Leave empty for no authentication</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">Max Memory (MB)</label>
+                                    <input type="number" wire:model="redisMaxMemoryMB" min="64" max="8192"
+                                           class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white">
+                                    @error('redisMaxMemoryMB')
+                                        <span class="text-xs text-red-400 mt-1">{{ $message }}</span>
+                                    @enderror
+                                </div>
                             </div>
                         @endif
 

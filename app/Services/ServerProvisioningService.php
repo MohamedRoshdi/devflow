@@ -24,6 +24,8 @@ class ServerProvisioningService
             'update_system' => $options['update_system'] ?? true,
             'install_nginx' => $options['install_nginx'] ?? true,
             'install_mysql' => $options['install_mysql'] ?? false,
+            'install_postgresql' => $options['install_postgresql'] ?? false,
+            'install_redis' => $options['install_redis'] ?? false,
             'install_php' => $options['install_php'] ?? true,
             'install_composer' => $options['install_composer'] ?? true,
             'install_nodejs' => $options['install_nodejs'] ?? true,
@@ -48,6 +50,20 @@ class ServerProvisioningService
                 $mysqlPassword = $options['mysql_root_password'] ?? bin2hex(random_bytes(16));
                 $this->installMySQL($server, $mysqlPassword);
                 $installedPackages[] = 'mysql';
+            }
+
+            if ($tasks['install_postgresql']) {
+                $pgPassword = $options['postgresql_password'] ?? bin2hex(random_bytes(16));
+                $pgDatabases = $options['postgresql_databases'] ?? [];
+                $this->installPostgreSQL($server, $pgPassword, $pgDatabases);
+                $installedPackages[] = 'postgresql-16';
+            }
+
+            if ($tasks['install_redis']) {
+                $redisPassword = $options['redis_password'] ?? null;
+                $redisMaxMemory = $options['redis_max_memory_mb'] ?? 512;
+                $this->installRedis($server, $redisPassword, $redisMaxMemory);
+                $installedPackages[] = 'redis';
             }
 
             if ($tasks['install_php']) {
@@ -222,6 +238,97 @@ class ServerProvisioningService
     }
 
     /**
+     * Install PostgreSQL 16 database server
+     *
+     * @param  array<int, string>  $databases
+     */
+    public function installPostgreSQL(Server $server, string $password, array $databases = []): bool
+    {
+        $log = ProvisioningLog::create([
+            'server_id' => $server->id,
+            'task' => 'install_postgresql',
+            'status' => 'running',
+            'started_at' => now(),
+        ]);
+
+        try {
+            $escapedPassword = str_replace("'", "'\\''", $password);
+            $commands = [
+                'curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/keyrings/postgresql-keyring.gpg 2>/dev/null || true',
+                'echo "deb [signed-by=/usr/share/keyrings/postgresql-keyring.gpg] http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list',
+                'DEBIAN_FRONTEND=noninteractive apt-get update',
+                'DEBIAN_FRONTEND=noninteractive apt-get install -y postgresql-16 postgresql-contrib-16',
+                'systemctl enable postgresql',
+                'systemctl start postgresql',
+                sprintf("sudo -u postgres psql -c \"CREATE USER app_user WITH PASSWORD '%s';\" 2>/dev/null || sudo -u postgres psql -c \"ALTER USER app_user WITH PASSWORD '%s';\"", $escapedPassword, $escapedPassword),
+            ];
+
+            foreach ($databases as $database) {
+                $database = preg_replace('/[^a-zA-Z0-9_]/', '', $database);
+                $commands[] = sprintf('sudo -u postgres psql -c "CREATE DATABASE %s OWNER app_user;" 2>/dev/null || true', $database);
+                $commands[] = sprintf('sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE %s TO app_user;"', $database);
+            }
+
+            $output = '';
+            foreach ($commands as $command) {
+                $output .= $this->executeSSHCommand($server, $command)."\n";
+            }
+
+            $log->markAsCompleted($output);
+
+            return true;
+
+        } catch (\Exception $e) {
+            $log->markAsFailed($e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     * Install Redis server
+     */
+    public function installRedis(Server $server, ?string $password = null, int $maxMemoryMB = 512): bool
+    {
+        $log = ProvisioningLog::create([
+            'server_id' => $server->id,
+            'task' => 'install_redis',
+            'status' => 'running',
+            'started_at' => now(),
+        ]);
+
+        try {
+            $commands = [
+                'DEBIAN_FRONTEND=noninteractive apt-get install -y redis-server',
+                'sed -i "s/^bind .*/bind 127.0.0.1 ::1/" /etc/redis/redis.conf',
+                'sed -i "s/^supervised .*/supervised systemd/" /etc/redis/redis.conf',
+                sprintf('sed -i "s/^# maxmemory <bytes>/maxmemory %dmb/" /etc/redis/redis.conf', $maxMemoryMB),
+                'sed -i "s/^# maxmemory-policy .*/maxmemory-policy allkeys-lru/" /etc/redis/redis.conf',
+            ];
+
+            if ($password !== null && $password !== '') {
+                $escapedPassword = str_replace("'", "'\\''", $password);
+                $commands[] = sprintf('sed -i "s/^# requirepass .*/requirepass %s/" /etc/redis/redis.conf', $escapedPassword);
+            }
+
+            $commands[] = 'systemctl enable redis-server';
+            $commands[] = 'systemctl start redis-server';
+
+            $output = '';
+            foreach ($commands as $command) {
+                $output .= $this->executeSSHCommand($server, $command)."\n";
+            }
+
+            $log->markAsCompleted($output);
+
+            return true;
+
+        } catch (\Exception $e) {
+            $log->markAsFailed($e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
      * Install PHP with common extensions
      */
     public function installPHP(Server $server, string $version = '8.4'): bool
@@ -235,7 +342,7 @@ class ServerProvisioningService
 
         try {
             $extensions = [
-                'cli', 'fpm', 'common', 'curl', 'zip', 'gd', 'mysql', 'mbstring',
+                'cli', 'fpm', 'common', 'curl', 'zip', 'gd', 'mysql', 'pgsql', 'mbstring',
                 'xml', 'redis', 'intl', 'bcmath', 'soap', 'imagick', 'opcache',
             ];
 
@@ -487,6 +594,43 @@ class ServerProvisioningService
             $script .= "systemctl start mysql\n\n";
         }
 
+        if ($options['install_postgresql'] ?? false) {
+            $script .= "# Install PostgreSQL 16\n";
+            $script .= "echo '🐘 Installing PostgreSQL 16...'\n";
+            $script .= "curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/keyrings/postgresql-keyring.gpg 2>/dev/null || true\n";
+            $script .= "echo \"deb [signed-by=/usr/share/keyrings/postgresql-keyring.gpg] http://apt.postgresql.org/pub/repos/apt \$(lsb_release -cs)-pgdg main\" | tee /etc/apt/sources.list.d/pgdg.list\n";
+            $script .= "DEBIAN_FRONTEND=noninteractive apt-get update\n";
+            $script .= "DEBIAN_FRONTEND=noninteractive apt-get install -y postgresql-16 postgresql-contrib-16\n";
+            $script .= "systemctl enable postgresql\n";
+            $script .= "systemctl start postgresql\n";
+            $pgPassword = $options['postgresql_password'] ?? 'CHANGE_ME';
+            $script .= "sudo -u postgres psql -c \"CREATE USER app_user WITH PASSWORD '{$pgPassword}';\" 2>/dev/null || sudo -u postgres psql -c \"ALTER USER app_user WITH PASSWORD '{$pgPassword}';\"\n";
+            $pgDatabases = $options['postgresql_databases'] ?? [];
+            foreach ($pgDatabases as $database) {
+                $database = preg_replace('/[^a-zA-Z0-9_]/', '', $database);
+                $script .= "sudo -u postgres psql -c \"CREATE DATABASE {$database} OWNER app_user;\" 2>/dev/null || true\n";
+                $script .= "sudo -u postgres psql -c \"GRANT ALL PRIVILEGES ON DATABASE {$database} TO app_user;\"\n";
+            }
+            $script .= "\n";
+        }
+
+        if ($options['install_redis'] ?? false) {
+            $script .= "# Install Redis\n";
+            $script .= "echo '📦 Installing Redis...'\n";
+            $script .= "DEBIAN_FRONTEND=noninteractive apt-get install -y redis-server\n";
+            $script .= "sed -i 's/^bind .*/bind 127.0.0.1 ::1/' /etc/redis/redis.conf\n";
+            $script .= "sed -i 's/^supervised .*/supervised systemd/' /etc/redis/redis.conf\n";
+            $redisMaxMemory = $options['redis_max_memory_mb'] ?? 512;
+            $script .= "sed -i 's/^# maxmemory <bytes>/maxmemory {$redisMaxMemory}mb/' /etc/redis/redis.conf\n";
+            $script .= "sed -i 's/^# maxmemory-policy .*/maxmemory-policy allkeys-lru/' /etc/redis/redis.conf\n";
+            $redisPassword = $options['redis_password'] ?? null;
+            if ($redisPassword !== null && $redisPassword !== '') {
+                $script .= "sed -i 's/^# requirepass .*/requirepass {$redisPassword}/' /etc/redis/redis.conf\n";
+            }
+            $script .= "systemctl enable redis-server\n";
+            $script .= "systemctl start redis-server\n\n";
+        }
+
         if ($options['install_php'] ?? true) {
             $phpVersion = $options['php_version'] ?? '8.4';
             $script .= "# Install PHP {$phpVersion}\n";
@@ -495,7 +639,7 @@ class ServerProvisioningService
             $script .= "DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:ondrej/php\n";
             $script .= "DEBIAN_FRONTEND=noninteractive apt-get update\n";
             $script .= "DEBIAN_FRONTEND=noninteractive apt-get install -y php{$phpVersion}-cli php{$phpVersion}-fpm php{$phpVersion}-common ";
-            $script .= "php{$phpVersion}-curl php{$phpVersion}-zip php{$phpVersion}-gd php{$phpVersion}-mysql ";
+            $script .= "php{$phpVersion}-curl php{$phpVersion}-zip php{$phpVersion}-gd php{$phpVersion}-mysql php{$phpVersion}-pgsql ";
             $script .= "php{$phpVersion}-mbstring php{$phpVersion}-xml php{$phpVersion}-redis php{$phpVersion}-intl ";
             $script .= "php{$phpVersion}-bcmath php{$phpVersion}-soap php{$phpVersion}-imagick php{$phpVersion}-opcache\n";
             $script .= "systemctl enable php{$phpVersion}-fpm\n";
