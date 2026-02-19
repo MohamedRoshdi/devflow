@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Process;
 class DomainService
 {
     public function __construct(
-        private readonly SSLService $sslService
+        private readonly SSLService $sslService,
+        private readonly NginxConfigService $nginxConfigService
     ) {}
 
     /**
@@ -93,6 +94,25 @@ class DomainService
                 'domain' => $domain->domain,
                 'status' => $domain->status,
             ]);
+
+            // Install nginx vhost for bare-metal projects
+            if ($project->deployment_method === 'standard' && $project->server) {
+                try {
+                    $this->nginxConfigService->installVhost($project->server, $project, $domain);
+                } catch (\Exception $vhostError) {
+                    Log::warning('Nginx vhost install failed (non-fatal)', [
+                        'domain' => $domain->domain,
+                        'error' => $vhostError->getMessage(),
+                    ]);
+
+                    $domain->update([
+                        'metadata' => array_merge($domain->metadata ?? [], [
+                            'vhost_error' => $vhostError->getMessage(),
+                            'vhost_failed_at' => now()->toDateTimeString(),
+                        ]),
+                    ]);
+                }
+            }
 
             $freshDomain = $domain->fresh();
             if (!$freshDomain) {
@@ -387,6 +407,18 @@ class DomainService
                 if ($certificate) {
                     $this->sslService->revokeCertificate($certificate);
                     $certificate->delete();
+                }
+            }
+
+            // Remove nginx vhost for bare-metal projects
+            if ($project && $project->deployment_method === 'standard' && $server) {
+                try {
+                    $this->nginxConfigService->removeVhost($server, $domain);
+                } catch (\Exception $vhostError) {
+                    Log::warning('Nginx vhost removal failed (non-fatal)', [
+                        'domain' => $domain->domain,
+                        'error' => $vhostError->getMessage(),
+                    ]);
                 }
             }
 

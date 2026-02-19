@@ -370,6 +370,8 @@ class PipelineBuilderService
                         'docker-compose pull',
                         'docker-compose down',
                         'docker-compose up -d',
+                        'docker-compose exec -T app composer install --no-dev --optimize-autoloader',
+                        'docker-compose exec -T app sh -c "test -f package.json && npm ci --no-audit --no-fund && npm run build || true"',
                         'docker-compose exec -T app php artisan migrate --force',
                     ]),
                 ],

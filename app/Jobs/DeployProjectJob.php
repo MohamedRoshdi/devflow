@@ -9,6 +9,7 @@ use App\Models\Deployment;
 use App\Models\PipelineStage;
 use App\Models\Project;
 use App\Services\CICD\PipelineExecutionService;
+use App\Services\Deployment\ReleaseDeploymentService;
 use App\Services\DockerService;
 use App\Services\GitService;
 use Illuminate\Bus\Queueable;
@@ -108,6 +109,13 @@ class DeployProjectJob implements ShouldQueue
 
             if ($project === null) {
                 throw new \RuntimeException('Project not found for deployment');
+            }
+
+            // Bare-metal (standard) projects use symlink-based release deployment
+            if ($project->deployment_method === 'standard') {
+                $this->handleBaremetalDeployment($project, $startTime);
+
+                return;
             }
 
             // Check if project has pipeline stages configured
@@ -419,144 +427,164 @@ class DeployProjectJob implements ShouldQueue
         $addLog("Target container: {$containerName}");
         $addLog('');
 
-        $optimizationCommands = [
-            'composer install --optimize-autoloader --no-dev' => 'Installing/updating dependencies',
-            'php artisan config:cache' => 'Caching configuration',
-            'php artisan route:cache' => 'Caching routes',
-            'php artisan view:cache' => 'Caching views',
-            'php artisan event:cache' => 'Caching events',
-            'php artisan migrate --force' => 'Running migrations',
-            'php artisan storage:link' => 'Linking storage',
-            'php artisan optimize' => 'Optimizing application',
-        ];
-
-        foreach ($optimizationCommands as $cmd => $description) {
-            $addLog("$ docker exec {$containerName} {$cmd}");
-            $dockerCmd = "docker exec {$containerName} {$cmd} 2>&1 || echo 'Command may have already run or not applicable'";
-            $result = \Illuminate\Support\Facades\Process::run($dockerCmd);
-
-            // Log output but don't fail deployment if optimization fails
-            if ($result->successful() || str_contains($result->output(), 'already')) {
-                $addLog("  ✓ {$description} completed");
-            } else {
-                $addLog("  ⚠ {$description} skipped or failed (not critical)");
-            }
-
-            // Save logs after each command so user sees progress
-            $this->deployment->update(['output_log' => implode("\n", $logs)]);
-        }
-
-        $addLog('✓ Laravel optimization completed');
+        // Enable maintenance mode before risky operations (migrations, cache clears)
+        $addLog('=== Enabling Maintenance Mode ===');
+        $maintenanceDownCmd = "docker exec {$containerName} php artisan down --retry=30 --secret=devflow-deploy 2>&1 || true";
+        \Illuminate\Support\Facades\Process::run($maintenanceDownCmd);
+        $addLog('Maintenance mode enabled (bypass: /devflow-deploy)');
         $addLog('');
-
-        // Update logs with optimization progress
-        $this->deployment->update([
-            'output_log' => implode("\n", $logs),
-        ]);
-
-        // Step 6: Fix Permissions & Environment Configuration
-        $addLog('=== Fixing Permissions & Environment ===');
+        $this->deployment->update(['output_log' => implode("\n", $logs)]);
 
         try {
-            // Determine container UID (Docker containers typically run as UID 1000)
-            $containerUid = '1000';
-            $uidCheckCmd = "docker exec {$containerName} id -u 2>/dev/null || echo '1000'";
-            $uidResult = \Illuminate\Support\Facades\Process::run($uidCheckCmd);
-            if ($uidResult->successful() && is_numeric(trim($uidResult->output()))) {
-                $containerUid = trim($uidResult->output());
-            }
-            $addLog("Container UID: {$containerUid}");
-
-            // Fix permissions via SSH on the server with correct UID
-            $addLog('Setting proper ownership and permissions...');
-            $permissionCommand = "cd {$projectPath} && ".
-                "chown -R {$containerUid}:{$containerUid} storage bootstrap/cache 2>/dev/null && ".
-                'chmod -R 777 storage bootstrap/cache';
-
-            $permResult = \Illuminate\Support\Facades\Process::timeout(60)->run("{$sshPrefix} \"{$permissionCommand}\"");
-
-            if ($permResult->successful()) {
-                $addLog("  ✓ Permissions fixed (UID:{$containerUid}, 777)");
-            } else {
-                $addLog('  ⚠ Permission fix partially completed: '.$permResult->errorOutput());
-            }
-
-            // Fix .env file for Docker (DB_HOST, REDIS_HOST should use service names)
-            $addLog('Checking .env configuration for Docker...');
-            $envFixCommand = "cd {$projectPath} && ".
-                "sed -i 's/^DB_HOST=127.0.0.1\$/DB_HOST=mysql/' .env 2>/dev/null; ".
-                "sed -i 's/^DB_HOST=localhost\$/DB_HOST=mysql/' .env 2>/dev/null; ".
-                "sed -i 's/^REDIS_HOST=127.0.0.1\$/REDIS_HOST=redis/' .env 2>/dev/null; ".
-                "sed -i 's/^REDIS_HOST=localhost\$/REDIS_HOST=redis/' .env 2>/dev/null; ".
-                "echo 'env checked'";
-
-            $envResult = \Illuminate\Support\Facades\Process::timeout(30)->run("{$sshPrefix} \"{$envFixCommand}\"");
-            if ($envResult->successful()) {
-                $addLog('  ✓ Environment configuration validated');
-            }
-
-            // Clear Laravel caches inside container
-            $addLog('Clearing Laravel caches...');
-            $cacheCommands = [
-                'php artisan config:clear' => 'Configuration cache',
-                'php artisan cache:clear' => 'Application cache',
-                'php artisan view:clear' => 'View cache',
-                'php artisan route:clear' => 'Route cache',
+            $optimizationCommands = [
+                'composer install --optimize-autoloader --no-dev' => 'Installing/updating dependencies',
+                'sh -c "test -f package.json && npm ci --no-audit --no-fund || true"' => 'Installing NPM dependencies',
+                'sh -c "test -f package.json && npm run build || true"' => 'Building frontend assets',
+                'php artisan config:cache' => 'Caching configuration',
+                'php artisan route:cache' => 'Caching routes',
+                'php artisan view:cache' => 'Caching views',
+                'php artisan event:cache' => 'Caching events',
+                'php artisan migrate --force' => 'Running migrations',
+                'php artisan storage:link' => 'Linking storage',
+                'php artisan optimize' => 'Optimizing application',
             ];
 
-            foreach ($cacheCommands as $cmd => $description) {
+            foreach ($optimizationCommands as $cmd => $description) {
                 $addLog("$ docker exec {$containerName} {$cmd}");
-                $dockerCmd = "docker exec {$containerName} {$cmd} 2>&1 || echo 'skipped'";
+                $dockerCmd = "docker exec {$containerName} {$cmd} 2>&1 || echo 'Command may have already run or not applicable'";
                 $result = \Illuminate\Support\Facades\Process::run($dockerCmd);
 
-                if ($result->successful() && ! str_contains($result->output(), 'skipped')) {
-                    $addLog("  ✓ {$description} cleared");
+                // Log output but don't fail deployment if optimization fails
+                if ($result->successful() || str_contains($result->output(), 'already')) {
+                    $addLog("  ✓ {$description} completed");
                 } else {
-                    $addLog("  ⚠ {$description} clear skipped");
+                    $addLog("  ⚠ {$description} skipped or failed (not critical)");
                 }
+
+                // Save logs after each command so user sees progress
+                $this->deployment->update(['output_log' => implode("\n", $logs)]);
             }
 
-            // Save logs progress
-            $this->deployment->update(['output_log' => implode("\n", $logs)]);
+            $addLog('✓ Laravel optimization completed');
+            $addLog('');
 
-            // Rebuild config cache with corrected .env values
-            $addLog('Rebuilding configuration cache...');
-            $rebuildCommands = [
-                'php artisan config:cache' => 'Configuration',
-                'php artisan route:cache' => 'Routes',
-                'php artisan view:cache' => 'Views',
-            ];
-
-            foreach ($rebuildCommands as $cmd => $description) {
-                $addLog("$ docker exec {$containerName} {$cmd}");
-                $dockerCmd = "docker exec {$containerName} {$cmd} 2>&1 || echo 'skipped'";
-                $result = \Illuminate\Support\Facades\Process::run($dockerCmd);
-
-                if ($result->successful() && ! str_contains($result->output(), 'skipped')) {
-                    $addLog("  ✓ {$description} cached");
-                }
-            }
-
-            // Save logs progress
-            $this->deployment->update(['output_log' => implode("\n", $logs)]);
-
-            $addLog('✓ Permissions, environment, and caches handled');
-
-        } catch (\Exception $permError) {
-            // Don't fail deployment if permission fix fails
-            $addLog('  ⚠ Permission fix encountered an error (non-critical): '.$permError->getMessage());
-            Log::warning('Permission fix failed but deployment continues', [
-                'deployment_id' => $this->deployment->id,
-                'error' => $permError->getMessage(),
+            // Update logs with optimization progress
+            $this->deployment->update([
+                'output_log' => implode("\n", $logs),
             ]);
+
+            // Step 6: Fix Permissions & Environment Configuration
+            $addLog('=== Fixing Permissions & Environment ===');
+
+            try {
+                // Determine container UID (Docker containers typically run as UID 1000)
+                $containerUid = '1000';
+                $uidCheckCmd = "docker exec {$containerName} id -u 2>/dev/null || echo '1000'";
+                $uidResult = \Illuminate\Support\Facades\Process::run($uidCheckCmd);
+                if ($uidResult->successful() && is_numeric(trim($uidResult->output()))) {
+                    $containerUid = trim($uidResult->output());
+                }
+                $addLog("Container UID: {$containerUid}");
+
+                // Fix permissions via SSH on the server with correct UID
+                $addLog('Setting proper ownership and permissions...');
+                $permissionCommand = "cd {$projectPath} && ".
+                    "chown -R {$containerUid}:{$containerUid} storage bootstrap/cache 2>/dev/null && ".
+                    'chmod -R 777 storage bootstrap/cache';
+
+                $permResult = \Illuminate\Support\Facades\Process::timeout(60)->run("{$sshPrefix} \"{$permissionCommand}\"");
+
+                if ($permResult->successful()) {
+                    $addLog("  ✓ Permissions fixed (UID:{$containerUid}, 777)");
+                } else {
+                    $addLog('  ⚠ Permission fix partially completed: '.$permResult->errorOutput());
+                }
+
+                // Fix .env file for Docker (DB_HOST, REDIS_HOST should use service names)
+                $addLog('Checking .env configuration for Docker...');
+                $envFixCommand = "cd {$projectPath} && ".
+                    "sed -i 's/^DB_HOST=127.0.0.1\$/DB_HOST=mysql/' .env 2>/dev/null; ".
+                    "sed -i 's/^DB_HOST=localhost\$/DB_HOST=mysql/' .env 2>/dev/null; ".
+                    "sed -i 's/^REDIS_HOST=127.0.0.1\$/REDIS_HOST=redis/' .env 2>/dev/null; ".
+                    "sed -i 's/^REDIS_HOST=localhost\$/REDIS_HOST=redis/' .env 2>/dev/null; ".
+                    "echo 'env checked'";
+
+                $envResult = \Illuminate\Support\Facades\Process::timeout(30)->run("{$sshPrefix} \"{$envFixCommand}\"");
+                if ($envResult->successful()) {
+                    $addLog('  ✓ Environment configuration validated');
+                }
+
+                // Clear Laravel caches inside container
+                $addLog('Clearing Laravel caches...');
+                $cacheCommands = [
+                    'php artisan config:clear' => 'Configuration cache',
+                    'php artisan cache:clear' => 'Application cache',
+                    'php artisan view:clear' => 'View cache',
+                    'php artisan route:clear' => 'Route cache',
+                ];
+
+                foreach ($cacheCommands as $cmd => $description) {
+                    $addLog("$ docker exec {$containerName} {$cmd}");
+                    $dockerCmd = "docker exec {$containerName} {$cmd} 2>&1 || echo 'skipped'";
+                    $result = \Illuminate\Support\Facades\Process::run($dockerCmd);
+
+                    if ($result->successful() && ! str_contains($result->output(), 'skipped')) {
+                        $addLog("  ✓ {$description} cleared");
+                    } else {
+                        $addLog("  ⚠ {$description} clear skipped");
+                    }
+                }
+
+                // Save logs progress
+                $this->deployment->update(['output_log' => implode("\n", $logs)]);
+
+                // Rebuild config cache with corrected .env values
+                $addLog('Rebuilding configuration cache...');
+                $rebuildCommands = [
+                    'php artisan config:cache' => 'Configuration',
+                    'php artisan route:cache' => 'Routes',
+                    'php artisan view:cache' => 'Views',
+                ];
+
+                foreach ($rebuildCommands as $cmd => $description) {
+                    $addLog("$ docker exec {$containerName} {$cmd}");
+                    $dockerCmd = "docker exec {$containerName} {$cmd} 2>&1 || echo 'skipped'";
+                    $result = \Illuminate\Support\Facades\Process::run($dockerCmd);
+
+                    if ($result->successful() && ! str_contains($result->output(), 'skipped')) {
+                        $addLog("  ✓ {$description} cached");
+                    }
+                }
+
+                // Save logs progress
+                $this->deployment->update(['output_log' => implode("\n", $logs)]);
+
+                $addLog('✓ Permissions, environment, and caches handled');
+
+            } catch (\Exception $permError) {
+                // Don't fail deployment if permission fix fails
+                $addLog('  ⚠ Permission fix encountered an error (non-critical): '.$permError->getMessage());
+                Log::warning('Permission fix failed but deployment continues', [
+                    'deployment_id' => $this->deployment->id,
+                    'error' => $permError->getMessage(),
+                ]);
+            }
+
+            $addLog('');
+
+            // Update logs with permission fix progress
+            $this->deployment->update([
+                'output_log' => implode("\n", $logs),
+            ]);
+        } finally {
+            // Always disable maintenance mode, even if optimization/permissions failed
+            $addLog('');
+            $addLog('=== Disabling Maintenance Mode ===');
+            $maintenanceUpCmd = "docker exec {$containerName} php artisan up 2>&1 || true";
+            \Illuminate\Support\Facades\Process::run($maintenanceUpCmd);
+            $addLog('Application is live');
+            $this->deployment->update(['output_log' => implode("\n", $logs)]);
         }
-
-        $addLog('');
-
-        // Update logs with permission fix progress
-        $this->deployment->update([
-            'output_log' => implode("\n", $logs),
-        ]);
 
         // Update deployment and project
         $endTime = now();
@@ -578,5 +606,71 @@ class DeployProjectJob implements ShouldQueue
             'deployment_id' => $this->deployment->id,
             'project_id' => $project->id,
         ]);
+    }
+
+    /**
+     * Handle bare-metal deployment using symlink-based releases (zero-downtime)
+     */
+    private function handleBaremetalDeployment(Project $project, \Illuminate\Support\Carbon $startTime): void
+    {
+        $releaseService = app(ReleaseDeploymentService::class);
+
+        $logs = [];
+        $addLog = function (string $line) use (&$logs): void {
+            $logs[] = $line;
+            $this->broadcastLog($line);
+        };
+
+        $addLog('=== Bare-Metal Release Deployment ===');
+        $addLog("Project: {$project->name}");
+        $addLog("Branch: {$project->branch}");
+        $addLog("Method: symlink-based zero-downtime");
+        $addLog('');
+
+        $this->deployment->update(['output_log' => implode("\n", $logs)]);
+
+        try {
+            $releaseService->deploy($project, $this->deployment);
+
+            $addLog('');
+            $addLog('=== Deployment Complete ===');
+
+            $endTime = now();
+            $duration = max(0, (int) $endTime->diffInSeconds($startTime));
+
+            $this->deployment->update([
+                'status' => 'success',
+                'completed_at' => $endTime,
+                'duration_seconds' => $duration,
+                'output_log' => implode("\n", $logs),
+            ]);
+
+            $project->update([
+                'status' => 'running',
+                'last_deployed_at' => now(),
+            ]);
+
+            Log::info('Bare-metal deployment successful', [
+                'deployment_id' => $this->deployment->id,
+                'project_id' => $project->id,
+                'release_path' => $this->deployment->release_path,
+            ]);
+        } catch (\Exception $e) {
+            $addLog('');
+            $addLog("ERROR: {$e->getMessage()}");
+
+            $endTime = now();
+            $duration = max(0, (int) $endTime->diffInSeconds($startTime));
+
+            $this->deployment->update([
+                'status' => 'failed',
+                'completed_at' => $endTime,
+                'duration_seconds' => $duration,
+                'error_log' => $e->getMessage(),
+                'output_log' => implode("\n", $logs),
+            ]);
+
+            throw $e;
+        }
     }
 }

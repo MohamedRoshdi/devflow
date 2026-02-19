@@ -8,6 +8,7 @@ use App\Events\DeploymentStatusUpdated;
 use App\Models\Deployment;
 use App\Models\Project;
 use App\Models\Server;
+use App\Services\Deployment\ReleaseDeploymentService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
 
@@ -276,6 +277,95 @@ class RollbackService
             return ['healthy' => true];
         } catch (\Exception $e) {
             return ['healthy' => false, 'error' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * Rollback a bare-metal project to a previous release via symlink swap.
+     *
+     * @param Deployment $targetDeployment The deployment to rollback to (must have release_path)
+     * @return array{success: bool, deployment?: Deployment, message?: string, error?: string}
+     */
+    public function rollbackToRelease(Deployment $targetDeployment): array
+    {
+        try {
+            $project = $targetDeployment->project;
+
+            if ($project === null) {
+                throw new \RuntimeException('Project not found for deployment');
+            }
+
+            if (! $targetDeployment->release_path) {
+                throw new \RuntimeException('Target deployment does not have a release path');
+            }
+
+            // Create new deployment record for rollback
+            $rollbackDeployment = Deployment::create([
+                'project_id' => $project->id,
+                'user_id' => auth()->id(),
+                'server_id' => $project->server_id,
+                'branch' => $targetDeployment->branch,
+                'commit_hash' => $targetDeployment->commit_hash,
+                'commit_message' => 'Rollback to release: ' . $targetDeployment->commit_message,
+                'status' => 'running',
+                'triggered_by' => 'rollback',
+                'rollback_deployment_id' => $targetDeployment->id,
+                'release_path' => $targetDeployment->release_path,
+                'started_at' => now(),
+            ]);
+
+            // Broadcast start event
+            broadcast(new DeploymentStatusUpdated(
+                $rollbackDeployment,
+                "Starting release rollback to deployment #{$targetDeployment->id}",
+                'info'
+            ))->toOthers();
+
+            // Delegate to ReleaseDeploymentService
+            $releaseService = app(ReleaseDeploymentService::class);
+            $releaseService->rollbackToRelease($project, $targetDeployment);
+
+            // Update deployment status
+            $rollbackDeployment->update([
+                'status' => 'success',
+                'completed_at' => now(),
+                'duration_seconds' => max(0, (int) now()->diffInSeconds($rollbackDeployment->started_at)),
+            ]);
+
+            // Broadcast success
+            broadcast(new DeploymentStatusUpdated(
+                $rollbackDeployment,
+                "Successfully rolled back to release deployment #{$targetDeployment->id}",
+                'success'
+            ))->toOthers();
+
+            return [
+                'success' => true,
+                'deployment' => $rollbackDeployment,
+                'message' => 'Release rollback completed successfully',
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('Release rollback failed: ' . $e->getMessage());
+
+            if (isset($rollbackDeployment)) {
+                $rollbackDeployment->update([
+                    'status' => 'failed',
+                    'completed_at' => now(),
+                    'error_message' => $e->getMessage(),
+                ]);
+
+                broadcast(new DeploymentStatusUpdated(
+                    $rollbackDeployment,
+                    'Release rollback failed: ' . $e->getMessage(),
+                    'error'
+                ))->toOthers();
+            }
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
         }
     }
 

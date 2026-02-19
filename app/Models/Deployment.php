@@ -35,6 +35,7 @@ class Deployment extends Model
         'target_environment',
         'is_canary',
         'canary_release_id',
+        'release_path',
     ];
 
     protected function casts(): array
