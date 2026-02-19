@@ -31,6 +31,17 @@
                     <livewire:components.inline-help help-key="deploy-button" />
                 </div>
             @endif
+            @if($this->canRollback())
+                <button wire:click="initiateRollback"
+                        wire:loading.attr="disabled"
+                        wire:target="confirmRollback"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-600/80 hover:bg-amber-500 text-white rounded-xl font-semibold transition-all duration-300 backdrop-blur-sm border border-amber-500/50 shadow-lg shadow-amber-500/30 hover:shadow-xl">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                    </svg>
+                    Rollback to This Version
+                </button>
+            @endif
             <a href="{{ route('deployments.index') }}" class="inline-flex items-center gap-2 px-6 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl font-semibold transition-all duration-300 backdrop-blur-sm border border-white/20 hover:border-white/30 shadow-lg hover:shadow-xl">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -483,6 +494,62 @@
                 <div class="bg-red-950/50 text-red-200 p-4 rounded-xl font-mono text-sm overflow-x-auto max-h-96 overflow-y-auto border border-red-500/30">
                     <pre>{{ e($deployment->error_log) }}</pre>
                 </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- Rollback Confirmation Modal --}}
+    @if($showRollbackConfirm)
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" wire:click.self="cancelRollback">
+            <div class="bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 max-w-md w-full mx-4 overflow-hidden">
+                <div class="bg-gradient-to-r from-amber-600/20 to-orange-600/20 p-6 border-b border-slate-700">
+                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                        <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.27 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                        </svg>
+                        Confirm Rollback
+                    </h3>
+                </div>
+                <div class="p-6 space-y-4">
+                    <p class="text-slate-300">
+                        Are you sure you want to rollback to this deployment?
+                    </p>
+                    <div class="bg-slate-700/50 rounded-lg p-4 text-sm text-slate-300 space-y-1">
+                        <p><span class="text-slate-400">Commit:</span> <code class="text-cyan-300">{{ substr($deployment->commit_hash ?? '', 0, 8) }}</code></p>
+                        <p><span class="text-slate-400">Message:</span> {{ e(\Illuminate\Support\Str::limit($deployment->commit_message ?? 'N/A', 80)) }}</p>
+                        <p><span class="text-slate-400">Branch:</span> {{ $deployment->branch }}</p>
+                    </div>
+                    <div class="bg-amber-900/30 border border-amber-500/30 rounded-lg p-3 text-sm text-amber-200">
+                        This will create a new deployment that reverts the application to this version.
+                    </div>
+                    <div class="flex justify-end gap-3 pt-2">
+                        <button wire:click="cancelRollback"
+                                class="px-5 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-semibold transition-all border border-slate-600">
+                            Cancel
+                        </button>
+                        <button wire:click="confirmRollback"
+                                wire:loading.attr="disabled"
+                                wire:target="confirmRollback"
+                                class="px-5 py-2.5 bg-amber-600 hover:bg-amber-500 text-white rounded-xl font-semibold transition-all border border-amber-500 shadow-lg shadow-amber-500/30">
+                            <span wire:loading.remove wire:target="confirmRollback">Confirm Rollback</span>
+                            <span wire:loading wire:target="confirmRollback">Rolling back...</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- Rollback In Progress Overlay --}}
+    @if($rollbackInProgress)
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+            <div class="text-center">
+                <svg class="animate-spin h-12 w-12 mx-auto text-amber-400 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <p class="text-white text-lg font-semibold">Rollback in progress...</p>
+                <p class="text-slate-400 text-sm mt-1">Please wait while we revert the deployment.</p>
             </div>
         </div>
     @endif

@@ -65,7 +65,7 @@
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div class="flex items-center gap-3">
                 <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Log Source</span>
-                <div class="inline-flex rounded-full bg-gray-100 dark:bg-gray-700 p-1">
+                <div class="inline-flex rounded-full bg-gray-100 dark:bg-gray-700 p-1 flex-wrap">
                     <button wire:click="$set('logType','laravel')"
                             class="px-4 py-1.5 text-xs font-semibold rounded-full transition-all
                                 @class([
@@ -81,6 +81,30 @@
                                     'text-gray-500 dark:text-gray-300' => $logType !== 'docker'
                                 ])">
                         Docker Output
+                    </button>
+                    <button wire:click="$set('logType','deploy')"
+                            class="px-4 py-1.5 text-xs font-semibold rounded-full transition-all
+                                @class([
+                                    'bg-white text-indigo-600 shadow-sm' => $logType === 'deploy',
+                                    'text-gray-500 dark:text-gray-300' => $logType !== 'deploy'
+                                ])">
+                        Deploy
+                    </button>
+                    <button wire:click="$set('logType','nginx')"
+                            class="px-4 py-1.5 text-xs font-semibold rounded-full transition-all
+                                @class([
+                                    'bg-white text-indigo-600 shadow-sm' => $logType === 'nginx',
+                                    'text-gray-500 dark:text-gray-300' => $logType !== 'nginx'
+                                ])">
+                        Nginx
+                    </button>
+                    <button wire:click="$set('logType','supervisor')"
+                            class="px-4 py-1.5 text-xs font-semibold rounded-full transition-all
+                                @class([
+                                    'bg-white text-indigo-600 shadow-sm' => $logType === 'supervisor',
+                                    'text-gray-500 dark:text-gray-300' => $logType !== 'supervisor'
+                                ])">
+                        Supervisor
                     </button>
                 </div>
                 @if($source)
@@ -118,7 +142,7 @@
         @else
             <div class="bg-gray-900 text-green-300 rounded-xl border border-gray-800 shadow-inner">
                 <div class="px-4 py-3 border-b border-gray-800 flex items-center justify-between text-xs text-green-500 uppercase tracking-wide">
-                    <span>{{ $logType === 'docker' ? 'Container Logs' : 'Laravel Application Log' }}</span>
+                    <span>{{ match($logType) { 'docker' => 'Container Logs', 'deploy' => 'Deployment Logs', 'nginx' => 'Nginx Logs', 'supervisor' => 'Supervisor Logs', default => 'Laravel Application Log' } }}</span>
                     <span>{{ now()->format('M d, Y • H:i:s') }}</span>
                 </div>
                 <div class="h-[28rem] overflow-y-auto scrollbar-thin">

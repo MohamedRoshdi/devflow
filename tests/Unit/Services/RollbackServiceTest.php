@@ -10,6 +10,7 @@ use App\Models\Project;
 use App\Models\User;
 use App\Services\DockerService;
 use App\Services\GitService;
+use App\Services\PhpFpmPoolService;
 use App\Services\RollbackService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
@@ -29,6 +30,8 @@ class RollbackServiceTest extends TestCase
 
     protected GitService $gitService;
 
+    protected PhpFpmPoolService $phpFpmPoolService;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -36,9 +39,10 @@ class RollbackServiceTest extends TestCase
         // Mock dependencies
         $this->dockerService = $this->createMock(DockerService::class);
         $this->gitService = $this->createMock(GitService::class);
+        $this->phpFpmPoolService = $this->createMock(PhpFpmPoolService::class);
 
         // Create service instance with mocked dependencies
-        $this->service = new RollbackService($this->dockerService, $this->gitService);
+        $this->service = new RollbackService($this->dockerService, $this->gitService, $this->phpFpmPoolService);
 
         Event::fake();
         Log::spy();
@@ -988,6 +992,112 @@ class RollbackServiceTest extends TestCase
                 exitCode: 1
             ),
         ]);
+    }
+
+    #[Test]
+    public function it_gets_latest_successful_deployment(): void
+    {
+        $server = $this->createOnlineServer();
+        $project = Project::factory()->create(['server_id' => $server->id]);
+
+        Deployment::factory()->success()->create([
+            'project_id' => $project->id,
+            'created_at' => now()->subDays(3),
+        ]);
+
+        $latest = Deployment::factory()->success()->create([
+            'project_id' => $project->id,
+            'created_at' => now()->subDay(),
+        ]);
+
+        Deployment::factory()->failed()->create([
+            'project_id' => $project->id,
+            'created_at' => now(),
+        ]);
+
+        $result = $this->service->getLatestSuccessfulDeployment($project);
+
+        $this->assertNotNull($result);
+        $this->assertEquals($latest->id, $result->id);
+    }
+
+    #[Test]
+    public function it_gets_latest_successful_deployment_excludes_rollbacks(): void
+    {
+        $server = $this->createOnlineServer();
+        $project = Project::factory()->create(['server_id' => $server->id]);
+
+        $original = Deployment::factory()->success()->create([
+            'project_id' => $project->id,
+            'created_at' => now()->subDays(2),
+        ]);
+
+        // Rollback deployment — should be excluded
+        Deployment::factory()->success()->create([
+            'project_id' => $project->id,
+            'rollback_deployment_id' => $original->id,
+            'created_at' => now(),
+        ]);
+
+        $result = $this->service->getLatestSuccessfulDeployment($project);
+
+        $this->assertNotNull($result);
+        $this->assertEquals($original->id, $result->id);
+    }
+
+    #[Test]
+    public function it_returns_null_when_no_successful_deployments(): void
+    {
+        $server = $this->createOnlineServer();
+        $project = Project::factory()->create(['server_id' => $server->id]);
+
+        Deployment::factory()->failed()->count(3)->create([
+            'project_id' => $project->id,
+        ]);
+
+        $result = $this->service->getLatestSuccessfulDeployment($project);
+
+        $this->assertNull($result);
+    }
+
+    #[Test]
+    public function it_rollback_to_release_fails_without_release_path(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $server = $this->createOnlineServer();
+        $project = Project::factory()->create(['server_id' => $server->id]);
+
+        $deployment = Deployment::factory()->success()->create([
+            'project_id' => $project->id,
+            'release_path' => null,
+        ]);
+
+        Process::fake(['*' => Process::result(output: 'ok')]);
+
+        $result = $this->service->rollbackToRelease($deployment);
+
+        $this->assertFalse($result['success']);
+        $this->assertArrayHasKey('error', $result);
+        $this->assertStringContainsString('release path', $result['error']); // @phpstan-ignore offsetAccess.notFound
+    }
+
+    #[Test]
+    public function it_rollback_to_release_fails_without_project(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $deployment = new Deployment;
+        $deployment->id = 999;
+        $deployment->release_path = '/var/www/releases/123';
+
+        $result = $this->service->rollbackToRelease($deployment);
+
+        $this->assertFalse($result['success']);
+        $this->assertArrayHasKey('error', $result);
+        $this->assertStringContainsString('Project not found', $result['error']); // @phpstan-ignore offsetAccess.notFound
     }
 
     /**

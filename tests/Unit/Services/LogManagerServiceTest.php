@@ -6,20 +6,22 @@ namespace Tests\Unit\Services;
 
 
 use PHPUnit\Framework\Attributes\Test;
+use App\Models\Deployment;
 use App\Models\Project;
 use App\Models\Server;
 use App\Services\DockerService;
 use App\Services\LogAggregationService;
 use App\Services\LogManagerService;
-
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Process;
 use Mockery;
 use Tests\TestCase;
 
 class LogManagerServiceTest extends TestCase
 {
-    
+    use RefreshDatabase;
 
     private LogManagerService $service;
     private DockerService $dockerService;
@@ -486,5 +488,122 @@ class LogManagerServiceTest extends TestCase
         $errors = $this->service->getRecentErrors($project, 50);
 
         $this->assertInstanceOf(Collection::class, $errors);
+    }
+
+    // ==========================================
+    // DEPLOYMENT LOGS TESTS
+    // ==========================================
+
+    #[Test]
+    public function it_gets_deployment_logs_for_project(): void
+    {
+        $server = Server::factory()->create();
+        $project = Project::factory()->create(['server_id' => $server->id]);
+
+        Deployment::factory()->success()->count(3)->create([
+            'project_id' => $project->id,
+        ]);
+
+        $logs = $this->service->getDeploymentLogs($project);
+
+        $this->assertInstanceOf(Collection::class, $logs);
+        $this->assertCount(3, $logs);
+
+        $first = $logs->first();
+        $this->assertArrayHasKey('deployment_id', $first);
+        $this->assertArrayHasKey('status', $first);
+        $this->assertArrayHasKey('triggered_by', $first);
+        $this->assertArrayHasKey('output_log', $first);
+        $this->assertArrayHasKey('commit_hash', $first);
+    }
+
+    #[Test]
+    public function it_gets_deployment_logs_filtered_by_id(): void
+    {
+        $server = Server::factory()->create();
+        $project = Project::factory()->create(['server_id' => $server->id]);
+
+        $target = Deployment::factory()->success()->create([
+            'project_id' => $project->id,
+            'commit_message' => 'Target deployment',
+        ]);
+
+        Deployment::factory()->success()->count(2)->create([
+            'project_id' => $project->id,
+        ]);
+
+        $logs = $this->service->getDeploymentLogs($project, $target->id);
+
+        $this->assertCount(1, $logs);
+        $first = $logs->first();
+        $this->assertNotNull($first);
+        $this->assertEquals($target->id, $first['deployment_id']);
+    }
+
+    #[Test]
+    public function it_gets_deployment_logs_respects_limit(): void
+    {
+        $server = Server::factory()->create();
+        $project = Project::factory()->create(['server_id' => $server->id]);
+
+        Deployment::factory()->success()->count(10)->create([
+            'project_id' => $project->id,
+        ]);
+
+        $logs = $this->service->getDeploymentLogs($project, null, 3);
+
+        $this->assertCount(3, $logs);
+    }
+
+    // ==========================================
+    // NGINX LOGS TESTS
+    // ==========================================
+
+    #[Test]
+    public function it_gets_project_nginx_logs(): void
+    {
+        $server = Server::factory()->create([
+            'ip_address' => '127.0.0.1',
+        ]);
+        $project = Project::factory()->create([
+            'server_id' => $server->id,
+            'slug' => 'nginx-test',
+        ]);
+
+        Process::fake([
+            '*tail*access.log*' => Process::result(output: '192.168.1.1 - - GET /api 200'),
+            '*tail*error.log*' => Process::result(output: 'upstream timeout'),
+            '*' => Process::result(output: ''),
+        ]);
+
+        $logs = $this->service->getProjectNginxLogs($project, 50);
+
+        $this->assertArrayHasKey('access_log', $logs);
+        $this->assertArrayHasKey('error_log', $logs);
+    }
+
+    // ==========================================
+    // SUPERVISOR LOGS TESTS
+    // ==========================================
+
+    #[Test]
+    public function it_gets_project_supervisor_logs(): void
+    {
+        $server = Server::factory()->create([
+            'ip_address' => '127.0.0.1',
+        ]);
+        $project = Project::factory()->create([
+            'server_id' => $server->id,
+            'slug' => 'supervisor-test',
+        ]);
+
+        Process::fake([
+            '*tail*worker.log*' => Process::result(output: '[2025-01-01] Processing job'),
+            '*' => Process::result(output: ''),
+        ]);
+
+        $logs = $this->service->getProjectSupervisorLogs($project, 50);
+
+        $this->assertArrayHasKey('worker_log', $logs);
     }
 }

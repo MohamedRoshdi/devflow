@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Deployments;
 
 use App\Models\Deployment;
+use App\Services\RollbackService;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -19,6 +20,10 @@ class DeploymentShow extends Component
     /** @var array<int, array{line: string, level: string, timestamp: string}> */
     public array $liveLogs = [];
 
+    public bool $showRollbackConfirm = false;
+
+    public bool $rollbackInProgress = false;
+
     public function mount(Deployment $deployment): void
     {
         // Authorization check - only allow viewing deployments for projects the user has access to
@@ -31,6 +36,81 @@ class DeploymentShow extends Component
         if (in_array($this->deployment->status, ['success', 'failed'])) {
             $this->initializeLiveLogs();
         }
+    }
+
+    public function canRollback(): bool
+    {
+        if ($this->deployment->status !== 'success') {
+            return false;
+        }
+
+        if (empty($this->deployment->commit_hash)) {
+            return false;
+        }
+
+        // Can't rollback to the latest deployment
+        $project = $this->deployment->project;
+        if ($project === null) {
+            return false;
+        }
+
+        $latestDeployment = $project->deployments()
+            ->where('status', 'success')
+            ->latest()
+            ->first();
+
+        return $latestDeployment === null || $latestDeployment->id !== $this->deployment->id;
+    }
+
+    public function initiateRollback(): void
+    {
+        if (! $this->canRollback()) {
+            return;
+        }
+
+        $this->showRollbackConfirm = true;
+    }
+
+    public function confirmRollback(): void
+    {
+        $this->authorize('rollback', $this->deployment);
+
+        if (! $this->canRollback()) {
+            $this->showRollbackConfirm = false;
+
+            return;
+        }
+
+        $this->rollbackInProgress = true;
+        $this->showRollbackConfirm = false;
+
+        $rollbackService = app(RollbackService::class);
+
+        try {
+            if ($this->deployment->release_path) {
+                $result = $rollbackService->rollbackToRelease($this->deployment);
+            } else {
+                $result = $rollbackService->rollbackToDeployment($this->deployment);
+            }
+
+            if ($result['success'] ?? false) {
+                /** @var Deployment $newDeployment */
+                $newDeployment = $result['deployment'];
+                $this->redirect(route('deployments.show', $newDeployment), navigate: true);
+            } else {
+                session()->flash('error', $result['error'] ?? 'Rollback failed.');
+                $this->rollbackInProgress = false;
+            }
+        } catch (\Throwable $e) {
+            session()->flash('error', 'Rollback failed: '.$e->getMessage());
+            $this->rollbackInProgress = false;
+        }
+    }
+
+    public function cancelRollback(): void
+    {
+        $this->showRollbackConfirm = false;
+        $this->rollbackInProgress = false;
     }
 
     /**
