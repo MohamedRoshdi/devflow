@@ -27,6 +27,7 @@ class NginxConfigService
         $phpVersion = $project->php_version ?? '8.4';
         $domainName = $domain->domain;
         $rootPath = "/var/www/{$slug}/public";
+        $fpmSocket = "/run/php/{$slug}.sock";
 
         $sslBlock = '';
         if ($domain->ssl_enabled) {
@@ -72,7 +73,7 @@ server {
     error_page 404 /index.php;
 
     location ~ \.php\$ {
-        fastcgi_pass unix:/run/php/php{$phpVersion}-fpm.sock;
+        fastcgi_pass unix:{$fpmSocket};
         fastcgi_param SCRIPT_FILENAME \$realpath_root\$fastcgi_script_name;
         include fastcgi_params;
         fastcgi_hide_header X-Powered-By;

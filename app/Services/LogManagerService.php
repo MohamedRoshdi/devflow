@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Models\Deployment;
 use App\Models\Project;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -466,6 +467,92 @@ class LogManagerService
                 'error' => $e->getMessage(),
             ];
         }
+    }
+
+    /**
+     * Get deployment logs for a project, optionally filtered by deployment ID.
+     *
+     * @param Project $project
+     * @param int|null $deploymentId Filter to a specific deployment
+     * @param int $limit Maximum entries to return
+     * @return Collection<int, array{deployment_id: int, status: string, triggered_by: string|null, started_at: Carbon|null, output_log: string|null, error_log: string|null, commit_hash: string|null, commit_message: string|null}>
+     */
+    public function getDeploymentLogs(Project $project, ?int $deploymentId = null, int $limit = 50): Collection
+    {
+        $query = Deployment::where('project_id', $project->id)
+            ->orderByDesc('created_at');
+
+        if ($deploymentId !== null) {
+            $query->where('id', $deploymentId);
+        }
+
+        return $query->limit($limit)
+            ->get()
+            ->map(fn (Deployment $deployment): array => [
+                'deployment_id' => $deployment->id,
+                'status' => $deployment->status ?? 'unknown',
+                'triggered_by' => $deployment->triggered_by,
+                'started_at' => $deployment->started_at,
+                'output_log' => $deployment->output_log,
+                'error_log' => $deployment->error_log,
+                'commit_hash' => $deployment->commit_hash,
+                'commit_message' => $deployment->commit_message,
+            ]);
+    }
+
+    /**
+     * Fetch nginx access and error logs for a project via SSH.
+     *
+     * @param Project $project
+     * @param int $lines Number of lines to retrieve from each log file
+     * @return array{access_log: string, error_log: string}
+     */
+    public function getProjectNginxLogs(Project $project, int $lines = 100): array
+    {
+        $server = $project->server;
+        $slug = $project->validated_slug;
+
+        $accessLogPath = "/var/log/nginx/{$slug}_access.log";
+        $errorLogPath = "/var/log/nginx/{$slug}_error.log";
+
+        $accessResult = $this->executeServerCommand(
+            $server,
+            "tail -n {$lines} {$accessLogPath} 2>/dev/null || echo ''"
+        );
+
+        $errorResult = $this->executeServerCommand(
+            $server,
+            "tail -n {$lines} {$errorLogPath} 2>/dev/null || echo ''"
+        );
+
+        return [
+            'access_log' => trim($accessResult['output'] ?? ''),
+            'error_log' => trim($errorResult['output'] ?? ''),
+        ];
+    }
+
+    /**
+     * Fetch supervisor worker logs for a project via SSH.
+     *
+     * @param Project $project
+     * @param int $lines Number of lines to retrieve
+     * @return array{worker_log: string}
+     */
+    public function getProjectSupervisorLogs(Project $project, int $lines = 100): array
+    {
+        $server = $project->server;
+        $slug = $project->validated_slug;
+
+        $logPath = "/var/log/supervisor/{$slug}-worker.log";
+
+        $result = $this->executeServerCommand(
+            $server,
+            "tail -n {$lines} {$logPath} 2>/dev/null || echo ''"
+        );
+
+        return [
+            'worker_log' => trim($result['output'] ?? ''),
+        ];
     }
 
     /**

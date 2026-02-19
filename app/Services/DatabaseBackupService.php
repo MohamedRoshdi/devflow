@@ -108,6 +108,34 @@ class DatabaseBackupService
     }
 
     /**
+     * Create a quick backup without requiring a BackupSchedule directly.
+     *
+     * Looks up the project's first active BackupSchedule to determine database_type
+     * and database_name. If no schedule exists, gracefully returns null.
+     *
+     * @param Project $project
+     * @param string $type Backup type tag (e.g. 'pre-deploy', 'pre-migration')
+     * @return DatabaseBackup|null The created backup, or null if no schedule found
+     */
+    public function createQuickBackup(Project $project, string $type = 'pre-deploy'): ?DatabaseBackup
+    {
+        $schedule = BackupSchedule::where('project_id', $project->id)
+            ->where('is_active', true)
+            ->first();
+
+        if ($schedule === null) {
+            Log::info('No active backup schedule found, skipping quick backup', [
+                'project_id' => $project->id,
+                'type' => $type,
+            ]);
+
+            return null;
+        }
+
+        return $this->createBackup($schedule, $type);
+    }
+
+    /**
      * Backup MySQL database via SSH
      *
      * @return array<string, mixed>

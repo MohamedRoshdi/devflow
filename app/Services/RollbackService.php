@@ -16,7 +16,8 @@ class RollbackService
 {
     public function __construct(
         private DockerService $dockerService,
-        private GitService $gitService
+        private GitService $gitService,
+        private PhpFpmPoolService $phpFpmPoolService
     ) {}
 
     /**
@@ -325,6 +326,16 @@ class RollbackService
             $releaseService = app(ReleaseDeploymentService::class);
             $releaseService->rollbackToRelease($project, $targetDeployment);
 
+            // Reload PHP-FPM to pick up new release paths
+            $server = $project->server;
+            if ($server !== null) {
+                $this->phpFpmPoolService->reloadFpm($server, $project);
+
+                // Restart supervisor workers for this project
+                $slug = $project->validated_slug;
+                $this->executeOnServer($project, "supervisorctl restart {$slug}:* 2>/dev/null || true");
+            }
+
             // Update deployment status
             $rollbackDeployment->update([
                 'status' => 'success',
@@ -391,6 +402,20 @@ class RollbackService
                 ];
             })
             ->toArray();
+    }
+
+    /**
+     * Get the latest successful deployment for a project (excluding rollbacks).
+     *
+     * Useful for one-click rollback: get the last good deploy to quickly revert to.
+     */
+    public function getLatestSuccessfulDeployment(Project $project): ?Deployment
+    {
+        return Deployment::where('project_id', $project->id)
+            ->where('status', 'success')
+            ->whereNull('rollback_deployment_id')
+            ->latest()
+            ->first();
     }
 
     /**

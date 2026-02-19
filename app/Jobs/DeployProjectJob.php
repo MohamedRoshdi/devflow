@@ -9,6 +9,7 @@ use App\Models\Deployment;
 use App\Models\PipelineStage;
 use App\Models\Project;
 use App\Services\CICD\PipelineExecutionService;
+use App\Services\DatabaseBackupService;
 use App\Services\Deployment\ReleaseDeploymentService;
 use App\Services\DockerService;
 use App\Services\GitService;
@@ -626,6 +627,27 @@ class DeployProjectJob implements ShouldQueue
         $addLog("Branch: {$project->branch}");
         $addLog("Method: symlink-based zero-downtime");
         $addLog('');
+
+        $this->deployment->update(['output_log' => implode("\n", $logs)]);
+
+        // Pre-migration auto-backup
+        try {
+            $backupService = app(DatabaseBackupService::class);
+            $backup = $backupService->createQuickBackup($project, 'pre-migration');
+
+            if ($backup !== null) {
+                $addLog("Pre-migration backup created (ID: {$backup->id})");
+            } else {
+                $addLog('Pre-migration backup skipped (no active backup schedule)');
+            }
+        } catch (\Exception $backupError) {
+            $addLog('WARNING: Pre-migration backup failed: ' . $backupError->getMessage());
+            Log::warning('Pre-migration backup failed, continuing deployment', [
+                'deployment_id' => $this->deployment->id,
+                'project_id' => $project->id,
+                'error' => $backupError->getMessage(),
+            ]);
+        }
 
         $this->deployment->update(['output_log' => implode("\n", $logs)]);
 
