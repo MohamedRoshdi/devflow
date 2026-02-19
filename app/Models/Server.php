@@ -52,6 +52,7 @@ class Server extends Model
         'ssh_key',
         'ssh_password',
         'status',
+        'role',
         'is_current_server',
         'os',
         'cpu_cores',

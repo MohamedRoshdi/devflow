@@ -32,6 +32,8 @@ trait HasServerFormFields
 
     public string $auth_method = 'host_key';
 
+    public string $role = 'general';
+
     public ?float $latitude = null;
 
     public ?float $longitude = null;
@@ -115,6 +117,7 @@ trait HasServerFormFields
             'ip_address' => 'required|ip',
             'port' => 'required|integer|min:1|max:65535',
             'auth_method' => 'required|in:host_key,password,key',
+            'role' => 'required|in:general,app,database,control',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'location_name' => 'nullable|string|max:255',

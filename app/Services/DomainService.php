@@ -17,7 +17,8 @@ class DomainService
 {
     public function __construct(
         private readonly SSLService $sslService,
-        private readonly NginxConfigService $nginxConfigService
+        private readonly NginxConfigService $nginxConfigService,
+        private readonly CloudflareDNSService $cloudflareDNSService
     ) {}
 
     /**
@@ -686,15 +687,51 @@ class DomainService
      * @param array<string, mixed> $config
      * @return bool
      */
+    /**
+     * Configure Cloudflare DNS
+     *
+     * @param Domain $domain
+     * @param array<string, mixed> $config
+     * @return bool
+     */
     protected function configureCloudflare(Domain $domain, array $config): bool
     {
-        // Placeholder for Cloudflare DNS configuration
-        // This would use Cloudflare API to create DNS records
-        Log::info('Cloudflare DNS configuration not yet implemented', [
-            'domain' => $domain->domain,
+        $zoneId = $config['zone_id'] ?? null;
+        if (! $zoneId || ! is_string($zoneId)) {
+            Log::error('Cloudflare zone_id is required in dns_config', [
+                'domain' => $domain->domain,
+            ]);
+
+            return false;
+        }
+
+        $server = $domain->project?->server;
+        if (! $server) {
+            Log::error('No server associated with domain for Cloudflare DNS', [
+                'domain' => $domain->domain,
+            ]);
+
+            return false;
+        }
+
+        $result = $this->cloudflareDNSService->createDNSRecord(
+            $zoneId,
+            'A',
+            $domain->domain,
+            $server->ip_address,
+            (bool) ($config['proxied'] ?? false)
+        );
+
+        $recordId = $result['result']['id'] ?? null;
+
+        $domain->update([
+            'metadata' => array_merge($domain->metadata ?? [], [
+                'cloudflare_record_id' => $recordId,
+                'cloudflare_zone_id' => $zoneId,
+            ]),
         ]);
 
-        return false;
+        return true;
     }
 
     /**
@@ -749,8 +786,20 @@ class DomainService
                 'provider' => $provider,
             ]);
 
-            // Provider-specific DNS record removal would go here
-            // For now, just log the action
+            if ($provider === 'cloudflare') {
+                $metadata = $domain->metadata;
+                $recordId = is_array($metadata) ? ($metadata['cloudflare_record_id'] ?? null) : null;
+                $zoneId = is_array($metadata) ? ($metadata['cloudflare_zone_id'] ?? null) : null;
+
+                if (is_string($recordId) && is_string($zoneId)) {
+                    $this->cloudflareDNSService->deleteDNSRecord($zoneId, $recordId);
+                } else {
+                    Log::warning('Missing Cloudflare record/zone ID for DNS removal', [
+                        'domain' => $domain->domain,
+                    ]);
+                }
+            }
+
             return true;
 
         } catch (\Exception $e) {

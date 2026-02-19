@@ -363,6 +363,23 @@ return [
     | - SSL certificate renewal
     */
 
+    /*
+    | Cloudflare Configuration
+    |
+    | To set up Cloudflare integration:
+    | 1. Go to Cloudflare Dashboard > My Profile > API Tokens
+    | 2. Create a token with Zone.DNS edit permissions
+    | 3. Copy the API token
+    |
+    | Used for:
+    | - Automated DNS record management
+    | - Origin certificate uploads
+    */
+
+    'cloudflare' => [
+        'api_token' => env('CLOUDFLARE_API_TOKEN'),
+    ],
+
     'nginx_proxy_manager' => [
         'url' => env('NGINX_PROXY_MANAGER_URL', 'http://localhost:81'),
         'email' => env('NGINX_PROXY_MANAGER_EMAIL'),

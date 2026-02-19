@@ -29,6 +29,8 @@ class ServerCreate extends Component
 
     public string $auth_method = 'host_key'; // 'host_key', 'password', or 'key'
 
+    public string $role = 'general';
+
     public ?float $latitude = null;
 
     public ?float $longitude = null;
@@ -51,6 +53,7 @@ class ServerCreate extends Component
             // SSH key is optional - required only for 'key' auth method
             'ssh_key' => 'nullable|string|required_if:auth_method,key',
             'auth_method' => 'required|in:host_key,password,key',
+            'role' => 'required|in:general,app,database,control',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'location_name' => 'nullable|string|max:255',
@@ -104,6 +107,7 @@ class ServerCreate extends Component
             'username' => $this->username,
             'ssh_password' => $this->auth_method === 'password' ? $this->ssh_password : null,
             'ssh_key' => $this->auth_method === 'key' ? $this->ssh_key : null,
+            'role' => $this->role,
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'location_name' => $this->location_name,

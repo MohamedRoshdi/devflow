@@ -285,7 +285,7 @@
     <!-- Filters -->
     <div class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-xl mb-8 overflow-hidden">
         <div class="p-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-2">
                         <svg class="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -312,6 +312,22 @@
                         <option value="offline">Offline</option>
                         <option value="maintenance">Maintenance</option>
                         <option value="error">Error</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                        </svg>
+                        Role
+                    </label>
+                    <select wire:model.live="roleFilter"
+                            class="w-full px-4 py-2.5 bg-white dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600/50 rounded-xl text-slate-900 dark:text-white focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                        <option value="">All Roles</option>
+                        <option value="general">General</option>
+                        <option value="app">Application</option>
+                        <option value="database">Database</option>
+                        <option value="control">Control</option>
                     </select>
                 </div>
             </div>
@@ -460,6 +476,25 @@
                                 {{ ucfirst($server->status) }}
                             </span>
 
+                            @php
+                                $roleColors = [
+                                    'general' => 'bg-slate-500/20 text-slate-400 border-slate-500/30',
+                                    'app' => 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+                                    'database' => 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+                                    'control' => 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+                                ];
+                                $roleLabels = [
+                                    'general' => 'General',
+                                    'app' => 'App',
+                                    'database' => 'Database',
+                                    'control' => 'Control',
+                                ];
+                                $serverRole = $server->role ?? 'general';
+                            @endphp
+                            <span class="flex-shrink-0 px-2.5 py-1 rounded-lg text-xs font-semibold border {{ $roleColors[$serverRole] ?? $roleColors['general'] }}">
+                                {{ $roleLabels[$serverRole] ?? 'General' }}
+                            </span>
+
                             @if($server->tags->count() > 0)
                                 @foreach($server->tags as $tag)
                                     <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full"
@@ -602,7 +637,7 @@
         <div class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-xl p-4" wire:loading.remove>
             {{ $servers->links() }}
         </div>
-    @elseif($search || $statusFilter || !empty($tagFilter))
+    @elseif($search || $statusFilter || $roleFilter || !empty($tagFilter))
         {{-- No Results State (filters applied) --}}
         <div class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-xl text-center py-16" wire:loading.remove>
             <div class="relative inline-flex items-center justify-center w-20 h-20 mb-6">
@@ -615,7 +650,7 @@
             </div>
             <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">No Servers Found</h3>
             <p class="text-slate-600 dark:text-slate-400 mb-6 max-w-md mx-auto">No servers match your current filters. Try adjusting your search criteria or clear the filters.</p>
-            <button wire:click="$set('search', ''); $set('statusFilter', ''); $set('tagFilter', [])"
+            <button wire:click="$set('search', ''); $set('statusFilter', ''); $set('roleFilter', ''); $set('tagFilter', [])"
                class="group inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-slate-700 dark:text-white overflow-hidden transition-all duration-300 hover:-translate-y-0.5 bg-slate-200/50 dark:bg-slate-700/50 backdrop-blur-sm border border-slate-300/50 dark:border-slate-600/50 hover:border-slate-400/50 dark:hover:border-slate-500/50">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>

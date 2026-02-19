@@ -26,6 +26,8 @@ trait WithServerFiltering
 
     public string $statusFilter = '';
 
+    public string $roleFilter = '';
+
     /** @var array<int> */
     public array $tagFilter = [];
 
@@ -34,7 +36,7 @@ trait WithServerFiltering
      */
     public function updated(string $property): void
     {
-        if (in_array($property, ['search', 'statusFilter', 'tagFilter'])) {
+        if (in_array($property, ['search', 'statusFilter', 'roleFilter', 'tagFilter'])) {
             unset($this->serversQuery);
             $this->resetPage();
         }
@@ -51,7 +53,7 @@ trait WithServerFiltering
     {
         return Server::with(['tags:id,name,color', 'projects:id,name,server_id', 'user:id,name'])
             ->select([
-                'id', 'name', 'hostname', 'ip_address', 'port', 'status',
+                'id', 'name', 'hostname', 'ip_address', 'port', 'status', 'role',
                 'user_id', 'docker_installed', 'last_ping_at', 'created_at', 'updated_at',
                 'cpu_cores', 'memory_gb', 'disk_gb', 'location_name', 'os',
             ])
@@ -73,7 +75,7 @@ trait WithServerFiltering
                 'user:id,name',
             ])
             ->select([
-                'id', 'name', 'hostname', 'ip_address', 'port', 'status',
+                'id', 'name', 'hostname', 'ip_address', 'port', 'status', 'role',
                 'user_id', 'docker_installed', 'last_ping_at', 'created_at', 'updated_at',
                 'cpu_cores', 'memory_gb', 'disk_gb', 'location_name', 'os',
             ])
@@ -86,6 +88,9 @@ trait WithServerFiltering
             })
             ->when($this->statusFilter, function ($query) {
                 $query->where('status', $this->statusFilter);
+            })
+            ->when($this->roleFilter, function ($query) {
+                $query->where('role', $this->roleFilter);
             })
             ->when(! empty($this->tagFilter), function ($query) {
                 $query->whereHas('tags', function ($q) {

@@ -105,6 +105,24 @@
                 </div>
             </div>
 
+            <!-- Server Role -->
+            <div>
+                <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Server Role</label>
+                <select wire:model="role"
+                        id="role"
+                        wire:loading.attr="disabled"
+                        wire:target="createServer,testConnection"
+                        class="input @error('role') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
+                    <option value="general">General - All actions (default)</option>
+                    <option value="app">Application - Deploy, nginx, supervisor, PHP-FPM</option>
+                    <option value="database">Database - Backup, restore, create database</option>
+                    <option value="control">Control - DevFlow management only</option>
+                </select>
+                @error('role')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
             <!-- Authentication Method -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Authentication Method</label>
