@@ -144,6 +144,17 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
 
     // ============ ADVANCED FEATURES ============
 
+    // Blue-Green Deployments
+    Route::get('/projects/{project}/blue-green', \App\Livewire\Deployments\BlueGreenManager::class)->name('projects.blue-green');
+
+    // Canary Releases
+    Route::get('/projects/{project}/canary', \App\Livewire\Deployments\CanaryReleaseDashboard::class)->name('projects.canary');
+
+    // Multi-Region Management
+    Route::get('/regions', \App\Livewire\Servers\RegionManager::class)->name('regions.index');
+    Route::get('/regions/{region}', \App\Livewire\Servers\RegionDashboard::class)->name('regions.show');
+    Route::get('/projects/{project}/regions', \App\Livewire\Deployments\CrossRegionDeployment::class)->name('projects.regions');
+
     // Kubernetes Management
     Route::get('/kubernetes', \App\Livewire\Kubernetes\ClusterManager::class)->name('kubernetes.index');
 

@@ -38,6 +38,8 @@ trait HasServerFormFields
 
     public string $location_name = '';
 
+    public ?int $region_id = null;
+
     // Connection test result messages
     public ?string $connectionSuccess = null;
 
@@ -116,6 +118,7 @@ trait HasServerFormFields
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'location_name' => 'nullable|string|max:255',
+            'region_id' => 'nullable|exists:regions,id',
         ];
     }
 

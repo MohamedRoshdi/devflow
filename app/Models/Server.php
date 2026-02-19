@@ -82,6 +82,7 @@ class Server extends Model
         'last_baseline_at',
         'last_hardening_at',
         'hardening_level',
+        'region_id',
     ];
 
     protected $hidden = [
@@ -370,6 +371,14 @@ class Server extends Model
     public function remediationLogs(): HasMany
     {
         return $this->hasMany(RemediationLog::class);
+    }
+
+    /**
+     * @return BelongsTo<Region, $this>
+     */
+    public function region(): BelongsTo
+    {
+        return $this->belongsTo(Region::class);
     }
 
     /**

@@ -68,6 +68,9 @@ class Project extends Model
         'requires_approval',
         'approval_settings',
         'kubernetes_cluster_id',
+        'deployment_strategy',
+        'active_environment',
+        'blue_green_config',
     ];
 
     protected function casts(): array
@@ -80,6 +83,7 @@ class Project extends Model
             'post_deploy_commands' => 'array',
             'setup_config' => 'array',
             'approval_settings' => 'array',
+            'blue_green_config' => 'array',
             'auto_deploy' => 'boolean',
             'webhook_enabled' => 'boolean',
             'requires_approval' => 'boolean',
@@ -451,6 +455,54 @@ class Project extends Model
     public function dockerRegistries(): HasMany
     {
         return $this->hasMany(DockerRegistry::class);
+    }
+
+    /**
+     * @return HasMany<BlueGreenEnvironment, $this>
+     */
+    public function blueGreenEnvironments(): HasMany
+    {
+        return $this->hasMany(BlueGreenEnvironment::class);
+    }
+
+    /**
+     * @return HasMany<CanaryRelease, $this>
+     */
+    public function canaryReleases(): HasMany
+    {
+        return $this->hasMany(CanaryRelease::class);
+    }
+
+    /**
+     * @return HasMany<RegionDeployment, $this>
+     */
+    public function regionDeployments(): HasMany
+    {
+        return $this->hasMany(RegionDeployment::class);
+    }
+
+    /**
+     * @return HasMany<DnsRoutingRule, $this>
+     */
+    public function dnsRoutingRules(): HasMany
+    {
+        return $this->hasMany(DnsRoutingRule::class);
+    }
+
+    /**
+     * Check if this project uses blue-green deployment strategy.
+     */
+    public function usesBlueGreenDeployment(): bool
+    {
+        return $this->deployment_strategy === 'blue_green';
+    }
+
+    /**
+     * Check if this project uses canary deployment strategy.
+     */
+    public function usesCanaryDeployment(): bool
+    {
+        return $this->deployment_strategy === 'canary';
     }
 
     /**

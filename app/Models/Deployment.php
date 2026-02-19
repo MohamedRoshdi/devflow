@@ -31,6 +31,10 @@ class Deployment extends Model
         'rollback_deployment_id',
         'environment_snapshot',
         'metadata',
+        'deployment_strategy',
+        'target_environment',
+        'is_canary',
+        'canary_release_id',
     ];
 
     protected function casts(): array
@@ -41,6 +45,7 @@ class Deployment extends Model
             'started_at' => 'datetime',
             'completed_at' => 'datetime',
             'duration_seconds' => 'integer',
+            'is_canary' => 'boolean',
         ];
     }
 
@@ -143,6 +148,14 @@ class Deployment extends Model
     public function auditLogs()
     {
         return $this->morphMany(AuditLog::class, 'auditable');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<CanaryRelease, $this>
+     */
+    public function canaryRelease()
+    {
+        return $this->belongsTo(CanaryRelease::class);
     }
 
     // Approval helpers

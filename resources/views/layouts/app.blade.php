@@ -162,6 +162,15 @@
                         </svg>
                         <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Deployments</span>
                     </a>
+
+                    <!-- Regions - Direct Link -->
+                    <a href="{{ route('regions.index') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('regions.*') ? 'bg-blue-50 dark:bg-slate-800 text-blue-700 dark:text-white border-l-4 border-blue-500 -ml-1 pl-4' : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white' }}">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Regions</span>
+                    </a>
                 </div>
 
                 <!-- Documentation Section (PROMINENT) -->
@@ -491,6 +500,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
                     </svg>
                     <span>Deployments</span>
+                </a>
+                <a href="{{ route('regions.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('regions.*') ? 'bg-blue-50 dark:bg-slate-800 text-blue-700 dark:text-white' : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white' }}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span>Regions</span>
                 </a>
 
                 <!-- Other sections similarly simplified for mobile -->

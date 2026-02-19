@@ -471,6 +471,110 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Blue-Green Deployment Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Settings for blue-green deployment strategy.
+    |
+    */
+
+    'blue_green' => [
+        // Starting port for blue-green environment port assignments
+        'port_range_start' => (int) env('DEVFLOW_BLUE_GREEN_PORT_START', 10000),
+
+        // Proxy method for traffic switching ('nginx_config' or 'npm_api')
+        'proxy_method' => env('DEVFLOW_BLUE_GREEN_PROXY_METHOD', 'nginx_config'),
+
+        // Number of health check retries before declaring unhealthy
+        'health_check_retries' => (int) env('DEVFLOW_BLUE_GREEN_HEALTH_RETRIES', 3),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Canary Release Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Settings for canary deployment strategy including traffic splitting,
+    | health thresholds, and monitoring intervals.
+    |
+    */
+
+    'canary' => [
+        // Default weight schedule for canary rollout steps
+        'default_weight_schedule' => [
+            ['weight' => 10, 'duration_minutes' => 5],
+            ['weight' => 25, 'duration_minutes' => 10],
+            ['weight' => 50, 'duration_minutes' => 10],
+            ['weight' => 100, 'duration_minutes' => 0],
+        ],
+
+        // Error rate threshold (percentage) - rollback if exceeded
+        'error_rate_threshold' => (float) env('DEVFLOW_CANARY_ERROR_RATE_THRESHOLD', 5.00),
+
+        // Response time threshold (milliseconds) - rollback if exceeded
+        'response_time_threshold' => (int) env('DEVFLOW_CANARY_RESPONSE_TIME_THRESHOLD', 2000),
+
+        // Monitoring interval (seconds) between health checks
+        'monitor_interval' => (int) env('DEVFLOW_CANARY_MONITOR_INTERVAL', 60),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cost Estimation Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Default cost rates for resource usage estimation.
+    |
+    */
+
+    'cost_estimation' => [
+        'enabled' => (bool) env('DEVFLOW_COST_ESTIMATION_ENABLED', true),
+        'currency' => env('DEVFLOW_COST_CURRENCY', 'USD'),
+        'default_rates' => [
+            'cpu' => (float) env('DEVFLOW_COST_CPU_RATE', 0.05),
+            'memory' => (float) env('DEVFLOW_COST_MEMORY_RATE', 0.01),
+            'disk' => (float) env('DEVFLOW_COST_DISK_RATE', 0.001),
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Multi-Region Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Settings for multi-region deployment support.
+    |
+    */
+
+    'regions' => [
+        // Enable multi-region features
+        'enabled' => (bool) env('DEVFLOW_REGIONS_ENABLED', false),
+
+        // Default deployment strategy (sequential or parallel)
+        'default_strategy' => env('DEVFLOW_REGIONS_DEFAULT_STRATEGY', 'sequential'),
+
+        // Auto-failover when region goes offline
+        'auto_failover' => (bool) env('DEVFLOW_REGIONS_AUTO_FAILOVER', false),
+
+        // DNS provider for geo-routing (nginx, cloudflare, route53)
+        'dns_provider' => env('DEVFLOW_REGIONS_DNS_PROVIDER', 'nginx'),
+
+        // Health check interval for regions (seconds)
+        'health_check_interval' => (int) env('DEVFLOW_REGIONS_HEALTH_INTERVAL', 300),
+
+        // Continent templates for quick region setup
+        'continent_templates' => [
+            'North America' => ['US East', 'US West', 'Canada'],
+            'Europe' => ['EU West', 'EU Central', 'EU North'],
+            'Asia' => ['Asia Pacific', 'Asia South', 'Asia East'],
+            'South America' => ['SA East'],
+            'Africa' => ['Africa South'],
+            'Oceania' => ['Australia', 'New Zealand'],
+        ],
+    ],
+
     'storage' => [
         // Enable automatic cleanup of old artifacts
         'auto_cleanup' => (bool) env('DEVFLOW_AUTO_CLEANUP', true),
