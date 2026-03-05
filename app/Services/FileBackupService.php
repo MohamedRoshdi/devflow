@@ -32,7 +32,7 @@ class FileBackupService
      */
     public function createFullBackup(Project $project, array $options = []): FileBackup
     {
-        $sourcePath = $options['source_path'] ?? "/var/www/{$project->slug}";
+        $sourcePath = $options['source_path'] ?? ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
         $storageDisk = $options['storage_disk'] ?? 'local';
         $excludePatterns = $this->getExcludePatterns($project, $options['exclude'] ?? []);
 

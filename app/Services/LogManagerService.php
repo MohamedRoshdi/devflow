@@ -31,7 +31,7 @@ class LogManagerService
     {
         try {
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
 
             // Determine the log path based on framework
             $logPath = match ($project->framework) {
@@ -87,7 +87,7 @@ class LogManagerService
     {
         try {
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
             $timestamp = now()->format('Y-m-d_His');
 
             // Determine log paths based on framework
@@ -170,7 +170,7 @@ class LogManagerService
     {
         try {
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
 
             // Determine log directory based on framework
             $logDir = match ($project->framework) {
@@ -251,7 +251,7 @@ class LogManagerService
     {
         try {
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
 
             // Determine log path based on framework
             $logPath = match ($project->framework) {
@@ -313,7 +313,7 @@ class LogManagerService
     public function exportLogs(Project $project, ?\DateTimeInterface $from = null, ?\DateTimeInterface $to = null): string
     {
         $server = $project->server;
-        $projectPath = "/var/www/{$project->slug}";
+        $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
         $timestamp = now()->format('Y-m-d_His');
 
         // Determine log directory based on framework
@@ -397,7 +397,7 @@ class LogManagerService
 
             // For other frameworks, manually clear logs
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
 
             $logDir = match ($project->framework) {
                 'Symfony', 'symfony' => "{$projectPath}/var/log",
@@ -440,7 +440,7 @@ class LogManagerService
 
             // For other frameworks, fetch directly
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
 
             $logPath = match ($project->framework) {
                 'Symfony', 'symfony' => "{$projectPath}/var/log/prod.log",
@@ -679,7 +679,7 @@ class LogManagerService
     {
         try {
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
 
             $archiveDir = match ($project->framework) {
                 'Laravel', 'laravel' => "{$projectPath}/storage/logs/archive",

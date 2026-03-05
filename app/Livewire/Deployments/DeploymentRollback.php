@@ -119,7 +119,7 @@ class DeploymentRollback extends Component
         $targetDeployment = Deployment::find($this->selectedDeployment['id']);
 
         if ($currentDeployment && $targetDeployment) {
-            $projectPath = "/var/www/{$this->project->slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$this->project->slug}";
 
             // Get commit diff via SSH
             $diffCommand = "cd {$projectPath} && git log --oneline {$targetDeployment->commit_hash}..{$currentDeployment->commit_hash} 2>/dev/null || echo ''";
@@ -151,7 +151,7 @@ class DeploymentRollback extends Component
             return [];
         }
 
-        $projectPath = "/var/www/{$this->project->slug}";
+        $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$this->project->slug}";
         $command = "cd {$projectPath} && git diff --name-status {$fromCommit}..{$toCommit} 2>/dev/null | head -20";
         $output = $this->executeOnServer($command);
 

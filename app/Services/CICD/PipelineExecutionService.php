@@ -163,7 +163,7 @@ class PipelineExecutionService
         PipelineStageRun $stageRun,
         int $timeout = 600
     ): bool {
-        $projectPath = "/var/www/{$project->slug}";
+        $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
 
         // Build SSH command
         $sshPrefix = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 {$server->username}@{$server->ip_address}";

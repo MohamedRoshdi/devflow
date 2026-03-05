@@ -98,7 +98,7 @@ class GitService
     {
         try {
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
             $skip = max(0, ($page - 1) * $perPage);
 
             // Check if repository exists
@@ -195,7 +195,7 @@ class GitService
     {
         try {
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
 
             if (! $this->isRepositoryCloned($projectPath, $server)) {
                 return null;
@@ -232,7 +232,7 @@ class GitService
     {
         try {
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
 
             // Check if repository exists
             if (! $this->isRepositoryCloned($projectPath, $server)) {
@@ -381,7 +381,7 @@ class GitService
     {
         try {
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
 
             if (! $this->isRepositoryCloned($projectPath, $server)) {
                 return [
@@ -593,7 +593,7 @@ class GitService
     {
         try {
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
 
             // Check if repository exists
             if (! $this->isRepositoryCloned($projectPath, $server)) {
@@ -701,7 +701,7 @@ class GitService
             $validatedBranchName = SecurityHelper::sanitizeBranchName($branchName);
             $escapedBranchName = escapeshellarg($validatedBranchName);
 
-            $projectPath = "/var/www/{$project->slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
 
             // Check if repository exists
             if (! $this->isRepositoryCloned($projectPath, $server)) {

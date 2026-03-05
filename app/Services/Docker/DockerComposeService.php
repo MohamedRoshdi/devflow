@@ -32,7 +32,7 @@ class DockerComposeService
         }
 
         $slug = $project->validated_slug;
-        $projectPath = "/var/www/{$slug}";
+        $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$slug}";
 
         $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
         $result = $this->executeRemoteCommand($server, $checkComposeCmd, false);
@@ -89,7 +89,7 @@ class DockerComposeService
             }
 
             $slug = $project->validated_slug;
-            $projectPath = "/var/www/{$slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$slug}";
 
             $result = $this->executeRemoteCommandWithTimeout(
                 $server,
@@ -121,7 +121,7 @@ class DockerComposeService
             }
 
             $slug = $project->validated_slug;
-            $projectPath = "/var/www/{$slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$slug}";
 
             $result = $this->executeRemoteCommand(
                 $server,
@@ -152,7 +152,7 @@ class DockerComposeService
             }
 
             $slug = $project->validated_slug;
-            $projectPath = "/var/www/{$slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$slug}";
 
             $result = $this->executeRemoteCommand(
                 $server,
@@ -191,7 +191,7 @@ class DockerComposeService
             }
 
             $slug = $project->validated_slug;
-            $projectPath = "/var/www/{$slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$slug}";
 
             $serviceList = empty($services) ? '' : ' '.implode(' ', array_map('escapeshellarg', $services));
             $result = $this->executeRemoteCommand(
@@ -223,7 +223,7 @@ class DockerComposeService
             }
 
             $slug = $project->validated_slug;
-            $projectPath = "/var/www/{$slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$slug}";
 
             $result = $this->executeRemoteCommandWithTimeout(
                 $server,
@@ -255,7 +255,7 @@ class DockerComposeService
             }
 
             $slug = $project->validated_slug;
-            $projectPath = "/var/www/{$slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$slug}";
 
             $serviceArg = $service !== null ? ' '.escapeshellarg($service) : '';
             $result = $this->executeRemoteCommand(

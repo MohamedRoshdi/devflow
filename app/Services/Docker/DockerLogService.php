@@ -35,7 +35,7 @@ class DockerLogService
             }
 
             $slug = $project->validated_slug;
-            $projectPath = "/var/www/{$slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$slug}";
 
             // Check if project uses docker-compose
             $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
@@ -85,8 +85,9 @@ class DockerLogService
             }
 
             $slug = $project->validated_slug;
+            $basePath = (string) config('devflow.projects_path', '/var/www');
             $containerPath = '/var/www/storage/logs/laravel.log';
-            $hostPath = "/var/www/{$slug}/storage/logs/laravel.log";
+            $hostPath = "{$basePath}/{$slug}/storage/logs/laravel.log";
 
             $escapedSlug = escapeshellarg($slug);
             $dockerCommand = "docker exec {$escapedSlug} sh -c 'if [ -f {$containerPath} ]; then tail -n {$lines} {$containerPath}; else echo \"Laravel log not found inside container\"; fi'";
@@ -131,12 +132,13 @@ class DockerLogService
             }
 
             $slug = $project->validated_slug;
-            $hostPath = "/var/www/{$slug}/storage/logs/laravel.log";
+            $basePath = (string) config('devflow.projects_path', '/var/www');
+            $hostPath = "{$basePath}/{$slug}/storage/logs/laravel.log";
 
             // Use sudo for non-root users to handle permission issues
             $sudo = strtolower((string) $server->username) === 'root' ? '' : 'sudo ';
 
-            $hostCommand = "if [ -f {$hostPath} ]; then {$sudo}truncate -s 0 {$hostPath} && echo 'cleared'; elif [ -d /var/www/{$slug}/storage/logs ]; then {$sudo}touch {$hostPath} && {$sudo}chmod 666 {$hostPath} && echo 'created'; else echo 'not_found'; fi";
+            $hostCommand = "if [ -f {$hostPath} ]; then {$sudo}truncate -s 0 {$hostPath} && echo 'cleared'; elif [ -d {$basePath}/{$slug}/storage/logs ]; then {$sudo}touch {$hostPath} && {$sudo}chmod 666 {$hostPath} && echo 'created'; else echo 'not_found'; fi";
             $result = $this->executeRemoteCommand($server, $hostCommand, false);
 
             $output = trim($result->output());
@@ -151,7 +153,7 @@ class DockerLogService
             if ($output === 'not_found') {
                 return [
                     'success' => false,
-                    'error' => "Log directory not found at /var/www/{$slug}/storage/logs",
+                    'error' => "Log directory not found at {$basePath}/{$slug}/storage/logs",
                 ];
             }
 
@@ -181,7 +183,8 @@ class DockerLogService
             }
 
             $slug = $project->validated_slug;
-            $hostPath = "/var/www/{$slug}/storage/logs/laravel.log";
+            $basePath = (string) config('devflow.projects_path', '/var/www');
+            $hostPath = "{$basePath}/{$slug}/storage/logs/laravel.log";
 
             // Use sudo for non-root users
             $sudo = strtolower((string) $server->username) === 'root' ? '' : 'sudo ';

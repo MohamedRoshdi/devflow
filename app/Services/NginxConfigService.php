@@ -26,7 +26,7 @@ class NginxConfigService
         $slug = $project->validated_slug;
         $phpVersion = $project->php_version ?? '8.4';
         $domainName = $domain->domain;
-        $rootPath = "/var/www/{$slug}/public";
+        $rootPath = ((string) config('devflow.projects_path', '/var/www'))."/{$slug}/public";
         $fpmSocket = "/run/php/{$slug}.sock";
 
         $sslBlock = '';

@@ -291,8 +291,8 @@ class DeployProjectJob implements ShouldQueue
                 "chown -R root:root {$projectPath}/.git {$projectPath}/storage {$projectPath}/bootstrap 2>/dev/null || true && ".
                 "git -c safe.directory='*' fetch origin {$escapedBranch} && ".
                 "git -c safe.directory='*' reset --hard origin/{$escapedBranch} && ".
-                "chown -R 1000:1000 {$projectPath}/storage {$projectPath}/bootstrap/cache && ".
-                "chmod -R 775 {$projectPath}/storage {$projectPath}/bootstrap/cache";
+                "chown -R 1000:1000 {$projectPath}/storage {$projectPath}/bootstrap/cache 2>/dev/null || true && ".
+                "chmod -R 775 {$projectPath}/storage {$projectPath}/bootstrap/cache 2>/dev/null || true";
 
             $pullResult = $runCmd($gitCommand, 120);
 

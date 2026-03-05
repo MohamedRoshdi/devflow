@@ -99,7 +99,7 @@ class ProjectEnvironment extends Component
                 return;
             }
 
-            $projectPath = "/var/www/{$project->slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
 
             // Update APP_ENV and APP_DEBUG based on environment
             $appDebug = in_array($environment, ['local', 'development']) ? 'true' : 'false';
@@ -221,7 +221,7 @@ class ProjectEnvironment extends Component
                 return;
             }
 
-            $projectPath = "/var/www/{$project->slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
             $envPath = "{$projectPath}/.env";
 
             // Build SSH command to read the .env file
@@ -361,7 +361,7 @@ class ProjectEnvironment extends Component
             }
 
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
             $envPath = "{$projectPath}/.env";
 
             $key = strtoupper(trim($this->serverEnvKey));
@@ -420,7 +420,7 @@ class ProjectEnvironment extends Component
             }
 
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
 
             // Build SSH command to delete the variable
             $deleteCommand = "cd {$projectPath} && sed -i '/^{$key}=/d' .env && echo 'SUCCESS'";

@@ -18,7 +18,7 @@ class StorageService
 
         try {
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
 
             $command = $this->buildSSHCommand(
                 $server,
@@ -68,7 +68,7 @@ class StorageService
 
         try {
             $server = $project->server;
-            $projectPath = "/var/www/{$project->slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
 
             // Clean logs, cache, temp files
             $cleanupCommands = [

@@ -69,7 +69,7 @@ class DockerContainerService
     protected function detectComposeUsage(Server $server, Project $project): bool
     {
         $slug = $project->validated_slug;
-        $projectPath = "/var/www/{$slug}";
+        $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$slug}";
 
         $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
         $result = $this->executeRemoteCommand($server, $checkComposeCmd, false);
@@ -85,7 +85,7 @@ class DockerContainerService
     protected function buildDockerComposeContainer(Server $server, Project $project): array
     {
         $slug = $project->validated_slug;
-        $projectPath = "/var/www/{$slug}";
+        $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$slug}";
 
         $buildCommand = "cd {$projectPath} && docker compose build --no-cache --pull";
 
@@ -118,7 +118,7 @@ class DockerContainerService
     protected function buildStandaloneContainer(Server $server, Project $project): array
     {
         $slug = $project->validated_slug;
-        $projectPath = "/var/www/{$slug}";
+        $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$slug}";
 
         // Check for Dockerfile
         $checkDockerfileCommand = "cd {$projectPath} && if [ -f Dockerfile ]; then echo 'Dockerfile'; elif [ -f Dockerfile.production ]; then echo 'Dockerfile.production'; else echo 'missing'; fi";
@@ -201,7 +201,7 @@ class DockerContainerService
             }
 
             $slug = $project->validated_slug;
-            $projectPath = "/var/www/{$slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$slug}";
 
             $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
             $checkResult = $this->executeRemoteCommand($server, $checkComposeCmd, false);
@@ -225,7 +225,7 @@ class DockerContainerService
     protected function startDockerComposeContainers(Server $server, Project $project): array
     {
         $slug = $project->validated_slug;
-        $projectPath = "/var/www/{$slug}";
+        $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$slug}";
 
         $this->cleanupOrphanedContainers($server, $project);
 
@@ -308,7 +308,7 @@ class DockerContainerService
     protected function cleanupOrphanedContainers(Server $server, Project $project): void
     {
         $slug = $project->validated_slug;
-        $projectPath = "/var/www/{$slug}";
+        $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$slug}";
 
         // Step 1: Standard docker compose cleanup
         $cleanupCommand = "cd {$projectPath} && docker compose down --remove-orphans 2>/dev/null; true";
@@ -422,7 +422,7 @@ class DockerContainerService
             }
 
             $slug = $project->validated_slug;
-            $projectPath = "/var/www/{$slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$slug}";
 
             $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
             $checkResult = $this->executeRemoteCommand($server, $checkComposeCmd, false);
@@ -765,7 +765,7 @@ class DockerContainerService
             }
 
             $slug = $project->validated_slug;
-            $projectPath = "/var/www/{$slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$slug}";
 
             $checkComposeCmd = "test -f {$projectPath}/docker-compose.yml && echo 'compose' || echo 'standalone'";
             $checkResult = $this->executeRemoteCommand($server, $checkComposeCmd, false);

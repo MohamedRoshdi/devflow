@@ -331,7 +331,7 @@ class CrossRegionDeploymentService
      */
     private function deployToServer(Project $project, \App\Models\Server $server): void
     {
-        $projectPath = "/var/www/{$project->slug}";
+        $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
         $branch = escapeshellarg($project->branch ?? 'main');
         $sshPrefix = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 {$server->username}@{$server->ip_address}";
 
@@ -361,7 +361,7 @@ class CrossRegionDeploymentService
      */
     private function rollbackServer(Project $project, \App\Models\Server $server): void
     {
-        $projectPath = "/var/www/{$project->slug}";
+        $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
         $sshPrefix = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 {$server->username}@{$server->ip_address}";
 
         $command = "cd {$projectPath} && git reset --hard HEAD~1";

@@ -201,7 +201,7 @@ class RollbackService
      */
     private function backupCurrentState(Project $project): void
     {
-        $projectPath = "/var/www/{$project->slug}";
+        $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
         $backupPath = "/var/www/backups/{$project->slug}";
         $timestamp = now()->format('Y-m-d_H-i-s');
 
@@ -223,7 +223,7 @@ class RollbackService
     private function checkoutCommit(Project $project, string $commitHash): array
     {
         try {
-            $projectPath = "/var/www/{$project->slug}";
+            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
 
             // Configure safe directory
             $this->executeOnServer($project, "git config --global --add safe.directory {$projectPath} 2>&1 || true");
@@ -259,7 +259,7 @@ class RollbackService
      */
     private function restoreEnvironment(Project $project, array $environmentSnapshot): void
     {
-        $projectPath = "/var/www/{$project->slug}";
+        $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
 
         $envContent = '';
         foreach ($environmentSnapshot as $key => $value) {
