@@ -26,6 +26,9 @@
 # Bootstrap cache (all PHP files)
 /bootstrap/cache/*.php
 
+# Install/setup logs
+install.log
+
 # Environment files (keep only .env.example)
 .env
 .env.*
