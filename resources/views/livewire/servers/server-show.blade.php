@@ -333,6 +333,26 @@
         {{-- Overview Tab --}}
         @if(!isset($activeTab) || $activeTab === 'overview')
         <div class="space-y-8">
+            {{-- Create Project CTA when server has no projects --}}
+            @if($projects->count() === 0)
+                <div class="bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-indigo-500/10 rounded-2xl border border-cyan-500/20 p-8 text-center">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-cyan-500/30">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Ready to deploy your first project?</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-6 max-w-md mx-auto">This server is set up and waiting. Create a project to start deploying your application.</p>
+                    <a href="{{ route('projects.create', ['server' => $server->id]) }}"
+                        class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-semibold shadow-lg shadow-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/40 transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Create Project on this Server
+                    </a>
+                </div>
+            @endif
+
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {{-- Server Details Card --}}
                 <div class="bg-white dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700/50 overflow-hidden">
@@ -795,7 +815,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
                         </svg>
                         <p class="text-slate-600 dark:text-slate-400">No projects on this server</p>
-                        <a href="{{ route('projects.create') }}"
+                        <a href="{{ route('projects.create', ['server' => $server->id]) }}"
                             class="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/30 transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>

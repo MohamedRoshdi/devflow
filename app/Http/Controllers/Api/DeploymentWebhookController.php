@@ -146,9 +146,8 @@ class DeploymentWebhookController extends Controller
      */
     private function findProjectByWebhookSecret(string $secret): ?Project
     {
-        // Get all webhook-enabled projects with auto_deploy enabled
-        $projects = Project::where('auto_deploy', true)
-            ->whereNotNull('webhook_secret')
+        // Get all webhook-enabled projects
+        $projects = Project::whereNotNull('webhook_secret')
             ->get(['id', 'webhook_secret']);
 
         $matchedProject = null;

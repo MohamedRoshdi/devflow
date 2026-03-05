@@ -34,13 +34,32 @@
 
     <!-- Theme Script (must load before body to prevent flash) -->
     <script>
-        // Check for saved theme preference or default to light mode
-        const theme = localStorage.getItem('theme') || 'light';
-        if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
-        }
+        // Apply saved theme immediately to prevent flash (runs on initial load AND Livewire navigate)
+        (function() {
+            function applyStoredTheme() {
+                var t = localStorage.getItem('theme') || 'light';
+                if (t === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+            applyStoredTheme();
+            // Re-apply after Livewire SPA navigation replaces the page
+            document.addEventListener('livewire:navigating', function() {
+                window.__themeBeforeNavigate = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            });
+            document.addEventListener('livewire:navigated', function() {
+                applyStoredTheme();
+                // Re-initialize theme toggle buttons after navigation
+                window.__themeToggleInitialized = false;
+                if (typeof window.__initThemeToggle === 'function') {
+                    window.__initThemeToggle();
+                }
+            });
+        })();
         // Load sidebar state
-        const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        var sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
     </script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -648,15 +667,15 @@
 
     <!-- Theme Toggle Script -->
     <script>
-        (function() {
+        window.__initThemeToggle = function() {
             // Skip if already initialized
             if (window.__themeToggleInitialized) return;
             window.__themeToggleInitialized = true;
 
-            const themeToggleBtn = document.getElementById('theme-toggle');
-            const themeToggleMobileBtn = document.getElementById('theme-toggle-mobile');
-            const htmlElement = document.documentElement;
-            const themeColorMeta = document.getElementById('theme-color-meta');
+            var themeToggleBtn = document.getElementById('theme-toggle');
+            var themeToggleMobileBtn = document.getElementById('theme-toggle-mobile');
+            var htmlElement = document.documentElement;
+            var themeColorMeta = document.getElementById('theme-color-meta');
 
             function setTheme(theme) {
                 if (theme === 'dark') {
@@ -675,8 +694,8 @@
             }
 
             function toggleTheme() {
-                const currentTheme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
-                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                var currentTheme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
+                var newTheme = currentTheme === 'dark' ? 'light' : 'dark';
                 setTheme(newTheme);
             }
 
@@ -687,7 +706,8 @@
             if (themeToggleMobileBtn) {
                 themeToggleMobileBtn.addEventListener('click', toggleTheme);
             }
-        })();
+        };
+        window.__initThemeToggle();
     </script>
 
     @livewireScripts

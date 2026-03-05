@@ -107,6 +107,15 @@ class ProjectCreate extends Component
     {
         $this->loadServersAndTemplates();
         $this->loadUserDefaults();
+        $this->preselectServerFromQuery();
+    }
+
+    protected function preselectServerFromQuery(): void
+    {
+        $serverId = request()->query('server');
+        if ($serverId !== null && $this->servers->contains('id', (int) $serverId)) {
+            $this->server_id = (string) $serverId;
+        }
     }
 
     protected function loadServersAndTemplates(): void

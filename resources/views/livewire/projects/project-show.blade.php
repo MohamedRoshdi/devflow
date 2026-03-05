@@ -25,12 +25,12 @@
             <a href="{{ route('deployments.show', $project->activeDeployment) }}"
                wire:navigate
                class="block bg-gradient-to-r from-blue-500/20 via-indigo-500/20 to-purple-500/20 backdrop-blur-sm rounded-2xl border border-blue-500/30 shadow-lg shadow-blue-500/10 overflow-hidden hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300 group">
-                <div class="p-6">
-                    <div class="flex items-center justify-between gap-6">
-                        <div class="flex items-center gap-4">
+                <div class="p-4 sm:p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
+                        <div class="flex items-center gap-3 sm:gap-4">
                             {{-- Animated Deployment Icon --}}
-                            <div class="relative">
-                                <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                            <div class="relative flex-shrink-0">
+                                <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
                                     <svg class="w-7 h-7 text-white animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                                     </svg>
@@ -58,7 +58,7 @@
                                         Deployment is queued and will start shortly.
                                     @endif
                                 </p>
-                                <div class="flex items-center gap-4 mt-2 text-xs text-slate-400">
+                                <div class="flex items-center gap-4 mt-2 text-xs text-gray-500 dark:text-slate-400">
                                     <span class="flex items-center gap-1.5">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -90,9 +90,58 @@
         </div>
     @endif
 
+    {{-- First Deploy Guidance Banner --}}
+    @if($project->status === 'stopped' && $project->deployments()->count() === 0 && !$project->activeDeployment)
+        <div class="mb-6 animate-fade-in">
+            <div class="bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-cyan-500/20 backdrop-blur-sm rounded-2xl border border-emerald-500/30 shadow-lg shadow-emerald-500/10 overflow-hidden">
+                <div class="p-6">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Ready for your first deployment!</h3>
+                                <div class="flex flex-wrap items-center gap-3 mt-1 text-sm text-gray-500 dark:text-slate-400">
+                                    <span class="flex items-center gap-1">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0"/>
+                                        </svg>
+                                        Branch: <span class="font-mono text-emerald-400">{{ $project->branch }}</span>
+                                    </span>
+                                    <span class="flex items-center gap-1">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2"/>
+                                        </svg>
+                                        Server: <span class="text-emerald-400">{{ $project->server?->name ?? 'N/A' }}</span>
+                                    </span>
+                                    <span class="flex items-center gap-1">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                                        </svg>
+                                        {{ $project->deployment_method === 'standard' ? 'Bare Metal' : 'Docker' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <button wire:click="$set('showDeployModal', true)"
+                            class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 transition-all whitespace-nowrap">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            Deploy for the First Time
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     {{-- Hero Section with Premium Styling --}}
     <div class="relative mb-8">
-        <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl overflow-hidden border border-slate-700/50 shadow-2xl">
+        <div class="bg-gradient-to-br from-white via-gray-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 rounded-3xl overflow-hidden border border-gray-200 dark:border-slate-700/50 shadow-2xl">
             {{-- Grid Pattern Overlay --}}
             <div class="absolute inset-0 opacity-[0.03]" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23fff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
 
@@ -108,7 +157,7 @@
                                 </svg>
                             </div>
                             {{-- Status Indicator --}}
-                            <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-slate-900 flex items-center justify-center
+                            <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center
                                 @if($project->status === 'running') bg-emerald-500
                                 @elseif($project->status === 'building') bg-amber-500
                                 @elseif($project->status === 'stopped') bg-slate-500
@@ -123,7 +172,7 @@
 
                         <div>
                             <div class="flex items-center gap-3 mb-1">
-                                <h1 class="text-2xl lg:text-3xl font-bold text-white tracking-tight">{{ $project->name }}</h1>
+                                <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white tracking-tight">{{ $project->name }}</h1>
                                 <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider
                                     @if($project->status === 'running') bg-emerald-500/20 text-emerald-400 border border-emerald-500/30
                                     @elseif($project->status === 'building') bg-amber-500/20 text-amber-400 border border-amber-500/30
@@ -139,24 +188,24 @@
                                     @endif
                                 </span>
                             </div>
-                            <p class="text-slate-400 text-sm">{{ $project->framework ?? 'Unknown Stack' }} Project</p>
+                            <p class="text-gray-500 dark:text-slate-400 text-sm">{{ $project->framework ?? 'Unknown Stack' }} Project</p>
 
                             {{-- Info Pills --}}
                             <div class="flex flex-wrap items-center gap-2 mt-3">
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800/80 text-slate-300 border border-slate-700/50">
-                                    <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200 dark:bg-slate-800/80 dark:text-slate-300 dark:border-slate-700/50">
+                                    <svg class="w-3.5 h-3.5 text-gray-400 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                                     </svg>
                                     {{ $project->slug }}
                                 </span>
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800/80 text-slate-300 border border-slate-700/50">
-                                    <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200 dark:bg-slate-800/80 dark:text-slate-300 dark:border-slate-700/50">
+                                    <svg class="w-3.5 h-3.5 text-gray-400 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"/>
                                     </svg>
                                     {{ $project->server->name ?? 'No Server' }}
                                 </span>
                                 @if($project->php_version)
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800/80 text-slate-300 border border-slate-700/50">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200 dark:bg-slate-800/80 dark:text-slate-300 dark:border-slate-700/50">
                                         <svg class="w-3.5 h-3.5 text-indigo-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z"/></svg>
                                         PHP {{ $project->php_version }}
                                     </span>
@@ -235,7 +284,7 @@
                         @endif
 
                         <button wire:click="$set('showDeployModal', true)"
-                            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm bg-slate-800/80 text-slate-300 border border-slate-700/50 hover:bg-slate-700/80 hover:text-white transition-all">
+                            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200 hover:text-gray-900 dark:bg-slate-800/80 dark:text-slate-300 dark:border-slate-700/50 dark:hover:bg-slate-700/80 dark:hover:text-white transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                             </svg>
@@ -243,7 +292,7 @@
                         </button>
 
                         <a href="{{ route('projects.edit', $project) }}"
-                            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm bg-slate-800/80 text-slate-300 border border-slate-700/50 hover:bg-slate-700/80 hover:text-white transition-all">
+                            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200 hover:text-gray-900 dark:bg-slate-800/80 dark:text-slate-300 dark:border-slate-700/50 dark:hover:bg-slate-700/80 dark:hover:text-white transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -252,7 +301,7 @@
                         </a>
 
                         <a href="{{ route('projects.blue-green', $project) }}"
-                            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm bg-slate-800/80 text-slate-300 border border-slate-700/50 hover:bg-slate-700/80 hover:text-white transition-all">
+                            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200 hover:text-gray-900 dark:bg-slate-800/80 dark:text-slate-300 dark:border-slate-700/50 dark:hover:bg-slate-700/80 dark:hover:text-white transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
                             </svg>
@@ -260,7 +309,7 @@
                         </a>
 
                         <a href="{{ route('projects.canary', $project) }}"
-                            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm bg-slate-800/80 text-slate-300 border border-slate-700/50 hover:bg-slate-700/80 hover:text-white transition-all">
+                            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200 hover:text-gray-900 dark:bg-slate-800/80 dark:text-slate-300 dark:border-slate-700/50 dark:hover:bg-slate-700/80 dark:hover:text-white transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                             </svg>
@@ -273,16 +322,16 @@
                 </div>
 
                 {{-- Branch Info Bar with Switch Button --}}
-                <div class="mt-6 flex items-center gap-4 p-4 rounded-2xl bg-slate-800/50 border border-slate-700/30 backdrop-blur-sm">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center border border-slate-600/50">
-                        <svg class="w-5 h-5 text-slate-400" fill="currentColor" viewBox="0 0 24 24">
+                <div class="mt-6 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 p-4 rounded-2xl bg-white/80 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700/30 backdrop-blur-sm">
+                    <div class="hidden sm:flex w-10 h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-slate-700 dark:to-slate-800 items-center justify-center border border-gray-200 dark:border-slate-600/50">
+                        <svg class="w-5 h-5 text-gray-400 dark:text-slate-400" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                         </svg>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-3">
+                        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
                             <span class="text-xs text-slate-500 font-medium">Branch:</span>
-                            <span class="px-2.5 py-1 rounded-md bg-purple-500/20 text-purple-400 font-mono text-sm border border-purple-500/30">{{ $project->branch }}</span>
+                            <span class="px-2.5 py-1 rounded-md bg-purple-500/20 text-purple-400 font-mono text-sm border border-purple-500/30 truncate max-w-[150px] sm:max-w-none">{{ $project->branch }}</span>
                             @if($isUpdatePending)
                                 <span class="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 text-xs border border-amber-500/30">
                                     <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
@@ -328,7 +377,7 @@
 
     {{-- Git Update Alert --}}
     @if($checkingForUpdates && !$updateStatusLoaded)
-        <div class="mb-8 rounded-2xl border border-blue-700/50 bg-slate-800/50 backdrop-blur-sm shadow-xl">
+        <div class="mb-8 rounded-2xl border border-blue-200 dark:border-blue-700/50 bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm shadow-xl">
             <div class="flex items-center justify-between gap-6 p-6">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 rounded-full bg-blue-500/90 text-white flex items-center justify-center animate-pulse">
@@ -337,15 +386,15 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-lg font-semibold text-white">Checking repository status...</h3>
-                        <p class="text-sm text-slate-400">Fetching latest commits from origin/{{ $project->branch }}.</p>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Checking repository status...</h3>
+                        <p class="text-sm text-gray-500 dark:text-slate-400">Fetching latest commits from origin/{{ $project->branch }}.</p>
                     </div>
                 </div>
                 <div class="text-xs text-blue-400 uppercase tracking-wide">Please wait</div>
             </div>
         </div>
     @elseif($updateStatus && !$updateStatus['up_to_date'])
-        <div class="mb-8 rounded-2xl border border-amber-700/50 bg-gradient-to-r from-amber-900/20 to-orange-900/20 backdrop-blur-sm shadow-xl">
+        <div class="mb-8 rounded-2xl border border-amber-200 dark:border-amber-700/50 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 backdrop-blur-sm shadow-xl">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 p-6">
                 <div class="flex items-start gap-4">
                     <div class="flex-shrink-0">
@@ -357,21 +406,21 @@
                     </div>
                     <div class="space-y-3">
                         <div>
-                            <h3 class="text-xl font-bold text-white">{{ $updateStatus['commits_behind'] }} new {{ Str::plural('commit', $updateStatus['commits_behind']) }} ready for deployment</h3>
-                            <p class="text-sm text-slate-300">Pull in the latest changes from <span class="font-semibold text-amber-400">origin/{{ $project->branch }}</span> to keep production current.</p>
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{ $updateStatus['commits_behind'] }} new {{ Str::plural('commit', $updateStatus['commits_behind']) }} ready for deployment</h3>
+                            <p class="text-sm text-gray-600 dark:text-slate-300">Pull in the latest changes from <span class="font-semibold text-amber-600 dark:text-amber-400">origin/{{ $project->branch }}</span> to keep production current.</p>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                            <div class="flex items-center gap-3 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3">
-                                <div class="text-xs font-semibold uppercase text-slate-400">Current</div>
-                                <code class="font-mono text-sm text-white">{{ $updateStatus['local_commit'] }}</code>
+                            <div class="flex items-center gap-3 bg-gray-100 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-3">
+                                <div class="text-xs font-semibold uppercase text-gray-500 dark:text-slate-400">Current</div>
+                                <code class="font-mono text-sm text-gray-900 dark:text-white">{{ $updateStatus['local_commit'] }}</code>
                             </div>
-                            <div class="flex items-center gap-3 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3">
-                                <div class="text-xs font-semibold uppercase text-emerald-400">Latest</div>
-                                <code class="font-mono text-sm text-emerald-300">{{ $updateStatus['remote_commit'] }}</code>
+                            <div class="flex items-center gap-3 bg-gray-100 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-3">
+                                <div class="text-xs font-semibold uppercase text-emerald-600 dark:text-emerald-400">Latest</div>
+                                <code class="font-mono text-sm text-emerald-700 dark:text-emerald-300">{{ $updateStatus['remote_commit'] }}</code>
                             </div>
                         </div>
                         @if(isset($updateStatus['remote_meta']['message']))
-                            <p class="text-xs text-amber-300 italic">Latest change: "{{ Str::limit($updateStatus['remote_meta']['message'], 120) }}"</p>
+                            <p class="text-xs text-amber-600 dark:text-amber-300 italic">Latest change: "{{ Str::limit($updateStatus['remote_meta']['message'], 120) }}"</p>
                         @endif
                     </div>
                 </div>
@@ -385,7 +434,7 @@
                         </svg>
                         <span class="relative z-10">Deploy Latest Changes</span>
                     </button>
-                    <div class="text-xs text-amber-300 text-center">Automated Laravel optimizations run post-deploy.</div>
+                    <div class="text-xs text-amber-600 dark:text-amber-300 text-center">Automated Laravel optimizations run post-deploy.</div>
                 </div>
             </div>
         </div>
@@ -393,65 +442,65 @@
 
     {{-- Quick Stats Cards with Glassmorphism --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div class="group bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-6 hover:border-blue-500/50 transition-all hover:shadow-lg hover:shadow-blue-500/10">
+        <div class="group bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-slate-700/50 p-6 hover:border-blue-500/50 transition-all hover:shadow-lg hover:shadow-blue-500/10">
             <div class="flex items-center gap-3 mb-4">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                     </svg>
                 </div>
-                <h3 class="font-semibold text-white">Deployments</h3>
+                <h3 class="font-semibold text-gray-900 dark:text-white">Deployments</h3>
             </div>
-            <p class="text-3xl font-bold text-white">{{ $project->deployments()->count() }}</p>
-            <p class="text-xs text-slate-400 mt-1">Total deployments</p>
+            <p class="text-3xl font-bold text-gray-900 dark:text-white">{{ $project->deployments()->count() }}</p>
+            <p class="text-xs text-gray-500 dark:text-slate-400 mt-1">Total deployments</p>
         </div>
 
-        <div class="group bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-6 hover:border-purple-500/50 transition-all hover:shadow-lg hover:shadow-purple-500/10">
+        <div class="group bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-slate-700/50 p-6 hover:border-purple-500/50 transition-all hover:shadow-lg hover:shadow-purple-500/10">
             <div class="flex items-center gap-3 mb-4">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
                     </svg>
                 </div>
-                <h3 class="font-semibold text-white">Domains</h3>
+                <h3 class="font-semibold text-gray-900 dark:text-white">Domains</h3>
             </div>
-            <p class="text-3xl font-bold text-white">{{ $project->domains->count() }}</p>
-            <p class="text-xs text-slate-400 mt-1">Configured domains</p>
+            <p class="text-3xl font-bold text-gray-900 dark:text-white">{{ $project->domains->count() }}</p>
+            <p class="text-xs text-gray-500 dark:text-slate-400 mt-1">Configured domains</p>
         </div>
 
-        <div class="group bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-6 hover:border-emerald-500/50 transition-all hover:shadow-lg hover:shadow-emerald-500/10">
+        <div class="group bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-slate-700/50 p-6 hover:border-emerald-500/50 transition-all hover:shadow-lg hover:shadow-emerald-500/10">
             <div class="flex items-center gap-3 mb-4">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
                     </svg>
                 </div>
-                <h3 class="font-semibold text-white">Storage</h3>
+                <h3 class="font-semibold text-gray-900 dark:text-white">Storage</h3>
             </div>
-            <p class="text-3xl font-bold text-white">{{ number_format($project->storage_used_mb / 1024, 1) }}GB</p>
-            <p class="text-xs text-slate-400 mt-1">Disk usage</p>
+            <p class="text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($project->storage_used_mb / 1024, 1) }}GB</p>
+            <p class="text-xs text-gray-500 dark:text-slate-400 mt-1">Disk usage</p>
         </div>
 
-        <div class="group bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-6 hover:border-amber-500/50 transition-all hover:shadow-lg hover:shadow-amber-500/10">
+        <div class="group bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-slate-700/50 p-6 hover:border-amber-500/50 transition-all hover:shadow-lg hover:shadow-amber-500/10">
             <div class="flex items-center gap-3 mb-4">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>
-                <h3 class="font-semibold text-white">Last Deploy</h3>
+                <h3 class="font-semibold text-gray-900 dark:text-white">Last Deploy</h3>
             </div>
-            <p class="text-lg font-bold text-white">{{ $project->last_deployed_at ? $project->last_deployed_at->diffForHumans() : 'Never' }}</p>
-            <p class="text-xs text-slate-400 mt-1">Deployment time</p>
+            <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $project->last_deployed_at ? $project->last_deployed_at->diffForHumans() : 'Never' }}</p>
+            <p class="text-xs text-gray-500 dark:text-slate-400 mt-1">Deployment time</p>
         </div>
     </div>
 
     {{-- Premium Tab Navigation with Unique Colors --}}
-    <div class="mb-6">
-        <div class="flex items-center gap-2 p-1.5 bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 w-fit">
+    <div class="mb-6 overflow-x-auto scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent -mx-1 px-1">
+        <div class="flex items-center gap-2 p-1.5 bg-gray-100 dark:bg-slate-800/50 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-slate-700/50 w-max lg:w-fit">
             <button wire:click="setActiveTab('overview')"
                 wire:loading.class="opacity-50"
-                class="px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 {{ $activeTab === 'overview' ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30' : 'text-slate-400 hover:text-white hover:bg-slate-700/50' }}">
+                class="px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 {{ $activeTab === 'overview' ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/50' }}">
                 <svg wire:loading.remove wire:target="setActiveTab('overview')" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                 </svg>
@@ -464,7 +513,7 @@
 
             <button wire:click="setActiveTab('docker')"
                 wire:loading.class="opacity-50"
-                class="px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 {{ $activeTab === 'docker' ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/30' : 'text-slate-400 hover:text-white hover:bg-slate-700/50' }}">
+                class="px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 {{ $activeTab === 'docker' ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/30' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/50' }}">
                 <svg wire:loading.remove wire:target="setActiveTab('docker')" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                 </svg>
@@ -477,7 +526,7 @@
 
             <button wire:click="setActiveTab('environment')"
                 wire:loading.class="opacity-50"
-                class="px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 {{ $activeTab === 'environment' ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30' : 'text-slate-400 hover:text-white hover:bg-slate-700/50' }}">
+                class="px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 {{ $activeTab === 'environment' ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/50' }}">
                 <svg wire:loading.remove wire:target="setActiveTab('environment')" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -491,7 +540,7 @@
 
             <button wire:click="setActiveTab('git')"
                 wire:loading.class="opacity-50"
-                class="px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 {{ $activeTab === 'git' ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30' : 'text-slate-400 hover:text-white hover:bg-slate-700/50' }}">
+                class="px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 {{ $activeTab === 'git' ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/50' }}">
                 <svg wire:loading.remove wire:target="setActiveTab('git')" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                 </svg>
@@ -507,7 +556,7 @@
 
             <button wire:click="setActiveTab('logs')"
                 wire:loading.class="opacity-50"
-                class="px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 {{ $activeTab === 'logs' ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-lg shadow-amber-500/30' : 'text-slate-400 hover:text-white hover:bg-slate-700/50' }}">
+                class="px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 {{ $activeTab === 'logs' ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-lg shadow-amber-500/30' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/50' }}">
                 <svg wire:loading.remove wire:target="setActiveTab('logs')" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
@@ -520,7 +569,7 @@
 
             <button wire:click="setActiveTab('deployments')"
                 wire:loading.class="opacity-50"
-                class="px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 {{ $activeTab === 'deployments' ? 'bg-gradient-to-r from-rose-600 to-red-600 text-white shadow-lg shadow-rose-500/30' : 'text-slate-400 hover:text-white hover:bg-slate-700/50' }}">
+                class="px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 {{ $activeTab === 'deployments' ? 'bg-gradient-to-r from-rose-600 to-red-600 text-white shadow-lg shadow-rose-500/30' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/50' }}">
                 <svg wire:loading.remove wire:target="setActiveTab('deployments')" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                 </svg>
@@ -533,7 +582,7 @@
 
             <button wire:click="setActiveTab('webhooks')"
                 wire:loading.class="opacity-50"
-                class="px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 {{ $activeTab === 'webhooks' ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-500/30' : 'text-slate-400 hover:text-white hover:bg-slate-700/50' }}">
+                class="px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 {{ $activeTab === 'webhooks' ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-500/30' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/50' }}">
                 <svg wire:loading.remove wire:target="setActiveTab('webhooks')" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                 </svg>
@@ -546,7 +595,7 @@
 
             <button wire:click="setActiveTab('files')"
                 wire:loading.class="opacity-50"
-                class="px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 {{ $activeTab === 'files' ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg shadow-teal-500/30' : 'text-slate-400 hover:text-white hover:bg-slate-700/50' }}">
+                class="px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 {{ $activeTab === 'files' ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg shadow-teal-500/30' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/50' }}">
                 <svg wire:loading.remove wire:target="setActiveTab('files')" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
                 </svg>
@@ -566,7 +615,7 @@
         <div class="space-y-8">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {{-- Project Details Card --}}
-                <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 overflow-hidden">
+                <div class="bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-slate-700/50 overflow-hidden">
                     <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 border-b border-blue-500/30">
                         <h2 class="text-xl font-bold text-white flex items-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -576,60 +625,60 @@
                         </h2>
                     </div>
                     <div class="p-6 space-y-3">
-                        <div class="flex items-center justify-between py-3 border-b border-slate-700/50">
-                            <span class="text-slate-400 flex items-center gap-2 text-sm">
+                        <div class="flex items-center justify-between gap-3 py-3 border-b border-gray-200 dark:border-slate-700/50">
+                            <span class="text-gray-500 dark:text-slate-400 flex items-center gap-2 text-sm flex-shrink-0">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"/>
                                 </svg>
                                 Server
                             </span>
-                            <span class="font-semibold text-white">{{ $project->server->name ?? 'None' }}</span>
+                            <span class="font-semibold text-gray-900 dark:text-white truncate">{{ $project->server->name ?? 'None' }}</span>
                         </div>
-                        <div class="flex items-center justify-between py-3 border-b border-slate-700/50">
-                            <span class="text-slate-400 flex items-center gap-2 text-sm">
+                        <div class="flex items-center justify-between py-3 border-b border-gray-200 dark:border-slate-700/50">
+                            <span class="text-gray-500 dark:text-slate-400 flex items-center gap-2 text-sm">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
                                 </svg>
                                 Framework
                             </span>
-                            <span class="font-semibold text-white">{{ $project->framework ?? 'Unknown' }}</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">{{ $project->framework ?? 'Unknown' }}</span>
                         </div>
-                        <div class="flex items-center justify-between py-3 border-b border-slate-700/50">
-                            <span class="text-slate-400 flex items-center gap-2 text-sm">
+                        <div class="flex items-center justify-between py-3 border-b border-gray-200 dark:border-slate-700/50">
+                            <span class="text-gray-500 dark:text-slate-400 flex items-center gap-2 text-sm">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                 </svg>
                                 PHP Version
                             </span>
-                            <span class="font-semibold text-white">{{ $project->php_version ?? 'N/A' }}</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">{{ $project->php_version ?? 'N/A' }}</span>
                         </div>
-                        <div class="flex items-center justify-between py-3 border-b border-slate-700/50">
-                            <span class="text-slate-400 flex items-center gap-2 text-sm">
+                        <div class="flex items-center justify-between py-3 border-b border-gray-200 dark:border-slate-700/50">
+                            <span class="text-gray-500 dark:text-slate-400 flex items-center gap-2 text-sm">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                                 </svg>
                                 Node Version
                             </span>
-                            <span class="font-semibold text-white">{{ $project->node_version ?? 'N/A' }}</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">{{ $project->node_version ?? 'N/A' }}</span>
                         </div>
-                        <div class="flex items-center justify-between py-3 border-b border-slate-700/50">
-                            <span class="text-slate-400 flex items-center gap-2 text-sm">
+                        <div class="flex items-center justify-between py-3 border-b border-gray-200 dark:border-slate-700/50">
+                            <span class="text-gray-500 dark:text-slate-400 flex items-center gap-2 text-sm">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                 </svg>
                                 Created
                             </span>
-                            <span class="font-semibold text-white">{{ $project->created_at->format('M d, Y') }}</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">{{ $project->created_at->format('M d, Y') }}</span>
                         </div>
                         @if($project->environment)
                             <div class="flex items-center justify-between py-3">
-                                <span class="text-slate-400 flex items-center gap-2 text-sm">
+                                <span class="text-gray-500 dark:text-slate-400 flex items-center gap-2 text-sm">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 16v-2m8-6h2M4 12H2m15.364-7.364l1.414-1.414M6.343 17.657l-1.414 1.414m0-13.657L6.343 6.343m11.314 11.314l1.414 1.414"/>
                                     </svg>
                                     Environment
                                 </span>
-                                <span class="font-semibold text-white">{{ ucfirst($project->environment) }}</span>
+                                <span class="font-semibold text-gray-900 dark:text-white">{{ ucfirst($project->environment) }}</span>
                             </div>
                         @endif
                     </div>
@@ -637,7 +686,7 @@
 
                 {{-- Repository Info Card --}}
                 @if($project->repository_url)
-                <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 overflow-hidden">
+                <div class="bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-slate-700/50 overflow-hidden">
                     <div class="bg-gradient-to-r from-purple-600 to-pink-600 p-6 border-b border-purple-500/30">
                         <h2 class="text-xl font-bold text-white flex items-center gap-2">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -648,15 +697,15 @@
                     </div>
                     <div class="p-6 space-y-4">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-2">Repository URL</label>
-                            <div class="p-3 rounded-xl bg-slate-900/50 border border-slate-700">
-                                <p class="text-sm text-purple-400 font-mono break-all">{{ $project->repository_url }}</p>
+                            <label class="block text-xs font-semibold text-gray-500 dark:text-slate-400 mb-2">Repository URL</label>
+                            <div class="p-3 rounded-xl bg-gray-100 border border-gray-200 dark:bg-slate-900/50 dark:border-slate-700">
+                                <p class="text-sm text-purple-600 dark:text-purple-400 font-mono break-all">{{ $project->repository_url }}</p>
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-2">Current Branch</label>
+                            <label class="block text-xs font-semibold text-gray-500 dark:text-slate-400 mb-2">Current Branch</label>
                             <div class="flex items-center gap-2">
-                                <span class="px-3 py-2 rounded-xl bg-purple-500/20 text-purple-400 font-mono text-sm border border-purple-500/30 flex-1">
+                                <span class="px-3 py-2 rounded-xl bg-purple-50 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400 font-mono text-sm border border-purple-200 dark:border-purple-500/30 flex-1">
                                     {{ $project->branch }}
                                 </span>
                                 <button wire:click="setActiveTab('git')"
@@ -670,7 +719,7 @@
                 @endif
 
                 {{-- Project Notes Card --}}
-                <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 overflow-hidden">
+                <div class="bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-slate-700/50 overflow-hidden">
                     <div class="bg-gradient-to-r from-amber-600 to-orange-600 p-6 border-b border-amber-500/30">
                         <div class="flex items-center justify-between">
                             <h2 class="text-xl font-bold text-white flex items-center gap-2">
@@ -691,16 +740,16 @@
                     </div>
                     <div class="p-6">
                         @if($project->notes)
-                            <div class="p-4 bg-slate-900/50 rounded-xl border border-slate-700/30">
-                                <p class="text-sm text-slate-300 whitespace-pre-wrap">{{ $project->notes }}</p>
+                            <div class="p-4 bg-gray-50 rounded-xl border border-gray-200 dark:bg-slate-900/50 dark:border-slate-700/30">
+                                <p class="text-sm text-gray-700 dark:text-slate-300 whitespace-pre-wrap">{{ $project->notes }}</p>
                             </div>
                         @else
                             <div class="text-center py-6">
-                                <svg class="w-12 h-12 mx-auto text-slate-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-12 h-12 mx-auto text-gray-300 dark:text-slate-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
-                                <p class="text-slate-500 text-sm">{{ __('messages.project.no_notes') }}</p>
-                                <a href="{{ route('projects.edit', $project) }}" class="inline-flex items-center gap-1 mt-2 text-amber-400 hover:text-amber-300 text-sm">
+                                <p class="text-gray-400 dark:text-slate-500 text-sm">{{ __('messages.project.no_notes') }}</p>
+                                <a href="{{ route('projects.edit', $project) }}" class="inline-flex items-center gap-1 mt-2 text-amber-500 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300 text-sm">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                                     </svg>
@@ -713,7 +762,7 @@
             </div>
 
             {{-- Domains Card --}}
-            <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 overflow-hidden">
+            <div class="bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-slate-700/50 overflow-hidden">
                 <div class="bg-gradient-to-r from-purple-600 to-pink-600 p-6 border-b border-purple-500/30">
                     <div class="flex items-center justify-between">
                         <h2 class="text-xl font-bold text-white flex items-center gap-2">
@@ -737,11 +786,11 @@
                                     $protocol = $domain->ssl_enabled ? 'https' : 'http';
                                     $url = $protocol . '://' . $domain->domain;
                                 @endphp
-                                <div class="p-4 bg-slate-900/50 rounded-xl border border-slate-700/30 hover:bg-slate-900/70 hover:border-purple-500/30 transition-all group">
+                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200 hover:bg-gray-100 hover:border-purple-300 dark:bg-slate-900/50 dark:border-slate-700/30 dark:hover:bg-slate-900/70 dark:hover:border-purple-500/30 transition-all group">
                                     <div class="flex items-center justify-between">
                                         <div class="flex-1">
                                             <a href="{{ $url }}" target="_blank"
-                                                class="font-semibold text-purple-400 hover:text-purple-300 hover:underline flex items-center gap-2 group-hover:gap-3 transition-all">
+                                                class="font-semibold text-purple-600 hover:text-purple-500 dark:text-purple-400 dark:hover:text-purple-300 hover:underline flex items-center gap-2 group-hover:gap-3 transition-all">
                                                 {{ $domain->domain }}
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
@@ -763,7 +812,7 @@
                                                         SSL Active
                                                     </span>
                                                 @else
-                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-700/50 text-slate-400 border border-slate-600/50">
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-gray-100 text-gray-500 border border-gray-200 dark:bg-slate-700/50 dark:text-slate-400 dark:border-slate-600/50">
                                                         <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                                                             <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd"/>
                                                         </svg>
@@ -838,8 +887,8 @@
 
         {{-- Logs Tab --}}
         @if($activeTab === 'logs')
-            <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-8">
-                <p class="text-slate-400 text-center">Logs viewer coming soon...</p>
+            <div class="bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-slate-700/50 p-8">
+                <p class="text-gray-500 dark:text-slate-400 text-center">Logs viewer coming soon...</p>
             </div>
         @endif
 
@@ -864,40 +913,55 @@
         <div class="fixed inset-0 z-50 overflow-y-auto" x-transition>
             <div class="flex items-center justify-center min-h-screen p-4">
                 <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" wire:click="$set('showDeployModal', false)"></div>
-                <div class="relative bg-slate-900 rounded-2xl border border-slate-700/50 shadow-2xl w-full max-w-lg overflow-hidden">
-                    <div class="p-6 border-b border-slate-700/50 bg-gradient-to-r from-blue-900/30 to-indigo-900/30">
+                <div class="relative bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700/50 shadow-2xl w-full max-w-lg overflow-hidden">
+                    <div class="p-6 border-b border-gray-200 dark:border-slate-700/50 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30">
                         <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                                 <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                                 </svg>
                                 Deploy Project
                             </h3>
-                            <button wire:click="$set('showDeployModal', false)" class="text-slate-400 hover:text-white transition-colors">
+                            <button wire:click="$set('showDeployModal', false)" class="text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-white transition-colors">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                 </svg>
                             </button>
                         </div>
-                        <p class="text-sm text-slate-400 mt-2">This will deploy the latest changes from the <span class="font-mono text-blue-400">{{ $project->branch }}</span> branch.</p>
+                        <p class="text-sm text-gray-500 dark:text-slate-400 mt-2">This will deploy the latest changes from the <span class="font-mono text-blue-600 dark:text-blue-400">{{ $project->branch }}</span> branch.</p>
                     </div>
 
                     <div class="p-6 space-y-4">
-                        <div class="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
-                            <h4 class="text-sm font-semibold text-blue-300 mb-2">Deployment will:</h4>
-                            <ul class="text-sm text-blue-200 space-y-1">
+                        <div class="p-4 rounded-xl bg-blue-50 border border-blue-200 dark:bg-blue-500/10 dark:border-blue-500/20">
+                            <h4 class="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2">Deployment will:</h4>
+                            <ul class="text-sm text-blue-600 dark:text-blue-200 space-y-1">
                                 <li class="flex items-center gap-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                     </svg>
                                     Pull latest code from repository
                                 </li>
-                                <li class="flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                    </svg>
-                                    Build Docker containers
-                                </li>
+                                @if($project->deployment_method === 'standard')
+                                    <li class="flex items-center gap-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        Create new release via symlink (zero-downtime)
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        Install dependencies and run migrations
+                                    </li>
+                                @else
+                                    <li class="flex items-center gap-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        Build Docker containers
+                                    </li>
+                                @endif
                                 <li class="flex items-center gap-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -915,7 +979,7 @@
 
                         <div class="flex gap-3">
                             <button wire:click="$set('showDeployModal', false)"
-                                class="flex-1 px-4 py-3 rounded-xl bg-slate-800 text-slate-300 font-medium hover:bg-slate-700 transition-all">
+                                class="flex-1 px-4 py-3 rounded-xl bg-gray-100 text-gray-600 font-medium hover:bg-gray-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition-all">
                                 Cancel
                             </button>
                             <button wire:click="deploy"

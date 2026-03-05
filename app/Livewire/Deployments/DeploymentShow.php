@@ -34,6 +34,7 @@ class DeploymentShow extends Component
         $this->authorize('view', $deployment);
 
         $this->deployment = $deployment;
+        $this->deployment->load(['project.domains', 'project.server:id,name,ip_address']);
         $this->analyzeProgress();
 
         // Initialize live logs with existing logs if deployment is complete
