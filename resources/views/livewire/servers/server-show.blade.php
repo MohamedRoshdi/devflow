@@ -799,10 +799,10 @@
                                 </div>
                                 <span class="px-3 py-1 rounded-lg text-xs font-semibold
                                     @if($project->status === 'running') bg-emerald-500/20 text-emerald-400 border border-emerald-500/30
-                                    @elseif($project->status === 'stopped') bg-slate-500/20 text-slate-400 border border-slate-500/30
+                                    @elseif($project->status === 'stopped') bg-slate-500/20 text-slate-500 dark:text-slate-400 border border-slate-500/30
                                     @elseif($project->status === 'building') bg-amber-500/20 text-amber-400 border border-amber-500/30
                                     @elseif($project->status === 'failed') bg-red-500/20 text-red-400 border border-red-500/30
-                                    @else bg-slate-500/20 text-slate-400 border border-slate-500/30
+                                    @else bg-slate-500/20 text-slate-500 dark:text-slate-400 border border-slate-500/30
                                     @endif">
                                     {{ ucfirst($project->status) }}
                                 </span>

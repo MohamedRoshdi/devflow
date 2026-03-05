@@ -96,11 +96,11 @@
                             Deployment Pending
                         @endif
                     </h3>
-                    <span class="text-sm font-bold text-slate-300 bg-slate-700/50 px-3 py-1 rounded-lg">{{ $progress }}%</span>
+                    <span class="text-sm font-bold text-slate-700 dark:text-slate-300 bg-slate-200/80 dark:bg-slate-700/50 px-3 py-1 rounded-lg">{{ $progress }}%</span>
                 </div>
 
                 <!-- Progress Bar -->
-                <div class="w-full bg-slate-700/50 rounded-full h-3 overflow-hidden border border-slate-600/50">
+                <div class="w-full bg-slate-200 dark:bg-slate-700/50 rounded-full h-3 overflow-hidden border border-slate-300 dark:border-slate-600/50">
                     <div class="bg-gradient-to-r from-blue-500 to-cyan-500 h-3 rounded-full transition-all duration-500 ease-out relative overflow-hidden"
                          style="width: {{ $progress }}%">
                         <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 animate-shimmer"></div>
@@ -108,7 +108,7 @@
                 </div>
 
                 @if($currentStep)
-                    <p class="text-sm text-slate-300 mt-3 flex items-center">
+                    <p class="text-sm text-slate-600 dark:text-slate-300 mt-3 flex items-center">
                         <svg class="animate-spin h-4 w-4 mr-2 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -120,7 +120,7 @@
 
             <!-- Estimated Time -->
             <div class="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border border-blue-500/30 rounded-xl p-4 mt-4 backdrop-blur-sm">
-                <p class="text-sm text-blue-200 flex items-center gap-2">
+                <p class="text-sm text-blue-700 dark:text-blue-200 flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -129,7 +129,7 @@
                         <span class="ml-2">• Running for {{ $deployment->started_at->diffForHumans(null, true) }}</span>
                     @endif
                 </p>
-                <p class="text-xs text-blue-300 mt-1">
+                <p class="text-xs text-blue-600 dark:text-blue-300 mt-1">
                     Large builds with npm can take time. The page auto-refreshes every 3 seconds.
                 </p>
             </div>
@@ -441,13 +441,13 @@
                                         </svg>
                                     </div>
                                 @else
-                                    <div class="h-8 w-8 rounded-full bg-slate-700/50 flex items-center justify-center border border-slate-600/50">
-                                        <span class="text-slate-400 text-sm font-medium">{{ $loop->iteration }}</span>
+                                    <div class="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700/50 flex items-center justify-center border border-slate-300 dark:border-slate-600/50">
+                                        <span class="text-slate-500 dark:text-slate-400 text-sm font-medium">{{ $loop->iteration }}</span>
                                     </div>
                                 @endif
                             </div>
                             <div class="flex-1">
-                                <p class="font-medium {{ $isActive ? 'text-blue-400' : ($isComplete ? 'text-emerald-400' : 'text-slate-400') }}">
+                                <p class="font-medium {{ $isActive ? 'text-blue-600 dark:text-blue-400' : ($isComplete ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400') }}">
                                     {{ $step['name'] }}
                                 </p>
                             </div>
@@ -610,17 +610,17 @@
 
                     <!-- Status Indicator -->
                     <div class="mt-3 flex justify-between items-center">
-                        <div class="text-xs text-slate-400">
+                        <div class="text-xs text-slate-500 dark:text-slate-400">
                             @if(in_array($deployment->status, ['pending', 'running']))
                                 <span class="flex items-center gap-2 bg-blue-500/20 px-3 py-1.5 rounded-lg border border-blue-500/30">
                                     <svg class="animate-spin h-3 w-3 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    <span class="text-blue-300">Real-time streaming via WebSocket</span>
+                                    <span class="text-blue-600 dark:text-blue-300">Real-time streaming via WebSocket</span>
                                 </span>
                             @else
-                                <span class="bg-slate-700/50 px-3 py-1.5 rounded-lg border border-slate-600/50">{{ count($liveLogs) }} log lines</span>
+                                <span class="bg-slate-200 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600/50">{{ count($liveLogs) }} log lines</span>
                             @endif
                         </div>
 
@@ -637,11 +637,11 @@
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <p class="text-slate-300 font-medium">Starting deployment...</p>
+                    <p class="text-slate-700 dark:text-slate-300 font-medium">Starting deployment...</p>
                     <p class="text-xs text-slate-500 mt-2">Logs will stream in real-time shortly</p>
                 </div>
             @else
-                <p class="text-slate-400 text-center py-8">No logs available</p>
+                <p class="text-slate-500 dark:text-slate-400 text-center py-8">No logs available</p>
             @endif
         </div>
     </div>
@@ -715,7 +715,7 @@
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
                 <p class="text-white text-lg font-semibold">Rollback in progress...</p>
-                <p class="text-slate-400 text-sm mt-1">Please wait while we revert the deployment.</p>
+                <p class="text-slate-300 dark:text-slate-400 text-sm mt-1">Please wait while we revert the deployment.</p>
             </div>
         </div>
     @endif

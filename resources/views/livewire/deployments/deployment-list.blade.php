@@ -214,7 +214,7 @@
                                                         'bg-amber-600 text-white shadow-amber-600/40 border-amber-500' => $deployment->status === 'running',
                                                         'bg-red-600 text-white shadow-red-600/40 border-red-500' => $deployment->status === 'failed',
                                                         'bg-blue-600 text-white shadow-blue-600/40 border-blue-500' => $deployment->status === 'pending',
-                                                        'bg-slate-700 text-white shadow-slate-700/40 border-slate-600' => ! in_array($deployment->status, ['success', 'failed', 'running', 'pending']),
+                                                        'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-white shadow-slate-300/40 dark:shadow-slate-700/40 border-slate-300 dark:border-slate-600' => ! in_array($deployment->status, ['success', 'failed', 'running', 'pending']),
                                                     ]) role="status" aria-live="polite" aria-label="Deployment status: {{ ucfirst($deployment->status) }}" @if($deployment->status === 'success') title="Deployment completed successfully"
                                                     @elseif($deployment->status === 'running') title="Deployment currently in progress"
                                                     @elseif($deployment->status === 'failed') title="Deployment failed"

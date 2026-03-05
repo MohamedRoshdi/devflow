@@ -41,7 +41,7 @@
 
                             <div class="flex-1">
                                 <div class="flex items-center gap-3 mb-1">
-                                    <h3 class="text-lg font-bold text-white">Deployment in Progress</h3>
+                                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Deployment in Progress</h3>
                                     <span class="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider
                                         @if($project->activeDeployment->status === 'running')
                                             bg-blue-500/20 text-blue-400 border border-blue-500/30 animate-pulse
@@ -51,7 +51,7 @@
                                         {{ ucfirst($project->activeDeployment->status) }}
                                     </span>
                                 </div>
-                                <p class="text-slate-300 text-sm">
+                                <p class="text-slate-600 dark:text-slate-300 text-sm">
                                     @if($project->activeDeployment->status === 'running')
                                         Deployment is currently running. Click to view live progress.
                                     @else
@@ -828,14 +828,14 @@
                                                     @if($domain->status === 'active') text-emerald-400
                                                     @elseif($domain->status === 'pending') text-amber-400
                                                     @elseif($domain->status === 'failed' || $domain->status === 'expired') text-red-400
-                                                    @else text-slate-400
+                                                    @else text-slate-500 dark:text-slate-400
                                                     @endif">
                                                     {{ ucfirst($domain->status) }}
                                                 </span>
                                             </div>
                                         </div>
                                         <a href="{{ $url }}" target="_blank"
-                                            class="p-2 text-slate-400 hover:text-purple-400 transition-colors">
+                                            class="p-2 text-slate-500 dark:text-slate-400 hover:text-purple-500 dark:hover:text-purple-400 transition-colors">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                                             </svg>
@@ -846,10 +846,10 @@
                         </div>
                     @else
                         <div class="text-center py-12">
-                            <svg class="mx-auto h-16 w-16 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="mx-auto h-16 w-16 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
                             </svg>
-                            <p class="mt-4 text-slate-400">No domains configured</p>
+                            <p class="mt-4 text-slate-500 dark:text-slate-400">No domains configured</p>
                             <button wire:click="$dispatch('open-add-domain-modal')"
                                 class="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/20 text-purple-400 border border-purple-500/30 hover:bg-purple-500/30 transition-all">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
