@@ -77,11 +77,16 @@ class GitService
         // escapeshellarg wraps the string in single quotes and escapes any existing single quotes
         $escapedCommand = escapeshellarg($remoteCommand);
 
+        // For local servers, run the command directly without SSH
+        if ($server->shouldExecuteLocally()) {
+            return $remoteCommand;
+        }
+
         return sprintf(
             "ssh %s %s@%s %s",
             implode(' ', $sshOptions),
             escapeshellarg($server->username),
-            escapeshellarg($server->ip_address),
+            escapeshellarg($server->connection_host),
             $escapedCommand
         );
     }

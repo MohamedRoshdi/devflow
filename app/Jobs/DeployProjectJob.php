@@ -226,11 +226,21 @@ class DeployProjectJob implements ShouldQueue
         if ($server === null) {
             throw new \RuntimeException('Project does not have an associated server');
         }
-        $sshPrefix = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 {$server->username}@{$server->ip_address}";
+        $serverHost = $server->connection_host;
+        $serverPort = (int) ($server->port ?? 22);
+        $isLocal = $server->shouldExecuteLocally();
+        $sshPrefix = $isLocal
+            ? ''
+            : "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=30 -o LogLevel=ERROR -p {$serverPort} {$server->username}@{$serverHost}";
 
         // Check if repository already exists (via SSH to ensure we check server state)
-        $addLog("$ ssh {$server->username}@{$server->ip_address} test -d {$projectPath}/.git");
-        $checkResult = \Illuminate\Support\Facades\Process::run("{$sshPrefix} \"test -d {$projectPath}/.git && echo 'exists' || echo 'not_exists'\"");
+        $addLog($isLocal
+            ? "$ test -d {$projectPath}/.git"
+            : "$ ssh -p {$serverPort} {$server->username}@{$serverHost} test -d {$projectPath}/.git");
+        $checkCmd = "test -d {$projectPath}/.git && echo 'exists' || echo 'not_exists'";
+        $checkResult = $isLocal
+            ? \Illuminate\Support\Facades\Process::run($checkCmd)
+            : \Illuminate\Support\Facades\Process::run("{$sshPrefix} \"{$checkCmd}\"");
         $repoExists = trim($checkResult->output()) === 'exists';
         $addLog($repoExists ? '→ Repository exists' : '→ Repository not found');
 
@@ -259,7 +269,9 @@ class DeployProjectJob implements ShouldQueue
                 "chown -R 1000:1000 {$projectPath}/storage {$projectPath}/bootstrap/cache && ".
                 "chmod -R 775 {$projectPath}/storage {$projectPath}/bootstrap/cache";
 
-            $pullResult = \Illuminate\Support\Facades\Process::timeout(120)->run("{$sshPrefix} \"{$gitCommand}\"");
+            $pullResult = $isLocal
+                ? \Illuminate\Support\Facades\Process::timeout(120)->run($gitCommand)
+                : \Illuminate\Support\Facades\Process::timeout(120)->run("{$sshPrefix} \"{$gitCommand}\"");
 
             if (! $pullResult->successful()) {
                 $addLog('✗ Git pull failed');
@@ -303,7 +315,9 @@ class DeployProjectJob implements ShouldQueue
                 "chown -R 1000:1000 {$projectPath}/storage {$projectPath}/bootstrap/cache 2>/dev/null || true && ".
                 "chmod -R 775 {$projectPath}/storage {$projectPath}/bootstrap/cache 2>/dev/null || true";
 
-            $cloneResult = \Illuminate\Support\Facades\Process::timeout(300)->run("{$sshPrefix} \"{$cloneCommand}\"");
+            $cloneResult = $isLocal
+                ? \Illuminate\Support\Facades\Process::timeout(300)->run($cloneCommand)
+                : \Illuminate\Support\Facades\Process::timeout(300)->run("{$sshPrefix} \"{$cloneCommand}\"");
 
             if (! $cloneResult->successful()) {
                 $addLog('✗ Git clone failed');
@@ -493,7 +507,9 @@ class DeployProjectJob implements ShouldQueue
                     "chown -R {$containerUid}:{$containerUid} storage bootstrap/cache 2>/dev/null && ".
                     'chmod -R 777 storage bootstrap/cache';
 
-                $permResult = \Illuminate\Support\Facades\Process::timeout(60)->run("{$sshPrefix} \"{$permissionCommand}\"");
+                $permResult = $isLocal
+                    ? \Illuminate\Support\Facades\Process::timeout(60)->run($permissionCommand)
+                    : \Illuminate\Support\Facades\Process::timeout(60)->run("{$sshPrefix} \"{$permissionCommand}\"");
 
                 if ($permResult->successful()) {
                     $addLog("  ✓ Permissions fixed (UID:{$containerUid}, 777)");
@@ -510,7 +526,9 @@ class DeployProjectJob implements ShouldQueue
                     "sed -i 's/^REDIS_HOST=localhost\$/REDIS_HOST=redis/' .env 2>/dev/null; ".
                     "echo 'env checked'";
 
-                $envResult = \Illuminate\Support\Facades\Process::timeout(30)->run("{$sshPrefix} \"{$envFixCommand}\"");
+                $envResult = $isLocal
+                    ? \Illuminate\Support\Facades\Process::timeout(30)->run($envFixCommand)
+                    : \Illuminate\Support\Facades\Process::timeout(30)->run("{$sshPrefix} \"{$envFixCommand}\"");
                 if ($envResult->successful()) {
                     $addLog('  ✓ Environment configuration validated');
                 }

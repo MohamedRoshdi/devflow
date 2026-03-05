@@ -48,9 +48,7 @@ trait ExecutesRemoteCommands
      */
     protected function isLocalhost(Server $server): bool
     {
-        $localIPs = ['127.0.0.1', '::1', 'localhost'];
-
-        return in_array($server->ip_address, $localIPs);
+        return $server->shouldExecuteLocally();
     }
 
     /**
@@ -234,7 +232,7 @@ trait ExecutesRemoteCommands
             $sshpassPrefix,
             implode(' ', $sshOptions),
             escapeshellarg($server->username),
-            escapeshellarg($server->ip_address),
+            escapeshellarg($server->connection_host),
             escapeshellarg($remoteCommand)
         );
     }
