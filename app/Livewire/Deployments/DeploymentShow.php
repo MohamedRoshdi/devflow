@@ -286,11 +286,12 @@ class DeploymentShow extends Component
         $this->authorize('create', Deployment::class);
 
         $newDeployment = Deployment::create([
+            'user_id' => auth()->id(),
             'project_id' => $this->deployment->project_id,
             'server_id' => $this->deployment->server_id,
             'branch' => $this->deployment->branch,
             'commit_hash' => $this->deployment->commit_hash,
-            'commit_message' => 'Retry of deployment #' . $this->deployment->id,
+            'commit_message' => 'Retry of deployment #'.$this->deployment->id,
             'triggered_by' => 'manual',
             'status' => 'pending',
         ]);

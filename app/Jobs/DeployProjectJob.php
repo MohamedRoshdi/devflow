@@ -207,7 +207,7 @@ class DeployProjectJob implements ShouldQueue
         $dockerService = app(DockerService::class);
 
         $logs = [];
-        $projectPath = "/var/www/{$project->slug}";
+        $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
 
         // Helper function to add log and broadcast
         $addLog = function (string $line) use (&$logs) {
@@ -233,14 +233,40 @@ class DeployProjectJob implements ShouldQueue
             ? ''
             : "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=30 -o LogLevel=ERROR -p {$serverPort} {$server->username}@{$serverHost}";
 
+        // Helper to run a command locally or via SSH
+        $runCmd = function (string $cmd, int $timeout = 120) use ($isLocal, $sshPrefix): \Illuminate\Contracts\Process\ProcessResult {
+            return $isLocal
+                ? \Illuminate\Support\Facades\Process::timeout($timeout)->run($cmd)
+                : \Illuminate\Support\Facades\Process::timeout($timeout)->run("{$sshPrefix} \"{$cmd}\"");
+        };
+
+        // Ensure project parent directory exists and is writable for local deploys
+        if ($isLocal) {
+            $parentDir = dirname($projectPath);
+            if (! is_writable($parentDir)) {
+                $addLog('Preparing project directory (requires elevated permissions)...');
+                $uid = posix_getuid().':'.posix_getgid();
+                // Try sudo -n (non-interactive) first
+                $mkdirResult = \Illuminate\Support\Facades\Process::run("sudo -n rm -rf {$projectPath} 2>/dev/null; sudo -n mkdir -p {$projectPath} && sudo -n chown -R {$uid} {$projectPath}");
+                if (! $mkdirResult->successful()) {
+                    // Fallback: try without sudo (works if user has adequate permissions)
+                    $mkdirResult = \Illuminate\Support\Facades\Process::run("mkdir -p {$projectPath}");
+                    if (! $mkdirResult->successful()) {
+                        throw new \RuntimeException(
+                            "Cannot create project directory: {$projectPath}. ".
+                            "Please run: sudo mkdir -p {$projectPath} && sudo chown -R {$uid} {$projectPath}"
+                        );
+                    }
+                }
+                $addLog('✓ Project directory prepared');
+            }
+        }
+
         // Check if repository already exists (via SSH to ensure we check server state)
         $addLog($isLocal
             ? "$ test -d {$projectPath}/.git"
             : "$ ssh -p {$serverPort} {$server->username}@{$serverHost} test -d {$projectPath}/.git");
-        $checkCmd = "test -d {$projectPath}/.git && echo 'exists' || echo 'not_exists'";
-        $checkResult = $isLocal
-            ? \Illuminate\Support\Facades\Process::run($checkCmd)
-            : \Illuminate\Support\Facades\Process::run("{$sshPrefix} \"{$checkCmd}\"");
+        $checkResult = $runCmd("test -d {$projectPath}/.git && echo 'exists' || echo 'not_exists'");
         $repoExists = trim($checkResult->output()) === 'exists';
         $addLog($repoExists ? '→ Repository exists' : '→ Repository not found');
 
@@ -262,16 +288,13 @@ class DeployProjectJob implements ShouldQueue
             $addLog("$ git reset --hard origin/{$project->branch}");
 
             $gitCommand = "cd {$projectPath} && ".
-                "git config --global safe.directory '*' && ".
                 "chown -R root:root {$projectPath}/.git {$projectPath}/storage {$projectPath}/bootstrap 2>/dev/null || true && ".
-                "git fetch origin {$escapedBranch} && ".
-                "git reset --hard origin/{$escapedBranch} && ".
+                "git -c safe.directory='*' fetch origin {$escapedBranch} && ".
+                "git -c safe.directory='*' reset --hard origin/{$escapedBranch} && ".
                 "chown -R 1000:1000 {$projectPath}/storage {$projectPath}/bootstrap/cache && ".
                 "chmod -R 775 {$projectPath}/storage {$projectPath}/bootstrap/cache";
 
-            $pullResult = $isLocal
-                ? \Illuminate\Support\Facades\Process::timeout(120)->run($gitCommand)
-                : \Illuminate\Support\Facades\Process::timeout(120)->run("{$sshPrefix} \"{$gitCommand}\"");
+            $pullResult = $runCmd($gitCommand, 120);
 
             if (! $pullResult->successful()) {
                 $addLog('✗ Git pull failed');
@@ -309,21 +332,24 @@ class DeployProjectJob implements ShouldQueue
             // Save logs so user sees clone starting
             $this->deployment->update(['output_log' => implode("\n", $logs)]);
 
-            $cloneCommand = "git config --global safe.directory '*' && ".
-                "rm -rf {$projectPath} 2>/dev/null || true && ".
-                "git clone --branch {$escapedBranch} --progress {$escapedRepoUrl} {$projectPath} 2>&1 && ".
-                "chown -R 1000:1000 {$projectPath}/storage {$projectPath}/bootstrap/cache 2>/dev/null || true && ".
-                "chmod -R 775 {$projectPath}/storage {$projectPath}/bootstrap/cache 2>/dev/null || true";
+            // Clone with safe.directory config (dir prep handled above for local deploys)
+            $cloneCommand = "git -c safe.directory='*' clone --branch {$escapedBranch} --progress {$escapedRepoUrl} {$projectPath} 2>&1";
 
-            $cloneResult = $isLocal
-                ? \Illuminate\Support\Facades\Process::timeout(300)->run($cloneCommand)
-                : \Illuminate\Support\Facades\Process::timeout(300)->run("{$sshPrefix} \"{$cloneCommand}\"");
+            $cloneResult = $runCmd($cloneCommand, 300);
 
             if (! $cloneResult->successful()) {
                 $addLog('✗ Git clone failed');
-                $addLog($cloneResult->errorOutput());
-                throw new \Exception('Git clone failed: '.$cloneResult->errorOutput());
+                $errorMsg = $cloneResult->errorOutput() ?: $cloneResult->output();
+                $addLog($errorMsg);
+                throw new \Exception('Git clone failed: '.$errorMsg);
             }
+
+            // Fix permissions after successful clone
+            $runCmd(
+                "chown -R 1000:1000 {$projectPath}/storage {$projectPath}/bootstrap/cache 2>/dev/null || true && " .
+                "chmod -R 775 {$projectPath}/storage {$projectPath}/bootstrap/cache 2>/dev/null || true",
+                30
+            );
 
             // Show clone output
             if ($cloneResult->output()) {
@@ -507,9 +533,7 @@ class DeployProjectJob implements ShouldQueue
                     "chown -R {$containerUid}:{$containerUid} storage bootstrap/cache 2>/dev/null && ".
                     'chmod -R 777 storage bootstrap/cache';
 
-                $permResult = $isLocal
-                    ? \Illuminate\Support\Facades\Process::timeout(60)->run($permissionCommand)
-                    : \Illuminate\Support\Facades\Process::timeout(60)->run("{$sshPrefix} \"{$permissionCommand}\"");
+                $permResult = $runCmd($permissionCommand, 60);
 
                 if ($permResult->successful()) {
                     $addLog("  ✓ Permissions fixed (UID:{$containerUid}, 777)");
@@ -526,9 +550,7 @@ class DeployProjectJob implements ShouldQueue
                     "sed -i 's/^REDIS_HOST=localhost\$/REDIS_HOST=redis/' .env 2>/dev/null; ".
                     "echo 'env checked'";
 
-                $envResult = $isLocal
-                    ? \Illuminate\Support\Facades\Process::timeout(30)->run($envFixCommand)
-                    : \Illuminate\Support\Facades\Process::timeout(30)->run("{$sshPrefix} \"{$envFixCommand}\"");
+                $envResult = $runCmd($envFixCommand, 30);
                 if ($envResult->successful()) {
                     $addLog('  ✓ Environment configuration validated');
                 }
