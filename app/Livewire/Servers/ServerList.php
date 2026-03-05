@@ -7,6 +7,7 @@ namespace App\Livewire\Servers;
 use App\Livewire\Traits\WithBulkServerActions;
 use App\Livewire\Traits\WithServerActions;
 use App\Livewire\Traits\WithServerFiltering;
+use App\Models\Server;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -77,6 +78,26 @@ class ServerList extends Component
     {
         unset($this->accessibleServers);
         $this->resetPage();
+    }
+
+    /**
+     * Clone a server with "(Copy)" suffix and offline status
+     */
+    public function cloneServer(int $serverId): void
+    {
+        $server = Server::find($serverId);
+
+        if (! $server) {
+            session()->flash('error', 'Server not found.');
+            return;
+        }
+
+        $clone = $server->replicate();
+        $clone->name = $server->name . ' (Copy)';
+        $clone->status = 'offline';
+        $clone->save();
+
+        $this->redirect(route('servers.edit', $clone), navigate: true);
     }
 
     /**

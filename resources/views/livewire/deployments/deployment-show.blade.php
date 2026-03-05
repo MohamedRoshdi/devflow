@@ -6,6 +6,11 @@
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-blue-500/3 to-indigo-500/3 rounded-full blur-3xl"></div>
     </div>
 
+    <x-breadcrumb :items="[
+        ['label' => 'Deployments', 'url' => route('deployments.index')],
+        ['label' => '#' . $deployment->id],
+    ]" />
+
     <div class="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         <div>
             <h1 class="text-3xl lg:text-4xl font-bold text-white tracking-tight flex items-center gap-3">
@@ -30,6 +35,28 @@
                     </button>
                     <livewire:components.inline-help help-key="deploy-button" />
                 </div>
+            @endif
+            @if(in_array($deployment->status, ['pending', 'running']))
+                <button wire:click="cancelDeployment"
+                        wire:confirm="Cancel this deployment? It will be marked as failed."
+                        wire:loading.attr="disabled"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-red-600/80 hover:bg-red-500 text-white rounded-xl font-semibold transition-all duration-300 backdrop-blur-sm border border-red-500/50 shadow-lg shadow-red-500/30 hover:shadow-xl">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Cancel
+                </button>
+            @endif
+            @if($deployment->status === 'failed')
+                <button wire:click="retryDeployment"
+                        wire:confirm="Retry this deployment? A new deployment will be created with the same settings."
+                        wire:loading.attr="disabled"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600/80 hover:bg-blue-500 text-white rounded-xl font-semibold transition-all duration-300 backdrop-blur-sm border border-blue-500/50 shadow-lg shadow-blue-500/30 hover:shadow-xl">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Retry
+                </button>
             @endif
             @if($this->canRollback())
                 <button wire:click="initiateRollback"
@@ -330,15 +357,30 @@
 
     <!-- Logs -->
     <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-slate-700/50 overflow-hidden">
-        <div class="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 p-6 border-b border-slate-700/50 flex justify-between items-center">
-            <h2 class="text-xl font-bold text-white">Deployment Logs</h2>
-            <div class="flex items-center space-x-3">
-                @if(in_array($deployment->status, ['pending', 'running']))
-                    <span class="flex items-center text-sm text-blue-400 bg-blue-500/20 px-3 py-1 rounded-lg border border-blue-500/30">
-                        <span class="h-2 w-2 bg-blue-400 rounded-full mr-2 animate-pulse"></span>
-                        Live Streaming
-                    </span>
-                @endif
+        <div class="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 p-6 border-b border-slate-700/50">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-white">Deployment Logs</h2>
+                <div class="flex items-center space-x-3">
+                    @if(in_array($deployment->status, ['pending', 'running']))
+                        <span class="flex items-center text-sm text-blue-400 bg-blue-500/20 px-3 py-1 rounded-lg border border-blue-500/30">
+                            <span class="h-2 w-2 bg-blue-400 rounded-full mr-2 animate-pulse"></span>
+                            Live Streaming
+                        </span>
+                    @endif
+                    <button wire:click="exportLogs"
+                            class="inline-flex items-center gap-2 px-3 py-1.5 text-sm bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 rounded-lg border border-slate-600/50 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Export Logs
+                    </button>
+                </div>
+            </div>
+            <div>
+                <input wire:model.live.debounce.300ms="logSearch"
+                       type="text"
+                       placeholder="Search logs..."
+                       class="w-full px-4 py-2 bg-slate-800/50 border border-slate-600/50 rounded-lg text-white placeholder-slate-500 text-sm focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 transition-all">
             </div>
         </div>
         <div class="p-6">
@@ -404,6 +446,7 @@
 
                         @if(count($liveLogs) > 0)
                             @foreach($liveLogs as $index => $log)
+                                @if(!$logSearch || str_contains(strtolower($log['line']), strtolower($logSearch)))
                                 <div class="flex hover:bg-gray-800/50 transition-colors py-0.5">
                                     <!-- Line Number -->
                                     <div class="flex-shrink-0 w-12 text-right pr-4 text-gray-600 select-none">
@@ -415,6 +458,7 @@
                                         {{ e($log['line']) }}
                                     </div>
                                 </div>
+                                @endif
                             @endforeach
                         @elseif($deployment->output_log)
                             @foreach(explode("\n", $deployment->output_log) as $index => $line)
@@ -427,6 +471,7 @@
                                         $level = 'warning';
                                     }
                                 @endphp
+                                @if(!$logSearch || str_contains($lowerLine, strtolower($logSearch)))
                                 <div class="flex hover:bg-gray-800/50 transition-colors py-0.5">
                                     <!-- Line Number -->
                                     <div class="flex-shrink-0 w-12 text-right pr-4 text-gray-600 select-none">
@@ -438,6 +483,7 @@
                                         {{ e($line) }}
                                     </div>
                                 </div>
+                                @endif
                             @endforeach
                         @endif
                     </div>

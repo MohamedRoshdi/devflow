@@ -210,6 +210,7 @@
 
                             <!-- Install Docker -->
                             <button wire:click="bulkInstallDocker"
+                                    wire:confirm="Install Docker on {{ count($selectedServers) }} server(s)?"
                                     @click="open = false"
                                     role="menuitem"
                                     aria-label="Install Docker on all selected servers"
@@ -241,21 +242,25 @@
                                          x-transition
                                          class="bg-slate-900/50">
                                         <button wire:click="bulkRestartService('nginx')"
+                                                wire:confirm="Restart Nginx on {{ count($selectedServers) }} server(s)?"
                                                 @click="open = false; servicesOpen = false"
                                                 class="w-full text-left px-8 py-2.5 hover:bg-slate-700/50 transition-colors text-slate-300 text-sm">
                                             Nginx
                                         </button>
                                         <button wire:click="bulkRestartService('mysql')"
+                                                wire:confirm="Restart MySQL on {{ count($selectedServers) }} server(s)?"
                                                 @click="open = false; servicesOpen = false"
                                                 class="w-full text-left px-8 py-2.5 hover:bg-slate-700/50 transition-colors text-slate-300 text-sm">
                                             MySQL
                                         </button>
                                         <button wire:click="bulkRestartService('redis')"
+                                                wire:confirm="Restart Redis on {{ count($selectedServers) }} server(s)?"
                                                 @click="open = false; servicesOpen = false"
                                                 class="w-full text-left px-8 py-2.5 hover:bg-slate-700/50 transition-colors text-slate-300 text-sm">
                                             Redis
                                         </button>
                                         <button wire:click="bulkRestartService('php-fpm')"
+                                                wire:confirm="Restart PHP-FPM on {{ count($selectedServers) }} server(s)?"
                                                 @click="open = false; servicesOpen = false"
                                                 class="w-full text-left px-8 py-2.5 hover:bg-slate-700/50 transition-colors text-slate-300 text-sm">
                                             PHP-FPM
@@ -427,7 +432,7 @@
                     <div class="p-6 cursor-pointer" onclick="window.location='{{ route('servers.show', $server) }}'">
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex-1 ml-8 min-w-0">
-                                <a href="{{ route('servers.show', $server) }}" class="text-xl font-bold text-slate-900 dark:text-white hover:text-blue-400 transition-colors truncate block">
+                                <a href="{{ route('servers.show', $server) }}" class="text-xl font-bold text-slate-900 dark:text-white hover:text-blue-400 transition-colors truncate block" title="{{ $server->name }}">
                                     {{ $server->name }}
                                 </a>
                                 <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 font-mono truncate">{{ $server->ip_address }}</p>
@@ -611,6 +616,12 @@
                                     Edit
                                 </a>
                                 @endcan
+                                <button wire:click="cloneServer({{ $server->id }})"
+                                        wire:loading.attr="disabled"
+                                        aria-label="Clone {{ $server->name }}"
+                                        class="text-cyan-400 hover:text-cyan-300 text-sm font-medium transition-colors">
+                                    Clone
+                                </button>
                                 @can('delete', $server)
                                 <button wire:click="deleteServer({{ $server->id }})"
                                         wire:confirm="Are you sure you want to delete '{{ $server->name }}'? This action cannot be undone and will remove all associated projects, configurations, and metrics."

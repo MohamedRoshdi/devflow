@@ -373,6 +373,12 @@
                                    aria-label="View {{ $project->name }} details">
                                     View
                                 </a>
+                                <button wire:click="duplicateProject({{ $project->id }})"
+                                        wire:loading.attr="disabled"
+                                        class="text-cyan-400 hover:text-cyan-300 text-sm font-medium transition-colors disabled:opacity-50"
+                                        aria-label="Duplicate {{ $project->name }}">
+                                    Duplicate
+                                </button>
                                 <button wire:click="deleteProject({{ $project->id }})"
                                         wire:confirm="Delete '{{ $project->name }}'? The project will be soft-deleted and its slug freed for reuse. Deployment history will be preserved."
                                         wire:loading.attr="disabled"

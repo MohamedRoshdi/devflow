@@ -185,7 +185,7 @@
                             <label for="slug" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Slug *</label>
                             <input wire:model="slug" id="slug" type="text" required placeholder="my-awesome-project"
                                    class="input @error('slug') border-red-500 @enderror">
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">URL: {{ $slug }}.nilestack.duckdns.org</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">URL: {{ $slug ?: 'your-project' }}.{{ config('app.base_domain', 'nilestack.duckdns.org') }}</p>
                             @error('slug') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>

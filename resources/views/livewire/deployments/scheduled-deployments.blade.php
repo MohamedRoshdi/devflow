@@ -1,4 +1,19 @@
 <div>
+    <x-breadcrumb :items="[
+        ['label' => 'Deployments', 'url' => route('deployments.index')],
+        ['label' => 'Scheduled'],
+    ]" />
+
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
+            <svg class="w-8 h-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Scheduled Deployments
+        </h1>
+        <p class="text-slate-600 dark:text-slate-400 mt-1">Schedule deployments for off-peak hours</p>
+    </div>
+
     <!-- Schedule Deployment Button -->
     <div class="mb-6">
         <button wire:click="openScheduleModal"

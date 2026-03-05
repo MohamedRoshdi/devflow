@@ -34,9 +34,11 @@
                        placeholder="Production Server 1"
                        wire:loading.attr="disabled"
                        wire:target="createServer,testConnection"
+                       aria-describedby="name-error"
+                       @error('name') aria-invalid="true" @enderror
                        class="input @error('name') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
                 @error('name')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p id="name-error" role="alert" class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -51,9 +53,11 @@
                            placeholder="192.168.1.100"
                            wire:loading.attr="disabled"
                            wire:target="createServer,testConnection"
+                           aria-describedby="ip_address-error"
+                           @error('ip_address') aria-invalid="true" @enderror
                            class="input @error('ip_address') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
                     @error('ip_address')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p id="ip_address-error" role="alert" class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -66,9 +70,11 @@
                            placeholder="server1.example.com"
                            wire:loading.attr="disabled"
                            wire:target="createServer,testConnection"
+                           aria-describedby="hostname-error"
+                           @error('hostname') aria-invalid="true" @enderror
                            class="input @error('hostname') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
                     @error('hostname')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p id="hostname-error" role="alert" class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
@@ -83,9 +89,11 @@
                            required
                            wire:loading.attr="disabled"
                            wire:target="createServer,testConnection"
+                           aria-describedby="port-error"
+                           @error('port') aria-invalid="true" @enderror
                            class="input @error('port') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
                     @error('port')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p id="port-error" role="alert" class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -98,9 +106,11 @@
                            required
                            wire:loading.attr="disabled"
                            wire:target="createServer,testConnection"
+                           aria-describedby="username-error"
+                           @error('username') aria-invalid="true" @enderror
                            class="input @error('username') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
                     @error('username')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p id="username-error" role="alert" class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
@@ -234,24 +244,43 @@
                 </div>
 
                 <button type="button"
-                        wire:click="getLocation"
-                        wire:loading.attr="disabled"
-                        wire:target="getLocation,createServer,testConnection"
+                        x-data="{ gettingLocation: false }"
+                        @click="
+                            if (!navigator.geolocation) { alert('Geolocation is not supported by your browser.'); return; }
+                            gettingLocation = true;
+                            navigator.geolocation.getCurrentPosition(
+                                (position) => {
+                                    $wire.set('latitude', position.coords.latitude.toFixed(6));
+                                    $wire.set('longitude', position.coords.longitude.toFixed(6));
+                                    gettingLocation = false;
+                                },
+                                (error) => {
+                                    alert('Unable to get location: ' + error.message);
+                                    gettingLocation = false;
+                                },
+                                { enableHighAccuracy: true, timeout: 10000 }
+                            );
+                        "
+                        :disabled="gettingLocation"
                         class="mt-4 inline-flex items-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity">
-                    <span wire:loading.remove wire:target="getLocation">
-                        <svg class="w-4 h-4 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        </svg>
-                        Use Current GPS Location
-                    </span>
-                    <span wire:loading wire:target="getLocation" class="inline-flex items-center">
-                        <svg class="animate-spin h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Getting Location...
-                    </span>
+                    <template x-if="!gettingLocation">
+                        <span class="inline-flex items-center">
+                            <svg class="w-4 h-4 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            Use Current GPS Location
+                        </span>
+                    </template>
+                    <template x-if="gettingLocation">
+                        <span class="inline-flex items-center">
+                            <svg class="animate-spin h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Getting Location...
+                        </span>
+                    </template>
                 </button>
             </div>
 
@@ -271,6 +300,7 @@
                             wire:click="testConnection"
                             wire:loading.attr="disabled"
                             wire:target="testConnection,createServer"
+                            aria-label="Test SSH connection"
                             class="btn btn-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-opacity inline-flex items-center">
                         <span wire:loading.remove wire:target="testConnection" class="inline-flex items-center">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

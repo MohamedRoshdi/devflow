@@ -99,6 +99,32 @@ class ProjectList extends Component
     }
 
     /**
+     * Duplicate a project with "(Copy)" name and stopped status
+     */
+    public function duplicateProject(int $projectId): void
+    {
+        try {
+            $project = Project::find($projectId);
+
+            if (! $project) {
+                session()->flash('error', 'Project not found.');
+                return;
+            }
+
+            $clone = $project->replicate(['slug']);
+            $clone->name = $project->name . ' (Copy)';
+            $clone->slug = $project->slug . '-copy-' . time();
+            $clone->status = 'stopped';
+            $clone->save();
+
+            session()->flash('message', "Project duplicated as '{$clone->name}'.");
+        } catch (\Throwable $e) {
+            session()->flash('error', 'Failed to duplicate project: ' . $e->getMessage());
+            report($e);
+        }
+    }
+
+    /**
      * Get list of servers for the filter dropdown (cached for 5 minutes)
      *
      * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Server>

@@ -154,14 +154,37 @@
                         <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Projects</span>
                     </a>
 
-                    <!-- Deployments - Direct Link -->
-                    <a href="{{ route('deployments.index') }}"
-                       class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('deployments.*') ? 'bg-blue-50 dark:bg-slate-800 text-blue-700 dark:text-white border-l-4 border-blue-500 -ml-1 pl-4' : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white' }}">
-                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
-                        </svg>
-                        <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Deployments</span>
-                    </a>
+                    <!-- Deployments - Dropdown -->
+                    <div x-data="{ open: {{ request()->routeIs('deployments.*') ? 'true' : 'false' }} }">
+                        <button @click="open = !open"
+                                :aria-expanded="open.toString()"
+                                aria-label="Deployments menu"
+                                class="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('deployments.*') ? 'bg-blue-50 dark:bg-slate-800 text-blue-700 dark:text-white border-l-4 border-blue-500 -ml-1 pl-4' : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white' }}">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                                </svg>
+                                <span x-show="!sidebarCollapsed" class="whitespace-nowrap">Deployments</span>
+                            </div>
+                            <svg x-show="!sidebarCollapsed" class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                        <div x-show="open && !sidebarCollapsed" x-collapse class="ml-8 space-y-1 mt-1 pb-2">
+                            <a href="{{ route('deployments.index') }}"
+                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('deployments.index') ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800' }}">
+                                All Deployments
+                            </a>
+                            <a href="{{ route('deployments.approvals') }}"
+                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('deployments.approvals') ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800' }}">
+                                Approvals
+                            </a>
+                            <a href="{{ route('deployments.scheduled') }}"
+                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('deployments.scheduled') ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800' }}">
+                                Scheduled
+                            </a>
+                        </div>
+                    </div>
 
                     <!-- Regions - Direct Link -->
                     <a href="{{ route('regions.index') }}"
@@ -182,6 +205,8 @@
                     <!-- Documentation with Dropdown and Highlight -->
                     <div x-data="{ open: {{ request()->routeIs('docs.*') ? 'true' : 'false' }} }" class="bg-blue-50/50 dark:bg-blue-500/5 rounded-lg">
                         <button @click="open = !open"
+                                :aria-expanded="open.toString()"
+                                aria-label="Documentation menu"
                                 class="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('docs.*') ? 'bg-blue-50 dark:bg-slate-800 text-blue-700 dark:text-white border-l-4 border-blue-500 -ml-1 pl-4' : 'text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-blue-700 dark:hover:text-white' }}">
                             <div class="flex items-center gap-3">
                                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -233,6 +258,8 @@
                     <!-- Logs with Dropdown -->
                     <div x-data="{ open: {{ request()->routeIs('logs.*') ? 'true' : 'false' }} }">
                         <button @click="open = !open"
+                                :aria-expanded="open.toString()"
+                                aria-label="Logs menu"
                                 class="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('logs.*') ? 'bg-blue-50 dark:bg-slate-800 text-blue-700 dark:text-white border-l-4 border-blue-500 -ml-1 pl-4' : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white' }}">
                             <div class="flex items-center gap-3">
                                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -364,6 +391,8 @@
                     <!-- Settings with Dropdown -->
                     <div x-data="{ open: {{ request()->routeIs(['admin.*', 'settings.*', 'teams.*']) ? 'true' : 'false' }} }">
                         <button @click="open = !open"
+                                :aria-expanded="open.toString()"
+                                aria-label="Settings menu"
                                 class="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs(['admin.*', 'settings.*', 'teams.*']) ? 'bg-blue-50 dark:bg-slate-800 text-blue-700 dark:text-white border-l-4 border-blue-500 -ml-1 pl-4' : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white' }}">
                             <div class="flex items-center gap-3">
                                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -495,12 +524,33 @@
                     </svg>
                     <span>Projects</span>
                 </a>
-                <a href="{{ route('deployments.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('deployments.*') ? 'bg-blue-50 dark:bg-slate-800 text-blue-700 dark:text-white' : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white' }}">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
-                    </svg>
-                    <span>Deployments</span>
-                </a>
+                <div x-data="{ open: {{ request()->routeIs('deployments.*') ? 'true' : 'false' }} }">
+                    <button @click="open = !open"
+                            :aria-expanded="open.toString()"
+                            aria-label="Deployments menu"
+                            class="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('deployments.*') ? 'bg-blue-50 dark:bg-slate-800 text-blue-700 dark:text-white' : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white' }}">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                            </svg>
+                            <span>Deployments</span>
+                        </div>
+                        <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                    <div x-show="open" x-collapse class="ml-8 space-y-1 mt-1 pb-2">
+                        <a href="{{ route('deployments.index') }}" class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('deployments.index') ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800' }}">
+                            All Deployments
+                        </a>
+                        <a href="{{ route('deployments.approvals') }}" class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('deployments.approvals') ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800' }}">
+                            Approvals
+                        </a>
+                        <a href="{{ route('deployments.scheduled') }}" class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('deployments.scheduled') ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800' }}">
+                            Scheduled
+                        </a>
+                    </div>
+                </div>
                 <a href="{{ route('regions.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('regions.*') ? 'bg-blue-50 dark:bg-slate-800 text-blue-700 dark:text-white' : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white' }}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>

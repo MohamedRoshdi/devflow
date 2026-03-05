@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Livewire\Deployments;
 
+use App\Jobs\DeployProjectJob;
 use App\Models\Deployment;
 use App\Services\RollbackService;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class DeploymentShow extends Component
 {
@@ -23,6 +25,8 @@ class DeploymentShow extends Component
     public bool $showRollbackConfirm = false;
 
     public bool $rollbackInProgress = false;
+
+    public string $logSearch = '';
 
     public function mount(Deployment $deployment): void
     {
@@ -270,6 +274,60 @@ class DeploymentShow extends Component
             $this->currentStep = 'Deployment failed';
             $this->progress = 0;
         }
+    }
+
+    public function retryDeployment(): void
+    {
+        if ($this->deployment->status !== 'failed') {
+            return;
+        }
+
+        $this->authorize('create', Deployment::class);
+
+        $newDeployment = Deployment::create([
+            'project_id' => $this->deployment->project_id,
+            'server_id' => $this->deployment->server_id,
+            'branch' => $this->deployment->branch,
+            'commit_hash' => $this->deployment->commit_hash,
+            'commit_message' => 'Retry of deployment #' . $this->deployment->id,
+            'triggered_by' => 'manual',
+            'status' => 'pending',
+        ]);
+
+        DeployProjectJob::dispatch($newDeployment);
+
+        $this->redirect(route('deployments.show', $newDeployment), navigate: true);
+    }
+
+    public function cancelDeployment(): void
+    {
+        if (! in_array($this->deployment->status, ['pending', 'running'])) {
+            return;
+        }
+
+        $this->deployment->update([
+            'status' => 'failed',
+            'output_log' => ($this->deployment->output_log ?? '') . "\n\n--- Deployment cancelled by user at " . now()->toDateTimeString() . " ---",
+            'completed_at' => now(),
+        ]);
+
+        $this->deployment->refresh();
+        $this->analyzeProgress();
+        $this->initializeLiveLogs();
+
+        session()->flash('message', 'Deployment cancelled.');
+    }
+
+    public function exportLogs(): StreamedResponse
+    {
+        $filename = 'deployment-' . $this->deployment->id . '-logs.txt';
+        $content = $this->deployment->output_log ?? 'No logs available.';
+
+        return response()->streamDownload(function () use ($content): void {
+            echo $content;
+        }, $filename, [
+            'Content-Type' => 'text/plain',
+        ]);
     }
 
     public function render(): \Illuminate\View\View
