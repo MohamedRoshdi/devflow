@@ -59,18 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('livewire:navigated', () => {
     window.initDashboardSortable();
-    // Re-apply theme after Livewire SPA navigation
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    if (savedTheme === 'dark') {
-        document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark');
-    }
-    // Re-initialize theme toggle buttons
-    if (typeof window.__initThemeToggle === 'function') {
-        window.__themeToggleInitialized = false;
-        window.__initThemeToggle();
-    }
 });
 
 // Enhanced Toast Notification System

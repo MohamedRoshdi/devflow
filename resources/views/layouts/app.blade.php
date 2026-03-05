@@ -34,29 +34,13 @@
 
     <!-- Theme Script (must load before body to prevent flash) -->
     <script>
-        // Apply saved theme immediately to prevent flash (runs on initial load AND Livewire navigate)
         (function() {
-            function applyStoredTheme() {
-                var t = localStorage.getItem('theme') || 'light';
-                if (t === 'dark') {
-                    document.documentElement.classList.add('dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                }
+            var t = localStorage.getItem('theme') || 'light';
+            if (t === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
             }
-            applyStoredTheme();
-            // Re-apply after Livewire SPA navigation replaces the page
-            document.addEventListener('livewire:navigating', function() {
-                window.__themeBeforeNavigate = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-            });
-            document.addEventListener('livewire:navigated', function() {
-                applyStoredTheme();
-                // Re-initialize theme toggle buttons after navigation
-                window.__themeToggleInitialized = false;
-                if (typeof window.__initThemeToggle === 'function') {
-                    window.__initThemeToggle();
-                }
-            });
         })();
         // Load sidebar state
         var sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
@@ -586,11 +570,17 @@
                 class="fixed top-0 right-0 z-30 h-16 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 transition-all duration-300 hidden md:flex items-center justify-end px-6 shadow-sm dark:shadow-none">
 
             <!-- Theme Toggle -->
-            <button id="theme-toggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors mr-4" aria-label="Toggle theme">
-                <svg id="theme-toggle-light-icon" class="w-5 h-5 text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-white hidden dark:block transition-colors" fill="currentColor" viewBox="0 0 20 20">
+            <button x-data x-on:click="
+                let isDark = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                document.getElementById('theme-color-meta')?.setAttribute('content', isDark ? '#1f2937' : '#2563eb');
+            " class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors mr-4" aria-label="Toggle theme">
+                <!-- Sun icon (visible in dark mode — click to go light) -->
+                <svg class="w-5 h-5 text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-white hidden dark:block transition-colors" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
                 </svg>
-                <svg id="theme-toggle-dark-icon" class="w-5 h-5 text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-white block dark:hidden transition-colors" fill="currentColor" viewBox="0 0 20 20">
+                <!-- Moon icon (visible in light mode — click to go dark) -->
+                <svg class="w-5 h-5 text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-white block dark:hidden transition-colors" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
                 </svg>
             </button>
@@ -625,7 +615,11 @@
             </a>
 
             <div class="flex items-center gap-2">
-                <button id="theme-toggle-mobile" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors">
+                <button x-data x-on:click="
+                    let isDark = document.documentElement.classList.toggle('dark');
+                    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                    document.getElementById('theme-color-meta')?.setAttribute('content', isDark ? '#1f2937' : '#2563eb');
+                " class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors">
                     <svg class="w-5 h-5 text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-white hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
                     </svg>
@@ -665,49 +659,16 @@
         <x-keyboard-shortcuts />
     @endauth
 
-    <!-- Theme Toggle Script -->
+    <!-- Theme: re-apply after Livewire SPA navigation -->
     <script>
-        window.__initThemeToggle = function() {
-            // Skip if already initialized
-            if (window.__themeToggleInitialized) return;
-            window.__themeToggleInitialized = true;
-
-            var themeToggleBtn = document.getElementById('theme-toggle');
-            var themeToggleMobileBtn = document.getElementById('theme-toggle-mobile');
-            var htmlElement = document.documentElement;
-            var themeColorMeta = document.getElementById('theme-color-meta');
-
-            function setTheme(theme) {
-                if (theme === 'dark') {
-                    htmlElement.classList.add('dark');
-                    localStorage.setItem('theme', 'dark');
-                    if (themeColorMeta) {
-                        themeColorMeta.setAttribute('content', '#1f2937');
-                    }
-                } else {
-                    htmlElement.classList.remove('dark');
-                    localStorage.setItem('theme', 'light');
-                    if (themeColorMeta) {
-                        themeColorMeta.setAttribute('content', '#2563eb');
-                    }
-                }
+        document.addEventListener('livewire:navigated', function() {
+            var t = localStorage.getItem('theme') || 'light';
+            if (t === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
             }
-
-            function toggleTheme() {
-                var currentTheme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
-                var newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                setTheme(newTheme);
-            }
-
-            if (themeToggleBtn) {
-                themeToggleBtn.addEventListener('click', toggleTheme);
-            }
-
-            if (themeToggleMobileBtn) {
-                themeToggleMobileBtn.addEventListener('click', toggleTheme);
-            }
-        };
-        window.__initThemeToggle();
+        });
     </script>
 
     @livewireScripts
