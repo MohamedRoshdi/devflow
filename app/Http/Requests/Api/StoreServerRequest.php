@@ -26,7 +26,7 @@ class StoreServerRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'hostname' => ['required', 'string', 'max:255'],
-            'ip_address' => ['required', 'ip', 'unique:servers,ip_address'],
+            'ip_address' => ['nullable', 'ip', 'unique:servers,ip_address', 'required_without:hostname'],
             'port' => ['nullable', 'integer', 'min:1', 'max:65535'],
             'username' => ['required', 'string', 'max:100'],
             'ssh_key' => ['nullable', 'string'],

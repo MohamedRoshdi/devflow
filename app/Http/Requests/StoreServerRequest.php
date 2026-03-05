@@ -30,7 +30,7 @@ class StoreServerRequest extends FormRequest
         return [
             'name' => NameRule::rules(required: true, maxLength: 255),
             'hostname' => 'nullable|string|max:255',
-            'ip_address' => 'required|ip',
+            'ip_address' => 'nullable|ip|required_without:hostname',
             'port' => 'required|integer|min:1|max:65535',
             'username' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_\-]+$/'],
             'ssh_password' => 'nullable|string|required_if:auth_method,password',

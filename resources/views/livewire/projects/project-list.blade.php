@@ -300,7 +300,7 @@
 
                         {{-- Project Info --}}
                         <div class="space-y-2.5 mb-4">
-                            <div class="flex items-center text-sm text-slate-300">
+                            <div class="flex items-center text-sm text-slate-600 dark:text-slate-300">
                                 <div class="p-1.5 bg-blue-500/20 rounded-lg mr-2 flex-shrink-0" aria-hidden="true">
                                     <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="Server icon">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"/>
@@ -308,7 +308,7 @@
                                 </div>
                                 <span class="truncate">{{ $project->server?->name ?? 'No server' }}</span>
                             </div>
-                            <div class="flex items-center text-sm text-slate-300">
+                            <div class="flex items-center text-sm text-slate-600 dark:text-slate-300">
                                 <div class="p-1.5 bg-purple-500/20 rounded-lg mr-2 flex-shrink-0" aria-hidden="true">
                                     <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="Framework: {{ ucfirst($project->framework ?? 'Unknown') }}">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
@@ -317,7 +317,7 @@
                                 <span class="truncate">{{ ucfirst($project->framework ?? 'Unknown') }}</span>
                             </div>
                             @if($project->domains->count() > 0)
-                                <div class="flex items-center text-sm text-slate-300">
+                                <div class="flex items-center text-sm text-slate-600 dark:text-slate-300">
                                     <div class="p-1.5 bg-emerald-500/20 rounded-lg mr-2 flex-shrink-0" aria-hidden="true">
                                         <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="Domain icon">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
@@ -351,7 +351,7 @@
                                 </p>
                                 <a href="{{ $url }}" target="_blank"
                                    onclick="event.stopPropagation()"
-                                   class="text-sm text-emerald-300 hover:text-emerald-200 font-mono break-all flex items-center gap-1 transition-colors"
+                                   class="text-sm text-emerald-600 dark:text-emerald-300 hover:text-emerald-700 dark:hover:text-emerald-200 font-mono break-all flex items-center gap-1 transition-colors"
                                    aria-label="Open {{ $project->name }} in new tab">
                                     {{ $url }}
                                     <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -369,13 +369,13 @@
                             </span>
                             <div class="flex items-center gap-3" onclick="event.stopPropagation()">
                                 <a href="{{ route('projects.show', $project) }}"
-                                   class="text-emerald-400 hover:text-emerald-300 text-sm font-medium transition-colors"
+                                   class="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-sm font-medium transition-colors"
                                    aria-label="View {{ $project->name }} details">
                                     View
                                 </a>
                                 <button wire:click="duplicateProject({{ $project->id }})"
                                         wire:loading.attr="disabled"
-                                        class="text-cyan-400 hover:text-cyan-300 text-sm font-medium transition-colors disabled:opacity-50"
+                                        class="text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 text-sm font-medium transition-colors disabled:opacity-50"
                                         aria-label="Duplicate {{ $project->name }}">
                                     Duplicate
                                 </button>

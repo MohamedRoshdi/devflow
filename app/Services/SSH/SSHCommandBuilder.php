@@ -38,7 +38,7 @@ class SSHCommandBuilder
     public static function forServer(Server $server): self
     {
         $builder = new self();
-        $builder->host = $server->ip_address;
+        $builder->host = $server->connection_host;
         $builder->username = $server->username ?? 'root';
         $builder->port = (int) ($server->port ?? 22);
 

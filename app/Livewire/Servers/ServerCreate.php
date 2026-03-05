@@ -40,14 +40,18 @@ class ServerCreate extends Component
     public string $location_name = '';
 
     /**
-     * @return array<string, array<int, string>|string>
+     * @return array<string, array<int, \Illuminate\Validation\Rules\Enum|string|\Closure>|string>
      */
     public function rules(): array
     {
         return [
             'name' => 'required|string|max:255',
             'hostname' => 'nullable|string|max:255',
-            'ip_address' => 'required|ip',
+            'ip_address' => ['nullable', 'ip', function (string $attribute, mixed $value, \Closure $fail): void {
+                if (empty($value) && empty($this->hostname)) {
+                    $fail('Either an IP address or a hostname must be provided.');
+                }
+            }],
             'port' => 'required|integer|min:1|max:65535',
             // Username: alphanumeric, underscores, hyphens - no shell special chars
             'username' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_\-]+$/'],
@@ -62,6 +66,27 @@ class ServerCreate extends Component
         ];
     }
 
+    /**
+     * Resolve hostname to IP address via DNS if no IP was provided.
+     */
+    protected function resolveHostnameToIp(): void
+    {
+        if (! empty($this->ip_address) || empty($this->hostname)) {
+            return;
+        }
+
+        $resolved = gethostbyname($this->hostname);
+
+        // gethostbyname returns the hostname unchanged if resolution fails
+        if ($resolved === $this->hostname) {
+            $this->addError('hostname', 'Could not resolve hostname to an IP address. Please provide an IP address manually.');
+
+            return;
+        }
+
+        $this->ip_address = $resolved;
+    }
+
     public function getLocation(): void
     {
         // This would be called from JavaScript to get GPS coordinates
@@ -72,6 +97,11 @@ class ServerCreate extends Component
     public function testConnection(): void
     {
         $this->validate();
+
+        $this->resolveHostnameToIp();
+        if ($this->getErrorBag()->isNotEmpty()) {
+            return;
+        }
 
         try {
             // Create temporary server object for testing
@@ -100,11 +130,16 @@ class ServerCreate extends Component
     {
         $this->validate();
 
+        $this->resolveHostnameToIp();
+        if ($this->getErrorBag()->isNotEmpty()) {
+            return;
+        }
+
         $server = Server::create([
             'user_id' => auth()->id(),
             'name' => $this->name,
             'hostname' => $this->hostname ?: null,
-            'ip_address' => $this->ip_address,
+            'ip_address' => $this->ip_address ?: null,
             'port' => $this->port,
             'username' => $this->username,
             'ssh_password' => $this->auth_method === 'password' ? $this->ssh_password : null,

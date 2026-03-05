@@ -240,29 +240,29 @@
                                     <!-- Services Submenu -->
                                     <div x-show="servicesOpen"
                                          x-transition
-                                         class="bg-slate-900/50">
+                                         class="bg-gray-50 dark:bg-slate-900/50">
                                         <button wire:click="bulkRestartService('nginx')"
                                                 wire:confirm="Restart Nginx on {{ count($selectedServers) }} server(s)?"
                                                 @click="open = false; servicesOpen = false"
-                                                class="w-full text-left px-8 py-2.5 hover:bg-slate-700/50 transition-colors text-slate-300 text-sm">
+                                                class="w-full text-left px-8 py-2.5 hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-colors text-slate-700 dark:text-slate-300 text-sm">
                                             Nginx
                                         </button>
                                         <button wire:click="bulkRestartService('mysql')"
                                                 wire:confirm="Restart MySQL on {{ count($selectedServers) }} server(s)?"
                                                 @click="open = false; servicesOpen = false"
-                                                class="w-full text-left px-8 py-2.5 hover:bg-slate-700/50 transition-colors text-slate-300 text-sm">
+                                                class="w-full text-left px-8 py-2.5 hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-colors text-slate-700 dark:text-slate-300 text-sm">
                                             MySQL
                                         </button>
                                         <button wire:click="bulkRestartService('redis')"
                                                 wire:confirm="Restart Redis on {{ count($selectedServers) }} server(s)?"
                                                 @click="open = false; servicesOpen = false"
-                                                class="w-full text-left px-8 py-2.5 hover:bg-slate-700/50 transition-colors text-slate-300 text-sm">
+                                                class="w-full text-left px-8 py-2.5 hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-colors text-slate-700 dark:text-slate-300 text-sm">
                                             Redis
                                         </button>
                                         <button wire:click="bulkRestartService('php-fpm')"
                                                 wire:confirm="Restart PHP-FPM on {{ count($selectedServers) }} server(s)?"
                                                 @click="open = false; servicesOpen = false"
-                                                class="w-full text-left px-8 py-2.5 hover:bg-slate-700/50 transition-colors text-slate-300 text-sm">
+                                                class="w-full text-left px-8 py-2.5 hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-colors text-slate-700 dark:text-slate-300 text-sm">
                                             PHP-FPM
                                         </button>
                                     </div>
@@ -522,7 +522,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
                                         </svg>
                                     </div>
-                                    <span class="text-sm font-medium text-slate-300">CPU</span>
+                                    <span class="text-sm font-medium text-slate-600 dark:text-slate-300">CPU</span>
                                 </div>
                                 <span class="text-sm font-bold text-slate-900 dark:text-white">{{ $server->cpu_cores ?: '-' }} Cores</span>
                             </div>
@@ -536,7 +536,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                                         </svg>
                                     </div>
-                                    <span class="text-sm font-medium text-slate-300">RAM</span>
+                                    <span class="text-sm font-medium text-slate-600 dark:text-slate-300">RAM</span>
                                 </div>
                                 <span class="text-sm font-bold text-slate-900 dark:text-white">{{ $server->memory_gb ?: '-' }} GB</span>
                             </div>
@@ -545,7 +545,7 @@
                         <!-- Location & Last Ping -->
                         <div class="space-y-2 mb-4">
                             @if($server->location_name)
-                            <div class="flex items-center text-sm text-slate-300"
+                            <div class="flex items-center text-sm text-slate-600 dark:text-slate-300"
                                  aria-label="Server location: {{ $server->location_name }}"
                                  title="Server location: {{ $server->location_name }}">
                                 <div class="p-1.5 bg-emerald-500/20 rounded-lg mr-2" aria-hidden="true">
@@ -557,7 +557,7 @@
                                 {{ $server->location_name }}
                             </div>
                             @endif
-                            <div class="flex items-center text-sm text-slate-300"
+                            <div class="flex items-center text-sm text-slate-600 dark:text-slate-300"
                                  aria-label="Last ping: {{ $server->last_ping_at ? $server->last_ping_at->diffForHumans() : 'Never' }}"
                                  title="Last ping: {{ $server->last_ping_at ? $server->last_ping_at->format('Y-m-d H:i:s') : 'Never' }}">
                                 <div class="p-1.5 bg-orange-500/20 rounded-lg mr-2" aria-hidden="true">

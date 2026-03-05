@@ -400,6 +400,15 @@ class Server extends Model
         return $this->hasOne(ServerCommandHistory::class)->latestOfMany();
     }
 
+    /**
+     * Get the host to use for SSH connections.
+     * Prefers ip_address, falls back to hostname.
+     */
+    public function getConnectionHostAttribute(): string
+    {
+        return $this->ip_address ?? $this->hostname ?? '127.0.0.1';
+    }
+
     // Status helpers
     public function isOnline(): bool
     {
@@ -474,7 +483,7 @@ class Server extends Model
 
         // Also check if IP matches current server
         $localIPs = ['127.0.0.1', '::1', 'localhost'];
-        if (in_array($this->ip_address, $localIPs)) {
+        if ($this->ip_address !== null && in_array($this->ip_address, $localIPs)) {
             return true;
         }
 
