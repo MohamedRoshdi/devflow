@@ -149,6 +149,23 @@ EOF;
     }
 
     /**
+     * Check if the supervisor config is installed on a server.
+     *
+     * @param Server $server
+     * @param Project $project
+     * @return bool
+     */
+    public function isInstalled(Server $server, Project $project): bool
+    {
+        $slug = $project->validated_slug;
+        $configPath = "/etc/supervisor/conf.d/{$slug}-worker.conf";
+
+        $result = $this->executeRemoteCommand($server, "test -f {$configPath} && echo 'exists'", false);
+
+        return str_contains($result->output(), 'exists');
+    }
+
+    /**
      * Get worker status from remote server.
      *
      * @param Server $server

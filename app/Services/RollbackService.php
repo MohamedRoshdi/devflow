@@ -21,6 +21,13 @@ class RollbackService
     ) {}
 
     /**
+     * Temp key files that need cleanup after execution.
+     *
+     * @var array<int, string>
+     */
+    private array $tempKeyFiles = [];
+
+    /**
      * Build SSH command for remote execution
      */
     protected function buildSSHCommand(Server $server, string $remoteCommand): string
@@ -33,9 +40,12 @@ class RollbackService
 
         if ($server->ssh_key) {
             $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
-            file_put_contents($keyFile, $server->ssh_key);
-            chmod($keyFile, 0600);
-            $sshOptions[] = '-i '.$keyFile;
+            if ($keyFile !== false) {
+                file_put_contents($keyFile, $server->ssh_key);
+                chmod($keyFile, 0600);
+                $sshOptions[] = '-i '.$keyFile;
+                $this->tempKeyFiles[] = $keyFile;
+            }
         }
 
         $escapedCommand = str_replace("'", "'\\''", $remoteCommand);
@@ -57,13 +67,30 @@ class RollbackService
         $server = $project->server;
         $sshCommand = $this->buildSSHCommand($server, $command);
 
-        $result = Process::timeout($timeout)->run($sshCommand);
+        try {
+            $result = Process::timeout($timeout)->run($sshCommand);
 
-        return [
-            'success' => $result->successful(),
-            'output' => $result->output(),
-            'error' => $result->errorOutput(),
-        ];
+            return [
+                'success' => $result->successful(),
+                'output' => $result->output(),
+                'error' => $result->errorOutput(),
+            ];
+        } finally {
+            $this->cleanupTempKeyFiles();
+        }
+    }
+
+    /**
+     * Remove any temporary SSH key files from disk.
+     */
+    private function cleanupTempKeyFiles(): void
+    {
+        foreach ($this->tempKeyFiles as $file) {
+            if (file_exists($file)) {
+                @unlink($file);
+            }
+        }
+        $this->tempKeyFiles = [];
     }
 
     /**

@@ -137,9 +137,9 @@ trait HasProjectFormFields
     protected function uniqueSlugRule(?int $ignoreId = null): string
     {
         if ($ignoreId !== null) {
-            return 'required|string|max:255|unique:projects,slug,'.$ignoreId.',id,deleted_at,NULL';
+            return 'required|string|max:255|unique:projects,slug,' . $ignoreId;
         }
 
-        return 'required|string|max:255|unique:projects,slug,NULL,id,deleted_at,NULL';
+        return 'required|string|max:255|unique:projects,slug';
     }
 }

@@ -66,7 +66,7 @@ class ProjectList extends Component
     public function deleteProject(int $projectId): void
     {
         try {
-            $project = Project::with(['server', 'user', 'domains'])->find($projectId);
+            $project = Project::with(['server', 'user', 'domains', 'activeDeployment'])->find($projectId);
 
             if (! $project) {
                 session()->flash('error', 'Project not found');
@@ -75,9 +75,21 @@ class ProjectList extends Component
 
             $this->authorize('delete', $project);
 
+            // Prevent deleting projects with active deployments
+            if ($project->activeDeployment) {
+                session()->flash('error', "Cannot delete '{$project->name}' — it has an active deployment. Wait for it to finish or cancel it first.");
+                return;
+            }
+
+            // Cancel pending setup tasks before deletion
+            $project->setupTasks()
+                ->whereIn('status', ['pending', 'in_progress'])
+                ->update(['status' => 'cancelled']);
+
             $projectName = $project->name;
             $project->delete();
-            session()->flash('message', "Project '{$projectName}' deleted successfully");
+
+            session()->flash('message', "Project '{$projectName}' has been archived. Its slug is now available for reuse.");
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             session()->flash('error', 'You do not have permission to delete this project');
         } catch (\Throwable $e) {

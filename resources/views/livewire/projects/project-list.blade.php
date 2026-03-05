@@ -306,7 +306,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"/>
                                     </svg>
                                 </div>
-                                <span class="truncate">{{ $project->server->name ?? 'No server' }}</span>
+                                <span class="truncate">{{ $project->server?->name ?? 'No server' }}</span>
                             </div>
                             <div class="flex items-center text-sm text-slate-300">
                                 <div class="p-1.5 bg-purple-500/20 rounded-lg mr-2 flex-shrink-0" aria-hidden="true">
@@ -374,7 +374,7 @@
                                     View
                                 </a>
                                 <button wire:click="deleteProject({{ $project->id }})"
-                                        wire:confirm="Are you sure you want to delete '{{ $project->name }}'? This action cannot be undone and will remove all associated deployments, logs, and configurations."
+                                        wire:confirm="Delete '{{ $project->name }}'? The project will be soft-deleted and its slug freed for reuse. Deployment history will be preserved."
                                         wire:loading.attr="disabled"
                                         class="text-red-400 hover:text-red-300 text-sm font-medium transition-colors disabled:opacity-50"
                                         aria-label="Delete {{ $project->name }}">

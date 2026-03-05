@@ -265,10 +265,84 @@
                         </div>
                     </div>
 
+                    {{-- Repository Analysis Status --}}
+                    @if($analyzing)
+                        <div class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                            <div class="flex items-center">
+                                <svg class="animate-spin h-5 w-5 text-blue-600 dark:text-blue-400 mr-3" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <div>
+                                    <p class="text-sm font-medium text-blue-900 dark:text-blue-100">Analyzing repository...</p>
+                                    <p class="text-xs text-blue-700 dark:text-blue-300 mt-0.5">Detecting framework, versions, and build configuration</p>
+                                </div>
+                            </div>
+                        </div>
+                    @elseif($analysisResult && !$analysisError)
+                        <div class="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start">
+                                    <svg class="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <div>
+                                        <p class="text-sm font-medium text-green-900 dark:text-green-100">Auto-detected from repository</p>
+                                        <div class="mt-1.5 flex flex-wrap gap-2">
+                                            @foreach($analysisResult['sources'] ?? [] as $field => $source)
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-green-100 dark:bg-green-800/50 text-green-800 dark:text-green-200">
+                                                    {{ ucfirst(str_replace(['phpVersion', 'nodeVersion', 'buildCommand', 'startCommand', 'suggestedDeploymentMethod'], ['PHP Version', 'Node Version', 'Build Command', 'Start Command', 'Deployment Method'], $field)) }}
+                                                    <span class="mx-1 text-green-400">-</span>
+                                                    {{ $source }}
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" wire:click="reanalyzeRepository" wire:loading.attr="disabled" class="text-xs text-green-700 dark:text-green-300 hover:underline whitespace-nowrap ml-4">
+                                    Re-analyze
+                                </button>
+                            </div>
+                        </div>
+                    @elseif($analysisError)
+                        <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start">
+                                    <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <div>
+                                        <p class="text-sm font-medium text-yellow-900 dark:text-yellow-100">{{ $analysisError }}</p>
+                                        <p class="text-xs text-yellow-700 dark:text-yellow-300 mt-0.5">Configure the fields manually below.</p>
+                                    </div>
+                                </div>
+                                <button type="button" wire:click="reanalyzeRepository" wire:loading.attr="disabled" class="text-xs text-yellow-700 dark:text-yellow-300 hover:underline whitespace-nowrap ml-4">
+                                    Retry
+                                </button>
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Framework Selection (pick what you're building first) -->
+                    <div>
+                        <label for="framework" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Framework
+                            @if(!empty($analysisResult['sources']['framework']))
+                                <span class="text-xs font-normal text-green-600 dark:text-green-400 ml-1">(detected: {{ $analysisResult['framework'] }})</span>
+                            @endif
+                        </label>
+                        <select wire:model.live="framework" id="framework" class="input">
+                            @foreach($this->frameworks as $value => $label)
+                                <option value="{{ $value }}">{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Select the framework/technology your project uses</p>
+                    </div>
+
                     <!-- Deployment Method Selection -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Deployment Method *</label>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 {{ $this->isStandardAllowed ? 'md:grid-cols-2' : '' }} gap-4">
                             <!-- Docker Option -->
                             <label class="relative flex cursor-pointer rounded-lg border p-4 shadow-sm focus:outline-none {{ $deployment_method === 'docker' ? 'border-emerald-500 ring-2 ring-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500' }}">
                                 <input type="radio" wire:model.live="deployment_method" value="docker" class="sr-only">
@@ -282,7 +356,7 @@
                                     </div>
                                     <div class="ml-3 flex-1">
                                         <span class="block text-sm font-semibold {{ $deployment_method === 'docker' ? 'text-emerald-900 dark:text-emerald-100' : 'text-gray-900 dark:text-white' }}">
-                                            🐳 Docker
+                                            Docker
                                         </span>
                                         <span class="mt-1 flex items-center text-xs {{ $deployment_method === 'docker' ? 'text-emerald-700 dark:text-emerald-300' : 'text-gray-500 dark:text-gray-400' }}">
                                             Uses docker-compose.yml from your repository
@@ -296,68 +370,73 @@
                                 @endif
                             </label>
 
-                            <!-- Standard Laravel Option -->
-                            <label class="relative flex cursor-pointer rounded-lg border p-4 shadow-sm focus:outline-none {{ $deployment_method === 'standard' ? 'border-red-500 ring-2 ring-red-500 bg-red-50 dark:bg-red-900/20' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500' }}">
+                            <!-- Bare Metal Option (only for Laravel / no framework) -->
+                            @if($this->isStandardAllowed)
+                            <label class="relative flex cursor-pointer rounded-lg border p-4 shadow-sm focus:outline-none {{ $deployment_method === 'standard' ? 'border-orange-500 ring-2 ring-orange-500 bg-orange-50 dark:bg-orange-900/20' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500' }}">
                                 <input type="radio" wire:model.live="deployment_method" value="standard" class="sr-only">
                                 <div class="flex flex-1 items-start">
                                     <div class="flex-shrink-0">
-                                        <div class="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                                            <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M23.642 5.43a.364.364 0 01.014.1v5.149c0 .135-.073.26-.189.326l-4.323 2.49v4.934a.378.378 0 01-.188.326L9.93 23.949a.316.316 0 01-.066.027c-.008.002-.016.008-.024.01a.348.348 0 01-.192 0c-.011-.002-.02-.008-.03-.012-.02-.008-.042-.014-.062-.025L.533 18.755a.376.376 0 01-.189-.326V2.974c0-.033.005-.066.014-.098.003-.012.01-.02.014-.032a.369.369 0 01.023-.058c.004-.013.015-.022.023-.033l.033-.045c.012-.01.025-.018.037-.027.014-.012.027-.024.041-.034H.53L5.043.05a.375.375 0 01.375 0L9.93 2.647h.002c.015.01.027.021.04.033l.038.027c.013.014.02.03.033.045.008.011.02.021.025.033.01.02.017.038.024.058.003.011.01.021.013.032.01.031.014.064.014.098v9.652l3.76-2.164V5.527c0-.033.004-.066.013-.098.003-.01.01-.02.013-.032a.487.487 0 01.024-.059c.007-.012.018-.02.025-.033.012-.015.021-.03.033-.043.012-.012.025-.02.037-.028.014-.01.026-.023.041-.032h.001l4.513-2.598a.375.375 0 01.375 0l4.513 2.598c.016.01.027.021.042.031.012.01.025.018.036.028.013.014.022.03.034.044.008.012.019.021.024.033.011.02.018.04.024.06.006.01.012.021.015.032zm-.74 5.032V6.179l-1.578.908-2.182 1.256v4.283zm-4.51 7.75v-4.287l-2.147 1.225-6.126 3.498v4.325zM1.093 3.624v14.588l8.273 4.761v-4.325l-4.322-2.445-.002-.003H5.04c-.014-.01-.025-.021-.04-.031-.011-.01-.024-.018-.035-.027l-.001-.002c-.013-.012-.021-.025-.031-.04-.01-.011-.021-.022-.028-.036h-.002c-.008-.014-.013-.031-.02-.047-.006-.016-.014-.027-.018-.043a.49.49 0 01-.008-.057c-.002-.014-.006-.027-.006-.041V5.789L1.093 3.624zm4.513-.908L3.36 1.56.813 2.716l2.246 1.297zm.375 6.873l2.182-1.256V3.624l-1.578.908-2.182 1.256v4.283zm9.134-8.128L12.869 0l-2.246 1.297 2.246 1.297zm.376 6.873l2.182-1.256V3.624l-1.578.908-2.182 1.256v4.283zM9.93 16.044l5.91-3.373-2.182-1.256-4.323 2.49z"/>
+                                        <div class="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/>
                                             </svg>
                                         </div>
                                     </div>
                                     <div class="ml-3 flex-1">
-                                        <span class="block text-sm font-semibold {{ $deployment_method === 'standard' ? 'text-red-900 dark:text-red-100' : 'text-gray-900 dark:text-white' }}">
-                                            🔧 Standard Laravel
+                                        <span class="block text-sm font-semibold {{ $deployment_method === 'standard' ? 'text-orange-900 dark:text-orange-100' : 'text-gray-900 dark:text-white' }}">
+                                            Bare Metal
                                         </span>
-                                        <span class="mt-1 flex items-center text-xs {{ $deployment_method === 'standard' ? 'text-red-700 dark:text-red-300' : 'text-gray-500 dark:text-gray-400' }}">
-                                            Traditional deployment (Nginx + PHP-FPM)
+                                        <span class="mt-1 flex items-center text-xs {{ $deployment_method === 'standard' ? 'text-orange-700 dark:text-orange-300' : 'text-gray-500 dark:text-gray-400' }}">
+                                            Zero-downtime deployment (Nginx + PHP-FPM)
                                         </span>
                                     </div>
                                 </div>
                                 @if($deployment_method === 'standard')
-                                    <svg class="h-5 w-5 text-red-600 dark:text-red-400 absolute top-4 right-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg class="h-5 w-5 text-orange-600 dark:text-orange-400 absolute top-4 right-4" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                                     </svg>
                                 @endif
                             </label>
+                            @endif
                         </div>
                         @error('deployment_method') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
-                    <!-- Framework Selection (always visible) -->
-                    <div>
-                        <label for="framework" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Framework</label>
-                        <select wire:model="framework" id="framework" class="input">
-                            @foreach($this->frameworks as $value => $label)
-                                <option value="{{ $value }}">{{ $label }}</option>
-                            @endforeach
-                        </select>
-                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Select the framework/technology your project uses</p>
-                    </div>
-
-                    <!-- PHP & Node Versions (only for Standard Laravel deployment) -->
-                    @if($deployment_method === 'standard')
+                    <!-- PHP & Node Versions (based on framework needs) -->
+                    @if($this->needsPhp || $this->needsNode)
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            @if($this->needsPhp)
                             <div>
-                                <label for="php_version" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">PHP Version *</label>
+                                <label for="php_version" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    PHP Version *
+                                    @if(!empty($analysisResult['sources']['phpVersion']))
+                                        <span class="text-xs font-normal text-green-600 dark:text-green-400 ml-1">(detected: {{ $analysisResult['phpVersion'] }})</span>
+                                    @endif
+                                </label>
                                 <select wire:model="php_version" id="php_version" class="input">
                                     @foreach($this->phpVersions as $value => $label)
                                         <option value="{{ $value }}">{{ $label }}</option>
                                     @endforeach
                                 </select>
                             </div>
+                            @endif
+                            @if($this->needsNode)
                             <div>
-                                <label for="node_version" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Node Version</label>
+                                <label for="node_version" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Node Version
+                                    @if(!empty($analysisResult['sources']['nodeVersion']))
+                                        <span class="text-xs font-normal text-green-600 dark:text-green-400 ml-1">(detected: {{ $analysisResult['nodeVersion'] }})</span>
+                                    @endif
+                                </label>
                                 <select wire:model="node_version" id="node_version" class="input">
+                                    <option value="22">22 (LTS)</option>
                                     <option value="20">20 (LTS)</option>
-                                    <option value="18">18 (LTS)</option>
-                                    <option value="16">16</option>
+                                    <option value="18">18</option>
                                 </select>
                             </div>
+                            @endif
                         </div>
-                    @else
+                    @elseif($deployment_method === 'docker')
                         <div class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                             <div class="flex items-start">
                                 <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
@@ -365,7 +444,7 @@
                                 </svg>
                                 <div>
                                     <p class="text-sm font-medium text-blue-900 dark:text-blue-100">Docker Deployment Selected</p>
-                                    <p class="text-sm text-blue-700 dark:text-blue-300 mt-1">PHP and Node versions will be defined in your <code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-800 rounded text-xs">docker-compose.yml</code> file.</p>
+                                    <p class="text-sm text-blue-700 dark:text-blue-300 mt-1">Runtime versions will be defined in your <code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-800 rounded text-xs">docker-compose.yml</code> or <code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-800 rounded text-xs">Dockerfile</code>.</p>
                                 </div>
                             </div>
                         </div>
@@ -378,14 +457,112 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="build_command" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Build Command</label>
+                            <label for="build_command" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Build Command
+                                @if(!empty($analysisResult['sources']['buildCommand']))
+                                    <span class="text-xs font-normal text-green-600 dark:text-green-400 ml-1">(detected)</span>
+                                @endif
+                            </label>
                             <input wire:model="build_command" id="build_command" type="text" placeholder="npm run build" class="input">
                         </div>
                         <div>
-                            <label for="start_command" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Start Command</label>
+                            <label for="start_command" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Start Command
+                                @if(!empty($analysisResult['sources']['startCommand']))
+                                    <span class="text-xs font-normal text-green-600 dark:text-green-400 ml-1">(detected)</span>
+                                @endif
+                            </label>
                             <input wire:model="start_command" id="start_command" type="text" placeholder="npm start" class="input">
                         </div>
                     </div>
+
+                    {{-- Deploy Pipeline Commands --}}
+                    @if(!empty($install_commands) || !empty($build_commands) || !empty($post_deploy_commands))
+                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                        <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                    <h4 class="text-sm font-medium text-gray-900 dark:text-white">Deploy Pipeline</h4>
+                                </div>
+                                @if($analysisResult)
+                                    <span class="text-xs text-green-600 dark:text-green-400">Auto-generated from repository</span>
+                                @endif
+                            </div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Commands that run during each deployment. Edit or reorder as needed.</p>
+                        </div>
+
+                        <div class="p-4 space-y-4">
+                            {{-- Install Commands --}}
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Install Dependencies</label>
+                                <div class="space-y-1.5">
+                                    @foreach($install_commands as $i => $cmd)
+                                        <div class="flex items-center gap-2 group">
+                                            <code class="flex-1 text-sm px-3 py-1.5 bg-gray-900 dark:bg-black text-green-400 rounded font-mono">{{ $cmd }}</code>
+                                            <button type="button" wire:click="removeCommand('install', {{ $i }})"
+                                                    class="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 transition-opacity p-1" title="Remove">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                            </button>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <div class="mt-1.5 flex gap-2" x-data="{ cmd: '' }">
+                                    <input x-model="cmd" type="text" placeholder="Add command..." class="input text-sm flex-1"
+                                           @keydown.enter.prevent="if(cmd.trim()) { $wire.addCommand('install', cmd.trim()); cmd = ''; }">
+                                    <button type="button" @click="if(cmd.trim()) { $wire.addCommand('install', cmd.trim()); cmd = ''; }"
+                                            class="px-3 py-1 text-xs bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600">Add</button>
+                                </div>
+                            </div>
+
+                            {{-- Build Commands --}}
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Build Assets</label>
+                                <div class="space-y-1.5">
+                                    @foreach($build_commands as $i => $cmd)
+                                        <div class="flex items-center gap-2 group">
+                                            <code class="flex-1 text-sm px-3 py-1.5 bg-gray-900 dark:bg-black text-yellow-400 rounded font-mono">{{ $cmd }}</code>
+                                            <button type="button" wire:click="removeCommand('build', {{ $i }})"
+                                                    class="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 transition-opacity p-1" title="Remove">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                            </button>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <div class="mt-1.5 flex gap-2" x-data="{ cmd: '' }">
+                                    <input x-model="cmd" type="text" placeholder="Add command..." class="input text-sm flex-1"
+                                           @keydown.enter.prevent="if(cmd.trim()) { $wire.addCommand('build', cmd.trim()); cmd = ''; }">
+                                    <button type="button" @click="if(cmd.trim()) { $wire.addCommand('build', cmd.trim()); cmd = ''; }"
+                                            class="px-3 py-1 text-xs bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600">Add</button>
+                                </div>
+                            </div>
+
+                            {{-- Post-Deploy Commands --}}
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Post-Deploy</label>
+                                <div class="space-y-1.5">
+                                    @foreach($post_deploy_commands as $i => $cmd)
+                                        <div class="flex items-center gap-2 group">
+                                            <code class="flex-1 text-sm px-3 py-1.5 bg-gray-900 dark:bg-black text-blue-400 rounded font-mono">{{ $cmd }}</code>
+                                            <button type="button" wire:click="removeCommand('post_deploy', {{ $i }})"
+                                                    class="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 transition-opacity p-1" title="Remove">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                            </button>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <div class="mt-1.5 flex gap-2" x-data="{ cmd: '' }">
+                                    <input x-model="cmd" type="text" placeholder="Add command..." class="input text-sm flex-1"
+                                           @keydown.enter.prevent="if(cmd.trim()) { $wire.addCommand('post_deploy', cmd.trim()); cmd = ''; }">
+                                    <button type="button" @click="if(cmd.trim()) { $wire.addCommand('post_deploy', cmd.trim()); cmd = ''; }"
+                                            class="px-3 py-1 text-xs bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600">Add</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                 </div>
             @endif
 
@@ -564,10 +741,12 @@
                                 </button>
                             </div>
                             <div class="grid grid-cols-2 gap-2 text-sm">
-                                <div><span class="text-gray-500 dark:text-gray-400">Deployment:</span> <span class="text-gray-900 dark:text-white font-semibold">{{ $deployment_method === 'docker' ? '🐳 Docker' : '🔧 Standard Laravel' }}</span></div>
+                                <div><span class="text-gray-500 dark:text-gray-400">Deployment:</span> <span class="text-gray-900 dark:text-white font-semibold">{{ $deployment_method === 'docker' ? 'Docker' : 'Bare Metal' }}</span></div>
                                 <div><span class="text-gray-500 dark:text-gray-400">Framework:</span> <span class="text-gray-900 dark:text-white">{{ $framework ?: 'Not specified' }}</span></div>
-                                @if($deployment_method === 'standard')
+                                @if($this->needsPhp)
                                     <div><span class="text-gray-500 dark:text-gray-400">PHP:</span> <span class="text-gray-900 dark:text-white">{{ $php_version }}</span></div>
+                                @endif
+                                @if($this->needsNode)
                                     <div><span class="text-gray-500 dark:text-gray-400">Node:</span> <span class="text-gray-900 dark:text-white">{{ $node_version }}</span></div>
                                 @endif
                                 <div><span class="text-gray-500 dark:text-gray-400">Root:</span> <span class="text-gray-900 dark:text-white">{{ $root_directory }}</span></div>
@@ -689,22 +868,42 @@
 
     <!-- Setup Progress Modal -->
     @if ($showProgressModal && $createdProjectId)
-        <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" wire:poll.2s="$refresh">
+        @php $progress = $this->setupProgress; $setupDone = in_array($progress['status'] ?? '', ['completed', 'failed'], true); @endphp
+        <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+             wire:poll.2s="$refresh"
+             x-data="{ done: @js($setupDone), redirecting: false }"
+             x-init="$watch('done', value => {
+                 if (value && !redirecting) {
+                     redirecting = true;
+                     setTimeout(() => $wire.closeProgressAndRedirect(), 1500);
+                 }
+             })"
+             x-effect="done = @js($setupDone)">
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full mx-4 p-6">
                 <div class="flex items-center mb-4">
-                    <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mr-3">
-                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 animate-spin" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center mr-3
+                        {{ $setupDone ? 'bg-green-100 dark:bg-green-900/30' : 'bg-blue-100 dark:bg-blue-900/30' }}">
+                        @if($setupDone)
+                            <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        @else
+                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        @endif
                     </div>
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Setting Up Project</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Configuring your project features...</p>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                            {{ $setupDone ? 'Setup Complete' : 'Setting Up Project' }}
+                        </h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            {{ $setupDone ? 'Redirecting to project page...' : 'Configuring your project features...' }}
+                        </p>
                     </div>
                 </div>
 
-                @php $progress = $this->setupProgress; @endphp
                 @if (!empty($progress['tasks']))
                     <div class="space-y-3 mb-6">
                         @foreach ($progress['tasks'] as $task)
@@ -725,7 +924,7 @@
                                 @else
                                     <div class="w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-600 mr-3"></div>
                                 @endif
-                                <span class="text-sm {{ $task['status'] === 'completed' ? 'text-green-600 dark:text-green-400' : ($task['status'] === 'running' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400') }}">
+                                <span class="text-sm {{ $task['status'] === 'completed' ? 'text-green-600 dark:text-green-400' : ($task['status'] === 'failed' ? 'text-red-600 dark:text-red-400' : ($task['status'] === 'running' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400')) }}">
                                     {{ $task['label'] }}
                                 </span>
                             </div>
@@ -738,9 +937,9 @@
                             wire:loading.attr="disabled"
                             wire:loading.class="opacity-50 cursor-not-allowed"
                             wire:target="closeProgressAndRedirect"
-                            class="btn btn-primary {{ ($progress['status'] ?? '') !== 'completed' && ($progress['status'] ?? '') !== 'failed' ? 'opacity-50' : '' }}">
+                            class="btn btn-primary">
                         <span wire:loading.remove wire:target="closeProgressAndRedirect">
-                            {{ ($progress['status'] ?? '') === 'completed' || ($progress['status'] ?? '') === 'failed' ? 'View Project' : 'Continue Anyway' }}
+                            {{ $setupDone ? 'View Project' : 'Continue Anyway' }}
                         </span>
                         <span wire:loading wire:target="closeProgressAndRedirect" class="flex items-center">
                             <svg class="animate-spin h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24">

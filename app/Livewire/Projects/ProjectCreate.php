@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Projects;
 
+use App\DTOs\RepositoryAnalysis;
 use App\Jobs\ProcessProjectSetupJob;
 use App\Livewire\Concerns\HasWizardSteps;
 use App\Models\Domain;
@@ -11,6 +12,7 @@ use App\Models\Project;
 use App\Models\ProjectTemplate;
 use App\Models\Server;
 use App\Services\ProjectSetupService;
+use App\Services\RepositoryAnalyzerService;
 use App\Services\ServerConnectivityService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
@@ -61,6 +63,14 @@ class ProjectCreate extends Component
     public ?float $longitude = null;
 
     public ?string $notes = null;
+
+    // Repository Analysis
+    /** @var array<string, mixed>|null */
+    public ?array $analysisResult = null;
+
+    public bool $analyzing = false;
+
+    public ?string $analysisError = null;
 
     // Step 3: Setup Options
     public bool $enableSsl = true;
@@ -139,7 +149,7 @@ class ProjectCreate extends Component
     {
         $this->validate([
             'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:projects,slug,NULL,id,deleted_at,NULL',
+            'slug' => 'required|string|max:255|unique:projects,slug',
             'server_id' => 'required|exists:servers,id',
             'repository_url' => ['required', 'regex:/^(https?:\/\/|git@)[\w\-\.]+[\/:][\w\-\.]+\/[\w\-\.]+\.git$/'],
             'branch' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_\-\.\/]+$/'],
@@ -157,6 +167,13 @@ class ProjectCreate extends Component
             'build_command' => 'nullable|string',
             'start_command' => 'nullable|string',
         ]);
+
+        // Bare Metal deployment only works with Laravel (or no framework specified)
+        if ($this->deployment_method === 'standard' && $this->framework !== '' && $this->framework !== 'laravel') {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'deployment_method' => 'Bare Metal deployment is only supported for Laravel projects. Please select Docker instead.',
+            ]);
+        }
     }
 
     public function selectTemplate(?int $templateId): void
@@ -180,6 +197,8 @@ class ProjectCreate extends Component
         $this->build_commands = $template->build_commands ?? [];
         $this->post_deploy_commands = $template->post_deploy_commands ?? [];
         $this->build_command = $template->build_commands[0] ?? '';
+
+        $this->updatedFramework();
     }
 
     public function clearTemplate(): void
@@ -200,6 +219,183 @@ class ProjectCreate extends Component
         $this->slug = Str::slug($this->name);
     }
 
+    public function updatedRepositoryUrl(): void
+    {
+        $this->clearAnalysisCache();
+    }
+
+    public function updatedBranch(): void
+    {
+        $this->clearAnalysisCache();
+    }
+
+    /**
+     * Override nextStep to trigger repository analysis when moving from Step 1 to Step 2.
+     */
+    public function nextStep(): void
+    {
+        $this->validateStep($this->currentStep);
+
+        $movingToStep2 = $this->currentStep === 1;
+
+        if ($this->currentStep < $this->totalSteps) {
+            $this->currentStep++;
+        }
+
+        if ($movingToStep2) {
+            $this->triggerAnalysisIfNeeded();
+        }
+    }
+
+    public function analyzeRepository(): void
+    {
+        $this->analyzing = true;
+        $this->analysisError = null;
+
+        try {
+            $analysis = app(RepositoryAnalyzerService::class)->analyze(
+                $this->repository_url,
+                $this->branch
+            );
+
+            $this->analysisResult = $analysis->toArray();
+            $this->cacheAnalysisResult();
+            $this->applyAnalysisResults($analysis);
+        } catch (\Throwable $e) {
+            $this->analysisError = 'Could not analyze repository: '.$e->getMessage();
+            Log::warning('Repository analysis failed in wizard', [
+                'url' => $this->repository_url,
+                'branch' => $this->branch,
+                'error' => $e->getMessage(),
+            ]);
+        } finally {
+            $this->analyzing = false;
+        }
+    }
+
+    public function reanalyzeRepository(): void
+    {
+        $this->clearAnalysisCache();
+        $this->analysisResult = null;
+        $this->analysisError = null;
+        $this->analyzeRepository();
+    }
+
+    protected function applyAnalysisResults(RepositoryAnalysis $analysis): void
+    {
+        if ($analysis->framework !== null) {
+            $this->framework = $analysis->framework;
+        }
+
+        if ($analysis->phpVersion !== null) {
+            $this->php_version = $analysis->phpVersion;
+        }
+
+        if ($analysis->nodeVersion !== null) {
+            $this->node_version = $analysis->nodeVersion;
+        }
+
+        if ($analysis->suggestedDeploymentMethod !== null) {
+            $this->deployment_method = $analysis->suggestedDeploymentMethod;
+        }
+
+        if ($analysis->buildCommand !== null) {
+            $this->build_command = $analysis->buildCommand;
+        }
+
+        if ($analysis->startCommand !== null) {
+            $this->start_command = $analysis->startCommand;
+        }
+
+        // Apply generated deploy commands (only if user hasn't customized them)
+        if (! empty($analysis->installCommands) && empty($this->install_commands)) {
+            $this->install_commands = $analysis->installCommands;
+        }
+        if (! empty($analysis->buildCommands) && empty($this->build_commands)) {
+            $this->build_commands = $analysis->buildCommands;
+        }
+        if (! empty($analysis->postDeployCommands) && empty($this->post_deploy_commands)) {
+            $this->post_deploy_commands = $analysis->postDeployCommands;
+        }
+
+        // Cascade UI changes based on detected framework
+        $this->updatedFramework();
+    }
+
+    private function triggerAnalysisIfNeeded(): void
+    {
+        if ($this->repository_url === '') {
+            return;
+        }
+
+        $cached = $this->getCachedAnalysis();
+        if ($cached !== null) {
+            $this->analysisResult = $cached;
+            $this->applyAnalysisResults(RepositoryAnalysis::fromArray($cached));
+
+            return;
+        }
+
+        $this->analyzeRepository();
+    }
+
+    private function getAnalysisCacheKey(): string
+    {
+        return 'repo_analysis_'.md5($this->repository_url.'|'.$this->branch);
+    }
+
+    private function clearAnalysisCache(): void
+    {
+        session()->forget($this->getAnalysisCacheKey());
+        $this->analysisResult = null;
+        $this->analysisError = null;
+    }
+
+    private function cacheAnalysisResult(): void
+    {
+        if ($this->analysisResult !== null) {
+            session()->put($this->getAnalysisCacheKey(), $this->analysisResult);
+        }
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function getCachedAnalysis(): ?array
+    {
+        $cached = session()->get($this->getAnalysisCacheKey());
+
+        return is_array($cached) ? $cached : null;
+    }
+
+    public function addCommand(string $type, string $command): void
+    {
+        if ($command === '') {
+            return;
+        }
+
+        match ($type) {
+            'install' => $this->install_commands[] = $command,
+            'build' => $this->build_commands[] = $command,
+            'post_deploy' => $this->post_deploy_commands[] = $command,
+            default => null,
+        };
+    }
+
+    public function removeCommand(string $type, int $index): void
+    {
+        if ($type === 'install' && isset($this->install_commands[$index])) {
+            unset($this->install_commands[$index]);
+            $this->install_commands = array_values($this->install_commands);
+        } elseif ($type === 'build' && isset($this->build_commands[$index])) {
+            unset($this->build_commands[$index]);
+            $this->build_commands = array_values($this->build_commands);
+        } elseif ($type === 'post_deploy' && isset($this->post_deploy_commands[$index])) {
+            unset($this->post_deploy_commands[$index]);
+            $this->post_deploy_commands = array_values($this->post_deploy_commands);
+        }
+    }
+
     public function refreshServerStatus(int $serverId): void
     {
         $server = Server::find($serverId);
@@ -218,7 +414,7 @@ class ProjectCreate extends Component
     {
         return [
             'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:projects,slug,NULL,id,deleted_at,NULL',
+            'slug' => 'required|string|max:255|unique:projects,slug',
             'server_id' => 'required|exists:servers,id',
             'repository_url' => ['required', 'regex:/^(https?:\/\/|git@)[\w\-\.]+[\/:][\w\-\.]+\/[\w\-\.]+\.git$/'],
             'branch' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_\-\.\/]+$/'],
@@ -300,8 +496,10 @@ class ProjectCreate extends Component
         $startPort = 8001;
         $maxPort = 9000;
 
+        // Only count active (non-deleted) projects for port allocation
         $usedPorts = Project::where('server_id', $this->server_id)
             ->whereNotNull('port')
+            ->whereNull('deleted_at')
             ->pluck('port')
             ->toArray();
 
@@ -365,7 +563,9 @@ class ProjectCreate extends Component
     public function closeProgressAndRedirect(): void
     {
         $this->showProgressModal = false;
-        $this->redirect(route('projects.show', $this->createdProjectId), navigate: true);
+
+        $project = Project::find($this->createdProjectId);
+        $this->redirect(route('projects.show', $project?->slug ?? $this->createdProjectId), navigate: true);
     }
 
     /** @return array<string, mixed> */
@@ -405,6 +605,79 @@ class ProjectCreate extends Component
             'nextjs' => 'Next.js',
             'nuxt' => 'Nuxt.js',
         ];
+    }
+
+    /**
+     * Per-framework configuration presets.
+     *
+     * @return array<string, array{category: string, standard_allowed: bool, needs_php: bool, needs_node: bool, build_command: string, start_command: string}>
+     */
+    public function getFrameworkPresetsProperty(): array
+    {
+        return [
+            'laravel' => ['category' => 'php', 'standard_allowed' => true, 'needs_php' => true, 'needs_node' => true, 'build_command' => 'npm run build', 'start_command' => ''],
+            'nodejs' => ['category' => 'node', 'standard_allowed' => false, 'needs_php' => false, 'needs_node' => true, 'build_command' => '', 'start_command' => 'node index.js'],
+            'react' => ['category' => 'node', 'standard_allowed' => false, 'needs_php' => false, 'needs_node' => true, 'build_command' => 'npm run build', 'start_command' => 'npx serve -s build'],
+            'vue' => ['category' => 'node', 'standard_allowed' => false, 'needs_php' => false, 'needs_node' => true, 'build_command' => 'npm run build', 'start_command' => 'npx serve -s dist'],
+            'nextjs' => ['category' => 'node', 'standard_allowed' => false, 'needs_php' => false, 'needs_node' => true, 'build_command' => 'npm run build', 'start_command' => 'npm start'],
+            'nuxt' => ['category' => 'node', 'standard_allowed' => false, 'needs_php' => false, 'needs_node' => true, 'build_command' => 'npm run build', 'start_command' => 'npm start'],
+            'static' => ['category' => 'static', 'standard_allowed' => false, 'needs_php' => false, 'needs_node' => false, 'build_command' => '', 'start_command' => ''],
+        ];
+    }
+
+    public function getIsStandardAllowedProperty(): bool
+    {
+        $preset = $this->frameworkPresets[$this->framework] ?? null;
+
+        return $preset === null || $preset['standard_allowed'];
+    }
+
+    public function getNeedsPhpProperty(): bool
+    {
+        $preset = $this->frameworkPresets[$this->framework] ?? null;
+
+        // No framework selected: show PHP if standard deployment is chosen
+        if ($preset === null) {
+            return $this->deployment_method === 'standard';
+        }
+
+        return $preset['needs_php'];
+    }
+
+    public function getNeedsNodeProperty(): bool
+    {
+        $preset = $this->frameworkPresets[$this->framework] ?? null;
+
+        // No framework selected: show Node if standard deployment is chosen
+        if ($preset === null) {
+            return $this->deployment_method === 'standard';
+        }
+
+        return $preset['needs_node'];
+    }
+
+    public function updatedFramework(): void
+    {
+        // If the current deployment method is not supported, switch to docker
+        if (! $this->isStandardAllowed && $this->deployment_method === 'standard') {
+            $this->deployment_method = 'docker';
+        }
+
+        // Collect all known preset default commands so we can detect untouched values
+        $knownBuildDefaults = array_unique(array_column($this->frameworkPresets, 'build_command'));
+        $knownStartDefaults = array_unique(array_column($this->frameworkPresets, 'start_command'));
+
+        $preset = $this->frameworkPresets[$this->framework] ?? null;
+
+        // Replace build/start commands if empty OR still set to a preset default (not manually edited)
+        if ($preset !== null) {
+            if ($this->build_command === '' || in_array($this->build_command, $knownBuildDefaults, true)) {
+                $this->build_command = $preset['build_command'];
+            }
+            if ($this->start_command === '' || in_array($this->start_command, $knownStartDefaults, true)) {
+                $this->start_command = $preset['start_command'];
+            }
+        }
     }
 
     /** @return array<string, string> */

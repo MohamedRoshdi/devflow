@@ -110,6 +110,29 @@ class Project extends Model
             // Clear project-specific cache when project is updated
             cache()->forget("project_{$project->id}_stats");
         });
+
+        // Free the slug and clean up domains for reuse when soft-deleting
+        static::deleting(function (Project $project) {
+            if (! $project->isForceDeleting()) {
+                $project->slug = $project->slug . '-deleted-' . $project->id;
+                $project->saveQuietly();
+
+                // Force-delete domains so their unique domain names are freed for reuse
+                $project->domains()->forceDelete();
+            }
+        });
+
+        // Restore original slug when restoring a soft-deleted project
+        static::restoring(function (Project $project) {
+            $originalSlug = preg_replace('/-deleted-\d+$/', '', $project->slug);
+
+            // Check if original slug is available
+            $slugTaken = static::where('slug', $originalSlug)
+                ->where('id', '!=', $project->id)
+                ->exists();
+
+            $project->slug = $slugTaken ? $originalSlug . '-restored-' . $project->id : $originalSlug;
+        });
     }
 
     /**

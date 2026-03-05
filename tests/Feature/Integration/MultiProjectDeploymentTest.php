@@ -114,7 +114,13 @@ class MultiProjectDeploymentTest extends TestCase
         Queue::fake();
 
         foreach ($this->projects as $project) {
-            DeployProjectJob::dispatch($project);
+            $deployment = Deployment::factory()->create([
+                'project_id' => $project->id,
+                'user_id' => $this->user->id,
+                'status' => 'pending',
+                'triggered_by' => 'manual',
+            ]);
+            DeployProjectJob::dispatch($deployment);
         }
 
         Queue::assertPushed(DeployProjectJob::class, 5);
@@ -454,7 +460,13 @@ class MultiProjectDeploymentTest extends TestCase
         Queue::fake();
 
         foreach ($this->projects as $project) {
-            DeployProjectJob::dispatch($project)->onQueue('deployments');
+            $deployment = Deployment::factory()->create([
+                'project_id' => $project->id,
+                'user_id' => $this->user->id,
+                'status' => 'pending',
+                'triggered_by' => 'manual',
+            ]);
+            DeployProjectJob::dispatch($deployment)->onQueue('deployments');
         }
 
         Queue::assertPushedOn('deployments', DeployProjectJob::class);

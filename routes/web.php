@@ -108,6 +108,7 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
     Route::get('/projects/{project}/configuration', \App\Livewire\Projects\ProjectConfiguration::class)->name('projects.configuration');
     Route::get('/projects/{project}/pipeline', \App\Livewire\Projects\PipelineSettings::class)->name('projects.pipeline');
     Route::get('/projects/{project}/backups', \App\Livewire\Projects\DatabaseBackupManager::class)->name('projects.backups');
+    Route::get('/projects/{project}/infrastructure', \App\Livewire\Projects\InfrastructureManager::class)->name('projects.infrastructure');
 
     // Project Domains
     Route::post('/projects/{project}/domains', [\App\Http\Controllers\DomainController::class, 'store'])->name('projects.domains.store');
@@ -159,8 +160,7 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
     Route::get('/kubernetes', \App\Livewire\Kubernetes\ClusterManager::class)->name('kubernetes.index');
 
     // CI/CD Pipelines
-    Route::get('/pipelines', fn() => \Livewire\Livewire::mount(\App\Livewire\CICD\PipelineBuilder::class))->name('pipelines.index');
-    Route::get('/projects/{project}/pipeline', \App\Livewire\CICD\PipelineBuilder::class)->name('projects.pipeline');
+    Route::get('/pipelines', \App\Livewire\CICD\PipelineBuilder::class)->name('pipelines.index');
 
     // Deployment Scripts
     Route::get('/scripts', \App\Livewire\Scripts\ScriptManager::class)->name('scripts.index');

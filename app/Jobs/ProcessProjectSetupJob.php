@@ -38,6 +38,12 @@ class ProcessProjectSetupJob implements ShouldQueue
      */
     public function handle(ProjectSetupService $setupService): void
     {
+        // Bail out if the project was deleted while this job was queued
+        if ($this->project->trashed()) {
+            \Log::info('Skipping setup for deleted project', ['project_id' => $this->project->id]);
+            return;
+        }
+
         $setupService->executeSetup($this->project);
     }
 

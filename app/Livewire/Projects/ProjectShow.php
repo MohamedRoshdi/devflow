@@ -6,6 +6,7 @@ namespace App\Livewire\Projects;
 
 use App\Models\Deployment;
 use App\Models\Project;
+use App\Services\BareMetalProcessService;
 use App\Services\DockerService;
 use App\Services\GitService;
 use Illuminate\Support\Facades\Cache;
@@ -38,11 +39,14 @@ class ProjectShow extends Component
 
     protected DockerService $dockerService;
 
+    protected BareMetalProcessService $bareMetalService;
+
     protected GitService $gitService;
 
-    public function boot(DockerService $dockerService, GitService $gitService): void
+    public function boot(DockerService $dockerService, BareMetalProcessService $bareMetalService, GitService $gitService): void
     {
         $this->dockerService = $dockerService;
+        $this->bareMetalService = $bareMetalService;
         $this->gitService = $gitService;
     }
 
@@ -180,7 +184,9 @@ class ProjectShow extends Component
     public function startProject(): void
     {
         try {
-            $result = $this->dockerService->startContainer($this->project);
+            $result = $this->project->deployment_method === 'standard'
+                ? $this->bareMetalService->startProject($this->project)
+                : $this->dockerService->startContainer($this->project);
 
             if ($result['success']) {
                 $this->project->update(['status' => 'running']);
@@ -197,7 +203,9 @@ class ProjectShow extends Component
     public function stopProject(): void
     {
         try {
-            $result = $this->dockerService->stopContainer($this->project);
+            $result = $this->project->deployment_method === 'standard'
+                ? $this->bareMetalService->stopProject($this->project)
+                : $this->dockerService->stopContainer($this->project);
 
             if ($result['success']) {
                 $this->project->update(['status' => 'stopped']);

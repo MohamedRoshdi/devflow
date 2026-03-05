@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\ServerRole;
 use App\Mappers\HealthScoreMapper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -120,6 +121,7 @@ class Server extends Model
             'last_guardian_scan_at' => 'datetime',
             'last_baseline_at' => 'datetime',
             'last_hardening_at' => 'datetime',
+            'role' => ServerRole::class,
         ];
     }
 

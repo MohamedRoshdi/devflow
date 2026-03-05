@@ -55,9 +55,7 @@ class ReleaseDeploymentService
         $this->prepareDirectoryStructure($server, $slug);
         $this->cloneToRelease($server, $project, $releasePath);
         $this->linkSharedResources($server, $slug, $releasePath);
-        $this->installComposerDependencies($server, $releasePath);
-        $this->buildFrontendAssets($server, $releasePath);
-        $this->runLaravelArtisan($server, $releasePath);
+        $this->runProjectCommands($server, $project, $releasePath);
         $this->atomicSymlinkSwap($server, $slug, $releasePath);
         $this->reloadPhpFpm($server, $project);
         $this->restartWorkers($server, $project);
@@ -183,47 +181,57 @@ class ReleaseDeploymentService
     }
 
     /**
-     * Install PHP dependencies via Composer.
+     * Run the project's stored install, build, and post-deploy commands.
+     * Falls back to sensible defaults if no commands are stored.
      */
-    private function installComposerDependencies(Server $server, string $releasePath): void
+    private function runProjectCommands(Server $server, Project $project, string $releasePath): void
     {
-        $this->executeRemoteCommandWithTimeout(
-            $server,
-            "cd {$releasePath} && composer install --optimize-autoloader --no-dev --no-interaction",
-            300
-        );
-    }
+        $installCommands = $project->install_commands ?? [];
+        $buildCommands = $project->build_commands ?? [];
+        $postDeployCommands = $project->post_deploy_commands ?? [];
 
-    /**
-     * Build frontend assets if package.json exists.
-     */
-    private function buildFrontendAssets(Server $server, string $releasePath): void
-    {
-        // Non-throwing — not all projects have frontend assets
-        $this->executeRemoteCommandWithTimeout(
-            $server,
-            "cd {$releasePath} && test -f package.json && npm ci --no-audit --no-fund && npm run build || true",
-            300,
-            false
-        );
-    }
+        // Fallback to defaults if project has no stored commands
+        if (empty($installCommands) && empty($buildCommands) && empty($postDeployCommands)) {
+            $installCommands = ['composer install --optimize-autoloader --no-dev --no-interaction'];
+            $buildCommands = ['npm run build'];
+            $postDeployCommands = [
+                'php artisan migrate --force',
+                'php artisan config:cache',
+                'php artisan route:cache',
+                'php artisan view:cache',
+                'php artisan event:cache',
+                'php artisan storage:link',
+            ];
+        }
 
-    /**
-     * Run Laravel artisan optimization commands.
-     */
-    private function runLaravelArtisan(Server $server, string $releasePath): void
-    {
-        $commands = [
-            "php {$releasePath}/artisan migrate --force",
-            "php {$releasePath}/artisan config:cache",
-            "php {$releasePath}/artisan route:cache",
-            "php {$releasePath}/artisan view:cache",
-            "php {$releasePath}/artisan event:cache",
-            "php {$releasePath}/artisan storage:link 2>/dev/null || true",
-        ];
+        // Install dependencies (with longer timeout)
+        foreach ($installCommands as $cmd) {
+            $this->executeRemoteCommandWithTimeout(
+                $server,
+                "cd {$releasePath} && {$cmd}",
+                300,
+                false
+            );
+        }
 
-        foreach ($commands as $cmd) {
-            $this->executeRemoteCommand($server, $cmd, false);
+        // Build assets
+        foreach ($buildCommands as $cmd) {
+            $this->executeRemoteCommandWithTimeout(
+                $server,
+                "cd {$releasePath} && {$cmd}",
+                300,
+                false
+            );
+        }
+
+        // Post-deploy (artisan commands, etc.)
+        foreach ($postDeployCommands as $cmd) {
+            // Prefix artisan commands with the release path for proper execution
+            $finalCmd = str_starts_with($cmd, 'php artisan')
+                ? str_replace('php artisan', "php {$releasePath}/artisan", $cmd)
+                : "cd {$releasePath} && {$cmd}";
+
+            $this->executeRemoteCommand($server, $finalCmd, false);
         }
     }
 

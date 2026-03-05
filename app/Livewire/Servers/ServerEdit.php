@@ -36,7 +36,7 @@ class ServerEdit extends Component
         $this->latitude = $this->server->latitude !== null ? (float) $this->server->latitude : null;
         $this->longitude = $this->server->longitude !== null ? (float) $this->server->longitude : null;
         $this->location_name = $this->server->location_name ?? '';
-        $this->role = $this->server->role ?? 'general';
+        $this->role = (string) ($this->server->getRawOriginal('role') ?? 'general');
 
         // Determine auth method based on stored credentials
         // Priority: key > password > host_key (default)

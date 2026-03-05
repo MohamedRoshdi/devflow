@@ -489,7 +489,7 @@
                                     'database' => 'Database',
                                     'control' => 'Control',
                                 ];
-                                $serverRole = $server->role ?? 'general';
+                                $serverRole = $server->role?->value ?? 'general';
                             @endphp
                             <span class="flex-shrink-0 px-2.5 py-1 rounded-lg text-xs font-semibold border {{ $roleColors[$serverRole] ?? $roleColors['general'] }}">
                                 {{ $roleLabels[$serverRole] ?? 'General' }}
@@ -509,8 +509,8 @@
                         <!-- Resources -->
                         <div class="space-y-2.5 mb-4">
                             <div class="flex items-center justify-between p-3 bg-blue-500/10 border border-blue-500/30 rounded-xl backdrop-blur-sm"
-                                 aria-label="CPU: {{ $server->cpu_cores ?? 0 }} cores"
-                                 title="CPU: {{ $server->cpu_cores ?? 0 }} cores">
+                                 aria-label="CPU: {{ $server->cpu_cores ?: 'unknown' }} cores"
+                                 title="CPU: {{ $server->cpu_cores ?: 'unknown' }} cores">
                                 <div class="flex items-center">
                                     <div class="p-1.5 bg-blue-500/20 rounded-lg mr-2" aria-hidden="true">
                                         <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-hidden="true">
@@ -519,12 +519,12 @@
                                     </div>
                                     <span class="text-sm font-medium text-slate-300">CPU</span>
                                 </div>
-                                <span class="text-sm font-bold text-slate-900 dark:text-white">{{ $server->cpu_cores ?? 0 }} Cores</span>
+                                <span class="text-sm font-bold text-slate-900 dark:text-white">{{ $server->cpu_cores ?: '-' }} Cores</span>
                             </div>
 
                             <div class="flex items-center justify-between p-3 bg-purple-500/10 border border-purple-500/30 rounded-xl backdrop-blur-sm"
-                                 aria-label="RAM: {{ $server->memory_gb ?? 0 }} gigabytes"
-                                 title="RAM: {{ $server->memory_gb ?? 0 }} GB">
+                                 aria-label="RAM: {{ $server->memory_gb ?: 'unknown' }} gigabytes"
+                                 title="RAM: {{ $server->memory_gb ?: '-' }} GB">
                                 <div class="flex items-center">
                                     <div class="p-1.5 bg-purple-500/20 rounded-lg mr-2" aria-hidden="true">
                                         <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-hidden="true">
@@ -533,23 +533,25 @@
                                     </div>
                                     <span class="text-sm font-medium text-slate-300">RAM</span>
                                 </div>
-                                <span class="text-sm font-bold text-slate-900 dark:text-white">{{ $server->memory_gb ?? 0 }} GB</span>
+                                <span class="text-sm font-bold text-slate-900 dark:text-white">{{ $server->memory_gb ?: '-' }} GB</span>
                             </div>
                         </div>
 
                         <!-- Location & Last Ping -->
                         <div class="space-y-2 mb-4">
+                            @if($server->location_name)
                             <div class="flex items-center text-sm text-slate-300"
-                                 aria-label="Server location: {{ $server->location_name ?? 'Unknown' }}"
-                                 title="Server location: {{ $server->location_name ?? 'Unknown' }}">
+                                 aria-label="Server location: {{ $server->location_name }}"
+                                 title="Server location: {{ $server->location_name }}">
                                 <div class="p-1.5 bg-emerald-500/20 rounded-lg mr-2" aria-hidden="true">
                                     <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     </svg>
                                 </div>
-                                {{ $server->location_name ?? 'Unknown' }}
+                                {{ $server->location_name }}
                             </div>
+                            @endif
                             <div class="flex items-center text-sm text-slate-300"
                                  aria-label="Last ping: {{ $server->last_ping_at ? $server->last_ping_at->diffForHumans() : 'Never' }}"
                                  title="Last ping: {{ $server->last_ping_at ? $server->last_ping_at->format('Y-m-d H:i:s') : 'Never' }}">

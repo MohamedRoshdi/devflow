@@ -9,11 +9,13 @@ use App\Models\Project;
 use App\Models\Server;
 use App\Services\ServerConnectivityService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 
 class ProjectEdit extends Component
 {
+    use AuthorizesRequests;
     use HasProjectFormFields;
 
     public Project $project;
@@ -23,20 +25,7 @@ class ProjectEdit extends Component
 
     public function mount(Project $project): void
     {
-        $user = auth()->user();
-
-        if (! $user) {
-            abort(401);
-        }
-
-        // Check if user owns the project or is a team member
-        if ($project->user_id !== $user->id) {
-            if ($project->team_id && $user->currentTeam && $user->currentTeam->id === $project->team_id) {
-                // Team member has access
-            } else {
-                abort(403);
-            }
-        }
+        $this->authorize('update', $project);
 
         $this->project = $project;
         $this->loadProjectData();

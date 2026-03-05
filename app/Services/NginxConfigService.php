@@ -203,6 +203,23 @@ NGINX;
     }
 
     /**
+     * Check if an Nginx vhost config is installed for a project.
+     *
+     * @param Server $server
+     * @param Project $project
+     * @return bool
+     */
+    public function isInstalled(Server $server, Project $project): bool
+    {
+        $slug = $project->validated_slug;
+        $filePath = "/etc/nginx/sites-available/{$slug}";
+
+        $result = $this->executeRemoteCommand($server, "test -f {$filePath} && echo 'exists'", false);
+
+        return str_contains($result->output(), 'exists');
+    }
+
+    /**
      * Resolve SSL certificate and key paths based on the domain's ssl_provider.
      *
      * @param Domain $domain

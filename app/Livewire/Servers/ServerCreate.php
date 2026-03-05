@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Livewire\Servers;
 
+use App\Enums\ServerRole;
 use App\Models\Server;
 use App\Services\DockerService;
 use App\Services\ServerConnectivityService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Validation\Rules\Enum;
 use Livewire\Component;
 
 class ServerCreate extends Component
@@ -53,7 +55,7 @@ class ServerCreate extends Component
             // SSH key is optional - required only for 'key' auth method
             'ssh_key' => 'nullable|string|required_if:auth_method,key',
             'auth_method' => 'required|in:host_key,password,key',
-            'role' => 'required|in:general,app,database,control',
+            'role' => ['required', new Enum(ServerRole::class)],
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'location_name' => 'nullable|string|max:255',

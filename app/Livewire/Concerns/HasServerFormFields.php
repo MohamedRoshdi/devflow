@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Concerns;
 
+use App\Enums\ServerRole;
 use App\Models\Server;
 use App\Services\ServerConnectivityService;
 
@@ -117,7 +118,7 @@ trait HasServerFormFields
             'ip_address' => 'required|ip',
             'port' => 'required|integer|min:1|max:65535',
             'auth_method' => 'required|in:host_key,password,key',
-            'role' => 'required|in:general,app,database,control',
+            'role' => ['required', new \Illuminate\Validation\Rules\Enum(ServerRole::class)],
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'location_name' => 'nullable|string|max:255',

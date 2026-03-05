@@ -284,10 +284,11 @@ class CrossRegionDeploymentService
             }
 
             $statuses = $regionDeployment->region_statuses ?? [];
-            $regionStatus = $statuses[$regionId]['status'] ?? 'pending';
+            $regionEntry = $statuses[$regionId] ?? [];
+            $regionStatus = is_array($regionEntry) ? ($regionEntry['status'] ?? 'pending') : 'pending';
 
             // Only rollback regions that were successfully deployed or are running
-            if (in_array($regionStatus, ['success', 'running'], true)) {
+            if ($regionStatus === 'success' || $regionStatus === 'running') {
                 $result = $this->rollbackRegion($regionDeployment, $region);
 
                 if (!$result) {
@@ -391,7 +392,7 @@ class CrossRegionDeploymentService
     ): void {
         $statuses = $regionDeployment->region_statuses ?? [];
 
-        if (!isset($statuses[$regionId])) {
+        if (!isset($statuses[$regionId]) || !is_array($statuses[$regionId])) {
             $statuses[$regionId] = [];
         }
 

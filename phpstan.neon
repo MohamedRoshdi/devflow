@@ -14,95 +14,255 @@ parameters:
         - '#Access to an undefined property App\\Http\\Resources\\.*::\$.*#'
         - '#Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$.*#'
         - '#Relation .* is not found in App\\Models\\.* model#'
-        # Services with dynamic methods
-        - '#Call to an undefined method App\\Services\\.*::.*#'
+        # Eloquent model method resolution (scopes, dynamic methods)
+        - '#Call to an undefined method App\\Models\\.*::.*#'
         - '#Call to an undefined method App\\Http\\Controllers\\.*::authorize\(\)#'
         - '#Call to an undefined method App\\Http\\Resources\\.*::.*#'
-        - '#Call to an undefined method App\\Models\\.*::.*#'
         - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Pivot::.*#'
         - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Model::.*#'
-        # Livewire properties
+        # Livewire reactive properties (read by framework, not PHP)
         - '#Property App\\Livewire\\.*::\$.* is never read, only written#'
         - '#Property App\\Livewire\\.*::\$.* is unused#'
         - '#Property App\\Services\\.*::\$.* is never read, only written#'
-        # Type coercion for Eloquent
+        # Type coercion for Eloquent (find/first return Model, not specific subclass)
         - '#does not accept Illuminate\\Database\\Eloquent\\Model#'
         - '#expects App\\Models\\.*, Illuminate\\Database\\Eloquent\\Model#'
         - '#expects App\\Models\\.*, Illuminate\\Database\\Eloquent\\Model\|null given#'
         - '#should return .* but returns Illuminate\\Database\\Eloquent\\Model\|null#'
-        # Null coalescing
+        # Defensive null coalescing (acceptable patterns)
         - '#on left side of \?\? always exists#'
         - '#in isset\(\) always exists and is not nullable#'
         - '#in isset\(\) is never defined#'
-        - '#Undefined variable#'
-        # Dead code and unreachable
-        - '#Unreachable statement#'
-        - '#always false#'
-        - '#always true#'
         # Unused traits (utility traits for future use)
         - '#Trait App\\Traits\\HasCommonValidation is used zero times#'
         - '#Trait App\\Models\\Concerns\\BelongsToTeam is used zero times#'
         # Test classes
         - '#Class Tests\\.*constructor invoked with#'
         - '#on an unknown class#'
-        # Type hints
+        # Type hint narrowing for Carbon/date helpers
         - '#Parameter \#1 \$value of method Carbon\\Carbon::subDays\(\) expects#'
         - '#Parameter \#1 \$value of method Carbon\\Carbon::addSeconds\(\) expects#'
         - '#Parameter \#2 \$timestamp of function date expects#'
         - '#Parameter \#2 \$environmentSnapshot of method#'
+        # Missing value type specifications (common in Laravel array returns)
         - '#Method .* has no return type specified#'
         - '#Method .* has parameter .* with no value type specified#'
         - '#Method .* return type has no value type specified#'
         - '#has parameter \$data with no type specified#'
         - '#contains unresolvable type#'
-        # Expression results
-        - '#Expression .* on a separate line does not do anything#'
-        # Method calls on nullable
-        - '#Cannot call method .* on string#'
-        - '#Cannot call method .* on null#'
         # Argument type mismatches with jobs
         - '#Parameter \#1 .* of job class App\\Jobs\\.*#'
         # PHP 8.4 implicit nullable deprecation
         - '#Deprecated in PHP 8.4.*implicitly nullable#'
-        # Empty arrays and foreach
-        - '#Empty array passed to foreach#'
-        - '#passed to foreach#'
-        - '#Variable .* in empty\(\) is never defined#'
-        # Additional property access patterns
-        - '#Access to an undefined property#'
-        # Nullsafe and isset patterns
+        # Nullsafe operator on already-narrowed types (defensive coding)
+        - '#Using nullsafe .* is unnecessary#'
         - '#is never null#'
         - '#cannot be null#'
+        # Offset access on dynamic arrays
         - '#Offset .* on .* on left side of \?\? does not exist#'
         - '#Offset .* does not exist on#'
-        # Match and return patterns
+        # Match expressions (framework enums may add cases)
         - '#Match expression does not handle remaining value#'
+        # Dead catch (defensive exception handling)
         - '#Dead catch#'
         - '#Caught class .* is not thrown#'
-        # Comparison patterns
-        - '#Strict comparison using === between#'
+        # Accessing ->id on route() returns (route model binding)
+        - identifier: property.notFound
+          path: app/Http/Requests/*
+        # Livewire computed properties accessed as regular properties
+        - identifier: property.notFound
+          path: app/Livewire/*
+        # Console commands: model property access from dynamic queries
+        - identifier: property.notFound
+          path: app/Console/*
+        # Model accessor/mutator properties
+        - identifier: property.notFound
+          path: app/Models/*
+        # Controller authorize() and route binding
+        - identifier: property.notFound
+          path: app/Http/Controllers/*
+        # Jobs: dynamic model property access
+        - identifier: property.notFound
+          path: app/Jobs/*
+        # Method calls on Carbon/string from Eloquent casts
+        -
+            message: '#Cannot call method .* on string#'
+            path: app/Services/Security/*
+        # Method calls on nullable models (defensive patterns)
+        - identifier: method.nonObject
+          path: app/Services/*
+        - identifier: method.nonObject
+          path: app/Livewire/*
+        - identifier: method.nonObject
+          path: app/Console/*
+        - identifier: method.nonObject
+          path: app/Jobs/*
+        - identifier: method.nonObject
+          path: app/Http/*
+        # Strict comparison on enum/status values (defensive checks)
+        - identifier: identical.alwaysFalse
+        - identifier: identical.alwaysTrue
+        - identifier: match.alwaysTrue
+        - identifier: match.alwaysFalse
+        - identifier: booleanNot.alwaysFalse
+        - identifier: booleanNot.alwaysTrue
+        - identifier: booleanAnd.alwaysFalse
+        - identifier: booleanAnd.rightAlwaysFalse
+        - identifier: booleanAnd.leftAlwaysTrue
+        - identifier: booleanAnd.rightAlwaysTrue
+        - identifier: booleanOr.alwaysFalse
+        - identifier: booleanOr.alwaysTrue
+        - identifier: booleanOr.rightAlwaysTrue
+        - identifier: booleanOr.leftAlwaysTrue
+        - identifier: ternary.alwaysTrue
+        - identifier: ternary.alwaysFalse
+        - identifier: if.alwaysTrue
+        - identifier: greater.alwaysTrue
+        # Empty foreach on potentially empty collections
+        - identifier: foreach.emptyArray
+        # Expression on separate line (logging, dispatch)
+        - '#Expression .* on a separate line does not do anything#'
+        # Undefined variables in Livewire computed property patterns
+        - identifier: variable.undefined
+          path: app/Livewire/*
+        # Events/Listeners/Notifications: argument and property access
+        - identifier: method.nonObject
+          path: app/Events/*
+        - identifier: method.nonObject
+          path: app/Listeners/*
+        - identifier: method.nonObject
+          path: app/Notifications/*
+        - identifier: method.nonObject
+          path: app/Policies/*
+        - identifier: encapsedStringPart.nonString
+          path: app/Console/*
+        - identifier: encapsedStringPart.nonString
+          path: app/Http/*
+        - identifier: encapsedStringPart.nonString
+          path: app/Events/*
+        - identifier: encapsedStringPart.nonString
+          path: app/Listeners/*
+        - identifier: encapsedStringPart.nonString
+          path: app/Notifications/*
+        - identifier: encapsedStringPart.nonString
+          path: app/Jobs/*
+        - identifier: assign.propertyType
+          path: app/Console/*
+        - identifier: assign.propertyType
+          path: app/Http/*
+        - identifier: assign.propertyType
+          path: app/Events/*
+        - identifier: assign.propertyType
+          path: app/Listeners/*
+        - identifier: assign.propertyType
+          path: app/Jobs/*
+        - identifier: assign.propertyType
+          path: app/Models/*
+        # Console commands: foreach/method patterns
+        - identifier: foreach.nonIterable
+          path: app/Console/*
+        - identifier: foreach.nonIterable
+          path: app/Jobs/*
+        - identifier: foreach.nonIterable
+          path: app/Http/*
+        # Argument type in various app directories
+        - identifier: argument.type
+          path: app/Console/*
+        - identifier: argument.type
+          path: app/Http/*
+        - identifier: argument.type
+          path: app/Events/*
+        - identifier: argument.type
+          path: app/Listeners/*
+        - identifier: argument.type
+          path: app/Jobs/*
+        - identifier: argument.type
+          path: app/Notifications/*
+        - identifier: argument.type
+          path: app/Policies/*
+        - identifier: argument.type
+          path: app/Providers/*
+        # Property access on nullable (Jobs, Console, Http)
+        - identifier: property.nonObject
+          path: app/Console/*
+        - identifier: property.nonObject
+          path: app/Http/*
+        - identifier: property.nonObject
+          path: app/Jobs/*
+        - identifier: property.nonObject
+          path: app/Events/*
+        - identifier: property.nonObject
+          path: app/Listeners/*
+        - identifier: property.nonObject
+          path: app/Models/*
+        # Return type in broader areas
+        - identifier: return.type
+          path: app/Console/*
+        - identifier: return.type
+          path: app/Http/*
+        # Method not found on service classes
+        - identifier: method.notFound
+          path: app/Services/*
+        - identifier: method.notFound
+          path: app/Providers/*
+        # Undefined variables in controller webhook handlers
+        - identifier: variable.undefined
+          path: app/Http/*
+        # Model date accessors that PHPStan sees as strings (missing @property Carbon annotations)
+        -
+            message: '#Cannot call method .* on string#'
+            path: app/Models/*
+        # Property nonObject in Notifications
+        - identifier: property.nonObject
+          path: app/Notifications/*
+        # Assign property type in Dashboard/Docker/Notifications components
+        - identifier: assign.propertyType
+          path: app/Livewire/Dashboard/*
+        - identifier: assign.propertyType
+          path: app/Livewire/Docker/*
+        - identifier: assign.propertyType
+          path: app/Livewire/Notifications/*
+        - identifier: assign.propertyType
+          path: app/Livewire/MultiTenant/*
+        - identifier: assign.propertyType
+          path: app/Livewire/Users/*
+        # Encapsed string in Dashboard/Notifications/Settings
+        - identifier: encapsedStringPart.nonString
+          path: app/Livewire/Dashboard/*
+        - identifier: encapsedStringPart.nonString
+          path: app/Livewire/Notifications/*
+        - identifier: encapsedStringPart.nonString
+          path: app/Livewire/Settings/*
+        # Return type in Notifications
+        - identifier: return.type
+          path: app/Notifications/*
+        # Property access on Services with nullable models
+        - identifier: property.nonObject
+          path: app/Services/DnsRoutingService.php
+        - identifier: property.nonObject
+          path: app/Services/LogAlertService.php
         # PHPDoc patterns
         - '#PHPDoc tag @var#'
         - '#PHPDoc type .* of property .* is not covariant#'
-        # Generic argument type patterns
+        # Services: argument type mismatches (SSH commands, Process calls)
         - identifier: argument.type
           path: app/Services/*
+        # Livewire: argument type mismatches (component dispatch, wire calls)
         - identifier: argument.type
           path: app/Livewire/*
+        # Models: argument type for relationship definitions
         - identifier: argument.type
           path: app/Models/*
-        # Nullsafe unnecessary patterns
-        - '#Using nullsafe .* is unnecessary#'
-        # isset offset on dynamic types
+        # Livewire: isset on dynamic wire properties
         - identifier: isset.offset
           path: app/Livewire/*
-        # Return type patterns
+        # Models: return type narrowing for relationship accessors
         - identifier: return.type
           path: app/Models/*
         # Factory classes that don't exist yet
         - '#PHPDoc tag @use has invalid type Database\\Factories\\.*#'
         - '#Type Database\\Factories\\.* in generic type .* is not subtype of template type TFactory#'
-        # Test classes called from app
+        # Test class called from app code
         - '#Call to an undefined method Tests\\Performance\\PerformanceTestSuite::runPerformanceTests#'
         # Mockery in tests
         - '#Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage::.*#'
@@ -120,119 +280,103 @@ parameters:
           identifier: method.impossibleType
         - path: tests/*
           message: '#Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert::assertContains\(\) expects iterable, string\|null given#'
-        # Level 9 specific: mixed types from config() and cache()
-        -
-            message: '#Cannot access offset .* on mixed#'
-        -
-            message: '#Cannot call method .* on mixed#'
-        -
-            message: '#Cannot access property .* on mixed#'
-        -
-            message: '#Binary operation .* between .* and mixed results in an error#'
-        -
-            message: '#Cannot cast mixed to#'
-        -
-            identifier: offsetAccess.nonOffsetAccessible
-            path: app/Livewire/*
-        -
-            identifier: offsetAccess.nonOffsetAccessible
-            path: app/Services/*
-        # Level 9: Cache and config return types
-        -
-            message: '#Method .* should return .* but returns mixed#'
-            path: app/Services/CacheManagementService.php
-        -
-            message: '#Method .* should return .* but returns mixed#'
-            path: app/Services/GitHubService.php
-        -
-            message: '#Method .* should return .* but returns mixed#'
-            path: app/Services/HelpContentService.php
-        -
-            message: '#Method .* should return .* but returns mixed#'
-            path: app/Services/LogAggregationService.php
-        -
-            message: '#Method .* should return .* but returns mixed#'
-            path: app/Services/MetricsCollectionService.php
-        -
-            message: '#Method .* should return .* but returns mixed#'
-            path: app/Services/ProjectHealthService.php
-        -
-            message: '#Method .* should return .* but returns mixed#'
-            path: app/Services/QueueMonitorService.php
-        -
-            message: '#Method .* should return .* but returns mixed#'
-            path: app/Services/SystemSettingsService.php
-        -
-            message: '#Method .* should return .* but returns mixed#'
-            path: app/Services/DomainService.php
+        # Level 9: mixed types from config() and cache() (returns mixed)
+        - message: '#Cannot access offset .* on mixed#'
+        - message: '#Cannot call method .* on mixed#'
+        - message: '#Cannot access property .* on mixed#'
+        - message: '#Binary operation .* between .* and mixed results in an error#'
+        - message: '#Cannot cast mixed to#'
+        # Level 9: offsetAccess on Livewire/Service dynamic arrays
+        - identifier: offsetAccess.nonOffsetAccessible
+          path: app/Livewire/*
+        - identifier: offsetAccess.nonOffsetAccessible
+          path: app/Services/*
+        # Level 9: Services returning mixed from config/cache
+        - message: '#Method .* should return .* but returns mixed#'
+          path: app/Services/CacheManagementService.php
+        - message: '#Method .* should return .* but returns mixed#'
+          path: app/Services/GitHubService.php
+        - message: '#Method .* should return .* but returns mixed#'
+          path: app/Services/HelpContentService.php
+        - message: '#Method .* should return .* but returns mixed#'
+          path: app/Services/LogAggregationService.php
+        - message: '#Method .* should return .* but returns mixed#'
+          path: app/Services/MetricsCollectionService.php
+        - message: '#Method .* should return .* but returns mixed#'
+          path: app/Services/ProjectHealthService.php
+        - message: '#Method .* should return .* but returns mixed#'
+          path: app/Services/QueueMonitorService.php
+        - message: '#Method .* should return .* but returns mixed#'
+          path: app/Services/SystemSettingsService.php
+        - message: '#Method .* should return .* but returns mixed#'
+          path: app/Services/DomainService.php
         # Level 9: Template type resolution for generics
-        -
-            identifier: argument.templateType
-            path: app/Services/*
-        # Level 9: Foreach on potentially mixed iterables
-        -
-            identifier: foreach.nonIterable
-            path: app/Services/Kubernetes/*
-        # Level 9: Process/SSH output parsing
-        -
-            message: '#Part .* of encapsed string cannot be cast to string#'
-            path: app/Services/Kubernetes/*
-        -
-            message: '#Part .* of encapsed string cannot be cast to string#'
-            path: app/Livewire/Deployments/*
-        # Level 9: Binary operations with config() results
-        -
-            identifier: binaryOp.invalid
-            path: app/Services/MultiTenant/*
-        -
-            identifier: binaryOp.invalid
-            path: app/Livewire/Deployments/*
-        # Level 9: Collection return types with complex structures
-        -
-            message: '#should return .* but returns .*Collection.*mixed#'
-            path: app/Services/ProjectHealthService.php
-        -
-            message: '#should return array.* but returns array.*mixed#'
-            path: app/Services/MetricsCollectionService.php
-        # Level 9: Domain-specific offsetAccess patterns
-        -
-            message: '#Offset .* might not exist on array#'
-            path: app/Services/DomainService.php
-        # Level 9: Property type assignments in Livewire components
-        -
-            identifier: assign.propertyType
-            path: app/Livewire/Deployments/*
-        # Level 9: String concatenation in deployment scripts
-        -
-            identifier: encapsedStringPart.nonString
-            path: app/Livewire/Deployments/*
-        # Level 9: Property access on Eloquent models (can be null from DB)
-        -
-            identifier: property.nonObject
-            path: app/Livewire/Deployments/*
-        -
-            identifier: property.nonObject
-        # Level 9: Livewire property type assignments (reactive properties)
-        -
-            identifier: assign.propertyType
-        # Level 9: All string interpolation (SSH commands, log messages, etc.)
-        -
-            identifier: encapsedStringPart.nonString
-        # Level 9: Function parameter narrowing (Laravel validation patterns)
-        -
-            identifier: function.alreadyNarrowedType
-        # Level 9: Argument types for Laravel helper functions
-        -
-            identifier: argument.type
-            message: '#Parameter .* expects .*,.*given#'
-        # Level 9: Binary operations with config/cache values
-        -
-            identifier: binaryOp.invalid
-        # Level 9: Foreach on potentially mixed arrays from external sources
-        -
-            identifier: foreach.nonIterable
-        # Level 9: Complex return types from Laravel collections and queries
-        -
-            identifier: return.type
-            message: '#should return .* but returns#'
+        - identifier: argument.templateType
+          path: app/Services/*
+        # Level 9: Foreach on Kubernetes mixed iterables
+        - identifier: foreach.nonIterable
+          path: app/Services/Kubernetes/*
+        # Level 9: String interpolation in SSH commands
+        - message: '#Part .* of encapsed string cannot be cast to string#'
+          path: app/Services/Kubernetes/*
+        - message: '#Part .* of encapsed string cannot be cast to string#'
+          path: app/Livewire/Deployments/*
+        # Level 9: Binary operations with config() in specific namespaces
+        - identifier: binaryOp.invalid
+          path: app/Services/MultiTenant/*
+        - identifier: binaryOp.invalid
+          path: app/Livewire/Deployments/*
+        # Level 9: Collection return types
+        - message: '#should return .* but returns .*Collection.*mixed#'
+          path: app/Services/ProjectHealthService.php
+        - message: '#should return array.* but returns array.*mixed#'
+          path: app/Services/MetricsCollectionService.php
+        # Level 9: Domain-specific offsetAccess
+        - message: '#Offset .* might not exist on array#'
+          path: app/Services/DomainService.php
+        # Level 9: Deployment Livewire components (complex SSH/deploy logic)
+        - identifier: assign.propertyType
+          path: app/Livewire/Deployments/*
+        - identifier: encapsedStringPart.nonString
+          path: app/Livewire/Deployments/*
+        - identifier: property.nonObject
+          path: app/Livewire/Deployments/*
+        # Level 9: Property access on nullable models (path-restricted)
+        - identifier: property.nonObject
+          path: app/Livewire/Projects/*
+        - identifier: property.nonObject
+          path: app/Livewire/Servers/*
+        # Level 9: Livewire property assignments (form binding)
+        - identifier: assign.propertyType
+          path: app/Livewire/Projects/*
+        - identifier: assign.propertyType
+          path: app/Livewire/Servers/*
+        - identifier: assign.propertyType
+          path: app/Livewire/Settings/*
+        # Level 9: String interpolation in SSH commands (path-restricted)
+        - identifier: encapsedStringPart.nonString
+          path: app/Services/*
+        - identifier: encapsedStringPart.nonString
+          path: app/Livewire/Projects/*
+        - identifier: encapsedStringPart.nonString
+          path: app/Livewire/Servers/*
+        # Level 9: Function parameter narrowing (Laravel validation)
+        - identifier: function.alreadyNarrowedType
+        # Level 9: Foreach on mixed arrays from SSH/API responses (path-restricted)
+        - identifier: foreach.nonIterable
+          path: app/Services/*
+        - identifier: foreach.nonIterable
+          path: app/Livewire/*
+        # Level 9: Return type mismatches in services (collection transforms)
+        - identifier: return.type
+          path: app/Services/*
+          message: '#should return .* but returns#'
+        - identifier: return.type
+          path: app/Livewire/*
+          message: '#should return .* but returns#'
+        # Level 9: Binary operations with config/cache (path-restricted)
+        - identifier: binaryOp.invalid
+          path: app/Services/*
+        - identifier: binaryOp.invalid
+          path: app/Livewire/*
     reportUnmatchedIgnoredErrors: false
