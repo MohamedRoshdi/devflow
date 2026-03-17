@@ -73,6 +73,33 @@
         <!-- Security Score Card -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             <!-- Main Score -->
+            @php
+                // Use the persisted DB score when available; fall back to the live-calculated score.
+                $displayScore = $server->security_score ?? $liveSecurityScore;
+                $scoreColor = match (true) {
+                    $displayScore >= 81 => '#10b981',
+                    $displayScore >= 61 => '#eab308',
+                    $displayScore >= 41 => '#f97316',
+                    $displayScore !== null => '#ef4444',
+                    default => '#6b7280',
+                };
+                $riskLevel = match (true) {
+                    $displayScore >= 91 => 'secure',
+                    $displayScore >= 81 => 'low',
+                    $displayScore >= 61 => 'medium',
+                    $displayScore >= 41 => 'high',
+                    $displayScore !== null => 'critical',
+                    default => 'unknown',
+                };
+                $riskBadgeClass = match ($riskLevel) {
+                    'secure' => 'bg-emerald-500/20 text-emerald-400',
+                    'low' => 'bg-green-500/20 text-green-400',
+                    'medium' => 'bg-yellow-500/20 text-yellow-400',
+                    'high' => 'bg-orange-500/20 text-orange-400',
+                    'critical' => 'bg-red-500/20 text-red-400',
+                    default => 'bg-gray-500/20 text-gray-400',
+                };
+            @endphp
             <div class="lg:col-span-1 bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 p-6">
                 <h3 class="text-lg font-semibold text-white mb-4">Security Score</h3>
                 <div class="flex flex-col items-center">
@@ -80,26 +107,23 @@
                         <svg class="w-40 h-40 transform -rotate-90" viewBox="0 0 100 100">
                             <circle cx="50" cy="50" r="45" fill="none" stroke="#374151" stroke-width="8"/>
                             <circle cx="50" cy="50" r="45" fill="none"
-                                stroke="{{ $server->security_score >= 81 ? '#10b981' : ($server->security_score >= 61 ? '#eab308' : ($server->security_score >= 41 ? '#f97316' : '#ef4444')) }}"
+                                stroke="{{ $scoreColor }}"
                                 stroke-width="8" stroke-linecap="round"
-                                stroke-dasharray="{{ ($server->security_score ?? 0) * 2.827 }} 282.7"
+                                stroke-dasharray="{{ ($displayScore ?? 0) * 2.827 }} 282.7"
                                 class="transition-all duration-1000"/>
                         </svg>
                         <div class="absolute inset-0 flex flex-col items-center justify-center">
-                            <span class="text-4xl font-bold text-white">{{ $server->security_score ?? '--' }}</span>
+                            <span class="text-4xl font-bold text-white">{{ $displayScore ?? '--' }}</span>
                             <span class="text-gray-400 text-sm">/100</span>
                         </div>
                     </div>
                     <div class="mt-4 text-center">
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
-                            {{ $server->security_risk_level === 'secure' ? 'bg-emerald-500/20 text-emerald-400' : '' }}
-                            {{ $server->security_risk_level === 'low' ? 'bg-green-500/20 text-green-400' : '' }}
-                            {{ $server->security_risk_level === 'medium' ? 'bg-yellow-500/20 text-yellow-400' : '' }}
-                            {{ $server->security_risk_level === 'high' ? 'bg-orange-500/20 text-orange-400' : '' }}
-                            {{ $server->security_risk_level === 'critical' ? 'bg-red-500/20 text-red-400' : '' }}
-                            {{ $server->security_risk_level === 'unknown' ? 'bg-gray-500/20 text-gray-400' : '' }}">
-                            {{ ucfirst($server->security_risk_level) }} Risk
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $riskBadgeClass }}">
+                            {{ ucfirst($riskLevel) }} Risk
                         </span>
+                        @if($server->security_score === null && $displayScore !== null)
+                            <p class="mt-1 text-xs text-gray-500">Live estimate — run a full scan to save</p>
+                        @endif
                     </div>
                     @if($server->last_security_scan_at)
                         <p class="mt-2 text-xs text-gray-500">

@@ -60,6 +60,7 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
     Route::get('/servers/{server}/databases', \App\Livewire\Servers\DatabaseManager::class)->name('servers.databases');
     Route::get('/servers/{server}/provisioning', ProvisioningLogs::class)->name('servers.provisioning');
     Route::get('/servers/{server}/supervisor', SupervisorManager::class)->name('servers.supervisor');
+    Route::get('/servers/{server}/cron', \App\Livewire\Servers\CronManager::class)->name('servers.cron');
     Route::get('/servers/{server}/nginx', \App\Livewire\Servers\NginxManager::class)->name('servers.nginx');
     Route::get('/servers/{server}/terminal', \App\Livewire\Servers\SSHTerminal::class)->name('servers.terminal');
 

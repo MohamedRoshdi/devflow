@@ -9,6 +9,7 @@ use App\Models\Project;
 use App\Services\BareMetalProcessService;
 use App\Services\DockerService;
 use App\Services\GitService;
+use App\Services\LogManagerService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Livewire\Attributes\On;
@@ -37,17 +38,27 @@ class ProjectShow extends Component
 
     public bool $updateStatusLoaded = false;
 
+    // Logs tab state
+    public string $selectedLogType = 'laravel';
+
+    public string $logContent = '';
+
+    public string $logError = '';
+
     protected DockerService $dockerService;
 
     protected BareMetalProcessService $bareMetalService;
 
     protected GitService $gitService;
 
-    public function boot(DockerService $dockerService, BareMetalProcessService $bareMetalService, GitService $gitService): void
+    protected LogManagerService $logManagerService;
+
+    public function boot(DockerService $dockerService, BareMetalProcessService $bareMetalService, GitService $gitService, LogManagerService $logManagerService): void
     {
         $this->dockerService = $dockerService;
         $this->bareMetalService = $bareMetalService;
         $this->gitService = $gitService;
+        $this->logManagerService = $logManagerService;
     }
 
     public function mount(Project $project): void
@@ -56,7 +67,7 @@ class ProjectShow extends Component
 
         $this->project = $project->load([
             'domains:id,project_id,domain,subdomain,ssl_enabled,is_primary',
-            'activeDeployment' => fn ($q) => $q->select('deployments.id', 'deployments.project_id', 'deployments.status', 'deployments.created_at')
+            'activeDeployment' => fn ($q) => $q->select('deployments.id', 'deployments.project_id', 'deployments.status', 'deployments.created_at'),
         ]);
 
         $tab = request()->query('tab', 'overview');
@@ -156,6 +167,7 @@ class ProjectShow extends Component
 
             if ($activeDeployment) {
                 session()->flash('error', 'A deployment is already in progress. Please wait for it to complete or cancel it first.');
+
                 return $this->redirect(route('deployments.show', $activeDeployment), navigate: true);
             }
 
@@ -177,6 +189,7 @@ class ProjectShow extends Component
 
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to start deployment: '.$e->getMessage());
+
             return null;
         }
     }
@@ -219,13 +232,69 @@ class ProjectShow extends Component
         }
     }
 
+    /**
+     * Load log content from the server for the selected log type.
+     */
+    public function loadLogs(): void
+    {
+        $this->logContent = '';
+        $this->logError = '';
+
+        try {
+            switch ($this->selectedLogType) {
+                case 'laravel':
+                    $result = $this->logManagerService->tailLogs($this->project, 100);
+                    if ($result['success']) {
+                        $this->logContent = $result['logs'];
+                    } else {
+                        $this->logError = $result['error'] ?? 'Failed to fetch Laravel logs.';
+                    }
+                    break;
+
+                case 'nginx_access':
+                    $result = $this->logManagerService->getProjectNginxLogs($this->project, 100);
+                    $this->logContent = $result['access_log'];
+                    if ($this->logContent === '') {
+                        $this->logContent = 'Log file is empty or not found.';
+                    }
+                    break;
+
+                case 'nginx_error':
+                    $result = $this->logManagerService->getProjectNginxLogs($this->project, 100);
+                    $this->logContent = $result['error_log'];
+                    if ($this->logContent === '') {
+                        $this->logContent = 'Log file is empty or not found.';
+                    }
+                    break;
+
+                case 'supervisor':
+                    $result = $this->logManagerService->getProjectSupervisorLogs($this->project, 100);
+                    $this->logContent = $result['worker_log'];
+                    if ($this->logContent === '') {
+                        $this->logContent = 'Log file is empty or not found.';
+                    }
+                    break;
+
+                default:
+                    $this->logError = 'Unknown log type selected.';
+            }
+        } catch (\Exception $e) {
+            \Log::error('ProjectShow: Failed to load logs', [
+                'project_id' => $this->project->id,
+                'log_type' => $this->selectedLogType,
+                'error' => $e->getMessage(),
+            ]);
+            $this->logError = 'Could not connect to server to retrieve logs.';
+        }
+    }
+
     public function render(): View
     {
         $deployments = $this->project->deployments()
             ->select(['id', 'project_id', 'user_id', 'server_id', 'status', 'branch', 'commit_hash', 'commit_message', 'created_at', 'started_at', 'completed_at', 'triggered_by'])
             ->with([
                 'user:id,name',
-                'server:id,name'
+                'server:id,name',
             ])
             ->latest()
             ->paginate($this->deploymentsPerPage, ['*'], 'deploymentsPage');

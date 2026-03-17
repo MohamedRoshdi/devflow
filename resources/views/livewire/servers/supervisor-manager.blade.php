@@ -80,7 +80,7 @@
     <!-- Workers Grid -->
     <div class="mb-8">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <h2 class="text-lg font-semibold text-white flex items-center gap-2">
                 <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                 </svg>
@@ -107,11 +107,11 @@
                     @php
                         $status = $workerStatuses[$worker['name']]['status'] ?? 'UNKNOWN';
                         $statusColor = match($status) {
-                            'RUNNING' => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-                            'STOPPED', 'EXITED' => 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-                            'FATAL' => 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300',
-                            'STARTING', 'BACKOFF' => 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
-                            default => 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400',
+                            'RUNNING' => 'bg-green-900/30 text-green-400',
+                            'STOPPED', 'EXITED' => 'bg-red-900/30 text-red-400',
+                            'FATAL' => 'bg-red-900/40 text-red-300',
+                            'STARTING', 'BACKOFF' => 'bg-yellow-900/30 text-yellow-400',
+                            default => 'bg-gray-700 text-gray-400',
                         };
                         $dotColor = match($status) {
                             'RUNNING' => 'bg-green-500',
@@ -121,7 +121,7 @@
                         };
                     @endphp
                     <div wire:key="worker-{{ $worker['name'] }}"
-                         class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700/50 p-5 transition-all">
+                         class="bg-gray-800 rounded-2xl shadow-lg border border-gray-700/50 p-5 transition-all">
 
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex items-center gap-3">
@@ -129,8 +129,8 @@
                                     {{ strtoupper(substr($worker['name'], 0, 2)) }}
                                 </div>
                                 <div>
-                                    <h3 class="font-semibold text-gray-900 dark:text-white">{{ $worker['name'] }}</h3>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ $worker['numprocs'] }} {{ $worker['numprocs'] === 1 ? 'process' : 'processes' }} · user: {{ $worker['user'] }}</p>
+                                    <h3 class="font-semibold text-white">{{ $worker['name'] }}</h3>
+                                    <p class="text-xs text-gray-400">{{ $worker['numprocs'] }} {{ $worker['numprocs'] === 1 ? 'process' : 'processes' }} · user: {{ $worker['user'] }}</p>
                                 </div>
                             </div>
 
@@ -141,8 +141,8 @@
                         </div>
 
                         <!-- Command -->
-                        <div class="mb-4 px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-700/50">
-                            <p class="text-xs font-mono text-gray-600 dark:text-gray-400 truncate" title="{{ $worker['command'] }}">
+                        <div class="mb-4 px-3 py-2 rounded-lg bg-gray-900/50 border border-gray-700/50">
+                            <p class="text-xs font-mono text-gray-400 truncate" title="{{ $worker['command'] }}">
                                 {{ $worker['command'] }}
                             </p>
                         </div>
@@ -153,7 +153,7 @@
                                 <button wire:click="startWorker('{{ $worker['name'] }}')"
                                         wire:loading.attr="disabled"
                                         wire:target="startWorker('{{ $worker['name'] }}')"
-                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors disabled:opacity-50">
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-green-900/30 text-green-400 hover:bg-green-900/50 transition-colors disabled:opacity-50">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -166,7 +166,7 @@
                                 <button wire:click="stopWorker('{{ $worker['name'] }}')"
                                         wire:loading.attr="disabled"
                                         wire:target="stopWorker('{{ $worker['name'] }}')"
-                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-200 dark:hover:bg-yellow-900/50 transition-colors disabled:opacity-50">
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-yellow-900/30 text-yellow-400 hover:bg-yellow-900/50 transition-colors disabled:opacity-50">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/>
                                     </svg>
@@ -177,7 +177,7 @@
                             <button wire:click="restartWorker('{{ $worker['name'] }}')"
                                     wire:loading.attr="disabled"
                                     wire:target="restartWorker('{{ $worker['name'] }}')"
-                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors disabled:opacity-50">
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-900/30 text-blue-400 hover:bg-blue-900/50 transition-colors disabled:opacity-50">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                                 </svg>
@@ -185,7 +185,7 @@
                             </button>
 
                             <button wire:click="viewLogs('{{ $worker['name'] }}')"
-                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                 </svg>
@@ -193,7 +193,7 @@
                             </button>
 
                             <button wire:click="confirmDestructiveAction('deleteWorker', '{{ $worker['name'] }}', 'Stop all processes for \'{{ $worker['name'] }}\' and remove its supervisor config file.')"
-                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors ms-auto">
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-red-900/30 text-red-400 hover:bg-red-900/50 transition-colors ms-auto">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                 </svg>
@@ -204,11 +204,11 @@
                 @endforeach
             </div>
         @else
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-12 text-center">
-                <svg class="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="bg-gray-800 rounded-2xl shadow-lg p-12 text-center">
+                <svg class="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                 </svg>
-                <p class="text-gray-500 dark:text-gray-400 mb-4">No supervisor workers found on this server.</p>
+                <p class="text-gray-400 mb-4">No supervisor workers found on this server.</p>
                 <button wire:click="$set('showCreateModal', true)"
                         class="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">
                     + Add your first worker
@@ -219,17 +219,17 @@
 
     <!-- Logs Section -->
     @if (count($logs) > 0)
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden mb-8">
-            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
-                <h3 class="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+        <div class="bg-gray-800 rounded-2xl shadow-lg overflow-hidden mb-8">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-700 bg-gray-900/50">
+                <h3 class="font-semibold text-white flex items-center gap-2">
                     <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
                     Logs: <span class="text-blue-600 dark:text-blue-400">{{ $logsWorkerName }}</span>
-                    <span class="text-xs text-gray-500 dark:text-gray-400 font-normal">(last 50 lines)</span>
+                    <span class="text-xs text-gray-400 font-normal">(last 50 lines)</span>
                 </h3>
                 <button wire:click="$set('logs', [])"
-                        class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+                        class="text-sm text-gray-400 hover:text-gray-200 transition-colors">
                     ✕ Close
                 </button>
             </div>
@@ -249,35 +249,35 @@
              aria-labelledby="password-confirm-title">
             <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" wire:click="cancelConfirmation"></div>
 
-            <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-                <div class="flex items-center gap-4 p-6 border-b border-gray-200 dark:border-gray-700">
-                    <div class="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0">
-                        <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="relative bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+                <div class="flex items-center gap-4 p-6 border-b border-gray-700">
+                    <div class="w-10 h-10 rounded-xl bg-red-900/30 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                         </svg>
                     </div>
                     <div>
-                        <h3 id="password-confirm-title" class="text-gray-900 dark:text-white font-semibold">Confirm Destructive Action</h3>
-                        <p class="text-gray-500 dark:text-gray-400 text-sm mt-0.5">{{ $pendingActionLabel }}</p>
+                        <h3 id="password-confirm-title" class="text-white font-semibold">Confirm Destructive Action</h3>
+                        <p class="text-gray-400 text-sm mt-0.5">{{ $pendingActionLabel }}</p>
                     </div>
                 </div>
                 <div class="p-6 space-y-4">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Enter your password to continue:</p>
+                    <p class="text-sm text-gray-400">Enter your password to continue:</p>
                     <div>
                         <input wire:model="confirmPassword"
                                type="password"
                                placeholder="Your password"
                                autofocus
                                wire:keydown.enter="executeConfirmedAction"
-                               class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:border-transparent transition">
+                               class="w-full px-4 py-2.5 border border-gray-600 rounded-xl bg-gray-700 text-white placeholder-gray-500 focus:ring-2 focus:ring-red-500 focus:border-transparent transition">
                         @error('confirmPassword')
-                            <p class="mt-1.5 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            <p class="mt-1.5 text-sm text-red-400">{{ $message }}</p>
                         @enderror
                     </div>
                 </div>
-                <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-700">
                     <button wire:click="cancelConfirmation"
-                            class="px-4 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                            class="px-4 py-2.5 text-sm font-medium text-gray-400 hover:text-white transition-colors">
                         Cancel
                     </button>
                     <button wire:click="executeConfirmedAction"
@@ -298,11 +298,11 @@
     <!-- Add Worker Modal -->
     @if ($showCreateModal)
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
-                <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Add Supervisor Worker</h3>
+            <div class="bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6 border-b border-gray-700 flex items-center justify-between">
+                    <h3 class="text-xl font-bold text-white">Add Supervisor Worker</h3>
                     <button wire:click="$set('showCreateModal', false)"
-                            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                            class="text-gray-400 hover:text-gray-200 transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
@@ -312,50 +312,50 @@
                 <div class="p-6 space-y-5">
                     <!-- Worker Name -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                        <label class="block text-sm font-medium text-gray-300 mb-1.5">
                             Worker Name
-                            <span class="text-gray-400 font-normal text-xs ms-1">(lowercase, hyphens allowed)</span>
+                            <span class="text-gray-500 font-normal text-xs ms-1">(lowercase, hyphens allowed)</span>
                         </label>
                         <input type="text"
                                wire:model.blur="newWorkerName"
                                placeholder="e.g. queue-default or horizon"
-                               class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
-                        @error('newWorkerName') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
+                               class="w-full px-4 py-2.5 border border-gray-600 rounded-xl bg-gray-700 text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                        @error('newWorkerName') <p class="mt-1 text-sm text-red-400">{{ $message }}</p> @enderror
                     </div>
 
                     <!-- Command -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Command</label>
+                        <label class="block text-sm font-medium text-gray-300 mb-1.5">Command</label>
                         <input type="text"
                                wire:model.blur="newWorkerCommand"
                                placeholder="php /var/www/app/artisan queue:work redis --sleep=3 --tries=3"
-                               class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 font-mono text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
-                        @error('newWorkerCommand') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
+                               class="w-full px-4 py-2.5 border border-gray-600 rounded-xl bg-gray-700 text-white placeholder-gray-500 font-mono text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                        @error('newWorkerCommand') <p class="mt-1 text-sm text-red-400">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <!-- Number of Processes -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                            <label class="block text-sm font-medium text-gray-300 mb-1.5">
                                 Processes
                             </label>
                             <input type="number"
                                    wire:model.blur="newWorkerNumProcs"
                                    min="1" max="10"
-                                   class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
-                            @error('newWorkerNumProcs') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
+                                   class="w-full px-4 py-2.5 border border-gray-600 rounded-xl bg-gray-700 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                            @error('newWorkerNumProcs') <p class="mt-1 text-sm text-red-400">{{ $message }}</p> @enderror
                         </div>
 
                         <!-- User -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                            <label class="block text-sm font-medium text-gray-300 mb-1.5">
                                 Run as User
                             </label>
                             <input type="text"
                                    wire:model.blur="newWorkerUser"
                                    placeholder="deploy"
-                                   class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
-                            @error('newWorkerUser') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
+                                   class="w-full px-4 py-2.5 border border-gray-600 rounded-xl bg-gray-700 text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                            @error('newWorkerUser') <p class="mt-1 text-sm text-red-400">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
@@ -374,7 +374,7 @@
                     </div>
                 </div>
 
-                <div class="p-6 border-t border-gray-200 dark:border-gray-700 flex gap-3">
+                <div class="p-6 border-t border-gray-700 flex gap-3">
                     <button wire:click="createWorker"
                             wire:loading.attr="disabled"
                             class="flex-1 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50">
@@ -388,7 +388,7 @@
                         Create Worker
                     </button>
                     <button wire:click="$set('showCreateModal', false)"
-                            class="flex-1 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-xl transition-colors font-medium">
+                            class="flex-1 px-4 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-xl transition-colors font-medium">
                         Cancel
                     </button>
                 </div>

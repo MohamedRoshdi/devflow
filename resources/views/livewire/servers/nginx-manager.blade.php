@@ -167,24 +167,24 @@
 
     {{-- Stats Bar --}}
     <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-5">
-            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Available Sites</p>
-            <p class="text-3xl font-bold text-gray-900 dark:text-white mt-1">{{ count($sites) }}</p>
+        <div class="bg-gray-800 rounded-2xl shadow-lg p-5">
+            <p class="text-sm font-medium text-gray-400">Available Sites</p>
+            <p class="text-3xl font-bold text-white mt-1">{{ count($sites) }}</p>
         </div>
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-5">
-            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Enabled Sites</p>
+        <div class="bg-gray-800 rounded-2xl shadow-lg p-5">
+            <p class="text-sm font-medium text-gray-400">Enabled Sites</p>
             <p class="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{{ count($enabledSites) }}</p>
         </div>
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-5">
-            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Disabled Sites</p>
+        <div class="bg-gray-800 rounded-2xl shadow-lg p-5">
+            <p class="text-sm font-medium text-gray-400">Disabled Sites</p>
             <p class="text-3xl font-bold text-amber-600 dark:text-amber-400 mt-1">{{ count($sites) - count($enabledSites) }}</p>
         </div>
     </div>
 
     {{-- Sites List --}}
-    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+    <div class="bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-700 flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-white flex items-center gap-2">
                 <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
@@ -195,7 +195,7 @@
                 wire:click="loadSites"
                 wire:loading.attr="disabled"
                 wire:target="loadSites"
-                class="inline-flex items-center gap-2 px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-all"
+                class="inline-flex items-center gap-2 px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg transition-all"
             >
                 <svg class="w-4 h-4" wire:loading.class="animate-spin" wire:target="loadSites" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
@@ -213,30 +213,30 @@
                 <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">No files in <code class="font-mono">/etc/nginx/sites-available/</code></p>
             </div>
         @else
-            <div class="divide-y divide-gray-100 dark:divide-gray-700/50">
+            <div class="divide-y divide-gray-700/50">
                 @foreach($sites as $site)
                     @php($isEnabled = in_array($site, $enabledSites, true))
-                    <div wire:key="site-{{ $site }}" class="px-6 py-4 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
+                    <div wire:key="site-{{ $site }}" class="px-6 py-4 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-gray-700/30 transition-colors">
                         {{-- Site name and status --}}
                         <div class="flex items-center gap-3 flex-1 min-w-0">
                             <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0
-                                {{ $isEnabled ? 'bg-emerald-500/10' : 'bg-gray-100 dark:bg-gray-700' }}">
+                                {{ $isEnabled ? 'bg-emerald-500/10' : 'bg-gray-700' }}">
                                 <svg class="w-5 h-5 {{ $isEnabled ? 'text-emerald-500' : 'text-gray-400 dark:text-gray-500' }}"
                                      fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
                                 </svg>
                             </div>
                             <div class="min-w-0">
-                                <p class="font-medium text-gray-900 dark:text-white truncate">{{ $site }}</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">/etc/nginx/sites-available/{{ $site }}</p>
+                                <p class="font-medium text-white truncate">{{ $site }}</p>
+                                <p class="text-xs text-gray-400">/etc/nginx/sites-available/{{ $site }}</p>
                             </div>
                             @if($isEnabled)
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30 flex-shrink-0">
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex-shrink-0">
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                                     Enabled
                                 </span>
                             @else
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-600 flex-shrink-0">
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-700 text-gray-400 border border-gray-600 flex-shrink-0">
                                     <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
                                     Disabled
                                 </span>
@@ -292,7 +292,7 @@
                             {{-- Delete --}}
                             <button
                                 wire:click="confirmDeleteSite('{{ $site }}')"
-                                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/20 rounded-lg transition-all"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded-lg transition-all"
                                 title="Delete Site"
                             >
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -368,35 +368,35 @@
              aria-labelledby="password-confirm-title">
             <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" wire:click="cancelConfirmation"></div>
 
-            <div class="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700/50 overflow-hidden">
-                <div class="flex items-center gap-4 px-6 py-5 border-b border-gray-200 dark:border-gray-700">
-                    <div class="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-500/20 flex items-center justify-center flex-shrink-0">
-                        <svg class="w-5 h-5 text-red-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="relative w-full max-w-md bg-gray-800 rounded-2xl shadow-2xl border border-gray-700/50 overflow-hidden">
+                <div class="flex items-center gap-4 px-6 py-5 border-b border-gray-700">
+                    <div class="w-10 h-10 rounded-xl bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                         </svg>
                     </div>
                     <div>
-                        <h3 id="password-confirm-title" class="text-gray-900 dark:text-white font-semibold">Confirm Destructive Action</h3>
-                        <p class="text-gray-500 dark:text-gray-400 text-sm mt-0.5">{{ $pendingActionLabel }}</p>
+                        <h3 id="password-confirm-title" class="text-white font-semibold">Confirm Destructive Action</h3>
+                        <p class="text-gray-400 text-sm mt-0.5">{{ $pendingActionLabel }}</p>
                     </div>
                 </div>
                 <div class="p-6 space-y-4">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Enter your password to continue:</p>
+                    <p class="text-sm text-gray-400">Enter your password to continue:</p>
                     <div>
                         <input wire:model="confirmPassword"
                                type="password"
                                placeholder="Your password"
                                autofocus
                                wire:keydown.enter="executeConfirmedAction"
-                               class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition">
+                               class="w-full px-4 py-2.5 border border-gray-600 rounded-xl bg-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition">
                         @error('confirmPassword')
                             <p class="mt-1.5 text-sm text-red-500 dark:text-red-400">{{ $message }}</p>
                         @enderror
                     </div>
                 </div>
-                <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-700">
                     <button wire:click="cancelConfirmation"
-                            class="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                            class="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors">
                         Cancel
                     </button>
                     <button wire:click="executeConfirmedAction"

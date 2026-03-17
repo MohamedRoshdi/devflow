@@ -223,8 +223,16 @@
                                 if ($primaryDomain) {
                                     $protocol = $primaryDomain->ssl_enabled ? 'https://' : 'http://';
                                     $url = $protocol . $primaryDomain->domain;
-                                } elseif ($project->port && $project->server) {
-                                    $url = 'http://' . $project->server->ip_address . ':' . $project->port;
+                                } elseif ($project->server) {
+                                    if ($project->deployment_method === 'standard') {
+                                        // Bare metal projects run on port 80 via Nginx — no port suffix
+                                        $url = 'http://' . $project->server->ip_address;
+                                    } elseif ($project->port) {
+                                        // Docker projects run on a custom port
+                                        $url = 'http://' . $project->server->ip_address . ':' . $project->port;
+                                    } else {
+                                        $url = null;
+                                    }
                                 } else {
                                     $url = null;
                                 }
@@ -887,8 +895,71 @@
 
         {{-- Logs Tab --}}
         @if($activeTab === 'logs')
-            <div class="bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-slate-700/50 p-8">
-                <p class="text-gray-500 dark:text-slate-400 text-center">Logs viewer coming soon...</p>
+            <div class="bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-slate-700/50 overflow-hidden">
+                {{-- Logs Header --}}
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border-b border-gray-200 dark:border-slate-700/50 bg-gray-50/80 dark:bg-slate-900/40">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                            <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Log Viewer</h3>
+                        <span class="text-xs text-gray-500 dark:text-slate-400">(last 100 lines)</span>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        {{-- Log Type Selector --}}
+                        <select wire:model.live="selectedLogType"
+                            class="text-sm bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-1.5 text-gray-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50">
+                            <option value="laravel">Laravel App Log</option>
+                            <option value="nginx_access">Nginx Access Log</option>
+                            <option value="nginx_error">Nginx Error Log</option>
+                            <option value="supervisor">Supervisor Worker Log</option>
+                        </select>
+
+                        {{-- Refresh Button --}}
+                        <button wire:click="loadLogs"
+                            wire:loading.attr="disabled"
+                            wire:target="loadLogs"
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 hover:bg-amber-500/30 transition-all disabled:opacity-50">
+                            <svg wire:loading.remove wire:target="loadLogs" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            <svg wire:loading wire:target="loadLogs" class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Log Output --}}
+                <div class="p-4">
+                    @if($logContent === '' && !$logError)
+                        <div class="flex flex-col items-center justify-center py-12 text-center">
+                            <div class="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center mb-3">
+                                <svg class="w-6 h-6 text-amber-400/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                            </div>
+                            <p class="text-gray-500 dark:text-slate-400 text-sm">Select a log type and click <span class="font-medium text-amber-500">Refresh</span> to load logs.</p>
+                        </div>
+                    @elseif($logError)
+                        <div class="flex items-start gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
+                            <svg class="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <div>
+                                <p class="text-sm font-medium text-red-400">Failed to load logs</p>
+                                <p class="text-xs text-red-300/80 mt-1">{{ $logError }}</p>
+                            </div>
+                        </div>
+                    @else
+                        <pre class="font-mono text-xs text-green-300 bg-slate-950 rounded-xl p-4 overflow-x-auto overflow-y-auto max-h-[600px] leading-relaxed whitespace-pre-wrap break-words">{{ $logContent ?: 'Log file is empty.' }}</pre>
+                    @endif
+                </div>
             </div>
         @endif
 

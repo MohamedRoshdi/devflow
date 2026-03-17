@@ -15,9 +15,11 @@ class Fail2banService
     public function getFail2banStatus(Server $server): array
     {
         try {
-            $result = $this->executeCommand($server, 'sudo fail2ban-client status 2>&1');
+            // First check if fail2ban-client binary exists (does not require sudo)
+            $whichResult = $this->executeCommand($server, 'command -v fail2ban-client 2>/dev/null || which fail2ban-client 2>/dev/null');
+            $installed = $whichResult['success'] && ! empty($whichResult['output']);
 
-            if (! $result['success'] && str_contains($result['output'].$result['error'], 'command not found')) {
+            if (! $installed) {
                 return [
                     'installed' => false,
                     'enabled' => false,
@@ -26,8 +28,32 @@ class Fail2banService
                 ];
             }
 
-            if (str_contains($result['output'].$result['error'], 'not running') ||
-                str_contains($result['output'].$result['error'], 'failed to access socket')) {
+            // Use sudo -n (non-interactive) to avoid hanging on password prompt
+            $result = $this->executeCommand($server, 'sudo -n fail2ban-client status 2>/dev/null');
+
+            // If sudo -n fails, fall back with password injection or systemctl check
+            if (! $result['success'] || empty($result['output'])) {
+                // Try systemctl to check running state without needing fail2ban-client sudo
+                $systemctlResult = $this->executeCommand($server, 'systemctl is-active fail2ban 2>/dev/null');
+                $isRunning = $systemctlResult['success'] || trim($systemctlResult['output']) === 'active';
+
+                if (! $isRunning) {
+                    return [
+                        'installed' => true,
+                        'enabled' => false,
+                        'jails' => [],
+                        'message' => 'Fail2ban is installed but not running',
+                    ];
+                }
+
+                // Service is active — try with getSudoPrefix (handles password-based sudo)
+                $sudoPrefix = $this->getSudoPrefix($server);
+                $result = $this->executeCommand($server, "{$sudoPrefix}fail2ban-client status 2>/dev/null");
+            }
+
+            $combined = $result['output'].$result['error'];
+
+            if (str_contains($combined, 'not running') || str_contains($combined, 'failed to access socket')) {
                 return [
                     'installed' => true,
                     'enabled' => false,
@@ -652,12 +678,12 @@ class Fail2banService
                 $this->logEvent(
                     $server,
                     SecurityEvent::TYPE_BULK_UNBAN,
-                    "Unbanned all IPs from all jails"
+                    'Unbanned all IPs from all jails'
                 );
 
                 return [
                     'success' => true,
-                    'message' => "All IPs have been unbanned",
+                    'message' => 'All IPs have been unbanned',
                 ];
             }
 
@@ -681,7 +707,7 @@ class Fail2banService
             // First add to whitelist
             $whitelistResult = $this->addToWhitelist($server, $ip, $jailName);
 
-            if (!$whitelistResult['success']) {
+            if (! $whitelistResult['success']) {
                 return $whitelistResult;
             }
 
@@ -863,7 +889,7 @@ class Fail2banService
     /**
      * Bulk ban multiple IPs at once
      *
-     * @param array<int, string> $ips
+     * @param  array<int, string>  $ips
      * @return array{success: bool, banned: int, failed: int, message: string}
      */
     public function bulkBanIPs(Server $server, array $ips, string $jailName = 'sshd'): array
@@ -894,7 +920,7 @@ class Fail2banService
             'success' => $banned > 0,
             'banned' => $banned,
             'failed' => $failed,
-            'message' => "Banned {$banned} IPs" . ($failed > 0 ? ", {$failed} failed" : ''),
+            'message' => "Banned {$banned} IPs".($failed > 0 ? ", {$failed} failed" : ''),
         ];
     }
 

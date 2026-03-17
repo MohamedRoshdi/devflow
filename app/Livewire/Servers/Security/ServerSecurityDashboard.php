@@ -21,6 +21,9 @@ class ServerSecurityDashboard extends Component
     /** @var array<string, mixed>|null */
     public ?array $securityOverview = null;
 
+    /** Live-calculated score from the current overview (used before a full scan is saved to DB) */
+    public ?int $liveSecurityScore = null;
+
     public bool $isLoading = true;
 
     public bool $isScanning = false;
@@ -62,12 +65,71 @@ class ServerSecurityDashboard extends Component
             $service = app(ServerSecurityService::class);
             $this->securityOverview = $service->getSecurityOverview($this->server);
             $this->server->refresh();
+
+            // Compute a live score from the current overview so the gauge is never "--"
+            // even before a full scan has been saved to the database.
+            if ($this->server->security_score === null) {
+                $this->liveSecurityScore = $this->calculateLiveScore($this->securityOverview);
+            } else {
+                $this->liveSecurityScore = null; // use the persisted DB score
+            }
         } catch (\Exception $e) {
             $this->flashMessage = 'Failed to load security status: '.$e->getMessage();
             $this->flashType = 'error';
         }
 
         $this->isLoading = false;
+    }
+
+    /**
+     * Calculate a security score from the already-fetched overview data,
+     * avoiding a second round of SSH calls.
+     *
+     * @param  array<string, mixed>|null  $overview
+     */
+    protected function calculateLiveScore(?array $overview): int
+    {
+        if ($overview === null) {
+            return 0;
+        }
+
+        $score = 0;
+
+        // Firewall (20 points)
+        if ($overview['ufw']['enabled'] ?? false) {
+            $score += 20;
+        }
+
+        // Fail2ban (15 points)
+        if ($overview['fail2ban']['enabled'] ?? false) {
+            $score += 15;
+        }
+
+        // SSH configuration (up to 40 points)
+        $sshConfig = $overview['ssh']['config'] ?? [];
+        if (! empty($sshConfig)) {
+            if (($sshConfig['port'] ?? 22) !== 22) {
+                $score += 10;
+            }
+            if (! ($sshConfig['root_login_enabled'] ?? true)) {
+                $score += 15;
+            }
+            if (! ($sshConfig['password_auth_enabled'] ?? true)) {
+                $score += 15;
+            }
+        }
+
+        // Open ports (10 points) — fewer ports = better
+        $portCount = count($overview['open_ports']['ports'] ?? []);
+        if ($portCount <= 3) {
+            $score += 10;
+        } elseif ($portCount <= 5) {
+            $score += 7;
+        } elseif ($portCount <= 10) {
+            $score += 4;
+        }
+
+        return (int) min(100, max(0, $score));
     }
 
     public function runSecurityScan(): void
