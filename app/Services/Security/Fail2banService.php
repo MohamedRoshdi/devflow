@@ -108,7 +108,7 @@ class Fail2banService
     {
         try {
             $jailName = escapeshellarg($jailName);
-            $result = $this->executeCommand($server, "sudo fail2ban-client status {$jailName} 2>&1");
+            $result = $this->executeCommand($server, "sudo -n fail2ban-client status {$jailName} 2>&1");
 
             if (! $result['success']) {
                 return [

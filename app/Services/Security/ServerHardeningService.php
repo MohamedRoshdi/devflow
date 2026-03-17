@@ -167,7 +167,7 @@ class ServerHardeningService
         $this->logSecurityEvent(
             $server,
             SecurityEvent::TYPE_SERVER_HARDENED,
-            "Server hardening completed (level: {$hardeningLevel}). Steps: " . implode(', ', array_keys($results)),
+            "Server hardening completed (level: {$hardeningLevel}). Steps: ".implode(', ', array_keys($results)),
             [
                 'hardening_level' => $hardeningLevel,
                 'steps_executed' => array_keys($results),
@@ -213,7 +213,7 @@ class ServerHardeningService
             if (! $configResult['success']) {
                 return [
                     'success' => false,
-                    'message' => 'Failed to update sshd_config: ' . ($configResult['error'] ?: $configResult['output']),
+                    'message' => 'Failed to update sshd_config: '.($configResult['error'] ?: $configResult['output']),
                 ];
             }
 
@@ -250,7 +250,7 @@ class ServerHardeningService
 
                 return [
                     'success' => false,
-                    'message' => 'SSH config validation failed, rolled back: ' . $validateResult['error'],
+                    'message' => 'SSH config validation failed, rolled back: '.$validateResult['error'],
                 ];
             }
 
@@ -291,7 +291,7 @@ class ServerHardeningService
 
             return [
                 'success' => false,
-                'message' => 'Failed to change SSH port: ' . $e->getMessage(),
+                'message' => 'Failed to change SSH port: '.$e->getMessage(),
             ];
         }
     }
@@ -318,12 +318,12 @@ class ServerHardeningService
                     "{$sudoPrefix}apt-get update -qq && {$sudoPrefix}apt-get install -y -qq ufw",
                     120
                 );
-                $steps['install'] = $installResult['success'] ? 'installed' : 'failed: ' . $installResult['error'];
+                $steps['install'] = $installResult['success'] ? 'installed' : 'failed: '.$installResult['error'];
 
                 if (! $installResult['success']) {
                     return [
                         'success' => false,
-                        'message' => 'Failed to install UFW: ' . $installResult['error'],
+                        'message' => 'Failed to install UFW: '.$installResult['error'],
                         'steps' => $steps,
                     ];
                 }
@@ -385,7 +385,7 @@ class ServerHardeningService
 
             return [
                 'success' => false,
-                'message' => 'Failed to setup firewall: ' . $e->getMessage(),
+                'message' => 'Failed to setup firewall: '.$e->getMessage(),
             ];
         }
     }
@@ -414,12 +414,12 @@ class ServerHardeningService
                     "{$sudoPrefix}apt-get update -qq && {$sudoPrefix}apt-get install -y -qq fail2ban",
                     120
                 );
-                $steps['install'] = $installResult['success'] ? 'installed' : 'failed: ' . $installResult['error'];
+                $steps['install'] = $installResult['success'] ? 'installed' : 'failed: '.$installResult['error'];
 
                 if (! $installResult['success']) {
                     return [
                         'success' => false,
-                        'message' => 'Failed to install fail2ban: ' . $installResult['error'],
+                        'message' => 'Failed to install fail2ban: '.$installResult['error'],
                         'steps' => $steps,
                     ];
                 }
@@ -447,12 +447,12 @@ class ServerHardeningService
 
             $writeCommand = "{$sudoPrefix}bash -c 'printf \"{$jailConfig}\\n\" > /etc/fail2ban/jail.local'";
             $writeResult = $this->executeCommand($server, $writeCommand);
-            $steps['jail_config'] = $writeResult['success'] ? 'created' : 'failed: ' . $writeResult['error'];
+            $steps['jail_config'] = $writeResult['success'] ? 'created' : 'failed: '.$writeResult['error'];
 
             if (! $writeResult['success']) {
                 return [
                     'success' => false,
-                    'message' => 'Failed to create jail.local: ' . $writeResult['error'],
+                    'message' => 'Failed to create jail.local: '.$writeResult['error'],
                     'steps' => $steps,
                 ];
             }
@@ -492,7 +492,7 @@ class ServerHardeningService
 
             return [
                 'success' => false,
-                'message' => 'Failed to configure fail2ban: ' . $e->getMessage(),
+                'message' => 'Failed to configure fail2ban: '.$e->getMessage(),
             ];
         }
     }
@@ -514,7 +514,7 @@ class ServerHardeningService
 
             // Build the sysctl configuration content
             $lines = ['# DevFlow Pro - Server Hardening Sysctl Configuration'];
-            $lines[] = '# Applied: ' . now()->toIso8601String();
+            $lines[] = '# Applied: '.now()->toIso8601String();
             $lines[] = '';
 
             foreach (self::SYSCTL_HARDENING_PARAMS as $key => $value) {
@@ -528,7 +528,7 @@ class ServerHardeningService
             if (! $writeResult['success']) {
                 return [
                     'success' => false,
-                    'message' => 'Failed to write sysctl configuration: ' . $writeResult['error'],
+                    'message' => 'Failed to write sysctl configuration: '.$writeResult['error'],
                 ];
             }
 
@@ -538,7 +538,7 @@ class ServerHardeningService
                 if ($result['success']) {
                     $applied[] = "{$key}={$value}";
                 } else {
-                    $failed[] = "{$key}: " . ($result['error'] ?: $result['output']);
+                    $failed[] = "{$key}: ".($result['error'] ?: $result['output']);
                 }
             }
 
@@ -548,7 +548,7 @@ class ServerHardeningService
             $success = count($failed) === 0;
 
             $this->logRemediation($server, 'harden_sysctl', 'kernel_parameters', [
-                'command' => 'Applied ' . count($applied) . ' sysctl parameters via /etc/sysctl.d/99-devflow-hardening.conf',
+                'command' => 'Applied '.count($applied).' sysctl parameters via /etc/sysctl.d/99-devflow-hardening.conf',
                 'rollback' => 'rm /etc/sysctl.d/99-devflow-hardening.conf && sysctl --system',
                 'success' => $success,
             ]);
@@ -570,7 +570,7 @@ class ServerHardeningService
 
             return [
                 'success' => false,
-                'message' => 'Failed to apply sysctl hardening: ' . $e->getMessage(),
+                'message' => 'Failed to apply sysctl hardening: '.$e->getMessage(),
             ];
         }
     }
@@ -631,13 +631,13 @@ class ServerHardeningService
                 if ($stopResult['success']) {
                     $disabled[] = $service;
                 } else {
-                    $failed[] = "{$service}: " . ($stopResult['error'] ?: $stopResult['output']);
+                    $failed[] = "{$service}: ".($stopResult['error'] ?: $stopResult['output']);
                 }
             }
 
             $this->logRemediation($server, 'harden_services', 'disable_unused_services', [
-                'command' => 'Disabled services: ' . implode(', ', $disabled),
-                'rollback' => 'systemctl enable --now ' . implode(' ', $disabled),
+                'command' => 'Disabled services: '.implode(', ', $disabled),
+                'rollback' => 'systemctl enable --now '.implode(' ', $disabled),
                 'success' => count($failed) === 0,
             ]);
 
@@ -657,7 +657,7 @@ class ServerHardeningService
 
             return [
                 'success' => false,
-                'message' => 'Failed to disable unused services: ' . $e->getMessage(),
+                'message' => 'Failed to disable unused services: '.$e->getMessage(),
             ];
         }
     }
@@ -705,7 +705,7 @@ class ServerHardeningService
 
             return [
                 'success' => false,
-                'message' => 'Failed to get hardening status: ' . $e->getMessage(),
+                'message' => 'Failed to get hardening status: '.$e->getMessage(),
             ];
         }
     }
@@ -747,7 +747,7 @@ class ServerHardeningService
             if (! $validateResult['success'] && ! empty(trim($validateResult['error']))) {
                 return [
                     'success' => false,
-                    'message' => 'SSH config validation failed after hardening: ' . $validateResult['error'],
+                    'message' => 'SSH config validation failed after hardening: '.$validateResult['error'],
                     'changes' => $changes,
                 ];
             }
@@ -757,7 +757,7 @@ class ServerHardeningService
             $this->executeCommand($server, $restartCommand, 15);
 
             $this->logRemediation($server, 'harden_ssh', 'ssh_configuration', [
-                'command' => 'SSH hardened: ' . implode(', ', array_filter($changes)),
+                'command' => 'SSH hardened: '.implode(', ', array_filter($changes)),
                 'rollback' => 'Restore /etc/ssh/sshd_config from backup',
                 'success' => true,
             ]);
@@ -771,7 +771,7 @@ class ServerHardeningService
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to harden SSH: ' . $e->getMessage(),
+                'message' => 'Failed to harden SSH: '.$e->getMessage(),
             ];
         }
     }
@@ -816,7 +816,7 @@ class ServerHardeningService
         $sudoPrefix = $this->getSudoPrefix($server);
         $result = $this->executeCommand($server, "{$sudoPrefix}ufw status verbose 2>&1");
 
-        $combinedOutput = $result['output'] . ' ' . $result['error'];
+        $combinedOutput = $result['output'].' '.$result['error'];
 
         $installed = ! str_contains(strtolower($combinedOutput), 'command not found')
             && ! str_contains(strtolower($combinedOutput), 'ufw: not found');
@@ -843,9 +843,9 @@ class ServerHardeningService
      */
     private function getFail2banHardeningStatus(Server $server): array
     {
-        $result = $this->executeCommand($server, 'sudo fail2ban-client status 2>&1');
+        $result = $this->executeCommand($server, 'sudo -n fail2ban-client status 2>&1');
 
-        $combinedOutput = $result['output'] . $result['error'];
+        $combinedOutput = $result['output'].$result['error'];
         $installed = ! str_contains(strtolower($combinedOutput), 'command not found');
         $running = $installed
             && ! str_contains(strtolower($combinedOutput), 'not running')

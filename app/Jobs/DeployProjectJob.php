@@ -8,6 +8,7 @@ use App\Events\DeploymentLogUpdated;
 use App\Models\Deployment;
 use App\Models\PipelineStage;
 use App\Models\Project;
+use App\Notifications\DeploymentCompleted;
 use App\Services\CICD\PipelineExecutionService;
 use App\Services\DatabaseBackupService;
 use App\Services\Deployment\ReleaseDeploymentService;
@@ -59,6 +60,8 @@ class DeployProjectJob implements ShouldQueue
             'deployment_id' => $this->deployment->id,
             'error' => $exception?->getMessage(),
         ]);
+
+        $this->deployment->project?->user?->notify(new DeploymentCompleted($this->deployment, false));
     }
 
     /**
@@ -164,6 +167,8 @@ class DeployProjectJob implements ShouldQueue
                 'deployment_id' => $this->deployment->id,
                 'error' => $e->getMessage(),
             ]);
+
+            $this->deployment->project?->user?->notify(new DeploymentCompleted($this->deployment, false));
         }
     }
 
@@ -207,12 +212,16 @@ class DeployProjectJob implements ShouldQueue
                 'pipeline_run_id' => $pipelineRun->id,
                 'project_id' => $project->id,
             ]);
+
+            $project->user?->notify(new DeploymentCompleted($this->deployment, true));
         } else {
             Log::error('Pipeline deployment failed', [
                 'deployment_id' => $this->deployment->id,
                 'pipeline_run_id' => $pipelineRun->id,
                 'project_id' => $project->id,
             ]);
+
+            $project->user?->notify(new DeploymentCompleted($this->deployment, false));
         }
     }
 
@@ -683,6 +692,8 @@ class DeployProjectJob implements ShouldQueue
             'deployment_id' => $this->deployment->id,
             'project_id' => $project->id,
         ]);
+
+        $project->user?->notify(new DeploymentCompleted($this->deployment, true));
     }
 
     /**
@@ -753,6 +764,8 @@ class DeployProjectJob implements ShouldQueue
                 'project_id' => $project->id,
                 'release_path' => $this->deployment->release_path,
             ]);
+
+            $project->user?->notify(new DeploymentCompleted($this->deployment, true));
         } catch (\Exception $e) {
             $addLog('');
             $addLog("ERROR: {$e->getMessage()}");
@@ -767,6 +780,8 @@ class DeployProjectJob implements ShouldQueue
                 'error_log' => $e->getMessage(),
                 'output_log' => implode("\n", $logs),
             ]);
+
+            $project->user?->notify(new DeploymentCompleted($this->deployment, false));
 
             throw $e;
         }

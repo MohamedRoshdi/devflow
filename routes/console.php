@@ -52,3 +52,6 @@ Schedule::command('canary:monitor')->everyMinute();
 
 // Monitor region health
 Schedule::command('regions:monitor-health')->everyFiveMinutes();
+
+// Backup DevFlow's own database daily at 3 AM
+Schedule::command('devflow:backup-self')->daily()->at('03:00');
