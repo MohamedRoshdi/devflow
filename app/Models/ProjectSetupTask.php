@@ -44,7 +44,17 @@ class ProjectSetupTask extends Model
 
     public const TYPE_NOTIFICATIONS = 'notifications';
 
+    public const TYPE_NGINX = 'nginx';
+
+    public const TYPE_SUPERVISOR = 'supervisor';
+
+    public const TYPE_CRON = 'cron';
+
+    public const TYPE_SHARED_DIRS = 'shared_dirs';
+
     public const TYPE_DEPLOYMENT = 'deployment';
+
+    public const TYPE_POST_DEPLOY_HEALTH = 'post_deploy_health';
 
     // Statuses
     public const STATUS_PENDING = 'pending';
@@ -65,7 +75,12 @@ class ProjectSetupTask extends Model
             self::TYPE_HEALTH_CHECK,
             self::TYPE_BACKUP,
             self::TYPE_NOTIFICATIONS,
+            self::TYPE_NGINX,
+            self::TYPE_SUPERVISOR,
+            self::TYPE_CRON,
+            self::TYPE_SHARED_DIRS,
             self::TYPE_DEPLOYMENT,
+            self::TYPE_POST_DEPLOY_HEALTH,
         ];
     }
 
@@ -77,7 +92,12 @@ class ProjectSetupTask extends Model
             self::TYPE_HEALTH_CHECK => 'Health Checks',
             self::TYPE_BACKUP => 'Database Backup',
             self::TYPE_NOTIFICATIONS => 'Notifications',
+            self::TYPE_NGINX => 'Nginx Vhost',
+            self::TYPE_SUPERVISOR => 'Supervisor Queue Worker',
+            self::TYPE_CRON => 'Cron Scheduler',
+            self::TYPE_SHARED_DIRS => 'Shared Directory Structure',
             self::TYPE_DEPLOYMENT => 'Initial Deployment',
+            self::TYPE_POST_DEPLOY_HEALTH => 'Post-Deploy Health Check',
             default => ucfirst($type),
         };
     }

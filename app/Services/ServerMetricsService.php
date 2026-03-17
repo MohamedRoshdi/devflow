@@ -195,7 +195,7 @@ class ServerMetricsService
     protected function executeSSHCommand(Server $server, string $remoteCommand): string
     {
         $command = $this->buildSSHCommand($server, $remoteCommand);
-        $result = Process::timeout(10)->run($command);
+        $result = Process::timeout(30)->run($command);
 
         if ($result->successful()) {
             return trim($result->output());
@@ -222,7 +222,7 @@ class ServerMetricsService
         $sshOptions = [
             '-o StrictHostKeyChecking=no',
             '-o UserKnownHostsFile=/dev/null',
-            '-o ConnectTimeout=10',
+            '-o ConnectTimeout=30',
             '-o LogLevel=ERROR',
             '-p '.$server->port,
         ];

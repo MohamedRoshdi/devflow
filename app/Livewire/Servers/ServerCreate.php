@@ -9,13 +9,14 @@ use App\Models\Server;
 use App\Services\DockerService;
 use App\Services\ServerConnectivityService;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\Rules\Enum;
 use Livewire\Component;
 
 class ServerCreate extends Component
 {
     public string $name = '';
+
+    public string $serverAddress = '';
 
     public string $hostname = '';
 
@@ -40,16 +41,52 @@ class ServerCreate extends Component
     public string $location_name = '';
 
     /**
+     * Auto-detect whether the user entered an IP address or hostname and
+     * populate the appropriate backing property.
+     */
+    public function updatedServerAddress(): void
+    {
+        $value = trim($this->serverAddress);
+
+        if ($value === '') {
+            $this->ip_address = '';
+            $this->hostname = '';
+
+            return;
+        }
+
+        // IPv4
+        if (preg_match('/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/', $value)) {
+            $this->ip_address = $value;
+            $this->hostname = '';
+
+            return;
+        }
+
+        // IPv6
+        if (filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+            $this->ip_address = $value;
+            $this->hostname = '';
+
+            return;
+        }
+
+        // Hostname
+        $this->hostname = $value;
+        $this->ip_address = '';
+    }
+
+    /**
      * @return array<string, array<int, \Illuminate\Validation\Rules\Enum|string|\Closure>|string>
      */
     public function rules(): array
     {
         return [
             'name' => 'required|string|max:255',
-            'hostname' => 'nullable|string|max:255',
-            'ip_address' => ['nullable', 'ip', function (string $attribute, mixed $value, \Closure $fail): void {
-                if (empty($value) && empty($this->hostname)) {
-                    $fail('Either an IP address or a hostname must be provided.');
+            'serverAddress' => ['required', 'string', 'max:255', function (string $attribute, mixed $value, \Closure $fail): void {
+                $trimmed = trim($value);
+                if ($trimmed === '') {
+                    $fail('An IP address or hostname is required.');
                 }
             }],
             'port' => 'required|integer|min:1|max:65535',

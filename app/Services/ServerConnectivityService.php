@@ -45,7 +45,7 @@ class ServerConnectivityService
             $command = $this->buildSSHCommand($server, 'echo "CONNECTION_TEST"');
 
             $startTime = microtime(true);
-            $result = Process::timeout(10)->run($command);
+            $result = Process::timeout(30)->run($command);
             $latency = (microtime(true) - $startTime) * 1000;
 
             if ($result->successful() && str_contains($result->output(), 'CONNECTION_TEST')) {
@@ -86,7 +86,7 @@ class ServerConnectivityService
         $startTime = microtime(true);
 
         try {
-            $ssh = new SSH2($server->ip_address, $server->port, 10);
+            $ssh = new SSH2($server->ip_address, $server->port, 30);
 
             if (! $ssh->login($server->username, $server->ssh_password)) {
                 return [
@@ -191,7 +191,7 @@ class ServerConnectivityService
             // Use system SSH for key-based authentication
             foreach ($commands as $key => $cmd) {
                 $command = $this->buildSSHCommand($server, $cmd, true);
-                $result = Process::timeout(10)->run($command);
+                $result = Process::timeout(30)->run($command);
 
                 if ($result->successful()) {
                     $output = trim($result->output());
@@ -223,7 +223,7 @@ class ServerConnectivityService
     protected function getPhpseclibConnection(Server $server): ?SSH2
     {
         try {
-            $ssh = new SSH2($server->ip_address, $server->port, 10);
+            $ssh = new SSH2($server->ip_address, $server->port, 30);
 
             if (! $ssh->login($server->username, $server->ssh_password)) {
                 Log::warning('ServerConnectivityService: phpseclib login failed', [
@@ -543,7 +543,7 @@ class ServerConnectivityService
 
             // Use system SSH for key-based authentication
             $command = $this->buildSSHCommand($server, 'uptime -p', true);
-            $result = Process::timeout(10)->run($command);
+            $result = Process::timeout(30)->run($command);
 
             if ($result->successful()) {
                 return [
@@ -590,7 +590,7 @@ class ServerConnectivityService
 
             // Use system SSH for key-based authentication
             $command = $this->buildSSHCommand($server, $diskCommand, true);
-            $result = Process::timeout(10)->run($command);
+            $result = Process::timeout(30)->run($command);
 
             if ($result->successful()) {
                 return [
@@ -637,7 +637,7 @@ class ServerConnectivityService
 
             // Use system SSH for key-based authentication
             $command = $this->buildSSHCommand($server, $memCommand, true);
-            $result = Process::timeout(10)->run($command);
+            $result = Process::timeout(30)->run($command);
 
             if ($result->successful()) {
                 return [
@@ -736,7 +736,7 @@ class ServerConnectivityService
         $sshOptions = [
             '-o StrictHostKeyChecking=no',
             '-o UserKnownHostsFile=/dev/null',
-            '-o ConnectTimeout=10',
+            '-o ConnectTimeout=30',
             '-o LogLevel=ERROR',
             '-p '.$server->port,
         ];

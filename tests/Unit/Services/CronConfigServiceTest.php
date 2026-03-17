@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
-use PHPUnit\Framework\Attributes\Test;
 use App\Models\Project;
 use App\Services\CronConfigService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use Tests\Traits\CreatesServers;
 use Tests\Traits\MocksSSH;
@@ -52,8 +52,24 @@ class CronConfigServiceTest extends TestCase
 
         $config = $this->service->generateConfig($project);
 
-        $this->assertStringContainsString('php artisan schedule:run', $config);
+        $this->assertStringContainsString('artisan schedule:run', $config);
         $this->assertStringContainsString('* * * * *', $config);
+    }
+
+    #[Test]
+    public function it_generates_config_using_deploy_path_when_set(): void
+    {
+        $server = $this->createOnlineServer();
+        $project = Project::factory()->create([
+            'server_id' => $server->id,
+            'slug' => 'deploy-cron-test',
+            'deploy_path' => '/opt/apps/my-cron-app',
+        ]);
+
+        $config = $this->service->generateConfig($project);
+
+        $this->assertStringContainsString('php /opt/apps/my-cron-app/artisan schedule:run', $config);
+        $this->assertStringNotContainsString('/var/www/', $config);
     }
 
     #[Test]
@@ -75,11 +91,13 @@ class CronConfigServiceTest extends TestCase
 
         Process::assertRan(function ($process): bool {
             $command = (string) $process->command;
+
             return str_contains($command, 'tee /etc/cron.d/install-cron-scheduler');
         });
 
         Process::assertRan(function ($process): bool {
             $command = (string) $process->command;
+
             return str_contains($command, 'chmod 644 /etc/cron.d/install-cron-scheduler');
         });
     }
@@ -105,6 +123,7 @@ class CronConfigServiceTest extends TestCase
 
         Process::assertRan(function ($process): bool {
             $command = (string) $process->command;
+
             return str_contains($command, 'rm -f /etc/cron.d/remove-cron-scheduler');
         });
     }

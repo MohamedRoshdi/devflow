@@ -9,9 +9,7 @@ use App\Models\Project;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Process;
-use ZipArchive;
 
 class LogManagerService
 {
@@ -21,17 +19,28 @@ class LogManagerService
     ) {}
 
     /**
+     * Resolve the working path for a deployed project.
+     *
+     * Uses the project's configured deploy_path when set, otherwise falls back
+     * to {projects_path}/{slug}.
+     */
+    private function resolveProjectPath(Project $project): string
+    {
+        return $project->deploy_path
+            ?? ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
+    }
+
+    /**
      * Get recent errors from project logs
      *
-     * @param Project $project
-     * @param int $limit Maximum number of error entries to return
+     * @param  int  $limit  Maximum number of error entries to return
      * @return Collection<int, array{source: string, level: string, message: string, logged_at: Carbon, file_path?: string, line_number?: int}>
      */
     public function getRecentErrors(Project $project, int $limit = 50): Collection
     {
         try {
             $server = $project->server;
-            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
+            $projectPath = $this->resolveProjectPath($project);
 
             // Determine the log path based on framework
             $logPath = match ($project->framework) {
@@ -80,14 +89,13 @@ class LogManagerService
     /**
      * Rotate logs for a project
      *
-     * @param Project $project
      * @return array{rotated: int, archived: string|null, error?: string}
      */
     public function rotateLogs(Project $project): array
     {
         try {
             $server = $project->server;
-            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
+            $projectPath = $this->resolveProjectPath($project);
             $timestamp = now()->format('Y-m-d_His');
 
             // Determine log paths based on framework
@@ -110,8 +118,8 @@ class LogManagerService
 
             foreach ($logPaths as $logPath) {
                 // Create archive name
-                $archiveName = basename($logPath) . ".{$timestamp}";
-                $archiveDir = dirname($logPath) . '/archive';
+                $archiveName = basename($logPath).".{$timestamp}";
+                $archiveDir = dirname($logPath).'/archive';
 
                 // Use sudo for non-root users
                 $sudo = strtolower($server->username ?? 'root') === 'root' ? '' : 'sudo ';
@@ -163,14 +171,13 @@ class LogManagerService
     /**
      * Get log file statistics
      *
-     * @param Project $project
      * @return array{total_size_bytes: int, total_files: int, files: array<int, array{path: string, size_bytes: int, modified_at: string}>, error_count_by_level: array<string, int>}
      */
     public function getLogStats(Project $project): array
     {
         try {
             $server = $project->server;
-            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
+            $projectPath = $this->resolveProjectPath($project);
 
             // Determine log directory based on framework
             $logDir = match ($project->framework) {
@@ -242,16 +249,15 @@ class LogManagerService
     /**
      * Search logs for a specific pattern
      *
-     * @param Project $project
-     * @param string $pattern Search pattern (supports regex)
-     * @param string|null $level Filter by log level (error, warning, info, etc.)
+     * @param  string  $pattern  Search pattern (supports regex)
+     * @param  string|null  $level  Filter by log level (error, warning, info, etc.)
      * @return Collection<int, array{source: string, level: string, message: string, logged_at: Carbon, file_path?: string, line_number?: int}>
      */
     public function searchLogs(Project $project, string $pattern, ?string $level = null): Collection
     {
         try {
             $server = $project->server;
-            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
+            $projectPath = $this->resolveProjectPath($project);
 
             // Determine log path based on framework
             $logPath = match ($project->framework) {
@@ -304,16 +310,16 @@ class LogManagerService
     /**
      * Download log files as archive
      *
-     * @param Project $project
-     * @param \DateTimeInterface|null $from Start date for filtering
-     * @param \DateTimeInterface|null $to End date for filtering
+     * @param  \DateTimeInterface|null  $from  Start date for filtering
+     * @param  \DateTimeInterface|null  $to  End date for filtering
      * @return string Path to the created archive file
+     *
      * @throws \RuntimeException If archive creation fails
      */
     public function exportLogs(Project $project, ?\DateTimeInterface $from = null, ?\DateTimeInterface $to = null): string
     {
         $server = $project->server;
-        $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
+        $projectPath = $this->resolveProjectPath($project);
         $timestamp = now()->format('Y-m-d_His');
 
         // Determine log directory based on framework
@@ -372,7 +378,6 @@ class LogManagerService
     /**
      * Clear all logs for a project (archives them first)
      *
-     * @param Project $project
      * @return bool Success status
      */
     public function clearLogs(Project $project): bool
@@ -386,18 +391,20 @@ class LogManagerService
                     'project_id' => $project->id,
                     'error' => $rotateResult['error'],
                 ]);
+
                 return false;
             }
 
             // For Laravel projects, use the DockerService method
             if (in_array($project->framework, ['Laravel', 'laravel'])) {
                 $result = $this->dockerService->clearLaravelLogs($project);
+
                 return $result['success'] ?? false;
             }
 
             // For other frameworks, manually clear logs
             $server = $project->server;
-            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
+            $projectPath = $this->resolveProjectPath($project);
 
             $logDir = match ($project->framework) {
                 'Symfony', 'symfony' => "{$projectPath}/var/log",
@@ -426,8 +433,7 @@ class LogManagerService
     /**
      * Get real-time log stream (last N lines for Livewire)
      *
-     * @param Project $project
-     * @param int $lines Number of lines to retrieve
+     * @param  int  $lines  Number of lines to retrieve
      * @return array<string, mixed>
      */
     public function tailLogs(Project $project, int $lines = 100): array
@@ -440,7 +446,7 @@ class LogManagerService
 
             // For other frameworks, fetch directly
             $server = $project->server;
-            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
+            $projectPath = $this->resolveProjectPath($project);
 
             $logPath = match ($project->framework) {
                 'Symfony', 'symfony' => "{$projectPath}/var/log/prod.log",
@@ -472,9 +478,8 @@ class LogManagerService
     /**
      * Get deployment logs for a project, optionally filtered by deployment ID.
      *
-     * @param Project $project
-     * @param int|null $deploymentId Filter to a specific deployment
-     * @param int $limit Maximum entries to return
+     * @param  int|null  $deploymentId  Filter to a specific deployment
+     * @param  int  $limit  Maximum entries to return
      * @return Collection<int, array{deployment_id: int, status: string, triggered_by: string|null, started_at: Carbon|null, output_log: string|null, error_log: string|null, commit_hash: string|null, commit_message: string|null}>
      */
     public function getDeploymentLogs(Project $project, ?int $deploymentId = null, int $limit = 50): Collection
@@ -503,8 +508,7 @@ class LogManagerService
     /**
      * Fetch nginx access and error logs for a project via SSH.
      *
-     * @param Project $project
-     * @param int $lines Number of lines to retrieve from each log file
+     * @param  int  $lines  Number of lines to retrieve from each log file
      * @return array{access_log: string, error_log: string}
      */
     public function getProjectNginxLogs(Project $project, int $lines = 100): array
@@ -534,8 +538,7 @@ class LogManagerService
     /**
      * Fetch supervisor worker logs for a project via SSH.
      *
-     * @param Project $project
-     * @param int $lines Number of lines to retrieve
+     * @param  int  $lines  Number of lines to retrieve
      * @return array{worker_log: string}
      */
     public function getProjectSupervisorLogs(Project $project, int $lines = 100): array
@@ -558,8 +561,9 @@ class LogManagerService
     /**
      * Parse a Laravel log file
      *
-     * @param string $path Path to the log file
+     * @param  string  $path  Path to the log file
      * @return Collection<int, array{source: string, level: string, message: string, logged_at: Carbon, file_path?: string, line_number?: int}>
+     *
      * @phpstan-ignore method.unused (Reserved for future direct file parsing)
      */
     private function parseLogFile(string $path): Collection
@@ -582,7 +586,7 @@ class LogManagerService
     /**
      * Parse generic error log format
      *
-     * @param string $content Log file content
+     * @param  string  $content  Log file content
      * @return array<int, array{source: string, level: string, message: string, logged_at: Carbon}>
      */
     private function parseGenericErrorLog(string $content): array
@@ -633,7 +637,6 @@ class LogManagerService
     /**
      * Get error counts by level for a project
      *
-     * @param Project $project
      * @return array<string, int>
      */
     private function getErrorCountsByLevel(Project $project): array
@@ -671,15 +674,14 @@ class LogManagerService
     /**
      * Clean up old archived logs
      *
-     * @param Project $project
-     * @param int $retentionDays Number of days to keep archives
+     * @param  int  $retentionDays  Number of days to keep archives
      * @return int Number of archives deleted
      */
     private function cleanupOldArchives(Project $project, int $retentionDays = 30): int
     {
         try {
             $server = $project->server;
-            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
+            $projectPath = $this->resolveProjectPath($project);
 
             $archiveDir = match ($project->framework) {
                 'Laravel', 'laravel' => "{$projectPath}/storage/logs/archive",
@@ -715,8 +717,7 @@ class LogManagerService
     /**
      * Execute a command on the server
      *
-     * @param \App\Models\Server $server
-     * @param string $command
+     * @param  \App\Models\Server  $server
      * @return array{success: bool, output: string, error?: string}
      */
     private function executeServerCommand($server, string $command): array
@@ -753,21 +754,19 @@ class LogManagerService
     /**
      * Check if server is localhost
      *
-     * @param \App\Models\Server $server
-     * @return bool
+     * @param  \App\Models\Server  $server
      */
     private function isLocalhost($server): bool
     {
         $localIPs = ['127.0.0.1', '::1', 'localhost'];
+
         return in_array($server->ip_address, $localIPs, true);
     }
 
     /**
      * Build SSH command for remote execution
      *
-     * @param \App\Models\Server $server
-     * @param string $remoteCommand
-     * @return string
+     * @param  \App\Models\Server  $server
      */
     private function buildSSHCommand($server, string $remoteCommand): string
     {
@@ -777,7 +776,7 @@ class LogManagerService
         $sshOptions = [
             '-o StrictHostKeyChecking=no',
             '-o UserKnownHostsFile=/dev/null',
-            '-p ' . $port,
+            '-p '.$port,
         ];
 
         if ($server->ssh_key) {
@@ -786,7 +785,7 @@ class LogManagerService
             if ($keyFile !== false) {
                 chmod($keyFile, 0600);
                 file_put_contents($keyFile, $server->ssh_key);
-                $sshOptions[] = '-i ' . $keyFile;
+                $sshOptions[] = '-i '.$keyFile;
 
                 // Register cleanup
                 register_shutdown_function(static function () use ($keyFile): void {

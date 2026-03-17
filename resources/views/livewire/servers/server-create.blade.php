@@ -42,47 +42,30 @@
                 @enderror
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- IP Address -->
-                <div>
-                    <label for="ip_address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        IP Address
-                        <span class="text-gray-400 dark:text-gray-500 text-xs font-normal ml-1">or provide hostname</span>
-                    </label>
-                    <input wire:model="ip_address"
-                           id="ip_address"
-                           type="text"
-                           placeholder="192.168.1.100"
-                           wire:loading.attr="disabled"
-                           wire:target="createServer,testConnection"
-                           aria-describedby="ip_address-help ip_address-error"
-                           @error('ip_address') aria-invalid="true" @enderror
-                           class="input @error('ip_address') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
-                    @error('ip_address')
-                        <p id="ip_address-error" role="alert" class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Hostname -->
-                <div>
-                    <label for="hostname" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Domain/Hostname
-                        <span class="text-gray-400 dark:text-gray-500 text-xs font-normal ml-1">or provide IP</span>
-                    </label>
-                    <input wire:model="hostname"
-                           id="hostname"
-                           type="text"
-                           placeholder="server1.example.com"
-                           wire:loading.attr="disabled"
-                           wire:target="createServer,testConnection"
-                           aria-describedby="hostname-help hostname-error"
-                           @error('hostname') aria-invalid="true" @enderror
-                           class="input @error('hostname') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
-                    <p id="hostname-help" class="text-gray-400 dark:text-gray-500 text-xs mt-1">IP will be resolved from hostname if not provided</p>
-                    @error('hostname')
-                        <p id="hostname-error" role="alert" class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
+            <!-- Server Address -->
+            <div>
+                <label for="serverAddress" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Server Address <span class="text-red-500">*</span></label>
+                <input wire:model.live.debounce.500ms="serverAddress"
+                       id="serverAddress"
+                       type="text"
+                       placeholder="IP address or hostname (e.g. 46.225.186.229 or server.example.com)"
+                       wire:loading.attr="disabled"
+                       wire:target="createServer,testConnection"
+                       aria-describedby="serverAddress-hint serverAddress-error"
+                       @error('serverAddress') aria-invalid="true" @enderror
+                       class="input @error('serverAddress') border-red-500 @enderror disabled:opacity-50 disabled:cursor-not-allowed">
+                <p id="serverAddress-hint" class="text-gray-400 dark:text-gray-500 text-xs mt-1">
+                    @if($ip_address !== '')
+                        <span class="text-green-600 dark:text-green-400">&#10003; IP address detected</span>
+                    @elseif($hostname !== '')
+                        <span class="text-green-600 dark:text-green-400">&#10003; Hostname detected &mdash; IP will be resolved automatically</span>
+                    @else
+                        Enter an IP address or hostname
+                    @endif
+                </p>
+                @error('serverAddress')
+                    <p id="serverAddress-error" role="alert" class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

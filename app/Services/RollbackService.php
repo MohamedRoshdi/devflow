@@ -201,7 +201,7 @@ class RollbackService
      */
     private function backupCurrentState(Project $project): void
     {
-        $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
+        $projectPath = $project->deploy_path ?? ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
         $backupPath = "/var/www/backups/{$project->slug}";
         $timestamp = now()->format('Y-m-d_H-i-s');
 
@@ -223,7 +223,7 @@ class RollbackService
     private function checkoutCommit(Project $project, string $commitHash): array
     {
         try {
-            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
+            $projectPath = $project->deploy_path ?? ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
 
             // Configure safe directory
             $this->executeOnServer($project, "git config --global --add safe.directory {$projectPath} 2>&1 || true");
@@ -259,7 +259,7 @@ class RollbackService
      */
     private function restoreEnvironment(Project $project, array $environmentSnapshot): void
     {
-        $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
+        $projectPath = $project->deploy_path ?? ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
 
         $envContent = '';
         foreach ($environmentSnapshot as $key => $value) {
@@ -311,7 +311,7 @@ class RollbackService
     /**
      * Rollback a bare-metal project to a previous release via symlink swap.
      *
-     * @param Deployment $targetDeployment The deployment to rollback to (must have release_path)
+     * @param  Deployment  $targetDeployment  The deployment to rollback to (must have release_path)
      * @return array{success: bool, deployment?: Deployment, message?: string, error?: string}
      */
     public function rollbackToRelease(Deployment $targetDeployment): array
@@ -334,7 +334,7 @@ class RollbackService
                 'server_id' => $project->server_id,
                 'branch' => $targetDeployment->branch,
                 'commit_hash' => $targetDeployment->commit_hash,
-                'commit_message' => 'Rollback to release: ' . $targetDeployment->commit_message,
+                'commit_message' => 'Rollback to release: '.$targetDeployment->commit_message,
                 'status' => 'running',
                 'triggered_by' => 'rollback',
                 'rollback_deployment_id' => $targetDeployment->id,
@@ -384,7 +384,7 @@ class RollbackService
             ];
 
         } catch (\Exception $e) {
-            Log::error('Release rollback failed: ' . $e->getMessage());
+            Log::error('Release rollback failed: '.$e->getMessage());
 
             if (isset($rollbackDeployment)) {
                 $rollbackDeployment->update([
@@ -395,7 +395,7 @@ class RollbackService
 
                 broadcast(new DeploymentStatusUpdated(
                     $rollbackDeployment,
-                    'Release rollback failed: ' . $e->getMessage(),
+                    'Release rollback failed: '.$e->getMessage(),
                     'error'
                 ))->toOthers();
             }

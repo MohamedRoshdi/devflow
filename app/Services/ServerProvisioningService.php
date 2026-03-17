@@ -695,10 +695,71 @@ class ServerProvisioningService
     }
 
     /**
+     * Prepend "sudo -n" to a command when the server user is not root.
+     * "-n" (non-interactive) prevents sudo from prompting for a password —
+     * the deploy user must have NOPASSWD sudo rights in /etc/sudoers.
+     */
+    protected function sudoWrap(Server $server, string $command): string
+    {
+        if (strtolower($server->username) === 'root') {
+            return $command;
+        }
+
+        return 'sudo -n '.$command;
+    }
+
+    /**
+     * Commands that require root privileges and must be wrapped with sudo
+     * when the server user is not root.
+     */
+    protected function requiresRoot(string $command): bool
+    {
+        $rootPrefixes = [
+            'apt-get',
+            'systemctl',
+            'add-apt-repository',
+            'ufw',
+            'swapon',
+            'mkswap',
+            'fallocate',
+            'sysctl',
+            'DEBIAN_FRONTEND=noninteractive apt-get',
+            'DEBIAN_FRONTEND=noninteractive add-apt-repository',
+        ];
+
+        foreach ($rootPrefixes as $prefix) {
+            if (str_starts_with(ltrim($command), $prefix)) {
+                return true;
+            }
+        }
+
+        // sed/tee writing to system paths
+        if (preg_match('/\b(sed|tee)\b.*\/(etc|proc|sys|usr\/local\/bin)/', $command)) {
+            return true;
+        }
+
+        // chmod on system paths
+        if (preg_match('/\bchmod\b.*\/(swapfile|usr\/local\/bin|etc)/', $command)) {
+            return true;
+        }
+
+        // sudo -u postgres (already explicit sudo)
+        if (str_contains($command, 'sudo -u postgres')) {
+            return false; // already has explicit sudo
+        }
+
+        return false;
+    }
+
+    /**
      * Execute SSH command using ServerMetricsService pattern
      */
     protected function executeSSHCommand(Server $server, string $remoteCommand): string
     {
+        $remoteCommand = $this->requiresRoot($remoteCommand)
+            ? $this->sudoWrap($server, $remoteCommand)
+            : $remoteCommand;
+
         $sshOptions = [
             '-o StrictHostKeyChecking=no',
             '-o UserKnownHostsFile=/dev/null',

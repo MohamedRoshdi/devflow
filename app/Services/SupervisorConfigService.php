@@ -16,13 +16,12 @@ class SupervisorConfigService
     /**
      * Generate supervisor worker config content.
      *
-     * @param Project $project
-     * @param array{queue_names?: string, num_workers?: int, max_tries?: int, max_time?: int, memory_limit?: int} $options
-     * @return string
+     * @param  array{queue_names?: string, num_workers?: int, max_tries?: int, max_time?: int, memory_limit?: int}  $options
      */
     public function generateConfig(Project $project, array $options = []): string
     {
         $slug = $project->validated_slug;
+        $deployPath = $project->deploy_path ?? "/var/www/{$slug}";
         $queueNames = $options['queue_names'] ?? 'default';
         $numWorkers = $options['num_workers'] ?? 2;
         $maxTries = $options['max_tries'] ?? 3;
@@ -32,7 +31,7 @@ class SupervisorConfigService
         return <<<EOF
 [program:{$slug}-worker]
 process_name=%(program_name)s_%(process_num)02d
-command=php /var/www/{$slug}/artisan queue:work --queue={$queueNames} --sleep=3 --tries={$maxTries} --max-time={$maxTime} --memory={$memoryLimit}
+command=php {$deployPath}/artisan queue:work --queue={$queueNames} --sleep=3 --tries={$maxTries} --max-time={$maxTime} --memory={$memoryLimit}
 autostart=true
 autorestart=true
 stopasgroup=true
@@ -40,7 +39,7 @@ killasgroup=true
 user=www-data
 numprocs={$numWorkers}
 redirect_stderr=true
-stdout_logfile=/var/www/{$slug}/storage/logs/worker.log
+stdout_logfile={$deployPath}/storage/logs/worker.log
 stdout_logfile_maxbytes=10MB
 stopwaitsecs=3600
 EOF;
@@ -49,10 +48,7 @@ EOF;
     /**
      * Install supervisor config on remote server.
      *
-     * @param Server $server
-     * @param Project $project
-     * @param array{queue_names?: string, num_workers?: int, max_tries?: int, max_time?: int, memory_limit?: int} $options
-     * @return bool
+     * @param  array{queue_names?: string, num_workers?: int, max_tries?: int, max_time?: int, memory_limit?: int}  $options
      */
     public function installConfig(Server $server, Project $project, array $options = []): bool
     {
@@ -82,10 +78,6 @@ EOF;
 
     /**
      * Remove supervisor config from remote server.
-     *
-     * @param Server $server
-     * @param Project $project
-     * @return bool
      */
     public function removeConfig(Server $server, Project $project): bool
     {
@@ -117,10 +109,6 @@ EOF;
 
     /**
      * Restart queue workers on remote server.
-     *
-     * @param Server $server
-     * @param Project $project
-     * @return bool
      */
     public function restartWorkers(Server $server, Project $project): bool
     {
@@ -131,10 +119,12 @@ EOF;
             'project' => $slug,
         ]);
 
+        $deployPath = $project->deploy_path ?? "/var/www/{$slug}";
+
         // Signal Laravel queue workers to restart after current job
         $this->executeRemoteCommand(
             $server,
-            "cd /var/www/{$slug} && php artisan queue:restart",
+            "php {$deployPath}/artisan queue:restart",
             false
         );
 
@@ -150,10 +140,6 @@ EOF;
 
     /**
      * Check if the supervisor config is installed on a server.
-     *
-     * @param Server $server
-     * @param Project $project
-     * @return bool
      */
     public function isInstalled(Server $server, Project $project): bool
     {
@@ -168,8 +154,6 @@ EOF;
     /**
      * Get worker status from remote server.
      *
-     * @param Server $server
-     * @param Project $project
      * @return array<int, array{name: string, status: string, pid: string, uptime: string}>
      */
     public function getWorkerStatus(Server $server, Project $project): array

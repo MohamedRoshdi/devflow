@@ -9,15 +9,22 @@ use App\Models\BackupSchedule;
 use App\Models\HealthCheck;
 use App\Models\Project;
 use App\Models\ProjectSetupTask;
+use App\Services\Docker\Concerns\ExecutesRemoteCommands;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class ProjectSetupService
 {
+    use ExecutesRemoteCommands;
+
     public function __construct(
         protected ?SSLService $sslService = null,
         protected ?HealthCheckService $healthCheckService = null,
         protected ?NotificationService $notificationService = null,
-        protected ?DatabaseBackupService $backupService = null
+        protected ?DatabaseBackupService $backupService = null,
+        protected ?NginxConfigService $nginxConfigService = null,
+        protected ?SupervisorConfigService $supervisorConfigService = null,
+        protected ?CronConfigService $cronConfigService = null
     ) {}
 
     /**
@@ -54,8 +61,32 @@ class ProjectSetupService
             $tasks[] = ProjectSetupTask::TYPE_NOTIFICATIONS;
         }
 
+        // Bare-metal only: infrastructure setup runs before initial deployment
+        if ($project->deployment_method === 'standard') {
+            if ($config['nginx'] ?? true) {
+                $tasks[] = ProjectSetupTask::TYPE_NGINX;
+            }
+
+            if ($config['supervisor'] ?? true) {
+                $tasks[] = ProjectSetupTask::TYPE_SUPERVISOR;
+            }
+
+            if ($config['cron'] ?? true) {
+                $tasks[] = ProjectSetupTask::TYPE_CRON;
+            }
+
+            if ($config['shared_dirs'] ?? true) {
+                $tasks[] = ProjectSetupTask::TYPE_SHARED_DIRS;
+            }
+        }
+
         if ($config['deployment'] ?? false) {
             $tasks[] = ProjectSetupTask::TYPE_DEPLOYMENT;
+        }
+
+        // Bare-metal only: post-deploy health check runs after deployment
+        if ($project->deployment_method === 'standard' && ($config['post_deploy_health'] ?? true)) {
+            $tasks[] = ProjectSetupTask::TYPE_POST_DEPLOY_HEALTH;
         }
 
         // Create task records
@@ -115,7 +146,12 @@ class ProjectSetupService
             ProjectSetupTask::TYPE_HEALTH_CHECK => $this->setupHealthChecks($project, $task),
             ProjectSetupTask::TYPE_BACKUP => $this->setupBackup($project, $task),
             ProjectSetupTask::TYPE_NOTIFICATIONS => $this->setupNotifications($project, $task),
+            ProjectSetupTask::TYPE_NGINX => $this->setupNginx($project, $task),
+            ProjectSetupTask::TYPE_SUPERVISOR => $this->setupSupervisor($project, $task),
+            ProjectSetupTask::TYPE_CRON => $this->setupCron($project, $task),
+            ProjectSetupTask::TYPE_SHARED_DIRS => $this->setupSharedDirs($project, $task),
             ProjectSetupTask::TYPE_DEPLOYMENT => $this->setupDeployment($project, $task),
+            ProjectSetupTask::TYPE_POST_DEPLOY_HEALTH => $this->setupPostDeployHealth($project, $task),
             default => $task->markAsSkipped('Unknown task type'),
         };
 
@@ -271,6 +307,183 @@ class ProjectSetupService
         } else {
             $task->markAsCompleted('Deployment ready', [
                 'note' => 'Deploy manually from the project page.',
+            ]);
+        }
+    }
+
+    /**
+     * Install Nginx vhost on the project's server (bare-metal only).
+     */
+    protected function setupNginx(Project $project, ProjectSetupTask $task): void
+    {
+        $task->updateProgress(10, 'Locating primary domain...');
+
+        $server = $project->server;
+
+        if (! $server) {
+            $task->markAsFailed('No server attached to project');
+
+            return;
+        }
+
+        $domain = $project->domains()->where('is_primary', true)->first();
+
+        if (! $domain) {
+            $task->markAsFailed('No primary domain found');
+
+            return;
+        }
+
+        $task->updateProgress(40, 'Generating and installing Nginx vhost...');
+
+        $service = $this->nginxConfigService ?? new NginxConfigService;
+        $service->installVhost($server, $project, $domain);
+
+        $task->markAsCompleted('Nginx vhost installed and Nginx reloaded', [
+            'domain' => $domain->domain,
+            'config' => "/etc/nginx/sites-available/{$project->validated_slug}",
+        ]);
+    }
+
+    /**
+     * Install Supervisor queue worker config on the project's server (bare-metal only).
+     */
+    protected function setupSupervisor(Project $project, ProjectSetupTask $task): void
+    {
+        $task->updateProgress(20, 'Installing Supervisor queue worker config...');
+
+        $server = $project->server;
+
+        if (! $server) {
+            $task->markAsFailed('No server attached to project');
+
+            return;
+        }
+
+        $service = $this->supervisorConfigService ?? new SupervisorConfigService;
+        $service->installConfig($server, $project);
+
+        $task->markAsCompleted('Supervisor queue worker installed and activated', [
+            'config' => "/etc/supervisor/conf.d/{$project->validated_slug}-worker.conf",
+        ]);
+    }
+
+    /**
+     * Install cron scheduler entry on the project's server (bare-metal only).
+     */
+    protected function setupCron(Project $project, ProjectSetupTask $task): void
+    {
+        $task->updateProgress(20, 'Installing cron scheduler entry...');
+
+        $server = $project->server;
+
+        if (! $server) {
+            $task->markAsFailed('No server attached to project');
+
+            return;
+        }
+
+        $service = $this->cronConfigService ?? new CronConfigService;
+        $service->installConfig($server, $project);
+
+        $task->markAsCompleted('Cron scheduler entry installed', [
+            'config' => "/etc/cron.d/{$project->slug}-scheduler",
+        ]);
+    }
+
+    /**
+     * Create shared directory structure on the project's server (bare-metal only).
+     */
+    protected function setupSharedDirs(Project $project, ProjectSetupTask $task): void
+    {
+        $task->updateProgress(10, 'Creating shared directory structure...');
+
+        $server = $project->server;
+
+        if (! $server) {
+            $task->markAsFailed('No server attached to project');
+
+            return;
+        }
+
+        $slug = $project->validated_slug;
+        $deployPath = $project->deploy_path ?? ((string) config('devflow.projects_path', '/var/www'))."/{$slug}";
+        $sharedBase = dirname($deployPath)."/../shared/{$slug}";
+
+        $task->updateProgress(40, 'Creating storage directories...');
+
+        // Build a single compound command to keep the SSH round-trips to one
+        $mkdirCmd = implode(' && ', [
+            "mkdir -p {$sharedBase}/storage/app/public",
+            "mkdir -p {$sharedBase}/storage/framework/cache",
+            "mkdir -p {$sharedBase}/storage/framework/sessions",
+            "mkdir -p {$sharedBase}/storage/framework/views",
+            "mkdir -p {$sharedBase}/storage/logs",
+        ]);
+
+        $this->executeRemoteCommand($server, $mkdirCmd);
+
+        $task->updateProgress(80, 'Setting ownership...');
+
+        $this->executeRemoteCommand($server, "chown -R www-data:www-data {$sharedBase}");
+
+        $task->markAsCompleted('Shared directory structure created', [
+            'path' => $sharedBase,
+        ]);
+    }
+
+    /**
+     * Perform an HTTP health check against the project's primary domain after deployment.
+     */
+    protected function setupPostDeployHealth(Project $project, ProjectSetupTask $task): void
+    {
+        $task->updateProgress(20, 'Locating primary domain...');
+
+        $domain = $project->domains()->where('is_primary', true)->first();
+
+        if (! $domain) {
+            $task->markAsSkipped('No primary domain — skipping post-deploy health check');
+
+            return;
+        }
+
+        $url = "http://{$domain->domain}/";
+
+        $task->updateProgress(50, "Checking {$url} ...");
+
+        try {
+            $response = Http::timeout(15)->get($url);
+            $statusCode = $response->status();
+
+            if ($response->successful()) {
+                $task->markAsCompleted('Site is up and responding', [
+                    'url' => $url,
+                    'http_status' => $statusCode,
+                ]);
+            } else {
+                Log::warning('Post-deploy health check returned non-2xx', [
+                    'project' => $project->slug,
+                    'url' => $url,
+                    'http_status' => $statusCode,
+                ]);
+
+                $task->markAsCompleted("Site responded with HTTP {$statusCode} — review application logs", [
+                    'url' => $url,
+                    'http_status' => $statusCode,
+                    'note' => 'Non-2xx response. Auto-rollback not triggered — investigate manually.',
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::warning('Post-deploy health check failed to connect', [
+                'project' => $project->slug,
+                'url' => $url,
+                'error' => $e->getMessage(),
+            ]);
+
+            $task->markAsCompleted('Could not reach site — verify server and DNS are configured', [
+                'url' => $url,
+                'error' => $e->getMessage(),
+                'note' => 'Connection failed. Auto-rollback not triggered — investigate manually.',
             ]);
         }
     }

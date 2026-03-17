@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
-use PHPUnit\Framework\Attributes\Test;
 use App\Models\Project;
 use App\Services\SupervisorConfigService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use Tests\Traits\CreatesServers;
 use Tests\Traits\MocksSSH;
@@ -83,6 +83,48 @@ class SupervisorConfigServiceTest extends TestCase
     }
 
     #[Test]
+    public function it_generates_config_using_deploy_path_when_set(): void
+    {
+        $server = $this->createOnlineServer();
+        $project = Project::factory()->create([
+            'server_id' => $server->id,
+            'slug' => 'deploy-path-test',
+            'deploy_path' => '/opt/apps/my-app',
+        ]);
+
+        $config = $this->service->generateConfig($project);
+
+        $this->assertStringContainsString('php /opt/apps/my-app/artisan queue:work', $config);
+        $this->assertStringContainsString('stdout_logfile=/opt/apps/my-app/storage/logs/worker.log', $config);
+        $this->assertStringNotContainsString('/var/www/', $config);
+    }
+
+    #[Test]
+    public function it_restarts_workers_using_deploy_path_when_set(): void
+    {
+        $server = $this->createOnlineServer();
+        $project = Project::factory()->create([
+            'server_id' => $server->id,
+            'slug' => 'deploy-restart-test',
+            'deploy_path' => '/opt/apps/my-app',
+        ]);
+
+        Process::fake([
+            '*' => Process::result(output: 'Success'),
+        ]);
+
+        Log::spy();
+
+        $this->service->restartWorkers($server, $project);
+
+        Process::assertRan(function ($process): bool {
+            $command = (string) $process->command;
+
+            return str_contains($command, 'php /opt/apps/my-app/artisan queue:restart');
+        });
+    }
+
+    #[Test]
     public function it_installs_config_on_server(): void
     {
         $server = $this->createOnlineServer();
@@ -101,6 +143,7 @@ class SupervisorConfigServiceTest extends TestCase
 
         Process::assertRan(function ($process): bool {
             $command = (string) $process->command;
+
             return str_contains($command, 'tee /etc/supervisor/conf.d/install-sv-worker.conf');
         });
     }
@@ -122,6 +165,7 @@ class SupervisorConfigServiceTest extends TestCase
 
         Process::assertRan(function ($process): bool {
             $command = (string) $process->command;
+
             return str_contains($command, 'supervisorctl reread') && str_contains($command, 'supervisorctl update');
         });
     }
@@ -147,6 +191,7 @@ class SupervisorConfigServiceTest extends TestCase
 
         Process::assertRan(function ($process): bool {
             $command = (string) $process->command;
+
             return str_contains($command, 'supervisorctl stop stop-first-worker:*');
         });
     }
@@ -170,11 +215,13 @@ class SupervisorConfigServiceTest extends TestCase
 
         Process::assertRan(function ($process): bool {
             $command = (string) $process->command;
+
             return str_contains($command, 'rm -f /etc/supervisor/conf.d/update-after-rm-worker.conf');
         });
 
         Process::assertRan(function ($process): bool {
             $command = (string) $process->command;
+
             return str_contains($command, 'supervisorctl reread') && str_contains($command, 'supervisorctl update');
         });
     }
@@ -200,11 +247,13 @@ class SupervisorConfigServiceTest extends TestCase
 
         Process::assertRan(function ($process): bool {
             $command = (string) $process->command;
-            return str_contains($command, 'php artisan queue:restart');
+
+            return str_contains($command, 'artisan queue:restart');
         });
 
         Process::assertRan(function ($process): bool {
             $command = (string) $process->command;
+
             return str_contains($command, 'supervisorctl restart restart-test-worker:*');
         });
     }

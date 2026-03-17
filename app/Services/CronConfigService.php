@@ -17,17 +17,15 @@ class CronConfigService
      * Generate cron config content for a project.
      *
      * Produces a valid /etc/cron.d/ file with the required user field.
-     *
-     * @param Project $project
-     * @return string
      */
     public function generateConfig(Project $project): string
     {
         $slug = $project->slug;
+        $deployPath = $project->deploy_path ?? "/var/www/{$slug}";
 
         return <<<CRON
         # DevFlow managed cron for {$slug}
-        * * * * * www-data cd /var/www/{$slug} && php artisan schedule:run >> /dev/null 2>&1
+        * * * * * www-data php {$deployPath}/artisan schedule:run >> /dev/null 2>&1
 
         CRON;
     }
@@ -37,9 +35,6 @@ class CronConfigService
      *
      * Writes to /etc/cron.d/{slug}-scheduler with correct permissions (644).
      *
-     * @param Server $server
-     * @param Project $project
-     * @return bool
      *
      * @throws \RuntimeException
      */
@@ -75,10 +70,6 @@ class CronConfigService
 
     /**
      * Remove the cron config from a server.
-     *
-     * @param Server $server
-     * @param Project $project
-     * @return bool
      */
     public function removeConfig(Server $server, Project $project): bool
     {
@@ -97,10 +88,6 @@ class CronConfigService
 
     /**
      * Check if the cron config is installed on a server.
-     *
-     * @param Server $server
-     * @param Project $project
-     * @return bool
      */
     public function isInstalled(Server $server, Project $project): bool
     {

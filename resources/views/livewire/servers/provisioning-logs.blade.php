@@ -24,8 +24,8 @@
                     </div>
 
                     <div>
-                        <h1 class="text-3xl font-bold text-white">Provisioning Logs</h1>
-                        <p class="text-white/80 mt-2">{{ $server->name }} - Provisioning History</p>
+                        <h1 class="text-3xl font-bold text-white">Server Provisioning</h1>
+                        <p class="text-white/80 mt-2">{{ $server->name }} — Configure &amp; Deploy</p>
                         <div class="flex flex-wrap items-center gap-3 mt-3">
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white/10 text-white/90">
                                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -39,11 +39,31 @@
                                 </svg>
                                 {{ $this->stats['total'] }} Total Logs
                             </span>
+                            @if($server->provision_status)
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                    {{ match($server->provision_status) {
+                                        'completed' => 'bg-green-500/20 text-green-300 border border-green-500/30',
+                                        'provisioning' => 'bg-blue-500/20 text-blue-300 border border-blue-500/30',
+                                        'failed' => 'bg-red-500/20 text-red-300 border border-red-500/30',
+                                        default => 'bg-white/10 text-white/80',
+                                    } }}">
+                                    {{ ucfirst($server->provision_status) }}
+                                </span>
+                            @endif
                         </div>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-3">
+                    @if(!$showProvisioningForm)
+                        <button wire:click="$set('showProvisioningForm', true)"
+                                class="px-4 py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-xl transition-all duration-200 font-medium flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            {{ $server->isProvisioned() ? 'Re-provision' : 'Start Provisioning' }}
+                        </button>
+                    @endif
                     <a href="{{ route('servers.show', $server) }}" class="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all duration-200 font-medium flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -139,7 +159,367 @@
         </div>
     </div>
 
-    <!-- Filters and Logs -->
+    {{-- ====================================================
+         Provisioning Wizard Form
+    ===================================================== --}}
+    @if($showProvisioningForm)
+        <div class="bg-gray-800 border border-gray-700 rounded-2xl shadow-xl mb-8 overflow-hidden">
+            <!-- Form Header -->
+            <div class="px-6 py-5 border-b border-gray-700 bg-gradient-to-r from-purple-900/40 to-indigo-900/40 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-purple-500/20 rounded-lg">
+                        <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-semibold text-white">Provision Server</h2>
+                        <p class="text-sm text-gray-400">Install packages and configure your server</p>
+                    </div>
+                </div>
+                @if($this->stats['total'] > 0)
+                    <button wire:click="$set('showProvisioningForm', false)"
+                            class="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                @endif
+            </div>
+
+            <div class="px-6 py-6 space-y-8">
+                {{-- Package Selection --}}
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                        </svg>
+                        Packages to Install
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {{-- PHP --}}
+                        <label class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-700 rounded-xl cursor-pointer hover:border-purple-500/50 hover:bg-gray-900/80 transition-all group">
+                            <input type="checkbox" wire:model.live="installPHP"
+                                   class="w-4 h-4 rounded text-purple-600 bg-gray-700 border-gray-600 focus:ring-purple-500 focus:ring-offset-gray-900">
+                            <div class="flex items-center gap-2 flex-1">
+                                <span class="text-lg">🐘</span>
+                                <div>
+                                    <span class="text-sm font-medium text-white">PHP</span>
+                                    <span class="text-xs text-gray-400 ml-1">(version below)</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        {{-- Nginx --}}
+                        <label class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-700 rounded-xl cursor-pointer hover:border-purple-500/50 hover:bg-gray-900/80 transition-all group">
+                            <input type="checkbox" wire:model.live="installNginx"
+                                   class="w-4 h-4 rounded text-purple-600 bg-gray-700 border-gray-600 focus:ring-purple-500 focus:ring-offset-gray-900">
+                            <div class="flex items-center gap-2 flex-1">
+                                <span class="text-lg">🌐</span>
+                                <div>
+                                    <span class="text-sm font-medium text-white">Nginx</span>
+                                    <span class="text-xs text-gray-500 block">Web server</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        {{-- PostgreSQL --}}
+                        <label class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-700 rounded-xl cursor-pointer hover:border-purple-500/50 hover:bg-gray-900/80 transition-all group">
+                            <input type="checkbox" wire:model.live="installPostgreSQL"
+                                   class="w-4 h-4 rounded text-purple-600 bg-gray-700 border-gray-600 focus:ring-purple-500 focus:ring-offset-gray-900">
+                            <div class="flex items-center gap-2 flex-1">
+                                <span class="text-lg">🐘</span>
+                                <div>
+                                    <span class="text-sm font-medium text-white">PostgreSQL 16</span>
+                                    <span class="text-xs text-gray-500 block">Relational database</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        {{-- MySQL --}}
+                        <label class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-700 rounded-xl cursor-pointer hover:border-purple-500/50 hover:bg-gray-900/80 transition-all group">
+                            <input type="checkbox" wire:model.live="installMySQL"
+                                   class="w-4 h-4 rounded text-purple-600 bg-gray-700 border-gray-600 focus:ring-purple-500 focus:ring-offset-gray-900">
+                            <div class="flex items-center gap-2 flex-1">
+                                <span class="text-lg">🗄️</span>
+                                <div>
+                                    <span class="text-sm font-medium text-white">MySQL</span>
+                                    <span class="text-xs text-gray-500 block">Relational database</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        {{-- Redis --}}
+                        <label class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-700 rounded-xl cursor-pointer hover:border-purple-500/50 hover:bg-gray-900/80 transition-all group">
+                            <input type="checkbox" wire:model.live="installRedis"
+                                   class="w-4 h-4 rounded text-purple-600 bg-gray-700 border-gray-600 focus:ring-purple-500 focus:ring-offset-gray-900">
+                            <div class="flex items-center gap-2 flex-1">
+                                <span class="text-lg">⚡</span>
+                                <div>
+                                    <span class="text-sm font-medium text-white">Redis</span>
+                                    <span class="text-xs text-gray-500 block">In-memory cache</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        {{-- Composer --}}
+                        <label class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-700 rounded-xl cursor-pointer hover:border-purple-500/50 hover:bg-gray-900/80 transition-all group">
+                            <input type="checkbox" wire:model.live="installComposer"
+                                   class="w-4 h-4 rounded text-purple-600 bg-gray-700 border-gray-600 focus:ring-purple-500 focus:ring-offset-gray-900">
+                            <div class="flex items-center gap-2 flex-1">
+                                <span class="text-lg">🎼</span>
+                                <div>
+                                    <span class="text-sm font-medium text-white">Composer</span>
+                                    <span class="text-xs text-gray-500 block">PHP dependency manager</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        {{-- Node.js --}}
+                        <label class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-700 rounded-xl cursor-pointer hover:border-purple-500/50 hover:bg-gray-900/80 transition-all group">
+                            <input type="checkbox" wire:model.live="installNodeJS"
+                                   class="w-4 h-4 rounded text-purple-600 bg-gray-700 border-gray-600 focus:ring-purple-500 focus:ring-offset-gray-900">
+                            <div class="flex items-center gap-2 flex-1">
+                                <span class="text-lg">⬢</span>
+                                <div>
+                                    <span class="text-sm font-medium text-white">Node.js</span>
+                                    <span class="text-xs text-gray-400 ml-1">(version below)</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        {{-- Firewall --}}
+                        <label class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-700 rounded-xl cursor-pointer hover:border-purple-500/50 hover:bg-gray-900/80 transition-all group">
+                            <input type="checkbox" wire:model.live="configureFirewall"
+                                   class="w-4 h-4 rounded text-purple-600 bg-gray-700 border-gray-600 focus:ring-purple-500 focus:ring-offset-gray-900">
+                            <div class="flex items-center gap-2 flex-1">
+                                <span class="text-lg">🔥</span>
+                                <div>
+                                    <span class="text-sm font-medium text-white">UFW Firewall</span>
+                                    <span class="text-xs text-gray-500 block">Opens ports 22, 80, 443</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        {{-- Swap --}}
+                        <label class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-700 rounded-xl cursor-pointer hover:border-purple-500/50 hover:bg-gray-900/80 transition-all group">
+                            <input type="checkbox" wire:model.live="setupSwap"
+                                   class="w-4 h-4 rounded text-purple-600 bg-gray-700 border-gray-600 focus:ring-purple-500 focus:ring-offset-gray-900">
+                            <div class="flex items-center gap-2 flex-1">
+                                <span class="text-lg">💾</span>
+                                <div>
+                                    <span class="text-sm font-medium text-white">Swap File</span>
+                                    <span class="text-xs text-gray-400 ml-1">(size below)</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        {{-- SSH Hardening --}}
+                        <label class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-700 rounded-xl cursor-pointer hover:border-purple-500/50 hover:bg-gray-900/80 transition-all group">
+                            <input type="checkbox" wire:model.live="secureSSH"
+                                   class="w-4 h-4 rounded text-purple-600 bg-gray-700 border-gray-600 focus:ring-purple-500 focus:ring-offset-gray-900">
+                            <div class="flex items-center gap-2 flex-1">
+                                <span class="text-lg">🔐</span>
+                                <div>
+                                    <span class="text-sm font-medium text-white">SSH Hardening</span>
+                                    <span class="text-xs text-gray-500 block">Disable password auth</span>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                {{-- Version Configuration --}}
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        Version &amp; Size Options
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        {{-- PHP Version --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">
+                                PHP Version
+                                @if(!$installPHP)
+                                    <span class="text-xs text-gray-500 font-normal">(PHP not selected)</span>
+                                @endif
+                            </label>
+                            <select wire:model.blur="phpVersion"
+                                    @disabled(!$installPHP)
+                                    class="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                                <option value="8.1">PHP 8.1</option>
+                                <option value="8.2">PHP 8.2</option>
+                                <option value="8.3">PHP 8.3</option>
+                                <option value="8.4">PHP 8.4</option>
+                            </select>
+                            @error('phpVersion')
+                                <p class="mt-1 text-xs text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Node.js Version --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">
+                                Node.js Version
+                                @if(!$installNodeJS)
+                                    <span class="text-xs text-gray-500 font-normal">(Node.js not selected)</span>
+                                @endif
+                            </label>
+                            <select wire:model.blur="nodeVersion"
+                                    @disabled(!$installNodeJS)
+                                    class="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                                <option value="18">Node.js 18 LTS</option>
+                                <option value="20">Node.js 20 LTS</option>
+                                <option value="22">Node.js 22 Current</option>
+                            </select>
+                            @error('nodeVersion')
+                                <p class="mt-1 text-xs text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Swap Size --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">
+                                Swap Size (GB)
+                                @if(!$setupSwap)
+                                    <span class="text-xs text-gray-500 font-normal">(Swap not selected)</span>
+                                @endif
+                            </label>
+                            <input type="number" wire:model.blur="swapSizeGB" min="1" max="32"
+                                   @disabled(!$setupSwap)
+                                   class="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                            @error('swapSizeGB')
+                                <p class="mt-1 text-xs text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Database & Service Credentials --}}
+                @if($installPostgreSQL || $installMySQL || $installRedis)
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                            </svg>
+                            Credentials &amp; Configuration
+                        </h3>
+                        <div class="space-y-5">
+                            {{-- PostgreSQL --}}
+                            @if($installPostgreSQL)
+                                <div class="p-5 bg-gray-900/60 border border-gray-700 rounded-xl space-y-4">
+                                    <h4 class="text-sm font-semibold text-blue-400 flex items-center gap-2">
+                                        <span>🐘</span> PostgreSQL Configuration
+                                    </h4>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-300 mb-2">Password</label>
+                                            <input type="password" wire:model.blur="postgresqlPassword"
+                                                   class="w-full px-3 py-2.5 bg-gray-800 border border-gray-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                                                   placeholder="PostgreSQL password">
+                                            @error('postgresqlPassword')
+                                                <p class="mt-1 text-xs text-red-400">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-300 mb-2">Databases</label>
+                                            <input type="text" wire:model.blur="postgresqlDatabases"
+                                                   class="w-full px-3 py-2.5 bg-gray-800 border border-gray-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                                                   placeholder="app_db, admin_db (comma-separated)">
+                                            <p class="mt-1 text-xs text-gray-500">Leave empty to create databases later</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                            {{-- MySQL --}}
+                            @if($installMySQL)
+                                <div class="p-5 bg-gray-900/60 border border-gray-700 rounded-xl">
+                                    <h4 class="text-sm font-semibold text-orange-400 flex items-center gap-2 mb-4">
+                                        <span>🗄️</span> MySQL Configuration
+                                    </h4>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-300 mb-2">Root Password</label>
+                                        <input type="password" wire:model.blur="mysqlPassword"
+                                               class="w-full px-3 py-2.5 bg-gray-800 border border-gray-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                                               placeholder="MySQL root password">
+                                        @error('mysqlPassword')
+                                            <p class="mt-1 text-xs text-red-400">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
+                            @endif
+
+                            {{-- Redis --}}
+                            @if($installRedis)
+                                <div class="p-5 bg-gray-900/60 border border-gray-700 rounded-xl space-y-4">
+                                    <h4 class="text-sm font-semibold text-red-400 flex items-center gap-2">
+                                        <span>⚡</span> Redis Configuration
+                                    </h4>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-300 mb-2">Password <span class="text-gray-500 font-normal">(optional)</span></label>
+                                            <input type="password" wire:model.blur="redisPassword"
+                                                   class="w-full px-3 py-2.5 bg-gray-800 border border-gray-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                                                   placeholder="Leave empty for no auth">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-300 mb-2">Max Memory (MB)</label>
+                                            <input type="number" wire:model.blur="redisMaxMemoryMB" min="64" max="8192"
+                                                   class="w-full px-3 py-2.5 bg-gray-800 border border-gray-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
+                                            @error('redisMaxMemoryMB')
+                                                <p class="mt-1 text-xs text-red-400">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Warning notice for SSH hardening --}}
+                @if($secureSSH)
+                    <div class="flex items-start gap-3 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+                        <svg class="w-5 h-5 text-amber-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        <p class="text-sm text-amber-300">
+                            <strong>SSH Hardening</strong> will disable password authentication and restrict root login.
+                            Ensure your SSH key is already added to the server before proceeding.
+                        </p>
+                    </div>
+                @endif
+
+                {{-- Submit Button --}}
+                <div class="pt-2">
+                    <button wire:click="startProvisioning"
+                            wire:loading.attr="disabled"
+                            class="w-full py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-purple-900/30 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3 text-base">
+                        <svg wire:loading.remove wire:target="startProvisioning" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z"></path>
+                        </svg>
+                        <svg wire:loading wire:target="startProvisioning" class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span wire:loading.remove wire:target="startProvisioning">Start Provisioning</span>
+                        <span wire:loading wire:target="startProvisioning">Starting provisioning...</span>
+                    </button>
+                    <p class="mt-2 text-center text-xs text-gray-500">
+                        Provisioning runs in the background and may take 5–15 minutes depending on selected packages.
+                    </p>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- ====================================================
+         Provisioning Timeline / Logs
+    ===================================================== --}}
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl transition-colors overflow-hidden">
         <!-- Header with Filters -->
         <div class="p-6 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-750">
@@ -360,7 +740,7 @@
                         @if($statusFilter !== 'all' || $dateRange !== 'all')
                             No logs match your current filters. Try adjusting your filters.
                         @else
-                            This server doesn't have any provisioning logs yet.
+                            This server hasn't been provisioned yet. Use the form above to get started.
                         @endif
                     </p>
                     @if($statusFilter !== 'all' || $dateRange !== 'all')
@@ -370,6 +750,14 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                             </svg>
                             Reset Filters
+                        </button>
+                    @elseif(!$showProvisioningForm)
+                        <button wire:click="$set('showProvisioningForm', true)"
+                                class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-medium transition-all inline-flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z"></path>
+                            </svg>
+                            Start Provisioning
                         </button>
                     @endif
                 </div>

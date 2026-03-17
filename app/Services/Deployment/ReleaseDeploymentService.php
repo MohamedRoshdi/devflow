@@ -22,15 +22,12 @@ class ReleaseDeploymentService
     /**
      * Execute a symlink-based zero-downtime deployment.
      *
-     * Directory layout:
-     *   /var/www/{slug}                         -> symlink to current release
-     *   /var/www/releases/{slug}/{timestamp}/   -> each release's code
-     *   /var/www/shared/{slug}/.env             -> shared env file
-     *   /var/www/shared/{slug}/storage/         -> shared storage dir
+     * Directory layout (base = getBasePath()):
+     *   {base}                            -> symlink to current release
+     *   {base}/../releases/{slug}/{ts}/   -> each release's code
+     *   {base}/../shared/{slug}/.env      -> shared env file
+     *   {base}/../shared/{slug}/storage/  -> shared storage dir
      *
-     * @param Project $project
-     * @param Deployment $deployment
-     * @return void
      * @throws \RuntimeException
      */
     public function deploy(Project $project, Deployment $deployment): void
@@ -41,25 +38,28 @@ class ReleaseDeploymentService
         }
 
         $slug = $project->validated_slug;
+        $basePath = $this->getBasePath($project);
+        $parentDir = dirname($basePath);
         $timestamp = now()->format('YmdHis');
-        $releasePath = "/var/www/releases/{$slug}/{$timestamp}";
+        $releasePath = "{$parentDir}/releases/{$slug}/{$timestamp}";
 
         // Record release_path immediately so rollback works even on partial failure
         $deployment->update(['release_path' => $releasePath]);
 
         Log::info('Starting release deployment', [
             'project' => $slug,
+            'base_path' => $basePath,
             'release' => $releasePath,
         ]);
 
-        $this->prepareDirectoryStructure($server, $slug);
+        $this->prepareDirectoryStructure($server, $slug, $parentDir);
         $this->cloneToRelease($server, $project, $releasePath);
-        $this->linkSharedResources($server, $slug, $releasePath);
+        $this->linkSharedResources($server, $slug, $releasePath, $parentDir);
         $this->runProjectCommands($server, $project, $releasePath);
-        $this->atomicSymlinkSwap($server, $slug, $releasePath);
-        $this->reloadPhpFpm($server, $project);
+        $this->atomicSymlinkSwap($server, $basePath, $releasePath);
+        $this->reloadRuntime($server, $project, $basePath);
         $this->restartWorkers($server, $project);
-        $this->cleanupOldReleases($server, $slug);
+        $this->cleanupOldReleases($server, $slug, $parentDir);
 
         Log::info('Release deployment completed', [
             'project' => $slug,
@@ -70,9 +70,6 @@ class ReleaseDeploymentService
     /**
      * Rollback to a previous release by swapping the symlink.
      *
-     * @param Project $project
-     * @param Deployment $targetDeployment
-     * @return void
      * @throws \RuntimeException
      */
     public function rollbackToRelease(Project $project, Deployment $targetDeployment): void
@@ -83,6 +80,7 @@ class ReleaseDeploymentService
         }
 
         $slug = $project->validated_slug;
+        $basePath = $this->getBasePath($project);
         $releasePath = $targetDeployment->release_path;
 
         if (! $releasePath) {
@@ -102,11 +100,12 @@ class ReleaseDeploymentService
 
         Log::info('Rolling back to release', [
             'project' => $slug,
+            'base_path' => $basePath,
             'release' => $releasePath,
         ]);
 
-        $this->atomicSymlinkSwap($server, $slug, $releasePath);
-        $this->reloadPhpFpm($server, $project);
+        $this->atomicSymlinkSwap($server, $basePath, $releasePath);
+        $this->reloadRuntime($server, $project, $basePath);
         $this->restartWorkers($server, $project);
 
         Log::info('Rollback completed', [
@@ -116,26 +115,39 @@ class ReleaseDeploymentService
     }
 
     /**
+     * Resolve the deployment base path for a project.
+     *
+     * Uses the project's configured deploy_path when set, otherwise
+     * falls back to /var/www/{slug}.
+     */
+    private function getBasePath(Project $project): string
+    {
+        $slug = $project->validated_slug;
+
+        return $project->deploy_path ?? "/var/www/{$slug}";
+    }
+
+    /**
      * Create shared and release directory structure.
      */
-    private function prepareDirectoryStructure(Server $server, string $slug): void
+    private function prepareDirectoryStructure(Server $server, string $slug, string $parentDir): void
     {
         $sharedDirs = [
-            "/var/www/releases/{$slug}",
-            "/var/www/shared/{$slug}/storage/app/public",
-            "/var/www/shared/{$slug}/storage/framework/cache",
-            "/var/www/shared/{$slug}/storage/framework/sessions",
-            "/var/www/shared/{$slug}/storage/framework/views",
-            "/var/www/shared/{$slug}/storage/logs",
+            "{$parentDir}/releases/{$slug}",
+            "{$parentDir}/shared/{$slug}/storage/app/public",
+            "{$parentDir}/shared/{$slug}/storage/framework/cache",
+            "{$parentDir}/shared/{$slug}/storage/framework/sessions",
+            "{$parentDir}/shared/{$slug}/storage/framework/views",
+            "{$parentDir}/shared/{$slug}/storage/logs",
         ];
 
-        $mkdirCmd = 'mkdir -p ' . implode(' ', $sharedDirs);
+        $mkdirCmd = 'mkdir -p '.implode(' ', $sharedDirs);
         $this->executeRemoteCommand($server, $mkdirCmd);
 
         // Ensure shared storage has proper ownership
         $this->executeRemoteCommand(
             $server,
-            "chown -R www-data:www-data /var/www/shared/{$slug}",
+            "chown -R www-data:www-data {$parentDir}/shared/{$slug}",
             false
         );
     }
@@ -165,18 +177,18 @@ class ReleaseDeploymentService
     /**
      * Link shared .env and storage into the release directory.
      */
-    private function linkSharedResources(Server $server, string $slug, string $releasePath): void
+    private function linkSharedResources(Server $server, string $slug, string $releasePath, string $parentDir): void
     {
         // Remove release's own storage directory and link shared one
         $this->executeRemoteCommand(
             $server,
-            "rm -rf {$releasePath}/storage && ln -sfn /var/www/shared/{$slug}/storage {$releasePath}/storage"
+            "rm -rf {$releasePath}/storage && ln -sfn {$parentDir}/shared/{$slug}/storage {$releasePath}/storage"
         );
 
         // Link shared .env file
         $this->executeRemoteCommand(
             $server,
-            "ln -sfn /var/www/shared/{$slug}/.env {$releasePath}/.env"
+            "ln -sfn {$parentDir}/shared/{$slug}/.env {$releasePath}/.env"
         );
     }
 
@@ -238,16 +250,35 @@ class ReleaseDeploymentService
     /**
      * Atomic symlink swap — the zero-downtime moment.
      */
-    private function atomicSymlinkSwap(Server $server, string $slug, string $releasePath): void
+    private function atomicSymlinkSwap(Server $server, string $basePath, string $releasePath): void
     {
         $this->executeRemoteCommand(
             $server,
-            "ln -sfn {$releasePath} /var/www/{$slug}"
+            "ln -sfn {$releasePath} {$basePath}"
         );
     }
 
     /**
+     * Reload the PHP runtime to pick up the new code.
+     *
+     * When the project uses Octane, sends an octane:reload signal so the
+     * long-lived workers pick up the new files without a full restart.
+     * Otherwise reloads PHP-FPM (graceful, zero-downtime).
+     */
+    private function reloadRuntime(Server $server, Project $project, string $basePath): void
+    {
+        if ($project->use_octane) {
+            $this->reloadOctane($server, $basePath);
+        } else {
+            $this->reloadPhpFpm($server, $project);
+        }
+    }
+
+    /**
      * Reload PHP-FPM to pick up new code paths.
+     *
+     * Tries the versioned service name first (php8.4-fpm), then the generic
+     * php-fpm alias, and silently succeeds if neither is available.
      */
     private function reloadPhpFpm(Server $server, Project $project): void
     {
@@ -255,7 +286,19 @@ class ReleaseDeploymentService
 
         $this->executeRemoteCommand(
             $server,
-            "systemctl reload php{$phpVersion}-fpm",
+            "sudo -n systemctl reload php{$phpVersion}-fpm 2>/dev/null || sudo -n systemctl reload php-fpm 2>/dev/null || true",
+            false
+        );
+    }
+
+    /**
+     * Signal Laravel Octane to reload workers so they pick up the new release.
+     */
+    private function reloadOctane(Server $server, string $basePath): void
+    {
+        $this->executeRemoteCommand(
+            $server,
+            "php {$basePath}/artisan octane:reload 2>/dev/null || true",
             false
         );
     }
@@ -271,11 +314,11 @@ class ReleaseDeploymentService
     /**
      * Keep only the last 5 releases, delete the rest.
      */
-    private function cleanupOldReleases(Server $server, string $slug): void
+    private function cleanupOldReleases(Server $server, string $slug, string $parentDir): void
     {
         $this->executeRemoteCommand(
             $server,
-            "ls -dt /var/www/releases/{$slug}/*/ 2>/dev/null | tail -n +6 | xargs -r rm -rf",
+            "ls -dt {$parentDir}/releases/{$slug}/*/ 2>/dev/null | tail -n +6 | xargs -r rm -rf",
             false
         );
     }

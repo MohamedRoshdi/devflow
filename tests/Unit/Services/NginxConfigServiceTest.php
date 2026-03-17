@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
-use PHPUnit\Framework\Attributes\Test;
 use App\Models\Domain;
 use App\Models\Project;
 use App\Services\NginxConfigService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use Tests\Traits\CreatesServers;
 use Tests\Traits\MocksSSH;
@@ -45,6 +45,28 @@ class NginxConfigServiceTest extends TestCase
 
         $this->assertStringContainsString('fastcgi_pass unix:/run/php/my-project.sock', $vhost);
         $this->assertStringContainsString('root /var/www/my-project/public', $vhost);
+    }
+
+    #[Test]
+    public function it_generates_vhost_using_deploy_path_when_set(): void
+    {
+        $server = $this->createOnlineServer();
+        $project = Project::factory()->create([
+            'server_id' => $server->id,
+            'slug' => 'deploy-nginx-test',
+            'deploy_path' => '/opt/apps/my-nginx-app',
+        ]);
+
+        $domain = Domain::factory()->create([
+            'project_id' => $project->id,
+            'domain' => 'example.com',
+            'ssl_enabled' => false,
+        ]);
+
+        $vhost = $this->service->generateVhost($project, $domain);
+
+        $this->assertStringContainsString('root /opt/apps/my-nginx-app/public', $vhost);
+        $this->assertStringNotContainsString('/var/www/', $vhost);
     }
 
     #[Test]
@@ -171,21 +193,25 @@ class NginxConfigServiceTest extends TestCase
 
         Process::assertRan(function ($process): bool {
             $command = (string) $process->command;
+
             return str_contains($command, 'tee /etc/nginx/sites-available/install-test');
         });
 
         Process::assertRan(function ($process): bool {
             $command = (string) $process->command;
+
             return str_contains($command, 'ln -sfn');
         });
 
         Process::assertRan(function ($process): bool {
             $command = (string) $process->command;
+
             return str_contains($command, 'nginx -t');
         });
 
         Process::assertRan(function ($process): bool {
             $command = (string) $process->command;
+
             return str_contains($command, 'systemctl reload nginx');
         });
     }
@@ -247,11 +273,13 @@ class NginxConfigServiceTest extends TestCase
 
         Process::assertRan(function ($process): bool {
             $command = (string) $process->command;
+
             return str_contains($command, 'rm -f /etc/nginx/sites-enabled/remove-vhost');
         });
 
         Process::assertRan(function ($process): bool {
             $command = (string) $process->command;
+
             return str_contains($command, 'rm -f /etc/nginx/sites-available/remove-vhost');
         });
     }

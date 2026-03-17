@@ -185,7 +185,9 @@
                             <label for="slug" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Slug *</label>
                             <input wire:model="slug" id="slug" type="text" required placeholder="my-awesome-project"
                                    class="input @error('slug') border-red-500 @enderror">
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">URL: {{ $slug ?: 'your-project' }}.{{ config('app.base_domain', 'nilestack.duckdns.org') }}</p>
+                            @if(config('app.base_domain'))
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">URL: {{ $slug ?: 'your-project' }}.{{ config('app.base_domain') }}</p>
+                            @endif
                             @error('slug') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
@@ -480,10 +482,49 @@
                         </div>
                     @endif
 
-                    <div>
-                        <label for="root_directory" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Root Directory *</label>
-                        <input wire:model="root_directory" id="root_directory" type="text" required placeholder="/" class="input">
+                    @if($framework === 'laravel')
+                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <span class="font-medium text-gray-900 dark:text-white">Enable Laravel Octane</span>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">High-performance application server</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" wire:model.live="useOctane" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+
+                        @if($useOctane)
+                        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <label for="octaneServer" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Server Type</label>
+                            <select wire:model="octaneServer" id="octaneServer" class="input">
+                                <option value="frankenphp">FrankenPHP</option>
+                                <option value="swoole">Swoole</option>
+                                <option value="roadrunner">RoadRunner</option>
+                            </select>
+                            <p class="mt-1 text-xs text-amber-600 dark:text-amber-400">
+                                Post-deploy will use <code class="font-mono">php artisan octane:reload</code> instead of php-fpm reload.
+                            </p>
+                        </div>
+                        @endif
                     </div>
+                    @endif
+
+                    <div>
+                        <label for="root_directory" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Repository Subdirectory</label>
+                        <input wire:model="root_directory" id="root_directory" type="text" placeholder="/ (root of repository)" class="input">
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Subdirectory within the git repo. Use / for the root.</p>
+                    </div>
+
+                    @if($deployment_method === 'standard')
+                    <div>
+                        <label for="deployPath" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Server Deploy Path *</label>
+                        <input wire:model="deployPath" id="deployPath" type="text" placeholder="/var/www/e-store" class="input">
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Full path on the server where the project will be deployed</p>
+                        @error('deployPath') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+                    @endif
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -667,13 +708,29 @@
                             </div>
                         </label>
 
+                        <!-- Existing Deployment -->
+                        <label class="flex items-start p-4 border rounded-lg cursor-pointer transition-all hover:border-blue-300
+                            {{ $existingProject ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-700' }}">
+                            <input type="checkbox" wire:model.live="existingProject" class="mt-1 h-4 w-4 text-blue-600 rounded">
+                            <div class="ml-3">
+                                <span class="font-medium text-gray-900 dark:text-white">Existing Deployment</span>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Code is already deployed on the server. Skip initial clone.</p>
+                            </div>
+                        </label>
+
                         <!-- Auto Deploy -->
                         <label class="flex items-start p-4 border rounded-lg cursor-pointer transition-all hover:border-blue-300
-                            {{ $enableAutoDeploy ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-700' }}">
-                            <input type="checkbox" wire:model="enableAutoDeploy" class="mt-1 h-4 w-4 text-blue-600 rounded">
+                            {{ $enableAutoDeploy ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : ($existingProject ? 'border-gray-200 dark:border-gray-700 opacity-50' : 'border-gray-200 dark:border-gray-700') }}">
+                            <input type="checkbox" wire:model="enableAutoDeploy" class="mt-1 h-4 w-4 text-blue-600 rounded" {{ $existingProject ? 'disabled' : '' }}>
                             <div class="ml-3">
                                 <span class="font-medium text-gray-900 dark:text-white">Initial Deployment</span>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Deploy immediately after setup</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                    @if($existingProject)
+                                        Disabled — code is already deployed
+                                    @else
+                                        Deploy immediately after setup
+                                    @endif
+                                </p>
                             </div>
                         </label>
                     </div>
@@ -780,6 +837,12 @@
                                     <div><span class="text-gray-500 dark:text-gray-400">Node:</span> <span class="text-gray-900 dark:text-white">{{ $node_version }}</span></div>
                                 @endif
                                 <div><span class="text-gray-500 dark:text-gray-400">Root:</span> <span class="text-gray-900 dark:text-white">{{ $root_directory }}</span></div>
+                                @if($deployment_method === 'standard' && $deployPath)
+                                    <div class="col-span-2"><span class="text-gray-500 dark:text-gray-400">Deploy Path:</span> <span class="text-gray-900 dark:text-white font-mono text-xs">{{ $deployPath }}</span></div>
+                                @endif
+                                @if($useOctane)
+                                    <div><span class="text-gray-500 dark:text-gray-400">Octane:</span> <span class="text-gray-900 dark:text-white">{{ ucfirst($octaneServer) }}</span></div>
+                                @endif
                             </div>
                         </div>
 
@@ -797,6 +860,9 @@
                                 </button>
                             </div>
                             <div class="flex flex-wrap gap-2">
+                                @if($existingProject)
+                                    <span class="px-2 py-1 bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 text-xs rounded-full">Existing Deployment</span>
+                                @endif
                                 @if($enableSsl)
                                     <span class="px-2 py-1 bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 text-xs rounded-full">SSL Certificate</span>
                                 @endif
@@ -815,7 +881,7 @@
                                 @if($enableAutoDeploy)
                                     <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-xs rounded-full">Initial Deployment</span>
                                 @endif
-                                @if(!$enableSsl && !$enableWebhooks && !$enableHealthChecks && !$enableBackups && !$enableNotifications && !$enableAutoDeploy)
+                                @if(!$existingProject && !$enableSsl && !$enableWebhooks && !$enableHealthChecks && !$enableBackups && !$enableNotifications && !$enableAutoDeploy)
                                     <span class="text-sm text-gray-500 dark:text-gray-400">No auto-setup features selected</span>
                                 @endif
                             </div>

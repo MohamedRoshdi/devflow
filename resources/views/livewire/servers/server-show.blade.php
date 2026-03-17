@@ -123,6 +123,30 @@
                             Backups
                         </a>
 
+                        <a href="{{ route('servers.databases', $server) }}"
+                            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700/80 hover:text-slate-900 dark:hover:text-white transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
+                            </svg>
+                            Databases
+                        </a>
+
+                        <a href="{{ route('servers.supervisor', $server) }}"
+                            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700/80 hover:text-slate-900 dark:hover:text-white transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            Supervisor
+                        </a>
+
+                        <a href="{{ route('servers.nginx', $server) }}"
+                            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700/80 hover:text-slate-900 dark:hover:text-white transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                            </svg>
+                            Nginx
+                        </a>
+
                         @can('update', $server)
                         <a href="{{ route('servers.edit', $server) }}"
                             class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700/80 hover:text-slate-900 dark:hover:text-white transition-all">
@@ -443,7 +467,12 @@
                     </div>
                 </div>
 
-                {{-- Docker Status Card --}}
+                {{-- Docker Status Card (only shown when docker is installed or user explicitly requests it) --}}
+                @php
+                    $installedPackages = $server->installed_packages ?? [];
+                    $hasDocker = in_array('docker', $installedPackages) || $server->docker_installed;
+                @endphp
+                @if($hasDocker || $showDocker)
                 <div class="bg-white dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700/50 overflow-hidden">
                     <div class="bg-gradient-to-r from-cyan-600 to-blue-600 p-6 border-b border-cyan-500/30">
                         <h2 class="text-xl font-bold text-white flex items-center gap-2">
@@ -544,6 +573,15 @@
                         @endif
                     </div>
                 </div>
+                @else
+                <div class="bg-white dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700/50 p-5 flex items-center justify-between">
+                    <span class="text-sm text-slate-500 dark:text-slate-400">Docker not configured on this server.</span>
+                    <button wire:click="$set('showDocker', true)"
+                        class="text-xs text-cyan-600 dark:text-cyan-400 hover:underline font-medium">
+                        Show Docker options
+                    </button>
+                </div>
+                @endif
             </div>
         </div>
         @endif
@@ -629,7 +667,7 @@
                         Restart Services
                     </h3>
                     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                        @foreach(['nginx', 'apache2', 'mysql', 'redis', 'php8.4-fpm', 'docker', 'supervisor'] as $service)
+                        @foreach($restartableServices as $service)
                             <button wire:click="restartService('{{ $service }}')"
                                 wire:confirm="Restart {{ $service }}? The service will be briefly unavailable."
                                 wire:loading.attr="disabled"

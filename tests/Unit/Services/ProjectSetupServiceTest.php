@@ -4,21 +4,24 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
-
-use PHPUnit\Framework\Attributes\Test;
 use App\Events\ProjectSetupUpdated;
 use App\Models\Project;
 use App\Models\ProjectSetupTask;
+use App\Services\CronConfigService;
+use App\Services\NginxConfigService;
 use App\Services\ProjectSetupService;
+use App\Services\SupervisorConfigService;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Queue;
 use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class ProjectSetupServiceTest extends TestCase
 {
-
     protected ProjectSetupService $service;
 
     protected function setUp(): void
@@ -1184,5 +1187,373 @@ class ProjectSetupServiceTest extends TestCase
         $this->assertArrayHasKey('result_data', $webhookTask);
         $this->assertEquals('https://example.com/webhook', $webhookTask['result_data']['webhook_url']);
         $this->assertEquals('test-secret', $webhookTask['result_data']['secret']);
+    }
+
+    // -----------------------------------------------------------------------
+    // Bare-metal infrastructure setup tasks
+    // -----------------------------------------------------------------------
+
+    #[Test]
+    public function it_adds_bare_metal_tasks_for_standard_deployment_method(): void
+    {
+        $project = Project::factory()->create(['deployment_method' => 'standard']);
+
+        $this->service->initializeSetup($project, ['deployment' => true]);
+
+        foreach ([
+            ProjectSetupTask::TYPE_NGINX,
+            ProjectSetupTask::TYPE_SUPERVISOR,
+            ProjectSetupTask::TYPE_CRON,
+            ProjectSetupTask::TYPE_SHARED_DIRS,
+            ProjectSetupTask::TYPE_POST_DEPLOY_HEALTH,
+        ] as $type) {
+            $this->assertDatabaseHas('project_setup_tasks', [
+                'project_id' => $project->id,
+                'task_type' => $type,
+                'status' => ProjectSetupTask::STATUS_PENDING,
+            ]);
+        }
+    }
+
+    #[Test]
+    public function it_does_not_add_bare_metal_tasks_for_non_standard_deployment(): void
+    {
+        $project = Project::factory()->create(['deployment_method' => 'docker']);
+
+        $this->service->initializeSetup($project, ['deployment' => true]);
+
+        foreach ([
+            ProjectSetupTask::TYPE_NGINX,
+            ProjectSetupTask::TYPE_SUPERVISOR,
+            ProjectSetupTask::TYPE_CRON,
+            ProjectSetupTask::TYPE_SHARED_DIRS,
+            ProjectSetupTask::TYPE_POST_DEPLOY_HEALTH,
+        ] as $type) {
+            $this->assertDatabaseMissing('project_setup_tasks', [
+                'project_id' => $project->id,
+                'task_type' => $type,
+            ]);
+        }
+    }
+
+    #[Test]
+    public function it_can_opt_out_of_bare_metal_tasks_via_config(): void
+    {
+        $project = Project::factory()->create(['deployment_method' => 'standard']);
+
+        $this->service->initializeSetup($project, [
+            'nginx' => false,
+            'supervisor' => false,
+            'cron' => false,
+            'shared_dirs' => false,
+            'post_deploy_health' => false,
+        ]);
+
+        foreach ([
+            ProjectSetupTask::TYPE_NGINX,
+            ProjectSetupTask::TYPE_SUPERVISOR,
+            ProjectSetupTask::TYPE_CRON,
+            ProjectSetupTask::TYPE_SHARED_DIRS,
+            ProjectSetupTask::TYPE_POST_DEPLOY_HEALTH,
+        ] as $type) {
+            $this->assertDatabaseMissing('project_setup_tasks', [
+                'project_id' => $project->id,
+                'task_type' => $type,
+            ]);
+        }
+    }
+
+    #[Test]
+    public function it_fails_nginx_setup_when_no_server_attached(): void
+    {
+        $project = Project::factory()->create(['server_id' => null]);
+
+        $task = ProjectSetupTask::factory()->create([
+            'project_id' => $project->id,
+            'task_type' => ProjectSetupTask::TYPE_NGINX,
+            'status' => ProjectSetupTask::STATUS_PENDING,
+        ]);
+
+        $this->service->executeSetup($project);
+
+        $task->refresh();
+        $this->assertEquals(ProjectSetupTask::STATUS_FAILED, $task->status);
+        $this->assertEquals('No server attached to project', $task->message);
+    }
+
+    #[Test]
+    public function it_fails_nginx_setup_when_no_primary_domain(): void
+    {
+        $project = Project::factory()->create();
+
+        $task = ProjectSetupTask::factory()->create([
+            'project_id' => $project->id,
+            'task_type' => ProjectSetupTask::TYPE_NGINX,
+            'status' => ProjectSetupTask::STATUS_PENDING,
+        ]);
+
+        $this->service->executeSetup($project);
+
+        $task->refresh();
+        $this->assertEquals(ProjectSetupTask::STATUS_FAILED, $task->status);
+        $this->assertEquals('No primary domain found', $task->message);
+    }
+
+    #[Test]
+    public function it_completes_nginx_setup_via_nginx_config_service(): void
+    {
+        $project = Project::factory()->create();
+
+        $project->domains()->create([
+            'domain' => 'myapp.com',
+            'is_primary' => true,
+        ]);
+
+        $nginxService = Mockery::mock(NginxConfigService::class);
+        $nginxService->shouldReceive('installVhost')->once()->andReturn(true);
+
+        $service = new ProjectSetupService(nginxConfigService: $nginxService);
+
+        $task = ProjectSetupTask::factory()->create([
+            'project_id' => $project->id,
+            'task_type' => ProjectSetupTask::TYPE_NGINX,
+            'status' => ProjectSetupTask::STATUS_PENDING,
+        ]);
+
+        $service->executeSetup($project);
+
+        $task->refresh();
+        $this->assertEquals(ProjectSetupTask::STATUS_COMPLETED, $task->status);
+        $this->assertArrayHasKey('domain', $task->result_data);
+        $this->assertEquals('myapp.com', $task->result_data['domain']);
+    }
+
+    #[Test]
+    public function it_fails_supervisor_setup_when_no_server_attached(): void
+    {
+        $project = Project::factory()->create(['server_id' => null]);
+
+        $task = ProjectSetupTask::factory()->create([
+            'project_id' => $project->id,
+            'task_type' => ProjectSetupTask::TYPE_SUPERVISOR,
+            'status' => ProjectSetupTask::STATUS_PENDING,
+        ]);
+
+        $this->service->executeSetup($project);
+
+        $task->refresh();
+        $this->assertEquals(ProjectSetupTask::STATUS_FAILED, $task->status);
+        $this->assertEquals('No server attached to project', $task->message);
+    }
+
+    #[Test]
+    public function it_completes_supervisor_setup_via_supervisor_config_service(): void
+    {
+        $project = Project::factory()->create();
+
+        $supervisorService = Mockery::mock(SupervisorConfigService::class);
+        $supervisorService->shouldReceive('installConfig')->once()->andReturn(true);
+
+        $service = new ProjectSetupService(supervisorConfigService: $supervisorService);
+
+        $task = ProjectSetupTask::factory()->create([
+            'project_id' => $project->id,
+            'task_type' => ProjectSetupTask::TYPE_SUPERVISOR,
+            'status' => ProjectSetupTask::STATUS_PENDING,
+        ]);
+
+        $service->executeSetup($project);
+
+        $task->refresh();
+        $this->assertEquals(ProjectSetupTask::STATUS_COMPLETED, $task->status);
+        $this->assertArrayHasKey('config', $task->result_data);
+    }
+
+    #[Test]
+    public function it_fails_cron_setup_when_no_server_attached(): void
+    {
+        $project = Project::factory()->create(['server_id' => null]);
+
+        $task = ProjectSetupTask::factory()->create([
+            'project_id' => $project->id,
+            'task_type' => ProjectSetupTask::TYPE_CRON,
+            'status' => ProjectSetupTask::STATUS_PENDING,
+        ]);
+
+        $this->service->executeSetup($project);
+
+        $task->refresh();
+        $this->assertEquals(ProjectSetupTask::STATUS_FAILED, $task->status);
+        $this->assertEquals('No server attached to project', $task->message);
+    }
+
+    #[Test]
+    public function it_completes_cron_setup_via_cron_config_service(): void
+    {
+        $project = Project::factory()->create();
+
+        $cronService = Mockery::mock(CronConfigService::class);
+        $cronService->shouldReceive('installConfig')->once()->andReturn(true);
+
+        $service = new ProjectSetupService(cronConfigService: $cronService);
+
+        $task = ProjectSetupTask::factory()->create([
+            'project_id' => $project->id,
+            'task_type' => ProjectSetupTask::TYPE_CRON,
+            'status' => ProjectSetupTask::STATUS_PENDING,
+        ]);
+
+        $service->executeSetup($project);
+
+        $task->refresh();
+        $this->assertEquals(ProjectSetupTask::STATUS_COMPLETED, $task->status);
+        $this->assertArrayHasKey('config', $task->result_data);
+    }
+
+    #[Test]
+    public function it_fails_shared_dirs_setup_when_no_server_attached(): void
+    {
+        $project = Project::factory()->create(['server_id' => null]);
+
+        $task = ProjectSetupTask::factory()->create([
+            'project_id' => $project->id,
+            'task_type' => ProjectSetupTask::TYPE_SHARED_DIRS,
+            'status' => ProjectSetupTask::STATUS_PENDING,
+        ]);
+
+        $this->service->executeSetup($project);
+
+        $task->refresh();
+        $this->assertEquals(ProjectSetupTask::STATUS_FAILED, $task->status);
+        $this->assertEquals('No server attached to project', $task->message);
+    }
+
+    #[Test]
+    public function it_completes_shared_dirs_setup_via_ssh_commands(): void
+    {
+        Process::fake([
+            '*mkdir*' => Process::result('', '', 0),
+            '*chown*' => Process::result('', '', 0),
+        ]);
+
+        $project = Project::factory()->create();
+
+        $task = ProjectSetupTask::factory()->create([
+            'project_id' => $project->id,
+            'task_type' => ProjectSetupTask::TYPE_SHARED_DIRS,
+            'status' => ProjectSetupTask::STATUS_PENDING,
+        ]);
+
+        $this->service->executeSetup($project);
+
+        $task->refresh();
+        $this->assertEquals(ProjectSetupTask::STATUS_COMPLETED, $task->status);
+        $this->assertArrayHasKey('path', $task->result_data);
+    }
+
+    #[Test]
+    public function it_skips_post_deploy_health_when_no_primary_domain(): void
+    {
+        $project = Project::factory()->create();
+
+        $task = ProjectSetupTask::factory()->create([
+            'project_id' => $project->id,
+            'task_type' => ProjectSetupTask::TYPE_POST_DEPLOY_HEALTH,
+            'status' => ProjectSetupTask::STATUS_PENDING,
+        ]);
+
+        $this->service->executeSetup($project);
+
+        $task->refresh();
+        $this->assertEquals(ProjectSetupTask::STATUS_SKIPPED, $task->status);
+    }
+
+    #[Test]
+    public function it_completes_post_deploy_health_when_site_returns_2xx(): void
+    {
+        Http::fake(['http://myapp.com/' => Http::response('OK', 200)]);
+
+        $project = Project::factory()->create();
+
+        $project->domains()->create([
+            'domain' => 'myapp.com',
+            'is_primary' => true,
+        ]);
+
+        $task = ProjectSetupTask::factory()->create([
+            'project_id' => $project->id,
+            'task_type' => ProjectSetupTask::TYPE_POST_DEPLOY_HEALTH,
+            'status' => ProjectSetupTask::STATUS_PENDING,
+        ]);
+
+        $this->service->executeSetup($project);
+
+        $task->refresh();
+        $this->assertEquals(ProjectSetupTask::STATUS_COMPLETED, $task->status);
+        $this->assertEquals(200, $task->result_data['http_status']);
+    }
+
+    #[Test]
+    public function it_completes_post_deploy_health_with_warning_on_non_2xx_response(): void
+    {
+        Http::fake(['http://myapp.com/' => Http::response('Not Found', 404)]);
+
+        $project = Project::factory()->create();
+
+        $project->domains()->create([
+            'domain' => 'myapp.com',
+            'is_primary' => true,
+        ]);
+
+        $task = ProjectSetupTask::factory()->create([
+            'project_id' => $project->id,
+            'task_type' => ProjectSetupTask::TYPE_POST_DEPLOY_HEALTH,
+            'status' => ProjectSetupTask::STATUS_PENDING,
+        ]);
+
+        $this->service->executeSetup($project);
+
+        // Marks completed (not failed) — no auto-rollback
+        $task->refresh();
+        $this->assertEquals(ProjectSetupTask::STATUS_COMPLETED, $task->status);
+        $this->assertEquals(404, $task->result_data['http_status']);
+        $this->assertArrayHasKey('note', $task->result_data);
+    }
+
+    #[Test]
+    public function it_completes_post_deploy_health_with_note_on_connection_failure(): void
+    {
+        Http::fake(['http://myapp.com/' => fn () => throw new \Exception('Connection refused')]);
+
+        $project = Project::factory()->create();
+
+        $project->domains()->create([
+            'domain' => 'myapp.com',
+            'is_primary' => true,
+        ]);
+
+        $task = ProjectSetupTask::factory()->create([
+            'project_id' => $project->id,
+            'task_type' => ProjectSetupTask::TYPE_POST_DEPLOY_HEALTH,
+            'status' => ProjectSetupTask::STATUS_PENDING,
+        ]);
+
+        $this->service->executeSetup($project);
+
+        $task->refresh();
+        // Still marked completed — log warning, no auto-rollback
+        $this->assertEquals(ProjectSetupTask::STATUS_COMPLETED, $task->status);
+        $this->assertArrayHasKey('error', $task->result_data);
+        $this->assertArrayHasKey('note', $task->result_data);
+    }
+
+    #[Test]
+    public function it_returns_correct_labels_for_new_task_types(): void
+    {
+        $this->assertEquals('Nginx Vhost', ProjectSetupTask::getTypeLabel(ProjectSetupTask::TYPE_NGINX));
+        $this->assertEquals('Supervisor Queue Worker', ProjectSetupTask::getTypeLabel(ProjectSetupTask::TYPE_SUPERVISOR));
+        $this->assertEquals('Cron Scheduler', ProjectSetupTask::getTypeLabel(ProjectSetupTask::TYPE_CRON));
+        $this->assertEquals('Shared Directory Structure', ProjectSetupTask::getTypeLabel(ProjectSetupTask::TYPE_SHARED_DIRS));
+        $this->assertEquals('Post-Deploy Health Check', ProjectSetupTask::getTypeLabel(ProjectSetupTask::TYPE_POST_DEPLOY_HEALTH));
     }
 }

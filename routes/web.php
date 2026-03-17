@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\DocsController;
 use App\Http\Controllers\GitHubAuthController;
 use App\Http\Controllers\TeamInvitationController;
 use App\Livewire\Admin\ProjectTemplateManager;
@@ -22,6 +21,7 @@ use App\Livewire\Servers\ServerList;
 use App\Livewire\Servers\ServerMetricsDashboard;
 use App\Livewire\Servers\ServerShow;
 use App\Livewire\Servers\ServerTagManager;
+use App\Livewire\Servers\SupervisorManager;
 use App\Livewire\Settings\GitHubSettings;
 use App\Livewire\Teams\TeamList;
 use App\Livewire\Teams\TeamSettings;
@@ -57,7 +57,10 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
     Route::get('/servers/{server}/ssl', \App\Livewire\Servers\SSLManager::class)->name('servers.ssl');
     Route::get('/servers/{server}/alerts', \App\Livewire\Servers\ResourceAlertManager::class)->name('servers.alerts');
     Route::get('/servers/{server}/backups', \App\Livewire\Servers\ServerBackupManager::class)->name('servers.backups');
+    Route::get('/servers/{server}/databases', \App\Livewire\Servers\DatabaseManager::class)->name('servers.databases');
     Route::get('/servers/{server}/provisioning', ProvisioningLogs::class)->name('servers.provisioning');
+    Route::get('/servers/{server}/supervisor', SupervisorManager::class)->name('servers.supervisor');
+    Route::get('/servers/{server}/nginx', \App\Livewire\Servers\NginxManager::class)->name('servers.nginx');
     Route::get('/servers/{server}/terminal', \App\Livewire\Servers\SSHTerminal::class)->name('servers.terminal');
 
     // SSH Terminal (Standalone - Simple)
@@ -89,13 +92,13 @@ Route::middleware(['auth', 'throttle:web'])->group(function () {
     Route::get('/projects/devflow', \App\Livewire\Projects\DevFlowSelfManagement::class)->name('projects.devflow');
     Route::get('/projects/devflow/logs/{filename}', function (string $filename) {
         // Security: Only allow laravel log files
-        if (!str_starts_with($filename, 'laravel') || !str_ends_with($filename, '.log')) {
+        if (! str_starts_with($filename, 'laravel') || ! str_ends_with($filename, '.log')) {
             abort(403, 'Invalid log file');
         }
 
-        $logPath = storage_path('logs/' . basename($filename));
+        $logPath = storage_path('logs/'.basename($filename));
 
-        if (!file_exists($logPath)) {
+        if (! file_exists($logPath)) {
             abort(404, 'Log file not found');
         }
 

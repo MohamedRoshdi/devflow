@@ -16,17 +16,14 @@ class NginxConfigService
 
     /**
      * Generate nginx vhost config for a project domain.
-     *
-     * @param Project $project
-     * @param Domain $domain
-     * @return string
      */
     public function generateVhost(Project $project, Domain $domain): string
     {
         $slug = $project->validated_slug;
         $phpVersion = $project->php_version ?? '8.4';
         $domainName = $domain->domain;
-        $rootPath = ((string) config('devflow.projects_path', '/var/www'))."/{$slug}/public";
+        $deployPath = $project->deploy_path ?? ((string) config('devflow.projects_path', '/var/www'))."/{$slug}";
+        $rootPath = "{$deployPath}/public";
         $fpmSocket = "/run/php/{$slug}.sock";
 
         $sslBlock = '';
@@ -96,10 +93,6 @@ NGINX;
     /**
      * Install nginx vhost on remote server.
      *
-     * @param Server $server
-     * @param Project $project
-     * @param Domain $domain
-     * @return bool
      * @throws \RuntimeException When nginx config test fails
      */
     public function installVhost(Server $server, Project $project, Domain $domain): bool
@@ -138,7 +131,7 @@ NGINX;
             ]);
 
             throw new \RuntimeException(
-                'Nginx config test failed: ' . ($testResult->errorOutput() ?: $testResult->output())
+                'Nginx config test failed: '.($testResult->errorOutput() ?: $testResult->output())
             );
         }
 
@@ -155,10 +148,6 @@ NGINX;
 
     /**
      * Remove nginx vhost from remote server.
-     *
-     * @param Server $server
-     * @param Domain $domain
-     * @return bool
      */
     public function removeVhost(Server $server, Domain $domain): bool
     {
@@ -191,9 +180,6 @@ NGINX;
 
     /**
      * Test nginx configuration on remote server.
-     *
-     * @param Server $server
-     * @return bool
      */
     public function testConfig(Server $server): bool
     {
@@ -204,10 +190,6 @@ NGINX;
 
     /**
      * Check if an Nginx vhost config is installed for a project.
-     *
-     * @param Server $server
-     * @param Project $project
-     * @return bool
      */
     public function isInstalled(Server $server, Project $project): bool
     {
@@ -222,7 +204,6 @@ NGINX;
     /**
      * Resolve SSL certificate and key paths based on the domain's ssl_provider.
      *
-     * @param Domain $domain
      * @return array{certificate: string, private_key: string}
      */
     private function resolveSSLPaths(Domain $domain): array

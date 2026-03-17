@@ -39,6 +39,9 @@ class Project extends Model
         'node_version',
         'port',
         'root_directory',
+        'deploy_path',
+        'use_octane',
+        'octane_server',
         'build_command',
         'start_command',
         'install_commands',
@@ -84,6 +87,7 @@ class Project extends Model
             'setup_config' => 'array',
             'approval_settings' => 'array',
             'blue_green_config' => 'array',
+            'use_octane' => 'boolean',
             'auto_deploy' => 'boolean',
             'webhook_enabled' => 'boolean',
             'requires_approval' => 'boolean',
@@ -114,7 +118,7 @@ class Project extends Model
         // Free the slug and clean up domains for reuse when soft-deleting
         static::deleting(function (Project $project) {
             if (! $project->isForceDeleting()) {
-                $project->slug = $project->slug . '-deleted-' . $project->id;
+                $project->slug = $project->slug.'-deleted-'.$project->id;
                 $project->saveQuietly();
 
                 // Force-delete domains so their unique domain names are freed for reuse
@@ -131,7 +135,7 @@ class Project extends Model
                 ->where('id', '!=', $project->id)
                 ->exists();
 
-            $project->slug = $slugTaken ? $originalSlug . '-restored-' . $project->id : $originalSlug;
+            $project->slug = $slugTaken ? $originalSlug.'-restored-'.$project->id : $originalSlug;
         });
     }
 
@@ -156,7 +160,7 @@ class Project extends Model
      */
     protected function validatePathSecurity(): void
     {
-        $pathFields = ['root_directory'];
+        $pathFields = ['root_directory', 'deploy_path'];
 
         foreach ($pathFields as $field) {
             if (! isset($this->attributes[$field]) || ! is_string($this->attributes[$field])) {

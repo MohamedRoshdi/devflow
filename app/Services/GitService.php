@@ -13,6 +13,7 @@ class GitService
 {
     /**
      * Cache of temporary SSH key files per server ID
+     *
      * @var array<int, string>
      */
     protected array $sshKeyFiles = [];
@@ -27,6 +28,18 @@ class GitService
                 @unlink($keyFile);
             }
         }
+    }
+
+    /**
+     * Resolve the working path for a deployed project.
+     *
+     * Uses the project's configured deploy_path when set, otherwise falls back
+     * to {projects_path}/{slug}.
+     */
+    private function resolveProjectPath(Project $project): string
+    {
+        return $project->deploy_path
+            ?? ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
     }
 
     /**
@@ -45,7 +58,7 @@ class GitService
 
         if ($server->ssh_key) {
             // Reuse cached temp file if available for this server
-            if (!isset($this->sshKeyFiles[$server->id])) {
+            if (! isset($this->sshKeyFiles[$server->id])) {
                 // Create temporary SSH key file
                 $keyFile = tempnam(sys_get_temp_dir(), 'ssh_key_');
                 if ($keyFile === false) {
@@ -83,7 +96,7 @@ class GitService
         }
 
         return sprintf(
-            "ssh %s %s@%s %s",
+            'ssh %s %s@%s %s',
             implode(' ', $sshOptions),
             escapeshellarg($server->username),
             escapeshellarg($server->connection_host),
@@ -98,7 +111,7 @@ class GitService
     {
         try {
             $server = $project->server;
-            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
+            $projectPath = $this->resolveProjectPath($project);
             $skip = max(0, ($page - 1) * $perPage);
 
             // Check if repository exists
@@ -195,7 +208,7 @@ class GitService
     {
         try {
             $server = $project->server;
-            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
+            $projectPath = $this->resolveProjectPath($project);
 
             if (! $this->isRepositoryCloned($projectPath, $server)) {
                 return null;
@@ -232,7 +245,7 @@ class GitService
     {
         try {
             $server = $project->server;
-            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
+            $projectPath = $this->resolveProjectPath($project);
 
             // Check if repository exists
             if (! $this->isRepositoryCloned($projectPath, $server)) {
@@ -381,7 +394,7 @@ class GitService
     {
         try {
             $server = $project->server;
-            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
+            $projectPath = $this->resolveProjectPath($project);
 
             if (! $this->isRepositoryCloned($projectPath, $server)) {
                 return [
@@ -439,7 +452,7 @@ class GitService
     /**
      * Get all available branches from a local repository (for DevFlow self-management)
      */
-    public function getLocalBranches(string $projectPath = null): array
+    public function getLocalBranches(?string $projectPath = null): array
     {
         try {
             $projectPath = $projectPath ?? base_path();
@@ -529,7 +542,7 @@ class GitService
     /**
      * Switch to a different branch in local repository (for DevFlow self-management)
      */
-    public function switchLocalBranch(string $branchName, string $projectPath = null): array
+    public function switchLocalBranch(string $branchName, ?string $projectPath = null): array
     {
         try {
             $projectPath = $projectPath ?? base_path();
@@ -593,7 +606,7 @@ class GitService
     {
         try {
             $server = $project->server;
-            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
+            $projectPath = $this->resolveProjectPath($project);
 
             // Check if repository exists
             if (! $this->isRepositoryCloned($projectPath, $server)) {
@@ -701,7 +714,7 @@ class GitService
             $validatedBranchName = SecurityHelper::sanitizeBranchName($branchName);
             $escapedBranchName = escapeshellarg($validatedBranchName);
 
-            $projectPath = ((string) config('devflow.projects_path', '/var/www'))."/{$project->slug}";
+            $projectPath = $this->resolveProjectPath($project);
 
             // Check if repository exists
             if (! $this->isRepositoryCloned($projectPath, $server)) {

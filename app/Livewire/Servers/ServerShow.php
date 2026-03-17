@@ -31,6 +31,8 @@ class ServerShow extends Component
 
     public string $activeTab = 'overview';
 
+    public bool $showDocker = false;
+
     public function mount(Server $server)
     {
         $this->authorize('view', $server);
@@ -290,6 +292,27 @@ class ServerShow extends Component
         ];
     }
 
+    /**
+     * Determine which services should appear in the Restart Services panel.
+     * Uses the server's installed_packages JSON field when available;
+     * falls back to a sensible bare-metal default (no mysql/apache2/docker).
+     *
+     * @return list<string>
+     */
+    protected function getRestartableServices(): array
+    {
+        $installed = $this->server->installed_packages ?? [];
+
+        if (! empty($installed)) {
+            // Only show services that make sense to restart
+            $restartable = ['nginx', 'php8.4-fpm', 'php8.3-fpm', 'php8.2-fpm', 'redis', 'supervisor', 'postgresql', 'mysql', 'apache2', 'docker', 'fail2ban'];
+
+            return array_values(array_filter($restartable, fn (string $s) => in_array($s, $installed, true)));
+        }
+
+        return ['nginx', 'php8.4-fpm', 'redis', 'supervisor', 'postgresql'];
+    }
+
     public function render(): \Illuminate\View\View
     {
         // Fix N+1: Eager load relationships for projects
@@ -309,6 +332,7 @@ class ServerShow extends Component
         return view('livewire.servers.server-show', [
             'projects' => $projects,
             'deployments' => $deployments,
+            'restartableServices' => $this->getRestartableServices(),
         ]);
     }
 }

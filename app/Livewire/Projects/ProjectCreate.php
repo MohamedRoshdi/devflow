@@ -52,6 +52,12 @@ class ProjectCreate extends Component
 
     public string $root_directory = '/';
 
+    public string $deployPath = '/var/www/';
+
+    public bool $useOctane = false;
+
+    public string $octaneServer = 'frankenphp';
+
     public string $build_command = '';
 
     public string $start_command = '';
@@ -73,6 +79,8 @@ class ProjectCreate extends Component
     public ?string $analysisError = null;
 
     // Step 3: Setup Options
+    public bool $existingProject = false;
+
     public bool $enableSsl = true;
 
     public bool $enableWebhooks = true;
@@ -108,6 +116,7 @@ class ProjectCreate extends Component
         $this->loadServersAndTemplates();
         $this->loadUserDefaults();
         $this->preselectServerFromQuery();
+        $this->deployPath = '/var/www/';
     }
 
     protected function preselectServerFromQuery(): void
@@ -173,8 +182,11 @@ class ProjectCreate extends Component
             'php_version' => 'nullable|string|max:255',
             'node_version' => 'nullable|string|max:255',
             'root_directory' => 'required|string|max:255',
+            'deployPath' => 'nullable|string|max:500',
             'build_command' => 'nullable|string',
             'start_command' => 'nullable|string',
+            'useOctane' => 'boolean',
+            'octaneServer' => 'nullable|string|in:frankenphp,swoole,roadrunner',
         ]);
 
         // Bare Metal deployment only works with Laravel (or no framework specified)
@@ -226,6 +238,23 @@ class ProjectCreate extends Component
     public function updatedName(): void
     {
         $this->slug = Str::slug($this->name);
+        $this->updatedSlug();
+    }
+
+    public function updatedSlug(): void
+    {
+        if ($this->slug !== '') {
+            $this->deployPath = '/var/www/'.$this->slug;
+        } else {
+            $this->deployPath = '/var/www/';
+        }
+    }
+
+    public function updatedExistingProject(): void
+    {
+        if ($this->existingProject) {
+            $this->enableAutoDeploy = false;
+        }
     }
 
     public function updatedRepositoryUrl(): void
@@ -432,9 +461,13 @@ class ProjectCreate extends Component
             'php_version' => 'nullable|string|max:255',
             'node_version' => 'nullable|string|max:255',
             'root_directory' => 'required|string|max:255',
+            'deployPath' => 'nullable|string|max:500',
             'build_command' => 'nullable|string',
             'start_command' => 'nullable|string',
             'auto_deploy' => 'boolean',
+            'useOctane' => 'boolean',
+            'octaneServer' => 'nullable|string|in:frankenphp,swoole,roadrunner',
+            'existingProject' => 'boolean',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'notes' => 'nullable|string|max:2000',
@@ -447,6 +480,7 @@ class ProjectCreate extends Component
 
         $port = $this->findNextAvailablePort();
         $setupConfig = $this->buildSetupConfig();
+        $postDeployCommands = $this->buildFinalPostDeployCommands();
 
         $project = Project::create([
             'user_id' => auth()->id(),
@@ -462,6 +496,9 @@ class ProjectCreate extends Component
             'node_version' => $this->node_version,
             'port' => $port,
             'root_directory' => $this->root_directory,
+            'deploy_path' => $this->deployPath ?: null,
+            'use_octane' => $this->useOctane,
+            'octane_server' => $this->useOctane ? $this->octaneServer : null,
             'build_command' => $this->build_command,
             'start_command' => $this->start_command,
             'auto_deploy' => $this->auto_deploy,
@@ -473,7 +510,7 @@ class ProjectCreate extends Component
             'setup_config' => $setupConfig,
             'install_commands' => $this->install_commands,
             'build_commands' => $this->build_commands,
-            'post_deploy_commands' => $this->post_deploy_commands,
+            'post_deploy_commands' => $postDeployCommands,
         ]);
 
         $this->createDefaultDomains($project, $port);
@@ -500,6 +537,45 @@ class ProjectCreate extends Component
         ];
     }
 
+    /**
+     * Build the final post-deploy command list, injecting required Laravel commands
+     * and the correct process-reload command for bare-metal Laravel projects.
+     *
+     * @return array<int, string>
+     */
+    protected function buildFinalPostDeployCommands(): array
+    {
+        $commands = $this->post_deploy_commands;
+
+        if ($this->framework !== 'laravel' || $this->deployment_method !== 'standard') {
+            return $commands;
+        }
+
+        // Inject missing Laravel essential commands (before the process-reload)
+        $essentialCommands = [
+            'php artisan storage:link',
+            'php artisan event:cache',
+        ];
+
+        foreach ($essentialCommands as $cmd) {
+            if (! in_array($cmd, $commands, true)) {
+                $commands[] = $cmd;
+            }
+        }
+
+        // Add process-reload as the last command
+        $reloadCommand = $this->useOctane
+            ? 'php artisan octane:reload'
+            : 'sudo systemctl reload php8.4-fpm';
+
+        // Only append if not already present
+        if (! in_array($reloadCommand, $commands, true)) {
+            $commands[] = $reloadCommand;
+        }
+
+        return array_values($commands);
+    }
+
     protected function findNextAvailablePort(): int
     {
         $startPort = 8001;
@@ -524,17 +600,20 @@ class ProjectCreate extends Component
     protected function createDefaultDomains(Project $project, int $port): void
     {
         $server = Server::find($this->server_id);
-        $baseDomain = config('app.base_domain', 'nilestack.duckdns.org');
-        $subdomain = $project->slug.'.'.$baseDomain;
+        $baseDomain = config('app.base_domain');
 
-        Domain::create([
-            'project_id' => $project->id,
-            'domain' => $subdomain,
-            'is_primary' => true,
-            'ssl_enabled' => false,
-            'dns_configured' => false,
-            'status' => 'pending',
-        ]);
+        if ($baseDomain) {
+            $subdomain = $project->slug.'.'.$baseDomain;
+
+            Domain::create([
+                'project_id' => $project->id,
+                'domain' => $subdomain,
+                'is_primary' => true,
+                'ssl_enabled' => false,
+                'dns_configured' => false,
+                'status' => 'pending',
+            ]);
+        }
 
         if ($server?->ip_address) {
             Domain::create([
@@ -550,7 +629,7 @@ class ProjectCreate extends Component
     }
 
     /**
-     * @param array<string, bool> $setupConfig
+     * @param  array<string, bool>  $setupConfig
      */
     protected function initializeProjectSetup(Project $project, array $setupConfig): void
     {
