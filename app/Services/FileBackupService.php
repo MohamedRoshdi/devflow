@@ -700,7 +700,7 @@ class FileBackupService
         $sshOptions = [
             '-o StrictHostKeyChecking=no',
             '-o UserKnownHostsFile=/dev/null',
-            '-o ConnectTimeout=10',
+            '-o ConnectTimeout=30',
             '-o LogLevel=ERROR',
             '-p '.$server->port,
         ];

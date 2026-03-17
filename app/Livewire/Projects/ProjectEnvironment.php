@@ -110,7 +110,7 @@ class ProjectEnvironment extends Component
                 "sed -i 's|^APP_DEBUG=.*|APP_DEBUG={$appDebug}|' .env && ".
                 "echo 'SUCCESS'; else echo 'NO_ENV'; fi";
 
-            $sshCommand = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 {$server->username}@{$server->ip_address} \"{$updateCommand}\"";
+            $sshCommand = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 {$server->username}@{$server->ip_address} \"{$updateCommand}\"";
 
             $result = Process::timeout(30)->run($sshCommand);
 
@@ -225,7 +225,7 @@ class ProjectEnvironment extends Component
             $envPath = "{$projectPath}/.env";
 
             // Build SSH command to read the .env file
-            $sshCommand = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 {$server->username}@{$server->ip_address} \"cat {$envPath} 2>/dev/null || echo '__ENV_NOT_FOUND__'\"";
+            $sshCommand = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 {$server->username}@{$server->ip_address} \"cat {$envPath} 2>/dev/null || echo '__ENV_NOT_FOUND__'\"";
 
             $result = Process::timeout(30)->run($sshCommand);
 
@@ -376,7 +376,7 @@ class ProjectEnvironment extends Component
                 "sed -i 's|^{$key}=.*|{$key}={$escapedValue}|' .env; ".
                 "else echo '{$key}={$value}' >> .env; fi && echo 'SUCCESS'";
 
-            $sshCommand = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 {$server->username}@{$server->ip_address} \"{$updateCommand}\"";
+            $sshCommand = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 {$server->username}@{$server->ip_address} \"{$updateCommand}\"";
 
             $result = Process::timeout(30)->run($sshCommand);
 
@@ -425,7 +425,7 @@ class ProjectEnvironment extends Component
             // Build SSH command to delete the variable
             $deleteCommand = "cd {$projectPath} && sed -i '/^{$key}=/d' .env && echo 'SUCCESS'";
 
-            $sshCommand = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 {$server->username}@{$server->ip_address} \"{$deleteCommand}\"";
+            $sshCommand = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 {$server->username}@{$server->ip_address} \"{$deleteCommand}\"";
 
             $result = Process::timeout(30)->run($sshCommand);
 

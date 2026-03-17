@@ -466,7 +466,7 @@ class Fail2banService
         $sshOptions = [
             '-o StrictHostKeyChecking=no',
             '-o UserKnownHostsFile=/dev/null',
-            '-o ConnectTimeout=10',
+            '-o ConnectTimeout=30',
             '-o LogLevel=ERROR',
             '-p '.$port,
         ];
