@@ -17,6 +17,7 @@ use App\Services\ServerConnectivityService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -167,9 +168,9 @@ class ProjectCreate extends Component
     {
         $this->validate([
             'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:projects,slug',
+            'slug' => ['required', 'string', 'max:255', Rule::unique('projects', 'slug')->withoutTrashed()],
             'server_id' => 'required|exists:servers,id',
-            'repository_url' => ['required', 'regex:/^(https?:\/\/|git@)[\w\-\.]+[\/:][\w\-\.]+\/[\w\-\.]+\.git$/'],
+            'repository_url' => ['required', 'string', 'max:500', 'regex:/^(https?:\/\/|git@)[^\s]+$/i'],
             'branch' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_\-\.\/]+$/'],
         ]);
     }
@@ -452,9 +453,9 @@ class ProjectCreate extends Component
     {
         return [
             'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:projects,slug',
+            'slug' => ['required', 'string', 'max:255', Rule::unique('projects', 'slug')->withoutTrashed()],
             'server_id' => 'required|exists:servers,id',
-            'repository_url' => ['required', 'regex:/^(https?:\/\/|git@)[\w\-\.]+[\/:][\w\-\.]+\/[\w\-\.]+\.git$/'],
+            'repository_url' => ['required', 'string', 'max:500', 'regex:/^(https?:\/\/|git@)[^\s]+$/i'],
             'branch' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_\-\.\/]+$/'],
             'framework' => 'nullable|string|max:255',
             'deployment_method' => 'required|in:docker,standard',
@@ -534,6 +535,7 @@ class ProjectCreate extends Component
             'backup' => $this->enableBackups,
             'notifications' => $this->enableNotifications,
             'deployment' => $this->enableAutoDeploy,
+            'existing_project' => $this->existingProject,
         ];
     }
 

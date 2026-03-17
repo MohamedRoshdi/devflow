@@ -1,7 +1,7 @@
 <div>
     <div class="mb-8 flex justify-between items-center">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white dark:text-white">Edit Project</h1>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Edit Project</h1>
             <p class="text-gray-600 dark:text-gray-400 mt-1">Update project configuration</p>
         </div>
         <a href="{{ route('projects.show', $project) }}" class="btn btn-secondary">
@@ -43,24 +43,18 @@
                     </div>
 
                     <div>
-                        <label for="slug" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Slug *</label>
-                        <div class="relative">
-                            <input wire:model="slug"
-                                   id="slug"
-                                   type="text"
-                                   required
-                                   placeholder="my-awesome-project"
-                                   class="input @error('slug') border-red-500 @enderror">
-                            <div wire:loading wire:target="slug" class="absolute right-3 top-1/2 -translate-y-1/2">
-                                <svg class="animate-spin h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        @error('slug')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
+                        <label for="slug" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Slug
+                            <span class="ml-1 text-xs text-gray-400 dark:text-gray-500 font-normal">(read-only — changing breaks URLs & webhooks)</span>
+                        </label>
+                        <input id="slug"
+                               type="text"
+                               value="{{ $project->slug }}"
+                               disabled
+                               class="input bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed opacity-75">
+                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                            The slug is locked to prevent breaking existing deployment paths and webhook URLs.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -68,7 +62,7 @@
             <!-- Server Selection -->
             <div class="border-t pt-6">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Server Configuration</h3>
-                
+
                 @if (session()->has('server_status_updated'))
                     <div class="mb-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-400 px-4 py-2 rounded text-sm">
                         {{ session('server_status_updated') }}
@@ -85,16 +79,16 @@
                             </svg>
                         </div>
                         @forelse($servers as $server)
-                            <div class="border rounded-lg p-4 {{ $server_id == $server->id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 dark:border-gray-700 hover:border-blue-300' }}">
+                            <div class="border rounded-lg p-4 {{ $server_id == $server->id ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-blue-300' }}">
                                 <div class="flex items-center justify-between">
                                     <label class="flex items-center flex-1 cursor-pointer">
-                                        <input type="radio" 
-                                               wire:model="server_id" 
+                                        <input type="radio"
+                                               wire:model="server_id"
                                                value="{{ $server->id }}"
                                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
                                         <div class="ml-3 flex-1">
                                             <div class="flex items-center">
-                                                <span class="font-medium text-gray-900 dark:text-white dark:text-white">{{ $server->name }}</span>
+                                                <span class="font-medium text-gray-900 dark:text-white">{{ $server->name }}</span>
                                                 <span class="ml-2 px-2 py-1 rounded-full text-xs
                                                     @if($server->status === 'online') bg-green-100 text-green-800
                                                     @elseif($server->status === 'offline') bg-red-100 text-red-800
@@ -131,13 +125,13 @@
                             </div>
                         @empty
                             <p class="text-yellow-600 text-sm">
-                                ⚠️ You need to add a server first. 
+                                ⚠️ You need to add a server first.
                                 <a href="{{ route('servers.create') }}" class="underline font-medium">Add server now</a>
                             </p>
                         @endforelse
                     </div>
-                    
-                    @error('server_id') 
+
+                    @error('server_id')
                         <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
                     @enderror
                 </div>
@@ -325,6 +319,231 @@
                 </div>
             </div>
 
+            <!-- Deployment -->
+            <div class="border-t pt-6">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Deployment</h3>
+                <div class="space-y-6">
+
+                    {{-- Deployment Method --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Deployment Method</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <label class="flex items-start gap-3 p-4 border rounded-lg cursor-pointer transition-colors
+                                {{ $deployment_method === 'docker' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-blue-300' }}">
+                                <input type="radio"
+                                       wire:model.live="deployment_method"
+                                       value="docker"
+                                       class="mt-0.5 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                <div>
+                                    <div class="font-medium text-gray-900 dark:text-white text-sm">Docker</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Containerized deployment using Docker Compose</div>
+                                </div>
+                            </label>
+                            <label class="flex items-start gap-3 p-4 border rounded-lg cursor-pointer transition-colors
+                                {{ $deployment_method === 'standard' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-blue-300' }}">
+                                <input type="radio"
+                                       wire:model.live="deployment_method"
+                                       value="standard"
+                                       class="mt-0.5 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                <div>
+                                    <div class="font-medium text-gray-900 dark:text-white text-sm">Bare Metal</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Direct deployment to server filesystem</div>
+                                </div>
+                            </label>
+                        </div>
+                        @error('deployment_method')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Deploy Path (bare metal only) --}}
+                    @if($deployment_method === 'standard')
+                        <div>
+                            <label for="deploy_path" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Deploy Path</label>
+                            <input wire:model="deploy_path"
+                                   id="deploy_path"
+                                   type="text"
+                                   placeholder="/var/www/my-project"
+                                   class="input @error('deploy_path') border-red-500 @enderror">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                Absolute path on the server where the project will be deployed. Must start with <code class="font-mono">/var/www/</code>.
+                            </p>
+                            @error('deploy_path')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    @endif
+
+                    {{-- Octane (Laravel only) --}}
+                    @if(in_array($framework, ['Laravel', 'laravel']))
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3">
+                                <input wire:model.live="use_octane"
+                                       id="use_octane"
+                                       type="checkbox"
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <div>
+                                    <label for="use_octane" class="text-sm font-medium text-gray-900 dark:text-white cursor-pointer">
+                                        Enable Laravel Octane
+                                    </label>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">High-performance application server for Laravel</p>
+                                </div>
+                            </div>
+
+                            @if($use_octane)
+                                <div class="ml-7">
+                                    <label for="octane_server" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Octane Server</label>
+                                    <select wire:model="octane_server"
+                                            id="octane_server"
+                                            class="input @error('octane_server') border-red-500 @enderror" style="max-width: 280px;">
+                                        <option value="frankenphp">FrankenPHP (Recommended)</option>
+                                        <option value="swoole">Swoole</option>
+                                        <option value="roadrunner">RoadRunner</option>
+                                    </select>
+                                    @error('octane_server')
+                                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+
+                </div>
+            </div>
+
+            <!-- Build Pipeline -->
+            <div class="border-t pt-6">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">Build Pipeline</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Define commands that run during each deployment phase.</p>
+
+                <div class="space-y-8">
+
+                    {{-- Install Commands --}}
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div>
+                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Install Commands</label>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">e.g. <code class="font-mono">composer install --no-dev</code>, <code class="font-mono">npm ci</code></p>
+                            </div>
+                            <button type="button"
+                                    wire:click="addInstallCommand"
+                                    class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium flex items-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Add Command
+                            </button>
+                        </div>
+                        @if(count($install_commands) > 0)
+                            <div class="space-y-2">
+                                @foreach($install_commands as $i => $cmd)
+                                    <div class="flex items-center gap-2" wire:key="install-{{ $i }}">
+                                        <span class="text-xs text-gray-400 dark:text-gray-500 w-5 text-right flex-shrink-0">{{ $i + 1 }}</span>
+                                        <input wire:model="install_commands.{{ $i }}"
+                                               type="text"
+                                               placeholder="composer install --no-dev --optimize-autoloader"
+                                               class="input flex-1 font-mono text-sm">
+                                        <button type="button"
+                                                wire:click="removeInstallCommand({{ $i }})"
+                                                class="text-red-400 hover:text-red-600 flex-shrink-0 p-1"
+                                                title="Remove command">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="text-sm text-gray-400 dark:text-gray-500 italic py-2">No install commands. Click "Add Command" to add one.</p>
+                        @endif
+                    </div>
+
+                    {{-- Build Commands --}}
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div>
+                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Build Commands</label>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">e.g. <code class="font-mono">npm run build</code>, <code class="font-mono">php artisan config:cache</code></p>
+                            </div>
+                            <button type="button"
+                                    wire:click="addBuildCommand"
+                                    class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium flex items-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Add Command
+                            </button>
+                        </div>
+                        @if(count($build_commands) > 0)
+                            <div class="space-y-2">
+                                @foreach($build_commands as $i => $cmd)
+                                    <div class="flex items-center gap-2" wire:key="build-{{ $i }}">
+                                        <span class="text-xs text-gray-400 dark:text-gray-500 w-5 text-right flex-shrink-0">{{ $i + 1 }}</span>
+                                        <input wire:model="build_commands.{{ $i }}"
+                                               type="text"
+                                               placeholder="npm run build"
+                                               class="input flex-1 font-mono text-sm">
+                                        <button type="button"
+                                                wire:click="removeBuildCommand({{ $i }})"
+                                                class="text-red-400 hover:text-red-600 flex-shrink-0 p-1"
+                                                title="Remove command">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="text-sm text-gray-400 dark:text-gray-500 italic py-2">No build commands. Click "Add Command" to add one.</p>
+                        @endif
+                    </div>
+
+                    {{-- Post-Deploy Commands --}}
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div>
+                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Post-Deploy Commands</label>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">e.g. <code class="font-mono">php artisan migrate --force</code>, <code class="font-mono">php artisan queue:restart</code></p>
+                            </div>
+                            <button type="button"
+                                    wire:click="addPostDeployCommand"
+                                    class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium flex items-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Add Command
+                            </button>
+                        </div>
+                        @if(count($post_deploy_commands) > 0)
+                            <div class="space-y-2">
+                                @foreach($post_deploy_commands as $i => $cmd)
+                                    <div class="flex items-center gap-2" wire:key="post-{{ $i }}">
+                                        <span class="text-xs text-gray-400 dark:text-gray-500 w-5 text-right flex-shrink-0">{{ $i + 1 }}</span>
+                                        <input wire:model="post_deploy_commands.{{ $i }}"
+                                               type="text"
+                                               placeholder="php artisan migrate --force"
+                                               class="input flex-1 font-mono text-sm">
+                                        <button type="button"
+                                                wire:click="removePostDeployCommand({{ $i }})"
+                                                class="text-red-400 hover:text-red-600 flex-shrink-0 p-1"
+                                                title="Remove command">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="text-sm text-gray-400 dark:text-gray-500 italic py-2">No post-deploy commands. Click "Add Command" to add one.</p>
+                        @endif
+                    </div>
+
+                </div>
+            </div>
+
             <!-- Options -->
             <div class="border-t pt-6">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Options</h3>
@@ -456,5 +675,83 @@
             </div>
         </form>
     </div>
-</div>
 
+    <!-- Danger Zone -->
+    <div class="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow p-8 border border-red-200 dark:border-red-900/50">
+        <h3 class="text-lg font-medium text-red-600 dark:text-red-400 mb-1">Danger Zone</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            Deleting a project is permanent and cannot be undone. All deployments, domains, and related data will be removed.
+        </p>
+        <button type="button"
+                wire:click="confirmDestructiveAction('deleteProject', '', 'Delete Project: {{ $project->name }}')"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+            Delete Project
+        </button>
+    </div>
+
+    <!-- Password Confirmation Modal -->
+    @if($showPasswordConfirm)
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" x-data>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 w-full max-w-md mx-4 border border-red-200 dark:border-red-900/50"
+                 role="dialog"
+                 aria-modal="true"
+                 aria-labelledby="delete-dialog-title"
+                 @keydown.escape.window="$wire.cancelConfirmation()">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 id="delete-dialog-title" class="text-lg font-semibold text-gray-900 dark:text-white">Confirm Deletion</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ $pendingActionLabel }}</p>
+                    </div>
+                </div>
+
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                    Enter your password to confirm this irreversible action.
+                </p>
+
+                <div class="mb-4">
+                    <label for="confirmPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</label>
+                    <input wire:model="confirmPassword"
+                           id="confirmPassword"
+                           type="password"
+                           placeholder="Your password"
+                           class="input @error('confirmPassword') border-red-500 @enderror"
+                           @keydown.enter="$wire.executeConfirmedAction()">
+                    @error('confirmPassword')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="flex gap-3 justify-end">
+                    <button type="button"
+                            wire:click="cancelConfirmation"
+                            class="btn btn-secondary">
+                        Cancel
+                    </button>
+                    <button type="button"
+                            wire:click="executeConfirmedAction"
+                            wire:loading.attr="disabled"
+                            wire:loading.class="opacity-50 cursor-not-allowed"
+                            wire:target="executeConfirmedAction"
+                            class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors">
+                        <span wire:loading.remove wire:target="executeConfirmedAction">Confirm Delete</span>
+                        <span wire:loading wire:target="executeConfirmedAction" class="flex items-center gap-2">
+                            <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+                            Deleting...
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+</div>

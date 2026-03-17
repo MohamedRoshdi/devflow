@@ -101,6 +101,23 @@ class DeployProjectJob implements ShouldQueue
         $startTime = now();
 
         try {
+            // Prevent concurrent deployments for the same project
+            $activeDeployment = $this->deployment->project
+                ->deployments()
+                ->where('id', '!=', $this->deployment->id)
+                ->whereIn('status', ['running'])
+                ->exists();
+
+            if ($activeDeployment) {
+                $this->deployment->update([
+                    'status' => 'failed',
+                    'output_log' => 'Deployment cancelled: another deployment is currently running.',
+                    'completed_at' => now(),
+                ]);
+
+                return;
+            }
+
             $this->deployment->update([
                 'status' => 'running',
                 'started_at' => $startTime,
@@ -215,6 +232,10 @@ class DeployProjectJob implements ShouldQueue
             $this->broadcastLog($line);
         };
 
+        // Check if this is an existing project (skip clone/pull if code already exists)
+        $setupConfig = $project->setup_config ?? [];
+        $isExistingProject = (bool) ($setupConfig['existing_project'] ?? false);
+
         // Step 1: Setup Git repository
         $addLog('=== Setting Up Repository ===');
         $addLog("Repository: {$project->repository_url}");
@@ -273,7 +294,12 @@ class DeployProjectJob implements ShouldQueue
         // Save logs immediately so user can see progress
         $this->deployment->update(['output_log' => implode("\n", $logs)]);
 
-        if ($repoExists) {
+        // If "existing project" is flagged and the code already exists, skip all git operations
+        if ($isExistingProject && $repoExists) {
+            $addLog('');
+            $addLog('→ Existing project detected — skipping git clone/pull, proceeding to build.');
+            $this->deployment->update(['output_log' => implode("\n", $logs)]);
+        } elseif ($repoExists) {
             $addLog('');
             $addLog('Repository already exists, pulling latest changes...');
 
@@ -346,7 +372,7 @@ class DeployProjectJob implements ShouldQueue
 
             // Fix permissions after successful clone
             $runCmd(
-                "chown -R 1000:1000 {$projectPath}/storage {$projectPath}/bootstrap/cache 2>/dev/null || true && " .
+                "chown -R 1000:1000 {$projectPath}/storage {$projectPath}/bootstrap/cache 2>/dev/null || true && ".
                 "chmod -R 775 {$projectPath}/storage {$projectPath}/bootstrap/cache 2>/dev/null || true",
                 30
             );
@@ -495,7 +521,12 @@ class DeployProjectJob implements ShouldQueue
                 $dockerCmd = "docker exec {$containerName} {$cmd} 2>&1 || echo 'Command may have already run or not applicable'";
                 $result = \Illuminate\Support\Facades\Process::run($dockerCmd);
 
-                // Log output but don't fail deployment if optimization fails
+                // Migration failure is critical — fail the deployment
+                if (str_contains($cmd, 'migrate') && ! $result->successful()) {
+                    throw new \RuntimeException('Migration failed: '.$result->output());
+                }
+
+                // Log output but don't fail deployment if other optimization steps fail
                 if ($result->successful() || str_contains($result->output(), 'already')) {
                     $addLog("  ✓ {$description} completed");
                 } else {
@@ -543,6 +574,11 @@ class DeployProjectJob implements ShouldQueue
 
                 // Fix .env file for Docker (DB_HOST, REDIS_HOST should use service names)
                 $addLog('Checking .env configuration for Docker...');
+
+                // Create .env from .env.example if it doesn't exist
+                $envCheckCommand = "cd {$projectPath} && test -f .env || (cp .env.example .env && php artisan key:generate --no-interaction 2>/dev/null) 2>&1";
+                $runCmd($envCheckCommand, 30);
+
                 $envFixCommand = "cd {$projectPath} && ".
                     "sed -i 's/^DB_HOST=127.0.0.1\$/DB_HOST=mysql/' .env 2>/dev/null; ".
                     "sed -i 's/^DB_HOST=localhost\$/DB_HOST=mysql/' .env 2>/dev/null; ".
@@ -665,7 +701,7 @@ class DeployProjectJob implements ShouldQueue
         $addLog('=== Bare-Metal Release Deployment ===');
         $addLog("Project: {$project->name}");
         $addLog("Branch: {$project->branch}");
-        $addLog("Method: symlink-based zero-downtime");
+        $addLog('Method: symlink-based zero-downtime');
         $addLog('');
 
         $this->deployment->update(['output_log' => implode("\n", $logs)]);
@@ -681,7 +717,7 @@ class DeployProjectJob implements ShouldQueue
                 $addLog('Pre-migration backup skipped (no active backup schedule)');
             }
         } catch (\Exception $backupError) {
-            $addLog('WARNING: Pre-migration backup failed: ' . $backupError->getMessage());
+            $addLog('WARNING: Pre-migration backup failed: '.$backupError->getMessage());
             Log::warning('Pre-migration backup failed, continuing deployment', [
                 'deployment_id' => $this->deployment->id,
                 'project_id' => $project->id,

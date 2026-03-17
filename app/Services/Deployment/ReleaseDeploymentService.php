@@ -190,6 +190,13 @@ class ReleaseDeploymentService
             $server,
             "ln -sfn {$parentDir}/shared/{$slug}/.env {$releasePath}/.env"
         );
+
+        // Create .env from .env.example if the shared .env doesn't exist yet
+        $this->executeRemoteCommand(
+            $server,
+            "test -f {$parentDir}/shared/{$slug}/.env || (test -f {$releasePath}/.env.example && cp {$releasePath}/.env.example {$parentDir}/shared/{$slug}/.env && php {$releasePath}/artisan key:generate --no-interaction 2>/dev/null) || true",
+            false
+        );
     }
 
     /**
