@@ -64,6 +64,14 @@ class ServerSecurityDashboard extends Component
         try {
             $service = app(ServerSecurityService::class);
             $this->securityOverview = $service->getSecurityOverview($this->server);
+
+            // Sync live SSH results to server model so blade reads correct values
+            $this->server->update([
+                'ufw_installed' => $this->securityOverview['ufw']['installed'] ?? false,
+                'ufw_enabled' => $this->securityOverview['ufw']['enabled'] ?? false,
+                'fail2ban_installed' => $this->securityOverview['fail2ban']['installed'] ?? false,
+                'fail2ban_enabled' => $this->securityOverview['fail2ban']['enabled'] ?? false,
+            ]);
             $this->server->refresh();
 
             // Compute a live score from the current overview so the gauge is never "--"
