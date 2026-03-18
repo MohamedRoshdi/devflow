@@ -441,6 +441,10 @@
                                class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('settings.queue-monitor') ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800' }}">
                                 Queue Monitor
                             </a>
+                            <a href="{{ route('settings.cloudflare') }}"
+                               class="block px-3 py-2 rounded-lg text-sm {{ request()->routeIs('settings.cloudflare') ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800' }}">
+                                Cloudflare DNS
+                            </a>
 
                             <!-- Content Management -->
                             <div class="border-t border-gray-200 dark:border-slate-700 my-2"></div>
