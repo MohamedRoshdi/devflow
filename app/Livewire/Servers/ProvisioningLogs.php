@@ -49,6 +49,35 @@ class ProvisioningLogs extends Component
 
     public bool $secureSSH = true;
 
+    public bool $installSupervisor = false;
+
+    public bool $installFrankenphp = false;
+
+    public bool $installFail2ban = false;
+
+    public bool $configureWildcardNginx = false;
+
+    // Queue worker config (when Supervisor is enabled)
+    public int $queueWorkerCount = 2;
+
+    public string $queueNames = 'default';
+
+    // Octane config (when FrankenPHP is enabled)
+    public int $octaneWorkers = 4;
+
+    public int $octanePort = 8090;
+
+    // Wildcard Nginx config
+    public string $wildcardDomain = '';
+
+    public string $wildcardProjectPath = '/var/www/e-store';
+
+    // Additional databases
+    /** @var array<int, string> */
+    public array $additionalDatabases = [];
+
+    public string $newAdditionalDatabase = '';
+
     // Configuration options
     public string $phpVersion = '8.4';
 
@@ -146,6 +175,21 @@ class ProvisioningLogs extends Component
         $this->resetPage();
     }
 
+    public function addAdditionalDatabase(): void
+    {
+        $name = preg_replace('/[^a-zA-Z0-9_]/', '', trim($this->newAdditionalDatabase));
+        if ($name !== '' && ! in_array($name, $this->additionalDatabases, true)) {
+            $this->additionalDatabases[] = $name;
+        }
+        $this->newAdditionalDatabase = '';
+    }
+
+    public function removeAdditionalDatabase(int $index): void
+    {
+        unset($this->additionalDatabases[$index]);
+        $this->additionalDatabases = array_values($this->additionalDatabases);
+    }
+
     public function startProvisioning(): void
     {
         $this->validate([
@@ -155,9 +199,19 @@ class ProvisioningLogs extends Component
             'postgresqlPassword' => 'required_if:installPostgreSQL,true|min:8',
             'redisMaxMemoryMB' => 'required_if:installRedis,true|integer|min:64|max:8192',
             'swapSizeGB' => 'required|integer|min:1|max:32',
+            'queueWorkerCount' => 'required_if:installSupervisor,true|integer|min:1|max:16',
+            'queueNames' => 'required_if:installSupervisor,true|string|max:255',
+            'octaneWorkers' => 'required_if:installFrankenphp,true|integer|min:1|max:64',
+            'octanePort' => 'required_if:installFrankenphp,true|integer|min:1024|max:65535',
+            'wildcardDomain' => 'required_if:configureWildcardNginx,true|nullable|regex:/^[a-zA-Z0-9][a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}$/',
+            'wildcardProjectPath' => 'required_if:configureWildcardNginx,true|nullable|string|max:255',
         ]);
 
         $server = $this->server;
+
+        // Merge additional databases into postgresql_databases
+        $pgDatabases = array_filter(array_map('trim', explode(',', $this->postgresqlDatabases)));
+        $pgDatabases = array_unique(array_merge($pgDatabases, $this->additionalDatabases));
 
         $options = [
             'update_system' => true,
@@ -171,15 +225,26 @@ class ProvisioningLogs extends Component
             'configure_firewall' => $this->configureFirewall,
             'setup_swap' => $this->setupSwap,
             'secure_ssh' => $this->secureSSH,
+            'install_supervisor' => $this->installSupervisor,
+            'install_frankenphp' => $this->installFrankenphp,
+            'install_fail2ban' => $this->installFail2ban,
+            'configure_wildcard_nginx' => $this->configureWildcardNginx,
             'php_version' => $this->phpVersion,
             'node_version' => $this->nodeVersion,
             'mysql_root_password' => $this->mysqlPassword,
             'postgresql_password' => $this->postgresqlPassword,
-            'postgresql_databases' => array_filter(array_map('trim', explode(',', $this->postgresqlDatabases))),
+            'postgresql_databases' => $pgDatabases,
+            'additional_databases' => $this->additionalDatabases,
             'redis_password' => $this->redisPassword !== '' ? $this->redisPassword : null,
             'redis_max_memory_mb' => $this->redisMaxMemoryMB,
             'swap_size_gb' => $this->swapSizeGB,
             'firewall_ports' => [22, 80, 443],
+            'queue_worker_count' => $this->queueWorkerCount,
+            'queue_names' => $this->queueNames,
+            'octane_workers' => $this->octaneWorkers,
+            'octane_port' => $this->octanePort,
+            'wildcard_domain' => $this->wildcardDomain,
+            'wildcard_project_path' => $this->wildcardProjectPath,
         ];
 
         dispatch(function () use ($server, $options) {

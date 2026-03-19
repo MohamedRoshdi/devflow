@@ -236,8 +236,144 @@
                                     <input type="checkbox" wire:model="secureSSH" class="rounded text-blue-600">
                                     <span class="text-sm text-gray-300">SSH Security</span>
                                 </label>
+
+                                <label class="flex items-center gap-2 p-3 bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-700/50">
+                                    <input type="checkbox" wire:model="installSupervisor" class="rounded text-blue-600">
+                                    <span class="text-sm text-gray-300">Supervisor (Process manager)</span>
+                                </label>
+
+                                <label class="flex items-center gap-2 p-3 bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-700/50">
+                                    <input type="checkbox" wire:model.live="installFrankenphp" class="rounded text-blue-600">
+                                    <span class="text-sm text-gray-300">FrankenPHP (Laravel Octane)</span>
+                                </label>
+
+                                <label class="flex items-center gap-2 p-3 bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-700/50">
+                                    <input type="checkbox" wire:model.live="installFail2ban" class="rounded text-blue-600">
+                                    <span class="text-sm text-gray-300">Fail2ban (Intrusion prevention)</span>
+                                </label>
+
+                                <label class="flex items-center gap-2 p-3 bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-700/50 col-span-2">
+                                    <input type="checkbox" wire:model.live="configureWildcardNginx" class="rounded text-blue-600">
+                                    <span class="text-sm text-gray-300">Wildcard Subdomain Routing</span>
+                                    <span class="text-xs text-gray-500 ml-1">(*.domain.com → Octane)</span>
+                                </label>
                             </div>
                         </div>
+
+                        @if($configureWildcardNginx)
+                            <div class="p-4 bg-gray-900 border border-blue-500/20 rounded-lg space-y-4">
+                                <h4 class="text-sm font-medium text-blue-300 flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                    </svg>
+                                    Wildcard Nginx Configuration
+                                </h4>
+                                <p class="text-xs text-gray-400">
+                                    Generates two server blocks: wildcard subdomain proxy (<code class="text-blue-300">*.domain</code>)
+                                    and a custom domain catch-all. Requires Cloudflare origin certificates at
+                                    <code class="text-blue-300">/etc/ssl/certs/cloudflare-origin.pem</code>.
+                                </p>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">Base Domain</label>
+                                    <input type="text" wire:model="wildcardDomain"
+                                           class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500"
+                                           placeholder="e.g. store-eg.com">
+                                    @error('wildcardDomain')
+                                        <span class="text-xs text-red-400 mt-1 block">{{ $message }}</span>
+                                    @enderror
+                                    <p class="text-xs text-gray-500 mt-1">Nginx will serve <code>domain.com</code> and <code>*.domain.com</code></p>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">Project Path</label>
+                                    <input type="text" wire:model="wildcardProjectPath"
+                                           class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500"
+                                           placeholder="e.g. /var/www/e-store">
+                                    @error('wildcardProjectPath')
+                                        <span class="text-xs text-red-400 mt-1 block">{{ $message }}</span>
+                                    @enderror
+                                    <p class="text-xs text-gray-500 mt-1">Absolute path to your Laravel project root</p>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">Octane Port</label>
+                                    <input type="number" wire:model="octanePort" min="1024" max="65535"
+                                           class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white"
+                                           placeholder="8090">
+                                    @error('octanePort')
+                                        <span class="text-xs text-red-400 mt-1 block">{{ $message }}</span>
+                                    @enderror
+                                    <p class="text-xs text-gray-500 mt-1">Port where FrankenPHP/Octane is listening (default: 8090)</p>
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- Gap 3: Queue Worker Configuration (shown when Supervisor is checked) --}}
+                        @if($installSupervisor)
+                            <div class="p-4 bg-gray-900 border border-purple-500/20 rounded-lg space-y-4">
+                                <h4 class="text-sm font-medium text-purple-300 flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                    </svg>
+                                    Queue Worker Configuration
+                                </h4>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-300 mb-2">Worker Count</label>
+                                        <input type="number" wire:model="queueWorkerCount" min="1" max="16"
+                                               class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white">
+                                        @error('queueWorkerCount')
+                                            <span class="text-xs text-red-400 mt-1 block">{{ $message }}</span>
+                                        @enderror
+                                        <p class="text-xs text-gray-500 mt-1">Number of parallel queue worker processes</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-300 mb-2">Queue Names</label>
+                                        <input type="text" wire:model="queueNames"
+                                               class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white"
+                                               placeholder="default">
+                                        @error('queueNames')
+                                            <span class="text-xs text-red-400 mt-1 block">{{ $message }}</span>
+                                        @enderror
+                                        <p class="text-xs text-gray-500 mt-1">Comma-separated queue names (e.g. default,emails,notifications)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- Gap 4: Octane Settings (shown when FrankenPHP is checked) --}}
+                        @if($installFrankenphp)
+                            <div class="p-4 bg-gray-900 border border-orange-500/20 rounded-lg space-y-4">
+                                <h4 class="text-sm font-medium text-orange-300 flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                    </svg>
+                                    Octane / FrankenPHP Settings
+                                </h4>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-300 mb-2">Worker Count</label>
+                                        <input type="number" wire:model="octaneWorkers" min="1" max="64"
+                                               class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white">
+                                        @error('octaneWorkers')
+                                            <span class="text-xs text-red-400 mt-1 block">{{ $message }}</span>
+                                        @enderror
+                                        <p class="text-xs text-gray-500 mt-1">Number of FrankenPHP workers (default: 4)</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-300 mb-2">Octane Port</label>
+                                        <input type="number" wire:model="octanePort" min="1024" max="65535"
+                                               class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white"
+                                               placeholder="8090">
+                                        @error('octanePort')
+                                            <span class="text-xs text-red-400 mt-1 block">{{ $message }}</span>
+                                        @enderror
+                                        <p class="text-xs text-gray-500 mt-1">Port for Octane to listen on (default: 8090)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
 
                         {{-- Configuration Options --}}
                         <div class="grid grid-cols-2 gap-4">
@@ -290,6 +426,50 @@
                                            class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white"
                                            placeholder="e.g. app_db, admin_db">
                                     <p class="text-xs text-gray-500 mt-1">Leave empty to create databases later</p>
+                                </div>
+
+                                {{-- Additional Databases (multi-connection .env support) --}}
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                                        Additional Databases
+                                        <span class="text-xs font-normal text-gray-500 ml-1">— adds separate .env connection blocks (e.g. for multi-vertical apps)</span>
+                                    </label>
+
+                                    @if(count($additionalDatabases) > 0)
+                                        <div class="space-y-2 mb-3">
+                                            @foreach($additionalDatabases as $index => $dbName)
+                                                <div class="flex items-center gap-2 px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg">
+                                                    <svg class="w-4 h-4 text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 3 8 3s8-.79 8-3V7M4 7c0 2.21 3.582 3 8 3s8-.79 8-3M4 7c0-2.21 3.582 3 8 3s8-.79 8-3"></path>
+                                                    </svg>
+                                                    <span class="text-sm text-gray-300 flex-1 font-mono">{{ $dbName }}</span>
+                                                    <button type="button"
+                                                            wire:click="removeAdditionalDatabase({{ $index }})"
+                                                            class="text-gray-500 hover:text-red-400 transition-colors">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+
+                                    <div class="flex gap-2">
+                                        <input type="text"
+                                               wire:model="newAdditionalDatabase"
+                                               wire:keydown.enter.prevent="addAdditionalDatabase"
+                                               class="flex-1 px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm"
+                                               placeholder="e.g. lebsa">
+                                        <button type="button"
+                                                wire:click="addAdditionalDatabase"
+                                                class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm whitespace-nowrap">
+                                            Add Database
+                                        </button>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        Each database gets its own <code class="text-gray-400">DB_*</code> block in .env using the name as prefix (e.g. <code class="text-gray-400">LEBSA_DB_DATABASE=lebsa</code>). Shares the same user/password as the main DB.
+                                    </p>
                                 </div>
                             </div>
                         @endif

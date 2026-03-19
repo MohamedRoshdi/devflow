@@ -35,6 +35,29 @@ class ServerProvisioning extends Component
 
     public bool $secureSSH = true;
 
+    public bool $installSupervisor = false;
+
+    public bool $installFrankenphp = false;
+
+    public bool $installFail2ban = false;
+
+    public bool $configureWildcardNginx = false;
+
+    // Gap 3: Queue worker configuration (only used when installSupervisor is true)
+    public int $queueWorkerCount = 2;
+
+    public string $queueNames = 'default';
+
+    // Gap 4: Octane workers (only used when installFrankenphp is true)
+    public int $octaneWorkers = 4;
+
+    // Wildcard Nginx configuration
+    public string $wildcardDomain = '';
+
+    public string $wildcardProjectPath = '';
+
+    public int $octanePort = 8090;
+
     // Configuration options
     public string $phpVersion = '8.4';
 
@@ -45,6 +68,11 @@ class ServerProvisioning extends Component
     public string $postgresqlPassword = '';
 
     public string $postgresqlDatabases = '';
+
+    /** @var array<int, string> */
+    public array $additionalDatabases = [];
+
+    public string $newAdditionalDatabase = '';
 
     public string $redisPassword = '';
 
@@ -141,6 +169,30 @@ class ServerProvisioning extends Component
         $this->showProvisioningModal = false;
     }
 
+    public function addAdditionalDatabase(): void
+    {
+        $name = trim($this->newAdditionalDatabase);
+
+        if ($name === '') {
+            return;
+        }
+
+        // Sanitize: only allow alphanumeric and underscores
+        $name = preg_replace('/[^a-zA-Z0-9_]/', '_', $name);
+
+        if (! in_array($name, $this->additionalDatabases, true)) {
+            $this->additionalDatabases[] = $name;
+        }
+
+        $this->newAdditionalDatabase = '';
+    }
+
+    public function removeAdditionalDatabase(int $index): void
+    {
+        unset($this->additionalDatabases[$index]);
+        $this->additionalDatabases = array_values($this->additionalDatabases);
+    }
+
     public function startProvisioning(): void
     {
         $this->validate([
@@ -151,6 +203,12 @@ class ServerProvisioning extends Component
             'redisMaxMemoryMB' => 'required_if:installRedis,true|integer|min:64|max:8192',
             'swapSizeGB' => 'required|integer|min:1|max:32',
             'firewallPorts' => 'required|array|min:1',
+            'wildcardDomain' => 'required_if:configureWildcardNginx,true|nullable|regex:/^[a-zA-Z0-9][a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}$/',
+            'wildcardProjectPath' => 'required_if:configureWildcardNginx,true|nullable|string|max:255',
+            'octanePort' => 'required_if:configureWildcardNginx,true|integer|min:1024|max:65535',
+            'queueWorkerCount' => 'required_if:installSupervisor,true|integer|min:1|max:16',
+            'queueNames' => 'required_if:installSupervisor,true|string|max:255',
+            'octaneWorkers' => 'required_if:installFrankenphp,true|integer|min:1|max:64',
         ]);
 
         $this->isProvisioning = true;
@@ -173,10 +231,21 @@ class ServerProvisioning extends Component
                 'mysql_root_password' => $this->mysqlPassword,
                 'postgresql_password' => $this->postgresqlPassword,
                 'postgresql_databases' => array_filter(array_map('trim', explode(',', $this->postgresqlDatabases))),
+                'additional_databases' => $this->additionalDatabases,
                 'redis_password' => $this->redisPassword !== '' ? $this->redisPassword : null,
                 'redis_max_memory_mb' => $this->redisMaxMemoryMB,
                 'swap_size_gb' => $this->swapSizeGB,
                 'firewall_ports' => $this->firewallPorts,
+                'install_supervisor' => $this->installSupervisor,
+                'queue_worker_count' => $this->queueWorkerCount,
+                'queue_names' => $this->queueNames,
+                'install_frankenphp' => $this->installFrankenphp,
+                'octane_workers' => $this->octaneWorkers,
+                'install_fail2ban' => $this->installFail2ban,
+                'configure_wildcard_nginx' => $this->configureWildcardNginx,
+                'wildcard_domain' => $this->wildcardDomain,
+                'wildcard_project_path' => $this->wildcardProjectPath,
+                'wildcard_octane_port' => $this->octanePort,
             ];
 
             dispatch(function () use ($options) {
@@ -223,10 +292,21 @@ class ServerProvisioning extends Component
                 'node_version' => $this->nodeVersion,
                 'postgresql_password' => $this->postgresqlPassword,
                 'postgresql_databases' => array_filter(array_map('trim', explode(',', $this->postgresqlDatabases))),
+                'additional_databases' => $this->additionalDatabases,
                 'redis_password' => $this->redisPassword !== '' ? $this->redisPassword : null,
                 'redis_max_memory_mb' => $this->redisMaxMemoryMB,
                 'swap_size_gb' => $this->swapSizeGB,
                 'firewall_ports' => $this->firewallPorts,
+                'install_supervisor' => $this->installSupervisor,
+                'queue_worker_count' => $this->queueWorkerCount,
+                'queue_names' => $this->queueNames,
+                'install_frankenphp' => $this->installFrankenphp,
+                'octane_workers' => $this->octaneWorkers,
+                'install_fail2ban' => $this->installFail2ban,
+                'configure_wildcard_nginx' => $this->configureWildcardNginx,
+                'wildcard_domain' => $this->wildcardDomain,
+                'wildcard_project_path' => $this->wildcardProjectPath,
+                'wildcard_octane_port' => $this->octanePort,
             ];
 
             $service = app(ServerProvisioningService::class);

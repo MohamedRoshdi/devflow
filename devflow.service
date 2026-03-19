@@ -1,0 +1,17 @@
+[Unit]
+Description=DevFlow Pro Web Server
+After=network.target
+
+[Service]
+User=roshdy
+WorkingDirectory=/home/roshdy/Work/empire/dev-flow
+ExecStart=/usr/bin/php -d opcache.enable=0 artisan serve --host=127.0.0.1 --port=8088
+Environment=PHP_CLI_SERVER_WORKERS=2
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=devflow
+
+[Install]
+WantedBy=multi-user.target

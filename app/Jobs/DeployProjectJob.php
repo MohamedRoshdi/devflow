@@ -431,7 +431,66 @@ class DeployProjectJob implements ShouldQueue
         }
         $addLog('');
 
-        // Step 2: Build container
+        // Step 2: Check if project uses Docker or bare-metal post-deploy commands
+        $usesDocker = $server->docker_installed && ! empty($project->docker_compose_path);
+        $postDeployCommands = $project->post_deploy_commands ?? [];
+
+        if (! $usesDocker && ! empty($postDeployCommands)) {
+            // Bare-metal: run post-deploy commands via SSH
+            $addLog('=== Running Post-Deploy Commands ===');
+            $this->deployment->update(['output_log' => implode("\n", $logs)]);
+
+            foreach ($postDeployCommands as $cmd) {
+                $addLog("$ {$cmd}");
+                $result = $runCmd($cmd, 120);
+
+                if ($result->successful()) {
+                    $output = trim($result->output());
+                    if ($output) {
+                        foreach (explode("\n", $output) as $line) {
+                            $addLog("  {$line}");
+                        }
+                    }
+                    $addLog('  ✓ Done');
+                } else {
+                    $error = trim($result->errorOutput() ?: $result->output());
+                    $addLog("  ✗ Failed: {$error}");
+                    throw new \Exception("Post-deploy command failed: {$cmd}\n{$error}");
+                }
+
+                $this->deployment->update(['output_log' => implode("\n", $logs)]);
+            }
+
+            $addLog('');
+            $addLog('✓ All post-deploy commands completed');
+
+            // Update deployment and project
+            $endTime = now();
+            $duration = max(0, (int) $endTime->diffInSeconds($startTime));
+
+            $this->deployment->update([
+                'status' => 'success',
+                'completed_at' => $endTime,
+                'duration_seconds' => $duration,
+                'output_log' => implode("\n", $logs),
+            ]);
+
+            $project->update([
+                'status' => 'running',
+                'last_deployed_at' => now(),
+            ]);
+
+            Log::info('Bare-metal deployment successful', [
+                'deployment_id' => $this->deployment->id,
+                'project_id' => $project->id,
+            ]);
+
+            $project->user?->notify(new DeploymentCompleted($this->deployment, true));
+
+            return;
+        }
+
+        // Docker path: Build container
         $addLog('=== Building Docker Container ===');
         $addLog('Environment: '.($project->environment ?? 'production'));
         $addLog('This may take 10-20 minutes for large projects with npm builds...');
@@ -740,6 +799,33 @@ class DeployProjectJob implements ShouldQueue
 
         try {
             $releaseService->deploy($project, $this->deployment);
+
+            // Capture commit hash after successful clone/pull
+            $addLog('');
+            $addLog('=== Recording Commit Information ===');
+            $gitService = app(GitService::class);
+            $commitInfo = $gitService->getCurrentCommit($project);
+
+            if ($commitInfo) {
+                $addLog("Commit: {$commitInfo['short_hash']}");
+                $addLog("Author: {$commitInfo['author']}");
+                $addLog("Message: {$commitInfo['message']}");
+
+                $project->update([
+                    'current_commit_hash' => $commitInfo['hash'],
+                    'current_commit_message' => $commitInfo['message'],
+                    'last_commit_at' => now()->setTimestamp($commitInfo['timestamp']),
+                ]);
+
+                $this->deployment->update([
+                    'commit_hash' => $commitInfo['hash'],
+                    'commit_message' => $commitInfo['message'],
+                ]);
+
+                $addLog('✓ Commit information recorded');
+            } else {
+                $addLog('⚠ Could not retrieve commit information');
+            }
 
             $addLog('');
             $addLog('=== Deployment Complete ===');

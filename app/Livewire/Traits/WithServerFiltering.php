@@ -56,6 +56,7 @@ trait WithServerFiltering
                 'id', 'name', 'hostname', 'ip_address', 'port', 'status', 'role',
                 'user_id', 'docker_installed', 'last_ping_at', 'created_at', 'updated_at',
                 'cpu_cores', 'memory_gb', 'disk_gb', 'location_name', 'os',
+                'username', 'ssh_key', 'ssh_password',
             ])
             ->get();
     }
@@ -121,8 +122,7 @@ trait WithServerFiltering
      *
      * Adds or removes a tag from the active filter list.
      *
-     * @param int $tagId The ID of the tag to toggle
-     * @return void
+     * @param  int  $tagId  The ID of the tag to toggle
      */
     public function toggleTagFilter(int $tagId): void
     {

@@ -326,8 +326,142 @@
                                 </div>
                             </div>
                         </label>
+
+                        {{-- Supervisor --}}
+                        <label class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-700 rounded-xl cursor-pointer hover:border-purple-500/50 hover:bg-gray-900/80 transition-all group">
+                            <input type="checkbox" wire:model.live="installSupervisor"
+                                   class="w-4 h-4 rounded text-purple-600 bg-gray-700 border-gray-600 focus:ring-purple-500 focus:ring-offset-gray-900">
+                            <div class="flex items-center gap-2 flex-1">
+                                <span class="text-lg">⚙️</span>
+                                <div>
+                                    <span class="text-sm font-medium text-white">Supervisor</span>
+                                    <span class="text-xs text-gray-500 block">Process manager</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        {{-- FrankenPHP / Octane --}}
+                        <label class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-700 rounded-xl cursor-pointer hover:border-purple-500/50 hover:bg-gray-900/80 transition-all group">
+                            <input type="checkbox" wire:model.live="installFrankenphp"
+                                   class="w-4 h-4 rounded text-purple-600 bg-gray-700 border-gray-600 focus:ring-purple-500 focus:ring-offset-gray-900">
+                            <div class="flex items-center gap-2 flex-1">
+                                <span class="text-lg">🚀</span>
+                                <div>
+                                    <span class="text-sm font-medium text-white">FrankenPHP</span>
+                                    <span class="text-xs text-gray-500 block">Laravel Octane</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        {{-- Fail2ban --}}
+                        <label class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-700 rounded-xl cursor-pointer hover:border-purple-500/50 hover:bg-gray-900/80 transition-all group">
+                            <input type="checkbox" wire:model.live="installFail2ban"
+                                   class="w-4 h-4 rounded text-purple-600 bg-gray-700 border-gray-600 focus:ring-purple-500 focus:ring-offset-gray-900">
+                            <div class="flex items-center gap-2 flex-1">
+                                <span class="text-lg">🛡️</span>
+                                <div>
+                                    <span class="text-sm font-medium text-white">Fail2ban</span>
+                                    <span class="text-xs text-gray-500 block">Intrusion prevention</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        {{-- Wildcard Subdomain Routing --}}
+                        <label class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-700 rounded-xl cursor-pointer hover:border-purple-500/50 hover:bg-gray-900/80 transition-all group col-span-2">
+                            <input type="checkbox" wire:model.live="configureWildcardNginx"
+                                   class="w-4 h-4 rounded text-purple-600 bg-gray-700 border-gray-600 focus:ring-purple-500 focus:ring-offset-gray-900">
+                            <div class="flex items-center gap-2 flex-1">
+                                <span class="text-lg">🌐</span>
+                                <div>
+                                    <span class="text-sm font-medium text-white">Wildcard Subdomain Routing</span>
+                                    <span class="text-xs text-gray-500 block">*.domain.com → Octane reverse proxy</span>
+                                </div>
+                            </div>
+                        </label>
                     </div>
                 </div>
+
+                {{-- Conditional Config Panels --}}
+                @if($installSupervisor)
+                <div class="p-4 border border-purple-500/30 rounded-xl bg-purple-500/5">
+                    <h4 class="text-sm font-medium text-purple-300 mb-3">Queue Worker Configuration</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Worker Count</label>
+                            <input type="number" wire:model="queueWorkerCount" min="1" max="16"
+                                   class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Queue Names</label>
+                            <input type="text" wire:model="queueNames" placeholder="default,emails"
+                                   class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white">
+                        </div>
+                    </div>
+                </div>
+                @endif
+
+                @if($installFrankenphp)
+                <div class="p-4 border border-orange-500/30 rounded-xl bg-orange-500/5">
+                    <h4 class="text-sm font-medium text-orange-300 mb-3">Octane / FrankenPHP Settings</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Workers</label>
+                            <input type="number" wire:model="octaneWorkers" min="1" max="64"
+                                   class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Port</label>
+                            <input type="number" wire:model="octanePort" min="1024" max="65535"
+                                   class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white">
+                        </div>
+                    </div>
+                </div>
+                @endif
+
+                @if($configureWildcardNginx)
+                <div class="p-4 border border-cyan-500/30 rounded-xl bg-cyan-500/5">
+                    <h4 class="text-sm font-medium text-cyan-300 mb-3">Wildcard Subdomain Configuration</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Base Domain</label>
+                            <input type="text" wire:model="wildcardDomain" placeholder="store-eg.com"
+                                   class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Project Path</label>
+                            <input type="text" wire:model="wildcardProjectPath" placeholder="/var/www/e-store"
+                                   class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Octane Port</label>
+                            <input type="number" wire:model="octanePort" min="1024" max="65535"
+                                   class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white">
+                        </div>
+                    </div>
+                </div>
+                @endif
+
+                @if($installPostgreSQL && count($additionalDatabases) > 0 || $installPostgreSQL)
+                <div class="p-4 border border-blue-500/30 rounded-xl bg-blue-500/5">
+                    <h4 class="text-sm font-medium text-blue-300 mb-3">Additional Databases</h4>
+                    @if(count($additionalDatabases) > 0)
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        @foreach($additionalDatabases as $index => $db)
+                        <span class="inline-flex items-center gap-1 px-3 py-1 bg-blue-500/20 border border-blue-500/30 rounded-full text-sm text-blue-300">
+                            {{ $db }}
+                            <button type="button" wire:click="removeAdditionalDatabase({{ $index }})" class="text-blue-400 hover:text-red-400">&times;</button>
+                        </span>
+                        @endforeach
+                    </div>
+                    @endif
+                    <div class="flex gap-2">
+                        <input type="text" wire:model="newAdditionalDatabase" wire:keydown.enter.prevent="addAdditionalDatabase"
+                               placeholder="e.g. lebsa, general" class="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white">
+                        <button type="button" wire:click="addAdditionalDatabase"
+                                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors">Add</button>
+                    </div>
+                </div>
+                @endif
 
                 {{-- Version Configuration --}}
                 <div>

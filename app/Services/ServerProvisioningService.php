@@ -32,6 +32,10 @@ class ServerProvisioningService
             'configure_firewall' => $options['configure_firewall'] ?? true,
             'setup_swap' => $options['setup_swap'] ?? true,
             'secure_ssh' => $options['secure_ssh'] ?? true,
+            'install_supervisor' => $options['install_supervisor'] ?? false,
+            'install_frankenphp' => $options['install_frankenphp'] ?? false,
+            'configure_wildcard_nginx' => $options['configure_wildcard_nginx'] ?? false,
+            'install_fail2ban' => $options['install_fail2ban'] ?? false,
         ];
 
         $installedPackages = $server->installed_packages ?? [];
@@ -54,7 +58,10 @@ class ServerProvisioningService
 
             if ($tasks['install_postgresql']) {
                 $pgPassword = $options['postgresql_password'] ?? bin2hex(random_bytes(16));
-                $pgDatabases = $options['postgresql_databases'] ?? [];
+                $pgDatabases = array_unique(array_merge(
+                    $options['postgresql_databases'] ?? [],
+                    $options['additional_databases'] ?? []
+                ));
                 $this->installPostgreSQL($server, $pgPassword, $pgDatabases);
                 $installedPackages[] = 'postgresql-16';
             }
@@ -96,6 +103,38 @@ class ServerProvisioningService
 
             if ($tasks['secure_ssh']) {
                 $this->secureSSH($server);
+            }
+
+            if ($tasks['install_supervisor']) {
+                $this->installSupervisor($server);
+                $installedPackages[] = 'supervisor';
+
+                // Configure queue workers via SupervisorConfigService
+                $queueWorkerCount = (int) ($options['queue_worker_count'] ?? 2);
+                $queueNames = (string) ($options['queue_names'] ?? 'default');
+                $this->configureQueueWorkers($server, $queueWorkerCount, $queueNames);
+            }
+
+            if ($tasks['install_frankenphp']) {
+                $octaneWorkers = (int) ($options['octane_workers'] ?? 4);
+                $octanePort = (int) ($options['wildcard_octane_port'] ?? $options['octane_port'] ?? 8090);
+                $this->installFrankenPHP($server, $octaneWorkers, $octanePort);
+                $installedPackages[] = 'frankenphp';
+            }
+
+            if ($tasks['configure_wildcard_nginx']) {
+                $this->configureWildcardNginx($server, [
+                    'domain' => $options['wildcard_domain'] ?? '',
+                    'project_path' => $options['wildcard_project_path'] ?? '',
+                    'octane_port' => $options['wildcard_octane_port'] ?? 8090,
+                    'ssl_certificate' => $options['wildcard_ssl_certificate'] ?? '/etc/ssl/certs/cloudflare-origin.pem',
+                    'ssl_certificate_key' => $options['wildcard_ssl_certificate_key'] ?? '/etc/ssl/private/cloudflare-origin.key',
+                ]);
+            }
+
+            if ($tasks['install_fail2ban']) {
+                $this->installFail2ban($server);
+                $installedPackages[] = 'fail2ban';
             }
 
             $server->update([
@@ -605,7 +644,10 @@ class ServerProvisioningService
             $script .= "systemctl start postgresql\n";
             $pgPassword = $options['postgresql_password'] ?? 'CHANGE_ME';
             $script .= "sudo -u postgres psql -c \"CREATE USER app_user WITH PASSWORD '{$pgPassword}';\" 2>/dev/null || sudo -u postgres psql -c \"ALTER USER app_user WITH PASSWORD '{$pgPassword}';\"\n";
-            $pgDatabases = $options['postgresql_databases'] ?? [];
+            $pgDatabases = array_unique(array_merge(
+                $options['postgresql_databases'] ?? [],
+                $options['additional_databases'] ?? []
+            ));
             foreach ($pgDatabases as $database) {
                 $database = preg_replace('/[^a-zA-Z0-9_]/', '', $database);
                 $script .= "sudo -u postgres psql -c \"CREATE DATABASE {$database} OWNER app_user;\" 2>/dev/null || true\n";
@@ -689,15 +731,33 @@ class ServerProvisioningService
             $script .= "echo \"vm.swappiness=10\" >> /etc/sysctl.conf\n\n";
         }
 
+        if ($options['install_fail2ban'] ?? false) {
+            $script .= "# Install Fail2ban\n";
+            $script .= "echo 'Installing Fail2ban...'\n";
+            $script .= "DEBIAN_FRONTEND=noninteractive apt-get install -y fail2ban\n";
+            $script .= "cat > /etc/fail2ban/jail.local << 'ENDOFJAIL'\n";
+            $script .= "[DEFAULT]\nbantime  = 3600\nfindtime = 600\nmaxretry = 5\n\n";
+            $script .= "[sshd]\nenabled  = true\nport     = ssh\nfilter   = sshd\n";
+            $script .= "logpath  = /var/log/auth.log\nmaxretry = 5\nbantime  = 3600\n\n";
+            $script .= "[nginx-http-auth]\nenabled  = true\nfilter   = nginx-http-auth\n";
+            $script .= "port     = http,https\nlogpath  = /var/log/nginx/error.log\n\n";
+            $script .= "[nginx-botsearch]\nenabled  = true\nfilter   = nginx-botsearch\n";
+            $script .= "port     = http,https\nlogpath  = /var/log/nginx/access.log\nmaxretry = 2\n";
+            $script .= "ENDOFJAIL\n";
+            $script .= "systemctl enable fail2ban\n";
+            $script .= "systemctl restart fail2ban\n\n";
+        }
+
         $script .= "echo '✅ Server provisioning completed!'\n";
 
         return $script;
     }
 
     /**
-     * Prepend "sudo -n" to a command when the server user is not root.
-     * "-n" (non-interactive) prevents sudo from prompting for a password —
-     * the deploy user must have NOPASSWD sudo rights in /etc/sudoers.
+     * Prepend sudo to a command when the server user is not root.
+     * When a sudo password is available (via ssh_password), uses
+     * "echo PASSWORD | sudo -S" so no NOPASSWD sudoers entry is required.
+     * Without a password, falls back to "sudo -n" (requires NOPASSWD).
      */
     protected function sudoWrap(Server $server, string $command): string
     {
@@ -705,7 +765,248 @@ class ServerProvisioningService
             return $command;
         }
 
+        $password = $server->ssh_password ?? null;
+
+        if ($password !== null && $password !== '') {
+            $escaped = str_replace("'", "'\\''", $password);
+
+            return "echo '{$escaped}' | sudo -S {$command}";
+        }
+
         return 'sudo -n '.$command;
+    }
+
+    /**
+     * Install Supervisor process manager
+     */
+    public function installSupervisor(Server $server): bool
+    {
+        $log = ProvisioningLog::create([
+            'server_id' => $server->id,
+            'task' => 'install_supervisor',
+            'status' => 'running',
+            'started_at' => now(),
+        ]);
+
+        try {
+            $commands = [
+                'DEBIAN_FRONTEND=noninteractive apt-get install -y supervisor',
+                'systemctl enable supervisor',
+                'systemctl start supervisor',
+            ];
+
+            $output = '';
+            foreach ($commands as $command) {
+                $output .= $this->executeSSHCommand($server, $command)."\n";
+            }
+
+            $log->markAsCompleted($output);
+
+            return true;
+
+        } catch (\Exception $e) {
+            $log->markAsFailed($e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     * Install FrankenPHP binary and create Octane supervisor config
+     */
+    public function installFrankenPHP(Server $server, int $workers = 4, int $port = 8090): bool
+    {
+        $log = ProvisioningLog::create([
+            'server_id' => $server->id,
+            'task' => 'install_frankenphp',
+            'status' => 'running',
+            'started_at' => now(),
+        ]);
+
+        try {
+            $octaneConf = <<<CONF
+[program:octane]
+process_name=%(program_name)s_%(process_num)02d
+command=/usr/local/bin/frankenphp php-server --worker ./public/index.php --listen 127.0.0.1:{$port} --num-workers {$workers}
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=www-data
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/var/log/octane.log
+stdout_logfile_maxbytes=10MB
+stopwaitsecs=30
+CONF;
+
+            $commands = [
+                'curl -fsSL https://github.com/dunglas/frankenphp/releases/latest/download/frankenphp-linux-x86_64 -o /usr/local/bin/frankenphp',
+                'chmod +x /usr/local/bin/frankenphp',
+                sprintf('tee /etc/supervisor/conf.d/octane.conf > /dev/null <<\'ENDOFCONF\''."\n%s\nENDOFCONF", $octaneConf),
+                'supervisorctl reread',
+                'supervisorctl update',
+            ];
+
+            $output = '';
+            foreach ($commands as $command) {
+                $output .= $this->executeSSHCommand($server, $command)."\n";
+            }
+
+            $log->markAsCompleted($output);
+
+            return true;
+
+        } catch (\Exception $e) {
+            $log->markAsFailed($e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     * Configure queue workers via Supervisor (Gap 3).
+     * Called automatically after installSupervisor() when install_supervisor is true.
+     */
+    public function configureQueueWorkers(Server $server, int $workerCount = 2, string $queueNames = 'default'): bool
+    {
+        $log = ProvisioningLog::create([
+            'server_id' => $server->id,
+            'task' => 'configure_queue_workers',
+            'status' => 'running',
+            'started_at' => now(),
+        ]);
+
+        try {
+            $queueConf = <<<CONF
+[program:e-store-queue]
+process_name=%(program_name)s_%(process_num)02d
+command=php /var/www/html/artisan queue:work redis --queue={$queueNames} --tries=3 --max-time=3600
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=www-data
+numprocs={$workerCount}
+redirect_stderr=true
+stdout_logfile=/var/log/queue.log
+stdout_logfile_maxbytes=10MB
+stopwaitsecs=3600
+CONF;
+
+            $commands = [
+                sprintf('tee /etc/supervisor/conf.d/e-store-queue.conf > /dev/null <<\'ENDOFCONF\''."\n%s\nENDOFCONF", $queueConf),
+                'supervisorctl reread',
+                'supervisorctl update',
+            ];
+
+            $output = '';
+            foreach ($commands as $command) {
+                $output .= $this->executeSSHCommand($server, $command)."\n";
+            }
+
+            $log->markAsCompleted($output);
+
+            return true;
+
+        } catch (\Exception $e) {
+            $log->markAsFailed($e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     * Install and configure Fail2ban for intrusion prevention (Gap 5).
+     * Creates jails for SSH, nginx-http-auth, and nginx-botsearch.
+     */
+    public function installFail2ban(Server $server): bool
+    {
+        $log = ProvisioningLog::create([
+            'server_id' => $server->id,
+            'task' => 'install_fail2ban',
+            'status' => 'running',
+            'started_at' => now(),
+        ]);
+
+        try {
+            $jailConf = <<<'CONF'
+[DEFAULT]
+bantime  = 3600
+findtime = 600
+maxretry = 5
+
+[sshd]
+enabled  = true
+port     = ssh
+filter   = sshd
+logpath  = /var/log/auth.log
+maxretry = 5
+bantime  = 3600
+
+[nginx-http-auth]
+enabled  = true
+filter   = nginx-http-auth
+port     = http,https
+logpath  = /var/log/nginx/error.log
+
+[nginx-botsearch]
+enabled  = true
+filter   = nginx-botsearch
+port     = http,https
+logpath  = /var/log/nginx/access.log
+maxretry = 2
+CONF;
+
+            $commands = [
+                'DEBIAN_FRONTEND=noninteractive apt-get install -y fail2ban',
+                sprintf('tee /etc/fail2ban/jail.local > /dev/null <<\'ENDOFCONF\''."\n%s\nENDOFCONF", $jailConf),
+                'systemctl enable fail2ban',
+                'systemctl restart fail2ban',
+            ];
+
+            $output = '';
+            foreach ($commands as $command) {
+                $output .= $this->executeSSHCommand($server, $command)."\n";
+            }
+
+            $log->markAsCompleted($output);
+
+            return true;
+
+        } catch (\Exception $e) {
+            $log->markAsFailed($e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     * Install wildcard Nginx config for Octane/FrankenPHP subdomain routing.
+     *
+     * Generates a wildcard vhost (DOMAIN + *.DOMAIN) that reverse-proxies to
+     * Octane on the given port, plus a catch-all block for custom domains.
+     * Requires Nginx and the Cloudflare origin cert to be present on the server.
+     *
+     * @param  array{domain: string, project_path: string, octane_port: int, ssl_certificate?: string, ssl_certificate_key?: string}  $options
+     */
+    public function configureWildcardNginx(Server $server, array $options): bool
+    {
+        $log = ProvisioningLog::create([
+            'server_id' => $server->id,
+            'task' => 'configure_wildcard_nginx',
+            'status' => 'running',
+            'started_at' => now(),
+        ]);
+
+        try {
+            $nginxService = app(\App\Services\NginxConfigService::class);
+            $nginxService->installWildcardOctaneConfig($server, $options);
+
+            $log->markAsCompleted('Wildcard Nginx config installed for '.$options['domain']);
+
+            return true;
+
+        } catch (\Exception $e) {
+            $log->markAsFailed($e->getMessage());
+            throw $e;
+        }
     }
 
     /**

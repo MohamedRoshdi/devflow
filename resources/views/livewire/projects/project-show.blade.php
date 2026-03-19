@@ -1082,4 +1082,48 @@
             </div>
         </div>
     @endif
+
+    {{-- Add Domain Modal --}}
+    <div
+        x-data="{ open: false, domain: '', ssl: true, isPrimary: false }"
+        x-on:open-add-domain-modal.window="open = true; domain = ''; ssl = true; isPrimary = false"
+        x-show="open"
+        x-cloak
+        class="fixed inset-0 z-50 flex items-center justify-center p-4"
+        style="display: none;">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" x-on:click="open = false"></div>
+        <div class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md p-6 z-10">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Add Domain</h3>
+            <form method="POST" action="{{ route('projects.domains.store', $project) }}">
+                @csrf
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Domain Name</label>
+                        <input type="text" name="domain" x-model="domain" placeholder="demo.store-eg.com"
+                            class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all" />
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" name="ssl_enabled" id="ssl_enabled" x-model="ssl" value="1"
+                            class="w-4 h-4 text-purple-600 rounded" checked />
+                        <label for="ssl_enabled" class="text-sm text-gray-700 dark:text-slate-300">Enable SSL</label>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" name="is_primary" id="is_primary" x-model="isPrimary" value="1"
+                            class="w-4 h-4 text-purple-600 rounded" />
+                        <label for="is_primary" class="text-sm text-gray-700 dark:text-slate-300">Set as primary domain</label>
+                    </div>
+                </div>
+                <div class="flex gap-3 mt-6">
+                    <button type="button" x-on:click="open = false"
+                        class="flex-1 px-4 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-300 font-medium hover:bg-gray-200 dark:hover:bg-slate-600 transition-all">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium hover:from-purple-700 hover:to-pink-700 transition-all">
+                        Add Domain
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>

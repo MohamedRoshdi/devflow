@@ -71,6 +71,7 @@ class InstallScriptGenerator
             'repository_url' => '',
             'branch' => 'main',
             'framework' => 'laravel',
+            'additional_databases' => [],
         ], $options);
 
         return $this->buildScript();
@@ -806,6 +807,8 @@ BASH;
     {
         $dbDriver = $this->config['db_driver'];
         $dbConnection = $dbDriver === 'pgsql' ? 'pgsql' : 'mysql';
+        $additionalDatabases = $this->config['additional_databases'] ?? [];
+        $additionalEnvBlock = $this->buildAdditionalDatabasesEnvBlock($additionalDatabases);
 
         return <<<BASH
 # =============================================================================
@@ -838,7 +841,7 @@ sed -i "s/^DB_CONNECTION=.*/DB_CONNECTION={$dbConnection}/" .env
 sed -i "s/^DB_DATABASE=.*/DB_DATABASE=\$DB_NAME/" .env
 sed -i "s/^DB_USERNAME=.*/DB_USERNAME=\$DB_USER/" .env
 sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=\$DB_PASSWORD/" .env
-
+{$additionalEnvBlock}
 if [ "\$PRODUCTION_MODE" = true ]; then
     sed -i "s/^APP_ENV=.*/APP_ENV=production/" .env
     sed -i "s/^APP_DEBUG=.*/APP_DEBUG=false/" .env
@@ -865,6 +868,43 @@ fi
 print_success "Application setup complete"
 
 BASH;
+    }
+
+    /**
+     * Build bash snippet that appends additional database .env blocks.
+     *
+     * @param  array<int, string>  $databases
+     */
+    protected function buildAdditionalDatabasesEnvBlock(array $databases): string
+    {
+        if (empty($databases)) {
+            return '';
+        }
+
+        $lines = [''];
+        $lines[] = '# Additional database connections';
+
+        foreach ($databases as $dbName) {
+            $dbName = preg_replace('/[^a-zA-Z0-9_]/', '_', $dbName) ?? $dbName;
+            $prefix = strtoupper($dbName);
+
+            $lines[] = "# {$dbName} vertical";
+            $lines[] = "if ! grep -q '^{$prefix}_DB_HOST=' .env; then";
+            $lines[] = "    echo '' >> .env";
+            $lines[] = "    echo '# {$dbName} vertical database' >> .env";
+            $lines[] = "    echo '{$prefix}_DB_HOST=127.0.0.1' >> .env";
+            $lines[] = "    echo '{$prefix}_DB_PORT=5432' >> .env";
+            $lines[] = "    echo '{$prefix}_DB_DATABASE={$dbName}' >> .env";
+            $lines[] = "    echo \"{$prefix}_DB_USERNAME=\$DB_USER\" >> .env";
+            $lines[] = "    echo \"{$prefix}_DB_PASSWORD=\$DB_PASSWORD\" >> .env";
+            $lines[] = 'else';
+            $lines[] = "    sed -i \"s/^{$prefix}_DB_DATABASE=.*/{$prefix}_DB_DATABASE={$dbName}/\" .env";
+            $lines[] = "    sed -i \"s/^{$prefix}_DB_USERNAME=.*/{$prefix}_DB_USERNAME=\$DB_USER/\" .env";
+            $lines[] = "    sed -i \"s/^{$prefix}_DB_PASSWORD=.*/{$prefix}_DB_PASSWORD=\$DB_PASSWORD/\" .env";
+            $lines[] = 'fi';
+        }
+
+        return implode("\n", $lines)."\n";
     }
 
     protected function getCronSetup(): string
