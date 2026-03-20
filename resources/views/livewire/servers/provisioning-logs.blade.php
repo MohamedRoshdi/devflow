@@ -160,6 +160,164 @@
     </div>
 
     {{-- ====================================================
+         Server Setup Guide & Security Checklist
+    ===================================================== --}}
+    <div x-data="{ showGuide: false, showSecurity: false }" class="space-y-4 mb-6">
+
+        {{-- Setup Steps --}}
+        <div class="border border-gray-700 rounded-xl overflow-hidden">
+            <button @click="showGuide = !showGuide"
+                    class="w-full flex items-center justify-between p-4 bg-gray-800/50 hover:bg-gray-700/50 transition-colors text-left">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                    </svg>
+                    <span class="text-sm font-semibold text-white">Server Setup Steps</span>
+                    <span class="text-xs text-gray-500 font-normal">— recommended order of operations</span>
+                </div>
+                <svg :class="{ 'rotate-180': showGuide }" class="w-5 h-5 text-gray-400 transition-transform duration-200 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
+            <div x-show="showGuide" x-collapse class="border-t border-gray-700">
+                <div class="p-5 space-y-3">
+                    @php
+                        $steps = [
+                            ['num' => 1, 'title' => 'Add Server', 'desc' => 'Register the server IP, SSH key, and deploy user in DevFlow. Test SSH connectivity before proceeding.', 'color' => 'indigo'],
+                            ['num' => 2, 'title' => 'Provision Base', 'desc' => 'Install PHP 8.4, Nginx, PostgreSQL 16, Redis, Node.js 22, Composer, and Supervisor via the provisioning form below.', 'color' => 'purple'],
+                            ['num' => 3, 'title' => 'Security Hardening', 'desc' => 'Enable UFW (ports 22/80/443 only), configure Fail2ban for SSH + Nginx, and apply SSH hardening (key-only auth).', 'color' => 'amber'],
+                            ['num' => 4, 'title' => 'Configure Services', 'desc' => 'Set up Supervisor for queue workers + Octane, configure wildcard Nginx virtual host, and obtain SSL via Certbot or Cloudflare.', 'color' => 'cyan'],
+                            ['num' => 5, 'title' => 'Create Databases', 'desc' => 'Create application databases: estores, lebsa, general — plus test DBs (estores_test, estores_test_test_1..8). Use a dedicated app user, not postgres superuser.', 'color' => 'blue'],
+                            ['num' => 6, 'title' => 'Deploy Project', 'desc' => 'Git clone to /var/www, configure .env (APP_ENV=production, APP_DEBUG=false), run migrations, npm build, and cache config/routes/events/views.', 'color' => 'green'],
+                            ['num' => 7, 'title' => 'Verify', 'desc' => 'Hit /api/health — confirms DB, Redis, Queue, Storage are all live. Test SSL certificate, verify queue workers and scheduler cron are running.', 'color' => 'emerald'],
+                        ];
+                        $colorMap = [
+                            'indigo' => ['badge' => 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30', 'line' => 'bg-indigo-500/30'],
+                            'purple' => ['badge' => 'bg-purple-500/20 text-purple-300 border-purple-500/30', 'line' => 'bg-purple-500/30'],
+                            'amber'  => ['badge' => 'bg-amber-500/20 text-amber-300 border-amber-500/30', 'line' => 'bg-amber-500/30'],
+                            'cyan'   => ['badge' => 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30', 'line' => 'bg-cyan-500/30'],
+                            'blue'   => ['badge' => 'bg-blue-500/20 text-blue-300 border-blue-500/30', 'line' => 'bg-blue-500/30'],
+                            'green'  => ['badge' => 'bg-green-500/20 text-green-300 border-green-500/30', 'line' => 'bg-green-500/30'],
+                            'emerald'=> ['badge' => 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30', 'line' => 'bg-emerald-500/30'],
+                        ];
+                    @endphp
+                    @foreach($steps as $step)
+                    @php $c = $colorMap[$step['color']]; @endphp
+                    <div class="flex items-start gap-4">
+                        <div class="shrink-0 w-8 h-8 rounded-full border {{ $c['badge'] }} flex items-center justify-center text-sm font-bold">
+                            {{ $step['num'] }}
+                        </div>
+                        <div class="flex-1 min-w-0 pb-3 {{ !$loop->last ? 'border-b border-gray-700/60' : '' }}">
+                            <p class="text-sm font-semibold text-white">{{ $step['title'] }}</p>
+                            <p class="text-xs text-gray-400 mt-0.5 leading-relaxed">{{ $step['desc'] }}</p>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+
+        {{-- Security Checklist --}}
+        <div class="border border-amber-500/30 rounded-xl overflow-hidden">
+            <button @click="showSecurity = !showSecurity"
+                    class="w-full flex items-center justify-between p-4 bg-amber-500/5 hover:bg-amber-500/10 transition-colors text-left">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                    <span class="text-sm font-semibold text-white">Security Checklist</span>
+                    <span class="text-xs text-amber-500/70 font-normal">— review before going live</span>
+                </div>
+                <svg :class="{ 'rotate-180': showSecurity }" class="w-5 h-5 text-gray-400 transition-transform duration-200 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
+            <div x-show="showSecurity" x-collapse class="border-t border-amber-500/20">
+                <div class="p-5 grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                    {{-- Pre-Provisioning --}}
+                    <div>
+                        <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-blue-400 inline-block"></span>
+                            Pre-Provisioning
+                        </h4>
+                        <ul class="space-y-2.5">
+                            @foreach([
+                                'SSH key-only access — disable password auth',
+                                'Change default SSH port (optional but recommended)',
+                                'Create a non-root deploy user with sudo',
+                                'Update system packages before installing anything',
+                            ] as $item)
+                            <li class="flex items-start gap-2">
+                                <svg class="w-4 h-4 text-blue-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span class="text-xs text-gray-300 leading-relaxed">{{ $item }}</span>
+                            </li>
+                            @endforeach
+                        </ul>
+                    </div>
+
+                    {{-- Post-Provisioning --}}
+                    <div>
+                        <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-amber-400 inline-block"></span>
+                            Post-Provisioning
+                        </h4>
+                        <ul class="space-y-2.5">
+                            @foreach([
+                                'UFW: only open ports 22, 80, 443',
+                                'Fail2ban for SSH + Nginx brute force',
+                                'Unattended-upgrades for security patches',
+                                'Redis: listen on 127.0.0.1 only (no public)',
+                                'PostgreSQL: reject remote connections (pg_hba.conf)',
+                                'HTTPS with auto-renewal (Certbot or Cloudflare)',
+                                'File permissions: 755 dirs, 644 files, storage writable',
+                                'Log rotation to prevent disk fill',
+                            ] as $item)
+                            <li class="flex items-start gap-2">
+                                <svg class="w-4 h-4 text-amber-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span class="text-xs text-gray-300 leading-relaxed">{{ $item }}</span>
+                            </li>
+                            @endforeach
+                        </ul>
+                    </div>
+
+                    {{-- E-Store Specific --}}
+                    <div>
+                        <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-purple-400 inline-block"></span>
+                            E-Store Specific
+                        </h4>
+                        <ul class="space-y-2.5">
+                            @foreach([
+                                'Separate DB user — not postgres superuser',
+                                'Row-level security scoped per store_id',
+                                'APP_DEBUG=false, APP_ENV=production',
+                                'CSP headers configured (config/csp.php)',
+                                'session.secure=true, session.http_only=true',
+                                'Backup encryption enabled (AES-256)',
+                                'Rate limiting on all public routes',
+                            ] as $item)
+                            <li class="flex items-start gap-2">
+                                <svg class="w-4 h-4 text-purple-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span class="text-xs text-gray-300 leading-relaxed">{{ $item }}</span>
+                            </li>
+                            @endforeach
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    {{-- ====================================================
          Provisioning Wizard Form
     ===================================================== --}}
     @if($showProvisioningForm)
