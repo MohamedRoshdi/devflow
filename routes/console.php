@@ -64,3 +64,9 @@ Schedule::command('regions:monitor-health')->everyFiveMinutes();
 
 // Backup DevFlow's own database daily at 3 AM
 Schedule::command('devflow:backup-self')->daily()->at('03:00');
+
+// Check estore DNS resolution for wildcard and known subdomains (every 10 minutes)
+Schedule::command('estore:check-dns --alert')->everyTenMinutes()->withoutOverlapping();
+
+// Check estore SSL certificate expiry for origin and public subdomains (daily at 4 AM)
+Schedule::command('estore:check-ssl --alert')->daily()->at('04:00');
