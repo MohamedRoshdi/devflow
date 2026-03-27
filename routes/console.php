@@ -47,6 +47,15 @@ Schedule::command('security:predict --all')->hourly();
 // Capture security baselines - Weekly on Sunday at 4 AM
 Schedule::command('security:capture-baseline --all')->weeklyOn(0, '04:00');
 
+// Check supervisor process health (FATAL/STOPPED detection)
+Schedule::command('supervisor:check-health --alert')->everyTwoMinutes();
+
+// Check Redis connectivity and memory health on all online servers (every minute)
+Schedule::command('monitoring:check-redis-health')->everyMinute()->withoutOverlapping();
+
+// Check queue worker health and job backlog on all online servers (every 2 minutes)
+Schedule::command('monitoring:check-queue-health')->everyTwoMinutes()->withoutOverlapping();
+
 // Monitor active canary releases
 Schedule::command('canary:monitor')->everyMinute();
 

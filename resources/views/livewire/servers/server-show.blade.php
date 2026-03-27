@@ -591,6 +591,9 @@
                 </div>
                 @endif
             </div>
+
+            {{-- Supervisor Process Health --}}
+            <livewire:servers.supervisor-health-monitor :server="$server" />
         </div>
         @endif
 
