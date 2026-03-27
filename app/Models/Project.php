@@ -74,6 +74,7 @@ class Project extends Model
         'deployment_strategy',
         'active_environment',
         'blue_green_config',
+        'docker_compose_path',
     ];
 
     protected function casts(): array
